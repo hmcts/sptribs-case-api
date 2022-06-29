@@ -2,7 +2,6 @@ package uk.gov.hmcts.divorce.divorcecase.validation;
 
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkActionCaseData;
 import uk.gov.hmcts.divorce.divorcecase.model.Application;
 import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
 import uk.gov.hmcts.divorce.divorcecase.model.MarriageDetails;
@@ -120,7 +119,7 @@ public final class ValidationUtil {
         return caseData.getApplication().getJurisdiction().validateJurisdiction(caseData);
     }
 
-    public static List<String> validateCasesAcceptedToListForHearing(BulkActionCaseData caseData) {
+    /*public static List<String> validateCasesAcceptedToListForHearing(BulkActionCaseData caseData) {
         final List<ListValue<CaseLink>> casesAcceptedToListForHearing = caseData.getCasesAcceptedToListForHearing();
         final List<String> caseReferences = caseData.getBulkListCaseDetails().stream()
             .map(c -> c.getValue().getCaseReference().getCaseReference())
@@ -133,7 +132,7 @@ public final class ValidationUtil {
         return anyDuplicateCases || anyNewCasesAdded
             ? singletonList("You can only remove cases from the list of cases accepted to list for hearing.")
             : emptyList();
-    }
+    }*/
 
     private static boolean isLessThanOneYearAgo(LocalDate date) {
         return !date.isAfter(LocalDate.now())

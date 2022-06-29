@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkActionCaseData;
 import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
 import uk.gov.hmcts.divorce.idam.IdamService;
 import uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService;
@@ -54,7 +53,7 @@ public class PronouncementListTemplateContent {
     private AuthTokenGenerator authTokenGenerator;
 
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    public Map<String, Object> apply(final BulkActionCaseData caseData,
+    /*public Map<String, Object> apply(final BulkActionCaseData caseData,
                                      final Long bulkListCaseId,
                                      final LocalDate createdDate) {
 
@@ -91,7 +90,7 @@ public class PronouncementListTemplateContent {
         templateContent.put(BULK_LIST, bulkList);
 
         return templateContent;
-    }
+    }*/
 
     public List<CaseDetails> retrieveBulkListCases(Long bulkListCaseReference) {
 

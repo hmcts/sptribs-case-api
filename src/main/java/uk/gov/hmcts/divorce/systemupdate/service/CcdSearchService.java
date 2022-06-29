@@ -9,9 +9,6 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionCaseTypeConfig;
-import uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionState;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkActionCaseData;
 import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
 import uk.gov.hmcts.divorce.divorcecase.model.State;
 import uk.gov.hmcts.divorce.systemupdate.convert.CaseDetailsConverter;
@@ -35,8 +32,6 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
-import static uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionState.Created;
-import static uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionState.Listed;
 import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.CASE_TYPE;
 import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingPronouncement;
 
@@ -147,7 +142,7 @@ public class CcdSearchService {
         ).getCases();
     }
 
-    public List<CaseDetails> searchForBulkCasesWithVersionLessThan(int latestVersion, User user, String serviceAuth) {
+    /*public List<CaseDetails> searchForBulkCasesWithVersionLessThan(int latestVersion, User user, String serviceAuth) {
 
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
             .searchSource()
@@ -170,7 +165,7 @@ public class CcdSearchService {
             BulkActionCaseTypeConfig.CASE_TYPE,
             sourceBuilder.toString()
         ).getCases();
-    }
+    }*/
 
     public Deque<List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State>>> searchAwaitingPronouncementCasesAllPages(
         final User user,
@@ -190,7 +185,7 @@ public class CcdSearchService {
             bulkActionPageSize));
     }
 
-    public List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState>> searchForUnprocessedOrErroredBulkCases(
+    /*public List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState>> searchForUnprocessedOrErroredBulkCases(
         final BulkActionState state,
         final User user,
         final String serviceAuth) {
@@ -241,9 +236,9 @@ public class CcdSearchService {
         return allCaseDetails.stream()
             .map(caseDetailsConverter::convertToBulkActionCaseDetailsFromReformModel)
             .collect(toList());
-    }
+    }*/
 
-    public List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState>>
+    /*public List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState>>
         searchForCreatedOrListedBulkCasesWithCasesToBeRemoved(final User user, final String serviceAuth) {
 
         final List<CaseDetails> allCaseDetails = new ArrayList<>();
@@ -291,7 +286,7 @@ public class CcdSearchService {
         return allCaseDetails.stream()
             .map(caseDetailsConverter::convertToBulkActionCaseDetailsFromReformModel)
             .collect(toList());
-    }
+    }*/
 
     public List<CaseDetails> searchForCases(
         final List<String> caseReferences,

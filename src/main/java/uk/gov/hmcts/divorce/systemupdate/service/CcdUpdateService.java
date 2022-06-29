@@ -5,9 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionCaseTypeConfig;
-import uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionState;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkActionCaseData;
 import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
 import uk.gov.hmcts.divorce.divorcecase.model.State;
 import uk.gov.hmcts.divorce.divorcecase.task.CaseTask;
@@ -141,7 +138,7 @@ public class CcdUpdateService {
         }
     }
 
-    @Retryable(value = {FeignException.class, RuntimeException.class})
+    /*@Retryable(value = {FeignException.class, RuntimeException.class})
     public void updateBulkCaseWithRetries(final CaseDetails caseDetails,
                                           final String eventId,
                                           final User authorization,
@@ -184,9 +181,9 @@ public class CcdUpdateService {
 
             throw new CcdManagementException(e.status(), message, e);
         }
-    }
+    }*/
 
-    public void submitBulkActionEvent(final uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState> caseDetails,
+    /*public void submitBulkActionEvent(final uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState> caseDetails,
                                       final String eventId,
                                       final User user,
                                       final String serviceAuth) {
@@ -198,7 +195,7 @@ public class CcdUpdateService {
             serviceAuth,
             caseDetails.getId()
         );
-    }
+    }*/
 
     private void startAndSubmitEventForCaseworkers(final CaseDetails caseDetails,
                                                    final String eventId,

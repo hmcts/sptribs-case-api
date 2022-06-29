@@ -22,9 +22,6 @@ public class CftLibConfig implements CFTLibConfigurer {
     @Value("ccd-NFD-${CCD_DEF_NAME:dev}.xlsx")
     String defName;
 
-    @Value("ccd-NO_FAULT_DIVORCE_BulkAction-${CCD_DEF_NAME:dev}.xlsx")
-    String bulkCaseDefName;
-
 
     @Autowired
     CCDDefinitionGenerator configWriter;
@@ -68,9 +65,6 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         var nfdDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + defName));
         lib.importDefinition(nfdDefinition);
-
-        var bulkCasesDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + bulkCaseDefName));
-        lib.importDefinition(bulkCasesDefinition);
     }
 
     /**
