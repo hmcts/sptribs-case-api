@@ -21,9 +21,6 @@ import uk.gov.hmcts.ccd.sdk.type.Organisation;
 import uk.gov.hmcts.ccd.sdk.type.OrganisationPolicy;
 import uk.gov.hmcts.ccd.sdk.type.ScannedDocument;
 import uk.gov.hmcts.ccd.sdk.type.ScannedDocumentType;
-import uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionCaseTypeConfig;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkActionCaseData;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkListCaseDetails;
 import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
 import uk.gov.hmcts.divorce.divorcecase.model.ApplicantPrayer;
 import uk.gov.hmcts.divorce.divorcecase.model.Application;
@@ -86,7 +83,7 @@ import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
 import static uk.gov.hmcts.divorce.citizen.notification.ApplicationRemindApplicant2Notification.APPLICANT_2_SIGN_IN_DISSOLUTION_URL;
 import static uk.gov.hmcts.divorce.citizen.notification.ApplicationRemindApplicant2Notification.APPLICANT_2_SIGN_IN_DIVORCE_URL;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.CASE_TYPE;
+import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.divorce.divorcecase.model.ApplicantPrayer.DissolveDivorce.DISSOLVE_DIVORCE;
 import static uk.gov.hmcts.divorce.divorcecase.model.ApplicationType.JOINT_APPLICATION;
 import static uk.gov.hmcts.divorce.divorcecase.model.ApplicationType.SOLE_APPLICATION;
@@ -496,26 +493,6 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CallbackRequest callbackRequest(final BulkActionCaseData caseData,
-                                                  final String eventId) {
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
-
-        return CallbackRequest
-            .builder()
-            .eventId(eventId)
-            .caseDetailsBefore(caseDetailsBefore(caseData))
-            .caseDetails(
-                CaseDetails
-                    .builder()
-                    .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
-                    .id(TEST_CASE_ID)
-                    .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(BulkActionCaseTypeConfig.CASE_TYPE)
-                    .build()
-            )
-            .build();
-    }
-
     public static CallbackRequest callbackRequest(final CaseData caseData,
                                                   final String eventId) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
@@ -828,15 +805,6 @@ public class TestDataHelper {
             .build();
     }
 
-    private static CaseDetails caseDetailsBefore(BulkActionCaseData caseData) {
-        return CaseDetails
-            .builder()
-            .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
-            .id(TEST_CASE_ID)
-            .caseTypeId(BulkActionCaseTypeConfig.CASE_TYPE)
-            .build();
-    }
-
     public static ListValue<Fee> getFeeListValue() {
         return ListValue
             .<Fee>builder()
@@ -855,19 +823,6 @@ public class TestDataHelper {
             .builder()
             .paymentTotal("55000")
             .fees(singletonList(getFeeListValue()))
-            .build();
-    }
-
-    public static ListValue<BulkListCaseDetails> getBulkListCaseDetailsListValue(String caseReference) {
-        final var bulkListCaseDetails = BulkListCaseDetails.builder()
-            .caseReference(CaseLink.builder()
-                .caseReference(caseReference)
-                .build())
-            .build();
-
-        return ListValue
-            .<BulkListCaseDetails>builder()
-            .value(bulkListCaseDetails)
             .build();
     }
 

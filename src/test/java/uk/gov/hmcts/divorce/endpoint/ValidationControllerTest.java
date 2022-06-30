@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.divorce.bulkscan.validation.OcrValidator;
 import uk.gov.hmcts.divorce.endpoint.data.OcrDataValidationRequest;
 import uk.gov.hmcts.divorce.endpoint.data.OcrValidationResponse;
 
@@ -23,47 +22,8 @@ import static uk.gov.hmcts.divorce.testutil.TestDataHelper.ocrDataValidationRequ
 @ExtendWith(MockitoExtension.class)
 public class ValidationControllerTest {
 
-    @Mock
-    private OcrValidator validator;
-
     @InjectMocks
     private ValidationController controller;
-
-    @Test
-    void shouldValidateOcrRequestForD8FormType() {
-        final OcrDataValidationRequest request = ocrDataValidationRequest();
-
-        final OcrValidationResponse expectedResponse = OcrValidationResponse.builder()
-            .warnings(emptyList())
-            .errors(emptyList())
-            .status(SUCCESS)
-            .build();
-
-        when(validator.validateExceptionRecord(D8.getName(), request)).thenReturn(expectedResponse);
-
-        ResponseEntity<OcrValidationResponse> response = controller.validate(D8.getName(), request);
-
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody()).isEqualTo(expectedResponse);
-    }
-
-    @Test
-    void shouldValidateOcrRequestForD8SFormType() {
-        final OcrDataValidationRequest request = ocrDataValidationRequest();
-
-        final OcrValidationResponse expectedResponse = OcrValidationResponse.builder()
-            .warnings(emptyList())
-            .errors(emptyList())
-            .status(SUCCESS)
-            .build();
-
-        when(validator.validateExceptionRecord(D8S.getName(), request)).thenReturn(expectedResponse);
-
-        ResponseEntity<OcrValidationResponse> response = controller.validate(D8S.getName(), request);
-
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody()).isEqualTo(expectedResponse);
-    }
 
     @Test
     void shouldReturnErrorsIfInvalidFormTypePassed() {

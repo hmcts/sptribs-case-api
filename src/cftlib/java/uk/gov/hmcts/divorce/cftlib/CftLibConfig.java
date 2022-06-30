@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
-    @Value("ccd-NFD-${CCD_DEF_NAME:dev}.xlsx")
+    @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
     String defName;
 
 

@@ -26,7 +26,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.divorce.divorcecase.model.HowToRespondApplication.DISPUTE_DIVORCE;
 import static uk.gov.hmcts.divorce.divorcecase.model.State.Holding;
 import static uk.gov.hmcts.divorce.systemupdate.event.SystemNotifyApplicantDisputeFormOverdue.SYSTEM_NOTIFY_APPLICANT_DISPUTE_FORM_OVERDUE;
-import static uk.gov.hmcts.divorce.systemupdate.schedule.SystemNotifyApplicantDisputeFormOverdueTask.NOTIFICATION_SENT_FLAG;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.AOS_RESPONSE;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.DATA;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.ISSUE_DATE;
@@ -57,24 +56,5 @@ public class SystemNotifyApplicantDisputeFormOverdueFT extends FunctionalTestSui
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE)));
-    }
-
-    @Test
-    @EnabledIfEnvironmentVariable(named = "ELASTIC_SEARCH_ENABLED", matches = "true")
-    public void shouldSearchForDisputeFormOverdueCases() {
-        final BoolQueryBuilder query = boolQuery()
-            .must(matchQuery(STATE, Holding))
-            .must(matchQuery(AOS_RESPONSE, DISPUTE_DIVORCE.getType()))
-            .filter(rangeQuery(ISSUE_DATE).lte(LocalDate.now().minusDays(disputeDueDateOffsetDays)))
-            .mustNot(matchQuery(String.format(DATA, NOTIFICATION_SENT_FLAG), YesOrNo.YES));
-
-        searchForCasesWithQuery(query)
-            .forEach(caseDetails -> {
-                assertThat(caseDetails.getState().equals(Holding));
-                CaseData caseData = getCaseData(caseDetails.getData());
-                assertThat(DISPUTE_DIVORCE.getType().equals(caseData.getAcknowledgementOfService().getHowToRespondApplication()));
-                assertThat(caseData.getApplication().getIssueDate().plusDays(10)).isBeforeOrEqualTo(LocalDate.now());
-                assertThat(caseData.getAcknowledgementOfService().getApplicantNotifiedDisputeFormOverdue()).isNotEqualTo(YesOrNo.YES);
-            });
     }
 }

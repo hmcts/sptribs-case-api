@@ -27,8 +27,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.divorce.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.CASE_TYPE;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.JURISDICTION;
+import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.CASE_TYPE;
+import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.JURISDICTION;
 import static uk.gov.hmcts.divorce.divorcecase.model.State.Holding;
 import static uk.gov.hmcts.divorce.solicitor.event.SolicitorCreateApplication.SOLICITOR_CREATE;
 

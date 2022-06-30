@@ -22,17 +22,4 @@ public class CaseDetailsConverter {
         return objectMapper.convertValue(caseDetails, new TypeReference<>() {
         });
     }
-
-    /*public CaseDetails convertToReformModelFromBulkActionCaseDetails(
-        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState> caseDetails) {
-
-        return objectMapper.convertValue(caseDetails, CaseDetails.class);
-    }
-
-    public uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState> convertToBulkActionCaseDetailsFromReformModel(
-        final CaseDetails caseDetails) {
-
-        return objectMapper.convertValue(caseDetails, new TypeReference<>() {
-        });
-    }*/
 }

@@ -26,7 +26,6 @@ import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingFinalOrder;
 import static uk.gov.hmcts.divorce.systemupdate.event.SystemNotifyRespondentApplyFinalOrder.SYSTEM_NOTIFY_RESPONDENT_APPLY_FINAL_ORDER;
-import static uk.gov.hmcts.divorce.systemupdate.schedule.SystemRemindApplicantsApplyForFinalOrderTask.NOTIFICATION_SENT_FLAG;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.DATA;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.FINAL_ORDER_ELIGIBLE_FROM_DATE;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.FINAL_ORDER_ELIGIBLE_TO_RESPONDENT_DATE;
@@ -54,29 +53,5 @@ public class SystemNotifyRespondentApplyFinalOrderFT extends FunctionalTestSuite
         assertThatJson(response.asString())
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE)));
-    }
-
-    @Test
-    @EnabledIfEnvironmentVariable(named = "ELASTIC_SEARCH_ENABLED", matches = "true")
-    public void shouldSearchForRespodentEligibleToApplyForFinalOrderCases() {
-        final BoolQueryBuilder query =
-            boolQuery()
-                .must(matchQuery(STATE, AwaitingFinalOrder))
-                .must(existsQuery(FINAL_ORDER_ELIGIBLE_FROM_DATE))
-                .must(existsQuery(FINAL_ORDER_ELIGIBLE_TO_RESPONDENT_DATE))
-                .filter(rangeQuery(FINAL_ORDER_ELIGIBLE_FROM_DATE)
-                    .lte(LocalDate.now().minusDays(14)))
-                .mustNot(matchQuery(String.format(DATA, NOTIFICATION_SENT_FLAG), YesOrNo.YES));
-
-        List<CaseDetails> filteredCases = searchForCasesWithQuery(query);
-
-        filteredCases.forEach(caseDetails -> {
-            assertThat(caseDetails.getState().equals(AwaitingFinalOrder));
-            CaseData caseData = getCaseData(caseDetails.getData());
-            assertThat(caseData.getFinalOrder().getDateFinalOrderEligibleToRespondent()).isNotNull();
-            assertThat(caseData.getFinalOrder().getDateFinalOrderEligibleFrom()).isNotNull();
-            assertThat(caseData.getFinalOrder().getDateFinalOrderEligibleFrom().minusDays(14)).isBeforeOrEqualTo(LocalDate.now());
-            assertThat(caseData.getFinalOrder().hasFinalOrderReminderSentApplicant1()).isFalse();
-        });
     }
 }

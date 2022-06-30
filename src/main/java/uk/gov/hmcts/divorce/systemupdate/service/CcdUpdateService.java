@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CONFLICT;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.CASE_TYPE;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.JURISDICTION;
+import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.CASE_TYPE;
+import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.JURISDICTION;
 
 @Service
 @Slf4j

@@ -28,7 +28,6 @@ import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingConditionalOr
 import static uk.gov.hmcts.divorce.divorcecase.model.State.ConditionalOrderDrafted;
 import static uk.gov.hmcts.divorce.divorcecase.model.State.ConditionalOrderPending;
 import static uk.gov.hmcts.divorce.systemupdate.event.SystemRemindApplicantsApplyForCOrder.SYSTEM_REMIND_APPLICANTS_CONDITIONAL_ORDER;
-import static uk.gov.hmcts.divorce.systemupdate.schedule.conditionalorder.SystemRemindApplicantsApplyForCOrderTask.NOTIFICATION_FLAG;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.DATA;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.DUE_DATE;
 import static uk.gov.hmcts.divorce.systemupdate.service.CcdSearchService.STATE;
@@ -59,33 +58,5 @@ public class SystemRemindApplicantsApplyForCOrderFT extends FunctionalTestSuite 
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE)));
-    }
-
-    @Test
-    @EnabledIfEnvironmentVariable(named = "ELASTIC_SEARCH_ENABLED", matches = "true")
-    public void shouldSearchForCasesReadyToApplyForConditionalOrder() {
-        final BoolQueryBuilder query = boolQuery()
-            .must(
-                boolQuery()
-                    .should(matchQuery(STATE, AwaitingConditionalOrder))
-                    .should(matchQuery(STATE, ConditionalOrderPending))
-                    .should(matchQuery(STATE, ConditionalOrderDrafted))
-                    .minimumShouldMatch(1)
-            )
-            .filter(rangeQuery(DUE_DATE).lte(LocalDate.now().minusDays(submitCOrderReminderOffsetDays)))
-            .mustNot(matchQuery(String.format(DATA, NOTIFICATION_FLAG), YesOrNo.YES));
-
-        searchForCasesWithQuery(query)
-            .forEach(caseDetails -> {
-                CaseData caseData = getCaseData(caseDetails.getData());
-                assertThat(caseDetails.getState())
-                    .isIn(List.of(
-                        AwaitingConditionalOrder.getName(),
-                        ConditionalOrderPending.getName(),
-                        ConditionalOrderDrafted.getName()
-                    ));
-                assertThat(caseData.getApplication().getApplicantsRemindedCanApplyForConditionalOrder()).isNotEqualTo(YesOrNo.YES);
-                assertThat(caseData.getDueDate()).isBeforeOrEqualTo(LocalDate.now());
-            });
     }
 }

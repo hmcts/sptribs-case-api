@@ -14,9 +14,9 @@ import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.APPLICANT_2_SOLICI
 
 @Component
 @Slf4j
-public class NoFaultDivorce implements CCDConfig<CaseData, State, UserRole> {
+public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String CASE_TYPE = "NFD";
+    public static final String CASE_TYPE = "CIC";
     public static final String JURISDICTION = "DIVORCE";
 
     @Override

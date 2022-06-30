@@ -25,14 +25,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.google.common.collect.Lists.partition;
-import static java.util.stream.Collectors.toList;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.CASE_TYPE;
+import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingPronouncement;
 
 @Service

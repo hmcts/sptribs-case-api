@@ -31,7 +31,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.Fee.getValueInPence;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.CASE_TYPE;
+import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.divorce.payment.FeesAndPaymentsUtil.penceToPounds;
 import static uk.gov.hmcts.divorce.payment.model.PbaErrorMessage.CAE0001;
 import static uk.gov.hmcts.divorce.payment.model.PbaErrorMessage.CAE0003;
