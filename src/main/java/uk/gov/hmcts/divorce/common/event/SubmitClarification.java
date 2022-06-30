@@ -9,27 +9,27 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.divorce.citizen.notification.conditionalorder.PostInformationToCourtNotification;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.ClarificationResponse;
-import uk.gov.hmcts.divorce.divorcecase.model.ConditionalOrder;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.ClarificationResponse;
+import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import java.time.Clock;
 import java.time.LocalDate;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static uk.gov.hmcts.divorce.divorcecase.model.CaseDocuments.addDocumentToTop;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingClarification;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.ClarificationSubmitted;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.APPLICANT_2;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.LEGAL_ADVISOR;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.divorce.divorcecase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.divorce.ciccase.model.CaseDocuments.addDocumentToTop;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingClarification;
+import static uk.gov.hmcts.divorce.ciccase.model.State.ClarificationSubmitted;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CREATOR;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.LEGAL_ADVISOR;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j

@@ -2,8 +2,8 @@ package uk.gov.hmcts.divorce.solicitor.event.page;
 
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 
 public class CheckApplicant1SolicitorAnswers implements CcdPageConfiguration {
 

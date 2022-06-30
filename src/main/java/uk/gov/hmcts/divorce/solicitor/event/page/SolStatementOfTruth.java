@@ -4,16 +4,16 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.ApplicantPrayer;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.ApplicantPrayer;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.divorce.divorcecase.model.ServiceMethod.PERSONAL_SERVICE;
+import static uk.gov.hmcts.divorce.ciccase.model.ServiceMethod.PERSONAL_SERVICE;
 
 public class SolStatementOfTruth implements CcdPageConfiguration {
 

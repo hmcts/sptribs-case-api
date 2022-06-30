@@ -2,10 +2,10 @@ package uk.gov.hmcts.divorce.solicitor.event.page;
 
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.ApplicantPrayer;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.ApplicantPrayer;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 
 public class SolStatementOfTruthApplicant2 implements CcdPageConfiguration {
 

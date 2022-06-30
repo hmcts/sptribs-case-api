@@ -7,28 +7,28 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 
 import java.util.List;
 
-import static uk.gov.hmcts.divorce.divorcecase.model.ProgressPaperCase.AWAITING_DOCUMENTS;
-import static uk.gov.hmcts.divorce.divorcecase.model.ProgressPaperCase.AWAITING_HWF_DECISION;
-import static uk.gov.hmcts.divorce.divorcecase.model.ProgressPaperCase.SUBMITTED;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingDocuments;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingHWFDecision;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingPayment;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.NewPaperCase;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.Submitted;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.LEGAL_ADVISOR;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.divorce.divorcecase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.divorce.divorcecase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-import static uk.gov.hmcts.divorce.divorcecase.validation.ApplicationValidation.validateReadyForPayment;
+import static uk.gov.hmcts.divorce.ciccase.model.ProgressPaperCase.AWAITING_DOCUMENTS;
+import static uk.gov.hmcts.divorce.ciccase.model.ProgressPaperCase.AWAITING_HWF_DECISION;
+import static uk.gov.hmcts.divorce.ciccase.model.ProgressPaperCase.SUBMITTED;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingDocuments;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingHWFDecision;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingPayment;
+import static uk.gov.hmcts.divorce.ciccase.model.State.NewPaperCase;
+import static uk.gov.hmcts.divorce.ciccase.model.State.Submitted;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.LEGAL_ADVISOR;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.divorce.ciccase.validation.ApplicationValidation.validateReadyForPayment;
 
 @Slf4j
 @Component

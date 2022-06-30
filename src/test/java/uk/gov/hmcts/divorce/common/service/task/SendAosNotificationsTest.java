@@ -8,15 +8,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.divorce.common.notification.SoleApplicationDisputedNotification;
 import uk.gov.hmcts.divorce.common.notification.SoleApplicationNotDisputedNotification;
-import uk.gov.hmcts.divorce.divorcecase.model.AcknowledgementOfService;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.AcknowledgementOfService;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.divorce.divorcecase.model.HowToRespondApplication.DISPUTE_DIVORCE;
-import static uk.gov.hmcts.divorce.divorcecase.model.HowToRespondApplication.WITHOUT_DISPUTE_DIVORCE;
+import static uk.gov.hmcts.divorce.ciccase.model.HowToRespondApplication.DISPUTE_DIVORCE;
+import static uk.gov.hmcts.divorce.ciccase.model.HowToRespondApplication.WITHOUT_DISPUTE_DIVORCE;
 
 @ExtendWith(MockitoExtension.class)
 class SendAosNotificationsTest {

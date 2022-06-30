@@ -2,17 +2,17 @@ package uk.gov.hmcts.divorce.document.content.provider;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.FinancialOrderFor;
-import uk.gov.hmcts.divorce.divorcecase.model.LanguagePreference;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.FinancialOrderFor;
+import uk.gov.hmcts.divorce.ciccase.model.LanguagePreference;
 
 import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.divorce.divorcecase.model.FinancialOrderFor.APPLICANT;
-import static uk.gov.hmcts.divorce.divorcecase.model.FinancialOrderFor.CHILDREN;
-import static uk.gov.hmcts.divorce.divorcecase.model.LanguagePreference.WELSH;
+import static uk.gov.hmcts.divorce.ciccase.model.FinancialOrderFor.APPLICANT;
+import static uk.gov.hmcts.divorce.ciccase.model.FinancialOrderFor.CHILDREN;
+import static uk.gov.hmcts.divorce.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.divorce.document.content.DocmosisTemplateConstants.APPLICANT_1_EMAIL;
 import static uk.gov.hmcts.divorce.document.content.DocmosisTemplateConstants.APPLICANT_1_POSTAL_ADDRESS;
 import static uk.gov.hmcts.divorce.document.content.DocmosisTemplateConstants.APPLICANT_2_EMAIL;

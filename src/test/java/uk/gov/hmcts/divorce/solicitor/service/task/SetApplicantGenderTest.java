@@ -4,25 +4,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.DivorceOrDissolution;
-import uk.gov.hmcts.divorce.divorcecase.model.Gender;
-import uk.gov.hmcts.divorce.divorcecase.model.MarriageDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.MarriageFormation;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.WhoDivorcing;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.DivorceOrDissolution;
+import uk.gov.hmcts.divorce.ciccase.model.Gender;
+import uk.gov.hmcts.divorce.ciccase.model.MarriageDetails;
+import uk.gov.hmcts.divorce.ciccase.model.MarriageFormation;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.WhoDivorcing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static uk.gov.hmcts.divorce.divorcecase.model.DivorceOrDissolution.DISSOLUTION;
-import static uk.gov.hmcts.divorce.divorcecase.model.DivorceOrDissolution.DIVORCE;
-import static uk.gov.hmcts.divorce.divorcecase.model.Gender.FEMALE;
-import static uk.gov.hmcts.divorce.divorcecase.model.Gender.MALE;
-import static uk.gov.hmcts.divorce.divorcecase.model.MarriageFormation.OPPOSITE_SEX_COUPLE;
-import static uk.gov.hmcts.divorce.divorcecase.model.MarriageFormation.SAME_SEX_COUPLE;
-import static uk.gov.hmcts.divorce.divorcecase.model.WhoDivorcing.HUSBAND;
-import static uk.gov.hmcts.divorce.divorcecase.model.WhoDivorcing.WIFE;
+import static uk.gov.hmcts.divorce.ciccase.model.DivorceOrDissolution.DISSOLUTION;
+import static uk.gov.hmcts.divorce.ciccase.model.DivorceOrDissolution.DIVORCE;
+import static uk.gov.hmcts.divorce.ciccase.model.Gender.FEMALE;
+import static uk.gov.hmcts.divorce.ciccase.model.Gender.MALE;
+import static uk.gov.hmcts.divorce.ciccase.model.MarriageFormation.OPPOSITE_SEX_COUPLE;
+import static uk.gov.hmcts.divorce.ciccase.model.MarriageFormation.SAME_SEX_COUPLE;
+import static uk.gov.hmcts.divorce.ciccase.model.WhoDivorcing.HUSBAND;
+import static uk.gov.hmcts.divorce.ciccase.model.WhoDivorcing.WIFE;
 
 @ExtendWith(MockitoExtension.class)
 class SetApplicantGenderTest {

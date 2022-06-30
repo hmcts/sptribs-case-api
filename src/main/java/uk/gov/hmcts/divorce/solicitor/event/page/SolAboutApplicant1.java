@@ -2,15 +2,15 @@ package uk.gov.hmcts.divorce.solicitor.event.page;
 
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.MarriageDetails;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.MarriageDetails;
 
 public class SolAboutApplicant1 implements CcdPageConfiguration {
 
     private static final String DARK_HORIZONTAL_RULE =
-        "![Dark Rule](https://raw.githubusercontent.com/hmcts/nfdiv-case-api/master/resources/image/LabelDarkHorizontalRule.png)";
+        "![Dark Rule](https://raw.githubusercontent.com/hmcts/sptribs-case-api/master/resources/image/LabelDarkHorizontalRule.png)";
 
     @Override
     public void addTo(final PageBuilder pageBuilder) {

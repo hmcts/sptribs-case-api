@@ -9,18 +9,18 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.divorce.common.notification.ApplicationIssuedNotification;
 import uk.gov.hmcts.divorce.common.notification.ApplicationIssuedOverseasNotification;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseInvite;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.CaseInvite;
+import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.divorce.divorcecase.model.ApplicationType.JOINT_APPLICATION;
-import static uk.gov.hmcts.divorce.divorcecase.model.ApplicationType.SOLE_APPLICATION;
-import static uk.gov.hmcts.divorce.divorcecase.model.ServiceMethod.PERSONAL_SERVICE;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingAos;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingService;
+import static uk.gov.hmcts.divorce.ciccase.model.ApplicationType.JOINT_APPLICATION;
+import static uk.gov.hmcts.divorce.ciccase.model.ApplicationType.SOLE_APPLICATION;
+import static uk.gov.hmcts.divorce.ciccase.model.ServiceMethod.PERSONAL_SERVICE;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingAos;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingService;
 import static uk.gov.hmcts.divorce.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)

@@ -6,7 +6,7 @@ This API handles callbacks from CCD for the NFD case type.
 
                         ┌────────────────┐
                         │                │
-                        │ NFDIV-CASE-API │
+                        │ SPTRIBS-CASE-API │
                         │                │
                         └───────▲────────┘
                                 │
@@ -76,10 +76,10 @@ Generating the CCD JSON files will happen on every `./gradlew bootWithCcd` but y
 You can manually run a cron task from the cli:
 
 ```
-TASK_NAME=[task] java -jar nfdiv-case-api.jar run
+TASK_NAME=[task] java -jar sptribs-case-api.jar run
 
 # E.g.
-TASK_NAME=SystemProgressHeldCasesTask java -jar nfdiv-case-api.jar
+TASK_NAME=SystemProgressHeldCasesTask java -jar sptribs-case-api.jar
 
 # or
 TASK_NAME=SystemProgressHeldCasesTask ./gradlew bootRun

@@ -14,10 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.divorce.common.config.WebMvcConfig;
-import uk.gov.hmcts.divorce.divorcecase.model.AlternativeServiceType;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.ServiceMethod;
-import uk.gov.hmcts.divorce.divorcecase.model.ServicePaymentMethod;
+import uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.ServiceMethod;
+import uk.gov.hmcts.divorce.ciccase.model.ServicePaymentMethod;
 import uk.gov.hmcts.divorce.payment.PaymentService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 

@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.task.CaseTask;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.task.CaseTask;
 import uk.gov.hmcts.divorce.systemupdate.convert.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CONFLICT;
-import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.CASE_TYPE;
-import static uk.gov.hmcts.divorce.divorcecase.CriminalInjuriesCompensation.JURISDICTION;
+import static uk.gov.hmcts.divorce.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
+import static uk.gov.hmcts.divorce.ciccase.CriminalInjuriesCompensation.JURISDICTION;
 
 @Service
 @Slf4j

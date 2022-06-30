@@ -14,8 +14,8 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.divorce.caseworker.event.CaseworkerAlternativeServicePayment.CASEWORKER_SERVICE_PAYMENT;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingBailiffReferral;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingServiceConsideration;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingBailiffReferral;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingServiceConsideration;
 import static uk.gov.hmcts.divorce.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.divorce.testutil.TestResourceUtil.expectedResponse;
 
