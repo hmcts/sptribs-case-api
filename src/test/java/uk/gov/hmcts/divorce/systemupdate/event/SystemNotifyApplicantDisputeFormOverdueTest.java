@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.DisputeFormOverdueOverdueNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -32,9 +31,6 @@ class SystemNotifyApplicantDisputeFormOverdueTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
-
-    @Mock
-    private DisputeFormOverdueOverdueNotification disputeFormOverdueOverdueNotification;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -64,7 +60,7 @@ class SystemNotifyApplicantDisputeFormOverdueTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = underTest.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(disputeFormOverdueOverdueNotification, caseData, details.getId());
+        //verify(notificationDispatcher).send(disputeFormOverdueOverdueNotification, caseData, details.getId());
         assertThat(response.getData().getAcknowledgementOfService().getApplicantNotifiedDisputeFormOverdue()).isEqualTo(YesOrNo.YES);
     }
 }

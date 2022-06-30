@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.Applicant2RequestChangesNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -30,9 +29,6 @@ import static uk.gov.hmcts.divorce.ciccase.validation.ValidationUtil.validateApp
 public class Applicant2RequestChanges implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String APPLICANT_2_REQUEST_CHANGES = "applicant2-request-changes";
-
-    @Autowired
-    private Applicant2RequestChangesNotification applicant2RequestChangesNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -71,7 +67,7 @@ public class Applicant2RequestChanges implements CCDConfig<CaseData, State, User
                 .build();
         }
 
-        notificationDispatcher.send(applicant2RequestChangesNotification, data, details.getId());
+        //notificationDispatcher.send(applicant2RequestChangesNotification, data, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

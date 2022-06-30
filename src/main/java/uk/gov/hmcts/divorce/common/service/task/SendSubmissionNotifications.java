@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.divorce.citizen.notification.ApplicationOutstandingActionNotification;
-import uk.gov.hmcts.divorce.citizen.notification.ApplicationSubmittedNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.task.CaseTask;
@@ -20,12 +18,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.State.Submitted;
 public class SendSubmissionNotifications implements CaseTask {
 
     @Autowired
-    private ApplicationOutstandingActionNotification applicationOutstandingActionNotification;
-
-    @Autowired
-    private ApplicationSubmittedNotification applicationSubmittedNotification;
-
-    @Autowired
     private NotificationDispatcher notificationDispatcher;
 
     @Override
@@ -37,11 +29,11 @@ public class SendSubmissionNotifications implements CaseTask {
 
         if (state == Submitted || state == AwaitingHWFDecision && isEmpty(caseData.getApplication().getMissingDocumentTypes())) {
             log.info("Sending application submitted notifications for case : {}", caseId);
-            notificationDispatcher.send(applicationSubmittedNotification, caseData, caseId);
+            //notificationDispatcher.send(applicationSubmittedNotification, caseData, caseId);
         }
 
         log.info("Sending outstanding action notification if awaiting documents for case : {}", caseId);
-        notificationDispatcher.send(applicationOutstandingActionNotification, caseData, caseId);
+        //notificationDispatcher.send(applicationOutstandingActionNotification, caseData, caseId);
 
         return caseDetails;
     }

@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.RespondentSolicitorReminderNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -24,9 +23,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemRemindRespondentSolicitor implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_REMIND_RESPONDENT_SOLICITOR_TO_RESPOND = "system-remind-respondent-solicitor-to-respond";
-
-    @Autowired
-    private RespondentSolicitorReminderNotification respondentSolicitorReminderNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -50,7 +46,7 @@ public class SystemRemindRespondentSolicitor implements CCDConfig<CaseData, Stat
 
         CaseData data = details.getData();
 
-        notificationDispatcher.send(respondentSolicitorReminderNotification, data, details.getId());
+        //notificationDispatcher.send(respondentSolicitorReminderNotification, data, details.getId());
         data.getApplication().setRespondentSolicitorReminderSent(YesOrNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

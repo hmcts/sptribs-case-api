@@ -11,8 +11,6 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.BailiffServiceSuccessfulNotification;
-import uk.gov.hmcts.divorce.citizen.notification.BailiffServiceUnsuccessfulNotification;
 import uk.gov.hmcts.divorce.ciccase.model.AlternativeService;
 import uk.gov.hmcts.divorce.ciccase.model.Bailiff;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
@@ -41,12 +39,6 @@ class CaseworkerAddBailiffReturnTest {
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
-
-    @Mock
-    private BailiffServiceUnsuccessfulNotification unsuccessfulNotification;
-
-    @Mock
-    private BailiffServiceSuccessfulNotification successfulNotification;
 
     @InjectMocks
     private CaseworkerAddBailiffReturn caseworkerAddBailiffReturn;
@@ -97,7 +89,7 @@ class CaseworkerAddBailiffReturnTest {
 
         assertThat(response.getState()).isEqualTo(Holding);
         assertThat(response.getData().getDueDate()).isEqualTo(certificateOfServiceDate.plusDays(DUE_DATE_OFFSET));
-        verify(notificationDispatcher).send(successfulNotification, caseData, 12345L);
+        //verify(notificationDispatcher).send(successfulNotification, caseData, 12345L);
     }
 
     @Test
@@ -129,6 +121,6 @@ class CaseworkerAddBailiffReturnTest {
 
         assertThat(response.getState()).isEqualTo(AwaitingAos);
         assertThat(response.getData().getDueDate()).isNull();
-        verify(notificationDispatcher).send(unsuccessfulNotification, caseData, 12345L);
+        //verify(notificationDispatcher).send(unsuccessfulNotification, caseData, 12345L);
     }
 }

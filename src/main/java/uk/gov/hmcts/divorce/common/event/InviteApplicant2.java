@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.ApplicationSentForReviewNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -32,9 +31,6 @@ import static uk.gov.hmcts.divorce.ciccase.validation.ValidationUtil.validateApp
 public class InviteApplicant2 implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String INVITE_APPLICANT_2 = "invite-applicant2";
-
-    @Autowired
-    private ApplicationSentForReviewNotification applicationSentForReviewNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -85,7 +81,7 @@ public class InviteApplicant2 implements CCDConfig<CaseData, State, UserRole> {
         }
 
         data.setDueDate(LocalDate.now().plus(2, ChronoUnit.WEEKS));
-        notificationDispatcher.send(applicationSentForReviewNotification, data, details.getId());
+        //notificationDispatcher.send(applicationSentForReviewNotification, data, details.getId());
 
         if (!data.getApplicant2().isRepresented()) {
             return AboutToStartOrSubmitResponse.<CaseData, State>builder()

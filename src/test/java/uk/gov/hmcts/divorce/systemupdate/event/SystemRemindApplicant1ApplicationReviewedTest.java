@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.JointApplicationApprovedReminder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -32,9 +31,6 @@ public class SystemRemindApplicant1ApplicationReviewedTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
-
-    @Mock
-    private JointApplicationApprovedReminder jointApplicationApprovedReminder;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -66,7 +62,7 @@ public class SystemRemindApplicant1ApplicationReviewedTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             systemRemindApplicant1ApplicationReviewed.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(jointApplicationApprovedReminder, caseData, details.getId());
+        //verify(notificationDispatcher).send(jointApplicationApprovedReminder, caseData, details.getId());
         assertThat(response.getData().getApplication().getApplicant1ReminderSent()).isEqualTo(YesOrNo.YES);
     }
 }

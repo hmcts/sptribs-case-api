@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.conditionalorder.PostInformationToCourtNotification;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ClarificationResponse;
@@ -40,9 +39,6 @@ public class SubmitClarification implements CCDConfig<CaseData, State, UserRole>
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
-
-    @Autowired
-    private PostInformationToCourtNotification postInformationToCourtNotification;
 
     @Autowired
     private Clock clock;
@@ -92,7 +88,7 @@ public class SubmitClarification implements CCDConfig<CaseData, State, UserRole>
         final boolean clarificationDocumentsUploaded = isNotEmpty(conditionalOrder.getClarificationUploadDocuments());
 
         if (cannotUploadDocuments) {
-            notificationDispatcher.send(postInformationToCourtNotification, data, details.getId());
+            //notificationDispatcher.send(postInformationToCourtNotification, data, details.getId());
         }
 
         if (clarificationDocumentsUploaded) {

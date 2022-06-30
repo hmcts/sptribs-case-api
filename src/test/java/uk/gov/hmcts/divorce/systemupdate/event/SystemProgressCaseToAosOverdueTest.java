@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
-import uk.gov.hmcts.divorce.citizen.notification.AosReminderNotifications;
 import uk.gov.hmcts.divorce.common.service.task.GenerateAosOverdueLetterDocument;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.CaseInvite;
@@ -29,9 +28,6 @@ import static uk.gov.hmcts.divorce.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
 public class SystemProgressCaseToAosOverdueTest {
-
-    @Mock
-    private AosReminderNotifications aosReminderNotifications;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -62,8 +58,8 @@ public class SystemProgressCaseToAosOverdueTest {
 
         systemProgressCaseToAosOverdue.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(aosReminderNotifications, caseData, 1L);
-        verifyNoMoreInteractions(aosReminderNotifications);
+        //verify(notificationDispatcher).send(aosReminderNotifications, caseData, 1L);
+        //verifyNoMoreInteractions(aosReminderNotifications);
     }
 
     @Test
@@ -76,8 +72,8 @@ public class SystemProgressCaseToAosOverdueTest {
 
         systemProgressCaseToAosOverdue.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(aosReminderNotifications, caseData, 1L);
-        verifyNoMoreInteractions(aosReminderNotifications);
+        //verify(notificationDispatcher).send(aosReminderNotifications, caseData, 1L);
+        //verifyNoMoreInteractions(aosReminderNotifications);
     }
 
     @Test
@@ -90,8 +86,8 @@ public class SystemProgressCaseToAosOverdueTest {
 
         systemProgressCaseToAosOverdue.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(aosReminderNotifications, caseData, 1L);
-        verifyNoMoreInteractions(aosReminderNotifications);
+        //verify(notificationDispatcher).send(aosReminderNotifications, caseData, 1L);
+        //verifyNoMoreInteractions(aosReminderNotifications);
     }
 
     @Test
@@ -105,7 +101,7 @@ public class SystemProgressCaseToAosOverdueTest {
 
         systemProgressCaseToAosOverdue.aboutToSubmit(details, details);
 
-        verifyNoInteractions(aosReminderNotifications);
+        //verifyNoInteractions(aosReminderNotifications);
     }
 
     @Test

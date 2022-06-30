@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.Applicant1ResubmitNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -31,10 +30,6 @@ import static uk.gov.hmcts.divorce.ciccase.validation.ValidationUtil.validateApp
 public class Applicant1Resubmit implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String APPLICANT_1_RESUBMIT = "applicant1-resubmit";
-
-    @Autowired
-    private Applicant1ResubmitNotification applicant1ResubmitNotification;
-
     @Autowired
     private NotificationDispatcher notificationDispatcher;
 
@@ -76,7 +71,7 @@ public class Applicant1Resubmit implements CCDConfig<CaseData, State, UserRole> 
         data.getApplication().setApplicant2ConfirmApplicant1Information(null);
         data.getApplication().setApplicant2ExplainsApplicant1IncorrectInformation(null);
 
-        notificationDispatcher.send(applicant1ResubmitNotification, data, details.getId());
+        //notificationDispatcher.send(applicant1ResubmitNotification, data, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

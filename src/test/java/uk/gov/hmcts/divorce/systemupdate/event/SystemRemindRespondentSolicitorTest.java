@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Organisation;
 import uk.gov.hmcts.ccd.sdk.type.OrganisationPolicy;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.RespondentSolicitorReminderNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ServiceMethod;
 import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
@@ -33,9 +32,6 @@ import static uk.gov.hmcts.divorce.testutil.TestDataHelper.caseDataWithOrderSumm
 public class SystemRemindRespondentSolicitorTest {
 
     private static final LocalDate ISSUE_DATE = LocalDate.now().minusDays(10);
-
-    @Mock
-    private RespondentSolicitorReminderNotification respondentSolicitorReminderNotification;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -78,7 +74,7 @@ public class SystemRemindRespondentSolicitorTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = remindRespondentSolicitor.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(respondentSolicitorReminderNotification, details.getData(), details.getId());
+        //verify(notificationDispatcher).send(respondentSolicitorReminderNotification, details.getData(), details.getId());
         assertThat(response.getData().getApplication().getRespondentSolicitorReminderSent()).isEqualTo(YesOrNo.YES);
     }
 }

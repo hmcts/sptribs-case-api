@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.GeneralApplicationReceivedNotification;
 import uk.gov.hmcts.divorce.ciccase.model.ApplicationType;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
@@ -29,9 +28,6 @@ import static uk.gov.hmcts.divorce.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerAlternativeServiceApplicationTest {
-
-    @Mock
-    private GeneralApplicationReceivedNotification generalApplicationReceivedNotification;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -62,7 +58,7 @@ class CaseworkerAlternativeServiceApplicationTest {
 
         caseworkerAlternativeServiceApplication.aboutToSubmit(caseDetails, null);
 
-        verify(notificationDispatcher).send(generalApplicationReceivedNotification, caseData, caseDetails.getId());
+        //verify(notificationDispatcher).send(generalApplicationReceivedNotification, caseData, caseDetails.getId());
     }
 
     private CaseData caseData() {

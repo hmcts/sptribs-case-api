@@ -8,8 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.BailiffServiceSuccessfulNotification;
-import uk.gov.hmcts.divorce.citizen.notification.BailiffServiceUnsuccessfulNotification;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.AlternativeService;
 import uk.gov.hmcts.divorce.ciccase.model.Bailiff;
@@ -45,12 +43,6 @@ public class CaseworkerAddBailiffReturn implements CCDConfig<CaseData, State, Us
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
-
-    @Autowired
-    private BailiffServiceUnsuccessfulNotification unsuccessfulNotification;
-
-    @Autowired
-    private BailiffServiceSuccessfulNotification successfulNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -95,11 +87,11 @@ public class CaseworkerAddBailiffReturn implements CCDConfig<CaseData, State, Us
             log.info("Setting state to Holding and due date for case id: {}", caseId);
             caseData.setDueDate(caseData.getAlternativeService().getBailiff().getCertificateOfServiceDate().plusDays(dueDateOffsetDays));
             state = Holding;
-            notificationDispatcher.send(successfulNotification, caseData, caseId);
+            //notificationDispatcher.send(successfulNotification, caseData, caseId);
         } else {
             log.info("Setting state to AwaitingAos for case id: {}", caseId);
             state = AwaitingAos;
-            notificationDispatcher.send(unsuccessfulNotification, caseData, caseId);
+            //notificationDispatcher.send(unsuccessfulNotification, caseData, caseId);
         }
 
         caseData.archiveAlternativeServiceApplicationOnCompletion();

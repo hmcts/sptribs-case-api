@@ -6,7 +6,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.AosReminderNotifications;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.common.service.task.GenerateAosOverdueLetterDocument;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
@@ -29,9 +28,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemProgressCaseToAosOverdue implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_PROGRESS_TO_AOS_OVERDUE = "system-progress-to-aos-overdue";
-
-    @Autowired
-    private AosReminderNotifications aosReminderNotifications;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -60,7 +56,7 @@ public class SystemProgressCaseToAosOverdue implements CCDConfig<CaseData, State
             generateAosOverdueLetterDocument.apply(details);
         }
 
-        notificationDispatcher.send(aosReminderNotifications, data, details.getId());
+        //notificationDispatcher.send(aosReminderNotifications, data, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

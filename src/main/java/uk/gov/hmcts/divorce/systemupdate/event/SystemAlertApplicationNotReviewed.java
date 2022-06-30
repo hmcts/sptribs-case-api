@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.JointApplicationNotReviewedNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -21,9 +20,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemAlertApplicationNotReviewed implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_APPLICATION_NOT_REVIEWED = "system-application-not-reviewed";
-
-    @Autowired
-    private JointApplicationNotReviewedNotification jointApplicationNotReviewedNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -46,7 +42,7 @@ public class SystemAlertApplicationNotReviewed implements CCDConfig<CaseData, St
 
         CaseData data = details.getData();
 
-        notificationDispatcher.send(jointApplicationNotReviewedNotification, data, details.getId());
+        //notificationDispatcher.send(jointApplicationNotReviewedNotification, data, details.getId());
 
         data.getApplication().setOverdueNotificationSent(YesOrNo.YES);
 

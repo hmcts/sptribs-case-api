@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.conditionalorder.ConditionalOrderPronouncedNotification;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
@@ -32,9 +31,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemPronounceCase implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_PRONOUNCE_CASE = "system-pronounce-case";
-
-    @Autowired
-    private ConditionalOrderPronouncedNotification conditionalOrderPronouncedNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -68,7 +64,7 @@ public class SystemPronounceCase implements CCDConfig<CaseData, State, UserRole>
         generateConditionalOrderGrantedDoc(details, beforeDetails);
 
         try {
-            notificationDispatcher.send(conditionalOrderPronouncedNotification, caseData, caseId);
+            //notificationDispatcher.send(conditionalOrderPronouncedNotification, caseData, caseId);
         } catch (final NotificationTemplateException e) {
             log.error("Notification failed with message: {}", e.getMessage(), e);
         }

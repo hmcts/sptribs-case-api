@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.divorce.citizen.notification.conditionalorder.PostInformationToCourtNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ClarificationResponse;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
@@ -49,9 +48,6 @@ class SubmitClarificationTest {
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
-
-    @Mock
-    private PostInformationToCourtNotification postInformationToCourtNotification;
 
     @Mock
     private Clock clock;
@@ -119,7 +115,7 @@ class SubmitClarificationTest {
 
         submitClarification.aboutToSubmit(caseDetails, null);
 
-        verify(notificationDispatcher).send(postInformationToCourtNotification, caseData, 1L);
+        //verify(notificationDispatcher).send(postInformationToCourtNotification, caseData, 1L);
         verifyNoMoreInteractions(notificationDispatcher);
     }
 

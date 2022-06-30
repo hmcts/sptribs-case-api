@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.ApplicationSentForReviewNotification;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
@@ -30,9 +29,6 @@ import static uk.gov.hmcts.divorce.testutil.TestDataHelper.validApplicant1CaseDa
 
 @ExtendWith(SpringExtension.class)
 public class InviteApplicant2Test {
-
-    @Mock
-    private ApplicationSentForReviewNotification applicationSentForReviewNotification;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -110,7 +106,7 @@ public class InviteApplicant2Test {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = inviteApplicant2.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(applicationSentForReviewNotification, caseData, details.getId());
+        //verify(notificationDispatcher).send(applicationSentForReviewNotification, caseData, details.getId());
 
         assertThat(response.getData().getCaseInvite().accessCode()).isNotBlank();
         assertThat(response.getData().getCaseInvite().accessCode().length()).isEqualTo(8);

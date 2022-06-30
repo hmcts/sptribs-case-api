@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.Applicant2ApprovedNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -37,9 +36,6 @@ import static uk.gov.hmcts.divorce.document.model.DocumentType.APPLICATION;
 public class Applicant2Approve implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String APPLICANT_2_APPROVE = "applicant2-approve";
-
-    @Autowired
-    private Applicant2ApprovedNotification applicant2ApprovedNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -88,7 +84,7 @@ public class Applicant2Approve implements CCDConfig<CaseData, State, UserRole> {
 
         data.setDueDate(LocalDate.now().plus(2, ChronoUnit.WEEKS));
 
-        notificationDispatcher.send(applicant2ApprovedNotification, data, details.getId());
+        //notificationDispatcher.send(applicant2ApprovedNotification, data, details.getId());
 
         if (data.getApplicationType() == JOINT_APPLICATION && data.getApplicant1().isRepresented()) {
             generateJointApplication(details, data);

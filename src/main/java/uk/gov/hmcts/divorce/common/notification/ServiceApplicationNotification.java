@@ -16,10 +16,6 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
-import static uk.gov.hmcts.divorce.citizen.notification.GeneralApplicationReceivedNotification.IS_BAILIFF_SERVICE;
-import static uk.gov.hmcts.divorce.citizen.notification.GeneralApplicationReceivedNotification.IS_DEEMED_SERVICE;
-import static uk.gov.hmcts.divorce.citizen.notification.GeneralApplicationReceivedNotification.IS_DISPENSE_SERVICE;
-import static uk.gov.hmcts.divorce.citizen.notification.conditionalorder.ConditionalOrderPronouncedNotification.MISSING_FIELD_MESSAGE;
 import static uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType.BAILIFF;
 import static uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType.DEEMED;
 import static uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType.DISPENSED;
@@ -56,16 +52,16 @@ public class ServiceApplicationNotification implements ApplicantNotification {
 
         AlternativeServiceType alternativeServiceType = caseData.getAlternativeService().getAlternativeServiceType();
 
-        templateVars.put(IS_DEEMED_SERVICE, DEEMED.equals(alternativeServiceType) ? YES : NO);
-        templateVars.put(IS_DISPENSE_SERVICE, DISPENSED.equals(alternativeServiceType) ? YES : NO);
-        templateVars.put(IS_BAILIFF_SERVICE, BAILIFF.equals(alternativeServiceType) ? YES : NO);
+        templateVars.put("IS_DEEMED_SERVICE", DEEMED.equals(alternativeServiceType) ? YES : NO);
+        templateVars.put("IS_DISPENSE_SERVICE", DISPENSED.equals(alternativeServiceType) ? YES : NO);
+        templateVars.put("IS_BAILIFF_SERVICE", BAILIFF.equals(alternativeServiceType) ? YES : NO);
 
         return templateVars;
     }
 
     private EmailTemplateName getEmailTemplate(final AlternativeService alternativeService, final Long caseId) {
         if (isNull(alternativeService.getServiceApplicationGranted())) {
-            throw new NotificationTemplateException(format(MISSING_FIELD_MESSAGE, "serviceApplicationGranted", caseId));
+            throw new NotificationTemplateException(format("MISSING_FIELD_MESSAGE", "serviceApplicationGranted", caseId));
         }
 
         if (alternativeService.isApplicationGranted()) {

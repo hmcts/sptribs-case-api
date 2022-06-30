@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.divorce.caseworker.event.page.AnswerReceivedPaymentConfirmation;
 import uk.gov.hmcts.divorce.caseworker.event.page.AnswerReceivedPaymentSummary;
 import uk.gov.hmcts.divorce.caseworker.event.page.AnswerReceivedUploadDocument;
-import uk.gov.hmcts.divorce.citizen.notification.DisputedApplicationAnswerReceivedNotification;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
@@ -50,9 +49,6 @@ public class CaseworkerAnswerReceived implements CCDConfig<CaseData, State, User
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
-
-    @Autowired
-    private DisputedApplicationAnswerReceivedNotification answerReceivedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -117,7 +113,7 @@ public class CaseworkerAnswerReceived implements CCDConfig<CaseData, State, User
         final CaseData caseData = details.getData();
 
         if (caseData.getAcknowledgementOfService().isDisputed()) {
-            notificationDispatcher.send(answerReceivedNotification, details.getData(), details.getId());
+            //notificationDispatcher.send(answerReceivedNotification, details.getData(), details.getId());
         }
         return SubmittedCallbackResponse.builder().build();
     }

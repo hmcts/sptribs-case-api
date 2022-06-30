@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.conditionalorder.EntitlementGrantedConditionalOrderNotification;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
@@ -37,9 +36,6 @@ public class SystemUpdateCaseWithCourtHearing implements CCDConfig<CaseData, Sta
     @Autowired
     private NotificationDispatcher notificationDispatcher;
 
-    @Autowired
-    private EntitlementGrantedConditionalOrderNotification entitlementGrantedConditionalOrderNotification;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
@@ -60,7 +56,7 @@ public class SystemUpdateCaseWithCourtHearing implements CCDConfig<CaseData, Sta
 
         CaseData data = details.getData();
 
-        notificationDispatcher.send(entitlementGrantedConditionalOrderNotification, data, details.getId());
+        //notificationDispatcher.send(entitlementGrantedConditionalOrderNotification, data, details.getId());
 
         final CaseDetails<CaseData, State> updatedDetails = caseTasks(generateCertificateOfEntitlement).run(details);
 

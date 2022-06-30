@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.divorce.citizen.notification.Applicant2ApprovedNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.HelpWithFees;
 import uk.gov.hmcts.divorce.ciccase.model.Jurisdiction;
@@ -54,9 +53,6 @@ import static uk.gov.hmcts.divorce.testutil.TestDataHelper.getApplicant;
 
 @ExtendWith(MockitoExtension.class)
 class Applicant2ApproveTest {
-
-    @Mock
-    private Applicant2ApprovedNotification applicant2ApprovedNotification;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -142,7 +138,7 @@ class Applicant2ApproveTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = applicant2Approve.aboutToSubmit(caseDetails, caseDetails);
 
-        verify(notificationDispatcher).send(applicant2ApprovedNotification, caseData, caseDetails.getId());
+        //verify(notificationDispatcher).send(applicant2ApprovedNotification, caseData, caseDetails.getId());
         assertThat(response.getState()).isEqualTo(State.Applicant2Approved);
     }
 

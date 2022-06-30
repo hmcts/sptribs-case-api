@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.DisputeFormOverdueOverdueNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
@@ -21,9 +20,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemNotifyApplicantDisputeFormOverdue implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_NOTIFY_APPLICANT_DISPUTE_FORM_OVERDUE = "system-notify-applicant-dispute-form-overdue";
-
-    @Autowired
-    private DisputeFormOverdueOverdueNotification disputeFormOverdueOverdueNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -45,7 +41,7 @@ public class SystemNotifyApplicantDisputeFormOverdue implements CCDConfig<CaseDa
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
 
-        notificationDispatcher.send(disputeFormOverdueOverdueNotification, data, details.getId());
+        //notificationDispatcher.send(disputeFormOverdueOverdueNotification, data, details.getId());
 
         data.getAcknowledgementOfService().setApplicantNotifiedDisputeFormOverdue(YesOrNo.YES);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
