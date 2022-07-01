@@ -1,10 +1,10 @@
 package uk.gov.hmcts.divorce.common.event.page;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.AcknowledgementOfService;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 
 @Component
 public class SolicitorDetailsWithStatementOfTruth implements CcdPageConfiguration {

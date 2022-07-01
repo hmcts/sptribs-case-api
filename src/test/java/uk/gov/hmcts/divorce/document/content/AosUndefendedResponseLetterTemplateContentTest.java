@@ -6,11 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.divorce.common.service.HoldingPeriodService;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.DivorceOrDissolution;
+import uk.gov.hmcts.divorce.common.service.HoldingPeriodService;
 import uk.gov.hmcts.divorce.notification.CommonContent;
 import uk.gov.hmcts.divorce.testutil.TestDataHelper;
 

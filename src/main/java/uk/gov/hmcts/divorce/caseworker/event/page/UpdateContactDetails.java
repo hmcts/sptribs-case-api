@@ -2,8 +2,6 @@ package uk.gov.hmcts.divorce.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
@@ -12,6 +10,8 @@ import uk.gov.hmcts.divorce.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
+import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.ccd.sdk.api.Event.EventBuilder;
 import static uk.gov.hmcts.ccd.sdk.api.FieldCollection.FieldCollectionBuilder;

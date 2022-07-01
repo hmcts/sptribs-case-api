@@ -5,13 +5,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.divorce.common.ConditionalOrderCourtDetails;
-import uk.gov.hmcts.divorce.common.config.ConditionalOrderCourtDetailsConfig;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.ApplicationType;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
+import uk.gov.hmcts.divorce.common.ConditionalOrderCourtDetails;
+import uk.gov.hmcts.divorce.common.config.ConditionalOrderCourtDetailsConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

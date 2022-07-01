@@ -7,16 +7,15 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 import uk.gov.hmcts.divorce.notification.exception.NotificationTemplateException;
 import uk.gov.hmcts.divorce.systemupdate.service.task.GenerateConditionalOrderPronouncedDocument;
 
-import static uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration.NEVER_SHOW;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingPronouncement;
 import static uk.gov.hmcts.divorce.ciccase.model.State.ConditionalOrderPronounced;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
@@ -25,6 +24,7 @@ import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SYSTEMUPDATE;
 import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration.NEVER_SHOW;
 
 @Component
 @Slf4j

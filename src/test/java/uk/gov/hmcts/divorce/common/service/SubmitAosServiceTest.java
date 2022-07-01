@@ -7,14 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.divorce.caseworker.service.task.SendAosResponseLetterPackToApplicant;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.common.service.task.AddRespondentAnswersLink;
 import uk.gov.hmcts.divorce.common.service.task.GenerateAosResponseLetterDocument;
 import uk.gov.hmcts.divorce.common.service.task.GenerateRespondentAnswersDoc;
 import uk.gov.hmcts.divorce.common.service.task.SendAosNotifications;
 import uk.gov.hmcts.divorce.common.service.task.SetSubmissionAndDueDate;
 import uk.gov.hmcts.divorce.common.service.task.SetSubmitAosState;
-import uk.gov.hmcts.divorce.ciccase.model.CaseData;
-import uk.gov.hmcts.divorce.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;

@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.GeneralOrder;
 import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.document.CaseDataDocumentService;
 import uk.gov.hmcts.divorce.document.content.GeneralOrderTemplateContent;
 

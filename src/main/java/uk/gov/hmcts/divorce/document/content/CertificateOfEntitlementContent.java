@@ -3,12 +3,12 @@ package uk.gov.hmcts.divorce.document.content;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.divorce.common.ConditionalOrderCourtDetails;
-import uk.gov.hmcts.divorce.common.config.ConditionalOrderCourtDetailsConfig;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrderCourt;
+import uk.gov.hmcts.divorce.common.ConditionalOrderCourtDetails;
+import uk.gov.hmcts.divorce.common.config.ConditionalOrderCourtDetailsConfig;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

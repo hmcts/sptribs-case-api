@@ -3,13 +3,13 @@ package uk.gov.hmcts.divorce.common.event;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.common.event.page.ConditionalOrderReviewAoS;
 import uk.gov.hmcts.divorce.common.event.page.ConditionalOrderReviewApplicant1;
-import uk.gov.hmcts.divorce.ciccase.model.CaseData;
-import uk.gov.hmcts.divorce.ciccase.model.State;
-import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 
 import java.util.List;
 

@@ -8,10 +8,10 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.common.notification.RespondentApplyForFinalOrderNotification;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
+import uk.gov.hmcts.divorce.common.notification.RespondentApplyForFinalOrderNotification;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingFinalOrder;

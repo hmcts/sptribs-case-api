@@ -19,10 +19,10 @@ import uk.gov.hmcts.divorce.solicitor.service.task.AddMiniApplicationLink;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.divorce.common.event.DraftAos.DRAFT_AOS;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AosDrafted;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingAos;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingConditionalOrder;
+import static uk.gov.hmcts.divorce.common.event.DraftAos.DRAFT_AOS;
 import static uk.gov.hmcts.divorce.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.divorce.testutil.ConfigTestUtil.getEventsFrom;
 

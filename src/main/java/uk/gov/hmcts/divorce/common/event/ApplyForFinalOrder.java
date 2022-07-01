@@ -7,13 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.common.event.page.ApplyForFinalOrderDetails;
 import uk.gov.hmcts.divorce.common.notification.SoleAppliedForFinalOrderNotification;
-import uk.gov.hmcts.divorce.ciccase.model.CaseData;
-import uk.gov.hmcts.divorce.ciccase.model.State;
-import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import java.util.List;

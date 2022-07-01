@@ -8,12 +8,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.common.service.ProcessConfidentialDocumentsService;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
+import uk.gov.hmcts.divorce.common.service.ProcessConfidentialDocumentsService;
 import uk.gov.hmcts.divorce.solicitor.event.page.UpdateApplicant2ContactDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;

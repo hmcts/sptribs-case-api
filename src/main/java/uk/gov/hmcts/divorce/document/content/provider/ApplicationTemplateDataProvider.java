@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.divorce.common.exception.InvalidCcdCaseDataException;
 import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.JurisdictionConnections;
 import uk.gov.hmcts.divorce.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.divorce.common.exception.InvalidCcdCaseDataException;
 
 import java.util.Arrays;
 import java.util.List;

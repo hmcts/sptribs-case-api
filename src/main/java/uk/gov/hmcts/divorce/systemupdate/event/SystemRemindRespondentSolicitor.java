@@ -13,10 +13,10 @@ import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
-import static uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration.NEVER_SHOW;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingAos;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SYSTEMUPDATE;
 import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration.NEVER_SHOW;
 
 @Slf4j
 @Component

@@ -3,12 +3,11 @@ package uk.gov.hmcts.divorce.systemupdate.event;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 
-import static uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration.NEVER_SHOW;
 import static uk.gov.hmcts.divorce.ciccase.model.State.BulkCaseReject;
 import static uk.gov.hmcts.divorce.ciccase.model.State.POST_SUBMISSION_STATES;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
@@ -17,6 +16,7 @@ import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SYSTEMUPDATE;
 import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration.NEVER_SHOW;
 
 @Component
 public class SystemRemoveBulkCase implements CCDConfig<CaseData, State, UserRole> {

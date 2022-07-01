@@ -7,13 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Organisation;
 import uk.gov.hmcts.ccd.sdk.type.OrganisationPolicy;
-import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.CaseInfo;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
 import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.solicitor.service.SolicitorCreateApplicationService;
 
 import javax.servlet.http.HttpServletRequest;

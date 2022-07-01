@@ -13,7 +13,6 @@ import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import java.util.Set;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingDocuments;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingHWFDecision;

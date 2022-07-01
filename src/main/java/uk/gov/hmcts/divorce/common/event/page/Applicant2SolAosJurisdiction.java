@@ -1,11 +1,11 @@
 package uk.gov.hmcts.divorce.common.event.page;
 
-import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.AcknowledgementOfService;
 import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.Jurisdiction;
+import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 
 public class Applicant2SolAosJurisdiction implements CcdPageConfiguration {
 

@@ -5,12 +5,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.divorce.common.config.DocmosisTemplatesConfig;
-import uk.gov.hmcts.divorce.common.service.HoldingPeriodService;
 import uk.gov.hmcts.divorce.ciccase.model.Applicant;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.CtscContactDetails;
 import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
+import uk.gov.hmcts.divorce.common.config.DocmosisTemplatesConfig;
+import uk.gov.hmcts.divorce.common.service.HoldingPeriodService;
 import uk.gov.hmcts.divorce.notification.CommonContent;
 
 import java.util.HashMap;

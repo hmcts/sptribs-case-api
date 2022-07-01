@@ -1,11 +1,11 @@
 package uk.gov.hmcts.divorce.common.event.page;
 
-import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
 import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrderQuestions;
+import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 
 public class ConditionalOrderReviewApplicant2 implements CcdPageConfiguration {
 

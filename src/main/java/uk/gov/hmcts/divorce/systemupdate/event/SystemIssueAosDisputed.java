@@ -5,10 +5,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
+import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.divorce.ciccase.model.State.AOS_STATES;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AosOverdue;

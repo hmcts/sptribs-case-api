@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.divorce.common.exception.InvalidCcdCaseDataException;
 import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.MarriageDetails;
+import uk.gov.hmcts.divorce.common.exception.InvalidCcdCaseDataException;
 import uk.gov.hmcts.divorce.document.content.provider.ApplicationTemplateDataProvider.Connection;
 
 import java.time.LocalDate;
