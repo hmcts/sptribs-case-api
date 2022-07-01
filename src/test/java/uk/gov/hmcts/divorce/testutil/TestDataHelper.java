@@ -81,8 +81,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.ccd.sdk.type.ScannedDocumentType.FORM;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.divorce.citizen.notification.ApplicationRemindApplicant2Notification.APPLICANT_2_SIGN_IN_DISSOLUTION_URL;
-import static uk.gov.hmcts.divorce.citizen.notification.ApplicationRemindApplicant2Notification.APPLICANT_2_SIGN_IN_DIVORCE_URL;
 import static uk.gov.hmcts.divorce.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.divorce.ciccase.model.ApplicantPrayer.DissolveDivorce.DISSOLVE_DIVORCE;
 import static uk.gov.hmcts.divorce.ciccase.model.ApplicationType.JOINT_APPLICATION;
@@ -684,9 +682,7 @@ public class TestDataHelper {
     public static Map<String, String> getConfigTemplateVars() {
         return Map.of(
             SIGN_IN_DIVORCE_URL, SIGN_IN_DIVORCE_TEST_URL,
-            SIGN_IN_DISSOLUTION_URL, SIGN_IN_DISSOLUTION_TEST_URL,
-            APPLICANT_2_SIGN_IN_DIVORCE_URL, APPLICANT_2_SIGN_IN_DIVORCE_TEST_URL,
-            APPLICANT_2_SIGN_IN_DISSOLUTION_URL, APPLICANT_2_SIGN_IN_DISSOLUTION_TEST_URL
+            SIGN_IN_DISSOLUTION_URL, SIGN_IN_DISSOLUTION_TEST_URL
         );
     }
 
