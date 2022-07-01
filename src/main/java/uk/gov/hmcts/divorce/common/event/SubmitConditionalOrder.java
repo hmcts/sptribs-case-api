@@ -14,18 +14,14 @@ import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.common.service.task.GenerateConditionalOrderAnswersDocument;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
-import uk.gov.hmcts.divorce.solicitor.service.CcdAccessService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Collections.emptyList;
 import static java.util.List.of;
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingLegalAdvisorReferral;
 import static uk.gov.hmcts.divorce.ciccase.model.State.ConditionalOrderDrafted;
@@ -45,16 +41,7 @@ public class SubmitConditionalOrder implements CCDConfig<CaseData, State, UserRo
     public static final String SUBMIT_CONDITIONAL_ORDER = "submit-conditional-order";
 
     @Autowired
-    private NotificationDispatcher notificationDispatcher;
-
-    @Autowired
     private Clock clock;
-
-    @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
-    private CcdAccessService ccdAccessService;
 
     @Autowired
     private GenerateConditionalOrderAnswersDocument generateConditionalOrderAnswersDocument;
@@ -107,11 +94,11 @@ public class SubmitConditionalOrder implements CCDConfig<CaseData, State, UserRo
             ? AwaitingLegalAdvisorReferral
             : beforeDetails.getState() == ConditionalOrderDrafted ? ConditionalOrderPending : AwaitingLegalAdvisorReferral;
 
-        if (ccdAccessService.isApplicant1(request.getHeader(AUTHORIZATION), details.getId())) {
+        /*if (ccdAccessService.isApplicant1(request.getHeader(AUTHORIZATION), details.getId())) {
             //notificationDispatcher.send(app1AppliedForConditionalOrderNotification, data, details.getId());
         } else {
             //notificationDispatcher.send(app2AppliedForConditionalOrderNotification, data, details.getId());
-        }
+        }*/
 
         if (state == AwaitingLegalAdvisorReferral) {
             generateConditionalOrderAnswersDocument.apply(details);

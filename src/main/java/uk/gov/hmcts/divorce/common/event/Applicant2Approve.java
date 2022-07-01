@@ -12,7 +12,6 @@ import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.document.CaseDataDocumentService;
 import uk.gov.hmcts.divorce.document.content.DraftApplicationTemplateContent;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -36,9 +35,6 @@ import static uk.gov.hmcts.divorce.document.model.DocumentType.APPLICATION;
 public class Applicant2Approve implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String APPLICANT_2_APPROVE = "applicant2-approve";
-
-    @Autowired
-    private NotificationDispatcher notificationDispatcher;
 
     @Autowired
     private CaseDataDocumentService caseDataDocumentService;

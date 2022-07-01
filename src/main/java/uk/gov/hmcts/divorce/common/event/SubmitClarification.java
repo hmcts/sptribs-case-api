@@ -13,7 +13,6 @@ import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -36,9 +35,6 @@ public class SubmitClarification implements CCDConfig<CaseData, State, UserRole>
 
     public static final String SUBMIT_CLARIFICATION = "submit-clarification";
     private static final String NEVER_SHOW = "coRefusalDecision=\"NEVER_SHOW\"";
-
-    @Autowired
-    private NotificationDispatcher notificationDispatcher;
 
     @Autowired
     private Clock clock;
@@ -84,12 +80,12 @@ public class SubmitClarification implements CCDConfig<CaseData, State, UserRole>
 
         final CaseData data = details.getData();
         final ConditionalOrder conditionalOrder = data.getConditionalOrder();
-        final boolean cannotUploadDocuments = conditionalOrder.cannotUploadClarificationDocumentsBoolean();
+        //final boolean cannotUploadDocuments = conditionalOrder.cannotUploadClarificationDocumentsBoolean();
         final boolean clarificationDocumentsUploaded = isNotEmpty(conditionalOrder.getClarificationUploadDocuments());
 
-        if (cannotUploadDocuments) {
+        /*if (cannotUploadDocuments) {
             //notificationDispatcher.send(postInformationToCourtNotification, data, details.getId());
-        }
+        }*/
 
         if (clarificationDocumentsUploaded) {
             conditionalOrder.getClarificationUploadDocuments()

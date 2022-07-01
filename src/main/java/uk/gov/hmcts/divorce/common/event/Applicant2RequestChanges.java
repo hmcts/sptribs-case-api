@@ -1,7 +1,6 @@
 package uk.gov.hmcts.divorce.common.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import java.util.List;
 
@@ -29,9 +27,6 @@ import static uk.gov.hmcts.divorce.ciccase.validation.ValidationUtil.validateApp
 public class Applicant2RequestChanges implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String APPLICANT_2_REQUEST_CHANGES = "applicant2-request-changes";
-
-    @Autowired
-    private NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

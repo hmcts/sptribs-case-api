@@ -24,7 +24,7 @@ public class CriminalInjuriesCompensationTest {
 
         criminalInjuriesCompensation.configure(configBuilder);
 
-        assertThat(configBuilder.build().getCaseType()).isEqualTo("NFD");
+        assertThat(configBuilder.build().getCaseType()).isEqualTo("CIC");
 
     }
 

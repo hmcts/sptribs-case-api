@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.divorce.ciccase.model.Bailiff;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import java.time.LocalDate;
 
@@ -35,9 +33,6 @@ import static uk.gov.hmcts.divorce.testutil.ConfigTestUtil.getEventsFrom;
 class CaseworkerAddBailiffReturnTest {
 
     private static final long DUE_DATE_OFFSET = 16L;
-
-    @Mock
-    private NotificationDispatcher notificationDispatcher;
 
     @InjectMocks
     private CaseworkerAddBailiffReturn caseworkerAddBailiffReturn;

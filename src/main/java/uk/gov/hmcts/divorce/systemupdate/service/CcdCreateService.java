@@ -1,16 +1,13 @@
 package uk.gov.hmcts.divorce.systemupdate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.divorce.systemupdate.convert.CaseDetailsConverter;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 
 @Service
 @Slf4j
 public class CcdCreateService {
 
-    private static final String DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY = "No Fault Divorce case submission event";
+    /*private static final String DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY = "No Fault Divorce case submission event";
     private static final String DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting No Fault Divorce Case Event";
 
     @Autowired
@@ -20,7 +17,7 @@ public class CcdCreateService {
     private CcdCaseDataContentProvider ccdCaseDataContentProvider;
 
     @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
+    private CaseDetailsConverter caseDetailsConverter;*/
 
     /*public uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState> createBulkCase(
         final uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState> caseDetails,

@@ -18,19 +18,15 @@ import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrderQuestions;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.service.task.GenerateConditionalOrderAnswersDocument;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 import uk.gov.hmcts.divorce.solicitor.service.CcdAccessService;
 
 import java.time.Clock;
 import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.divorce.ciccase.model.ServiceMethod.SOLICITOR_SERVICE;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingLegalAdvisorReferral;
 import static uk.gov.hmcts.divorce.ciccase.model.State.ConditionalOrderPending;
@@ -44,9 +40,6 @@ import static uk.gov.hmcts.divorce.testutil.ConfigTestUtil.getEventsFrom;
 class SubmitConditionalOrderTest {
 
     private static final String DUMMY_AUTH_TOKEN = "ASAFSDFASDFASDFASDFASDF";
-
-    @Mock
-    private NotificationDispatcher notificationDispatcher;
 
     @Mock
     private CcdAccessService ccdAccessService;
@@ -167,7 +160,6 @@ class SubmitConditionalOrderTest {
     @Test
     void shouldSendApp2NotificationsOnAboutToSubmit() {
         setupMocks(clock);
-        when(ccdAccessService.isApplicant1(DUMMY_AUTH_TOKEN, 1L)).thenReturn(false);
         CaseData caseData = caseData();
         final CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder().id(1L).data(caseData).build();
 
@@ -214,7 +206,5 @@ class SubmitConditionalOrderTest {
         if (Objects.nonNull(mockClock)) {
             setMockClock(mockClock);
         }
-        when(request.getHeader(eq(AUTHORIZATION))).thenReturn(DUMMY_AUTH_TOKEN);
-        when(ccdAccessService.isApplicant1(DUMMY_AUTH_TOKEN, 1L)).thenReturn(true);
     }
 }

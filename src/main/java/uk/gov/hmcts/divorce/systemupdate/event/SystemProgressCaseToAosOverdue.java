@@ -11,7 +11,6 @@ import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.common.service.task.GenerateAosOverdueLetterDocument;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import static java.util.EnumSet.of;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AosDrafted;
@@ -28,9 +27,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemProgressCaseToAosOverdue implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_PROGRESS_TO_AOS_OVERDUE = "system-progress-to-aos-overdue";
-
-    @Autowired
-    private NotificationDispatcher notificationDispatcher;
 
     @Autowired
     private GenerateAosOverdueLetterDocument generateAosOverdueLetterDocument;

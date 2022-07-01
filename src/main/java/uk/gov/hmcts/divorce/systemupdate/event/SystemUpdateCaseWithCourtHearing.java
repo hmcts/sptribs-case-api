@@ -11,7 +11,6 @@ import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 import uk.gov.hmcts.divorce.systemupdate.service.task.GenerateCertificateOfEntitlement;
 
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingPronouncement;
@@ -33,9 +32,6 @@ public class SystemUpdateCaseWithCourtHearing implements CCDConfig<CaseData, Sta
     @Autowired
     private GenerateCertificateOfEntitlement generateCertificateOfEntitlement;
 
-    @Autowired
-    private NotificationDispatcher notificationDispatcher;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
@@ -54,7 +50,7 @@ public class SystemUpdateCaseWithCourtHearing implements CCDConfig<CaseData, Sta
 
         log.info("System update case court hearing about to submit callback invoked for case id: {}", details.getId());
 
-        CaseData data = details.getData();
+        //CaseData data = details.getData();
 
         //notificationDispatcher.send(entitlementGrantedConditionalOrderNotification, data, details.getId());
 

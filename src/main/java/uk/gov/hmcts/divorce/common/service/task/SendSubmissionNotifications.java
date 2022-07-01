@@ -1,13 +1,11 @@
 package uk.gov.hmcts.divorce.common.service.task;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.task.CaseTask;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingHWFDecision;
@@ -16,9 +14,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.State.Submitted;
 @Component
 @Slf4j
 public class SendSubmissionNotifications implements CaseTask {
-
-    @Autowired
-    private NotificationDispatcher notificationDispatcher;
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
