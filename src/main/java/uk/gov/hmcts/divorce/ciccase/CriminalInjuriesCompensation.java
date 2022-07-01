@@ -24,8 +24,8 @@ public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, 
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CASE_TYPE, "New Law Case", "Handling of the dissolution of marriage");
-        configBuilder.jurisdiction(JURISDICTION, "Family Divorce", "Family Divorce: dissolution of marriage");
+        configBuilder.caseType(CASE_TYPE, "CIC Case Type", "Handling of the dissolution of marriage");
+        configBuilder.jurisdiction(JURISDICTION, "CIC", "Family Divorce: dissolution of marriage");
         configBuilder.omitHistoryForRoles(APPLICANT_1_SOLICITOR, APPLICANT_2_SOLICITOR);
 
         // to shutter the service within xui uncomment this line
