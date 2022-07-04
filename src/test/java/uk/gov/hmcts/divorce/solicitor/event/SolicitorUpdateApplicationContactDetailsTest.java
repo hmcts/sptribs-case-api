@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
-import uk.gov.hmcts.divorce.solicitor.event.page.SolUpdateContactDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.divorce.solicitor.event.SolicitorUpdateContactDetails.SOLICITOR_UPDATE_CONTACT_DETAILS;

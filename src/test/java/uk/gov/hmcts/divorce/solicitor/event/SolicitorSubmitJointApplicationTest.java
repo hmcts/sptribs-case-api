@@ -16,8 +16,6 @@ import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.solicitor.client.organisation.OrganisationClient;
 import uk.gov.hmcts.divorce.solicitor.client.organisation.OrganisationContactInformation;
 import uk.gov.hmcts.divorce.solicitor.client.organisation.OrganisationsResponse;
-import uk.gov.hmcts.divorce.solicitor.event.page.HelpWithFeesPageForApplicant2;
-import uk.gov.hmcts.divorce.solicitor.event.page.MarriageIrretrievablyBrokenForApplicant2;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.util.List;

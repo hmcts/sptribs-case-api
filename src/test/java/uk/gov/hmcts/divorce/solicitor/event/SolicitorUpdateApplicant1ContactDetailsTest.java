@@ -14,7 +14,6 @@ import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 import uk.gov.hmcts.divorce.common.service.ProcessConfidentialDocumentsService;
-import uk.gov.hmcts.divorce.solicitor.event.page.UpdateApplicant1ContactDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

@@ -20,7 +20,6 @@ import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.AddSystemUpdateRole;
-import uk.gov.hmcts.divorce.solicitor.event.page.SolAboutTheSolicitor;
 import uk.gov.hmcts.divorce.solicitor.service.CcdAccessService;
 import uk.gov.hmcts.divorce.solicitor.service.SolicitorCreateApplicationService;
 

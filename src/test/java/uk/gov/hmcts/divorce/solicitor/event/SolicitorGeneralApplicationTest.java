@@ -29,7 +29,6 @@ import uk.gov.hmcts.divorce.payment.model.PaymentStatus;
 import uk.gov.hmcts.divorce.payment.model.PbaResponse;
 import uk.gov.hmcts.divorce.solicitor.client.organisation.OrganisationClient;
 import uk.gov.hmcts.divorce.solicitor.client.organisation.OrganisationsResponse;
-import uk.gov.hmcts.divorce.solicitor.event.page.GeneralApplicationSelectFee;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.time.LocalDateTime;

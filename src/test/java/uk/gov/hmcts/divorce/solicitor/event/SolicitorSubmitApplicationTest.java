@@ -25,7 +25,6 @@ import uk.gov.hmcts.divorce.payment.PaymentService;
 import uk.gov.hmcts.divorce.payment.model.Payment;
 import uk.gov.hmcts.divorce.payment.model.PaymentStatus;
 import uk.gov.hmcts.divorce.payment.model.PbaResponse;
-import uk.gov.hmcts.divorce.solicitor.event.page.SolPayment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

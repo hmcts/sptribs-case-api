@@ -14,7 +14,6 @@ import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.document.model.DivorceDocument;
-import uk.gov.hmcts.divorce.solicitor.event.page.SolAboutTheSolicitor;
 import uk.gov.hmcts.divorce.solicitor.service.SolicitorUpdateApplicationService;
 
 import java.util.List;
