@@ -2,28 +2,28 @@ package uk.gov.hmcts.divorce.caseworker.event.page;
 
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.ApplicantPrayer;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.CaseDocuments;
+import uk.gov.hmcts.divorce.ciccase.model.HelpWithFees;
+import uk.gov.hmcts.divorce.ciccase.model.Jurisdiction;
+import uk.gov.hmcts.divorce.ciccase.model.LabelContent;
+import uk.gov.hmcts.divorce.ciccase.model.MarriageDetails;
+import uk.gov.hmcts.divorce.ciccase.model.PaperFormDetails;
+import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.ApplicantPrayer;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseDocuments;
-import uk.gov.hmcts.divorce.divorcecase.model.HelpWithFees;
-import uk.gov.hmcts.divorce.divorcecase.model.Jurisdiction;
-import uk.gov.hmcts.divorce.divorcecase.model.LabelContent;
-import uk.gov.hmcts.divorce.divorcecase.model.MarriageDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.PaperFormDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.Solicitor;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.api.Event.EventBuilder;
 import static uk.gov.hmcts.ccd.sdk.api.FieldCollection.FieldCollectionBuilder;
-import static uk.gov.hmcts.divorce.divorcecase.validation.ValidationUtil.SOT_REQUIRED;
+import static uk.gov.hmcts.divorce.ciccase.validation.ValidationUtil.SOT_REQUIRED;
 
 public class CorrectPaperCase implements CcdPageConfiguration {
 

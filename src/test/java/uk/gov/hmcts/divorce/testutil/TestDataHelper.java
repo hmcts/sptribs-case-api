@@ -21,34 +21,31 @@ import uk.gov.hmcts.ccd.sdk.type.Organisation;
 import uk.gov.hmcts.ccd.sdk.type.OrganisationPolicy;
 import uk.gov.hmcts.ccd.sdk.type.ScannedDocument;
 import uk.gov.hmcts.ccd.sdk.type.ScannedDocumentType;
-import uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionCaseTypeConfig;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkActionCaseData;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkListCaseDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.ApplicantPrayer;
-import uk.gov.hmcts.divorce.divorcecase.model.Application;
-import uk.gov.hmcts.divorce.divorcecase.model.ApplicationType;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseInvite;
-import uk.gov.hmcts.divorce.divorcecase.model.ConditionalOrder;
-import uk.gov.hmcts.divorce.divorcecase.model.ConditionalOrderQuestions;
-import uk.gov.hmcts.divorce.divorcecase.model.DivorceGeneralOrder;
-import uk.gov.hmcts.divorce.divorcecase.model.DocumentsServedBeingThe;
-import uk.gov.hmcts.divorce.divorcecase.model.DocumentsServedHow;
-import uk.gov.hmcts.divorce.divorcecase.model.DocumentsServedWhere;
-import uk.gov.hmcts.divorce.divorcecase.model.FinalOrder;
-import uk.gov.hmcts.divorce.divorcecase.model.Gender;
-import uk.gov.hmcts.divorce.divorcecase.model.GeneralLetter;
-import uk.gov.hmcts.divorce.divorcecase.model.GeneralOrder;
-import uk.gov.hmcts.divorce.divorcecase.model.GeneralOrderDivorceParties;
-import uk.gov.hmcts.divorce.divorcecase.model.GeneralOrderJudgeOrLegalAdvisorType;
-import uk.gov.hmcts.divorce.divorcecase.model.GeneralParties;
-import uk.gov.hmcts.divorce.divorcecase.model.HelpWithFees;
-import uk.gov.hmcts.divorce.divorcecase.model.Jurisdiction;
-import uk.gov.hmcts.divorce.divorcecase.model.MarriageDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.Solicitor;
-import uk.gov.hmcts.divorce.divorcecase.model.SolicitorService;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.ApplicantPrayer;
+import uk.gov.hmcts.divorce.ciccase.model.Application;
+import uk.gov.hmcts.divorce.ciccase.model.ApplicationType;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.CaseInvite;
+import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrder;
+import uk.gov.hmcts.divorce.ciccase.model.ConditionalOrderQuestions;
+import uk.gov.hmcts.divorce.ciccase.model.DivorceGeneralOrder;
+import uk.gov.hmcts.divorce.ciccase.model.DocumentsServedBeingThe;
+import uk.gov.hmcts.divorce.ciccase.model.DocumentsServedHow;
+import uk.gov.hmcts.divorce.ciccase.model.DocumentsServedWhere;
+import uk.gov.hmcts.divorce.ciccase.model.FinalOrder;
+import uk.gov.hmcts.divorce.ciccase.model.Gender;
+import uk.gov.hmcts.divorce.ciccase.model.GeneralLetter;
+import uk.gov.hmcts.divorce.ciccase.model.GeneralOrder;
+import uk.gov.hmcts.divorce.ciccase.model.GeneralOrderDivorceParties;
+import uk.gov.hmcts.divorce.ciccase.model.GeneralOrderJudgeOrLegalAdvisorType;
+import uk.gov.hmcts.divorce.ciccase.model.GeneralParties;
+import uk.gov.hmcts.divorce.ciccase.model.HelpWithFees;
+import uk.gov.hmcts.divorce.ciccase.model.Jurisdiction;
+import uk.gov.hmcts.divorce.ciccase.model.MarriageDetails;
+import uk.gov.hmcts.divorce.ciccase.model.Solicitor;
+import uk.gov.hmcts.divorce.ciccase.model.SolicitorService;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.document.model.ConfidentialDivorceDocument;
 import uk.gov.hmcts.divorce.document.model.ConfidentialDocumentsReceived;
 import uk.gov.hmcts.divorce.document.model.DivorceDocument;
@@ -84,20 +81,18 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.ccd.sdk.type.ScannedDocumentType.FORM;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.divorce.citizen.notification.ApplicationRemindApplicant2Notification.APPLICANT_2_SIGN_IN_DISSOLUTION_URL;
-import static uk.gov.hmcts.divorce.citizen.notification.ApplicationRemindApplicant2Notification.APPLICANT_2_SIGN_IN_DIVORCE_URL;
-import static uk.gov.hmcts.divorce.divorcecase.NoFaultDivorce.CASE_TYPE;
-import static uk.gov.hmcts.divorce.divorcecase.model.ApplicantPrayer.DissolveDivorce.DISSOLVE_DIVORCE;
-import static uk.gov.hmcts.divorce.divorcecase.model.ApplicationType.JOINT_APPLICATION;
-import static uk.gov.hmcts.divorce.divorcecase.model.ApplicationType.SOLE_APPLICATION;
-import static uk.gov.hmcts.divorce.divorcecase.model.ConditionalOrderCourt.BURY_ST_EDMUNDS;
-import static uk.gov.hmcts.divorce.divorcecase.model.ContactDetailsType.PRIVATE;
-import static uk.gov.hmcts.divorce.divorcecase.model.ContactDetailsType.PUBLIC;
-import static uk.gov.hmcts.divorce.divorcecase.model.DivorceOrDissolution.DIVORCE;
-import static uk.gov.hmcts.divorce.divorcecase.model.Gender.FEMALE;
-import static uk.gov.hmcts.divorce.divorcecase.model.Gender.MALE;
-import static uk.gov.hmcts.divorce.divorcecase.model.JurisdictionConnections.APP_1_APP_2_RESIDENT;
-import static uk.gov.hmcts.divorce.divorcecase.model.ServiceMethod.COURT_SERVICE;
+import static uk.gov.hmcts.divorce.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
+import static uk.gov.hmcts.divorce.ciccase.model.ApplicantPrayer.DissolveDivorce.DISSOLVE_DIVORCE;
+import static uk.gov.hmcts.divorce.ciccase.model.ApplicationType.JOINT_APPLICATION;
+import static uk.gov.hmcts.divorce.ciccase.model.ApplicationType.SOLE_APPLICATION;
+import static uk.gov.hmcts.divorce.ciccase.model.ConditionalOrderCourt.BURY_ST_EDMUNDS;
+import static uk.gov.hmcts.divorce.ciccase.model.ContactDetailsType.PRIVATE;
+import static uk.gov.hmcts.divorce.ciccase.model.ContactDetailsType.PUBLIC;
+import static uk.gov.hmcts.divorce.ciccase.model.DivorceOrDissolution.DIVORCE;
+import static uk.gov.hmcts.divorce.ciccase.model.Gender.FEMALE;
+import static uk.gov.hmcts.divorce.ciccase.model.Gender.MALE;
+import static uk.gov.hmcts.divorce.ciccase.model.JurisdictionConnections.APP_1_APP_2_RESIDENT;
+import static uk.gov.hmcts.divorce.ciccase.model.ServiceMethod.COURT_SERVICE;
 import static uk.gov.hmcts.divorce.document.model.DocumentType.APPLICATION;
 import static uk.gov.hmcts.divorce.notification.CommonContent.APPLICANT_NAME;
 import static uk.gov.hmcts.divorce.notification.CommonContent.APPLICATION_REFERENCE;
@@ -117,8 +112,6 @@ import static uk.gov.hmcts.divorce.notification.CommonContent.SOLICITOR_NAME;
 import static uk.gov.hmcts.divorce.notification.CommonContent.WIFE_JOINT;
 import static uk.gov.hmcts.divorce.testutil.TestConstants.APPLICANT_2_FIRST_NAME;
 import static uk.gov.hmcts.divorce.testutil.TestConstants.APPLICANT_2_LAST_NAME;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.APPLICANT_2_SIGN_IN_DISSOLUTION_TEST_URL;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.APPLICANT_2_SIGN_IN_DIVORCE_TEST_URL;
 import static uk.gov.hmcts.divorce.testutil.TestConstants.FEE_CODE;
 import static uk.gov.hmcts.divorce.testutil.TestConstants.ISSUE_FEE;
 import static uk.gov.hmcts.divorce.testutil.TestConstants.SIGN_IN_DISSOLUTION_TEST_URL;
@@ -496,26 +489,6 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CallbackRequest callbackRequest(final BulkActionCaseData caseData,
-                                                  final String eventId) {
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
-
-        return CallbackRequest
-            .builder()
-            .eventId(eventId)
-            .caseDetailsBefore(caseDetailsBefore(caseData))
-            .caseDetails(
-                CaseDetails
-                    .builder()
-                    .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
-                    .id(TEST_CASE_ID)
-                    .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(BulkActionCaseTypeConfig.CASE_TYPE)
-                    .build()
-            )
-            .build();
-    }
-
     public static CallbackRequest callbackRequest(final CaseData caseData,
                                                   final String eventId) {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
@@ -707,9 +680,7 @@ public class TestDataHelper {
     public static Map<String, String> getConfigTemplateVars() {
         return Map.of(
             SIGN_IN_DIVORCE_URL, SIGN_IN_DIVORCE_TEST_URL,
-            SIGN_IN_DISSOLUTION_URL, SIGN_IN_DISSOLUTION_TEST_URL,
-            APPLICANT_2_SIGN_IN_DIVORCE_URL, APPLICANT_2_SIGN_IN_DIVORCE_TEST_URL,
-            APPLICANT_2_SIGN_IN_DISSOLUTION_URL, APPLICANT_2_SIGN_IN_DISSOLUTION_TEST_URL
+            SIGN_IN_DISSOLUTION_URL, SIGN_IN_DISSOLUTION_TEST_URL
         );
     }
 
@@ -828,15 +799,6 @@ public class TestDataHelper {
             .build();
     }
 
-    private static CaseDetails caseDetailsBefore(BulkActionCaseData caseData) {
-        return CaseDetails
-            .builder()
-            .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
-            .id(TEST_CASE_ID)
-            .caseTypeId(BulkActionCaseTypeConfig.CASE_TYPE)
-            .build();
-    }
-
     public static ListValue<Fee> getFeeListValue() {
         return ListValue
             .<Fee>builder()
@@ -855,19 +817,6 @@ public class TestDataHelper {
             .builder()
             .paymentTotal("55000")
             .fees(singletonList(getFeeListValue()))
-            .build();
-    }
-
-    public static ListValue<BulkListCaseDetails> getBulkListCaseDetailsListValue(String caseReference) {
-        final var bulkListCaseDetails = BulkListCaseDetails.builder()
-            .caseReference(CaseLink.builder()
-                .caseReference(caseReference)
-                .build())
-            .build();
-
-        return ListValue
-            .<BulkListCaseDetails>builder()
-            .value(bulkListCaseDetails)
             .build();
     }
 

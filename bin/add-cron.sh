@@ -47,7 +47,7 @@ spec:
     path: nfdiv-cron
   values:
     job:
-      image: hmctspublic.azurecr.io/nfdiv/case-api:prod-d25e51a-20210922052840 #{"$imagepolicy": "flux-system:nfdiv-case-api"}
+      image: hmctspublic.azurecr.io/nfdiv/case-api:prod-d25e51a-20210922052840 #{"$imagepolicy": "flux-system:sptribs-case-api"}
       keyVaults:
         nfdiv:
           secrets:

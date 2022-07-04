@@ -9,16 +9,13 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.citizen.notification.conditionalorder.EntitlementGrantedConditionalOrderNotification;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 import uk.gov.hmcts.divorce.systemupdate.service.task.GenerateCertificateOfEntitlement;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.divorce.systemupdate.event.SystemUpdateCaseWithCourtHearing.SYSTEM_UPDATE_CASE_COURT_HEARING;
@@ -34,9 +31,6 @@ class SystemUpdateCaseWithCourtHearingTest {
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
-
-    @Mock
-    private EntitlementGrantedConditionalOrderNotification entitlementGrantedConditionalOrderNotification;
 
     @InjectMocks
     private SystemUpdateCaseWithCourtHearing systemUpdateCaseWithCourtHearing;
@@ -69,7 +63,7 @@ class SystemUpdateCaseWithCourtHearingTest {
         updatedDetails.setData(caseData);
 
         when(generateCertificateOfEntitlement.apply(caseDetails)).thenReturn(updatedDetails);
-        doNothing().when(notificationDispatcher).send(entitlementGrantedConditionalOrderNotification, caseData, caseId);
+        //doNothing().when(notificationDispatcher).send(entitlementGrantedConditionalOrderNotification, caseData, caseId);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             systemUpdateCaseWithCourtHearing.aboutToSubmit(caseDetails, null);
@@ -94,7 +88,7 @@ class SystemUpdateCaseWithCourtHearingTest {
 
         systemUpdateCaseWithCourtHearing.aboutToSubmit(caseDetails, null);
 
-        verify(notificationDispatcher).send(entitlementGrantedConditionalOrderNotification, caseDetails.getData(), caseDetails.getId());
+        //verify(notificationDispatcher).send(entitlementGrantedConditionalOrderNotification, caseDetails.getData(), caseDetails.getId());
         verifyNoMoreInteractions(notificationDispatcher);
     }
 }

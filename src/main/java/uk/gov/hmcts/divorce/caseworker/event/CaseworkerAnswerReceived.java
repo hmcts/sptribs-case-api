@@ -11,13 +11,11 @@ import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.divorce.caseworker.event.page.AnswerReceivedPaymentConfirmation;
 import uk.gov.hmcts.divorce.caseworker.event.page.AnswerReceivedPaymentSummary;
 import uk.gov.hmcts.divorce.caseworker.event.page.AnswerReceivedUploadDocument;
-import uk.gov.hmcts.divorce.citizen.notification.DisputedApplicationAnswerReceivedNotification;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
-import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 import uk.gov.hmcts.divorce.payment.PaymentService;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
@@ -25,16 +23,16 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static uk.gov.hmcts.divorce.divorcecase.model.CaseDocuments.addDocumentToTop;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AosOverdue;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingAos;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingConditionalOrder;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingPronouncement;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.Holding;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.LEGAL_ADVISOR;
-import static uk.gov.hmcts.divorce.divorcecase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.divorce.divorcecase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.divorce.ciccase.model.CaseDocuments.addDocumentToTop;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AosOverdue;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingAos;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingConditionalOrder;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingPronouncement;
+import static uk.gov.hmcts.divorce.ciccase.model.State.Holding;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.LEGAL_ADVISOR;
+import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.divorce.payment.PaymentService.EVENT_ISSUE;
 import static uk.gov.hmcts.divorce.payment.PaymentService.KEYWORD_DEF;
 import static uk.gov.hmcts.divorce.payment.PaymentService.SERVICE_OTHER;
@@ -47,12 +45,6 @@ public class CaseworkerAnswerReceived implements CCDConfig<CaseData, State, User
 
     @Autowired
     private PaymentService paymentService;
-
-    @Autowired
-    private NotificationDispatcher notificationDispatcher;
-
-    @Autowired
-    private DisputedApplicationAnswerReceivedNotification answerReceivedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -114,11 +106,11 @@ public class CaseworkerAnswerReceived implements CCDConfig<CaseData, State, User
                                                CaseDetails<CaseData, State> beforeDetails) {
         log.info("CASEWORKER_ADD_ANSWER submitted-callback invoked for case id: {}", details.getId());
 
-        final CaseData caseData = details.getData();
+        //final CaseData caseData = details.getData();
 
-        if (caseData.getAcknowledgementOfService().isDisputed()) {
-            notificationDispatcher.send(answerReceivedNotification, details.getData(), details.getId());
-        }
+        /*if (caseData.getAcknowledgementOfService().isDisputed()) {
+            //notificationDispatcher.send(answerReceivedNotification, details.getData(), details.getId());
+        }*/
         return SubmittedCallbackResponse.builder().build();
     }
 }

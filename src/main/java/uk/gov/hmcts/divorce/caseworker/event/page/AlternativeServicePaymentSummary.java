@@ -1,10 +1,10 @@
 package uk.gov.hmcts.divorce.caseworker.event.page;
 
+import uk.gov.hmcts.divorce.ciccase.model.AlternativeService;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.FeeDetails;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.AlternativeService;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.FeeDetails;
 
 public class AlternativeServicePaymentSummary implements CcdPageConfiguration {
 

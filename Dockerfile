@@ -3,8 +3,8 @@ ARG APP_INSIGHTS_AGENT_VERSION=3.2.6
 
 FROM hmctspublic.azurecr.io/base/java:17-distroless
 
-COPY build/libs/nfdiv-case-api.jar /opt/app/
+COPY build/libs/sptribs-case-api.jar /opt/app/
 COPY lib/applicationinsights.json /opt/app/
 
 EXPOSE 4013
-CMD [ "nfdiv-case-api.jar" ]
+CMD [ "sptribs-case-api.jar" ]

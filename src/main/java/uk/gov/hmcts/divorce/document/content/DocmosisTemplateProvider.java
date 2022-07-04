@@ -2,8 +2,8 @@ package uk.gov.hmcts.divorce.document.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.divorce.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.divorce.common.config.DocmosisTemplatesConfig;
-import uk.gov.hmcts.divorce.divorcecase.model.LanguagePreference;
 
 @Component
 public class DocmosisTemplateProvider {

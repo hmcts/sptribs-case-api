@@ -1,6 +1,5 @@
 package uk.gov.hmcts.divorce.endpoint;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriUtils;
-import uk.gov.hmcts.divorce.bulkscan.validation.OcrValidator;
 import uk.gov.hmcts.divorce.endpoint.data.FormType;
 import uk.gov.hmcts.divorce.endpoint.data.OcrDataValidationRequest;
 import uk.gov.hmcts.divorce.endpoint.data.OcrValidationResponse;
@@ -23,9 +21,6 @@ import static uk.gov.hmcts.divorce.endpoint.data.ValidationStatus.ERRORS;
 
 @RestController
 public class ValidationController {
-
-    @Autowired
-    private OcrValidator validator;
 
     @PostMapping(
         value = "/forms/{form-type}/validate-ocr",
@@ -44,7 +39,7 @@ public class ValidationController {
             ));
         }
 
-        OcrValidationResponse result = validator.validateExceptionRecord(encodedFormType, requestBody);
+        OcrValidationResponse result = null; //validator.validateExceptionRecord(encodedFormType, requestBody);
 
         return ResponseEntity.ok().body(result);
     }

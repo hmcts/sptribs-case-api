@@ -10,16 +10,14 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.JointApplicationApprovedReminder;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.divorce.systemupdate.event.SystemRemindApplicant1ApplicationReviewed.SYSTEM_REMIND_APPLICANT_1_APPLICATION_REVIEWED;
@@ -32,9 +30,6 @@ public class SystemRemindApplicant1ApplicationReviewedTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
-
-    @Mock
-    private JointApplicationApprovedReminder jointApplicationApprovedReminder;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -66,7 +61,7 @@ public class SystemRemindApplicant1ApplicationReviewedTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             systemRemindApplicant1ApplicationReviewed.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(jointApplicationApprovedReminder, caseData, details.getId());
+        //verify(notificationDispatcher).send(jointApplicationApprovedReminder, caseData, details.getId());
         assertThat(response.getData().getApplication().getApplicant1ReminderSent()).isEqualTo(YesOrNo.YES);
     }
 }

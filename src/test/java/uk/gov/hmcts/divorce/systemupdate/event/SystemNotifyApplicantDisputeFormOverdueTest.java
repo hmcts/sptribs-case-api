@@ -10,16 +10,14 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.divorce.citizen.notification.DisputeFormOverdueOverdueNotification;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.notification.NotificationDispatcher;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.divorce.systemupdate.event.SystemNotifyApplicantDisputeFormOverdue.SYSTEM_NOTIFY_APPLICANT_DISPUTE_FORM_OVERDUE;
@@ -32,9 +30,6 @@ class SystemNotifyApplicantDisputeFormOverdueTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
-
-    @Mock
-    private DisputeFormOverdueOverdueNotification disputeFormOverdueOverdueNotification;
 
     @Mock
     private NotificationDispatcher notificationDispatcher;
@@ -64,7 +59,7 @@ class SystemNotifyApplicantDisputeFormOverdueTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = underTest.aboutToSubmit(details, details);
 
-        verify(notificationDispatcher).send(disputeFormOverdueOverdueNotification, caseData, details.getId());
+        //verify(notificationDispatcher).send(disputeFormOverdueOverdueNotification, caseData, details.getId());
         assertThat(response.getData().getAcknowledgementOfService().getApplicantNotifiedDisputeFormOverdue()).isEqualTo(YesOrNo.YES);
     }
 }

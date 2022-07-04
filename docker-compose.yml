@@ -1,7 +1,7 @@
 version: '2.1'
 
 services:
-  nfdiv-case-api:
+  sptribs-case-api:
     build:
       context: .
       args:
