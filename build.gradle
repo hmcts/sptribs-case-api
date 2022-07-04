@@ -192,7 +192,7 @@ def sonarExclusions = [
 
 sonarqube {
   properties {
-    property "sonar.projectName", "Divorce :: nfdiv-case-api"
+    property "sonar.projectName", "Divorce :: sptribs-case-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform:nfdiv-case-api"
     property "sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.exclusions", sonarExclusions.join(', ')
@@ -328,7 +328,7 @@ task loadEnvSecrets() {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'nfdiv-aat', '-o', 'tsv', '--query', 'value', '--name', 'nfdiv-case-api-dot-env'
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'nfdiv-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
@@ -360,7 +360,7 @@ bootRun {
 
 bootJar {
   getArchiveFileName().set(provider {
-    'nfdiv-case-api.jar'
+    'sptribs-case-api.jar'
   })
 
   manifest {

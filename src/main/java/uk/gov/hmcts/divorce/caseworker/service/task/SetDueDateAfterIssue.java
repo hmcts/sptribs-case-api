@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.task.CaseTask;
 import uk.gov.hmcts.divorce.common.service.HoldingPeriodService;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.task.CaseTask;
 
 import java.time.Clock;
 import java.time.LocalDate;

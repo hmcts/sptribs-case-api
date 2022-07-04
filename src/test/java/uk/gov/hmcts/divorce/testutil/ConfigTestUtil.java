@@ -7,13 +7,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Search;
 import uk.gov.hmcts.ccd.sdk.api.Search.SearchBuilder;
-import uk.gov.hmcts.ccd.sdk.type.ExceptionRecord;
-import uk.gov.hmcts.divorce.bulkaction.ccd.BulkActionState;
-import uk.gov.hmcts.divorce.bulkaction.data.BulkActionCaseData;
-import uk.gov.hmcts.divorce.bulkscan.ccd.ExceptionRecordState;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.model.UserRole;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -35,24 +31,6 @@ public final class ConfigTestUtil {
             UserRole.class,
             new HashMap<>(),
             ImmutableSet.copyOf(State.class.getEnumConstants())));
-    }
-
-    public static ConfigBuilderImpl<ExceptionRecord, ExceptionRecordState, UserRole> createExceptionRecordConfigBuilder() {
-        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
-            ExceptionRecord.class,
-            ExceptionRecordState.class,
-            UserRole.class,
-            new HashMap<>(),
-            ImmutableSet.copyOf(ExceptionRecordState.class.getEnumConstants())));
-    }
-
-    public static ConfigBuilderImpl<BulkActionCaseData, BulkActionState, UserRole> createBulkActionConfigBuilder() {
-        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
-            BulkActionCaseData.class,
-            BulkActionState.class,
-            UserRole.class,
-            new HashMap<>(),
-            ImmutableSet.copyOf(BulkActionState.class.getEnumConstants())));
     }
 
     @SuppressWarnings({"unchecked"})

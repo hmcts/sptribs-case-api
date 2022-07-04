@@ -17,8 +17,8 @@ import uk.gov.hmcts.divorce.caseworker.service.task.SetDueDateAfterIssue;
 import uk.gov.hmcts.divorce.caseworker.service.task.SetIssueDate;
 import uk.gov.hmcts.divorce.caseworker.service.task.SetPostIssueState;
 import uk.gov.hmcts.divorce.caseworker.service.task.SetServiceType;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.document.task.DivorceApplicationRemover;
 
 import static org.assertj.core.api.Assertions.assertThat;

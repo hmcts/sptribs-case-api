@@ -13,16 +13,16 @@ import uk.gov.hmcts.divorce.caseworker.service.task.SendAosPackToRespondent;
 import uk.gov.hmcts.divorce.caseworker.service.task.SendApplicationIssueNotifications;
 import uk.gov.hmcts.divorce.caseworker.service.task.SetPostIssueState;
 import uk.gov.hmcts.divorce.caseworker.service.task.SetReIssueAndDueDate;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.ReissueOption;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.ReissueOption;
+import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.systemupdate.service.ReissueProcessingException;
 
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.divorce.divorcecase.model.ReissueOption.DIGITAL_AOS;
-import static uk.gov.hmcts.divorce.divorcecase.model.ReissueOption.OFFLINE_AOS;
-import static uk.gov.hmcts.divorce.divorcecase.model.ReissueOption.REISSUE_CASE;
-import static uk.gov.hmcts.divorce.divorcecase.task.CaseTaskRunner.caseTasks;
+import static uk.gov.hmcts.divorce.ciccase.model.ReissueOption.DIGITAL_AOS;
+import static uk.gov.hmcts.divorce.ciccase.model.ReissueOption.OFFLINE_AOS;
+import static uk.gov.hmcts.divorce.ciccase.model.ReissueOption.REISSUE_CASE;
+import static uk.gov.hmcts.divorce.ciccase.task.CaseTaskRunner.caseTasks;
 
 @Service
 @Slf4j

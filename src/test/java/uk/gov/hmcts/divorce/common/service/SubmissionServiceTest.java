@@ -6,13 +6,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.common.service.task.SendSubmissionNotifications;
 import uk.gov.hmcts.divorce.common.service.task.SetApplicant2Email;
 import uk.gov.hmcts.divorce.common.service.task.SetApplicantOfflineStatus;
 import uk.gov.hmcts.divorce.common.service.task.SetDateSubmitted;
 import uk.gov.hmcts.divorce.common.service.task.SetStateAfterSubmission;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;

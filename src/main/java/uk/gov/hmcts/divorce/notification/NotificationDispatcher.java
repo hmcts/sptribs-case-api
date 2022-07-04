@@ -1,7 +1,7 @@
 package uk.gov.hmcts.divorce.notification;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 

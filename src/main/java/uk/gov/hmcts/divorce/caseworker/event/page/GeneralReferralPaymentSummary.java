@@ -1,10 +1,10 @@
 package uk.gov.hmcts.divorce.caseworker.event.page;
 
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.FeeDetails;
+import uk.gov.hmcts.divorce.ciccase.model.GeneralReferral;
 import uk.gov.hmcts.divorce.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.FeeDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.GeneralReferral;
 
 public class GeneralReferralPaymentSummary implements CcdPageConfiguration {
 

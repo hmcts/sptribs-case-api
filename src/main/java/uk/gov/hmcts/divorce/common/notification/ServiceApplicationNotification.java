@@ -3,9 +3,9 @@ package uk.gov.hmcts.divorce.common.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.divorce.divorcecase.model.AlternativeService;
-import uk.gov.hmcts.divorce.divorcecase.model.AlternativeServiceType;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.AlternativeService;
+import uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
 import uk.gov.hmcts.divorce.notification.ApplicantNotification;
 import uk.gov.hmcts.divorce.notification.CommonContent;
 import uk.gov.hmcts.divorce.notification.EmailTemplateName;
@@ -16,13 +16,9 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
-import static uk.gov.hmcts.divorce.citizen.notification.GeneralApplicationReceivedNotification.IS_BAILIFF_SERVICE;
-import static uk.gov.hmcts.divorce.citizen.notification.GeneralApplicationReceivedNotification.IS_DEEMED_SERVICE;
-import static uk.gov.hmcts.divorce.citizen.notification.GeneralApplicationReceivedNotification.IS_DISPENSE_SERVICE;
-import static uk.gov.hmcts.divorce.citizen.notification.conditionalorder.ConditionalOrderPronouncedNotification.MISSING_FIELD_MESSAGE;
-import static uk.gov.hmcts.divorce.divorcecase.model.AlternativeServiceType.BAILIFF;
-import static uk.gov.hmcts.divorce.divorcecase.model.AlternativeServiceType.DEEMED;
-import static uk.gov.hmcts.divorce.divorcecase.model.AlternativeServiceType.DISPENSED;
+import static uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType.BAILIFF;
+import static uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType.DEEMED;
+import static uk.gov.hmcts.divorce.ciccase.model.AlternativeServiceType.DISPENSED;
 import static uk.gov.hmcts.divorce.notification.CommonContent.NO;
 import static uk.gov.hmcts.divorce.notification.CommonContent.YES;
 import static uk.gov.hmcts.divorce.notification.EmailTemplateName.SERVICE_APPLICATION_GRANTED;
@@ -56,16 +52,16 @@ public class ServiceApplicationNotification implements ApplicantNotification {
 
         AlternativeServiceType alternativeServiceType = caseData.getAlternativeService().getAlternativeServiceType();
 
-        templateVars.put(IS_DEEMED_SERVICE, DEEMED.equals(alternativeServiceType) ? YES : NO);
-        templateVars.put(IS_DISPENSE_SERVICE, DISPENSED.equals(alternativeServiceType) ? YES : NO);
-        templateVars.put(IS_BAILIFF_SERVICE, BAILIFF.equals(alternativeServiceType) ? YES : NO);
+        templateVars.put("IS_DEEMED_SERVICE", DEEMED.equals(alternativeServiceType) ? YES : NO);
+        templateVars.put("IS_DISPENSE_SERVICE", DISPENSED.equals(alternativeServiceType) ? YES : NO);
+        templateVars.put("IS_BAILIFF_SERVICE", BAILIFF.equals(alternativeServiceType) ? YES : NO);
 
         return templateVars;
     }
 
     private EmailTemplateName getEmailTemplate(final AlternativeService alternativeService, final Long caseId) {
         if (isNull(alternativeService.getServiceApplicationGranted())) {
-            throw new NotificationTemplateException(format(MISSING_FIELD_MESSAGE, "serviceApplicationGranted", caseId));
+            throw new NotificationTemplateException(format("MISSING_FIELD_MESSAGE", "serviceApplicationGranted", caseId));
         }
 
         if (alternativeService.isApplicationGranted()) {

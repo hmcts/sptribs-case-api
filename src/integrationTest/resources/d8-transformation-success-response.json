@@ -1,6 +1,6 @@
 {
   "case_creation_details": {
-    "case_type_id": "NFD",
+    "case_type_id": "CIC",
     "event_id": "create-paper-case",
     "case_data": {
       "applicationType": "soleApplication",

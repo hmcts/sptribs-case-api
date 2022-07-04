@@ -2,19 +2,19 @@ package uk.gov.hmcts.divorce.notification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.divorce.ciccase.model.Applicant;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.divorce.common.config.EmailTemplatesConfig;
-import uk.gov.hmcts.divorce.divorcecase.model.Applicant;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.LanguagePreference;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.join;
 import static java.util.Objects.isNull;
-import static uk.gov.hmcts.divorce.divorcecase.model.Gender.FEMALE;
-import static uk.gov.hmcts.divorce.divorcecase.model.Gender.MALE;
-import static uk.gov.hmcts.divorce.divorcecase.model.LanguagePreference.WELSH;
+import static uk.gov.hmcts.divorce.ciccase.model.Gender.FEMALE;
+import static uk.gov.hmcts.divorce.ciccase.model.Gender.MALE;
+import static uk.gov.hmcts.divorce.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.divorce.notification.FormatUtil.formatId;
 
 @Component

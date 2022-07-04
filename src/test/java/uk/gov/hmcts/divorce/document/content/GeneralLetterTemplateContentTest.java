@@ -8,10 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.divorce.divorcecase.model.ApplicationType;
-import uk.gov.hmcts.divorce.divorcecase.model.CtscContactDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.DivorceOrDissolution;
-import uk.gov.hmcts.divorce.divorcecase.model.GeneralParties;
+import uk.gov.hmcts.divorce.ciccase.model.ApplicationType;
+import uk.gov.hmcts.divorce.ciccase.model.CtscContactDetails;
+import uk.gov.hmcts.divorce.ciccase.model.DivorceOrDissolution;
+import uk.gov.hmcts.divorce.ciccase.model.GeneralParties;
 import uk.gov.hmcts.divorce.notification.CommonContent;
 
 import java.time.Clock;

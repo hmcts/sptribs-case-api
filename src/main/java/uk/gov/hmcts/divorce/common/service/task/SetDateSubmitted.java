@@ -4,16 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.divorce.divorcecase.model.CaseData;
-import uk.gov.hmcts.divorce.divorcecase.model.State;
-import uk.gov.hmcts.divorce.divorcecase.task.CaseTask;
+import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.State;
+import uk.gov.hmcts.divorce.ciccase.task.CaseTask;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingDocuments;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.AwaitingHWFDecision;
-import static uk.gov.hmcts.divorce.divorcecase.model.State.Submitted;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingDocuments;
+import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingHWFDecision;
+import static uk.gov.hmcts.divorce.ciccase.model.State.Submitted;
 
 @Component
 @Slf4j

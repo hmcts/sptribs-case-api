@@ -9,4 +9,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'nfdiv-case-api'
+rootProject.name = 'sptribs-case-api'
