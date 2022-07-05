@@ -16,9 +16,8 @@ import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.divorce.ciccase.model.State.NewPaperCase;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER_BULK_SCAN;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Slf4j
 @Component
@@ -44,7 +43,7 @@ public class CaseworkerCorrectPaperCase implements CCDConfig<CaseData, State, Us
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .showEventNotes()
-            .grant(CREATE_READ_UPDATE, CASE_WORKER, CASE_WORKER_BULK_SCAN, SUPER_USER));
+            .grant(CREATE_READ_UPDATE_DELETE, CASE_WORKER, SUPER_USER));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(final CaseDetails<CaseData, State> details) {
