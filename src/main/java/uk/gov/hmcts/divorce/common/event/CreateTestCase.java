@@ -11,10 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.divorce.ciccase.model.Applicant;
-import uk.gov.hmcts.divorce.ciccase.model.Application;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
-import uk.gov.hmcts.divorce.ciccase.model.CaseInvite;
+import uk.gov.hmcts.divorce.ciccase.model.CicCase;
+import uk.gov.hmcts.divorce.ciccase.model.Notifications;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
@@ -43,8 +42,7 @@ import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.CREATE_READ_
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-application";
-    private static final String SOLE_APPLICATION = "classpath:data/sole.json";
-    private static final String JOINT_APPLICATION = "classpath:data/joint.json";
+    private static final String ASSESSMENT  = "classpath:data/assessment.json";
 
     @Autowired
     private CcdAccessService ccdAccessService;
@@ -67,27 +65,27 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         new PageBuilder(configBuilder
             .event(TEST_CREATE)
             .initialState(Draft)
-            .name("Create Case")
+            .name("All Structured Data Test Page")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
             .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN))
-            .page("Create Case", this::midEvent)
+            .page("All Structured Data Test Page", this::midEvent)
             .mandatory(CaseData::getApplicationType)
-            .complex(CaseData::getApplicant1)
-                .mandatoryWithLabel(Applicant::getSolicitorRepresented, "Is applicant 1 represented")
+            .complex(CaseData::getCicCase)
+                .label("caseObject", "######################## Case Object ########################")
+                .mandatoryWithLabel(CicCase::getIsLateTribunalApplicationReasonGiven, "is late tribunal application reason given?")
+                .mandatoryWithLabel(CicCase::getIsTribunalApplicationOnTime, "is tribunal application on time?")
+                .mandatoryWithLabel(CicCase::getCaseCategory, "Case Category")
+                .mandatoryWithLabel(CicCase::getCaseSubcategory, "Case Subcategory")
+                .mandatoryWithLabel(CicCase::getCaseReceivedDate, "Case Received Date")
                 .done()
-            .complex(CaseData::getApplicant2)
-                .mandatoryWithLabel(Applicant::getSolicitorRepresented, "Is applicant 2 represented")
-                .done()
-            .complex(CaseData::getCaseInvite)
-                .label("userIdLabel", "<pre>Use ./bin/get-user-id-by-email.sh [email] to get an ID"
-                    + ".\n\nTEST_SOLICITOR@mailinator.com is 93b108b7-4b26-41bf-ae8f-6e356efb11b3 in AAT.\n</pre>")
-                .mandatoryWithLabel(CaseInvite::applicant2UserId, "Applicant 2 user ID")
-                .done()
-            .complex(CaseData::getApplication)
-                .mandatoryWithLabel(Application::getStateToTransitionApplicationTo, "Case state")
-            .done();
+            .complex(CaseData::getNotifications)
+                .label("notificationsObject", "######################## Notifications Object ########################")
+                .mandatoryWithLabel(Notifications::getIsNamedPartyApplicant, "Is Named Party Applicant?")
+                .mandatoryWithLabel(Notifications::getIsNamedPartySubject, "Is Named Party Subject?")
+                .mandatoryWithLabel(Notifications::getIsNamedPartySubjectRep, "Is Named Party Subject Rep?")
+                .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
@@ -113,7 +111,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
 
-        var file = details.getData().getApplicationType().isSole() ? SOLE_APPLICATION : JOINT_APPLICATION;
+        var file = ASSESSMENT;
         var resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource(file).getInputStream(), Charset.defaultCharset());
         var fixture = objectMapper.readValue(json, CaseData.class);

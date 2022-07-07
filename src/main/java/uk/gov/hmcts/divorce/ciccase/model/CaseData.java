@@ -50,6 +50,16 @@ import static uk.gov.hmcts.divorce.payment.model.PaymentStatus.SUCCESS;
 @Builder(toBuilder = true)
 public class CaseData {
 
+    @JsonUnwrapped(prefix = "cicCase")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class})
+    private CicCase cicCase = new CicCase();
+
+    @JsonUnwrapped(prefix = "notifications")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class})
+    private Notifications notifications = new Notifications();
+
     @CCD(
         label = "Application type",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
