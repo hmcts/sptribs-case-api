@@ -72,20 +72,18 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN))
             .page("All Structured Data Test Page", this::midEvent)
 
-           // .mandatory(CaseData::getApplicationType)
-            //.complex(CaseData::getCicCase)
-              //  .label("caseObject", "### CIC  Case Categorisation ####")
-               // .mandatoryWithLabel(CicCase::getIsLateTribunalApplicationReasonGiven, "is late tribunal application reason given?")
-               // .mandatoryWithLabel(CicCase::getIsTribunalApplicationOnTime, "is tribunal application on time?")
-              //  .mandatoryWithLabel(CicCase::getCaseCategory, "CIC Case Category")
-              //  .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
-              // .mandatoryWithLabel(CicCase::getCaseReceivedDate, "Case Received Date")
-//                .done()
-//            .complex(CaseData::getNotifications)
-//                .label("notificationsObject", "######################## Notifications Object ########################")
-//                .mandatoryWithLabel(Notifications::getIsNamedPartyApplicant, "Is Named Party Applicant?")
-//                .mandatoryWithLabel(Notifications::getIsNamedPartySubject, "Is Named Party Subject?")
-//                .mandatoryWithLabel(Notifications::getIsNamedPartySubjectRep, "Is Named Party Subject Rep?")
+
+            .complex(CaseData::getCicCase)
+               .label("caseObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
+              .mandatoryWithLabel(CicCase::getCaseCategory, "")
+              .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
+            .optionalWithLabel(CicCase::getComment,"Comments")
+            .done()
+            .page("Date")
+            .complex(CaseData::getCicCase)
+               .mandatoryWithLabel(CicCase::getCaseReceivedDate, "when was the case Received?" +
+                   "\nCase Record for [DRAFT] " + "\nDate of receipt")
+
                 .done();
     }
 
@@ -96,8 +94,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         final CaseData data = details.getData();
         try {
-            UUID uuid = UUID.fromString(data.getCaseInvite().applicant2UserId());
-            log.info("{}", uuid);
+//            UUID uuid = UUID.fromString(data.getCaseInvite().applicant2UserId());
+//            log.info("{}", uuid);
             return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(data)
                 .build();

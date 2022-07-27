@@ -16,7 +16,7 @@ import uk.gov.hmcts.divorce.ciccase.model.access.DefaultAccess;
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @AllArgsConstructor
@@ -36,7 +36,7 @@ public class CicCase {
     @CCD(
         label = "Case Subcategory",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = MultiSelectList,
+        typeOverride = FixedRadioList,
         typeParameterOverride = "CaseSubcategory"
     )
     private CaseSubcategory caseSubcategory;
@@ -59,4 +59,11 @@ public class CicCase {
         access = {CaseworkerAccess.class}
     )
     private YesOrNo isLateTribunalApplicationReasonGiven;
+
+    @CCD(
+        label = "Comment",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String comment;
 }
