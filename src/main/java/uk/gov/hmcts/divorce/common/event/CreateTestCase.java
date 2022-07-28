@@ -12,8 +12,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
-import uk.gov.hmcts.divorce.ciccase.model.CicCase;
-import uk.gov.hmcts.divorce.ciccase.model.Notifications;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
@@ -71,21 +69,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
             .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN))
             .page("All Structured Data Test Page", this::midEvent)
-
-           // .mandatory(CaseData::getApplicationType)
-            //.complex(CaseData::getCicCase)
-              //  .label("caseObject", "### CIC  Case Categorisation ####")
-               // .mandatoryWithLabel(CicCase::getIsLateTribunalApplicationReasonGiven, "is late tribunal application reason given?")
-               // .mandatoryWithLabel(CicCase::getIsTribunalApplicationOnTime, "is tribunal application on time?")
-              //  .mandatoryWithLabel(CicCase::getCaseCategory, "CIC Case Category")
-              //  .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
-              // .mandatoryWithLabel(CicCase::getCaseReceivedDate, "Case Received Date")
-//                .done()
-//            .complex(CaseData::getNotifications)
-//                .label("notificationsObject", "######################## Notifications Object ########################")
-//                .mandatoryWithLabel(Notifications::getIsNamedPartyApplicant, "Is Named Party Applicant?")
-//                .mandatoryWithLabel(Notifications::getIsNamedPartySubject, "Is Named Party Subject?")
-//                .mandatoryWithLabel(Notifications::getIsNamedPartySubjectRep, "Is Named Party Subject Rep?")
                 .done();
     }
 
