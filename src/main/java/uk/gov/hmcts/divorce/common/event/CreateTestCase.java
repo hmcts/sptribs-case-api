@@ -80,9 +80,17 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .optionalWithLabel(CicCase::getComment,"Comments")
             .done()
             .page("Date")
+            .label("dateObject","when was the case Received?\r\n" +
+        "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
             .complex(CaseData::getCicCase)
-               .mandatoryWithLabel(CicCase::getCaseReceivedDate, "when was the case Received?" +
-                   "\nCase Record for [DRAFT] " + "\nDate of receipt")
+               .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
+            .done()
+            .page("objectSubject")
+            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" +"\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatoryWithLabel(CicCase::getSubjectCIC,"Select all that apply.")
+            .optional(CicCase::getApplicantCIC,"")
+            .optional(CicCase::getRepresentativeCic,"")
 
                 .done();
     }
