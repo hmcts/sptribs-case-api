@@ -34,7 +34,7 @@ public class CreateTestCaseTest {
     private CreateTestCase createTestCase;
 
     @Test
-    void shouldNotReturnErrorsIfApplicant2UserIdIsValid() {
+    void shouldNotReturnErrorsIfApplicantUserIdIsValid() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
             .caseInvite(CaseInvite.builder()
@@ -48,19 +48,19 @@ public class CreateTestCaseTest {
         assertThat(response.getErrors()).isNull();
     }
 
-    @Test
-    void shouldReturnErrorsIfApplicant2UserIdIsNotValidUuid() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .caseInvite(CaseInvite.builder()
-                .applicant2UserId("app-2-id")
-                .build())
-            .build();
-        caseDetails.setData(caseData);
-
-        final AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors().size()).isEqualTo(1);
-        assertThat(response.getErrors()).contains("User ID entered for applicant 2 is an invalid UUID");
-    }
+//    @Test
+//    void shouldReturnErrorsIfApplicant2UserIdIsNotValidUuid() {
+//        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+//        final CaseData caseData = CaseData.builder()
+//            .caseInvite(CaseInvite.builder()
+//                .applicant2UserId("app-2-id")
+//                .build())
+//            .build();
+//        caseDetails.setData(caseData);
+//
+//        final AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.midEvent(caseDetails, caseDetails);
+//
+//        assertThat(response.getErrors().size()).isEqualTo(1);
+//        assertThat(response.getErrors()).contains("User ID entered for applicant 2 is an invalid UUID");
+//    }
 }

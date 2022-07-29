@@ -91,6 +91,17 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .mandatoryWithLabel(CicCase::getSubjectCIC,"Select all that apply.")
             .optional(CicCase::getApplicantCIC,"")
             .optional(CicCase::getRepresentativeCic,"")
+            .done()
+            .page("applicantDetailsObject")
+            .label("applicantDetailsObject","Who is the subject of this case?\r\n" +"\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getFullName)
+            .optional(CicCase::getAddress)
+            .optional(CicCase::getPhoneNumber)
+            .optional(CicCase::getEmail)
+            .mandatoryWithLabel(CicCase::getDateOfBirth,"")
+            .mandatoryWithLabel(CicCase::getContactDetailsPrefrence,"")
+            //.mandatory(CicCase::getContactDetailsPrefrence)
 
                 .done();
     }

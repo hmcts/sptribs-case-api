@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.divorce.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.divorce.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -91,4 +92,43 @@ public class CicCase {
 
     )
     private RepresentativeCIC representativeCic;
+
+    @CCD(
+        label = "Full Name",
+       // typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String fullName;
+
+    @CCD(label = "Address")
+    private AddressGlobalUK address;
+
+    @CCD(
+        label = "Phone number",
+        regex = "^[0-9 +().-]{9,}$"
+    )
+    private String phoneNumber;
+
+    @CCD(
+        label = "Email address",
+        typeOverride = Email
+    )
+    private String email;
+
+
+    @CCD(
+        label = "Date of birth",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateOfBirth;
+
+
+    @CCD(
+        label = "What is their contact preference?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ContactPreferenceType contactDetailsPrefrence;
+
+
 }
