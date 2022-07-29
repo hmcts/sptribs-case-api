@@ -16,7 +16,10 @@ import uk.gov.hmcts.divorce.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
 
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.*;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @AllArgsConstructor
@@ -85,24 +88,20 @@ public class CicCase {
     private ApplicantCIC applicantCIC;
 
     @CCD(
-       // label = "Representative",
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private RepresentativeCIC representativeCic;
 
     @CCD(
         label = "Full Name",
-       // typeOverride = TextArea,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fullName;
 
     @CCD(label = "Address")
     private AddressGlobalUK address;
-
     @CCD(
         label = "Phone number",
         regex = "^[0-9 +().-]{9,}$"

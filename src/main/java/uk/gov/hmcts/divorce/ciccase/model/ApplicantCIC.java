@@ -11,9 +11,6 @@ public enum ApplicantCIC implements HasLabel {
     @JsonProperty("ApplicantCIC")
     APPLICANT_CIC("Applicant (If different from subject).");
 
-//    @JsonProperty("Legibility")
-//    LEGIBILITY("Legibility");
-
     private final String label;
 
     public boolean isApplicantCIC() {

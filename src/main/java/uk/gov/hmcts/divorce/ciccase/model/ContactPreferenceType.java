@@ -14,10 +14,6 @@ public enum ContactPreferenceType implements HasLabel {
     @JsonProperty("Preference")
     EMAIL("Email", "Email"),
     POST("Post", "Post");
-
-//    @JsonProperty("Post")
-//    POST("Post", "Post");
-
     private String type;
     private final String label;
 }
