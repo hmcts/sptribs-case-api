@@ -32,7 +32,10 @@ import java.util.UUID;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.*;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 import static uk.gov.hmcts.divorce.ciccase.model.Gender.FEMALE;
 import static uk.gov.hmcts.divorce.ciccase.model.Gender.MALE;
 import static uk.gov.hmcts.divorce.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
@@ -73,17 +76,6 @@ public class CaseData {
         typeOverride = FixedRadioList,
         typeParameterOverride = "DivorceOrDissolution"
     )
-
-    // Created for test
-//    private ApplicationType drop;
-//    @CCD(
-//        label = "drop",
-//        hint = "Choose at least one of the following",
-//        typeOverride = MultiSelectList,
-//        typeParameterOverride = "ClarificationReason"
-//    )
-
-    //========================
     private DivorceOrDissolution divorceOrDissolution;
 
     @JsonUnwrapped(prefix = "labelContent")
