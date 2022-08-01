@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.divorce.ciccase.model.CaseData;
+import uk.gov.hmcts.divorce.ciccase.model.CicCase;
 import uk.gov.hmcts.divorce.ciccase.model.State;
 import uk.gov.hmcts.divorce.ciccase.model.UserRole;
 import uk.gov.hmcts.divorce.common.ccd.PageBuilder;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.System.getenv;
@@ -69,7 +69,36 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
             .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN))
             .page("All Structured Data Test Page", this::midEvent)
-                .done();
+
+
+            .complex(CaseData::getCicCase)
+               .label("caseObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
+              .mandatoryWithLabel(CicCase::getCaseCategory, "")
+              .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
+            .optionalWithLabel(CicCase::getComment,"Comments")
+            .done()
+            .page("Date")
+            .label("dateObject","when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
+            .complex(CaseData::getCicCase)
+               .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
+            .done()
+            .page("objectSubject")
+            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatoryWithLabel(CicCase::getSubjectCIC,"Select all that apply.")
+            .optional(CicCase::getApplicantCIC,"")
+            .optional(CicCase::getRepresentativeCic,"")
+            .done()
+            .page("applicantDetailsObject")
+            .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getFullName)
+            .optional(CicCase::getAddress)
+            .optional(CicCase::getPhoneNumber)
+            .optional(CicCase::getEmail)
+            .mandatoryWithLabel(CicCase::getDateOfBirth,"")
+            .mandatoryWithLabel(CicCase::getContactDetailsPrefrence,"")
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
@@ -79,8 +108,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         final CaseData data = details.getData();
         try {
-            UUID uuid = UUID.fromString(data.getCaseInvite().applicant2UserId());
-            log.info("{}", uuid);
+
             return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(data)
                 .build();
