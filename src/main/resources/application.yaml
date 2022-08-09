@@ -44,6 +44,9 @@ uk:
           signInProfessionalUsersUrl: ${NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL:https://manage-case.aat.platform.hmcts.net/cases/case-details/}
           divorceCourtEmail: divorcecase@justice.gov.uk
           dissolutionCourtEmail: divorcecase@justice.gov.uk
+          respondentName := "Appeals Team"
+          respondentOrganisation := "CICA"
+          respondentEmail := "appeals.team@cica.gov.uk
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
