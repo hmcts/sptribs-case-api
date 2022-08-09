@@ -127,7 +127,7 @@ public class CicCase {
         label = "What is their contact preference?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private ContactPreferenceType contactDetailsPrefrence;
+    private ContactPreferenceType contactDetailsPreference;
     private ApplicantCICDetails applicantCICDetails;
     private RepresentativeCICDetails representativeCICDetails;
 

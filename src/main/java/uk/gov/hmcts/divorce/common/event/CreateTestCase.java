@@ -74,7 +74,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .optional(CicCase::getPhoneNumber)
             .optional(CicCase::getEmail)
             .mandatoryWithLabel(CicCase::getDateOfBirth,"")
-            .mandatoryWithLabel(CicCase::getContactDetailsPrefrence,"")
+            .mandatoryWithLabel(CicCase::getContactDetailsPreference,"")
             .done()
             .page("representativeDetailsObjects")
             .label("representativeDetailsObject","Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
