@@ -17,7 +17,7 @@ import uk.gov.hmcts.divorce.ciccase.model.access.DefaultAccess;
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -31,7 +31,7 @@ public class CicCase {
     @CCD(
         label = "Case Category",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
+        typeOverride = FixedList,
         typeParameterOverride = "CaseCategory"
     )
     private CaseCategory caseCategory;
@@ -39,7 +39,7 @@ public class CicCase {
     @CCD(
         label = "Case Subcategory",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
+        typeOverride = FixedList,
         typeParameterOverride = "CaseSubcategory"
     )
     private CaseSubcategory caseSubcategory;
@@ -128,6 +128,7 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactDetailsPrefrence;
-
+    private ApplicantCICDetails applicantCICDetails;
+    private RepresentativeCICDetails representativeCICDetails;
 
 }
