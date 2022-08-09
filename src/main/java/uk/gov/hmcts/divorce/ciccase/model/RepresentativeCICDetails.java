@@ -10,14 +10,11 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.divorce.ciccase.model.access.CaseworkerWithCAAAccess;
-
 import uk.gov.hmcts.divorce.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
 
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.Document;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 
 @Data
 @AllArgsConstructor
@@ -56,10 +53,8 @@ public class RepresentativeCICDetails {
     )
     private String email;
 
-
     @CCD(
         label = "Is the representative legally qualified?"
-       // typeOverride = Email
     )
-    private RepresentativeLegalQualification representativeLegalQualification ;
+    private RepresentativeLegalQualification representativeLegalQualification;
 }

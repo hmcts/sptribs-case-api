@@ -22,8 +22,8 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
-import javax.annotation.PostConstruct;
 import java.util.TimeZone;
+import javax.annotation.PostConstruct;
 
 @SpringBootApplication(
     exclude = {CoreCaseDataClientAutoConfiguration.class},
