@@ -130,5 +130,6 @@ public class CicCase {
     private ContactPreferenceType contactDetailsPrefrence;
     private ApplicantCICDetails applicantCICDetails;
     private RepresentativeCICDetails representativeCICDetails;
+    private ContactPreferencesDetailsForApplicationCIC contactPreferencesDetailsForApplicationCIC;
 
 }

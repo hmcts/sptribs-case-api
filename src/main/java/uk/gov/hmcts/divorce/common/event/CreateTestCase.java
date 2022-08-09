@@ -64,6 +64,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getSubjectCIC)
+            .optional(CicCase::getApplicantCIC)
             .optional(CicCase::getRepresentativeCic)
             .done()
             .page("applicantDetailsObjects")
@@ -80,6 +81,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .label("representativeDetailsObject","Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
             .complex(CaseData::getCicCase)
            .optional(CicCase::getRepresentativeCICDetails)
+            .done()
+            .page("objectContacts")
+            .label("objectContact", "Who should receive information about the case?")
+            .complex(CaseData::getCicCase)
+            .optional(CicCase::getContactPreferencesDetailsForApplicationCIC)
             .done();
     }
 
