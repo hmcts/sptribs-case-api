@@ -12,37 +12,37 @@ import uk.gov.hmcts.divorce.ciccase.model.access.DefaultAccess;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
-    @Builder
-    public class ContactPreferencesDetailsForApplicationCIC {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
+@Builder
+public class ContactPreferencesDetailsForApplicationCIC {
 
-        @CCD(
+    @CCD(
             //label = "Add a Subject",
             typeOverride = MultiSelectList,
             typeParameterOverride = "SubjectCIC",
             access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
-        )
+     )
         private SubjectCIC subjectCIC;
 
-        @CCD(
+    @CCD(
             //label = "Add an Applicant",
             typeOverride = MultiSelectList,
             typeParameterOverride = "ApplicantCIC",
             access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
 
-        )
+     )
         private ApplicantCIC applicantCIC;
 
-        @CCD(
+    @CCD(
             typeOverride = MultiSelectList,
             typeParameterOverride = "RepresentativeCIC",
             access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-        )
+     )
         private RepresentativeCIC representativeCic;
-    }
+
+}
 
 
