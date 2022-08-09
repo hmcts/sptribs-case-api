@@ -1,10 +1,12 @@
 package uk.gov.hmcts.divorce.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
@@ -16,7 +18,9 @@ import uk.gov.hmcts.divorce.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -31,7 +35,7 @@ public class CicCase {
     @CCD(
         label = "Case Category",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
+        typeOverride = FixedList,
         typeParameterOverride = "CaseCategory"
     )
     private CaseCategory caseCategory;
@@ -39,7 +43,7 @@ public class CicCase {
     @CCD(
         label = "Case Subcategory",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
+        typeOverride = FixedList,
         typeParameterOverride = "CaseSubcategory"
     )
     private CaseSubcategory caseSubcategory;
@@ -128,6 +132,21 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactDetailsPrefrence;
+    //private RepresentativeLegalQualification  representativeLegalQualification;
+
+private ApplicantCICDetails applicantCICDetails;
 
 
+    private RepresentativeCICDetails representativeCICDetails ;
+        //= getRepresentativeCic().isRepresentativeCIC()? getRepresentativeCICDetails() :null  ;
+
+    //@JsonIgnore
+//    public RepresentativeCICDetails isRepresentativeCICDetails() {
+//        if (null != representativeCic &&  representativeCic.isRepresentativeCIC()) {
+//            return representativeCICDetails;              //getOrganisation().getOrganisationId();
+//        }else{
+//            return null;
+//        }
+//
+//    }
 }

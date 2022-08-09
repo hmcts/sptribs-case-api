@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 @AllArgsConstructor
 public enum ApplicantCIC implements HasLabel {
+
     @JsonProperty("ApplicantCIC")
     APPLICANT_CIC("Applicant (If different from subject).");
 
