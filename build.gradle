@@ -132,11 +132,11 @@ task smoke(type: Test) {
   description = "Runs Smoke Tests"
   setTestClassesDirs(sourceSets.functionalTest.output.classesDirs)
   setClasspath(sourceSets.functionalTest.runtimeClasspath)
-  include "uk/gov/hmcts/divorce/smoke/**"
+  include "uk/gov/hmcts/sptribs/smoke/**"
 }
 
 task highLevelDataSetup(type: JavaExec) {
-  mainClass.set("uk.gov.hmcts.divorce.common.ccd.HighLevelDataSetupApp")
+  mainClass.set("uk.gov.hmcts.sptribs.common.ccd.HighLevelDataSetupApp")
   classpath += sourceSets.main.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
@@ -183,16 +183,16 @@ dependencyCheck {
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
-  '**/uk/gov/hmcts/divorce/common/ccd/**',
-  '**/uk/gov/hmcts/divorce/common/event/CreateTestCase.java',
-  '**/uk/gov/hmcts/divorce/CaseApiApplication.java',
-  '**/uk/gov/hmcts/divorce/notification/GetAllTemplatesFromNotify.java',
-  '**/uk/gov/hmcts/divorce/common/config/**'
+  '**/uk/gov/hmcts/sptribs/common/ccd/**',
+  '**/uk/gov/hmcts/sptribs/common/event/CreateTestCase.java',
+  '**/uk/gov/hmcts/sptribs/CaseApiApplication.java',
+  '**/uk/gov/hmcts/sptribs/notification/GetAllTemplatesFromNotify.java',
+  '**/uk/gov/hmcts/sptribs/common/config/**'
 ]
 
 sonarqube {
   properties {
-    property "sonar.projectName", "Divorce :: sptribs-case-api"
+    property "sonar.projectName", "SpTribs :: sptribs-case-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform:nfdiv-case-api"
     property "sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.exclusions", sonarExclusions.join(', ')
@@ -321,7 +321,7 @@ dependencies {
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 }
 
-mainClassName = 'uk.gov.hmcts.divorce.CaseApiApplication'
+mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
 
 task loadEnvSecrets() {
   doLast {
@@ -384,7 +384,7 @@ functional {
 generateTypeScript {
   jsonLibrary = 'jackson2'
   classPatterns = [
-    'uk.gov.hmcts.divorce.**.model.*',
+    'uk.gov.hmcts.sptribs.**.model.*',
     'uk.gov.hmcts.ccd.sdk.type.*',
   ]
   outputFile = 'build/ts/index.ts'
