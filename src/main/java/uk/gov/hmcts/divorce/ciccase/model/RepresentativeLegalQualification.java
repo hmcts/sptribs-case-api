@@ -7,12 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @Getter
 @AllArgsConstructor
-public enum SubjectCIC implements HasLabel {
-    @JsonProperty("Subject")
-    SUBJECT("Subject");
+public enum RepresentativeLegalQualification implements HasLabel {
 
+
+
+    @JsonProperty("Qualified")
+    EMAIL("Yes", "Yes"),
+    POST("No", "No");
+    private String type;
     private final String label;
-    public boolean isSubject() {
-        return true;
-    }
 }
