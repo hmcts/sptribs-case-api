@@ -64,6 +64,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .event(TEST_CREATE)
             .initialState(Draft)
             .name("Create Case")
+            .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
