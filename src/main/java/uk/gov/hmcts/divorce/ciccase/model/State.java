@@ -342,25 +342,74 @@ public enum State {
         label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
         access = {DefaultStateAccessExcludingCAA.class}
     )
-    Submitted("Submitted");
+    Submitted("Submitted"),
 
-    public static final EnumSet<State> PRE_CONDITIONAL_ORDER_STATES = EnumSet.of(
-        AwaitingHWFDecision,
-        AwaitingPayment,
-        AwaitingDocuments,
-        Submitted,
-        AwaitingAos,
-        AwaitingService,
-        AosOverdue,
-        AosDrafted,
-        AwaitingServicePayment,
-        AwaitingServiceConsideration,
-        AwaitingBailiffReferral,
-        AwaitingBailiffService,
-        IssuedToBailiff,
-        Holding,
-        AwaitingConditionalOrder
-    );
+    @CCD(
+        name = "New case received",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    NewCaseReceived("NewCaseReceived"),
+
+    @CCD(
+        name = "New case pending review",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    NewCasePendingReview("NewCasePendingReview"),
+
+
+    @CCD(
+        name = "Case management",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    CaseManagement("CaseManagement"),
+
+    @CCD(
+        name = "Awaiting hearing",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    AwaitingHearing("AwaitingHearing"),
+
+    @CCD(
+        name = "Awaiting outcome",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    AwaitingOutcome("AwaitingOutcome"),
+
+    @CCD(
+        name = "New case closed",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    NewCaseClosed("NewCaseClosed"),
+
+
+    @CCD(
+        name = "Case closed",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    CaseClosed("CaseClosed"),
+
+
+    @CCD(
+        name = "New case stayed",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    NewCaseStayed("NewCaseStayed"),
+
+
+    @CCD(
+        name = "Case stayed",
+        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    CaseStayed("CaseStayed");
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
