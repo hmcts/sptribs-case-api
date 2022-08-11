@@ -44,6 +44,9 @@ uk:
           signInProfessionalUsersUrl: ${NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL:https://manage-case.aat.platform.hmcts.net/cases/case-details/}
           divorceCourtEmail: divorcecase@justice.gov.uk
           dissolutionCourtEmail: divorcecase@justice.gov.uk
+          respondentName: 'Appeals Team'
+          respondentOrganisation: 'CICA'
+          respondentEmail: appeals.team@cica.gov.uk
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
@@ -90,8 +93,8 @@ uk:
             APPLICANT_SOLICITOR_SERVICE: '1fb44d0d-c743-4bff-9e5c-6a62d3711517'
             GENERAL_EMAIL_PETITIONER: '48a1dd7e-1a46-4c1b-be4c-c7e733c8334e'
             GENERAL_EMAIL_PETITIONER_SOLICITOR: 'ca22e5be-7460-48af-b781-ef1564a63a29'
-            GENERAL_EMAIL_RESPONDENT: 'fccb96fb-7d6a-41f3-9d63-bebfc76829ef'
-            GENERAL_EMAIL_RESPONDENT_SOLICITOR: 'ac9a9948-25d8-4e59-8025-89860c251d3a'
+            GENERAL_EMAIL_RESPONDENT: 'appeals.team@cica.gov.uk'
+            GENERAL_EMAIL_RESPONDENT_SOLICITOR: 'appeals.team@cica.gov.uk'
             GENERAL_EMAIL_OTHER_PARTY: '2c188c63-db80-46b4-a1e2-53fdc510d5b9'
             APPLICANT_SOLICITOR_CAN_APPLY_CONDITIONAL_ORDER: '9bd841f2-0989-45c5-a08b-348ecd09711f'
             SOLICITOR_AWAITING_CONDITIONAL_ORDER: '3f2e50a1-b4ae-4466-bb8c-eac55563aa02'
@@ -172,8 +175,8 @@ uk:
             APPLICANT_SOLICITOR_SERVICE: ${APPLICANT_SOLICITOR_SERVICE_NOTIFICATION_ID:1fb44d0d-c743-4bff-9e5c-6a62d3711517}
             GENERAL_EMAIL_PETITIONER: '48a1dd7e-1a46-4c1b-be4c-c7e733c8334e'
             GENERAL_EMAIL_PETITIONER_SOLICITOR: 'ca22e5be-7460-48af-b781-ef1564a63a29'
-            GENERAL_EMAIL_RESPONDENT: 'fccb96fb-7d6a-41f3-9d63-bebfc76829ef'
-            GENERAL_EMAIL_RESPONDENT_SOLICITOR: 'ac9a9948-25d8-4e59-8025-89860c251d3a'
+            GENERAL_EMAIL_RESPONDENT: 'appeals.team@cica.gov.uk'
+            GENERAL_EMAIL_RESPONDENT_SOLICITOR: 'appeals.team@cica.gov.uk'
             GENERAL_EMAIL_OTHER_PARTY: '2c188c63-db80-46b4-a1e2-53fdc510d5b9'
             APPLICANT_SOLICITOR_CAN_APPLY_CONDITIONAL_ORDER: '9bd841f2-0989-45c5-a08b-348ecd09711f'
             SOLICITOR_AWAITING_CONDITIONAL_ORDER: '3f2e50a1-b4ae-4466-bb8c-eac55563aa02'
