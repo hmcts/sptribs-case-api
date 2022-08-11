@@ -31,6 +31,11 @@ public class FeatureToggleService {
         return internalClient.boolVariation(feature, user, false);
     }
 
+    //TODO this is a POC method. Will not be needed after POC
+    public boolean isTestFeatureEnabled() {
+        return internalClient.boolVariation("test-feature", createLDUser().build(), false);
+    }
+
     public LDUser.Builder createLDUser() {
         return new LDUser.Builder("sptribs-service")
             .custom("timestamp", String.valueOf(System.currentTimeMillis()))
