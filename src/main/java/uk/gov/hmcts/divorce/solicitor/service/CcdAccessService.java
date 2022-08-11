@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CREATOR;
 
 @Service
@@ -81,31 +80,6 @@ public class CcdAccessService {
         log.info("Successfully added the role to case Id {} ", caseId);
     }
 
-    @Retryable(value = {FeignException.class, RuntimeException.class})
-    public void linkRespondentToApplication(String caseworkerUserToken, Long caseId, String applicant2UserId) {
-        User caseworkerUser = idamService.retrieveUser(caseworkerUserToken);
-
-        caseAssignmentApi.addCaseUserRoles(
-            caseworkerUser.getAuthToken(),
-            authTokenGenerator.generate(),
-            getCaseAssignmentRequest(caseId, applicant2UserId, null, APPLICANT_2)
-        );
-
-        log.info("Successfully linked applicant 2 to case Id {} ", caseId);
-    }
-
-    @Retryable(value = {FeignException.class, RuntimeException.class})
-    public void unlinkUserFromApplication(Long caseId, String userToRemoveId) {
-        User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
-
-        caseAssignmentApi.removeCaseUserRoles(
-            caseworkerUser.getAuthToken(),
-            authTokenGenerator.generate(),
-            getCaseAssignmentRequest(caseId, userToRemoveId, null, APPLICANT_2)
-        );
-
-        log.info("Successfully unlinked applicant from case Id {} ", caseId);
-    }
 
     @Retryable(value = {FeignException.class, RuntimeException.class})
     public boolean isApplicant1(String userToken, Long caseId) {

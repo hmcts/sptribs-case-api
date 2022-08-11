@@ -6,8 +6,6 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2_SOLICITOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CREATOR;
@@ -22,8 +20,6 @@ public class Applicant2ReadAccess implements HasAccessControl {
         grants.putAll(LEGAL_ADVISOR, Permissions.READ);
         grants.putAll(CITIZEN, Permissions.READ);
         grants.putAll(CREATOR, Permissions.READ);
-        grants.putAll(APPLICANT_2_SOLICITOR, Permissions.READ);
-        grants.putAll(APPLICANT_2, Permissions.READ);
         grants.putAll(SYSTEMUPDATE, Permissions.CREATE_READ_UPDATE);
         return grants;
     }

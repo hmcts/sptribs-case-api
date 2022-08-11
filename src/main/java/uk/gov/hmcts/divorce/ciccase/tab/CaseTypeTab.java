@@ -17,7 +17,6 @@ import static uk.gov.hmcts.divorce.ciccase.model.State.AwaitingService;
 import static uk.gov.hmcts.divorce.ciccase.model.State.Draft;
 import static uk.gov.hmcts.divorce.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2_SOLICITOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.LEGAL_ADVISOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.SUPER_USER;
@@ -57,7 +56,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildStateTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("state", "State")
-            .forRoles(APPLICANT_2_SOLICITOR)
+            //.forRoles(APPLICANT_2_SOLICITOR)
             .label("LabelState", null, "#### Case State:  ${[STATE]}");
     }
 
@@ -65,7 +64,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private void buildAosTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("aosDetails", "AoS")
             .forRoles(CASE_WORKER, LEGAL_ADVISOR,
-                SUPER_USER, APPLICANT_1_SOLICITOR, APPLICANT_2_SOLICITOR)
+                SUPER_USER, APPLICANT_1_SOLICITOR)
             .showCondition("applicationType=\"soleApplication\" AND "
                 + notShowForState(
                     Draft, AwaitingHWFDecision, AwaitingPayment, Submitted, AwaitingDocuments,
