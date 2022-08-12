@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.ciccase.model;
+package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
