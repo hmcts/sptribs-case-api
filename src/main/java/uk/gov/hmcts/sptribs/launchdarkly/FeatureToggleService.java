@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.launchdarkly;
+package uk.gov.hmcts.sptribs.launchdarkly;
 
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;

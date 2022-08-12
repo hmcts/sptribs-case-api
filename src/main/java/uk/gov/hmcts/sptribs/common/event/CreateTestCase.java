@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
 
@@ -74,7 +75,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         //TODO this is a toggled off feature part of POC. should be removed in the future.
         //This feature toggle disabled two CCD config which represents the pages below.
-        if(featureToggleService.isTestFeatureEnabled()) {
+        if (featureToggleService.isTestFeatureEnabled()) {
             pageBuilder.page("applicantDetailsObjects")
                 .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
                 .complex(CaseData::getCicCase)
@@ -83,7 +84,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .optional(CicCase::getPhoneNumber)
                 .optional(CicCase::getEmail)
                 .mandatoryWithLabel(CicCase::getDateOfBirth,"")
-                .mandatoryWithLabel(CicCase::getContactDetailsPrefrence,"")
+                .mandatoryWithLabel(CicCase::getContactDetailsPreference,"")
                 .done();
 
             pageBuilder.page("representativeDetailsObjects")

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_2;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 
 @Service

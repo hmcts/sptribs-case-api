@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_2_SOLICITOR;
 
 @Component
 @Slf4j
