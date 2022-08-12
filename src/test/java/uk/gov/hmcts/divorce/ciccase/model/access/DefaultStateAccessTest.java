@@ -11,8 +11,6 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2_SOLICITOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.ORGANISATION_CASE_ACCESS_ADMINISTRATOR;
 
@@ -24,15 +22,13 @@ class DefaultStateAccessTest {
         final SetMultimap<HasRole, Permission> grants = new DefaultStateAccess().getGrants();
 
         assertThat(grants)
-            .hasSize(7)
+            .hasSize(5)
             .contains(
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, C),
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, R),
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, U),
                 entry(CREATOR, R),
-                entry(APPLICANT_2, R),
-                entry(APPLICANT_1_SOLICITOR, R),
-                entry(APPLICANT_2_SOLICITOR, R)
+                entry(APPLICANT_1_SOLICITOR, R)
             );
     }
 }

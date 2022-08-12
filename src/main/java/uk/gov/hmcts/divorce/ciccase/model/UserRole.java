@@ -17,12 +17,11 @@ public enum UserRole implements HasRole {
 
     SOLICITOR("caseworker-divorce-solicitor", "CRU"),
     APPLICANT_1_SOLICITOR("[APPONESOLICITOR]", "CRU"),
-    APPLICANT_2_SOLICITOR("[APPTWOSOLICITOR]", "CRU"),
     ORGANISATION_CASE_ACCESS_ADMINISTRATOR("caseworker-caa", "CRU"),
 
     CITIZEN("citizen", "CRU"),
     CREATOR("[CREATOR]", "CRU"),
-    APPLICANT_2("[APPLICANTTWO]", "CRU");
+    SUPERUSER("caseworker-sptribs-superuser", "CRU");
 
     @JsonValue
     private final String role;
