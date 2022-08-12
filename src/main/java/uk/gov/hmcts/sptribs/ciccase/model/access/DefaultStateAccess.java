@@ -20,9 +20,7 @@ public class DefaultStateAccess implements HasAccessControl {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
         grants.putAll(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, CREATE_READ_UPDATE);
         grants.putAll(CREATOR, READ);
-        grants.putAll(APPLICANT_2, READ);
         grants.putAll(APPLICANT_1_SOLICITOR, READ);
-        grants.putAll(APPLICANT_2_SOLICITOR, READ);
         return grants;
     }
 }

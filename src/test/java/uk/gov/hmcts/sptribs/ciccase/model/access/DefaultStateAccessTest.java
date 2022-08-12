@@ -24,15 +24,13 @@ class DefaultStateAccessTest {
         final SetMultimap<HasRole, Permission> grants = new DefaultStateAccess().getGrants();
 
         assertThat(grants)
-            .hasSize(7)
+            .hasSize(5)
             .contains(
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, C),
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, R),
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, U),
                 entry(CREATOR, R),
-                entry(APPLICANT_2, R),
-                entry(APPLICANT_1_SOLICITOR, R),
-                entry(APPLICANT_2_SOLICITOR, R)
+                entry(APPLICANT_1_SOLICITOR, R)
             );
     }
 }

@@ -25,20 +25,14 @@ class AosAccessTest {
         final SetMultimap<HasRole, Permission> grants = new AosAccess().getGrants();
 
         assertThat(grants)
-            .hasSize(12)
+            .hasSize(6)
             .contains(
                 entry(SYSTEMUPDATE, C),
                 entry(SYSTEMUPDATE, R),
                 entry(SYSTEMUPDATE, U),
                 entry(CASE_WORKER, R),
                 entry(LEGAL_ADVISOR, R),
-                entry(CITIZEN, R),
-                entry(APPLICANT_2_SOLICITOR, C),
-                entry(APPLICANT_2_SOLICITOR, R),
-                entry(APPLICANT_2_SOLICITOR, U),
-                entry(APPLICANT_2, C),
-                entry(APPLICANT_2, R),
-                entry(APPLICANT_2, U)
+                entry(CITIZEN, R)
             );
     }
 }

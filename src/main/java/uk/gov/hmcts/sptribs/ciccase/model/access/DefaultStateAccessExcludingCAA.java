@@ -17,9 +17,7 @@ public class DefaultStateAccessExcludingCAA implements HasAccessControl {
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
         grants.putAll(CREATOR, READ);
-        grants.putAll(APPLICANT_2, READ);
         grants.putAll(APPLICANT_1_SOLICITOR, READ);
-        grants.putAll(APPLICANT_2_SOLICITOR, READ);
         return grants;
     }
 }

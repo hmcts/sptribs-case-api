@@ -29,6 +29,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-application";
+    private final FeatureToggleService featureToggleService;
+
+    public CreateTestCase(FeatureToggleService featureToggleService) {
+        this.featureToggleService = featureToggleService;
+    }
 
 
     @Override
@@ -40,12 +45,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             roles.add(SOLICITOR);
         }
 
-        new PageBuilder(configBuilder
+        PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(TEST_CREATE)
             .initialState(Draft)
             .name("Create Case")
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
-            .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN))
+            .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
+
+        pageBuilder
             .page("caseCategoryObjects",this::midEvent)
             .label("caseCategoryObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
             .complex(CaseData::getCicCase)
@@ -58,29 +65,33 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .complex(CaseData::getCicCase)
                .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
             .done()
-
-
             .page("objectSubjects")
             .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getSubjectCIC)
             .optional(CicCase::getRepresentativeCic)
-            .done()
-            .page("applicantDetailsObjects")
-            .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getFullName)
-            .optional(CicCase::getAddress)
-            .optional(CicCase::getPhoneNumber)
-            .optional(CicCase::getEmail)
-            .mandatoryWithLabel(CicCase::getDateOfBirth,"")
-            .mandatoryWithLabel(CicCase::getContactDetailsPreference,"")
-            .done()
-            .page("representativeDetailsObjects")
-            .label("representativeDetailsObject","Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
-            .complex(CaseData::getCicCase)
-           .optional(CicCase::getRepresentativeCICDetails)
             .done();
+
+        //TODO this is a toggled off feature part of POC. should be removed in the future.
+        //This feature toggle disabled two CCD config which represents the pages below.
+        if(featureToggleService.isTestFeatureEnabled()) {
+            pageBuilder.page("applicantDetailsObjects")
+                .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
+                .complex(CaseData::getCicCase)
+                .mandatory(CicCase::getFullName)
+                .optional(CicCase::getAddress)
+                .optional(CicCase::getPhoneNumber)
+                .optional(CicCase::getEmail)
+                .mandatoryWithLabel(CicCase::getDateOfBirth,"")
+                .mandatoryWithLabel(CicCase::getContactDetailsPrefrence,"")
+                .done();
+
+            pageBuilder.page("representativeDetailsObjects")
+                .label("representativeDetailsObject","Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
+                .complex(CaseData::getCicCase)
+                .optional(CicCase::getRepresentativeCICDetails)
+                .done();
+        }
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(

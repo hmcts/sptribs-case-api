@@ -26,7 +26,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, 
 
         configBuilder.caseType(CASE_TYPE, "CIC Case Type", "Handling of the dissolution of marriage");
         configBuilder.jurisdiction(JURISDICTION, "CIC", "Family Divorce: dissolution of marriage");
-        configBuilder.omitHistoryForRoles(APPLICANT_1_SOLICITOR, APPLICANT_2_SOLICITOR);
+        configBuilder.omitHistoryForRoles(APPLICANT_1_SOLICITOR);
 
         // to shutter the service within xui uncomment this line
         // configBuilder.shutterService();

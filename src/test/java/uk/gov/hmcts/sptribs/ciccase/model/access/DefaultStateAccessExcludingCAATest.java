@@ -21,12 +21,10 @@ class DefaultStateAccessExcludingCAATest {
         final SetMultimap<HasRole, Permission> grants = new DefaultStateAccessExcludingCAA().getGrants();
 
         assertThat(grants)
-            .hasSize(4)
+            .hasSize(2)
             .contains(
                 entry(CREATOR, R),
-                entry(APPLICANT_2, R),
-                entry(APPLICANT_1_SOLICITOR, R),
-                entry(APPLICANT_2_SOLICITOR, R)
+                entry(APPLICANT_1_SOLICITOR, R)
             );
     }
 }
