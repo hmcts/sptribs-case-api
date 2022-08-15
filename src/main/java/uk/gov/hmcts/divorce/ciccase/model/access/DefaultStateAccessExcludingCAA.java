@@ -7,8 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2;
-import static uk.gov.hmcts.divorce.ciccase.model.UserRole.APPLICANT_2_SOLICITOR;
 import static uk.gov.hmcts.divorce.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.divorce.ciccase.model.access.Permissions.READ;
 
@@ -17,9 +15,7 @@ public class DefaultStateAccessExcludingCAA implements HasAccessControl {
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
         grants.putAll(CREATOR, READ);
-        grants.putAll(APPLICANT_2, READ);
         grants.putAll(APPLICANT_1_SOLICITOR, READ);
-        grants.putAll(APPLICANT_2_SOLICITOR, READ);
         return grants;
     }
 }
