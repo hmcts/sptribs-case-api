@@ -75,7 +75,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         //TODO this is a toggled off feature part of POC. should be removed in the future.
         //This feature toggle disabled two CCD config which represents the pages below.
-        if(featureToggleService.isTestFeatureEnabled()) {
+        if (featureToggleService.isTestFeatureEnabled()) {
             pageBuilder.page("applicantDetailsObjects")
                 .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
                 .complex(CaseData::getCicCase)
