@@ -39,6 +39,7 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.createRoles(
             "caseworker-divorce-courtadmin_beta",
             "caseworker-divorce-superuser",
+            "caseworker-sptribs-superuser",
             "caseworker-divorce-courtadmin-la",
             "caseworker-divorce-courtadmin",
             "caseworker-divorce-solicitor",

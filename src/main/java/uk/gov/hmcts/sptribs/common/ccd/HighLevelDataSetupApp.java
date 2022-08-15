@@ -18,6 +18,7 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     private static final CcdRoleConfig[] CCD_ROLES_NEEDED_FOR_NFD = {
         new CcdRoleConfig("caseworker-divorce-courtadmin_beta", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-superuser", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs-superuser", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-courtadmin-la", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-courtadmin", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-solicitor", "PUBLIC"),
