@@ -7,7 +7,7 @@ import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.MetricsPublisher
 
 def type = "java"
-def product = "nfdiv"
+def product = "sptribs"
 def component = "case-api"
 
 GradleBuilder builder = new GradleBuilder(this, product)
@@ -38,7 +38,7 @@ def secrets = [
                 secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
                 secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
         ],
-        'nfdiv-${env}'    :[
+        'sptribs-${env}'    :[
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
                 secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
                 secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
@@ -57,7 +57,7 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
-    enableSlackNotifications('#no-fault-divorce-builds')
+    enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       enableHighLevelDataSetup()
@@ -81,8 +81,26 @@ withPipeline(type, product, component) {
         alwaysLinkToLastBuild: true,
         keepAll              : true,
         reportDir            : "build/reports/checkstyle",
+        reportFiles          : "cftlib.html",
+        reportName           : "Checkstyle Cftlib Report"
+      ]
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/checkstyle",
         reportFiles          : "test.html",
         reportName           : "Checkstyle Test Report"
+      ]
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/checkstyle",
+        reportFiles          : "cftlibTest.html",
+        reportName           : "Checkstyle CftlibTest Report"
       ]
 
       publishHTML target: [
