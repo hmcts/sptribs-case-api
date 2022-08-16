@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.common.config;
+package uk.gov.hmcts.sptribs.common.config;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

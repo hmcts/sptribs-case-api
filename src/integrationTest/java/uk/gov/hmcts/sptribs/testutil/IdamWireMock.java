@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.testutil;
+package uk.gov.hmcts.sptribs.testutil;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
@@ -19,9 +19,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.BEARER;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER_EMAIL;
 
 public final class IdamWireMock {
 

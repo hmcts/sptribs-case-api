@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.caseworker;
+package uk.gov.hmcts.sptribs.caseworker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -13,13 +13,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.divorce.caseworker.service.print.GeneralLetterPrinter;
-import uk.gov.hmcts.divorce.common.config.WebMvcConfig;
-import uk.gov.hmcts.divorce.document.DocumentIdProvider;
-import uk.gov.hmcts.divorce.testutil.ClockTestUtil;
-import uk.gov.hmcts.divorce.testutil.DocAssemblyWireMock;
-import uk.gov.hmcts.divorce.testutil.IdamWireMock;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.sptribs.caseworker.service.print.GeneralLetterPrinter;
+import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.document.DocumentIdProvider;
+import uk.gov.hmcts.sptribs.testutil.ClockTestUtil;
+import uk.gov.hmcts.sptribs.testutil.DocAssemblyWireMock;
+import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.Clock;
 import java.time.LocalDate;
