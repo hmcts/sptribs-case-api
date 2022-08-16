@@ -90,6 +90,7 @@ public class CicCase {
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
+        showCondition = "true",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private RepresentativeCIC representativeCic;
@@ -127,8 +128,11 @@ public class CicCase {
         label = "What is their contact preference?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private ContactPreferenceType contactDetailsPreference;
+    private ContactPreferenceType contactDetailsPrefrence;
     private ApplicantCICDetails applicantCICDetails;
     private RepresentativeCICDetails representativeCICDetails;
+    private ContactPreferencesDetailsForApplicationCIC contactPreferencesDetailsForApplicationCIC;
+
+    private CaseDocumentsCIC caseDocumentsCIC;
 
 }
