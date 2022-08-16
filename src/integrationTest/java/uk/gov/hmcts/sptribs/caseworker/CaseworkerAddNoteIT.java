@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.caseworker;
+package uk.gov.hmcts.sptribs.caseworker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
@@ -15,9 +15,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.divorce.ciccase.model.CaseData;
-import uk.gov.hmcts.divorce.common.config.WebMvcConfig;
-import uk.gov.hmcts.divorce.testutil.IdamWireMock;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -31,18 +31,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.divorce.caseworker.event.CaseworkerAddNote.CASEWORKER_ADD_NOTE;
-import static uk.gov.hmcts.divorce.testutil.IdamWireMock.CASEWORKER_ROLE;
-import static uk.gov.hmcts.divorce.testutil.IdamWireMock.stubForIdamDetails;
-import static uk.gov.hmcts.divorce.testutil.IdamWireMock.stubForIdamFailure;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.AUTHORIZATION;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.CASEWORKER_USER_ID;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.divorce.testutil.TestDataHelper.callbackRequest;
-import static uk.gov.hmcts.divorce.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.divorce.testutil.TestResourceUtil.expectedResponse;
+import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerAddNote.CASEWORKER_ADD_NOTE;
+import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.CASEWORKER_ROLE;
+import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
+import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamFailure;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.solicitor;
+package uk.gov.hmcts.sptribs.solicitor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -10,13 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.divorce.common.config.WebMvcConfig;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 
 import java.time.Clock;
 
-import static uk.gov.hmcts.divorce.testutil.PrdOrganisationWireMock.start;
-import static uk.gov.hmcts.divorce.testutil.PrdOrganisationWireMock.stopAndReset;
+import static uk.gov.hmcts.sptribs.testutil.PrdOrganisationWireMock.start;
+import static uk.gov.hmcts.sptribs.testutil.PrdOrganisationWireMock.stopAndReset;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

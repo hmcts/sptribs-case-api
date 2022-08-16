@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.solicitor.service;
+package uk.gov.hmcts.sptribs.solicitor.service;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,24 +6,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.divorce.ciccase.model.UserRole;
-import uk.gov.hmcts.divorce.idam.IdamService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.List;
 
-import static uk.gov.hmcts.divorce.testutil.TestConstants.APP_1_SOL_AUTH_TOKEN;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.CASEWORKER_AUTH_TOKEN;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.CASEWORKER_USER_ID;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.SOLICITOR_USER_ID;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.SYSTEM_USER_USER_ID;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APP_1_SOL_AUTH_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_AUTH_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_USER_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
