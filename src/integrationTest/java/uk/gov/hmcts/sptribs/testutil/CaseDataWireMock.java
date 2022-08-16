@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.testutil;
+package uk.gov.hmcts.sptribs.testutil;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.matching.EqualToJsonPattern;
@@ -13,11 +13,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.AUTH_HEADER_VALUE;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.BEARER;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTH_HEADER_VALUE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 
 public final class CaseDataWireMock {
 

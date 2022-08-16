@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.endpoint;
+package uk.gov.hmcts.sptribs.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,9 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import uk.gov.hmcts.divorce.common.config.WebMvcConfig;
-import uk.gov.hmcts.divorce.common.config.interceptors.RequestInterceptor;
-import uk.gov.hmcts.divorce.endpoint.data.OcrDataValidationRequest;
+import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.config.interceptors.RequestInterceptor;
+import uk.gov.hmcts.sptribs.endpoint.data.OcrDataValidationRequest;
 
 import java.util.List;
 
@@ -22,10 +22,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.AUTH_HEADER_VALUE;
-import static uk.gov.hmcts.divorce.testutil.TestConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.divorce.testutil.TestDataHelper.populateKeyValue;
-import static uk.gov.hmcts.divorce.testutil.TestResourceUtil.expectedResponse;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTH_HEADER_VALUE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.populateKeyValue;
+import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

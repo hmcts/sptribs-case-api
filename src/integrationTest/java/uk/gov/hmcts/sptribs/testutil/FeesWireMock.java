@@ -1,4 +1,4 @@
-package uk.gov.hmcts.divorce.testutil;
+package uk.gov.hmcts.sptribs.testutil;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.springframework.boot.test.util.TestPropertyValues;
