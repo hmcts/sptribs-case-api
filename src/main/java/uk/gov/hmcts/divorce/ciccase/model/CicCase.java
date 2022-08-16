@@ -90,6 +90,7 @@ public class CicCase {
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
+        showCondition = "true",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private RepresentativeCIC representativeCic;
@@ -131,5 +132,7 @@ public class CicCase {
     private ApplicantCICDetails applicantCICDetails;
     private RepresentativeCICDetails representativeCICDetails;
     private ContactPreferencesDetailsForApplicationCIC contactPreferencesDetailsForApplicationCIC;
+
+    private CaseDocumentsCIC caseDocumentsCIC;
 
 }

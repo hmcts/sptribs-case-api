@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 @AllArgsConstructor
 public enum RepresentativeCIC implements HasLabel {
-    @JsonProperty("RepresentativeCIC")
+    @JsonProperty("Representative")
     REPRESENTATIVE("Representative");
     private final String label;
     public boolean isRepresentativeCIC() {
