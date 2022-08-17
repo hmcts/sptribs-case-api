@@ -33,7 +33,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             "TEST_CASE_WORKER_USER@mailinator.com",
             "TEST_SOLICITOR@mailinator.com",
             "divorce_as_caseworker_admin@mailinator.com")) {
-            lib.createProfile(p, "DIVORCE", "NO_FAULT_DIVORCE", "Submitted");
+            lib.createProfile(p, "CIC", "CIC", "Submitted");
         }
 
         lib.createRoles(

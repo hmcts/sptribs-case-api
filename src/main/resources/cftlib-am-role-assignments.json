@@ -75,5 +75,22 @@
       }
     ],
     "overrideAll": true
+  },
+  {
+    "email": "TEST_CASE_WORKER_USER@mailinator.com",
+    "id": "93b108b7-4b26-41bf-ae8f-6e356efb11x5",
+    "roleAssignments": [
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-divorce-courtadmin_beta",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "authorisations": []
+      }
+    ],
+    "overrideAll": true
   }
 ]
