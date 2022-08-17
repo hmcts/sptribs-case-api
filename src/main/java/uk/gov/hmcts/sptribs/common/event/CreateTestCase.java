@@ -50,6 +50,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .event(TEST_CREATE)
             .initialState(Draft)
             .name("Create Case")
+            .showSummary()
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
             .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
