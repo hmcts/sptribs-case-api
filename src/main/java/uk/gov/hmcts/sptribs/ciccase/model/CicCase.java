@@ -101,8 +101,27 @@ public class CicCase {
     )
     private String fullName;
 
+    @CCD(
+        label = "Full Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String applicantFullName;
+
+    @CCD(
+        label = "Full Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String representativeFullName;
+
     @CCD(label = "Address")
     private AddressGlobalUK address;
+
+    @CCD(label = "Address")
+    private AddressGlobalUK applicantAddress;
+
+    @CCD(label = "Address")
+    private AddressGlobalUK representativeAddress;
+
     @CCD(
         label = "Phone number",
         regex = "^[0-9 +().-]{9,}$"
@@ -130,7 +149,9 @@ public class CicCase {
     )
     private ContactPreferenceType contactDetailsPrefrence;
     private ApplicantCICDetails applicantCICDetails;
+
     private RepresentativeCICDetails representativeCICDetails;
+
     private ContactPreferencesDetailsForApplicationCIC contactPreferencesDetailsForApplicationCIC;
 
     private CaseDocumentsCIC caseDocumentsCIC;

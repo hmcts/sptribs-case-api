@@ -6,10 +6,13 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCICDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCICDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
@@ -84,10 +87,33 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .mandatoryWithLabel(CicCase::getDateOfBirth, "")
             .mandatoryWithLabel(CicCase::getContactDetailsPrefrence, "")
             .done();
+        pageBuilder.page("applicantDetailsObjects")
+            .label("applicantDetailsObject", "Who is the Applicant in this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getApplicantFullName)
+            .optional(CicCase::getApplicantAddress)
+            .done()
+            .complex(CaseData::getCicCase)
+            .complex(CicCase::getApplicantCICDetails)
+            .optional(ApplicantCICDetails::getPhoneNumber)
+            .optional(ApplicantCICDetails::getEmail)
+            .mandatoryWithLabel(ApplicantCICDetails::getDateOfBirth, "")
+            .mandatoryWithLabel(ApplicantCICDetails::getContactDetailsPrefrence, "")
+            .done()
+            .done();
         pageBuilder.page("representativeDetailsObjects")
             .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getRepresentativeCICDetails)
+            .mandatory(CicCase::getRepresentativeFullName)
+            .optional(CicCase::getRepresentativeAddress)
+            .done()
+            .complex(CaseData::getCicCase)
+            .complex(CicCase::getRepresentativeCICDetails)
+            .optional(RepresentativeCICDetails::getPhoneNumber)
+            .optional(RepresentativeCICDetails::getEmail)
+            .mandatoryWithLabel(RepresentativeCICDetails::getDateOfBirth, "")
+            .mandatoryWithLabel(RepresentativeCICDetails::getContactDetailsPrefrence, "")
+            .done()
             .done();
         pageBuilder.page("objectContacts")
             .label("objectContact", "Who should receive information about the case?")
@@ -118,7 +144,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .label("applicantDetailsObject", "Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
                 .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getFullName)
-                .optional(CicCase::getAddress)
+                //.optional(CicCase::getAddress)
                 .optional(CicCase::getPhoneNumber)
                 .optional(CicCase::getEmail)
                 .mandatoryWithLabel(CicCase::getDateOfBirth, "")
