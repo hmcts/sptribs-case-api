@@ -45,7 +45,7 @@ public class ApplicantCICDetails {
         label = "Email address",
         typeOverride = Email
     )
-    private String email;
+    private String emailAddress;
 
 
 }
