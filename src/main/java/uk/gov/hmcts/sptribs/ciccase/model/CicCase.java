@@ -101,26 +101,8 @@ public class CicCase {
     )
     private String fullName;
 
-    @CCD(
-        label = "Full Name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String applicantFullName;
-
-    @CCD(
-        label = "Full Name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String representativeFullName;
-
     @CCD(label = "Address")
     private AddressGlobalUK address;
-
-    @CCD(label = "Address")
-    private AddressGlobalUK applicantAddress;
-
-    @CCD(label = "Address")
-    private AddressGlobalUK representativeAddress;
 
     @CCD(
         label = "Phone number",
@@ -148,9 +130,74 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactDetailsPrefrence;
-    private ApplicantCICDetails applicantCICDetails;
 
-    private RepresentativeCICDetails representativeCICDetails;
+    @CCD(
+        label = "Full Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String applicantFullName;
+
+    @CCD(label = "Address")
+    private AddressGlobalUK applicantAddress;
+
+    @CCD(
+        label = "Phone number",
+        regex = "^[0-9 +().-]{9,}$"
+    )
+    private String applicantPhoneNumber;
+
+    @CCD(
+        label = "Email address",
+        typeOverride = Email
+    )
+    private String applicantEmailAddress;
+
+    @CCD(
+        label = "Date of birth",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate applicantDateOfBirth;
+
+    @CCD(
+        label = "What is their contact preference?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ContactPreferenceType applicantContactDetailsPreference;
+
+    @CCD(
+        label = "Full Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String representativeFullName;
+
+    @CCD(label = "Address")
+    private AddressGlobalUK representativeAddress;
+
+    @CCD(
+        label = "Phone number",
+        regex = "^[0-9 +().-]{9,}$"
+    )
+    private String representativePhoneNumber;
+
+    @CCD(
+        label = "Email address",
+        typeOverride = Email
+    )
+    private String representativeEmailAddress;
+
+    @CCD(
+        label = "Date of birth",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate representativeDateOfBirth;
+
+    @CCD(
+        label = "What is their contact preference?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ContactPreferenceType representativeContactDetailsPreference;
 
     private ContactPreferencesDetailsForApplicationCIC contactPreferencesDetailsForApplicationCIC;
 
