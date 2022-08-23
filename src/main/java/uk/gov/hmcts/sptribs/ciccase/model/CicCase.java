@@ -90,7 +90,6 @@ public class CicCase {
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
-        showCondition = "true",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private RepresentativeCIC representativeCic;
@@ -125,14 +124,58 @@ public class CicCase {
 
 
     @CCD(
-        label = "What is their contact preference?",
+        label = "What is their contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private ContactPreferenceType contactDetailsPrefrence;
+    private ContactPreferenceType contactPreferenceType;
+
+
+    @CCD(
+        typeOverride = FixedList,
+        typeParameterOverride = "SchemeCic",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private SchemeCic schemeCic;
+
+    @CCD(
+        label = "CICA reference number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String cicaReferenceNumber;
+
+    @CCD(
+        label = "Police authority management incident",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String policeAuthority;
+    @CCD(
+        label = "Has the tribunal form received in time?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo formReceivedInTime;
+    @CCD(
+        label = "Has the applicant explained why they missed the deadline?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo missedTheDeadLineCic;
+
+    @CCD(
+        label = "Have any claims linked to this case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
+    )
+    private YesOrNo claimLinkedToCic;
+
+    @CCD(
+        label = "Are there any ongoing compensation claims linked to this case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
+    )
+    private YesOrNo compensationClaimLinkCIC;
     private ApplicantCICDetails applicantCICDetails;
     private RepresentativeCICDetails representativeCICDetails;
-    private ContactPreferencesDetailsForApplicationCIC contactPreferencesDetailsForApplicationCIC;
-
+    private ContactPreferencesDetailsCIC contactPreferencesDetailsCIC;
     private CaseDocumentsCIC caseDocumentsCIC;
+
 
 }

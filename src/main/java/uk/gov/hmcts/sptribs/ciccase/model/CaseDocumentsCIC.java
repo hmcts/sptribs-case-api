@@ -47,11 +47,12 @@ public class CaseDocumentsCIC {
         final var listItemId = isBlank(id) ? String.valueOf(randomUUID()) : id;
         final var listValue = new ListValue<T>(listItemId, value);
         final List<ListValue<T>> list = isEmpty(documents) ? new ArrayList<>() : new ArrayList<>(documents);
-
         list.add(0, listValue);
 
         return list;
     }
+
+
 
     public static <T> List<ListValue<T>> sortByNewest(final List<ListValue<T>> previous, final List<ListValue<T>> updated) {
         if (isEmpty(previous)) {
@@ -72,21 +73,20 @@ public class CaseDocumentsCIC {
         return sortDocuments(documentsWithoutIds);
     }
 
-    private static <T> List<ListValue<T>> sortDocuments(final Map<Boolean, List<ListValue<T>>> documentsWithoutIds) {
+    public static <T> List<ListValue<T>> sortDocuments(final Map<Boolean, List<ListValue<T>>> documentsWithoutIds) {
         final List<ListValue<T>> sortedDocuments = new ArrayList<>();
         final var newDocuments = documentsWithoutIds.get(true);
-        final var previousDocuments = documentsWithoutIds.getOrDefault(false, new ArrayList<>());
+
 
         if (null != newDocuments) {
             sortedDocuments.addAll(0, newDocuments); // add new documents to start of the list
-            sortedDocuments.addAll(1, previousDocuments);
             sortedDocuments.forEach(
                 uploadedDocumentListValue -> uploadedDocumentListValue.setId(String.valueOf(randomUUID()))
             );
             return sortedDocuments;
         }
 
-        return previousDocuments;
+        return documentsWithoutIds.getOrDefault(false, new ArrayList<>());
     }
 
     public static <T> boolean hasAddedDocuments(final List<ListValue<T>> after,

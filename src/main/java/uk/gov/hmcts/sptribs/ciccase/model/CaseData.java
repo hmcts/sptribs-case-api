@@ -328,6 +328,8 @@ public class CaseData {
         return divorceOrDissolution.isDivorce();
     }
 
+
+
     @JsonIgnore
     public void deriveAndPopulateApplicantGenderDetails() {
         Gender app1Gender;

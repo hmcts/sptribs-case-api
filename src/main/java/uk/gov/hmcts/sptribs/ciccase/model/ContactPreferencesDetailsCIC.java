@@ -17,7 +17,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
-public class ContactPreferencesDetailsForApplicationCIC {
+public class ContactPreferencesDetailsCIC {
 
     @CCD(
             //label = "Add a Subject",

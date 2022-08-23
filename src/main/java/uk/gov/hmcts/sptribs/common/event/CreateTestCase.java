@@ -41,12 +41,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
         var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
-
         if (env.contains(ENVIRONMENT_AAT)) {
             roles.add(SOLICITOR);
         }
-
-
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(TEST_CREATE)
@@ -80,9 +77,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .mandatory(CicCase::getFullName)
             .optional(CicCase::getAddress)
             .optional(CicCase::getPhoneNumber)
-            .optional(CicCase::getEmail)
             .mandatoryWithLabel(CicCase::getDateOfBirth, "")
-            .mandatoryWithLabel(CicCase::getContactDetailsPrefrence, "")
+            .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
+            .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
             .done();
         pageBuilder.page("representativeDetailsObjects")
             .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
@@ -92,23 +89,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         pageBuilder.page("objectContacts")
             .label("objectContact", "Who should receive information about the case?")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getContactPreferencesDetailsForApplicationCIC)
+            .optional(CicCase::getContactPreferencesDetailsCIC)
             .done();
-        pageBuilder.page("documentsUploadObjets")
-            .label("upload", "<h1>Upload Tribunal Forms</h1>")
-            .complex(CaseData::getCicCase)
-            .label("documentUploadObjectLabel", "Case record for [DRAFT]\n"
-                + "\nPlease upload a copy of the completed tribunal form,as well as any\n"
-                + "\nsupporting document or other information that has been supplied.\n"
-                + "\n<h3>Files should be:</h3>\n"
-                + "\n.Uploading seperatly and not in one large file\n"
-                + "\n.a maximum of 1000MB in size (large files must be split)\n"
-                + "\n.labelled clearly, e.g. applicant-name-B1-for.pdf\n"
-                + "<h3>Already uploaded files:</h3>\n"
-                + "\n-None\n")
-            .label("documentsUploadObjets2", "Add a file\n" + "\nUpload a file to the system")
-            .optional(CicCase::getCaseDocumentsCIC)
-            .done();
+        uploadDocuments(pageBuilder);
+        furtherDetails(pageBuilder);
 
 
         //TODO this is a toggled off feature part of POC. should be removed in the future.
@@ -122,7 +106,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .optional(CicCase::getPhoneNumber)
                 .optional(CicCase::getEmail)
                 .mandatoryWithLabel(CicCase::getDateOfBirth, "")
-                .mandatoryWithLabel(CicCase::getContactPreferencesDetailsForApplicationCIC, "")
+                .mandatoryWithLabel(CicCase::getContactPreferencesDetailsCIC, "")
                 .done();
 
             pageBuilder.page("representativeDetailsObjects")
@@ -131,6 +115,35 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .optional(CicCase::getRepresentativeCICDetails)
                 .done();
         }
+    }
+
+    private void uploadDocuments(PageBuilder pageBuilder) {
+        pageBuilder.page("documentsUploadObjets")
+            .label("upload", "<h1>Upload Tribunal Forms</h1>")
+            .complex(CaseData::getCicCase)
+            .label("documentUploadObjectLabel", "Case record for [DRAFT]\n"
+                + "\nPlease upload a copy of the completed tribunal form,as well as any\n"
+                + "\nsupporting document or other information that has been supplied.\n"
+                + "\n<h3>Files should be:</h3>\n"
+                + "\n.Uploading seperatly and not in one large file\n" + "\n.a maximum of 1000MB in size (large files must be split)\n"
+                + "\n.labelled clearly, e.g. applicant-name-B1-for.pdf\n" + "<h3>Already uploaded files:</h3>\n" + "\n-None\n")
+            .label("documentsUploadObjets2", "Add a file\n" + "\nUpload a file to the system")
+            .optional(CicCase::getCaseDocumentsCIC)
+            .done();
+    }
+
+    private void furtherDetails(PageBuilder pageBuilder) {
+        pageBuilder.page("objectFurtherDetails")
+            .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
+            .complex(CaseData::getCicCase)
+            .optional(CicCase::getSchemeCic)
+            .optional(CicCase::getClaimLinkedToCic)
+            .optional(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
+            .optional(CicCase::getCompensationClaimLinkCIC)
+            .optional(CicCase::getPoliceAuthority)
+            .optional(CicCase::getFormReceivedInTime)
+            .optional(CicCase::getMissedTheDeadLineCic)
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(

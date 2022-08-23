@@ -105,4 +105,10 @@
       <property name="cycloOptions" value="" />
     </properties>
   </rule>
+<!--  <rule ref="category/java/design.xml/ExcessiveMethodLength">-->
+<!--    <properties>-->
+<!--      <property name="minimum" value="100.0" />-->
+<!--    </properties>-->
+<!--  </rule>-->
+
 </ruleset>
