@@ -171,11 +171,23 @@ public class CicCase {
     )
     private String representativeFullName;
 
+    @CCD(
+        label = "Organisation or business name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String representativeOrgName;
+
+    @CCD(
+        label = "Representative's reference",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String representativeReference;
+
     @CCD(label = "Address")
     private AddressGlobalUK representativeAddress;
 
     @CCD(
-        label = "Phone number",
+        label = "Contact number",
         regex = "^[0-9 +().-]{9,}$"
     )
     private String representativePhoneNumber;
@@ -198,6 +210,13 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType representativeContactDetailsPreference;
+
+    @CCD(
+        label = "Is the representative legally qualified?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
+    )
+    private YesOrNo isRepresentativeQualified;
 
     private ContactPreferencesDetailsForApplicationCIC contactPreferencesDetailsForApplicationCIC;
 
