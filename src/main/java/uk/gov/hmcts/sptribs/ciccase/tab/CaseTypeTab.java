@@ -46,6 +46,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildLanguageTab(configBuilder);
         buildDocumentsTab(configBuilder);
         buildNotesTab(configBuilder);
+        buildCaseDetailsTab(configBuilder);
     }
 
     private void buildWarningsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -141,5 +142,25 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("notes", "Notes")
             .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
             .field(CaseData::getNotes);
+    }
+
+    private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseDetails", "Case Details")
+            .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
+            .label("case-details", null, "### Case details")
+            .field("cicCaseCaseCategory")
+            .field("cicCaseCaseReceivedDate")
+            .field("cicCaseCaseSubcategory")
+            .field("cicCaseComment")
+            .field("cicCaseContactDetailsPreference")
+            .field("cicCaseDateOfBirth")
+            .field("cicCaseEmail")
+            .field("cicCaseFullName")
+            .field("cicCasePhoneNumber")
+            .field("cicCaseRepresentativeCic")
+            .field("cicCaseRepresentativeCICDetails")
+            .field("cicCaseAddress")
+            .label("submission-details", null, "### Submission details")
+            .field("dateSubmitted");
     }
 }

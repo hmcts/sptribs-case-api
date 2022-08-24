@@ -69,12 +69,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String comment;
+
     @CCD(
         //label = "Add a Subject",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private SubjectCIC subjectCIC;
 

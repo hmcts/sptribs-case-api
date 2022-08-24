@@ -10,10 +10,14 @@ import uk.gov.hmcts.sptribs.common.service.task.SendSubmissionNotifications;
 import uk.gov.hmcts.sptribs.common.service.task.SetApplicant2Email;
 import uk.gov.hmcts.sptribs.common.service.task.SetApplicantOfflineStatus;
 import uk.gov.hmcts.sptribs.common.service.task.SetDateSubmitted;
+import uk.gov.hmcts.sptribs.common.service.task.SetHyphenatedCaseRef;
 import uk.gov.hmcts.sptribs.common.service.task.SetStateAfterSubmission;
 
 @Service
 public class SubmissionService {
+
+    @Autowired
+    private SetHyphenatedCaseRef setHyphenatedCaseRef;
 
     @Autowired
     private SetStateAfterSubmission setStateAfterSubmission;
@@ -33,6 +37,7 @@ public class SubmissionService {
     public CaseDetails<CaseData, State> submitApplication(final CaseDetails<CaseData, State> caseDetails) {
 
         return CaseTaskRunner.caseTasks(
+            setHyphenatedCaseRef,
             setStateAfterSubmission,
             setDateSubmitted,
             setApplicant2Email,

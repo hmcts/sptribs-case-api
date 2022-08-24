@@ -7,18 +7,17 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-
 @Component
 @Slf4j
-public class SetStateAfterSubmission implements CaseTask {
+public class SetHyphenatedCaseRef  implements CaseTask {
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
+        caseDetails.getData().setHyphenatedCaseRef(caseDetails.getData().formatCaseRef(caseDetails.getId()));
 
-        caseDetails.setState(Submitted);
-
-        log.info("State set to {}, CaseID {}", caseDetails.getState(), caseDetails.getId());
+        log.info("Setting CaseId to {}, State: {}",
+            caseDetails.getId(),
+            caseDetails.getState());
 
         return caseDetails;
     }

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.common.event;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
@@ -32,6 +35,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String TEST_CREATE = "create-test-application";
     private final FeatureToggleService featureToggleService;
 
+    @Autowired
+    private SubmissionService submissionService;
+
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
     }
@@ -52,6 +58,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .name("Create Case")
             .showSummary()
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
         pageBuilder
@@ -66,34 +73,35 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .label("dateObject","when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
             .complex(CaseData::getCicCase)
                .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
-            .done()
-            .page("objectSubjects")
-            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getSubjectCIC)
-            .optional(CicCase::getRepresentativeCic)
             .done();
 
-        //TODO this is a toggled off feature part of POC. should be removed in the future.
-        //This feature toggle disabled two CCD config which represents the pages below.
+        //TODO SubjectCIC and RepresentativeCic are causing a deserialization problem when using about to submit
         if (featureToggleService.isTestFeatureEnabled()) {
-            pageBuilder.page("applicantDetailsObjects")
-                .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
+            pageBuilder
+                .page("objectSubjects")
+                .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
                 .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getFullName)
-                .optional(CicCase::getAddress)
-                .optional(CicCase::getPhoneNumber)
-                .optional(CicCase::getEmail)
-                .mandatoryWithLabel(CicCase::getDateOfBirth,"")
-                .mandatoryWithLabel(CicCase::getContactDetailsPreference,"")
-                .done();
-
-            pageBuilder.page("representativeDetailsObjects")
-                .label("representativeDetailsObject","Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
-                .complex(CaseData::getCicCase)
-                .optional(CicCase::getRepresentativeCICDetails)
+                .mandatory(CicCase::getSubjectCIC)
+                .optional(CicCase::getRepresentativeCic)
                 .done();
         }
+
+        pageBuilder.page("applicantDetailsObjects")
+            .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getFullName)
+            .optional(CicCase::getAddress)
+            .optional(CicCase::getPhoneNumber)
+            .optional(CicCase::getEmail)
+            .mandatoryWithLabel(CicCase::getDateOfBirth,"")
+            .mandatoryWithLabel(CicCase::getContactDetailsPreference,"")
+            .done();
+
+        pageBuilder.page("representativeDetailsObjects")
+            .label("representativeDetailsObject","Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .optional(CicCase::getRepresentativeCICDetails)
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
@@ -112,6 +120,22 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .errors(singletonList("User ID entered for applicant 2 is an invalid UUID"))
                 .build();
         }
+    }
+
+    @SneakyThrows
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+        CaseData data = details.getData();
+        State state = details.getState();
+
+        var submittedDetails = submissionService.submitApplication(details);
+        data = submittedDetails.getData();
+        state = submittedDetails.getState();
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .state(state)
+            .build();
     }
 
 

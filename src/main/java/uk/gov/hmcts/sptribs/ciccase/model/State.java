@@ -248,7 +248,7 @@ public enum State {
 
     @CCD(
         name = "Draft",
-        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        label = "### Case record for: ${hyphenatedCaseRef}\n",
         access = {DefaultStateAccessExcludingCAA.class, SolicitorAccess.class}
     )
     Draft("Draft"),
@@ -339,7 +339,7 @@ public enum State {
 
     @CCD(
         name = "Submitted",
-        label = "### Case number: ${hyphenatedCaseRef}\n ### ${applicant1LastName} and ${applicant2LastName}\n",
+        label = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
     Submitted("Submitted"),
