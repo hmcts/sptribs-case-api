@@ -52,20 +52,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .showSummary()
                 .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
                 .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
-        pageBuilder.page("caseCategoryObjects")
-            .label("caseCategoryObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
-            .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getCaseCategory, "")
-            .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
-            .optionalWithLabel(CicCase::getComment, "Comments")
-            .done();
+        caseCategory(pageBuilder);
         pageBuilder.page("dateObjects")
             .label("dateObject", "when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
             .done();
         pageBuilder.page("objectSubjects")
-            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
+            .label("subjectObject", "<h3>Which parties are named on the tribunal form?</h3>\r\n" + "\r\nCase record for [DRAFT]")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getSubjectCIC)
             .optional(CicCase::getApplicantCIC)
@@ -116,6 +110,17 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .done();
         }
     }
+
+    private void caseCategory(PageBuilder pageBuilder) {
+        pageBuilder.page("caseCategoryObjects")
+            .label("caseCategoryObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatoryWithLabel(CicCase::getCaseCategory, "")
+            .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
+            .optionalWithLabel(CicCase::getComment, "Comments")
+            .done();
+    }
+
 
     private void uploadDocuments(PageBuilder pageBuilder) {
         pageBuilder.page("documentsUploadObjets")
