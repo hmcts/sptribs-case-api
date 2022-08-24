@@ -1,20 +1,25 @@
 package uk.gov.hmcts.sptribs.common.event;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
 
+import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
@@ -32,6 +37,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String TEST_CREATE = "create-test-application";
     private final FeatureToggleService featureToggleService;
 
+    @Autowired
+    private SubmissionService submissionService;
+
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
     }
@@ -46,37 +54,39 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             roles.add(SOLICITOR);
         }
 
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(TEST_CREATE)
-            .initialState(Draft)
-            .name("Create Case")
-            .showSummary()
-            .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
-            .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
+        if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
+            PageBuilder pageBuilder = new PageBuilder(configBuilder
+                .event(TEST_CREATE)
+                .initialState(Draft)
+                .name("Create Case")
+                .showSummary()
+                .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted)
+                .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
-        pageBuilder
-            .page("caseCategoryObjects",this::midEvent)
-            .label("caseCategoryObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
-            .complex(CaseData::getCicCase)
-              .mandatoryWithLabel(CicCase::getCaseCategory, "")
-              .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
-            .optionalWithLabel(CicCase::getComment,"Comments")
-            .done()
-            .page("dateObjects")
-            .label("dateObject","when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
-            .complex(CaseData::getCicCase)
-               .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
-            .done()
-            .page("objectSubjects")
-            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getSubjectCIC)
-            .optional(CicCase::getRepresentativeCic)
-            .done();
+            pageBuilder
+                .page("caseCategoryObjects",this::midEvent)
+                .label("caseCategoryObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
+                .complex(CaseData::getCicCase)
+                .mandatoryWithLabel(CicCase::getCaseCategory, "")
+                .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
+                .optionalWithLabel(CicCase::getComment,"Comments")
+                .done()
+                .page("dateObjects")
+                .label("dateObject","when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
+                .complex(CaseData::getCicCase)
+                .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
+                .done();
 
-        //TODO this is a toggled off feature part of POC. should be removed in the future.
-        //This feature toggle disabled two CCD config which represents the pages below.
-        if (featureToggleService.isTestFeatureEnabled()) {
+            pageBuilder
+                .page("objectSubjects")
+                .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
+                .complex(CaseData::getCicCase)
+                .mandatory(CicCase::getSubjectCIC)
+                .optional(CicCase::getRepresentativeCIC)
+                .done();
+
             pageBuilder.page("applicantDetailsObjects")
                 .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
                 .complex(CaseData::getCicCase)
@@ -112,6 +122,33 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .errors(singletonList("User ID entered for applicant 2 is an invalid UUID"))
                 .build();
         }
+    }
+
+    @SneakyThrows
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+        CaseData data = details.getData();
+        State state = details.getState();
+
+        var submittedDetails = submissionService.submitApplication(details);
+        data = submittedDetails.getData();
+        state = submittedDetails.getState();
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .state(state)
+            .build();
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+        var data = details.getData();
+
+        String claimNumber = data.getHyphenatedCaseRef();
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
+            .build();
     }
 
 
