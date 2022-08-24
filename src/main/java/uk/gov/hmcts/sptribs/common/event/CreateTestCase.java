@@ -41,6 +41,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
         var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
+
         if (env.contains(ENVIRONMENT_AAT)) {
             roles.add(SOLICITOR);
         }
