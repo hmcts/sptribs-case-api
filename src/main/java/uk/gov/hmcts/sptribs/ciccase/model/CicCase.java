@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -76,7 +77,7 @@ public class CicCase {
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private SubjectCIC subjectCIC;
+    private Set<SubjectCIC> subjectCIC;
 
     @CCD(
         //label = "Add an Applicant",
@@ -92,7 +93,7 @@ public class CicCase {
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private RepresentativeCIC representativeCic;
+    private Set<RepresentativeCIC> representativeCIC;
 
     @CCD(
         label = "Full Name",
