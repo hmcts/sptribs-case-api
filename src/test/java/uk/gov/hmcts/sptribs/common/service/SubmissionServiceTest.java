@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.common.service.task.SendSubmissionNotifications;
 import uk.gov.hmcts.sptribs.common.service.task.SetApplicant2Email;
 import uk.gov.hmcts.sptribs.common.service.task.SetApplicantOfflineStatus;
 import uk.gov.hmcts.sptribs.common.service.task.SetDateSubmitted;
+import uk.gov.hmcts.sptribs.common.service.task.SetHyphenatedCaseRef;
 import uk.gov.hmcts.sptribs.common.service.task.SetStateAfterSubmission;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +21,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SubmissionServiceTest {
+
+    @Mock
+    private SetHyphenatedCaseRef setHyphenatedCaseRef;
 
     @Mock
     private SetStateAfterSubmission setStateAfterSubmission;
@@ -45,6 +49,7 @@ class SubmissionServiceTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> expectedCaseDetails = new CaseDetails<>();
 
+        when(setHyphenatedCaseRef.apply(caseDetails)).thenReturn(caseDetails);
         when(setStateAfterSubmission.apply(caseDetails)).thenReturn(caseDetails);
         when(setDateSubmitted.apply(caseDetails)).thenReturn(caseDetails);
         when(setApplicant2Email.apply(caseDetails)).thenReturn(caseDetails);
@@ -55,6 +60,7 @@ class SubmissionServiceTest {
 
         assertThat(result).isSameAs(expectedCaseDetails);
 
+        verify(setHyphenatedCaseRef).apply(caseDetails);
         verify(setStateAfterSubmission).apply(caseDetails);
         verify(setDateSubmitted).apply(caseDetails);
         verify(setApplicant2Email).apply(caseDetails);

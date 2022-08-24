@@ -8,11 +8,10 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 @AllArgsConstructor
 public enum SubjectCIC implements HasLabel {
-    @JsonProperty("Subject")
+    @JsonProperty("SubjectCIC")
     SUBJECT("Subject");
-
     private final String label;
     public boolean isSubject() {
-        return true;
+        return SUBJECT.name().equalsIgnoreCase(this.name());
     }
 }

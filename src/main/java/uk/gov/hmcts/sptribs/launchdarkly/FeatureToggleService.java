@@ -23,8 +23,8 @@ public class FeatureToggleService {
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
-    public boolean isFeatureEnabled(String feature) {
-        return internalClient.boolVariation(feature, createLDUser().build(), false);
+    public boolean isCicCreateCaseFeatureEnabled() {
+        return internalClient.boolVariation("CIC-Create-Case", createLDUser().build(), true);
     }
 
     public boolean isFeatureEnabled(String feature, LDUser user) {
