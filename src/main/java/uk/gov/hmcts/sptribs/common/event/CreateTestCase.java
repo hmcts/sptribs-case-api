@@ -104,7 +104,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private void subjectCategory(PageBuilder pageBuilder) {
         pageBuilder.page("subjectDetailsObjects")
-            .label("subjectDetailsObject", "Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
+            .label("subjectDetailsObject", "Who is the subject of this case?\r\n" + CASE_RECORD_DRAFT)
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getFullName)
             .optional(CicCase::getAddress)
