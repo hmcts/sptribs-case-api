@@ -13,11 +13,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 
@@ -25,7 +27,10 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 class CreateTestCaseTest {
 
     @Mock
-    private FeatureToggleService featureToggleService;;
+    private FeatureToggleService featureToggleService;
+
+    @Mock
+    private SubmissionService submissionService;
 
     @InjectMocks
     private CreateTestCase createTestCase;
@@ -49,6 +54,7 @@ class CreateTestCaseTest {
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        when(featureToggleService.isCicCreateCaseFeatureEnabled()).thenReturn(true);
         createTestCase.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())

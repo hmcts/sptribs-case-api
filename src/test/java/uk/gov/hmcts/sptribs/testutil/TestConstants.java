@@ -35,6 +35,7 @@ public final class TestConstants {
     public static final String TEST_AUTHORIZATION_TOKEN = "test-auth";
     public static final String TEST_SYSTEM_AUTHORISATION_TOKEN = "test-system-auth";
 
+
     public static final String CCD_DATA = "ccd_data";
     public static final String FEE_CODE = "FEECODE1";
     public static final String ISSUE_FEE = "Issue Fee";
@@ -67,6 +68,16 @@ public final class TestConstants {
     public static final String SOLICITOR_MID_EVENT_RESPONSE = "classpath:solicitor-mid-event-response.json";
     public static final String SOLICITOR_MID_EVENT_ERROR = "classpath:solicitor-mid-event-error-response.json";
     public static final String LINE_1_LINE_2_CITY_POSTCODE = "line1\nline2\ncity\npostcode";
+    public static final String CLASSPATH_WIREMOCK_RESPONSES_DG_ASSEMBLY_RESPONSE_JSON
+        = "classpath:wiremock/responses/dg-assembly-response.json";
+    public static final String CLASSPATH_CFTLIB_AM_ROLE_ASSIGNMENTS_JSON = "classpath:cftlib-am-role-assignments.json";
+    public static final String CLASSPATH_WIREMOCK_RESPONSES_DG_ASSEMBLY_RESPONSE_JSON1
+        = "classpath:wiremock/responses/dg-assembly-response.json";
+    public static final String CASEWORKER_ADD_NOTE_RESPONSE = "classpath:caseworker-add-note-response.json";
+    public static final String CLASSPATH_BULK_SCAN_D_8_VALIDATION_ERROR_RESPONSE_JSON
+        = "classpath:bulk-scan-d8-validation-error-response.json";
+
+
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")
         .addressLine2("line2")
