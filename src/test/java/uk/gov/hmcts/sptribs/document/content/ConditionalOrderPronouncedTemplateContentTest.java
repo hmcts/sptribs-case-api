@@ -68,7 +68,7 @@ class ConditionalOrderPronouncedTemplateContentTest {
 
     @Test
     void shouldApplyDivorceContentFromCaseDataForConditionalOrderPronouncedTemplate() {
-
+        //Given
         LocalDate coPronouncedDate = LocalDate.of(2022, 6, 10);
         LocalDate marriageDate = LocalDate.of(2000, 1, 2);
 
@@ -104,8 +104,10 @@ class ConditionalOrderPronouncedTemplateContentTest {
                 .build())
             .build();
 
+        //When
         final Map<String, Object> result = conditionalOrderPronouncedTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(IS_SOLE, true),
             entry(IS_DIVORCE, true),

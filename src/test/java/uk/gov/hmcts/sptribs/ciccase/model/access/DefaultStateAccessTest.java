@@ -18,9 +18,9 @@ class DefaultStateAccessTest {
 
     @Test
     void shouldGrantCaseAccessAdministratorsSolicitorsAndCitizens() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new DefaultStateAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(5)
             .contains(

@@ -51,6 +51,7 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForDivorce() {
+        //Given
         CaseData caseData = caseData();
         caseData.getApplicant1().setFinancialOrder(NO);
         caseData.getApplicant2().setSolicitorRepresented(YES);
@@ -58,8 +59,10 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
             Solicitor.builder().address(LINE_1_LINE_2_CITY_POSTCODE).build()
         );
 
+        //When
         Map<String, Object> templateContent = respondentSolicitorAosInvitationTemplateContent.apply(caseData, TEST_CASE_ID, LOCAL_DATE);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_FIRST_NAME, TEST_FIRST_NAME),
             entry(APPLICANT_1_FULL_NAME, caseData.getApplicant1().getFullName()),
@@ -79,6 +82,7 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForDissolution() {
+        //Given
         CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DISSOLUTION);
         caseData.getApplicant1().setFinancialOrder(NO);
@@ -87,8 +91,10 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
             Solicitor.builder().address(LINE_1_LINE_2_CITY_POSTCODE).build()
         );
 
+        //When
         Map<String, Object> templateContent = respondentSolicitorAosInvitationTemplateContent.apply(caseData, TEST_CASE_ID, LOCAL_DATE);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_FIRST_NAME, TEST_FIRST_NAME),
             entry(APPLICANT_1_FULL_NAME, caseData.getApplicant1().getFullName()),
@@ -108,6 +114,7 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
 
     @Test
     public void shouldConvertMarriageDateToCorrectFormat() {
+        //Given
         CaseData caseData = caseData();
         MarriageDetails marriageDetails = new MarriageDetails();
         marriageDetails.setDate(LocalDate.of(2019, 06, 4));
@@ -119,8 +126,10 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
             Solicitor.builder().address(LINE_1_LINE_2_CITY_POSTCODE).build()
         );
 
+        //When
         Map<String, Object> templateContent = respondentSolicitorAosInvitationTemplateContent.apply(caseData, TEST_CASE_ID, LOCAL_DATE);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_DATE, "4 June 2019")
         );
@@ -130,6 +139,7 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyApplicant2PostalAddressIfApplicant2AddressNotNull() {
+        //Given
         AddressGlobalUK address = AddressGlobalUK.builder()
             .addressLine1("221b")
             .addressLine2("Baker Street")
@@ -145,8 +155,10 @@ public class RespondentSolicitorAosInvitationTemplateContentTest {
         caseData.setDivorceOrDissolution(DISSOLUTION);
         caseData.getApplicant1().setFinancialOrder(NO);
 
+        //When
         Map<String, Object> templateContent = respondentSolicitorAosInvitationTemplateContent.apply(caseData, TEST_CASE_ID, LOCAL_DATE);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_2_POSTAL_ADDRESS, "221b\nBaker Street\nLondon\nNW1 6XE")
         );

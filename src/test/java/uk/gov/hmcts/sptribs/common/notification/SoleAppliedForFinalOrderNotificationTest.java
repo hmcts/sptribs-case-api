@@ -63,6 +63,7 @@ class SoleAppliedForFinalOrderNotificationTest {
 
     @Test
     void shouldSendApplicant1NotificationIfTheyAreCurrentUser() {
+        //Given
         setupMocks(clock);
         CaseData data = caseData();
         data.setFinalOrder(FinalOrder.builder().dateFinalOrderNoLongerEligible(getExpectedLocalDate().plusDays(30)).build()
@@ -72,8 +73,10 @@ class SoleAppliedForFinalOrderNotificationTest {
             .thenReturn(getMainTemplateVars());
         when(ccdAccessService.isApplicant1(DUMMY_AUTH_TOKEN, 1L)).thenReturn(true);
 
+        //When
         notification.sendToApplicant1(data, 1L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLIED_FOR_FINAL_ORDER),
@@ -86,6 +89,7 @@ class SoleAppliedForFinalOrderNotificationTest {
 
     @Test
     void shouldSendApplicant2NotificationIfTheyAreCurrentUser() {
+        //Given
         setupMocks(clock);
         CaseData data = validApplicant2CaseData();
         data.setFinalOrder(FinalOrder.builder().dateFinalOrderNoLongerEligible(getExpectedLocalDate().plusDays(30)).build()
@@ -96,8 +100,10 @@ class SoleAppliedForFinalOrderNotificationTest {
             .thenReturn(getMainTemplateVars());
         when(ccdAccessService.isApplicant1(DUMMY_AUTH_TOKEN, 1L)).thenReturn(false);
 
+        //When
         notification.sendToApplicant2(data, 1L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_APPLIED_FOR_FINAL_ORDER),
@@ -110,6 +116,7 @@ class SoleAppliedForFinalOrderNotificationTest {
 
     @Test
     public void verifyApplicant1TemplateVarsWhenFinalOrderEligible() {
+        //Given
         setupMocks(clock);
         CaseData data = caseData();
         data.setFinalOrder(FinalOrder.builder().dateFinalOrderNoLongerEligible(getExpectedLocalDate().plusDays(30)).build()
@@ -119,8 +126,10 @@ class SoleAppliedForFinalOrderNotificationTest {
             .thenReturn(getMainTemplateVars());
         when(ccdAccessService.isApplicant1(DUMMY_AUTH_TOKEN, 1L)).thenReturn(true);
 
+        //When
         notification.sendToApplicant1(data, 1L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLIED_FOR_FINAL_ORDER),
@@ -136,6 +145,7 @@ class SoleAppliedForFinalOrderNotificationTest {
 
     @Test
     public void verifyApplicant1TemplateVarsWhenFinalOrderNotEligible() {
+        //Given
         setupMocks(clock);
         CaseData data = caseData();
         data.setFinalOrder(FinalOrder.builder().dateFinalOrderNoLongerEligible(getExpectedLocalDate().minusDays(30)).build()
@@ -145,8 +155,10 @@ class SoleAppliedForFinalOrderNotificationTest {
             .thenReturn(getMainTemplateVars());
         when(ccdAccessService.isApplicant1(DUMMY_AUTH_TOKEN, 1L)).thenReturn(true);
 
+        //When
         notification.sendToApplicant1(data, 1L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLIED_FOR_FINAL_ORDER),
@@ -162,6 +174,7 @@ class SoleAppliedForFinalOrderNotificationTest {
 
     @Test
     public void verifyApplicant2TemplateVars() {
+        //Given
         setupMocks(clock);
         CaseData data = validApplicant2CaseData();
         data.setFinalOrder(FinalOrder.builder().dateFinalOrderNoLongerEligible(getExpectedLocalDate().plusDays(30)).build()
@@ -172,9 +185,10 @@ class SoleAppliedForFinalOrderNotificationTest {
             .thenReturn(getMainTemplateVars());
         when(ccdAccessService.isApplicant1(DUMMY_AUTH_TOKEN, 1L)).thenReturn(false);
 
+        //When
         notification.sendToApplicant2(data, 1L);
 
-
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_APPLIED_FOR_FINAL_ORDER),

@@ -18,9 +18,9 @@ class SystemUpdateAndSuperUserAccessTest {
 
     @Test
     void shouldGrantSystemUpdateAndSuperUserAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new SystemUpdateAndSuperUserAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(7)
             .contains(

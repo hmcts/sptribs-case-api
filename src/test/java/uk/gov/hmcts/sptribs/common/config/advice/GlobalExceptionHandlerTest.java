@@ -15,14 +15,17 @@ public class GlobalExceptionHandlerTest {
 
     @Test
     public void shouldHandleNotificationException() {
+        //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
         final NotificationException notificationException = mock(NotificationException.class);
 
         when(notificationException.getCause()).thenReturn(new NotificationClientException("some exception"));
 
+        //When
         final ResponseEntity<Object> actualResponse =
             exceptionHandler.handleNotificationException(notificationException);
 
+        //Then
         assertThat(actualResponse.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
         assertThat(actualResponse.getBody(), is("some exception"));

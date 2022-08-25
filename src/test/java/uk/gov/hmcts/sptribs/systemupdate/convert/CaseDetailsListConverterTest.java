@@ -28,7 +28,7 @@ class CaseDetailsListConverterTest {
 
     @Test
     void shouldOnlyReturnCasesThatDeserializeWhenConverting() {
-
+        //Given
         final List<CaseDetails> caseDetailsList = createCaseDetailsList(10);
 
         final CaseDetails failedCaseDetails1 = caseDetailsList.get(2);
@@ -52,9 +52,11 @@ class CaseDetailsListConverterTest {
             return caseDetails;
         }).when(caseDetailsConverter).convertToCaseDetailsFromReformModel(any(CaseDetails.class));
 
+        //When
         final List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State>> result =
             caseDetailsListConverter.convertToListOfValidCaseDetails(caseDetailsList);
 
+        //Then
         assertThat(result)
             .hasSize(8)
             .containsAll(expectedResult);

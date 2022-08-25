@@ -23,9 +23,9 @@ class OrganisationPolicyAccessTest {
 
     @Test
     void shouldGrantOrganisationPolicyAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new OrganisationPolicyAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(16)
             .contains(

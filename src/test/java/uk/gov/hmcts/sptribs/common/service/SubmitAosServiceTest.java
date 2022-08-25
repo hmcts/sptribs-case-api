@@ -49,6 +49,7 @@ class SubmitAosServiceTest {
 
     @Test
     void shouldProcessSolicitorSubmitAos() {
+        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> expectedCaseDetails = new CaseDetails<>();
 
@@ -60,8 +61,10 @@ class SubmitAosServiceTest {
         when(generateAosResponseLetterDocument.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(sendAosResponseLetterPackToApplicant.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
+        //When
         final CaseDetails<CaseData, State> result = submitAosService.submitAos(caseDetails);
 
+        //Then
         assertThat(result).isSameAs(expectedCaseDetails);
 
         verify(setSubmitAosState).apply(caseDetails);
@@ -75,6 +78,7 @@ class SubmitAosServiceTest {
 
     @Test
     void shouldProcessSubmitOfflineAos() {
+        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> expectedCaseDetails = new CaseDetails<>();
 
@@ -85,8 +89,10 @@ class SubmitAosServiceTest {
         when(generateAosResponseLetterDocument.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(sendAosResponseLetterPackToApplicant.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
+        //When
         final CaseDetails<CaseData, State> result = submitAosService.submitOfflineAos(caseDetails);
 
+        //Then
         assertThat(result).isSameAs(expectedCaseDetails);
 
         verify(setSubmitAosState).apply(caseDetails);

@@ -73,7 +73,7 @@ class CaseDataDocumentServiceTest {
 
     @Test
     void shouldAddRenderedDocumentToCaseData() {
-
+        //Given
         final var documentId = "123456";
         final CaseData caseData = caseData();
         final Map<String, Object> templateContent = new HashMap<>();
@@ -94,6 +94,7 @@ class CaseDataDocumentServiceTest {
 
         when(documentIdProvider.documentId()).thenReturn(documentId);
 
+        //When
         caseDataDocumentService.renderDocumentAndUpdateCaseData(
             caseData,
             EMAIL,
@@ -105,6 +106,7 @@ class CaseDataDocumentServiceTest {
 
         final List<ListValue<DivorceDocument>> documentsGenerated = caseData.getDocuments().getDocumentsGenerated();
 
+        //Then
         assertThat(documentsGenerated).hasSize(1);
 
         final ListValue<DivorceDocument> documentListValue = documentsGenerated.get(0);
@@ -123,7 +125,7 @@ class CaseDataDocumentServiceTest {
 
     @Test
     void shouldGenerateAndReturnGeneralOrderDocument() {
-
+        //Given
         final Map<String, Object> templateContent = new HashMap<>();
         final User systemUser = mock(User.class);
         final String filename = GENERAL_ORDER_PDF_FILENAME + TEST_CASE_ID;
@@ -140,6 +142,7 @@ class CaseDataDocumentServiceTest {
                 filename))
             .thenReturn(new DocumentInfo(DOC_URL, PDF_FILENAME, DOC_BINARY_URL));
 
+        //When
         final Document result = caseDataDocumentService.renderDocument(
             templateContent,
             TEST_CASE_ID,
@@ -147,6 +150,7 @@ class CaseDataDocumentServiceTest {
             ENGLISH,
             filename);
 
+        //Then
         assertThat(result.getBinaryUrl()).isEqualTo(DOC_BINARY_URL);
         assertThat(result.getUrl()).isEqualTo(DOC_URL);
         assertThat(result.getFilename()).isEqualTo(GENERAL_ORDER_PDF_FILENAME);
@@ -154,6 +158,7 @@ class CaseDataDocumentServiceTest {
 
     @Test
     public void shouldGenerateConfidentialDocumentsWhenDocumentTypeIsNOPAndApplicant1ContactIsPrivate() {
+        //Given
         final var documentId = "123456";
         final CaseData caseData = caseData();
         caseData.getApplicant1().setContactDetailsType(ContactDetailsType.PRIVATE);
@@ -176,6 +181,7 @@ class CaseDataDocumentServiceTest {
 
         when(documentIdProvider.documentId()).thenReturn(documentId);
 
+        //When
         caseDataDocumentService.renderDocumentAndUpdateCaseData(
             caseData,
             NOTICE_OF_PROCEEDINGS_APP_1,
@@ -189,6 +195,7 @@ class CaseDataDocumentServiceTest {
         final List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments
             = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
+        //Then
         assertTrue(isEmpty(nonConfidentialDocuments));
         assertThat(confidentialDocuments).hasSize(1);
 
@@ -209,6 +216,7 @@ class CaseDataDocumentServiceTest {
 
     @Test
     public void shouldGenerateConfidentialDocumentsWhenDocumentTypeIsNOPAndApplicant2ContactIsPrivate() {
+        //Given
         final var documentId = "123456";
         final CaseData caseData = caseData();
         caseData.getApplicant2().setContactDetailsType(ContactDetailsType.PRIVATE);
@@ -231,6 +239,7 @@ class CaseDataDocumentServiceTest {
 
         when(documentIdProvider.documentId()).thenReturn(documentId);
 
+        //When
         caseDataDocumentService.renderDocumentAndUpdateCaseData(
             caseData,
             NOTICE_OF_PROCEEDINGS_APP_2,
@@ -244,6 +253,7 @@ class CaseDataDocumentServiceTest {
         final List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments
             = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
+        //Then
         assertTrue(isEmpty(nonConfidentialDocuments));
         assertThat(confidentialDocuments).hasSize(1);
 
@@ -264,6 +274,7 @@ class CaseDataDocumentServiceTest {
 
     @Test
     public void shouldGenerateConfidentialDocumentsWhenDocumentTypeIsGeneralLetterAndApplicant1ContactIsPrivate() {
+        //Given
         final var documentId = "123456";
         final CaseData caseData = caseData();
         caseData.getApplicant1().setContactDetailsType(ContactDetailsType.PRIVATE);
@@ -287,6 +298,7 @@ class CaseDataDocumentServiceTest {
 
         when(documentIdProvider.documentId()).thenReturn(documentId);
 
+        //When
         caseDataDocumentService.renderDocumentAndUpdateCaseData(
             caseData,
             GENERAL_LETTER,
@@ -300,6 +312,7 @@ class CaseDataDocumentServiceTest {
         final List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments
             = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
+        //Then
         assertTrue(isEmpty(nonConfidentialDocuments));
         assertThat(confidentialDocuments).hasSize(1);
 
@@ -320,6 +333,7 @@ class CaseDataDocumentServiceTest {
 
     @Test
     public void shouldGenerateConfidentialDocumentsWhenDocumentTypeIsOther() {
+        //Given
         final var documentId = "123456";
         final CaseData caseData = caseData();
         caseData.getGeneralLetter().setGeneralLetterParties(GeneralParties.OTHER);
@@ -363,6 +377,7 @@ class CaseDataDocumentServiceTest {
 
         when(documentIdProvider.documentId()).thenReturn(documentId);
 
+        //When
         caseDataDocumentService.renderDocumentAndUpdateCaseData(
             caseData,
             DocumentType.OTHER,
@@ -376,6 +391,7 @@ class CaseDataDocumentServiceTest {
         final List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments
             = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
+        //Then
         assertTrue(isEmpty(nonConfidentialDocuments));
         assertThat(confidentialDocuments).hasSize(1);
 

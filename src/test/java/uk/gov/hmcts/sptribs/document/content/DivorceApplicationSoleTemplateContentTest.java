@@ -90,7 +90,7 @@ public class DivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForSoleApplicationWithTypeDivorce() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -125,8 +125,10 @@ public class DivorceApplicationSoleTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP, "for a final order of divorce from"),
             entry(DIVORCE_OR_DISSOLUTION, "divorce application"),
@@ -159,7 +161,7 @@ public class DivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyWelshContentFromCaseDataForSoleApplicationWithTypeDivorce() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -195,8 +197,10 @@ public class DivorceApplicationSoleTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(IS_DIVORCE, true),
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, MARRIAGE_CY),
@@ -220,6 +224,7 @@ public class DivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForSoleApplicationWithTypeDissolution() {
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -260,8 +265,10 @@ public class DivorceApplicationSoleTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP, DISSOLUTION_OF_THE_CIVIL_PARTNERSHIP_WITH),
             entry(DIVORCE_OR_DISSOLUTION, "application to end your civil partnership"),
@@ -299,6 +306,7 @@ public class DivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyWelshContentFromCaseDataForSoleApplicationWithTypeDissolution() {
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -340,8 +348,10 @@ public class DivorceApplicationSoleTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(IS_DIVORCE, false),
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, CIVIL_PARTNERSHIP_CY),
@@ -370,6 +380,7 @@ public class DivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForSoleApplicationWithFormattedSolicitorAddress() {
+        //Given
         final String solAddressWithNewLine = "10 Solicitor Road\ntown\n\npostcode\n";
         final String solAddressWithCleanUp = "10 Solicitor Road\ntown\npostcode";
 
@@ -410,8 +421,10 @@ public class DivorceApplicationSoleTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP, "for a final order of divorce from"),
             entry(DIVORCE_OR_DISSOLUTION, "divorce application"),
@@ -446,7 +459,7 @@ public class DivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForSoleApplicationWithNullSolicitorAddress() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -483,8 +496,10 @@ public class DivorceApplicationSoleTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP, "for a final order of divorce from"),
             entry(DIVORCE_OR_DISSOLUTION, "divorce application"),
@@ -518,7 +533,7 @@ public class DivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForSoleApplicationWithBlankSolicitorAddress() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -558,8 +573,10 @@ public class DivorceApplicationSoleTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setPlaceOfMarriage("Dublin");
         caseData.getApplication().getMarriageDetails().setCountryOfMarriage("Ireland");
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP, "for a final order of divorce from"),
             entry(DIVORCE_OR_DISSOLUTION, "divorce application"),

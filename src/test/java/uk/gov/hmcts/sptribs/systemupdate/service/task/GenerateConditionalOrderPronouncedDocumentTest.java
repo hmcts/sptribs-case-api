@@ -48,7 +48,7 @@ class GenerateConditionalOrderPronouncedDocumentTest {
 
     @Test
     void shouldGenerateConditionalOrderGrantedDocAndUpdateCaseData() {
-
+        //Given
         final Map<String, Object> templateContent = new HashMap<>();
         final CaseData caseData = CaseData.builder()
             .applicant1(Applicant.builder()
@@ -63,8 +63,10 @@ class GenerateConditionalOrderPronouncedDocumentTest {
         when(conditionalOrderPronouncedTemplateContent.apply(caseData, TEST_CASE_ID))
             .thenReturn(templateContent);
 
+        //When
         generateConditionalOrderPronouncedDocument.apply(caseDetails);
 
+        //Then
         verify(caseDataDocumentService).renderDocumentAndUpdateCaseData(
             caseData,
             CONDITIONAL_ORDER_GRANTED,
@@ -77,7 +79,7 @@ class GenerateConditionalOrderPronouncedDocumentTest {
 
     @Test
     public void shouldReturnConditionalOrderDocWhenExists() {
-
+        //Given
         ListValue<DivorceDocument> divorceDocumentListValue = ListValue
             .<DivorceDocument>builder()
             .id(APPLICATION.getLabel())
@@ -100,14 +102,17 @@ class GenerateConditionalOrderPronouncedDocumentTest {
                 .build())
             .build();
 
+        //When
         Optional<ListValue<DivorceDocument>> conditionalOrderGrantedDoc =
             generateConditionalOrderPronouncedDocument.getConditionalOrderGrantedDoc(caseData);
 
+        //Then
         assertTrue(conditionalOrderGrantedDoc.isPresent());
     }
 
     @Test
     public void shouldNotReturnConditionalOrderDocWhenDoesNotExists() {
+        //Given
         ListValue<DivorceDocument> divorceDocumentListValue = ListValue
             .<DivorceDocument>builder()
             .id(APPLICATION.getLabel())
@@ -122,14 +127,17 @@ class GenerateConditionalOrderPronouncedDocumentTest {
                 .build())
             .build();
 
+        //When
         Optional<ListValue<DivorceDocument>> conditionalOrderGrantedDoc =
             generateConditionalOrderPronouncedDocument.getConditionalOrderGrantedDoc(caseData);
 
+        //Then
         assertTrue(conditionalOrderGrantedDoc.isEmpty());
     }
 
     @Test
     public void shouldRemoveConditionalOrderGrantedDoc() {
+        //Given
         final Map<String, Object> templateContent = new HashMap<>();
         final CaseData caseData = CaseData.builder()
             .applicant1(Applicant.builder()
@@ -159,9 +167,11 @@ class GenerateConditionalOrderPronouncedDocumentTest {
         when(conditionalOrderPronouncedTemplateContent.apply(caseData, TEST_CASE_ID))
             .thenReturn(templateContent);
 
+        //When
         generateConditionalOrderPronouncedDocument
             .removeExistingAndGenerateNewConditionalOrderGrantedDoc(caseDetails);
 
+        //Then
         verify(caseDataDocumentService).renderDocumentAndUpdateCaseData(
             caseData,
             CONDITIONAL_ORDER_GRANTED,

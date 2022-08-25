@@ -35,6 +35,7 @@ public class CreateTestCaseTest {
 
     @Test
     void shouldNotReturnErrorsIfApplicantUserIdIsValid() {
+        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
             .caseInvite(CaseInvite.builder()
@@ -43,8 +44,10 @@ public class CreateTestCaseTest {
             .build();
         caseDetails.setData(caseData);
 
+        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.midEvent(caseDetails, caseDetails);
 
+        //Then
         assertThat(response.getErrors()).isNull();
     }
 

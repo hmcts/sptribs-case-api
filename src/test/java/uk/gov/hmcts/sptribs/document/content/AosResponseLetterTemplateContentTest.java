@@ -41,6 +41,7 @@ public class AosResponseLetterTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDivorceContent() {
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .lastName(TEST_LAST_NAME)
@@ -71,8 +72,10 @@ public class AosResponseLetterTemplateContentTest {
         when(holdingPeriodService.getDueDateFor(caseData.getApplication().getIssueDate()))
             .thenReturn(caseData.getApplication().getIssueDate().plusDays(141));
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         Map<String, Object> expectedEntries = new LinkedHashMap<>();
         expectedEntries.put("caseReference", formatId(TEST_CASE_ID));
         expectedEntries.put("applicant1FirstName", TEST_FIRST_NAME);
@@ -93,6 +96,7 @@ public class AosResponseLetterTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDissolutionContent() {
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .lastName(TEST_LAST_NAME)
@@ -122,8 +126,10 @@ public class AosResponseLetterTemplateContentTest {
         when(holdingPeriodService.getDueDateFor(caseData.getApplication().getIssueDate()))
             .thenReturn(caseData.getApplication().getIssueDate().plusDays(141));
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         Map<String, Object> expectedEntries = new LinkedHashMap<>();
         expectedEntries.put("caseReference", formatId(TEST_CASE_ID));
         expectedEntries.put("applicant1FirstName", TEST_FIRST_NAME);

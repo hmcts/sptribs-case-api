@@ -47,7 +47,7 @@ class AwaitingFinalOrderReminderNotificationTest {
 
     @Test
     void shouldSendAwaitingFinalOrderReminderEmailToApplicant1IfNotRepresentedAndSole() {
-
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
@@ -56,8 +56,10 @@ class AwaitingFinalOrderReminderNotificationTest {
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(getConditionalOrderTemplateVars(SOLE_APPLICATION));
 
+        //When
         awaitingFinalOrderReminderNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(APPLICANT_APPLY_FOR_FINAL_ORDER),
@@ -74,7 +76,7 @@ class AwaitingFinalOrderReminderNotificationTest {
 
     @Test
     void shouldSendAwaitingFinalOrderReminderEmailToApplicant1IfNotRepresentedAndJoint() {
-
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
@@ -83,8 +85,10 @@ class AwaitingFinalOrderReminderNotificationTest {
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(getConditionalOrderTemplateVars(JOINT_APPLICATION));
 
+        //When
         awaitingFinalOrderReminderNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(APPLICANT_APPLY_FOR_FINAL_ORDER),
@@ -102,20 +106,22 @@ class AwaitingFinalOrderReminderNotificationTest {
 
     @Test
     void shouldNotSendAwaitingFinalOrderReminderEmailToApplicant2IfNotRepresentedAndSole() {
-
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
         data.setApplicationType(SOLE_APPLICATION);
 
+        //When
         awaitingFinalOrderReminderNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldSendAwaitingFinalOrderReminderEmailToApplicant2IfNotRepresentedAndJoint() {
-
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
@@ -124,8 +130,10 @@ class AwaitingFinalOrderReminderNotificationTest {
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(getConditionalOrderTemplateVars(JOINT_APPLICATION));
 
+        //When
         awaitingFinalOrderReminderNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(APPLICANT_APPLY_FOR_FINAL_ORDER),
@@ -143,7 +151,7 @@ class AwaitingFinalOrderReminderNotificationTest {
 
     @Test
     void shouldSendAwaitingFinalOrderReminderEmailWithCorrectTemplateVars() {
-
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
@@ -151,8 +159,10 @@ class AwaitingFinalOrderReminderNotificationTest {
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(getConditionalOrderTemplateVars(SOLE_APPLICATION));
 
+        //When
         awaitingFinalOrderReminderNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(APPLICANT_APPLY_FOR_FINAL_ORDER),

@@ -22,9 +22,9 @@ class DefaultAccessTest {
 
     @Test
     void shouldGrantDefaultAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new DefaultAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(11)
             .contains(

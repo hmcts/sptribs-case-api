@@ -67,12 +67,15 @@ class AwaitingConditionalOrderNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant1() {
+        //Given
         final var data = validApplicant1CaseData();
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(new HashMap<>());
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -86,14 +89,17 @@ class AwaitingConditionalOrderNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant1InWelshIfApp1LangPrefIsWelsh() {
+        //Given
         final var data = validApplicant1CaseData();
         data.getApplicant1().setLanguagePreferenceWelsh(YES);
 
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(new HashMap<>());
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -107,6 +113,7 @@ class AwaitingConditionalOrderNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant1Solicitor() {
+        //Given
         final var applicant = getApplicant();
         applicant.setSolicitor(Solicitor.builder().email(TEST_SOLICITOR_EMAIL).name(TEST_SOLICITOR_NAME).build());
         applicant.setSolicitorRepresented(YES);
@@ -117,8 +124,10 @@ class AwaitingConditionalOrderNotificationTest {
         when(commonContent.getProfessionalUsersSignInUrl(1234567890123456L)).thenReturn(SIGN_IN_PROFESSIONAL_USERS_URL);
         when(commonContent.getUnionType(data)).thenReturn(DIVORCE);
 
+        //When
         notification.sendToApplicant1Solicitor(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(APPLICANT_SOLICITOR_CAN_APPLY_CONDITIONAL_ORDER),
@@ -138,6 +147,7 @@ class AwaitingConditionalOrderNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant1SolicitorWithReference() {
+        //Given
         final var applicant = getApplicant();
         applicant.setSolicitor(
             Solicitor.builder()
@@ -153,8 +163,10 @@ class AwaitingConditionalOrderNotificationTest {
         when(commonContent.basicTemplateVars(data, 1234567890123456L)).thenReturn(getBasicTemplateVars());
         when(commonContent.getUnionType(data)).thenReturn(DIVORCE);
 
+        //When
         notification.sendToApplicant1Solicitor(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(APPLICANT_SOLICITOR_CAN_APPLY_CONDITIONAL_ORDER),
@@ -167,12 +179,15 @@ class AwaitingConditionalOrderNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant2IfJointApplication() {
+        //Given
         final var data = validApplicant2CaseData();
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(new HashMap<>());
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -186,14 +201,17 @@ class AwaitingConditionalOrderNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant2IfJointApplicationInWelshIfApp2LangPrefIsWelsh() {
+        //Given
         final var data = validApplicant2CaseData();
         data.getApplicant2().setLanguagePreferenceWelsh(YES);
 
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(new HashMap<>());
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -207,26 +225,33 @@ class AwaitingConditionalOrderNotificationTest {
 
     @Test
     void shouldNotSendEmailToApplicant2IfSoleApplication() {
+        //Given
         final var data = validApplicant2CaseData();
         data.setApplicationType(SOLE_APPLICATION);
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService, commonContent);
     }
 
     @Test
     void shouldNotSendEmailToApplicant2IfEmailNotSet() {
+        //Given
         final var data = validApplicant2CaseData();
         data.getApplicant2().setEmail(null);
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //When
         verifyNoInteractions(notificationService, commonContent);
     }
 
     @Test
     void shouldSendEmailToApplicant2SolicitorWhenJointApplication() {
+        //Given
         final Applicant applicant = getApplicant();
         applicant.setSolicitor(Solicitor.builder().email(TEST_SOLICITOR_EMAIL).name(TEST_SOLICITOR_NAME).build());
         applicant.setSolicitorRepresented(YES);
@@ -237,8 +262,10 @@ class AwaitingConditionalOrderNotificationTest {
 
         when(commonContent.basicTemplateVars(data, 1234567890123456L)).thenReturn(getBasicTemplateVars());
 
+        //When
         notification.sendToApplicant2Solicitor(data, 1234567890123456L);
 
+        //When
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(SOLICITOR_AWAITING_CONDITIONAL_ORDER),

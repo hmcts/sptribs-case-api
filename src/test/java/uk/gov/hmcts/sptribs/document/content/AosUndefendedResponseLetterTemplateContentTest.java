@@ -50,13 +50,15 @@ public class AosUndefendedResponseLetterTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDivorceContent() {
-
+        //Given
         CaseData caseData = buildCaseData(DIVORCE);
 
         when(commonContent.getPartner(caseData, caseData.getApplicant2())).thenReturn("wife");
 
+        //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry("caseReference", formatId(TEST_CASE_ID)),
             entry("applicant1FirstName", TEST_FIRST_NAME),
@@ -73,12 +75,15 @@ public class AosUndefendedResponseLetterTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDissolutionContent() {
+        //Given
         CaseData caseData = buildCaseData(DISSOLUTION);
 
         when(commonContent.getPartner(caseData, caseData.getApplicant2())).thenReturn("civil partner");
 
+        //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry("caseReference", formatId(TEST_CASE_ID)),
             entry("applicant1FirstName", TEST_FIRST_NAME),

@@ -22,9 +22,9 @@ public class BulkCaseListAccessTest {
 
     @Test
     void shouldBulkCaseListAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new BulkCaseListAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(10)
             .contains(

@@ -37,7 +37,7 @@ class GenerateRespondentAnswersDocTest {
 
     @Test
     void shouldGenerateRespondentAnswerDocWhenTaskIsExecuted() {
-
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -60,8 +60,10 @@ class GenerateRespondentAnswersDocTest {
                 RESPONDENT_ANSWERS_DOCUMENT_NAME
             );
 
+        //When
         final CaseDetails<CaseData, State> result = generateRespondentAnswersDoc.apply(caseDetails);
 
+        //Then
         verify(caseDataDocumentService)
             .renderDocumentAndUpdateCaseData(
                 caseData,

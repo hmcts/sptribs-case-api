@@ -30,7 +30,7 @@ public class GeneralLetterServiceTest {
 
     @Test
     public void testProcessGeneralLetter() {
-
+        //Given
         var caseData = buildCaseDataWithGeneralLetter(APPLICANT);
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
@@ -39,8 +39,10 @@ public class GeneralLetterServiceTest {
         when(generateGeneralLetter.apply(caseDetails)).thenReturn(caseDetails);
         when(sendGeneralLetter.apply(caseDetails)).thenReturn(caseDetails);
 
+        //Wehn
         final CaseDetails<CaseData, State> response = service.processGeneralLetter(caseDetails);
 
+        //Then
         var expectedCaseData = buildCaseDataWithGeneralLetter(APPLICANT);
 
         assertThat(response.getData()).isEqualTo(expectedCaseData);
