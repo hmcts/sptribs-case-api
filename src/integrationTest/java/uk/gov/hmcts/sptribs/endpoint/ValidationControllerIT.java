@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTH_HEADER_VALUE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CLASSPATH_BULK_SCAN_D_8_VALIDATION_ERROR_RESPONSE_JSON;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.populateKeyValue;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
@@ -65,6 +66,6 @@ public class ValidationControllerIT {
             .accept(APPLICATION_JSON))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk())
-            .andExpect(content().json(expectedResponse("classpath:bulk-scan-d8-validation-error-response.json")));
+            .andExpect(content().json(expectedResponse(CLASSPATH_BULK_SCAN_D_8_VALIDATION_ERROR_RESPONSE_JSON)));
     }
 }
