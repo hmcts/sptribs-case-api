@@ -37,7 +37,6 @@ import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamFailure;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_ADD_NOTE_RESPONSE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -52,7 +51,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseworkerAddNoteIT {
 
-
+    private static final String CASEWORKER_ADD_NOTE_RESPONSE =
+        "classpath:caseworker-add-note-response.json";
 
     @Autowired
     private MockMvc mockMvc;
