@@ -35,6 +35,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-application";
+    private static final String CASE_RECORD_DRAFT = "\r\nCase record for [DRAFT]";
     private final FeatureToggleService featureToggleService;
 
     @Autowired
@@ -66,15 +67,30 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
             caseCategory(pageBuilder);
-
             selectParties(pageBuilder);
             subjectCategory(pageBuilder);
 
-
-            pageBuilder.page("representativeDetailsObjects")
-                .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
+            pageBuilder.page("applicantDetailsObjects")
+                .label("applicantDetailsObject", "Who is the applicant in this case?\r\n" + CASE_RECORD_DRAFT)
                 .complex(CaseData::getCicCase)
-                .optional(CicCase::getRepresentativeCICDetails)
+                .mandatory(CicCase::getApplicantFullName)
+                .optional(CicCase::getApplicantAddress)
+                .mandatory(CicCase::getApplicantPhoneNumber)
+                .mandatory(CicCase::getApplicantEmailAddress)
+                .optionalWithLabel(CicCase::getApplicantDateOfBirth, "")
+                .mandatoryWithLabel(CicCase::getApplicantContactDetailsPreference, "")
+                .done();
+            pageBuilder.page("representativeDetailsObjects")
+                .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + CASE_RECORD_DRAFT)
+                .complex(CaseData::getCicCase)
+                .mandatory(CicCase::getRepresentativeFullName)
+                .optional(CicCase::getRepresentativeOrgName)
+                .optional(CicCase::getRepresentativeAddress)
+                .mandatory(CicCase::getRepresentativePhoneNumber)
+                .mandatory(CicCase::getRepresentativeEmailAddress)
+                .optional(CicCase::getRepresentativeReference)
+                .mandatoryWithLabel(CicCase::getIsRepresentativeQualified, "")
+                .mandatoryWithLabel(CicCase::getRepresentativeContactDetailsPreference, "")
                 .done();
             pageBuilder.page("objectContacts")
                 .label("objectContact", "Who should receive information about the case?")
@@ -88,7 +104,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private void subjectCategory(PageBuilder pageBuilder) {
         pageBuilder.page("subjectDetailsObjects")
-            .label("subjectDetailsObject", "Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
+            .label("subjectDetailsObject", "Who is the subject of this case?\r\n" + CASE_RECORD_DRAFT)
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getFullName)
             .optional(CicCase::getAddress)

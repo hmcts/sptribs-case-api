@@ -47,6 +47,7 @@ public class CaseDocumentsCIC {
         final var listItemId = isBlank(id) ? String.valueOf(randomUUID()) : id;
         final var listValue = new ListValue<T>(listItemId, value);
         final List<ListValue<T>> list = isEmpty(documents) ? new ArrayList<>() : new ArrayList<>(documents);
+
         list.add(0, listValue);
 
         return list;
