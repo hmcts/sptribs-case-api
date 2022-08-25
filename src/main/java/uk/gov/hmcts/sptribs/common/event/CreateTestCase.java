@@ -65,45 +65,95 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .submittedCallback(this::submitted)
                 .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
-            pageBuilder
-                .page("caseCategoryObjects",this::midEvent)
-                .label("caseCategoryObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
-                .complex(CaseData::getCicCase)
-                .mandatoryWithLabel(CicCase::getCaseCategory, "")
-                .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
-                .optionalWithLabel(CicCase::getComment,"Comments")
-                .done()
-                .page("dateObjects")
-                .label("dateObject","when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
-                .complex(CaseData::getCicCase)
-                .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
-                .done();
+            caseCategory(pageBuilder);
 
-            pageBuilder
-                .page("objectSubjects")
-                .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
-                .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getSubjectCIC)
-                .optional(CicCase::getRepresentativeCIC)
-                .done();
+            selectParties(pageBuilder);
+            subjectCategory(pageBuilder);
 
-            pageBuilder.page("applicantDetailsObjects")
-                .label("applicantDetailsObject","Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
-                .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getFullName)
-                .optional(CicCase::getAddress)
-                .optional(CicCase::getPhoneNumber)
-                .optional(CicCase::getEmail)
-                .mandatoryWithLabel(CicCase::getDateOfBirth,"")
-                .mandatoryWithLabel(CicCase::getContactDetailsPreference,"")
-                .done();
 
             pageBuilder.page("representativeDetailsObjects")
-                .label("representativeDetailsObject","Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
+                .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + "\r\nCase record for [DRAFT]")
                 .complex(CaseData::getCicCase)
                 .optional(CicCase::getRepresentativeCICDetails)
                 .done();
+            pageBuilder.page("objectContacts")
+                .label("objectContact", "Who should receive information about the case?")
+                .complex(CaseData::getCicCase)
+                .optional(CicCase::getContactDetailsPreference)
+                .done();
+            uploadDocuments(pageBuilder);
+            furtherDetails(pageBuilder);
         }
+    }
+
+    private void subjectCategory(PageBuilder pageBuilder) {
+        pageBuilder.page("subjectDetailsObjects")
+            .label("subjectDetailsObject", "Who is the subject of this case?\r\n" + "\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getFullName)
+            .optional(CicCase::getAddress)
+            .optional(CicCase::getPhoneNumber)
+            .mandatoryWithLabel(CicCase::getDateOfBirth, "")
+            .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
+            .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
+            .done();
+    }
+
+    private void selectParties(PageBuilder pageBuilder) {
+        pageBuilder
+            .page("objectSubjects")
+            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getSubjectCIC)
+            .optional(CicCase::getApplicantCIC)
+            .optional(CicCase::getRepresentativeCIC)
+            .done();
+    }
+
+    private void caseCategory(PageBuilder pageBuilder) {
+        pageBuilder
+            .page("caseCategoryObjects", this::midEvent)
+            .label("caseCategoryObject", "CIC  Case Categorisation \r\n" + "\r\nCase Record for [DRAFT]")
+            .complex(CaseData::getCicCase)
+            .mandatoryWithLabel(CicCase::getCaseCategory, "")
+            .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
+            .optionalWithLabel(CicCase::getComment, "Comments")
+            .done()
+            .page("dateObjects")
+            .label("dateObject", "when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
+            .complex(CaseData::getCicCase)
+            .mandatoryWithLabel(CicCase::getCaseReceivedDate, "")
+            .done();
+    }
+
+
+    private void uploadDocuments(PageBuilder pageBuilder) {
+        pageBuilder.page("documentsUploadObjets")
+            .label("upload", "<h1>Upload Tribunal Forms</h1>")
+            .complex(CaseData::getCicCase)
+            .label("documentUploadObjectLabel", "Case record for [DRAFT]\n"
+                + "\nPlease upload a copy of the completed tribunal form,as well as any\n"
+                + "\nsupporting document or other information that has been supplied.\n"
+                + "\n<h3>Files should be:</h3>\n"
+                + "\n.Uploading seperatly and not in one large file\n" + "\n.a maximum of 1000MB in size (large files must be split)\n"
+                + "\n.labelled clearly, e.g. applicant-name-B1-for.pdf\n" + "<h3>Already uploaded files:</h3>\n" + "\n-None\n")
+            .label("documentsUploadObjets2", "Add a file\n" + "\nUpload a file to the system")
+            .optional(CicCase::getCaseDocumentsCIC)
+            .done();
+    }
+
+    private void furtherDetails(PageBuilder pageBuilder) {
+        pageBuilder.page("objectFurtherDetails")
+            .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
+            .complex(CaseData::getCicCase)
+            .optional(CicCase::getSchemeCic)
+            .optional(CicCase::getClaimLinkedToCic)
+            .optional(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
+            .optional(CicCase::getCompensationClaimLinkCIC)
+            .optional(CicCase::getPoliceAuthority)
+            .optional(CicCase::getFormReceivedInTime)
+            .optional(CicCase::getMissedTheDeadLineCic)
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
@@ -150,9 +200,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
             .build();
     }
-
-
-
 
 
 }
