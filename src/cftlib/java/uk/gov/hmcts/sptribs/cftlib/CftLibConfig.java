@@ -19,6 +19,7 @@ import java.util.List;
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
+    public static final String CLASSPATH_CFTLIB_AM_ROLE_ASSIGNMENTS_JSON = "classpath:cftlib-am-role-assignments.json";
     @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
     String defName;
 
@@ -57,7 +58,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             "pui-user-manager"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
-        var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
+        var json = IOUtils.toString(resourceLoader.getResource(CLASSPATH_CFTLIB_AM_ROLE_ASSIGNMENTS_JSON)
             .getInputStream(), Charset.defaultCharset());
         lib.configureRoleAssignments(json);
 

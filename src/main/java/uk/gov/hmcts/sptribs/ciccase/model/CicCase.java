@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -69,14 +70,14 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String comment;
+
     @CCD(
         //label = "Add a Subject",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
-    private SubjectCIC subjectCIC;
+    private Set<SubjectCIC> subjectCIC;
 
     @CCD(
         //label = "Add an Applicant",
@@ -85,14 +86,14 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
 
     )
-    private ApplicantCIC applicantCIC;
+    private Set<ApplicantCIC> applicantCIC;
 
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private RepresentativeCIC representativeCic;
+    private Set<RepresentativeCIC> representativeCIC;
 
     @CCD(
         label = "Full Name",
@@ -124,11 +125,58 @@ public class CicCase {
 
 
     @CCD(
-        label = "What is their contact preference?",
+        label = "What is their contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private ContactPreferenceType contactDetailsPreference;
+    private ContactPreferenceType contactPreferenceType;
+
+
+    @CCD(
+        typeOverride = FixedList,
+        typeParameterOverride = "SchemeCic",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private SchemeCic schemeCic;
+
+    @CCD(
+        label = "CICA reference number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String cicaReferenceNumber;
+
+    @CCD(
+        label = "Police authority management incident",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String policeAuthority;
+    @CCD(
+        label = "Has the tribunal form received in time?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo formReceivedInTime;
+    @CCD(
+        label = "Has the applicant explained why they missed the deadline?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo missedTheDeadLineCic;
+
+    @CCD(
+        label = "Have any claims linked to this case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
+    )
+    private YesOrNo claimLinkedToCic;
+
+    @CCD(
+        label = "Are there any ongoing compensation claims linked to this case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
+    )
+    private YesOrNo compensationClaimLinkCIC;
     private ApplicantCICDetails applicantCICDetails;
     private RepresentativeCICDetails representativeCICDetails;
+    private ContactPreferencesDetailsCIC contactDetailsPreference;
+    private CaseDocumentsCIC caseDocumentsCIC;
+
 
 }
