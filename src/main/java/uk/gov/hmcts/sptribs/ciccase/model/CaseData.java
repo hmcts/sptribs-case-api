@@ -52,7 +52,7 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CicCase cicCase = new CicCase();
 
     @JsonUnwrapped(prefix = "notifications")
