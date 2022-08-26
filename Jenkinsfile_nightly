@@ -9,6 +9,6 @@ properties([
 
 def type = "java"
 def product = "sptribs"
-def component = "case=api"
+def component = "case-api"
 
 withNightlyPipeline(type, product, component) {}
