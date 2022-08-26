@@ -118,7 +118,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private void selectParties(PageBuilder pageBuilder) {
         pageBuilder
             .page("objectSubjects")
-            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
+            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + CASE_RECORD_DRAFT)
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getSubjectCIC)
             .optional(CicCase::getApplicantCIC)
