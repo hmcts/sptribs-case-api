@@ -16,7 +16,4 @@ public enum CaseCategory implements HasLabel {
 
     private final String label;
 
-    public boolean isAssessment() {
-        return ASSESSMENT.name().equalsIgnoreCase(this.name());
-    }
 }
