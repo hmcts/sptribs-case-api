@@ -1,34 +1,36 @@
 package uk.gov.hmcts.sptribs.common.event;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.solicitor.service.CcdAccessService;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
+import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateTestCaseTest {
+class CreateTestCaseTest {
 
     @Mock
-    private CcdAccessService ccdAccessService;
+    private FeatureToggleService featureToggleService;
 
     @Mock
-    private HttpServletRequest httpServletRequest;
-
-    @Mock
-    private ObjectMapper objectMapper;
+    private SubmissionService submissionService;
 
     @InjectMocks
     private CreateTestCase createTestCase;
@@ -48,5 +50,16 @@ public class CreateTestCaseTest {
         assertThat(response.getErrors()).isNull();
     }
 
+    @Test
+    void shouldAddConfigurationToConfigBuilder() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        when(featureToggleService.isCicCreateCaseFeatureEnabled()).thenReturn(true);
+        createTestCase.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .contains("create-test-application");
+    }
 
 }
