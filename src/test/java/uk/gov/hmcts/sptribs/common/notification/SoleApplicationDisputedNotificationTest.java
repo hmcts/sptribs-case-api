@@ -71,14 +71,17 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosDisputedEmailToSoleApplicantWithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.getApplication().setIssueDate(LocalDate.now());
         ReflectionTestUtils.setField(soleApplicationDisputedNotification, "disputeDueDateOffsetDays", DISPUTE_DUE_DATE_OFFSET_DAYS);
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(getMainTemplateVars());
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLICANT_DISPUTED_AOS_SUBMITTED),
@@ -97,6 +100,7 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosDisputedEmailToSoleApplicantWithDissolutionContent() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.getApplication().setIssueDate(LocalDate.now());
@@ -105,8 +109,10 @@ class SoleApplicationDisputedNotificationTest {
         templateVars.putAll(Map.of(IS_DISSOLUTION, YES, IS_DIVORCE, NO));
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2())).thenReturn(templateVars);
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLICANT_DISPUTED_AOS_SUBMITTED),
@@ -125,6 +131,7 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosDisputedEmailToSoleRespondentWithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.getApplication().setIssueDate(LocalDate.now());
         ReflectionTestUtils.setField(soleApplicationDisputedNotification, "disputeDueDateOffsetDays", DISPUTE_DUE_DATE_OFFSET_DAYS);
@@ -133,8 +140,10 @@ class SoleApplicationDisputedNotificationTest {
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(getMainTemplateVars());
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_RESPONDENT_DISPUTED_AOS_SUBMITTED),
@@ -153,6 +162,7 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosDisputedEmailToSoleRespondentWithDivorceContentWhenLangPrefIsWelsh() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.getApplicant2().setLanguagePreferenceWelsh(YesOrNo.YES);
         data.getApplication().setIssueDate(LocalDate.now());
@@ -165,8 +175,10 @@ class SoleApplicationDisputedNotificationTest {
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(templateVars);
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_RESPONDENT_DISPUTED_AOS_SUBMITTED),
@@ -186,6 +198,7 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosDisputedEmailToSoleRespondentWithDissolutionContent() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.getApplication().setIssueDate(LocalDate.now());
@@ -196,8 +209,10 @@ class SoleApplicationDisputedNotificationTest {
         templateVars.putAll(Map.of(IS_DISSOLUTION, YES, IS_DIVORCE, NO));
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1())).thenReturn(templateVars);
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_RESPONDENT_DISPUTED_AOS_SUBMITTED),
@@ -216,6 +231,7 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosDisputedEmailToApplicant1SolicitorWithCorrectContent() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.getApplicant1().getSolicitor().setName(TEST_SOLICITOR_NAME);
         data.getApplicant1().getSolicitor().setReference(TEST_REFERENCE);
@@ -225,8 +241,10 @@ class SoleApplicationDisputedNotificationTest {
         when(commonContent.basicTemplateVars(data, 1234567890123456L)).thenReturn(getMainTemplateVars());
         when(commonContent.getProfessionalUsersSignInUrl(1234567890123456L)).thenReturn(PROFESSIONAL_USERS_SIGN_IN_URL);
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant1Solicitor(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(SOLE_AOS_SUBMITTED_APPLICANT_1_SOLICITOR),
@@ -250,6 +268,7 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosSubmittedEmailToRespondentSolicitorWithDivorceAndDisputedContent() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.setApplicant2(applicantRepresentedBySolicitor());
         data.getApplication().setIssueDate(LocalDate.of(2021, 6, 18));
@@ -257,8 +276,10 @@ class SoleApplicationDisputedNotificationTest {
 
         when(commonContent.basicTemplateVars(data, 1234567890123456L)).thenReturn(getMainTemplateVars());
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant2Solicitor(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(SOLE_AOS_SUBMITTED_RESPONDENT_SOLICITOR),
@@ -280,6 +301,7 @@ class SoleApplicationDisputedNotificationTest {
 
     @Test
     void shouldSendAosSubmittedEmailToRespondentSolicitorWithDissolutionAndDisputedContent() {
+        //Given
         CaseData data = validCaseDataForAosSubmitted();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.setApplicant2(applicantRepresentedBySolicitor());
@@ -288,8 +310,10 @@ class SoleApplicationDisputedNotificationTest {
 
         when(commonContent.basicTemplateVars(data, 1234567890123456L)).thenReturn(getMainTemplateVars());
 
+        //When
         soleApplicationDisputedNotification.sendToApplicant2Solicitor(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(SOLE_AOS_SUBMITTED_RESPONDENT_SOLICITOR),

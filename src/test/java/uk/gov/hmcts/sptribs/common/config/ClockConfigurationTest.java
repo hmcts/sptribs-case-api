@@ -13,9 +13,10 @@ class ClockConfigurationTest {
 
     @Test
     void shouldReturnSystemDefaultClock() {
-
+        //When
         final Clock clock = new ClockConfiguration().clock();
 
+        //Then
         assertNotNull(clock);
         assertThat(clock.getZone(), is(ZoneId.systemDefault()));
     }

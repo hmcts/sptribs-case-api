@@ -25,15 +25,17 @@ class CoversheetSolicitorTemplateContentTest {
 
     @Test
     void shouldReturnCoversheetTemplateContent() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setSolicitor(Solicitor.builder()
             .name(APPLICANT_2_SOLICITOR_NAME)
             .address(APPLICANT_2_SOLICITOR_ADDRESS)
             .build());
 
+        //When
         final Map<String, Object> result = coversheetSolicitorTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         Map<String, Object> expectedEntries = new LinkedHashMap<>();
         expectedEntries.put("caseReference", formatId(1616591401473378L));
         expectedEntries.put("solicitorName", APPLICANT_2_SOLICITOR_NAME);

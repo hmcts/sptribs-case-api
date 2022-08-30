@@ -56,10 +56,13 @@ class CaseworkerAddNoteTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
+        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        //When
         caseworkerAddNote.configure(configBuilder);
 
+        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ADD_NOTE);
@@ -67,6 +70,7 @@ class CaseworkerAddNoteTest {
 
     @Test
     public void shouldSuccessfullyAddCaseNoteToCaseDataWhenThereAreNoExistingCaseNotes() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
 
@@ -86,9 +90,11 @@ class CaseworkerAddNoteTest {
 
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(getCaseworkerUser());
 
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
+        //Then
         assertThat(response.getData().getNotes())
             .extracting("id", "value.author", "value.note")
             .contains(tuple("1", "testFname testSname", "This is a test note"));
@@ -106,6 +112,7 @@ class CaseworkerAddNoteTest {
 
     @Test
     public void shouldSuccessfullyAddCaseNoteToStartOfCaseNotesListWhenThereIsExistingCaseNote() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note 2");
 
@@ -136,9 +143,11 @@ class CaseworkerAddNoteTest {
 
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(getCaseworkerUser());
 
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
+        //Then
         assertThat(response.getData().getNotes())
             .extracting("id", "value.author", "value.note")
             .containsExactly(

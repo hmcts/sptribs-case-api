@@ -23,10 +23,11 @@ class SystemUpdateIssueDateTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
+        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
+        //When
         event.configure(configBuilder);
-
+        //When
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_SYSTEM_USER_UPDATE_ISSUE_DATE);

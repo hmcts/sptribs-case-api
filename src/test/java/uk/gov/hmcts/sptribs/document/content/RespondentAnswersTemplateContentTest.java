@@ -52,7 +52,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForRespondentAnswers() {
-
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant2().setLegalProceedingsDetails("some description");
@@ -69,8 +69,10 @@ public class RespondentAnswersTemplateContentTest {
         caseData.getApplicant2().setFirstName("app2fname");
         caseData.getApplicant2().setLastName("app2lname");
 
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(ISSUE_DATE, "28 April 2021"),
             entry(CCD_CASE_REFERENCE, FORMATTED_TEST_CASE_ID),
@@ -87,6 +89,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateDisputingDivorceContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant2().setLegalProceedingsDetails("some description");
@@ -109,8 +112,10 @@ public class RespondentAnswersTemplateContentTest {
 
         caseData.getApplication().setMarriageDetails(marriageDetails);
 
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, MARRIAGE),
             entry(THE_APPLICATION, A_DIVORCE_APPLICATION),
@@ -120,6 +125,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateDisputingCivilPartnershipContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant2().setLegalProceedingsDetails("some description");
@@ -142,8 +148,11 @@ public class RespondentAnswersTemplateContentTest {
         marriageDetails.setApplicant2Name("app2fname app2lname");
 
         caseData.getApplication().setMarriageDetails(marriageDetails);
+
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, CIVIL_PARTNERSHIP),
             entry(THE_APPLICATION, END_A_CIVIL_PARTNERSHIP),
@@ -153,6 +162,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateNotDisputingDivorceContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant2().setLegalProceedingsDetails("some description");
@@ -175,8 +185,10 @@ public class RespondentAnswersTemplateContentTest {
 
         caseData.getApplication().setMarriageDetails(marriageDetails);
 
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, MARRIAGE),
             entry(THE_APPLICATION, A_DIVORCE_APPLICATION),
@@ -186,6 +198,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateNotDisputingCivilPartnershipContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant2().setLegalProceedingsDetails("some description");
@@ -209,8 +222,10 @@ public class RespondentAnswersTemplateContentTest {
 
         caseData.getApplication().setMarriageDetails(marriageDetails);
 
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, CIVIL_PARTNERSHIP),
             entry(THE_APPLICATION, END_A_CIVIL_PARTNERSHIP),
@@ -220,6 +235,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateDisputingWelshDivorceContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant1().setLanguagePreferenceWelsh(YES);
@@ -243,8 +259,10 @@ public class RespondentAnswersTemplateContentTest {
 
         caseData.getApplication().setMarriageDetails(marriageDetails);
 
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, MARRIAGE_CY),
             entry(THE_APPLICATION, A_DIVORCE_APPLICATION_CY),
@@ -254,6 +272,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateDisputingWelshCivilPartnershipContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant1().setLanguagePreferenceWelsh(YES);
@@ -275,10 +294,12 @@ public class RespondentAnswersTemplateContentTest {
         final var marriageDetails = new MarriageDetails();
         marriageDetails.setApplicant1Name("app1fname app1lname");
         marriageDetails.setApplicant2Name("app2fname app2lname");
-
         caseData.getApplication().setMarriageDetails(marriageDetails);
+
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, CIVIL_PARTNERSHIP_CY),
             entry(THE_APPLICATION, END_A_CIVIL_PARTNERSHIP_CY),
@@ -288,6 +309,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateNotDisputingWelshDivorceContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant1().setLanguagePreferenceWelsh(YES);
@@ -311,8 +333,10 @@ public class RespondentAnswersTemplateContentTest {
 
         caseData.getApplication().setMarriageDetails(marriageDetails);
 
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, MARRIAGE_CY),
             entry(THE_APPLICATION, A_DIVORCE_APPLICATION_CY),
@@ -322,6 +346,7 @@ public class RespondentAnswersTemplateContentTest {
 
     @Test
     void shouldGenerateNotDisputingWelshCivilPartnershipContent() {
+        //Given
         final var caseData = caseData();
         caseData.getApplication().setIssueDate(LOCAL_DATE);
         caseData.getApplicant1().setLanguagePreferenceWelsh(YES);
@@ -346,8 +371,10 @@ public class RespondentAnswersTemplateContentTest {
 
         caseData.getApplication().setMarriageDetails(marriageDetails);
 
+        //When
         final Map<String, Object> templateContent = respondentAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, CIVIL_PARTNERSHIP_CY),
             entry(THE_APPLICATION, END_A_CIVIL_PARTNERSHIP_CY),

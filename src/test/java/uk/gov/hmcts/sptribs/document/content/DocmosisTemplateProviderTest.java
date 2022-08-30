@@ -29,21 +29,25 @@ class DocmosisTemplateProviderTest {
 
     @Test
     void shouldReturnTemplateForEnglish() {
-
+        //Given
         mockDocmosisTemplateConfig();
 
+        //When
         final String name = docmosisTemplateProvider.templateNameFor(DIVORCE_DRAFT_APPLICATION, ENGLISH);
 
+        //Then
         assertThat(name, is(ENGLISH_TEMPLATE_ID));
     }
 
     @Test
     void shouldReturnTemplateForWelsh() {
-
+        //Given
         mockDocmosisTemplateConfig();
 
+        //When
         final String name = docmosisTemplateProvider.templateNameFor(DIVORCE_DRAFT_APPLICATION, WELSH);
 
+        //Then
         assertThat(name, is(WELSH_TEMPLATE_ID));
     }
 

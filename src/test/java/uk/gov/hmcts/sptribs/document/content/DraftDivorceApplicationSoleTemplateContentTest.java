@@ -98,6 +98,7 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForSoleDivorceApplication() {
+        //Given
         CaseData caseData = caseData();
         caseData.setApplicationType(SOLE_APPLICATION);
         caseData.getApplicant1().setFinancialOrder(NO);
@@ -128,8 +129,10 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
         when(applicationTemplateDataProvider.deriveJurisdictionList(any(), eq(TEST_CASE_ID)))
             .thenReturn(List.of(new ApplicationTemplateDataProvider.Connection(APP_1_APP_2_RESIDENT.getLabel())));
 
+        //When
         Map<String, Object> templateContent = draftApplicationTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_FIRST_NAME, TEST_FIRST_NAME),
             entry(APPLICANT_1_FULL_NAME, caseData.getApplicant1().getFullName()),
@@ -161,6 +164,7 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForJointDivorceApplication() {
+        //Given
         CaseData caseData = caseData();
         caseData.setApplicationType(JOINT_APPLICATION);
         caseData.getApplicant1().setFinancialOrder(NO);
@@ -184,8 +188,10 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
         when(applicantTemplateDataProvider.deriveJointFinancialOrder(eq(caseData.getApplicant2().getFinancialOrdersFor())))
             .thenReturn("children of the applicant and the respondent.");
 
+        //When
         Map<String, Object> templateContent = draftApplicationTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_FIRST_NAME, TEST_FIRST_NAME),
             entry(APPLICANT_1_FULL_NAME, caseData.getApplicant1().getFullName()),
@@ -216,6 +222,7 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForSoleApplicationForDissolution() {
+        //Given
         CaseData caseData = caseData();
         caseData.setApplicationType(SOLE_APPLICATION);
         caseData.setDivorceOrDissolution(DISSOLUTION);
@@ -233,8 +240,10 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
         when(applicationTemplateDataProvider.deriveJurisdictionList(any(), eq(TEST_CASE_ID)))
             .thenReturn(List.of(new ApplicationTemplateDataProvider.Connection(APP_1_APP_2_RESIDENT.getLabel())));
 
+        //When
         Map<String, Object> templateContent = draftApplicationTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_FIRST_NAME, TEST_FIRST_NAME),
             entry(APPLICANT_1_FULL_NAME, caseData.getApplicant1().getFullName()),
@@ -264,6 +273,7 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForJointApplicationForDissolution() {
+        //Given
         CaseData caseData = caseData();
         caseData.setApplicationType(JOINT_APPLICATION);
         caseData.setDivorceOrDissolution(DISSOLUTION);
@@ -282,8 +292,10 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
         when(applicationTemplateDataProvider.deriveJurisdictionList(any(), eq(TEST_CASE_ID)))
             .thenReturn(List.of(new ApplicationTemplateDataProvider.Connection(APP_1_APP_2_RESIDENT.getLabel())));
 
+        //When
         Map<String, Object> templateContent = draftApplicationTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_FIRST_NAME, TEST_FIRST_NAME),
             entry(APPLICANT_1_FULL_NAME, caseData.getApplicant1().getFullName()),
@@ -309,6 +321,7 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
 
     @Test
     public void shouldConvertMarriageDateToCorrectFormat() {
+        //Given
         CaseData caseData = caseData();
         caseData.setApplicationType(SOLE_APPLICATION);
         MarriageDetails marriageDetails = new MarriageDetails();
@@ -322,8 +335,10 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
         when(applicationTemplateDataProvider.deriveJurisdictionList(any(), eq(TEST_CASE_ID)))
             .thenReturn(List.of(new ApplicationTemplateDataProvider.Connection(APP_1_APP_2_RESIDENT.getLabel())));
 
+        //When
         Map<String, Object> templateContent = draftApplicationTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(MARRIAGE_DATE, "4 June 2019"),
             entry(PLACE_OF_MARRIAGE, "UK")

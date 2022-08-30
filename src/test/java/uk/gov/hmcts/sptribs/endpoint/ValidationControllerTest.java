@@ -22,6 +22,7 @@ public class ValidationControllerTest {
 
     @Test
     void shouldReturnErrorsIfInvalidFormTypePassed() {
+        //Given
         final String invalidFormType = "invalid-form-type";
         final OcrDataValidationRequest request = ocrDataValidationRequest();
 
@@ -31,8 +32,10 @@ public class ValidationControllerTest {
             .status(ERRORS)
             .build();
 
+        //When
         ResponseEntity<OcrValidationResponse> response = controller.validate(invalidFormType, request);
 
+        //When
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo(expectedResponse);
     }

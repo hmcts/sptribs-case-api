@@ -25,16 +25,20 @@ class SetApplicantOfflineStatusTest {
 
     @Test
     void testSetsApplicant1AsOnline() {
+        //Given
         final var details = new CaseDetails<CaseData, State>();
         details.setData(caseData());
 
+        //When
         final var result = task.apply(details);
 
+        //Then
         assertEquals(result.getData().getApplicant1().getOffline(), NO);
     }
 
     @Test
     void testSetsApplicant2AsOnlineIfRepresentedAndOrganisationPolicyIsPresent() {
+        //Given
         final var details = new CaseDetails<CaseData, State>();
         final var data = caseData();
 
@@ -59,13 +63,16 @@ class SetApplicantOfflineStatusTest {
         );
         details.setData(data);
 
+        //When
         final var result = task.apply(details);
 
+        //Then
         assertEquals(result.getData().getApplicant2().getOffline(), NO);
     }
 
     @Test
     void testSetsApplicant2AsOnlineIfNotRepresentedButEmailProvided() {
+        //Given
         final var details = new CaseDetails<CaseData, State>();
         final var data = caseData();
 
@@ -73,13 +80,16 @@ class SetApplicantOfflineStatusTest {
         data.getApplicant2().setEmail("not empty");
         details.setData(data);
 
+        //When
         final var result = task.apply(details);
 
+        //Then
         assertEquals(result.getData().getApplicant2().getOffline(), NO);
     }
 
     @Test
     void testSetsApplicant2AsOfflineIfNotRepresentedAndNoEmail() {
+        //Given
         final var details = new CaseDetails<CaseData, State>();
         final var data = caseData();
 
@@ -87,13 +97,16 @@ class SetApplicantOfflineStatusTest {
         data.getApplicant2().setEmail("");
         details.setData(data);
 
+        //When
         final var result = task.apply(details);
 
+        //Then
         assertEquals(result.getData().getApplicant2().getOffline(), YES);
     }
 
     @Test
     void testSetsApplicant2AsOfflineIfRepresentedAndDoesNotHaveOrganisationPolicy() {
+        //Given
         final var details = new CaseDetails<CaseData, State>();
         final var data = caseData();
         data.getApplicant2().setSolicitor(
@@ -106,8 +119,10 @@ class SetApplicantOfflineStatusTest {
         data.getApplicant2().setSolicitorRepresented(YES);
         details.setData(data);
 
+        //When
         final var result = task.apply(details);
 
+        //Then
         assertEquals(result.getData().getApplicant2().getOffline(), YES);
     }
 }

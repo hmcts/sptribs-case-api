@@ -15,9 +15,9 @@ class DefaultStateAccessExcludingCAATest {
 
     @Test
     void shouldGrantSolicitorsAndCitizens() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new DefaultStateAccessExcludingCAA().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(2)
             .contains(

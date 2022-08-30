@@ -25,19 +25,21 @@ class ScheduledTaskRunnerTest {
 
     @Test
     void shouldFindTheBean() {
+        //Given
         when(context.getBean("lowerCaseBean")).thenReturn(task);
-
+        //When
         taskRunner.run("LowerCaseBean");
-
+        //Then
         verify(task).run();
     }
 
     @Test
     void shouldNotFindTheBean() {
+        //Given
         when(context.getBean("missingBean")).thenThrow();
-
+        //When
         taskRunner.run("missingBean");
-
+        //Then
         verifyNoInteractions(task);
     }
 

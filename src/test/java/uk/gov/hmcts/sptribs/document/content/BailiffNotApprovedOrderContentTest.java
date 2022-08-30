@@ -60,6 +60,7 @@ public class BailiffNotApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDivorceContent() {
+        //Given
         setMockClock(clock);
 
         final CaseData caseData = jointCaseDataWithOrderSummary();
@@ -68,8 +69,10 @@ public class BailiffNotApprovedOrderContentTest {
 
         Mockito.when(commonContent.getPartner(caseData, caseData.getApplicant2(), LanguagePreference.ENGLISH)).thenReturn("wife");
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CCD_CASE_REFERENCE, FORMATTED_TEST_CASE_ID),
             entry(DATE, LocalDate.now().format(DATE_TIME_FORMATTER)),
@@ -84,6 +87,7 @@ public class BailiffNotApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDissolutionContent() {
+        //Given
         setMockClock(clock);
 
         final CaseData caseData = jointCaseDataWithOrderSummary();
@@ -92,8 +96,10 @@ public class BailiffNotApprovedOrderContentTest {
         caseData.getAlternativeService().setReceivedServiceApplicationDate(SERVICE_APPLICATION_DATE);
         Mockito.when(commonContent.getPartner(caseData, caseData.getApplicant2(), LanguagePreference.ENGLISH)).thenReturn("civil partner");
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CCD_CASE_REFERENCE, FORMATTED_TEST_CASE_ID),
             entry(DATE, LocalDate.now().format(DATE_TIME_FORMATTER)),
@@ -108,6 +114,7 @@ public class BailiffNotApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDivorceWelshContent() {
+        //Given
         setMockClock(clock);
 
         final Applicant applicant1 = Applicant.builder()
@@ -130,8 +137,10 @@ public class BailiffNotApprovedOrderContentTest {
 
         Mockito.when(commonContent.getPartner(caseData, caseData.getApplicant2(), LanguagePreference.WELSH)).thenReturn("gŵr");
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(THE_APPLICATION, DIVORCE_APPLICATION_CY),
             entry(PARTNER, "gŵr")
@@ -140,6 +149,7 @@ public class BailiffNotApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDissolutionWelshContent() {
+        //Given
         setMockClock(clock);
 
         final Applicant applicant1 = Applicant.builder()
@@ -162,8 +172,10 @@ public class BailiffNotApprovedOrderContentTest {
 
         Mockito.when(commonContent.getPartner(caseData, caseData.getApplicant2(), LanguagePreference.WELSH)).thenReturn("gŵr");
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(THE_APPLICATION, END_CIVIL_PARTNERSHIP_CY),
             entry(PARTNER, "gŵr")
