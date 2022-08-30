@@ -25,7 +25,7 @@ class CoversheetApplicant2TemplateContentTest {
 
     @Test
     void shouldReturnCoversheetTemplateContent() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setFirstName(APPLICANT_2_FIRST_NAME);
         caseData.getApplicant2().setLastName(APPLICANT_2_LAST_NAME);
@@ -36,6 +36,8 @@ class CoversheetApplicant2TemplateContentTest {
                 .postCode("postcode")
                 .build()
         );
+
+        //When
         final Map<String, Object> result = coversheetApplicant2TemplateContent.apply(caseData, TEST_CASE_ID);
 
         Map<String, Object> expectedEntries = new LinkedHashMap<>();
@@ -44,6 +46,7 @@ class CoversheetApplicant2TemplateContentTest {
         expectedEntries.put("applicantLastName", APPLICANT_2_LAST_NAME);
         expectedEntries.put("applicantAddress", "line 1\npostcode");
 
+        //Then
         assertThat(result).containsExactlyInAnyOrderEntriesOf(expectedEntries);
     }
 }

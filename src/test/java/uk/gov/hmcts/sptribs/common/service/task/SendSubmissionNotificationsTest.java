@@ -32,34 +32,41 @@ class SendSubmissionNotificationsTest {
 
     @Test
     void shouldDispatchSubmittedNotificationsAndOutstandingActionNotificationsIfSubmittedState() {
+        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
+        //When
         sendSubmissionNotifications.apply(caseDetails);
 
+        //Then
         //verify(notificationDispatcher).send(applicationSubmittedNotification, caseData, TEST_CASE_ID);
         //verify(notificationDispatcher).send(applicationOutstandingActionNotification, caseData, TEST_CASE_ID);
     }
 
     @Test
     void shouldDispatchOutstandingAndSubmittedNotificationIfAwaitingHwfDecisionState() {
+        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
         caseDetails.setState(AwaitingHWFDecision);
 
+        //When
         sendSubmissionNotifications.apply(caseDetails);
 
+        //Then
         //verify(notificationDispatcher).send(applicationSubmittedNotification, caseData, TEST_CASE_ID);
         //verify(notificationDispatcher).send(applicationOutstandingActionNotification, caseData, TEST_CASE_ID);
     }
 
     @Test
     void shouldOnlyDispatchOutstandingNotificationIfAwaitingHwfDecisionStateAndCannotUpload() {
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplication().setApplicant1CannotUploadSupportingDocument(Set.of(DocumentType.MARRIAGE_CERTIFICATE));
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -67,36 +74,44 @@ class SendSubmissionNotificationsTest {
         caseDetails.setData(caseData);
         caseDetails.setState(AwaitingHWFDecision);
 
+        //When
         sendSubmissionNotifications.apply(caseDetails);
 
+        //Then
         //verify(notificationDispatcher).send(applicationOutstandingActionNotification, caseData, TEST_CASE_ID);
         verifyNoMoreInteractions(notificationDispatcher);
     }
 
     @Test
     void shouldOnlyDispatchOutstandingNotificationIfAwaitingDocumentsState() {
+        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
         caseDetails.setState(AwaitingDocuments);
 
+        //When
         sendSubmissionNotifications.apply(caseDetails);
 
+        //Then
         //verify(notificationDispatcher).send(applicationOutstandingActionNotification, caseData, TEST_CASE_ID);
         verifyNoMoreInteractions(notificationDispatcher);
     }
 
     @Test
     void shouldNotDispatchSubmittedNotificationsIfOtherState() {
+        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
         caseDetails.setState(AwaitingPayment);
 
+        //When
         sendSubmissionNotifications.apply(caseDetails);
 
+        //Then
         //verify(notificationDispatcher).send(applicationOutstandingActionNotification, caseData, TEST_CASE_ID);
         verifyNoMoreInteractions(notificationDispatcher);
     }

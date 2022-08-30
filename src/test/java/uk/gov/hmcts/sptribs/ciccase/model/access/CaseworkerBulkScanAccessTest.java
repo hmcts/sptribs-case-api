@@ -19,9 +19,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 public class CaseworkerBulkScanAccessTest {
     @Test
     void shouldGrantCaseworkerBulkScanAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new CaseworkerBulkScanAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(11)
             .contains(

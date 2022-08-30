@@ -47,7 +47,7 @@ class GenerateCertificateOfEntitlementTest {
 
     @Test
     void shouldGenerateCertificateOfEntitlementAndUpdateCaseData() {
-
+        //Given
         final Map<String, Object> templateContent = new HashMap<>();
         final CaseData caseData = CaseData.builder()
             .applicant1(Applicant.builder()
@@ -73,12 +73,14 @@ class GenerateCertificateOfEntitlementTest {
             formatDocumentName(TEST_CASE_ID, CERTIFICATE_OF_ENTITLEMENT_NAME, LocalDateTime.now(clock))))
             .thenReturn(document);
 
+        //When
         final CaseDetails<CaseData, State> result = generateCertificateOfEntitlement.apply(caseDetails);
 
         final DivorceDocument certificateOfEntitlementDocument = result.getData()
             .getConditionalOrder()
             .getCertificateOfEntitlementDocument();
 
+        //Then
         assertThat(certificateOfEntitlementDocument.getDocumentLink()).isSameAs(document);
         assertThat(certificateOfEntitlementDocument.getDocumentFileName()).isEqualTo("filename");
         assertThat(certificateOfEntitlementDocument.getDocumentType()).isEqualTo(CERTIFICATE_OF_ENTITLEMENT);

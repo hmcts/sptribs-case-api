@@ -39,7 +39,7 @@ class ApplicationTemplateDataProviderTest {
 
     @Test
     void shouldReturnListOfJurisdictionsIfAllSelected() {
-
+        //Given
         final var caseId = 124872587L;
         final var application = Application.builder().build();
         application.getJurisdiction().setConnections(Set.of(
@@ -50,9 +50,11 @@ class ApplicationTemplateDataProviderTest {
             APP_1_APP_2_DOMICILED,
             RESIDUAL_JURISDICTION_CP));
 
+        //When
         final var result
             = applicationTemplateDataProvider.deriveJurisdictionList(application, caseId);
 
+        //Then
         assertThat(result).containsExactly(
             new Connection("both parties to the marriage or civil partnership are habitually resident in England and Wales"),
             new Connection("both parties to the marriage or civil partnership were last habitually resident in England and "
@@ -69,11 +71,11 @@ class ApplicationTemplateDataProviderTest {
 
     @Test
     void shouldThrowExceptionIfNoJurisdictionConnectsSelected() {
-
+        //Given
         final var caseId = 124872587L;
         final var application = Application.builder().build();
         application.getJurisdiction().setConnections(emptySet());
-
+        //When&Then
         assertThatThrownBy(() -> applicationTemplateDataProvider.deriveJurisdictionList(application, caseId, ENGLISH))
             .isInstanceOf(InvalidCcdCaseDataException.class)
             .hasMessage("JurisdictionConnections" + EMPTY);
@@ -81,10 +83,10 @@ class ApplicationTemplateDataProviderTest {
 
     @Test
     void shouldThrowExceptionIfJurisdictionConnectionsIsNull() {
-
+        //Given
         final var caseId = 124872587L;
         final var application = Application.builder().build();
-
+        //When&Then
         assertThatThrownBy(() -> applicationTemplateDataProvider.deriveJurisdictionList(application, caseId))
             .isInstanceOf(InvalidCcdCaseDataException.class)
             .hasMessage("JurisdictionConnections" + EMPTY);
@@ -92,7 +94,7 @@ class ApplicationTemplateDataProviderTest {
 
     @Test
     void shouldReturnListOfJurisdictionsInWelshIfAllSelected() {
-
+        //Given
         final var caseId = 124872587L;
         final var application = Application.builder().build();
         application.getJurisdiction().setConnections(Set.of(
@@ -103,9 +105,11 @@ class ApplicationTemplateDataProviderTest {
             APP_1_APP_2_DOMICILED,
             RESIDUAL_JURISDICTION_CP));
 
+        //When
         final var result
             = applicationTemplateDataProvider.deriveJurisdictionList(application, caseId, WELSH);
 
+        //Then
         assertThat(result).containsExactly(
             new Connection("mae'r ddau barti i'r briodas neu bartneriaeth sifil yn preswylio'n arferol yng Nghymru neu Loegr."),
             new Connection("roedd y ddau barti i'r briodas neu bartneriaeth sifil yn preswylio'n arferol ddiwethaf yng Nghymru "
@@ -122,6 +126,7 @@ class ApplicationTemplateDataProviderTest {
 
     @Test
     public void shouldMapCorrectMarriageDetails() {
+        //Given
         Map<String, Object> templateContent = new HashMap<>();
         Application application = Application.builder()
             .marriageDetails(MarriageDetails.builder()
@@ -131,6 +136,7 @@ class ApplicationTemplateDataProviderTest {
                 .build())
             .build();
 
+        //When
         applicationTemplateDataProvider.mapMarriageDetails(templateContent, application);
 
         Map<String, Object> expectedEntries = new LinkedHashMap<>();
@@ -138,6 +144,7 @@ class ApplicationTemplateDataProviderTest {
         expectedEntries.put(COUNTRY_OF_MARRIAGE, "UK");
         expectedEntries.put(MARRIAGE_DATE, "1 January 2000");
 
+        //Then
         assertThat(templateContent).containsExactlyInAnyOrderEntriesOf(expectedEntries);
     }
 }

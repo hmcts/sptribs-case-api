@@ -19,9 +19,9 @@ class AosAccessTest {
 
     @Test
     void shouldGrantAosAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new AosAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(6)
             .contains(

@@ -29,10 +29,13 @@ public class CaseworkerCorrectPaperCaseTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
+        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        //When
         caseworkerCorrectPaperCase.configure(configBuilder);
 
+        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CORRECT_PAPER_CASE);
@@ -40,6 +43,7 @@ public class CaseworkerCorrectPaperCaseTest {
 
     @Test
     void shouldPopulateLabel() {
+        //Given
         final CaseData caseData = CaseData.builder()
             .divorceOrDissolution(DIVORCE)
             .build();
@@ -71,14 +75,17 @@ public class CaseworkerCorrectPaperCaseTest {
             .applicantOrApplicant1UC("Applicant 1")
             .build();
 
+        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCorrectPaperCase.aboutToStart(caseDetails);
 
+        //Then
         assertThat(response.getData().getLabelContent()).isEqualTo(labelContent);
     }
 
     @Test
     void shouldClearWarnings() {
+        //Given
         final CaseData caseData = new CaseData();
         caseData.getBulkScanMetaInfo().setWarnings(
             List.of(
@@ -97,9 +104,11 @@ public class CaseworkerCorrectPaperCaseTest {
         details.setId(1L);
         details.setData(caseData);
 
+        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCorrectPaperCase.aboutToSubmit(details, details);
 
+        //Then
         assertThat(response.getData().getBulkScanMetaInfo().getWarnings()).isNull();
     }
 }

@@ -33,7 +33,7 @@ class SetDateSubmittedTest {
 
     @Test
     void shouldSetDateSubmittedIfStateIsSubmitted() {
-
+        //Given
         setMockClock(clock);
         final LocalDateTime expectedDateSubmitted = getExpectedLocalDateTime();
         final LocalDate expectedDueDate = expectedDateSubmitted.plusDays(14).toLocalDate();
@@ -45,8 +45,10 @@ class SetDateSubmittedTest {
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
 
+        //When
         final CaseDetails<CaseData, State> result = setDateSubmitted.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(Submitted);
         final CaseData resultData = result.getData();
         assertThat(resultData.getApplication().getDateSubmitted()).isEqualTo(expectedDateSubmitted);
@@ -55,7 +57,7 @@ class SetDateSubmittedTest {
 
     @Test
     void shouldSetDateSubmittedIfStateIsAwaitingDocuments() {
-
+        //Given
         setMockClock(clock);
         final LocalDateTime expectedDateSubmitted = getExpectedLocalDateTime();
         final LocalDate expectedDueDate = expectedDateSubmitted.plusDays(14).toLocalDate();
@@ -67,8 +69,10 @@ class SetDateSubmittedTest {
         caseDetails.setData(caseData);
         caseDetails.setState(AwaitingDocuments);
 
+        //When
         final CaseDetails<CaseData, State> result = setDateSubmitted.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(AwaitingDocuments);
         final CaseData resultData = result.getData();
         assertThat(resultData.getApplication().getDateSubmitted()).isEqualTo(expectedDateSubmitted);
@@ -77,7 +81,7 @@ class SetDateSubmittedTest {
 
     @Test
     void shouldSetDateSubmittedIfStateIsAwaitingHwfDecision() {
-
+        //Given
         setMockClock(clock);
         final LocalDateTime expectedDateSubmitted = getExpectedLocalDateTime();
         final LocalDate expectedDueDate = expectedDateSubmitted.plusDays(14).toLocalDate();
@@ -89,8 +93,10 @@ class SetDateSubmittedTest {
         caseDetails.setData(caseData);
         caseDetails.setState(AwaitingHWFDecision);
 
+        //When
         final CaseDetails<CaseData, State> result = setDateSubmitted.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(AwaitingHWFDecision);
         final CaseData resultData = result.getData();
         assertThat(resultData.getApplication().getDateSubmitted()).isEqualTo(expectedDateSubmitted);
@@ -99,7 +105,7 @@ class SetDateSubmittedTest {
 
     @Test
     void shouldNotSetDateSubmittedIfStateIsNotSubmitted() {
-
+        //Given
         final CaseData caseData = CaseData.builder().build();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -107,8 +113,10 @@ class SetDateSubmittedTest {
         caseDetails.setData(caseData);
         caseDetails.setState(AwaitingPayment);
 
+        //When
         final CaseDetails<CaseData, State> result = setDateSubmitted.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(AwaitingPayment);
         final CaseData resultData = result.getData();
         assertThat(resultData.getApplication().getDateSubmitted()).isNull();

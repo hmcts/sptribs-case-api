@@ -21,7 +21,7 @@ class SetApplicant2EmailTest {
 
     @Test
     void shouldSetApplicant2EmailIfApplicant2InviteEmailAddressIsSetAndApplicant2EmailIsNotSet() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicant2(Applicant.builder().build())
             .caseInvite(CaseInvite.builder()
@@ -32,14 +32,16 @@ class SetApplicant2EmailTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setApplicant2Email.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getApplicant2().getEmail()).isEqualTo(TEST_USER_EMAIL);
     }
 
     @Test
     void shouldSetApplicant2EmailIfApplicant2InviteEmailAddressIsSetAndApplicant2EmailIsBlank() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicant2(Applicant.builder()
                 .email("")
@@ -52,14 +54,16 @@ class SetApplicant2EmailTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setApplicant2Email.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getApplicant2().getEmail()).isEqualTo(TEST_USER_EMAIL);
     }
 
     @Test
     void shouldNotSetApplicant2EmailIfApplicant2InviteEmailAddressIsNotSet() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicant2(Applicant.builder().build())
             .caseInvite(CaseInvite.builder()
@@ -69,14 +73,16 @@ class SetApplicant2EmailTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setApplicant2Email.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getApplicant2().getEmail()).isNull();
     }
 
     @Test
     void shouldNotSetApplicant2EmailIfApplicant2InviteEmailAddressIsBlank() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicant2(Applicant.builder()
                 .build())
@@ -88,14 +94,16 @@ class SetApplicant2EmailTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setApplicant2Email.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getApplicant2().getEmail()).isNull();
     }
 
     @Test
     void shouldNotSetApplicant2EmailIfApplicant2EmailIsSet() {
-
+        //Given
         final String email = "app2@email";
 
         final CaseData caseData = CaseData.builder()
@@ -110,14 +118,16 @@ class SetApplicant2EmailTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setApplicant2Email.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getApplicant2().getEmail()).isEqualTo(email);
     }
 
     @Test
     void shouldNotSetApplicant2EmailIfCaseInviteIsNull() {
-
+        //Given
         final String email = "app2@email";
 
         final CaseData caseData = CaseData.builder()
@@ -129,8 +139,10 @@ class SetApplicant2EmailTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setApplicant2Email.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getApplicant2().getEmail()).isEmpty();
     }
 }

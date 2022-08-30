@@ -20,8 +20,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.util.ResourceUtils.getFile;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CLASSPATH_WIREMOCK_RESPONSES_DG_ASSEMBLY_RESPONSE_JSON;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CLASSPATH_WIREMOCK_RESPONSES_DG_ASSEMBLY_RESPONSE_JSON1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SYSTEM_AUTHORISATION_TOKEN;
@@ -47,7 +45,7 @@ public final class DocAssemblyWireMock {
     }
 
     public static void stubForDocAssembly() throws IOException {
-        String expectedResponse = expectedDocAssemblyResponse(CLASSPATH_WIREMOCK_RESPONSES_DG_ASSEMBLY_RESPONSE_JSON1)
+        String expectedResponse = expectedDocAssemblyResponse("classpath:wiremock/responses/dg-assembly-response.json")
             .replace("<docUuid>", "8d2bd0f2-80e9-4b0f-b38d-2c138b243e27")
             .replace("<templateId>", "RGl2b3JjZV9DUF9NaW5pX0RyYWZ0X1BldGl0aW9uX1RlbXBsYXRlLmRvY3g=");
 
@@ -64,7 +62,7 @@ public final class DocAssemblyWireMock {
     public static void stubForDocAssemblyWith(String uuid, String templateId) throws IOException {
         String encodedTemplateId = Base64.getEncoder().encodeToString(templateId.getBytes());
 
-        String expectedResponse = expectedDocAssemblyResponse(CLASSPATH_WIREMOCK_RESPONSES_DG_ASSEMBLY_RESPONSE_JSON)
+        String expectedResponse = expectedDocAssemblyResponse("classpath:wiremock/responses/dg-assembly-response.json")
             .replace("<docUuid>", uuid)
             .replace("<templateId>", templateId);
 

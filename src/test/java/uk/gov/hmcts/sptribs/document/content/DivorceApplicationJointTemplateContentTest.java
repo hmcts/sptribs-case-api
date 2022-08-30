@@ -80,7 +80,7 @@ class DivorceApplicationJointTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForJointApplicationWithTypeDivorce() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -116,8 +116,10 @@ class DivorceApplicationJointTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = divorceApplicationJointTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP, "for a final order of divorce."),
             entry(DIVORCE_OR_DISSOLUTION, "divorce application"),
@@ -156,7 +158,7 @@ class DivorceApplicationJointTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyContentFromCaseDataForJointApplicationWithTypeDissolution() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .firstName(TEST_FIRST_NAME)
             .middleName(TEST_MIDDLE_NAME)
@@ -192,8 +194,10 @@ class DivorceApplicationJointTemplateContentTest {
         caseData.getApplication().getMarriageDetails().setApplicant1Name(applicant1MarriageName);
         caseData.getApplication().getMarriageDetails().setApplicant2Name(applicant2MarriageName);
 
+        //When
         final Map<String, Object> result = divorceApplicationJointTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP, "for the dissolution of their civil partnership."),
             entry(DIVORCE_OR_DISSOLUTION, "application to end a civil partnership"),
