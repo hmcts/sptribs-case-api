@@ -36,7 +36,7 @@ class SetSubmissionAndDueDateTest {
 
     @Test
     void shouldSetDueDateAndDateAosSubmittedIfStateIsDisputed() {
-
+        //Given
         setMockClock(clock);
 
         final LocalDate issueDate = getExpectedLocalDate();
@@ -50,15 +50,17 @@ class SetSubmissionAndDueDateTest {
 
         when(holdingPeriodService.getDueDateFor(issueDate)).thenReturn(issueDate);
 
+        //When
         final CaseDetails<CaseData, State> result = setSubmissionAndDueDate.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getAcknowledgementOfService().getDateAosSubmitted()).isEqualTo(getExpectedLocalDateTime());
         assertThat(result.getData().getDueDate()).isEqualTo(issueDate);
     }
 
     @Test
     void shouldNotSetDueDateAndDateAosSubmittedIfStateHasNotChanged() {
-
+        //Given
         setMockClock(clock);
 
         final LocalDate dueDate = getExpectedLocalDate();
@@ -70,8 +72,10 @@ class SetSubmissionAndDueDateTest {
         caseDetails.setState(AwaitingConditionalOrder);
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setSubmissionAndDueDate.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getAcknowledgementOfService().getDateAosSubmitted()).isEqualTo(getExpectedLocalDateTime());
         assertThat(result.getData().getDueDate()).isEqualTo(dueDate);
     }

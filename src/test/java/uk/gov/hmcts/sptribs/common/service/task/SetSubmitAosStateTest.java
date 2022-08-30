@@ -23,40 +23,49 @@ class SetSubmitAosStateTest {
 
     @Test
     void shouldSetStateToHoldingIfPreviousStateIsAwaitingAos() {
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setState(AosDrafted);
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setSubmitAosState.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(Holding);
     }
 
     @Test
     void shouldSetStateToHoldingIfPreviousStateIsAosOverdue() {
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setState(AosOverdue);
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setSubmitAosState.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(Holding);
     }
 
     @Test
     void shouldNotSetStateToHoldingIfPreviousStateIsNotAwaitingAosOrAosOverdue() {
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setState(AwaitingConditionalOrder);
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = setSubmitAosState.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(AwaitingConditionalOrder);
     }
 }

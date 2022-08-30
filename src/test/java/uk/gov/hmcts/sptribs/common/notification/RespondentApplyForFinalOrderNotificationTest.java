@@ -45,25 +45,31 @@ class RespondentApplyForFinalOrderNotificationTest {
 
     @Test
     public void shouldNotSendRespondentApplyForFinalOrderEmailToApplicant1() {
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
         data.setApplicationType(SOLE_APPLICATION);
 
+        //When
         respondentApplyForFinalOrderNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     public void shouldSendRespondentApplyForFinalOrderEmailToApplicant2() {
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
         data.setApplicationType(SOLE_APPLICATION);
 
+        //When
         respondentApplyForFinalOrderNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(RESPONDENT_APPLY_FOR_FINAL_ORDER),
@@ -74,6 +80,7 @@ class RespondentApplyForFinalOrderNotificationTest {
 
     @Test
     public void shouldSendRespondentApplyForFinalOrderEmailWithCorrectContent() {
+        //Given
         final var data = validCaseDataForAwaitingFinalOrder();
         final var applicant2 = getApplicant2(MALE);
         data.setApplicant2(applicant2);
@@ -82,8 +89,10 @@ class RespondentApplyForFinalOrderNotificationTest {
         when(commonContent.conditionalOrderTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(getConditionalOrderTemplateVars(SOLE_APPLICATION));
 
+        //When
         respondentApplyForFinalOrderNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             any(),
             any(),

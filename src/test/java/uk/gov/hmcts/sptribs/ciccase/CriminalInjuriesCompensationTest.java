@@ -20,10 +20,13 @@ public class CriminalInjuriesCompensationTest {
 
     @Test
     void shouldAddSystemUpdateUserAccessToDraftStateWhenEnvironmentIsAat() {
+        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        //When
         criminalInjuriesCompensation.configure(configBuilder);
 
+        //Then
         assertThat(configBuilder.build().getCaseType()).isEqualTo("CIC");
 
     }

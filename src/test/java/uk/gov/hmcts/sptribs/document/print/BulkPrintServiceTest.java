@@ -85,6 +85,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldReturnLetterIdForValidRequest() throws IOException {
+        //Given
         List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
@@ -161,7 +162,10 @@ class BulkPrintServiceTest {
             "letterType"
         );
 
+        //When
         UUID letterId = bulkPrintService.print(print);
+
+        //Then
         assertThat(letterId).isEqualTo(uuid);
 
         verify(sendLetterApi).sendLetter(
@@ -207,6 +211,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldReturnLetterIdForAosRespondentPackWithoutD10DocumentsWhenPrintRequestIsInvoked() throws IOException {
+        //Given
         List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
@@ -283,7 +288,10 @@ class BulkPrintServiceTest {
             "letterType"
         );
 
+        //When
         UUID letterId = bulkPrintService.printAosRespondentPack(print, false);
+
+        //Then
         assertThat(letterId).isEqualTo(uuid);
 
         verify(sendLetterApi).sendLetter(
@@ -328,6 +336,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldReturnLetterIdForAosRespondentPackWithD10DocumentsWhenPrintRequestIsInvoked() throws IOException {
+        //Given
         List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
@@ -405,7 +414,10 @@ class BulkPrintServiceTest {
             "letterType"
         );
 
+        //When
         UUID letterId = bulkPrintService.printAosRespondentPack(print, true);
+
+        //Then
         assertThat(letterId).isEqualTo(uuid);
 
         verify(sendLetterApi).sendLetter(
@@ -453,6 +465,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldReturnLetterIdForAosPackWithD10DocumentsWhenPrintRequestIsInvoked() throws IOException {
+        //Given
         List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
@@ -530,7 +543,10 @@ class BulkPrintServiceTest {
             "letterType"
         );
 
+        //When
         UUID letterId = bulkPrintService.printWithD10Form(print);
+
+        //Then
         assertThat(letterId).isEqualTo(uuid);
 
         verify(sendLetterApi).sendLetter(
@@ -578,6 +594,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldThrowDocumentDownloadExceptionWhenDocumentCallFails() throws IOException {
+        //Given
         ListValue<DivorceDocument> divorceDocumentListValue = getDivorceDocumentListValue(
             () -> ResponseEntity.ok(resource)
         );
@@ -602,6 +619,7 @@ class BulkPrintServiceTest {
         given(resource.getInputStream())
             .willThrow(new IOException("Corrupt data"));
 
+        //When&Then
         assertThatThrownBy(() -> bulkPrintService.print(print))
             .isInstanceOf(InvalidResourceException.class)
             .hasMessage("Doc name " + documentUuid);
@@ -609,6 +627,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldThrowDocumentDownloadExceptionWhenResponseEntityIsNull() {
+        //Given
         ListValue<DivorceDocument> divorceDocumentListValue = getDivorceDocumentListValue(() -> null);
 
         final String documentUuid = FilenameUtils.getName(
@@ -628,6 +647,7 @@ class BulkPrintServiceTest {
             "letterType"
         );
 
+        //When&Then
         assertThatThrownBy(() -> bulkPrintService.print(print))
             .isInstanceOf(InvalidResourceException.class)
             .hasMessage("Resource is invalid " + documentUuid);
@@ -635,6 +655,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldThrowDocumentDownloadExceptionWhenResourceIsNull() {
+        //Given
         ListValue<DivorceDocument> divorceDocumentListValue = getDivorceDocumentListValue(
             () -> ResponseEntity.ok(null)
         );
@@ -656,6 +677,7 @@ class BulkPrintServiceTest {
             "letterType"
         );
 
+        //When&Then
         assertThatThrownBy(() -> bulkPrintService.print(print))
             .isInstanceOf(InvalidResourceException.class)
             .hasMessage("Resource is invalid " + documentUuid);
@@ -668,13 +690,17 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldLoadD10DocumentSuccessfully() throws Exception {
+        //When
         PDDocument d10 = PDDocument.load(bulkPrintService.loadD10PdfBytes("/D10.pdf"));
+
+        //Then
         assertThat(new PDFTextStripper().getText(d10))
             .contains("D10 Respond to a divorce, dissolution or (judicial) separation application");
     }
 
     @Test
     void shouldReturnLetterIdForValidRequestForConfidentialDocuments() throws IOException {
+        //Given
         List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
@@ -735,7 +761,10 @@ class BulkPrintServiceTest {
             "letterType"
         );
 
+        //When
         UUID letterId = bulkPrintService.print(print);
+
+        //Then
         assertThat(letterId).isEqualTo(uuid);
 
         verify(sendLetterApi).sendLetter(
@@ -778,6 +807,7 @@ class BulkPrintServiceTest {
 
     @Test
     void shouldThrowExceptionWhenDocumentResourceIsNull() {
+        //Given
         ListValue<DivorceDocument> divorceDocumentListValue = ListValue.<DivorceDocument>builder()
             .value(null)
             .id("1")
@@ -787,6 +817,7 @@ class BulkPrintServiceTest {
 
         Print print = new Print(letters, "1234", "5678", "letterType");
 
+        //When&Then
         assertThatThrownBy(() -> bulkPrintService.print(print))
             .isInstanceOf(InvalidResourceException.class)
             .hasMessage("Invalid document resource");

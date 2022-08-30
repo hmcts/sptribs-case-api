@@ -17,13 +17,16 @@ class RetiredFieldsTest {
 
     @Test
     void migrateShouldMigrateSomeFieldsAndLeaveOthersAlone() {
+        //Given
         final var data = new HashMap<String, Object>();
         data.put("exampleRetiredField", "This will be first name");
         data.put("applicant1FirstName", "This will be overwritten");
         data.put("applicant1LastName", "This will be left alone");
 
+        //When
         final var result = RetiredFields.migrate(data);
 
+        //Then
         assertThat(result).contains(
             entry("applicant1FirstName", "This will be first name"),
             entry("applicant1LastName", "This will be left alone"),
@@ -33,11 +36,14 @@ class RetiredFieldsTest {
 
     @Test
     void shouldMigrateSolServiceMethodToServiceMethod() {
+        //Given
         final var data = new HashMap<String, Object>();
         data.put("solServiceMethod", PERSONAL_SERVICE);
 
+        //When
         final var result = RetiredFields.migrate(data);
 
+        //Then
         assertThat(result).contains(
             entry("serviceMethod", PERSONAL_SERVICE),
             entry("solServiceMethod", null)
@@ -46,12 +52,15 @@ class RetiredFieldsTest {
 
     @Test
     void shouldMigrateD11DocumentToAnswerReceivedDocuments() {
+        //Given
         DivorceDocument d11Document = DivorceDocument.builder().build();
         final var data = new HashMap<String, Object>();
         data.put("d11Document", d11Document);
 
+        //When
         final var result = RetiredFields.migrate(data);
 
+        //Then
         assertThat(result).contains(
             entry("answerReceivedSupportingDocuments", List.of(ListValue
                 .<DivorceDocument>builder()
@@ -65,12 +74,15 @@ class RetiredFieldsTest {
 
     @Test
     void shouldMigrateGeneralApplicationFeeAccountNumberToPbaNumbers() {
+        //Given
         String feeCode = "FEE002";
         final var data = new HashMap<String, Object>();
         data.put("generalApplicationFeeAccountNumber", feeCode);
 
+        //When
         final var result = RetiredFields.migrate(data);
 
+        //Then
         assertThat(result).contains(
             entry("generalApplicationFeePbaNumbers",
                 DynamicList

@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.Gender;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfig;
 
@@ -57,13 +56,15 @@ class CommonContentTest {
 
     @Test
     void shouldSetCommonTemplateVarsForDivorceNotifications() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicant2(respondent());
         when(emailTemplatesConfig.getTemplateVars()).thenReturn(Map.of(DIVORCE_COURT_EMAIL, "divorce.court@email.com"));
 
+        //When
         final Map<String, String> templateVars = commonContent.basicTemplateVars(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateVars).isNotEmpty().hasSize(4)
             .contains(
                 entry(COURT_EMAIL, "divorce.court@email.com"),
@@ -74,14 +75,16 @@ class CommonContentTest {
 
     @Test
     void shouldSetCommonTemplateVarsForDissolutionNotifications() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicant2(respondent());
         caseData.setDivorceOrDissolution(DISSOLUTION);
         when(emailTemplatesConfig.getTemplateVars()).thenReturn(Map.of(DISSOLUTION_COURT_EMAIL, "dissolution.court@email.com"));
 
+        //When
         final Map<String, String> templateVars = commonContent.basicTemplateVars(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateVars).isNotEmpty().hasSize(4)
             .contains(
                 entry(COURT_EMAIL, "dissolution.court@email.com"),
@@ -91,86 +94,145 @@ class CommonContentTest {
     }
 
     @Test
-    void shouldGetPartner() {
+    void shouldGetPartnerAsWife() {
+        //When
         CaseData caseData = caseData();
         caseData.getApplicant2().setGender(FEMALE);
+        //Then
         assertThat(commonContent.getPartner(caseData, caseData.getApplicant2())).isEqualTo("wife");
+    }
 
-        caseData = caseData();
-        caseData.getApplicant2().setGender(Gender.MALE);
+    @Test
+    void shouldGetPartnerAsHusband() {
+        //When
+        CaseData caseData = caseData();
+        caseData.getApplicant2().setGender(MALE);
+        //Then
         assertThat(commonContent.getPartner(caseData, caseData.getApplicant2())).isEqualTo("husband");
+    }
 
-        caseData = caseData();
+    @Test
+    void shouldGetPartnerAsSpouse() {
+        //When
+        CaseData caseData = caseData();
         caseData.getApplicant2().setGender(null);
+        //Then
         assertThat(commonContent.getPartner(caseData, caseData.getApplicant2())).isEqualTo("spouse");
+    }
 
-        caseData = caseData();
+    @Test
+    void shouldGetPartnerAsCivilPartner() {
+        //When
+        CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DISSOLUTION);
+        //Then
         assertThat(commonContent.getPartner(caseData, caseData.getApplicant2())).isEqualTo("civil partner");
     }
 
     @Test
-    void shouldGetPartnerWelshContent() {
+    void shouldGetPartnerWelshContentAsGwraig() {
+        //When
         CaseData caseData = caseData();
         caseData.getApplicant2().setGender(FEMALE);
+        //Then
         assertThat(commonContent.getPartnerWelshContent(caseData, caseData.getApplicant2())).isEqualTo("gwraig");
+    }
 
-        caseData = caseData();
-        caseData.getApplicant2().setGender(Gender.MALE);
+    @Test
+    void shouldGetPartnerWelshContent() {
+        //When
+        CaseData caseData = caseData();
+        caseData.getApplicant2().setGender(MALE);
+        //Then
         assertThat(commonContent.getPartnerWelshContent(caseData, caseData.getApplicant2())).isEqualTo("gŵr");
+    }
 
-        caseData = caseData();
+    @Test
+    void shouldGetPartnerWelshContentAsPriod() {
+        //When
+        CaseData caseData = caseData();
         caseData.getApplicant2().setGender(null);
+        //Then
         assertThat(commonContent.getPartnerWelshContent(caseData, caseData.getApplicant2())).isEqualTo("priod");
+    }
 
-        caseData = caseData();
+    @Test
+    void shouldGetPartnerWelshContentAsPartnerSifil() {
+        //When
+        CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DISSOLUTION);
+        //Then
         assertThat(commonContent.getPartnerWelshContent(caseData, caseData.getApplicant2())).isEqualTo("partner sifil");
     }
 
     @Test
-    void shouldGetUnionType() {
+    void shouldGetUnionTypeDivorce() {
+        //When
         CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DIVORCE);
+        //Then
         assertThat(commonContent.getUnionType(caseData)).isEqualTo("divorce");
+    }
 
-        caseData = caseData();
+    @Test
+    void shouldGetUnionTypeDissolution() {
+        //When
+        CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DISSOLUTION);
+        //Then
         assertThat(commonContent.getUnionType(caseData)).isEqualTo("dissolution");
     }
 
     @Test
-    void shouldGetEnglishUnionType() {
+    void shouldGetEnglishUnionTypeDivorce() {
+        //When
         CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DIVORCE);
+        //Then
         assertThat(commonContent.getUnionType(caseData, LanguagePreference.ENGLISH)).isEqualTo("divorce");
-
-        caseData = caseData();
-        caseData.setDivorceOrDissolution(DISSOLUTION);
-        assertThat(commonContent.getUnionType(caseData, LanguagePreference.ENGLISH)).isEqualTo("dissolution");
     }
 
     @Test
-    void shouldGetWelshUnionType() {
+    void shouldGetEnglishUnionTypeDissolution() {
+        //When
+        CaseData caseData = caseData();
+        caseData.setDivorceOrDissolution(DISSOLUTION);
+        //Then
+        assertThat(commonContent.getUnionType(caseData, LanguagePreference.ENGLISH)).isEqualTo("dissolution");
+
+    }
+
+    @Test
+    void shouldGetWelshUnionTypeYsgariad() {
+        //When
         CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DIVORCE);
+        //Then
         assertThat(commonContent.getUnionType(caseData, LanguagePreference.WELSH)).isEqualTo("ysgariad");
+    }
 
-        caseData = caseData();
+    @Test
+    void shouldGetWelshUnionTypeDiddymiad() {
+        //When
+        CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DISSOLUTION);
+        //Then
         assertThat(commonContent.getUnionType(caseData, LanguagePreference.WELSH)).isEqualTo("diddymiad");
     }
 
     @Test
     void shouldSetTemplateVarsForSoleApplication() {
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicationType(SOLE_APPLICATION)
             .divorceOrDissolution(DIVORCE)
             .build();
 
+        //When
         final Map<String, String> templateVars = commonContent
             .conditionalOrderTemplateVars(caseData, 1L, getApplicant(), respondent());
 
+        //Then
         assertThat(templateVars)
             .isNotEmpty()
             .contains(
@@ -183,14 +245,17 @@ class CommonContentTest {
 
     @Test
     void shouldSetTemplateVarsForJointDivorceApplicationWhenPartnerIsMale() {
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicationType(JOINT_APPLICATION)
             .divorceOrDissolution(DIVORCE)
             .build();
 
+        //When
         final Map<String, String> templateVars = commonContent
             .conditionalOrderTemplateVars(caseData, 1L, getApplicant(FEMALE), getApplicant(MALE));
 
+        //Then
         assertThat(templateVars)
             .isNotEmpty()
             .contains(
@@ -203,14 +268,17 @@ class CommonContentTest {
 
     @Test
     void shouldSetTemplateVarsForJointDivorceApplicationWhenPartnerIsFemale() {
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicationType(JOINT_APPLICATION)
             .divorceOrDissolution(DIVORCE)
             .build();
 
+        //When
         final Map<String, String> templateVars = commonContent
             .conditionalOrderTemplateVars(caseData, 1L, getApplicant(MALE), getApplicant(FEMALE));
 
+        //Then
         assertThat(templateVars)
             .isNotEmpty()
             .contains(
@@ -223,14 +291,17 @@ class CommonContentTest {
 
     @Test
     void shouldSetTemplateVarsForJointDissolution() {
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicationType(JOINT_APPLICATION)
             .divorceOrDissolution(DISSOLUTION)
             .build();
 
+        //When
         final Map<String, String> templateVars = commonContent
             .conditionalOrderTemplateVars(caseData, 1L, getApplicant(MALE), getApplicant(FEMALE));
 
+        //Then
         assertThat(templateVars)
             .isNotEmpty()
             .contains(
@@ -243,18 +314,21 @@ class CommonContentTest {
 
     @Test
     void shouldReturnProfessionalSignInUrl() {
+        //Given
         Long caseId = 123456789L;
         when(emailTemplatesConfig.getTemplateVars())
             .thenReturn(Map.of(SIGN_IN_PROFESSIONAL_USERS_URL, "http://professional-sing-in-url/"));
 
+        //When
         String professionalSignInUrl = commonContent.getProfessionalUsersSignInUrl(caseId);
 
+        //Then
         assertThat(professionalSignInUrl).isEqualTo("http://professional-sing-in-url/123456789");
     }
 
     @Test
     void shouldAddWelshPartnerContentIfApplicant1PrefersWelsh() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .gender(MALE)
             .languagePreferenceWelsh(YES)
@@ -270,8 +344,10 @@ class CommonContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, String> result = commonContent.mainTemplateVars(caseData, 1L, applicant1, applicant2);
 
+        //Then
         assertThat(result)
             .isNotEmpty()
             .contains(
@@ -281,7 +357,7 @@ class CommonContentTest {
 
     @Test
     void shouldNotAddWelshPartnerContentIfApplicant1DoesNotPreferWelsh() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .gender(MALE)
             .languagePreferenceWelsh(NO)
@@ -297,8 +373,10 @@ class CommonContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, String> result = commonContent.mainTemplateVars(caseData, 1L, applicant1, applicant2);
 
+        //Then
         assertThat(result)
             .isNotEmpty()
             .contains(
@@ -308,7 +386,7 @@ class CommonContentTest {
 
     @Test
     void shouldAddWelshPartnerContentIfApplicant2PrefersWelsh() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .gender(MALE)
             .languagePreferenceWelsh(NO)
@@ -325,8 +403,10 @@ class CommonContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, String> result = commonContent.mainTemplateVars(caseData, 1L, applicant2, applicant1);
 
+        //Then
         assertThat(result)
             .isNotEmpty()
             .contains(
@@ -336,7 +416,7 @@ class CommonContentTest {
 
     @Test
     void shouldNotAddWelshPartnerContentIfApplicant2DoesNotPreferWelsh() {
-
+        //Given
         final Applicant applicant1 = Applicant.builder()
             .gender(MALE)
             .languagePreferenceWelsh(NO)
@@ -352,8 +432,10 @@ class CommonContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, String> result = commonContent.mainTemplateVars(caseData, 1L, applicant2, applicant1);
 
+        //Then
         assertThat(result)
             .isNotEmpty()
             .contains(

@@ -62,8 +62,10 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendDeemedAsServedServiceApplicationRejectedEmailToSoleApplicantWithDivorceContent() {
+        //When
         sendNotification(DEEMED, DIVORCE, NOT_GRANTED);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_REJECTED),
@@ -78,8 +80,10 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendDeemedAsServedServiceApplicationRejectedEmailToSoleApplicantWithDissolutionContent() {
+        //When
         sendNotification(DEEMED, DISSOLUTION, NOT_GRANTED);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_REJECTED),
@@ -94,8 +98,10 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendDispensedServiceApplicationRejectedEmailToSoleApplicantWithDivorceContent() {
+        //When
         sendNotification(DISPENSED, DIVORCE, NOT_GRANTED);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_REJECTED),
@@ -110,6 +116,7 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendDispensedServiceApplicationRejectedEmailInWelsh() {
+        //Given
         CaseData data = validApplicant1CaseData();
         data.getApplicant1().setLanguagePreferenceWelsh(YesOrNo.YES);
         data.getAlternativeService().setAlternativeServiceType(DISPENSED);
@@ -120,8 +127,10 @@ class ServiceApplicationNotificationTest {
         when(commonContent.mainTemplateVars(data, ID, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(templateVars);
 
+        //When
         serviceApplicationNotification.sendToApplicant1(data, ID);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_REJECTED),
@@ -136,8 +145,10 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendDispensedServiceApplicationRejectedEmailToSoleApplicantWithDissolutionContent() {
+        //When
         sendNotification(DISPENSED, DISSOLUTION, NOT_GRANTED);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_REJECTED),
@@ -152,8 +163,10 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendBailiffServiceApplicationRejectedEmailToSoleApplicantWithDivorceContent() {
+        //When
         sendNotification(BAILIFF, DIVORCE, NOT_GRANTED);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_REJECTED),
@@ -168,8 +181,10 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendBailiffServiceApplicationRejectedEmailToSoleApplicantWithDissolutionContent() {
+        //When
         sendNotification(BAILIFF, DISSOLUTION, NOT_GRANTED);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_REJECTED),
@@ -184,8 +199,10 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendBailiffServiceApplicationSuccessfulEmailToSoleApplicant() {
+        //When
         sendNotification(BAILIFF, DIVORCE, GRANTED);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_GRANTED),
@@ -200,6 +217,7 @@ class ServiceApplicationNotificationTest {
 
     @Test
     void shouldSendBailiffServiceApplicationSuccessfulEmailToSoleApplicantWhenLanguagePrefIsWelsh() {
+        //Given
         CaseData data = validApplicant1CaseData();
         data.getApplicant1().setLanguagePreferenceWelsh(YesOrNo.YES);
         data.getAlternativeService().setAlternativeServiceType(BAILIFF);
@@ -211,8 +229,10 @@ class ServiceApplicationNotificationTest {
         when(commonContent.mainTemplateVars(data, ID, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(templateVars);
 
+        //When
         serviceApplicationNotification.sendToApplicant1(data, ID);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SERVICE_APPLICATION_GRANTED),

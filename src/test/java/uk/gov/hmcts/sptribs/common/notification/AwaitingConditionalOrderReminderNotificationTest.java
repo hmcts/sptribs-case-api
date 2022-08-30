@@ -50,6 +50,7 @@ class AwaitingConditionalOrderReminderNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicant1() {
+        //Given
         final CaseData caseData = caseData();
 
         when(commonContent
@@ -60,8 +61,10 @@ class AwaitingConditionalOrderReminderNotificationTest {
                 caseData.getApplicant2()))
             .thenReturn(new HashMap<>());
 
+        //When
         awaitingConditionalOrderReminderNotification.sendToApplicant1(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -74,6 +77,7 @@ class AwaitingConditionalOrderReminderNotificationTest {
 
     @Test
     void shouldSendNotificationInWelshToApplicant1WhenApp1LangPrefIsWelsh() {
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant1().setLanguagePreferenceWelsh(YES);
 
@@ -85,8 +89,10 @@ class AwaitingConditionalOrderReminderNotificationTest {
                 caseData.getApplicant2()))
             .thenReturn(new HashMap<>());
 
+        //When
         awaitingConditionalOrderReminderNotification.sendToApplicant1(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -99,6 +105,7 @@ class AwaitingConditionalOrderReminderNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicant2IfJointApplication() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicationType(JOINT_APPLICATION);
         caseData.getApplicant2().setEmail(TEST_APPLICANT_2_USER_EMAIL);
@@ -111,8 +118,10 @@ class AwaitingConditionalOrderReminderNotificationTest {
                 caseData.getApplicant1()))
             .thenReturn(new HashMap<>());
 
+        //When
         awaitingConditionalOrderReminderNotification.sendToApplicant2(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -125,6 +134,7 @@ class AwaitingConditionalOrderReminderNotificationTest {
 
     @Test
     void shouldSendNotificationInWelshToApplicant2IfJointApplicationWhenApp2LangPrefIsWelsh() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicationType(JOINT_APPLICATION);
         caseData.getApplicant2().setEmail(TEST_APPLICANT_2_USER_EMAIL);
@@ -138,8 +148,10 @@ class AwaitingConditionalOrderReminderNotificationTest {
                 caseData.getApplicant1()))
             .thenReturn(new HashMap<>());
 
+        //When
         awaitingConditionalOrderReminderNotification.sendToApplicant2(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -152,17 +164,21 @@ class AwaitingConditionalOrderReminderNotificationTest {
 
     @Test
     void shouldNotSendNotificationToApplicant2IfSoleApplication() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicationType(SOLE_APPLICATION);
         caseData.getApplicant2().setEmail(TEST_APPLICANT_2_USER_EMAIL);
 
+        //When
         awaitingConditionalOrderReminderNotification.sendToApplicant2(caseData, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldNotSendNotificationToApplicant2SolicitorIfSoleApplication() {
+        //Given
         final Applicant applicant = getApplicant();
         applicant.setSolicitor(Solicitor.builder().email(TEST_SOLICITOR_EMAIL).name(TEST_SOLICITOR_NAME).build());
         applicant.setSolicitorRepresented(YES);
@@ -172,8 +188,10 @@ class AwaitingConditionalOrderReminderNotificationTest {
             .conditionalOrderApplicant1Questions(getConditionalOrderQuestions())
             .build());
 
+        //When
         awaitingConditionalOrderReminderNotification.sendToApplicant2Solicitor(caseData, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 }

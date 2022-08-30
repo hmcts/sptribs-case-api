@@ -16,7 +16,9 @@ class DocumentIdProviderTest {
 
     @Test
     void shouldProvideDocumentId() {
+        //When
         final String documentId = documentIdProvider.documentId();
+        //Then
         assertThat(documentId, matchesPattern("([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})"));
     }
 }

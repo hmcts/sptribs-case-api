@@ -50,14 +50,17 @@ public class ApplicationWithdrawnNotificationTest {
 
     @Test
     void shouldSendEmailToSoleApplicant1WithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
 
         Map<String, String> divorceTemplateVars = new HashMap<>(getMainTemplateVars());
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(divorceTemplateVars);
 
+        //When
         applicationWithdrawnNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLICATION_WITHDRAWN),
@@ -75,6 +78,7 @@ public class ApplicationWithdrawnNotificationTest {
 
     @Test
     void shouldSendEmailToSoleApplicant1WithDissolutionContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDivorceOrDissolution(DISSOLUTION);
 
@@ -83,8 +87,10 @@ public class ApplicationWithdrawnNotificationTest {
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(dissolutionTemplateVars);
 
+        //When
         applicationWithdrawnNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLICATION_WITHDRAWN),
@@ -102,6 +108,7 @@ public class ApplicationWithdrawnNotificationTest {
 
     @Test
     void shouldSendEmailToSoleRespondentWithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setApplicationType(ApplicationType.SOLE_APPLICATION);
 
@@ -110,8 +117,10 @@ public class ApplicationWithdrawnNotificationTest {
             .thenReturn(divorceTemplateVars);
         when(commonContent.getPartner(data, data.getApplicant2())).thenReturn("husband");
 
+        //When
         applicationWithdrawnNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLICATION_WITHDRAWN),
@@ -130,6 +139,7 @@ public class ApplicationWithdrawnNotificationTest {
 
     @Test
     void shouldSendEmailToSoleRespondentWithDissolutionContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setApplicationType(ApplicationType.SOLE_APPLICATION);
         data.setDivorceOrDissolution(DISSOLUTION);
@@ -140,8 +150,10 @@ public class ApplicationWithdrawnNotificationTest {
             .thenReturn(dissolutionTemplateVars);
         when(commonContent.getPartner(data, data.getApplicant2())).thenReturn("husband");
 
+        //When
         applicationWithdrawnNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLICATION_WITHDRAWN),
@@ -160,6 +172,7 @@ public class ApplicationWithdrawnNotificationTest {
 
     @Test
     void shouldSendEmailToJointApplicant2WithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setApplicationType(ApplicationType.JOINT_APPLICATION);
 
@@ -167,8 +180,10 @@ public class ApplicationWithdrawnNotificationTest {
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(divorceTemplateVars);
 
+        //When
         applicationWithdrawnNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLICATION_WITHDRAWN),
@@ -186,6 +201,7 @@ public class ApplicationWithdrawnNotificationTest {
 
     @Test
     void shouldSendEmailToJointApplicant2WithDissolutionContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setApplicationType(ApplicationType.JOINT_APPLICATION);
         data.setDivorceOrDissolution(DISSOLUTION);
@@ -195,8 +211,10 @@ public class ApplicationWithdrawnNotificationTest {
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant2(), data.getApplicant1()))
             .thenReturn(dissolutionTemplateVars);
 
+        //When
         applicationWithdrawnNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLICATION_WITHDRAWN),
@@ -214,21 +232,27 @@ public class ApplicationWithdrawnNotificationTest {
 
     @Test
     void shouldNotSendEmailApplicant2IfEmailIsNull() {
+        //Given
         CaseData data = validApplicant1CaseData();
         data.getApplicant2().setEmail(null);
 
+        //When
         applicationWithdrawnNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldNotSendEmailApplicant2IfEmailIsEmptyString() {
+        //Given
         CaseData data = validApplicant1CaseData();
         data.getApplicant2().setEmail("");
 
+        //When
         applicationWithdrawnNotification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 }

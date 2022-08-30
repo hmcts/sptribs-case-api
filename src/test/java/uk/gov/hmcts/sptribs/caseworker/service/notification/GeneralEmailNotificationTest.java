@@ -51,6 +51,7 @@ public class GeneralEmailNotificationTest {
 
     @Test
     public void shouldSendEmailNotificationToApplicantWhenGeneralEmailPartyIsPetitionerAndIsNotSolicitorRepresented() {
+        //Given
         final var caseData = caseData();
 
         final var applicant1 = getApplicant();
@@ -68,8 +69,10 @@ public class GeneralEmailNotificationTest {
             .build()
         );
 
+        //When
         generalEmailNotification.send(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(GENERAL_EMAIL_PETITIONER),
@@ -80,6 +83,7 @@ public class GeneralEmailNotificationTest {
 
     @Test
     void shouldSendEmailNotificationToRespondentWhenGeneralEmailPartyIsRespondentAndIsNotSolicitorRepresented() {
+        //Given
         final var caseData = caseData();
 
         final var applicant2 = getApplicant();
@@ -97,8 +101,10 @@ public class GeneralEmailNotificationTest {
             .build()
         );
 
+        //When
         generalEmailNotification.send(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(GENERAL_EMAIL_RESPONDENT),
@@ -109,6 +115,7 @@ public class GeneralEmailNotificationTest {
 
     @Test
     void shouldNotSendEmailNotificationWhenGeneralEmailPartyIsRespondentAndIsNotSolicitorRepresentedAndRespondentEmailIsNotPresent() {
+        //Given
         final var caseData = caseData();
 
         final var applicant2 = getApplicant();
@@ -127,13 +134,16 @@ public class GeneralEmailNotificationTest {
             .build()
         );
 
+        //When
         generalEmailNotification.send(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldSendEmailNotificationToApplicantSolicitorWhenGeneralEmailPartyIsPetitionerAndIsSolicitorRepresented() {
+        //Given
         final var caseData = caseData();
 
         final var applicant1 = getApplicant();
@@ -154,8 +164,10 @@ public class GeneralEmailNotificationTest {
             .build()
         );
 
+        //When
         generalEmailNotification.send(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(GENERAL_EMAIL_PETITIONER_SOLICITOR),
@@ -166,6 +178,7 @@ public class GeneralEmailNotificationTest {
 
     @Test
     void shouldSendEmailNotificationToRespondentSolicitorWhenGeneralEmailPartyIsRespondentAndIsSolicitorRepresented() {
+        //Given
         final var caseData = caseData();
 
         final var applicant2 = getApplicant();
@@ -186,8 +199,10 @@ public class GeneralEmailNotificationTest {
             .build()
         );
 
+        //When
         generalEmailNotification.send(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
             eq(GENERAL_EMAIL_RESPONDENT_SOLICITOR),
@@ -198,6 +213,7 @@ public class GeneralEmailNotificationTest {
 
     @Test
     void shouldSendEmailNotificationToOtherPartyWhenGeneralEmailPartyIsOther() throws Exception {
+        //Given
         final var caseData = caseData();
 
         final var marriageDetails = new MarriageDetails();
@@ -215,8 +231,10 @@ public class GeneralEmailNotificationTest {
             .build()
         );
 
+        //When
         generalEmailNotification.send(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(GENERAL_EMAIL_OTHER_PARTY),

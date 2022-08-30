@@ -37,7 +37,7 @@ class GenerateConditionalOrderAnswersDocumentTest {
 
     @Test
     void shouldGenerateConditionalOrderAnswersDocument() {
-
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -49,8 +49,10 @@ class GenerateConditionalOrderAnswersDocumentTest {
         when(conditionalOrderAnswersTemplateContent.apply(caseData, TEST_CASE_ID))
             .thenReturn(templateContent);
 
+        //When
         final CaseDetails<CaseData, State> result = generateConditionalOrderAnswersDocument.apply(caseDetails);
 
+        //Then
         assertThat(result.getData()).isEqualTo(caseData);
 
         verify(caseDataDocumentService)

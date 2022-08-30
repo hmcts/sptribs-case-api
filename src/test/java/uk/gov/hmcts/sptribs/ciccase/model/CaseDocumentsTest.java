@@ -19,7 +19,7 @@ class CaseDocumentsTest {
 
     @Test
     void shouldReturnTrueIfAfterHasAddedDocument() {
-
+        //When
         final ListValue<ScannedDocument> doc1 =
             getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
 
@@ -32,36 +32,39 @@ class CaseDocumentsTest {
         final List<ListValue<ScannedDocument>> before = List.of(doc1, doc2);
         final List<ListValue<ScannedDocument>> after = List.of(doc1, doc2, doc3);
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isTrue();
     }
 
     @Test
     void shouldReturnTrueIfBeforeIsEmptyAndAfterHasAddedDocument() {
-
+        //When
         final ListValue<ScannedDocument> doc1 =
             getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
 
         final List<ListValue<ScannedDocument>> before = emptyList();
         final List<ListValue<ScannedDocument>> after = List.of(doc1);
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isTrue();
     }
 
     @Test
     void shouldReturnTrueIfBeforeIsNullAndAfterHasDocument() {
-
+        //When
         final ListValue<ScannedDocument> doc1 =
             getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
 
         final List<ListValue<ScannedDocument>> before = null;
         final List<ListValue<ScannedDocument>> after = List.of(doc1);
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfBeforeAndAfterAreTheSame() {
-
+        //When
         final ListValue<ScannedDocument> doc1 =
             getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
 
@@ -74,21 +77,23 @@ class CaseDocumentsTest {
         final List<ListValue<ScannedDocument>> before = List.of(doc1, doc2, doc3);
         final List<ListValue<ScannedDocument>> after = List.of(doc1, doc2, doc3);
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfBeforeAndAfterAreEmpty() {
-
+        //When
         final List<ListValue<ScannedDocument>> before = emptyList();
         final List<ListValue<ScannedDocument>> after = emptyList();
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfBeforeHasDocumentsAndAfterHasRemovedDocument() {
-
+        //When
         final ListValue<ScannedDocument> doc1 =
             getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
 
@@ -101,12 +106,13 @@ class CaseDocumentsTest {
         final List<ListValue<ScannedDocument>> before = List.of(doc1, doc2, doc3);
         final List<ListValue<ScannedDocument>> after = List.of(doc1, doc3);
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfBeforeHasDocumentsAndAfterIsEmpty() {
-
+        //When
         final ListValue<ScannedDocument> doc1 =
             getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
 
@@ -119,36 +125,40 @@ class CaseDocumentsTest {
         final List<ListValue<ScannedDocument>> before = List.of(doc1, doc2, doc3);
         final List<ListValue<ScannedDocument>> after = emptyList();
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfBeforeHasDocumentAndAfterIsNull() {
-
+        //When
         final ListValue<ScannedDocument> doc1 =
             getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
 
         final List<ListValue<ScannedDocument>> before = List.of(doc1);
         final List<ListValue<ScannedDocument>> after = null;
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfBeforeIsEmptyAndAfterIsNull() {
-
+        //When
         final List<ListValue<ScannedDocument>> before = emptyList();
         final List<ListValue<ScannedDocument>> after = null;
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfBeforeIsNullAndAfterIsEmpty() {
-
+        //When
         final List<ListValue<ScannedDocument>> before = null;
         final List<ListValue<ScannedDocument>> after = emptyList();
 
+        //Then
         assertThat(CaseDocuments.hasAddedDocuments(after, before)).isFalse();
     }
 

@@ -66,7 +66,7 @@ class ReIssueApplicationServiceTest {
 
     @Test
     void shouldRunReIssueApplicationTasksForCitizenApplicationWhenReissueTypeIsDigitalAos() {
-
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -82,8 +82,10 @@ class ReIssueApplicationServiceTest {
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
         when(sendApplicationIssueNotifications.apply(caseDetails)).thenReturn(caseDetails);
 
+        //When
         final CaseDetails<CaseData, State> response = reIssueApplicationService.process(caseDetails);
 
+        //Then
         var expectedCaseData = caseData();
 
         assertThat(response.getData()).isEqualTo(expectedCaseData);
@@ -91,7 +93,7 @@ class ReIssueApplicationServiceTest {
 
     @Test
     void shouldRunReIssueApplicationTasksForCitizenApplicationWhenReissueTypeIsOfflineAos() {
-
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -110,8 +112,10 @@ class ReIssueApplicationServiceTest {
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
         when(sendApplicationIssueNotifications.apply(caseDetails)).thenReturn(caseDetails);
 
+        //When
         final CaseDetails<CaseData, State> response = reIssueApplicationService.process(caseDetails);
 
+        //Then
         var expectedCaseData = caseData();
         expectedCaseData.getApplicant2().setOffline(YES);
 
@@ -120,7 +124,7 @@ class ReIssueApplicationServiceTest {
 
     @Test
     void shouldRunReIssueApplicationTasksForCitizenApplicationWhenReissueTypeIsReissueCase() {
-
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -139,8 +143,10 @@ class ReIssueApplicationServiceTest {
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
         when(sendApplicationIssueNotifications.apply(caseDetails)).thenReturn(caseDetails);
 
+        //When
         final CaseDetails<CaseData, State> response = reIssueApplicationService.process(caseDetails);
 
+        //Then
         var expectedCaseData = caseData();
 
         assertThat(response.getData()).isEqualTo(expectedCaseData);
@@ -148,7 +154,7 @@ class ReIssueApplicationServiceTest {
 
     @Test
     void shouldRunReIssueApplicationTasksForSolicitorApplicationWhenReissueTypeIsDigitalAos() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setSolicitorRepresented(YES);
         caseData.getApplication().setSolSignStatementOfTruth(YES);
@@ -173,8 +179,10 @@ class ReIssueApplicationServiceTest {
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
         when(sendApplicationIssueNotifications.apply(caseDetails)).thenReturn(caseDetails);
 
+        //When
         final CaseDetails<CaseData, State> response = reIssueApplicationService.process(caseDetails);
 
+        //Then
         var expectedCaseData = caseData();
         expectedCaseData.getApplicant2().setSolicitorRepresented(YES);
         expectedCaseData.getApplicant2().setSolicitor(solicitor);
@@ -185,7 +193,7 @@ class ReIssueApplicationServiceTest {
 
     @Test
     void shouldRunReIssueApplicationTasksForSolicitorApplicationWhenReissueTypeIsOfflineAos() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setSolicitorRepresented(YES);
         caseData.getApplication().setSolSignStatementOfTruth(YES);
@@ -213,8 +221,10 @@ class ReIssueApplicationServiceTest {
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
         when(sendApplicationIssueNotifications.apply(caseDetails)).thenReturn(caseDetails);
 
+        //When
         final CaseDetails<CaseData, State> response = reIssueApplicationService.process(caseDetails);
 
+        //Then
         var expectedCaseData = caseData();
         expectedCaseData.getApplicant2().setSolicitorRepresented(YES);
         expectedCaseData.getApplicant2().setOffline(YES);
@@ -227,7 +237,7 @@ class ReIssueApplicationServiceTest {
 
     @Test
     void shouldRunReIssueApplicationTasksForSolicitorApplicationWhenReissueTypeIsReissueCase() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setSolicitorRepresented(YES);
         caseData.getApplication().setSolSignStatementOfTruth(YES);
@@ -255,8 +265,10 @@ class ReIssueApplicationServiceTest {
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
         when(sendApplicationIssueNotifications.apply(caseDetails)).thenReturn(caseDetails);
 
+        //When
         final CaseDetails<CaseData, State> response = reIssueApplicationService.process(caseDetails);
 
+        //Then
         var expectedCaseData = caseData();
         expectedCaseData.getApplicant2().setSolicitorRepresented(YES);
         expectedCaseData.getApplicant2().setSolicitor(solicitor);
@@ -267,7 +279,7 @@ class ReIssueApplicationServiceTest {
 
     @Test
     void shouldThrowReissueProcessingExceptionWhenReissueOptionIsNotSet() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setSolicitorRepresented(YES);
         caseData.getApplication().setSolSignStatementOfTruth(YES);
@@ -286,6 +298,7 @@ class ReIssueApplicationServiceTest {
         caseDetails.setId(1L);
         caseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        //When&Then
         assertThatThrownBy(() -> reIssueApplicationService.process(caseDetails))
             .isExactlyInstanceOf(ReissueProcessingException.class)
             .hasMessage("Exception occurred while processing reissue application for case id 1");

@@ -70,7 +70,7 @@ class CaseworkerIssueApplicationServiceTest {
 
     @Test
     void shouldRunIssueApplicationTasksForCitizenApplication() {
-
+        //Given
         final CaseData caseData = caseData();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -91,8 +91,10 @@ class CaseworkerIssueApplicationServiceTest {
         when(sendAosPackToApplicant.apply(caseDetails)).thenReturn(caseDetails);
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
 
+        //When
         final CaseDetails<CaseData, State> response = issueApplicationService.issueApplication(caseDetails);
 
+        //Then
         assertThat(response.getData()).isEqualTo(caseData);
     }
 }
