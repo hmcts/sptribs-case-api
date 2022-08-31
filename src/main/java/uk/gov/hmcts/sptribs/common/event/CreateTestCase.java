@@ -74,23 +74,23 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .label("applicantDetailsObject", "Who is the applicant in this case?\r\n" + CASE_RECORD_DRAFT)
                 .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getApplicantFullName)
-                .optional(CicCase::getApplicantAddress)
                 .mandatory(CicCase::getApplicantPhoneNumber)
                 .mandatory(CicCase::getApplicantEmailAddress)
                 .optionalWithLabel(CicCase::getApplicantDateOfBirth, "")
                 .mandatoryWithLabel(CicCase::getApplicantContactDetailsPreference, "")
+                .mandatory(CicCase::getApplicantAddress, "cicCaseApplicantContactDetailsPreference = \"Post\"")
                 .done();
             pageBuilder.page("representativeDetailsObjects")
                 .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + CASE_RECORD_DRAFT)
                 .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getRepresentativeFullName)
                 .optional(CicCase::getRepresentativeOrgName)
-                .optional(CicCase::getRepresentativeAddress)
                 .mandatory(CicCase::getRepresentativePhoneNumber)
-                .mandatory(CicCase::getRepresentativeEmailAddress)
                 .optional(CicCase::getRepresentativeReference)
                 .mandatoryWithLabel(CicCase::getIsRepresentativeQualified, "")
-                .mandatoryWithLabel(CicCase::getRepresentativeContactDetailsPreference, "")
+                .mandatory(CicCase::getRepresentativeContactDetailsPreference)
+                .mandatory(CicCase::getRepresentativeEmailAddress, "cicCaseRepresentativeContactDetailsPreference = \"Email\"")
+                .mandatory(CicCase::getRepresentativeAddress, "cicCaseRepresentativeContactDetailsPreference = \"Post\"")
                 .done();
             pageBuilder.page("objectContacts")
                 .label("objectContact", "Who should receive information about the case?")
@@ -199,6 +199,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
         state = submittedDetails.getState();
+
+        //data.getCicCase().setIsRepresentativePresent(YesOrNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

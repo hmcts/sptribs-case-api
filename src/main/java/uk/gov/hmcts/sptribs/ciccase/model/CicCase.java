@@ -262,8 +262,21 @@ public class CicCase {
     )
     private YesOrNo compensationClaimLinkCIC;
 
+    @CCD(
+        label = "Case Number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNumber;
+
+    @CCD(
+        label = "Is there a representative?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isRepresentativePresent;
+
     private ContactPreferencesDetailsCIC contactDetailsPreference;
 
     private CaseDocumentsCIC caseDocumentsCIC;
+
 
 }

@@ -39,6 +39,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        buildSummaryTab(configBuilder);
         buildWarningsTab(configBuilder);
         buildStateTab(configBuilder);
         buildAosTab(configBuilder);
@@ -47,6 +48,25 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildDocumentsTab(configBuilder);
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
+    }
+
+    private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("summary", "Summary")
+            .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
+            .label("case-details", null, "### Case details")
+            .field("cicCaseFullName") // TODO: to confirm if its ok to display full name as we dont have first name and last name seperately
+            .field("cicCaseDateOfBirth")
+            .field("cicCaseEmail")
+            .field(CaseData::getHyphenatedCaseRef)
+            //.field("isRepresentativePresent", "cicCaseRepresentativeFullName!=\"\"")
+            //TODO: Is there a representative
+            .label("representativeDetails", null, "### Representative Details")
+            .field("cicCaseIsRepresentativeQualified")
+            .field("cicCaseRepresentativeOrgName")
+            .field("cicCaseRepresentativeFullName")
+            .field("cicCaseRepresentativePhoneNumber")
+            .field("cicCaseRepresentativeEmailAddress")
+            .field("cicCaseRepresentativeReference");
     }
 
     private void buildWarningsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
