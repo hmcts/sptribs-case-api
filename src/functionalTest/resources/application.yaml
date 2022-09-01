@@ -1,6 +1,6 @@
 spring:
   application:
-    name: NFDIV Case API Functional Tests
+    name: sptribs Case API Functional Tests
 
   main:
     allow-bean-definition-overriding: true
@@ -27,7 +27,7 @@ idam:
   s2s-auth:
     url: ${TEST_S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     secret: ${S2S_SECRET:dummy}
-    microservice: nfdiv_case_api
+    microservice: sptribs_case_api
   solicitor:
     username: ${IDAM_SOLICITOR_USERNAME:dummysolicitor@test.com}
     password: ${IDAM_SOLICITOR_PASSWORD:dummy}
@@ -121,7 +121,7 @@ bulk-action:
   min-cases: 30
   page-size: 50
 
-SERVICE_AUTH_MICROSERVICE: nfdiv_case_api
+SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
 toggle:
