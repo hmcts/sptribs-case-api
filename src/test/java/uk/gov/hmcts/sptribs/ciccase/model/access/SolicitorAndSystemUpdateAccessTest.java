@@ -17,9 +17,9 @@ class SolicitorAndSystemUpdateAccessTest {
 
     @Test
     void shouldGrantSolicitorAndSystemUpdateAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new SolicitorAndSystemUpdateAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(6)
             .contains(

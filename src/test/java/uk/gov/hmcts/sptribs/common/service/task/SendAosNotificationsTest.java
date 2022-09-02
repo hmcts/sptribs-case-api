@@ -35,7 +35,7 @@ class SendAosNotificationsTest {
 
     @Test
     void shouldSendDisputedNotifications() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .acknowledgementOfService(AcknowledgementOfService.builder()
                 .howToRespondApplication(DISPUTE_DIVORCE)
@@ -46,15 +46,17 @@ class SendAosNotificationsTest {
         caseDetails.setId(1L);
         caseDetails.setData(caseData);
 
+        //When
         sendAosNotifications.apply(caseDetails);
 
+        //Then
         verify(notificationDispatcher).send(soleApplicationDisputedNotification, caseData, 1L);
         verifyNoMoreInteractions(notificationDispatcher);
     }
 
     @Test
     void shouldSendNotDisputedNotifications() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .acknowledgementOfService(AcknowledgementOfService.builder()
                 .howToRespondApplication(WITHOUT_DISPUTE_DIVORCE)
@@ -65,8 +67,10 @@ class SendAosNotificationsTest {
         caseDetails.setId(1L);
         caseDetails.setData(caseData);
 
+        //When
         sendAosNotifications.apply(caseDetails);
 
+        //Then
         verify(notificationDispatcher).send(soleApplicationNotDisputedNotification, caseData, 1L);
         verifyNoMoreInteractions(notificationDispatcher);
     }

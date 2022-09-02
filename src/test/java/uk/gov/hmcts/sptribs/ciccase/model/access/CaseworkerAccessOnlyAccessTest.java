@@ -22,9 +22,9 @@ class CaseworkerAccessOnlyAccessTest {
 
     @Test
     void shouldGrantCaseworkerAccessBetaOnlyAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new CaseworkerAccessOnlyAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(11)
             .contains(

@@ -51,6 +51,7 @@ public class BailiffApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDivorceContent() {
+        //Given
         setMockClock(clock);
 
         final Applicant applicant1 = Applicant.builder()
@@ -69,8 +70,10 @@ public class BailiffApprovedOrderContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(THE_APPLICATION, DIVORCE_APPLICATION),
             entry(DIVORCE_OR_DISSOLUTION, THE_DIVORCE),
@@ -85,6 +88,7 @@ public class BailiffApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDissolutionContent() {
+        //Given
         setMockClock(clock);
 
         final Applicant applicant1 = Applicant.builder()
@@ -103,8 +107,10 @@ public class BailiffApprovedOrderContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(THE_APPLICATION, END_CIVIL_PARTNERSHIP),
             entry(DIVORCE_OR_DISSOLUTION, ENDING_CIVIL_PARTNERSHIP),
@@ -119,6 +125,7 @@ public class BailiffApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDivorceWelshContent() {
+        //Given
         setMockClock(clock);
 
         final Applicant applicant1 = Applicant.builder()
@@ -138,8 +145,10 @@ public class BailiffApprovedOrderContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(THE_APPLICATION, DIVORCE_APPLICATION_CY),
             entry(DIVORCE_OR_DISSOLUTION, THE_DIVORCE_CY)
@@ -148,6 +157,7 @@ public class BailiffApprovedOrderContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDissolutionWelshContent() {
+        //Given
         setMockClock(clock);
 
         final Applicant applicant1 = Applicant.builder()
@@ -167,8 +177,10 @@ public class BailiffApprovedOrderContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry(THE_APPLICATION, END_CIVIL_PARTNERSHIP_CY),
             entry(DIVORCE_OR_DISSOLUTION, ENDING_CIVIL_PARTNERSHIP_CY)

@@ -48,6 +48,7 @@ class ConditionalOrderPendingReminderNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicant1WhenSubmittedDateIsNotSet() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setConditionalOrder(ConditionalOrder.builder()
             .conditionalOrderApplicant1Questions(getConditionalOrderQuestions())
@@ -62,8 +63,10 @@ class ConditionalOrderPendingReminderNotificationTest {
                 caseData.getApplicant2()))
             .thenReturn(new HashMap<>());
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant1(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -76,6 +79,7 @@ class ConditionalOrderPendingReminderNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicant1InWelshWhenSubmittedDateIsNotSetAndApp1LangPrefIsWelsh() {
+        //Given
         final var caseData = caseData();
         caseData.getApplicant1().setLanguagePreferenceWelsh(YES);
 
@@ -92,8 +96,10 @@ class ConditionalOrderPendingReminderNotificationTest {
                 caseData.getApplicant2()))
             .thenReturn(new HashMap<>());
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant1(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -106,18 +112,22 @@ class ConditionalOrderPendingReminderNotificationTest {
 
     @Test
     void shouldNotSendNotificationToApplicant1WhenSubmittedDateIsSet() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setConditionalOrder(ConditionalOrder.builder()
             .conditionalOrderApplicant1Questions(getConditionalOrderQuestions())
             .build());
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant1(caseData, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldNotSendNotificationToApplicant1SolicitorWhenSubmittedDateIsSet() {
+        //Given
         final Applicant applicant = getApplicant();
         applicant.setSolicitor(Solicitor.builder().email(TEST_SOLICITOR_EMAIL).name(TEST_SOLICITOR_NAME).build());
         applicant.setSolicitorRepresented(YES);
@@ -126,13 +136,16 @@ class ConditionalOrderPendingReminderNotificationTest {
             .conditionalOrderApplicant1Questions(getConditionalOrderQuestions())
             .build());
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant1Solicitor(caseData, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldSendNotificationToApplicant2WhenSubmittedDateIsSet() {
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setEmail(TEST_APPLICANT_2_USER_EMAIL);
         caseData.setConditionalOrder(ConditionalOrder.builder()
@@ -147,8 +160,10 @@ class ConditionalOrderPendingReminderNotificationTest {
                 caseData.getApplicant1()))
             .thenReturn(new HashMap<>());
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant2(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -161,6 +176,7 @@ class ConditionalOrderPendingReminderNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicant2InWelshWhenSubmittedDateIsSetAndApp2LangPrefIsWelsh() {
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setEmail(TEST_APPLICANT_2_USER_EMAIL);
         caseData.getApplicant2().setLanguagePreferenceWelsh(YES);
@@ -176,8 +192,10 @@ class ConditionalOrderPendingReminderNotificationTest {
                 caseData.getApplicant1()))
             .thenReturn(new HashMap<>());
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant2(caseData, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(CITIZEN_APPLY_FOR_CONDITIONAL_ORDER),
@@ -190,6 +208,7 @@ class ConditionalOrderPendingReminderNotificationTest {
 
     @Test
     void shouldNotSendNotificationToApplicant2WhenSubmittedDateIsNotSet() {
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setEmail(TEST_APPLICANT_2_USER_EMAIL);
         caseData.setConditionalOrder(ConditionalOrder.builder()
@@ -197,26 +216,32 @@ class ConditionalOrderPendingReminderNotificationTest {
             .build());
         caseData.getConditionalOrder().getConditionalOrderApplicant1Questions().setSubmittedDate(null);
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant2(caseData, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldNotSendNotificationToApplicant2WhenApplicant2EmailNotSet() {
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant2().setEmail(null);
         caseData.setConditionalOrder(ConditionalOrder.builder()
             .conditionalOrderApplicant1Questions(getConditionalOrderQuestions())
             .build());
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant2(caseData, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldNotSendNotificationToApplicant2SolicitorWhenSubmittedDateIsNotSet() {
+        //Given
         final Applicant applicant = getApplicant();
         applicant.setSolicitor(Solicitor.builder().email(TEST_SOLICITOR_EMAIL).name(TEST_SOLICITOR_NAME).build());
         applicant.setSolicitorRepresented(YES);
@@ -226,8 +251,10 @@ class ConditionalOrderPendingReminderNotificationTest {
             .build());
         caseData.getConditionalOrder().getConditionalOrderApplicant1Questions().setSubmittedDate(null);
 
+        //When
         conditionalOrderPendingReminderNotification.sendToApplicant2Solicitor(caseData, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 }

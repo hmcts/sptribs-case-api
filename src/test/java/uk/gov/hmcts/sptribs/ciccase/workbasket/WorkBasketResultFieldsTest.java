@@ -23,10 +23,13 @@ class WorkBasketResultFieldsTest {
 
     @Test
     void shouldSetWorkBasketResultFields() throws Exception {
+        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        //When
         workBasketResultFields.configure(configBuilder);
 
+        //Then
         assertThat(getWorkBasketResultFields(configBuilder).getFields())
             .extracting("id",
                 "label",

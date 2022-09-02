@@ -7,7 +7,7 @@ import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.MetricsPublisher
 
 def type = "java"
-def product = "nfdiv"
+def product = "sptribs"
 def component = "case-api"
 
 GradleBuilder builder = new GradleBuilder(this, product)
@@ -38,7 +38,7 @@ def secrets = [
                 secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
                 secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
         ],
-        'nfdiv-${env}'    :[
+        'sptribs-${env}'    :[
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
                 secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
                 secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
@@ -57,7 +57,7 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
-    enableSlackNotifications('#no-fault-divorce-builds')
+    enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       enableHighLevelDataSetup()
@@ -81,8 +81,26 @@ withPipeline(type, product, component) {
         alwaysLinkToLastBuild: true,
         keepAll              : true,
         reportDir            : "build/reports/checkstyle",
+        reportFiles          : "cftlib.html",
+        reportName           : "Checkstyle Cftlib Report"
+      ]
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/checkstyle",
         reportFiles          : "test.html",
         reportName           : "Checkstyle Test Report"
+      ]
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/checkstyle",
+        reportFiles          : "cftlibTest.html",
+        reportName           : "Checkstyle CftlibTest Report"
       ]
 
       publishHTML target: [
@@ -159,7 +177,7 @@ withPipeline(type, product, component) {
       env.CASE_DATA_STORE_BASEURL = "http://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-      env.SERVICE_AUTH_MICROSERVICE = "nfdiv_case_api"
+      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
       setCommonEnvVariables()
@@ -171,7 +189,7 @@ withPipeline(type, product, component) {
         env.CCD_DEF_NAME="aat"
         env.ELASTIC_SEARCH_ENABLED=true
         env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-        env.SERVICE_AUTH_MICROSERVICE = "nfdiv_case_api"
+        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
         env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         setCommonEnvVariables()
     }
@@ -182,7 +200,7 @@ withPipeline(type, product, component) {
         env.CCD_DEF_NAME="prod"
         env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
         env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
-        env.SERVICE_AUTH_MICROSERVICE = "nfdiv_case_api"
+        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
         env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
         env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
         env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"

@@ -5,7 +5,7 @@ name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
 version: 0.0.55
 maintainers:
-  - name: HMCTS nfdiv team
+  - name: HMCTS sptribs team
 dependencies:
   - name: java
     version: 3.7.9
@@ -31,7 +31,7 @@ dependencies:
     version: 2.2.7
     repository: '@hmctspublic'
     condition: idam-pr.enabled
-  - name: nfdiv-frontend
+  - name: sptribs-frontend
     version: ~0.0.68
     repository: '@hmctspublic'
-    condition: nfdiv-frontend.enabled
+    condition: sptribs-frontend.enabled

@@ -22,21 +22,25 @@ public class AddSystemUpdateRoleTest {
 
     @Test
     public void shouldAddSystemUpdateRoleWhenEnvironmentIsAat() throws Exception {
+        //When
         List<UserRole> actualRoles =
             withEnvironmentVariable("ENVIRONMENT", "aat")
                 .execute(() -> addSystemUpdateRole.addIfConfiguredForEnvironment(List.of(CITIZEN))
                 );
 
+        //Then
         assertThat(actualRoles).containsExactlyInAnyOrder(CITIZEN, SYSTEMUPDATE);
     }
 
     @Test
     public void shouldReturnTrueWhenEnvironmentIsAat() throws Exception {
+        //When
         boolean isEnvironmentAat =
             withEnvironmentVariable("ENVIRONMENT", "aat")
                 .execute(() -> addSystemUpdateRole.isEnvironmentAat()
                 );
 
+        //Then
         assertThat(isEnvironmentAat).isTrue();
     }
 }

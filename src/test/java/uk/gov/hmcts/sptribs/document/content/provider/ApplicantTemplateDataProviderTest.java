@@ -39,65 +39,71 @@ class ApplicantTemplateDataProviderTest {
 
     @Test
     void shouldReturnNullForJointIfNoFinancialOrder() {
-
+        //When
         final Applicant applicant = Applicant.builder().build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveJointFinancialOrder(applicant)).isNull();
     }
 
     @Test
     void shouldReturnNullForJointIfEmptyFinancialOrder() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(emptySet())
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveJointFinancialOrder(applicant)).isNull();
     }
 
     @Test
     void shouldReturnNullForJointIfFinancialOrderIsNo() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(NO)
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveJointFinancialOrder(applicant)).isNull();
     }
 
     @Test
     void shouldReturnCorrectStringForJointFinancialOrderForApplicantAndChildrenForJoint() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(Set.of(APPLICANT, CHILDREN))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveJointFinancialOrder(applicant))
             .isEqualTo("applicants, and for the children of both the applicants.");
     }
 
     @Test
     void shouldReturnCorrectStringForJointFinancialOrderForApplicant() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(Set.of(APPLICANT))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveJointFinancialOrder(applicant))
             .isEqualTo("applicants.");
     }
 
     @Test
     void shouldReturnCorrectStringForJointFinancialOrderForChildren() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(Set.of(CHILDREN))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveJointFinancialOrder(applicant))
             .isEqualTo("children of both the applicants.");
     }
@@ -127,117 +133,129 @@ class ApplicantTemplateDataProviderTest {
 
     @Test
     void shouldReturnNullForSoleIfNoFinancialOrder() {
-
+        //When
         final Applicant applicant = Applicant.builder().build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant)).isNull();
     }
 
     @Test
     void shouldReturnNullForSoleIfEmptyFinancialOrder() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(emptySet())
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant)).isNull();
     }
 
     @Test
     void shouldReturnNullForSoleIfFinancialOrderIsNo() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(NO)
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant)).isNull();
     }
 
     @Test
     void shouldReturnCorrectStringForSoleFinancialOrderForApplicantAndChildrenForJoint() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(Set.of(APPLICANT, CHILDREN))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant))
             .isEqualTo("applicant, and for the children of the applicant and the respondent.");
     }
 
     @Test
     void shouldReturnCorrectStringForSoleFinancialOrderForApplicant() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(Set.of(APPLICANT))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant))
             .isEqualTo("applicant.");
     }
 
     @Test
     void shouldReturnCorrectStringForSoleFinancialOrderForChildren() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .financialOrdersFor(Set.of(CHILDREN))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant))
             .isEqualTo("children of the applicant and the respondent.");
     }
 
     @Test
     void shouldReturnWelshContentForSoleFinancialOrderForApplicantAndChildrenForJoint() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .languagePreferenceWelsh(YES)
             .financialOrder(YES)
             .financialOrdersFor(Set.of(APPLICANT, CHILDREN))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant))
             .isEqualTo("y ceisydd a phlant y ceisydd a'r atebydd.");
     }
 
     @Test
     void shouldReturnWelshContentForSoleFinancialOrderForApplicant() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .languagePreferenceWelsh(YES)
             .financialOrder(YES)
             .financialOrdersFor(Set.of(APPLICANT))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant))
             .isEqualTo("y ceisydd.");
     }
 
     @Test
     void shouldReturnWelshContentForSoleFinancialOrderForChildren() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .languagePreferenceWelsh(YES)
             .financialOrder(YES)
             .financialOrdersFor(Set.of(CHILDREN))
             .build();
 
+        //Then
         assertThat(applicantTemplateDataProvider.deriveSoleFinancialOrder(applicant))
             .isEqualTo("plant y ceisydd a'r atebydd.");
     }
 
     @Test
     public void shouldMapApplicantContactDetailsWhenApplicantContactIsNotPrivateAndIsRepresented() {
+        //Given
         Applicant applicant1 = buildApplicant(YES, ContactDetailsType.PUBLIC);
         Applicant applicant2 = buildApplicant(YES, ContactDetailsType.PUBLIC);
 
         Map<String, Object> templateContent = new HashMap<>();
 
+        //When
         applicantTemplateDataProvider.mapContactDetails(applicant1, applicant2, templateContent);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_EMAIL, "sol@gm.com"),
             entry(APPLICANT_1_POSTAL_ADDRESS, "sol address"),
@@ -252,13 +270,16 @@ class ApplicantTemplateDataProviderTest {
 
     @Test
     public void shouldMapSolicitorContactDetailsWhenApplicantContactIsPrivateAndIsRepresented() {
+        //Given
         Applicant applicant1 = buildApplicant(YES, ContactDetailsType.PRIVATE);
         Applicant applicant2 = buildApplicant(YES, ContactDetailsType.PRIVATE);
 
         Map<String, Object> templateContent = new HashMap<>();
 
+        //When
         applicantTemplateDataProvider.mapContactDetails(applicant1, applicant2, templateContent);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_EMAIL, "sol@gm.com"),
             entry(APPLICANT_1_POSTAL_ADDRESS, "sol address"),
@@ -273,13 +294,16 @@ class ApplicantTemplateDataProviderTest {
 
     @Test
     public void shouldMapSolicitorContactDetailsWhenApplicantContactIsPrivateAndIsNotRepresented() {
+        //Given
         Applicant applicant1 = buildApplicant(NO, ContactDetailsType.PRIVATE);
         Applicant applicant2 = buildApplicant(YES, ContactDetailsType.PRIVATE);
 
         Map<String, Object> templateContent = new HashMap<>();
 
+        //When
         applicantTemplateDataProvider.mapContactDetails(applicant1, applicant2, templateContent);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_EMAIL, null),
             entry(APPLICANT_1_POSTAL_ADDRESS, null),
@@ -294,13 +318,16 @@ class ApplicantTemplateDataProviderTest {
 
     @Test
     public void shouldMapApplicantContactDetailsWhenApplicantContactIsNotPrivateAndIsNotRepresented() {
+        //Given
         Applicant applicant1 = buildApplicant(NO, ContactDetailsType.PUBLIC);
         Applicant applicant2 = buildApplicant(NO, ContactDetailsType.PUBLIC);
 
         Map<String, Object> templateContent = new HashMap<>();
 
+        //When
         applicantTemplateDataProvider.mapContactDetails(applicant1, applicant2, templateContent);
 
+        //Then
         assertThat(templateContent).contains(
             entry(APPLICANT_1_EMAIL, "app@gm.com"),
             entry(APPLICANT_1_POSTAL_ADDRESS, LINE_1_LINE_2_CITY_POSTCODE),

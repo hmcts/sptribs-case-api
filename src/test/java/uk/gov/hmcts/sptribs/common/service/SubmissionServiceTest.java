@@ -45,7 +45,7 @@ class SubmissionServiceTest {
 
     @Test
     void shouldProcessSubmissionCaseTasks() {
-
+        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> expectedCaseDetails = new CaseDetails<>();
 
@@ -56,8 +56,10 @@ class SubmissionServiceTest {
         when(setApplicantOfflineStatus.apply(caseDetails)).thenReturn(caseDetails);
         when(sendSubmissionNotifications.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
+        //When
         final CaseDetails<CaseData, State> result = submissionService.submitApplication(caseDetails);
 
+        //Then
         assertThat(result).isSameAs(expectedCaseDetails);
 
         verify(setHyphenatedCaseRef).apply(caseDetails);

@@ -80,7 +80,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("LabelState", null, "#### Case State:  ${[STATE]}");
     }
 
-    //TODO: Need to revisit this tab once the field stated in the ticket NFDIV-595 are available
+    //TODO: Need to revisit this tab once the field stated in the ticket sptribs-595 are available
     private void buildAosTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("aosDetails", "AoS")
             .forRoles(CASE_WORKER, LEGAL_ADVISOR,
@@ -188,6 +188,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseIsRepresentativeQualified")
             .field("cicCaseRepresentativeContactDetailsPreference")
             .field("cicCaseAddress")
+            .label("applicantDetails", null, "### Applicant Details")
+            .field("cicCaseApplicantFullName")
+            .field("cicCaseApplicantDateOfBirth")
+            .field("cicCaseApplicantPhoneNumber")
+            .field("cicCaseApplicantContactDetailsPreference")
+            .field("cicCaseApplicantEmailAddress")
+            .field("cicCaseApplicantAddress")
             .label("submission-details", null, "### Submission details")
             .field("dateSubmitted");
     }

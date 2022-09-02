@@ -43,7 +43,7 @@ class AosOverduePrinterTest {
 
     @Test
     void shouldPrintAosOverdueLetterForApplicantIfRequiredDocumentsArePresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(AOS_OVERDUE_LETTER)
@@ -64,8 +64,10 @@ class AosOverduePrinterTest {
 
         when(bulkPrintService.print(printCaptor.capture())).thenReturn(UUID.randomUUID());
 
+        //When
         aosOverduePrinter.sendLetterToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());
@@ -76,7 +78,7 @@ class AosOverduePrinterTest {
 
     @Test
     void shouldNotPrintAosOverdueLetterIfRequiredDocumentsAreNotPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(RESPONDENT_ANSWERS)
@@ -95,8 +97,10 @@ class AosOverduePrinterTest {
             .documents(CaseDocuments.builder().documentsGenerated(asList(doc1, doc2)).build())
             .build();
 
+        //When
         aosOverduePrinter.sendLetterToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(bulkPrintService);
     }
 }

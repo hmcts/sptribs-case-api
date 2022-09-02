@@ -66,7 +66,7 @@ public class DocAssemblyServiceTest {
 
     @Test
     public void shouldGenerateAndStoreDraftApplicationAndReturnDocumentUrl() {
-
+        //Given
         final Map<String, Object> templateContent = new HashMap<>();
         Map<String, Object> caseDataMap = expectedCaseData();
 
@@ -93,6 +93,7 @@ public class DocAssemblyServiceTest {
             docAssemblyRequest
         )).thenReturn(docAssemblyResponse);
 
+        //When
         DocumentInfo documentInfo = docAssemblyService.renderDocument(
             templateContent,
             TEST_CASE_ID,
@@ -102,6 +103,7 @@ public class DocAssemblyServiceTest {
             DIVORCE_DRAFT_APPLICATION_DOCUMENT_NAME + TEST_CASE_ID
         );
 
+        //Then
         assertThat(documentInfo.getUrl()).isEqualTo(DOC_STORE_BASE_URL_PATH + documentUuid);
         assertThat(documentInfo.getBinaryUrl()).isEqualTo(DOC_STORE_BASE_URL_PATH + documentUuid + BINARY);
         assertThat(documentInfo.getFilename()).isEqualTo(DRAFT_APPLICATION_FILENAME);
@@ -117,7 +119,7 @@ public class DocAssemblyServiceTest {
 
     @Test
     public void shouldReturn401UnauthorizedExceptionWhenServiceIsNotWhitelistedInDocAssemblyService() {
-
+        //Given
         final Map<String, Object> templateContent = new HashMap<>();
         Map<String, Object> caseDataMap = expectedCaseData();
 
@@ -154,6 +156,7 @@ public class DocAssemblyServiceTest {
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
+        //When&Then
         assertThatThrownBy(() -> docAssemblyService
             .renderDocument(
                 templateContent,

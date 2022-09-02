@@ -51,13 +51,15 @@ public class CertificateOfEntitlementContentTest {
 
     @Test
     void shouldReturnTemplateContentForSole() {
-
+        //Given
         final CaseData caseData = getCaseDataFor(SOLE_APPLICATION);
         caseData.setDivorceOrDissolution(DIVORCE);
         final ConditionalOrderCourtDetails expectedDetails = setupConditionalOrderCourtDetailsConfig();
 
+        //When
         final Map<String, Object> contentMap = certificateOfEntitlementContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(contentMap).contains(
             entry(CCD_CASE_REFERENCE, "1616-5914-0147-3378"),
             entry("courtDetails", expectedDetails),
@@ -75,13 +77,15 @@ public class CertificateOfEntitlementContentTest {
 
     @Test
     void shouldReturnTemplateContentForJoint() {
-
+        //Given
         final CaseData caseData = getCaseDataFor(JOINT_APPLICATION);
         caseData.setDivorceOrDissolution(DIVORCE);
         final ConditionalOrderCourtDetails expectedDetails = setupConditionalOrderCourtDetailsConfig();
 
+        //When
         final Map<String, Object> contentMap = certificateOfEntitlementContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(contentMap).contains(
             entry(CCD_CASE_REFERENCE, "1616-5914-0147-3378"),
             entry("courtDetails", expectedDetails),
@@ -99,12 +103,14 @@ public class CertificateOfEntitlementContentTest {
 
     @Test
     void shouldReturnTemplateContentForCivilPartnership() {
-
+        //Given
         final CaseData caseData = getCaseDataFor(JOINT_APPLICATION);
         caseData.setDivorceOrDissolution(DISSOLUTION);
 
+        //When
         final Map<String, Object> contentMap = certificateOfEntitlementContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(contentMap).contains(
             entry(MARRIAGE_OR_CIVIL_PARTNERSHIP, CIVIL_PARTNERSHIP)
         );
@@ -112,15 +118,18 @@ public class CertificateOfEntitlementContentTest {
 
     @Test
     void shouldSetHasFinancialOrdersAndCostsGrantedToFalseIfNotSet() {
-
+        //Given
         final CaseData caseData = getCaseDataFor(SOLE_APPLICATION);
         caseData.setDivorceOrDissolution(DIVORCE);
         caseData.getApplicant1().setFinancialOrder(null);
         caseData.getConditionalOrder().setClaimsGranted(null);
 
         final ConditionalOrderCourtDetails expectedDetails = setupConditionalOrderCourtDetailsConfig();
+
+        //When
         final Map<String, Object> contentMap = certificateOfEntitlementContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(contentMap).contains(
             entry(CCD_CASE_REFERENCE, "1616-5914-0147-3378"),
             entry("courtDetails", expectedDetails),
@@ -138,7 +147,7 @@ public class CertificateOfEntitlementContentTest {
 
     @Test
     void shouldSetValuesToNullIfNotSetInCaseData() {
-
+        //Given
         final CaseData caseData = getCaseDataFor(SOLE_APPLICATION);
         caseData.setDivorceOrDissolution(DIVORCE);
         caseData.getApplicant1().setFinancialOrder(null);
@@ -147,8 +156,10 @@ public class CertificateOfEntitlementContentTest {
         caseData.getConditionalOrder().setDecisionDate(null);
         caseData.getConditionalOrder().setDateAndTimeOfHearing(null);
 
+        //When
         final Map<String, Object> contentMap = certificateOfEntitlementContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(contentMap).contains(
             entry(CCD_CASE_REFERENCE, "1616-5914-0147-3378"),
             entry("courtDetails", null),

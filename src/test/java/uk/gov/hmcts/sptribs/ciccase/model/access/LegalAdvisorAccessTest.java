@@ -16,9 +16,9 @@ class LegalAdvisorAccessTest {
 
     @Test
     void shouldGrantAccessToLegalAdvisor() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new LegalAdvisorAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(3)
             .contains(

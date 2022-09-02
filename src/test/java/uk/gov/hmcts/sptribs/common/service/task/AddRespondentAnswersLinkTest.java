@@ -24,7 +24,7 @@ class AddRespondentAnswersLinkTest {
 
     @Test
     void shouldSetRespondentAnswersLinkIfGenerateAnswersDocumentPresent() {
-
+        //Given
         final Document documentLink = new Document("url", "filename", "binary url");
         final ListValue<DivorceDocument> respondentAnswersListValue = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
@@ -39,20 +39,24 @@ class AddRespondentAnswersLinkTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = addRespondentAnswersLink.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getConditionalOrder().getRespondentAnswersLink()).isSameAs(documentLink);
     }
 
     @Test
     void shouldNotSetMiniApplicationLinkIfNoDivorceApplicationDocumentPresent() {
-
+        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = addRespondentAnswersLink.apply(caseDetails);
 
+        //Then
         assertThat(result.getData().getConditionalOrder().getRespondentAnswersLink()).isNull();
     }
 }

@@ -24,9 +24,9 @@ class CaseworkerAccessWithCAATest {
 
     @Test
     void shouldGrantCaseworkerAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new CaseworkerWithCAAAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(19)
             .contains(
