@@ -31,7 +31,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Service
 @Slf4j
 public class BulkPrintService {
-    private static final String XEROX_TYPE_PARAMETER = "NFDIV001";
+    private static final String XEROX_TYPE_PARAMETER = "sptribs001";
     private static final String LETTER_TYPE_KEY = "letterType";
     private static final String CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
     private static final String CASE_IDENTIFIER_KEY = "caseIdentifier";
