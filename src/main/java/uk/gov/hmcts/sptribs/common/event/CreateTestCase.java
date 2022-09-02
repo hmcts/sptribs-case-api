@@ -8,11 +8,13 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
@@ -40,6 +42,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private SubmissionService submissionService;
+
+    @Autowired
+    private CcdPageConfiguration selectParties;
 
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
@@ -116,14 +121,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void selectParties(PageBuilder pageBuilder) {
-        pageBuilder
-            .page("objectSubjects")
-            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getSubjectCIC)
-            .optional(CicCase::getApplicantCIC)
-            .optional(CicCase::getRepresentativeCIC)
-            .done();
+        selectParties.addTo(pageBuilder);
     }
 
     private void caseCategory(PageBuilder pageBuilder) {
@@ -200,7 +198,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         data = submittedDetails.getData();
         state = submittedDetails.getState();
 
-        //data.getCicCase().setIsRepresentativePresent(YesOrNo.YES);
+        data.getCicCase().setIsRepresentativePresent(YesOrNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

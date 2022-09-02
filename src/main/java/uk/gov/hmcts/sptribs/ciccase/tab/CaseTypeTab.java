@@ -54,12 +54,11 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("summary", "Summary")
             .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
             .label("case-details", null, "### Case details")
-            .field("cicCaseFullName") // TODO: to confirm if its ok to display full name as we dont have first name and last name seperately
+            .field("cicCaseFullName")
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
             .field(CaseData::getHyphenatedCaseRef)
-            //.field("isRepresentativePresent", "cicCaseRepresentativeFullName!=\"\"")
-            //TODO: Is there a representative
+            .field("cicCaseIsRepresentativePresent", "cicCaseRepresentativeFullName!=\"\"")
             .label("representativeDetails", null, "### Representative Details")
             .field("cicCaseIsRepresentativeQualified")
             .field("cicCaseRepresentativeOrgName")
