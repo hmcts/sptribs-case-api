@@ -72,6 +72,14 @@ public class CicCase {
     private String comment;
 
     @CCD(
+        label = "Named Parties",
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "PartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<PartiesCIC> partiesCIC;
+
+    @CCD(
         //label = "Add a Subject",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
@@ -262,8 +270,27 @@ public class CicCase {
     )
     private YesOrNo compensationClaimLinkCIC;
 
-    private ContactPreferencesDetailsCIC contactDetailsPreference;
+    @CCD(
+        label = "Case Number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNumber;
+
+    @CCD(
+        label = "Is there a representative?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isRepresentativePresent;
+
+    @CCD(
+        label = "Contact Details Preference",
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "PartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<PartiesCIC> contactDetailsPreference;
 
     private CaseDocumentsCIC caseDocumentsCIC;
+
 
 }
