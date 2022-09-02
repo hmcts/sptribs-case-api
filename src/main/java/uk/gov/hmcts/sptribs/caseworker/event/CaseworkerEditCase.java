@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditApplicantDetails;
+import uk.gov.hmcts.sptribs.caseworker.event.page.EditCaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -20,11 +21,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
+    private final CcdPageConfiguration editCaseCategorisationDetails = new EditCaseCategorisationDetails();
     private final CcdPageConfiguration editApplicantDetails = new EditApplicantDetails();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = addEventConfig(configBuilder);
+        editCaseCategorisationDetails.addTo(pageBuilder);
         editApplicantDetails.addTo(pageBuilder);
     }
 
@@ -33,7 +36,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .event(CASEWORKER_EDIT_CASE)
             .forStates(POST_SUBMISSION_STATES)
             .name("Edit Case")
-            .description("Edit Case")
+            .description("")
             .showSummary()
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, CASE_WORKER, SUPER_USER)
