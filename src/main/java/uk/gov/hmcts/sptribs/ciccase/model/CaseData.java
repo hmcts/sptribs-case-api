@@ -205,7 +205,10 @@ public class CaseData {
     @JsonUnwrapped
     private RetiredFields retiredFields;
 
-    @CCD(access = {CaseworkerAccess.class})
+    @CCD(
+        label = "Case number",
+        access = {CaseworkerAccess.class}
+    )
     private String hyphenatedCaseRef;
 
     @CCD(
