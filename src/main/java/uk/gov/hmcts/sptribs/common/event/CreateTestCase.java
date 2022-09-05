@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
@@ -40,17 +41,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String CASE_RECORD_DRAFT = "\r\nCase record for [DRAFT]";
     private final FeatureToggleService featureToggleService;
 
+    private static final CcdPageConfiguration selectParties =  new SelectParties();
+
     @Autowired
     private SubmissionService submissionService;
-
-    @Autowired
-    private CcdPageConfiguration selectParties;
-
-    /*@Autowired
-    private CcdPageConfiguration applicantDetails;
-
-    @Autowired
-    private CcdPageConfiguration caseCategorisationDetails;*/
 
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
@@ -78,9 +72,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
             caseCategory(pageBuilder);
-            selectParties.addTo(pageBuilder);
+            buildSelectParty(pageBuilder);
             subjectCategory(pageBuilder);
-            //applicantDetails.addTo(pageBuilder);
+
             pageBuilder.page("applicantDetailsObjects")
                 .label("applicantDetailsObject", "Who is the applicant in this case?\r\n" + CASE_RECORD_DRAFT)
                 .complex(CaseData::getCicCase)
@@ -124,6 +118,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
             .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
             .done();
+    }
+
+    private void buildSelectParty(PageBuilder pageBuilder) {
+        selectParties.addTo(pageBuilder);
     }
 
     private void caseCategory(PageBuilder pageBuilder) {
