@@ -9,7 +9,7 @@ public class ApplicantDetails implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("editApplicantDetails")
+        pageBuilder.page("applicantDetails")
             .pageLabel("Who is the applicant in this case?")
             .label("applicantDetailsObject", "")
             .complex(CaseData::getCicCase)

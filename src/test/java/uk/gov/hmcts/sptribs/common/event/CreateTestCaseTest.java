@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.common.event;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,8 +53,6 @@ class CreateTestCaseTest {
         assertThat(response.getErrors()).isNull();
     }
 
-    //TODO This junit needs looking at
-    @Disabled
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();

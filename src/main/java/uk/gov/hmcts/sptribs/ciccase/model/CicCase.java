@@ -72,7 +72,7 @@ public class CicCase {
     private String comment;
 
     @CCD(
-        label = "Select all that apply",
+        label = "Named Parties",
         typeOverride = MultiSelectList,
         typeParameterOverride = "PartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -283,7 +283,7 @@ public class CicCase {
     private YesOrNo isRepresentativePresent;
 
     @CCD(
-        label = "Contact Details Preference",
+        label = "Who should receive information about the claim?",
         typeOverride = MultiSelectList,
         typeParameterOverride = "PartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

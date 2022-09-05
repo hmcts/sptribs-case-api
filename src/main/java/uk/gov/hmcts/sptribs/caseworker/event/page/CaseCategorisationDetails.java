@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.common.event.page;
+package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;

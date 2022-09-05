@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
@@ -42,6 +43,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final FeatureToggleService featureToggleService;
 
     private static final CcdPageConfiguration selectParties =  new SelectParties();
+    private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
 
     @Autowired
     private SubmissionService submissionService;
@@ -74,17 +76,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             caseCategory(pageBuilder);
             buildSelectParty(pageBuilder);
             subjectCategory(pageBuilder);
+            applicantDetails.addTo(pageBuilder);
 
-            pageBuilder.page("applicantDetailsObjects")
-                .label("applicantDetailsObject", "Who is the applicant in this case?\r\n" + CASE_RECORD_DRAFT)
-                .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getApplicantFullName)
-                .mandatory(CicCase::getApplicantPhoneNumber)
-                .mandatory(CicCase::getApplicantEmailAddress)
-                .optionalWithLabel(CicCase::getApplicantDateOfBirth, "")
-                .mandatoryWithLabel(CicCase::getApplicantContactDetailsPreference, "")
-                .mandatory(CicCase::getApplicantAddress, "cicCaseApplicantContactDetailsPreference = \"Post\"")
-                .done();
             pageBuilder.page("representativeDetailsObjects")
                 .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + CASE_RECORD_DRAFT)
                 .complex(CaseData::getCicCase)
