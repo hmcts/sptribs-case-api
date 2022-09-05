@@ -46,6 +46,12 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Autowired
     private CcdPageConfiguration selectParties;
 
+    /*@Autowired
+    private CcdPageConfiguration applicantDetails;
+
+    @Autowired
+    private CcdPageConfiguration caseCategorisationDetails;*/
+
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
     }
@@ -72,9 +78,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
             caseCategory(pageBuilder);
-            selectParties(pageBuilder);
+            selectParties.addTo(pageBuilder);
             subjectCategory(pageBuilder);
-
+            //applicantDetails.addTo(pageBuilder);
             pageBuilder.page("applicantDetailsObjects")
                 .label("applicantDetailsObject", "Who is the applicant in this case?\r\n" + CASE_RECORD_DRAFT)
                 .complex(CaseData::getCicCase)
@@ -118,10 +124,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
             .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
             .done();
-    }
-
-    private void selectParties(PageBuilder pageBuilder) {
-        selectParties.addTo(pageBuilder);
     }
 
     private void caseCategory(PageBuilder pageBuilder) {

@@ -72,7 +72,7 @@ public class CicCase {
     private String comment;
 
     @CCD(
-        label = "Named Parties",
+        label = "Select all that apply",
         typeOverride = MultiSelectList,
         typeParameterOverride = "PartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
