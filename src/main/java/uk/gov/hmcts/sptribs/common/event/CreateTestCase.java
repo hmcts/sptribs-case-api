@@ -146,13 +146,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         pageBuilder.page("objectFurtherDetails")
             .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getSchemeCic)
-            .optional(CicCase::getClaimLinkedToCic)
-            .optional(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
-            .optional(CicCase::getCompensationClaimLinkCIC)
+            .mandatory(CicCase::getSchemeCic)
+            .mandatory(CicCase::getClaimLinkedToCic)
+            .mandatory(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
+            .mandatory(CicCase::getCompensationClaimLinkCIC)
             .optional(CicCase::getPoliceAuthority)
-            .optional(CicCase::getFormReceivedInTime)
-            .optional(CicCase::getMissedTheDeadLineCic)
+            .mandatory(CicCase::getFormReceivedInTime)
+            .mandatory(CicCase::getMissedTheDeadLineCic)
             .done();
     }
 
