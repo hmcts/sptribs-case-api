@@ -3,13 +3,14 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.caseworker.event.page.EditApplicantDetails;
-import uk.gov.hmcts.sptribs.caseworker.event.page.EditCaseCategorisationDetails;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
@@ -21,13 +22,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
-    private final CcdPageConfiguration editCaseCategorisationDetails = new EditCaseCategorisationDetails();
-    private final CcdPageConfiguration editApplicantDetails = new EditApplicantDetails();
+    private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
+    private final CcdPageConfiguration editSelectedPartiesDetails = new SelectParties();
+    private final CcdPageConfiguration editApplicantDetails = new ApplicantDetails();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
+        editSelectedPartiesDetails.addTo(pageBuilder);
         editApplicantDetails.addTo(pageBuilder);
     }
 
