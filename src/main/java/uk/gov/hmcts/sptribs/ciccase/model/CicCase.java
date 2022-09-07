@@ -281,7 +281,7 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isRepresentativePresent;
-
+/*
     @CCD(
         label = "Who should receive information about the claim?",
         typeOverride = MultiSelectList,
@@ -289,7 +289,7 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<PartiesCIC> contactDetailsPreference;
-
+*/
     private CaseDocumentsCIC caseDocumentsCIC;
 
 

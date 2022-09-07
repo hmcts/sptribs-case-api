@@ -90,11 +90,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .mandatory(CicCase::getRepresentativeEmailAddress, "cicCaseRepresentativeContactDetailsPreference = \"Email\"")
                 .mandatory(CicCase::getRepresentativeAddress, "cicCaseRepresentativeContactDetailsPreference = \"Post\"")
                 .done();
-            pageBuilder.page("objectContacts")
+         /*   pageBuilder.page("objectContacts")
                 .label("objectContact", "Who should receive information about the case?")
                 .complex(CaseData::getCicCase)
                 .optional(CicCase::getContactDetailsPreference)
-                .done();
+                .done();*/
             uploadDocuments(pageBuilder);
             furtherDetails(pageBuilder);
         }
