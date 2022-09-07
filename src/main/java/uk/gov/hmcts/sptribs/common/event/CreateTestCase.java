@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
+import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
@@ -44,6 +45,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration selectParties =  new SelectParties();
     private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
+    private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
 
     @Autowired
     private SubmissionService submissionService;
@@ -75,7 +77,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
             caseCategory(pageBuilder);
             buildSelectParty(pageBuilder);
-            subjectCategory(pageBuilder);
+            subjectDetails.addTo(pageBuilder);
             applicantDetails.addTo(pageBuilder);
 
             pageBuilder.page("representativeDetailsObjects")
@@ -90,27 +92,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .mandatory(CicCase::getRepresentativeEmailAddress, "cicCaseRepresentativeContactDetailsPreference = \"Email\"")
                 .mandatory(CicCase::getRepresentativeAddress, "cicCaseRepresentativeContactDetailsPreference = \"Post\"")
                 .done();
-            pageBuilder.page("objectContacts")
+            /*pageBuilder.page("objectContacts")
                 .label("objectContact", "Who should receive information about the case?")
                 .complex(CaseData::getCicCase)
                 .optional(CicCase::getContactDetailsPreference)
-                .done();
+                .done();*/
             uploadDocuments(pageBuilder);
             furtherDetails(pageBuilder);
         }
-    }
-
-    private void subjectCategory(PageBuilder pageBuilder) {
-        pageBuilder.page("subjectDetailsObjects")
-            .label("subjectDetailsObject", "Who is the subject of this case?\r\n" + CASE_RECORD_DRAFT)
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getFullName)
-            .optional(CicCase::getAddress)
-            .optional(CicCase::getPhoneNumber)
-            .mandatoryWithLabel(CicCase::getDateOfBirth, "")
-            .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
-            .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
-            .done();
     }
 
     private void buildSelectParty(PageBuilder pageBuilder) {

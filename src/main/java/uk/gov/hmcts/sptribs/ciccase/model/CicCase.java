@@ -282,13 +282,15 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
 
-    @CCD(
+    //TODO this block is causing an ElasticSearch Error: can't merge a non object mapping [data.cicCaseContactDetailsPreference]
+    // with an object mapping
+    /*@CCD(
         label = "Who should receive information about the claim?",
         typeOverride = MultiSelectList,
         typeParameterOverride = "PartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<PartiesCIC> contactDetailsPreference;
+    private Set<PartiesCIC> contactDetailsPreference;*/
 
     private CaseDocumentsCIC caseDocumentsCIC;
 
