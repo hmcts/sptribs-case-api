@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
+import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
@@ -24,6 +25,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
     private final CcdPageConfiguration editSelectedPartiesDetails = new SelectParties();
+    private final CcdPageConfiguration editSubjectDetails = new SubjectDetails();
     private final CcdPageConfiguration editApplicantDetails = new ApplicantDetails();
 
     @Override
@@ -31,6 +33,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         var pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
+        editSubjectDetails.addTo(pageBuilder);
         editApplicantDetails.addTo(pageBuilder);
     }
 
