@@ -171,7 +171,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseCaseReceivedDate")
             .field("cicCaseCaseSubcategory")
             .field("cicCaseComment")
-            .field("cicCaseContactDetailsPreference")
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
             .field("cicCaseFullName")
