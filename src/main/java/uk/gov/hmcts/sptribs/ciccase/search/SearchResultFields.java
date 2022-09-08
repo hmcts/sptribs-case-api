@@ -12,25 +12,24 @@ import java.util.List;
 
 import static java.util.List.of;
 import static uk.gov.hmcts.ccd.sdk.api.SortOrder.FIRST;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_LAST_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_2_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_2_LAST_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_TYPE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_NAME;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.DUE_DATE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_MODIFIED_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_STATE_MODIFIED_DATE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
 
 @Component
 public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> {
 
     public static final List<SearchField<UserRole>> SEARCH_RESULT_FIELD_LIST = of(
-        SearchField.<UserRole>builder().id("[CASE_REFERENCE]").label("Case Number").build(),
-        SearchField.<UserRole>builder().id(APPLICANT_TYPE).label("Application Type").build(),
-        SearchField.<UserRole>builder().id(APPLICANT_1_FIRST_NAME).label("Applicant's First Name").build(),
-        SearchField.<UserRole>builder().id(APPLICANT_1_LAST_NAME).label("Applicant's Last Name").build(),
-        SearchField.<UserRole>builder().id(APPLICANT_2_FIRST_NAME).label("Respondent's First Name").build(),
-        SearchField.<UserRole>builder().id(APPLICANT_2_LAST_NAME).label("Respondent's Last Name").build(),
+        SearchField.<UserRole>builder().id(CCD_REFERENCE).label("Case Number").build(),
+        SearchField.<UserRole>builder().id(SUBJECT_NAME).label("Subject Name").build(),
+        SearchField.<UserRole>builder().id(CASE_STATE).label("Case Status").build(),
+        SearchField.<UserRole>builder().id(HEARING_DATE).label("Hearing Date").build(),
+        SearchField.<UserRole>builder().id(APPLICANT_NAME).label("Applicant Name").build(),
         SearchField.<UserRole>builder().id(DUE_DATE).label("Due Date").build(),
         SearchField.<UserRole>builder().id(LAST_MODIFIED_DATE).label("Last modified date").build(),
         SearchField.<UserRole>builder().id(LAST_STATE_MODIFIED_DATE).label("Last state modified date").order(FIRST.ASCENDING).build()

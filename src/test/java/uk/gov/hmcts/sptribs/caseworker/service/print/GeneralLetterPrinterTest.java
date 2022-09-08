@@ -38,7 +38,7 @@ class GeneralLetterPrinterTest {
 
     @Test
     void shouldPrintGeneralLetterIfRequiredDocumentsArePresent() {
-
+        //Given
         Document generalLetter = Document.builder()
             .filename("GeneralLetter.pdf")
             .build();
@@ -68,8 +68,10 @@ class GeneralLetterPrinterTest {
 
         when(bulkPrintService.print(printCaptor.capture())).thenReturn(UUID.randomUUID());
 
+        //When
         printer.sendLetterWithAttachments(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());
@@ -81,9 +83,10 @@ class GeneralLetterPrinterTest {
 
     @Test
     void shouldNotPrintGeneralLetterIfRequiredDocumentsAreNotPresent() {
-
+        //When
         printer.sendLetterWithAttachments(CaseData.builder().build(), TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(bulkPrintService);
     }
 }

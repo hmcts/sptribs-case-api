@@ -16,9 +16,9 @@ class SolicitorAccessTest {
 
     @Test
     void shouldGrantAosAccess() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new SolicitorAccess().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(3)
             .contains(

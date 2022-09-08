@@ -38,41 +38,42 @@ class HoldingPeriodServiceTest {
 
     @Test
     void shouldReturnDueDateForHoldingPeriodFinish() {
-
+        //When
         final LocalDate issueDate = getExpectedLocalDate();
 
+        //Then
         assertThat(holdingPeriodService.getDueDateFor(issueDate))
             .isEqualTo(issueDate.plusDays(HOLDING_PERIOD_DAYS));
     }
 
     @Test
     void shouldReturnTrueIfDaysBetweenIssueDateAndCurrentDateIsEqualToHoldingPeriod() {
-
+        //Given
         setMockClock(clock);
-
+        //When
         final LocalDate issueDate = getExpectedLocalDate().minusDays(HOLDING_PERIOD_DAYS);
-
+        //Then
         assertThat(holdingPeriodService.isHoldingPeriodFinished(issueDate)).isTrue();
     }
 
     @Test
     void shouldReturnTrueIfDaysBetweenIssueDateAndCurrentDateIsGreaterThanHoldingPeriod() {
-
+        //Given
         setMockClock(clock);
-
+        //When
         final LocalDate issueDate = getExpectedLocalDate().minusDays(HOLDING_PERIOD_DAYS);
-
+        //Then
         assertThat(holdingPeriodService.isHoldingPeriodFinished(issueDate.minusDays(1))).isTrue();
         assertThat(holdingPeriodService.isHoldingPeriodFinished(issueDate.minusWeeks(1))).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfDaysBetweenIssueDateAndCurrentDateIsLessThanHoldingPeriod() {
-
+        //Given
         setMockClock(clock);
-
+        //When
         final LocalDate issueDate = getExpectedLocalDate().minusDays(HOLDING_PERIOD_DAYS).plusDays(1);
-
+        //Then
         assertThat(holdingPeriodService.isHoldingPeriodFinished(issueDate.plusDays(1))).isFalse();
         assertThat(holdingPeriodService.isHoldingPeriodFinished(issueDate.plusWeeks(1))).isFalse();
     }

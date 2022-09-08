@@ -60,6 +60,7 @@ public class DraftApplicationRemovalServiceTest {
 
     @Test
     public void shouldRemoveDraftApplicationDocumentFromCaseDataAndDeleteApplicationDocumentFromDocManagement() {
+        //Given
         final List<String> systemRoles = List.of("caseworker-divorce");
         final String systemRolesCsv = String.join(",", systemRoles);
         final ListValue<DivorceDocument> divorceDocumentListValue = documentWithType(APPLICATION);
@@ -80,11 +81,13 @@ public class DraftApplicationRemovalServiceTest {
             true
         );
 
+        //When
         final List<ListValue<DivorceDocument>> actualDocumentsList = draftApplicationRemovalService.removeDraftApplicationDocument(
             singletonList(divorceDocumentListValue),
             TEST_CASE_ID
         );
 
+        //Then
         verify(idamService).retrieveSystemUpdateUserDetails();
         verify(authTokenGenerator).generate();
         verify(documentManagementClient).deleteDocument(
@@ -101,6 +104,7 @@ public class DraftApplicationRemovalServiceTest {
 
     @Test
     public void shouldThrow403ForbiddenWhenServiceIsNotWhitelistedInDocManagement() {
+        //Given
         final List<String> systemRoles = List.of("caseworker-divorce");
         final String userId = UUID.randomUUID().toString();
         final User systemUser = systemUser(systemRoles, userId);
@@ -132,6 +136,7 @@ public class DraftApplicationRemovalServiceTest {
                 anyBoolean()
             );
 
+        //When&Then
         assertThatThrownBy(() -> draftApplicationRemovalService.removeDraftApplicationDocument(
             singletonList(documentWithType(APPLICATION)),
             TEST_CASE_ID
@@ -146,6 +151,7 @@ public class DraftApplicationRemovalServiceTest {
 
     @Test
     public void shouldThrow401UnAuthorizedWhenServiceAuthTokenGenerationFails() {
+        //Given
         final List<String> systemRoles = List.of("caseworker-divorce");
         final String userId = UUID.randomUUID().toString();
         final User systemUser = systemUser(systemRoles, userId);
@@ -167,6 +173,7 @@ public class DraftApplicationRemovalServiceTest {
 
         doThrow(feignException).when(authTokenGenerator).generate();
 
+        //When&Then
         assertThatThrownBy(() -> draftApplicationRemovalService.removeDraftApplicationDocument(
             singletonList(documentWithType(APPLICATION)),
             TEST_CASE_ID
@@ -180,13 +187,16 @@ public class DraftApplicationRemovalServiceTest {
 
     @Test
     public void shouldNotInvokeDocManagementWhenApplicationDocumentDoesNotExistInGenerateDocuments() {
+        //Given
         final ListValue<DivorceDocument> divorceDocumentListValue = documentWithType(OTHER);
 
+        //When
         final List<ListValue<DivorceDocument>> actualDocumentsList = draftApplicationRemovalService.removeDraftApplicationDocument(
             singletonList(divorceDocumentListValue),
             TEST_CASE_ID
         );
 
+        //Then
         assertThat(actualDocumentsList).containsExactlyInAnyOrder(divorceDocumentListValue);
 
         verify(idamService).retrieveSystemUpdateUserDetails();

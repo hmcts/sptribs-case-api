@@ -54,7 +54,7 @@ class AosPackPrinterTest {
 
     @Test
     void shouldPrintAosPackWithD10ForRespondentIfRequiredDocumentsArePresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc2 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(NOTICE_OF_PROCEEDINGS_APP_2)
@@ -80,8 +80,10 @@ class AosPackPrinterTest {
 
         when(bulkPrintService.printAosRespondentPack(printCaptor.capture(), eq(true))).thenReturn(randomUUID());
 
+        //When
         aosPackPrinter.sendAosLetterToRespondent(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());
@@ -93,7 +95,7 @@ class AosPackPrinterTest {
 
     @Test
     void shouldPrintAosPackWithoutD10ForRespondentIfRequiredDocumentsArePresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc2 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(NOTICE_OF_PROCEEDINGS_APP_2)
@@ -119,8 +121,10 @@ class AosPackPrinterTest {
 
         when(bulkPrintService.printAosRespondentPack(printCaptor.capture(), eq(false))).thenReturn(randomUUID());
 
+        //When
         aosPackPrinter.sendAosLetterToRespondent(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());
@@ -132,7 +136,7 @@ class AosPackPrinterTest {
 
     @Test
     void shouldPrintAosPackForApplicantIfRequiredDocumentsArePresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(NOTICE_OF_PROCEEDINGS_APP_1)
@@ -158,8 +162,10 @@ class AosPackPrinterTest {
 
         when(bulkPrintService.print(printCaptor.capture())).thenReturn(randomUUID());
 
+        //When
         aosPackPrinter.sendAosLetterToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());
@@ -171,7 +177,7 @@ class AosPackPrinterTest {
 
     @Test
     void shouldPrintPersonalServiceAosPackForApplicantIfRequiredDocumentsArePresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(NOTICE_OF_PROCEEDINGS_APP_1)
@@ -202,8 +208,10 @@ class AosPackPrinterTest {
 
         when(bulkPrintService.printWithD10Form(printCaptor.capture())).thenReturn(randomUUID());
 
+        //When
         aosPackPrinter.sendAosLetterAndRespondentAosPackToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());
@@ -218,7 +226,7 @@ class AosPackPrinterTest {
 
     @Test
     void shouldPrintAosResponseLetterForApplicantIfRequiredDocumentsArePresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(AOS_RESPONSE_LETTER)
@@ -233,8 +241,10 @@ class AosPackPrinterTest {
 
         when(bulkPrintService.print(printCaptor.capture())).thenReturn(randomUUID());
 
+        //When
         aosPackPrinter.sendAosResponseLetterToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());
@@ -245,7 +255,7 @@ class AosPackPrinterTest {
 
     @Test
     void shouldNotPrintAosPackIfRequiredDocumentsAreNotPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(RESPONDENT_ANSWERS)
@@ -262,14 +272,16 @@ class AosPackPrinterTest {
             .documents(CaseDocuments.builder().documentsGenerated(asList(doc1, doc2)).build())
             .build();
 
+        //When
         aosPackPrinter.sendAosLetterToRespondent(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(bulkPrintService);
     }
 
     @Test
     void shouldNotPrintPersonalServiceAosPackIfRequiredDocumentsAreNotPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(RESPONDENT_ANSWERS)
@@ -286,14 +298,16 @@ class AosPackPrinterTest {
             .documents(CaseDocuments.builder().documentsGenerated(asList(doc1, doc2)).build())
             .build();
 
+        //When
         aosPackPrinter.sendAosLetterAndRespondentAosPackToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(bulkPrintService);
     }
 
     @Test
     void shouldNotPrintAosPackForApplicantIfRequiredDocumentsAreNotPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(RESPONDENT_ANSWERS)
@@ -310,14 +324,16 @@ class AosPackPrinterTest {
             .documents(CaseDocuments.builder().documentsGenerated(asList(doc1, doc2)).build())
             .build();
 
+        //When
         aosPackPrinter.sendAosLetterToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(bulkPrintService);
     }
 
     @Test
     void shouldNotPrintAosResponseLetterPackIfRequiredDocumentsAreNotPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(NOTICE_OF_PROCEEDINGS_APP_1)
@@ -334,14 +350,16 @@ class AosPackPrinterTest {
             .documents(CaseDocuments.builder().documentsGenerated(asList(doc1, doc2)).build())
             .build();
 
+        //When
         aosPackPrinter.sendAosResponseLetterToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(bulkPrintService);
     }
 
     @Test
     void shouldPrintAosPackForApplicantIfRequiredDocumentsArePresentAndApplicantContactIsPrivate() {
-
+        //Given
         final ListValue<ConfidentialDivorceDocument> doc1 = ListValue.<ConfidentialDivorceDocument>builder()
             .value(ConfidentialDivorceDocument.builder()
                 .confidentialDocumentsReceived(ConfidentialDocumentsReceived.NOTICE_OF_PROCEEDINGS_APP_1)
@@ -370,8 +388,10 @@ class AosPackPrinterTest {
 
         when(bulkPrintService.print(printCaptor.capture())).thenReturn(randomUUID());
 
+        //When
         aosPackPrinter.sendAosLetterToApplicant(caseData, TEST_CASE_ID);
 
+        //Then
         final Print print = printCaptor.getValue();
         assertThat(print.getCaseId()).isEqualTo(TEST_CASE_ID.toString());
         assertThat(print.getCaseRef()).isEqualTo(TEST_CASE_ID.toString());

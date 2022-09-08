@@ -76,6 +76,7 @@ class CcdSearchServiceTest {
 
     @Test
     void shouldReturnCasesWithGivenStateBeforeTodayWithoutFlag() {
+        //Given
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         final int from = 0;
         final int pageSize = 100;
@@ -99,14 +100,17 @@ class CcdSearchServiceTest {
             sourceBuilder.toString()))
             .thenReturn(expected);
 
+        //When
         final SearchResult result = ccdSearchService.searchForCasesWithQuery(from, pageSize, query, user, SERVICE_AUTHORIZATION);
 
+        //Then
         assertThat(result.getTotal()).isEqualTo(100);
         assertThat(result).isEqualTo(expected);
     }
 
     @Test
     void shouldReturnAllCasesWithGivenState() {
+        //Given
         final BoolQueryBuilder query = boolQuery()
             .must(matchQuery(STATE, Submitted))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
@@ -127,13 +131,16 @@ class CcdSearchServiceTest {
             getSourceBuilder(PAGE_SIZE, PAGE_SIZE).toString()))
             .thenReturn(expected2);
 
+        //When
         final List<CaseDetails> searchResult = ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION, Submitted);
 
+        //Then
         assertThat(searchResult.size()).isEqualTo(101);
     }
 
     @Test
     void shouldReturnAllCasesInHolding() {
+        //Given
         final BoolQueryBuilder query = boolQuery()
             .must(matchQuery(STATE, Holding))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
@@ -177,14 +184,16 @@ class CcdSearchServiceTest {
             sourceBuilder2.toString()))
             .thenReturn(expected2);
 
+        //When
         final List<CaseDetails> searchResult = ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION, Holding);
 
+        //Then
         assertThat(searchResult.size()).isEqualTo(101);
     }
 
     @Test
     void shouldReturnAllCasesWithGivenStateWhenFlagIsPassed() {
-
+        //Given
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         final int from = 0;
         final SearchResult expected = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
@@ -222,15 +231,17 @@ class CcdSearchServiceTest {
             sourceBuilder2.toString()))
             .thenReturn(expected2);
 
+        //When
         final List<CaseDetails> searchResult = ccdSearchService.searchForAllCasesWithQuery(
             query, user, SERVICE_AUTHORIZATION, AwaitingApplicant2Response);
 
+        //Then
         assertThat(searchResult.size()).isEqualTo(101);
     }
 
     @Test
     void shouldReturnCasesWithVersionOlderThan() {
-
+        //Given
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
 
@@ -256,13 +267,16 @@ class CcdSearchServiceTest {
             sourceBuilder.toString()))
             .thenReturn(expected1);
 
+        //When
         final List<CaseDetails> searchResult = ccdSearchService.searchForCasesWithVersionLessThan(1, user, SERVICE_AUTHORIZATION);
 
+        //Then
         assertThat(searchResult.size()).isEqualTo(100);
     }
 
     @Test
     void shouldThrowCcdSearchFailedExceptionIfSearchFails() {
+        //Given
         final BoolQueryBuilder query = boolQuery()
             .must(matchQuery("state", Submitted))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
@@ -275,6 +289,7 @@ class CcdSearchServiceTest {
                 CASE_TYPE,
                 getSourceBuilder(0, PAGE_SIZE).toString());
 
+        //When&Then
         final CcdSearchCaseException exception = assertThrows(
             CcdSearchCaseException.class,
             () -> ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION, Submitted));
@@ -284,7 +299,7 @@ class CcdSearchServiceTest {
 
     @Test
     void shouldReturnAllPagesOfCasesInStateAwaitingPronouncement() {
-
+        //Given
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         final SearchResult searchResult1 = SearchResult.builder().total(PAGE_SIZE)
             .cases(createCaseDetailsList(PAGE_SIZE)).build();
@@ -307,9 +322,11 @@ class CcdSearchServiceTest {
             .thenReturn(searchResult2);
         when(caseDetailsListConverter.convertToListOfValidCaseDetails(expectedCases)).thenReturn(createConvertedCaseDetailsList(101));
 
+        //When
         final Deque<List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State>>> allPages =
             ccdSearchService.searchAwaitingPronouncementCasesAllPages(user, SERVICE_AUTHORIZATION);
 
+        //Then
         assertThat(allPages.size()).isEqualTo(3);
         assertThat(allPages.poll().size()).isEqualTo(BULK_LIST_MAX_PAGE_SIZE);
         assertThat(allPages.poll().size()).isEqualTo(BULK_LIST_MAX_PAGE_SIZE);
@@ -318,7 +335,7 @@ class CcdSearchServiceTest {
 
     @Test
     void shouldThrowCcdSearchFailedExceptionIfSearchingCasesInAwaitingPronouncementAllPagesFails() {
-
+        //Given
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
 
         doThrow(feignException(422, "some error")).when(coreCaseDataApi)
@@ -328,6 +345,7 @@ class CcdSearchServiceTest {
                 CASE_TYPE,
                 searchSourceBuilderForAwaitingPronouncementCases(0).toString());
 
+        //When&Then
         final CcdSearchCaseException exception = assertThrows(
             CcdSearchCaseException.class,
             () -> ccdSearchService.searchAwaitingPronouncementCasesAllPages(user, SERVICE_AUTHORIZATION));
@@ -337,7 +355,7 @@ class CcdSearchServiceTest {
 
     @Test
     void shouldReturnCasesFromCcdWithMatchingCaseReferences() {
-
+        //Given
         final List<String> caseReferences = List.of(
             "1643192250866023",
             "1627308042786515",
@@ -366,8 +384,10 @@ class CcdSearchServiceTest {
             sourceBuilder.toString()))
             .thenReturn(expected);
 
+        //When
         final List<CaseDetails> searchResult = ccdSearchService.searchForCases(caseReferences, user, SERVICE_AUTHORIZATION);
 
+        //Then
         assertThat(searchResult.size()).isEqualTo(4);
     }
 

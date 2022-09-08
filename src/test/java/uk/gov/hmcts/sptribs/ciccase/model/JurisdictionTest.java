@@ -18,6 +18,7 @@ public class JurisdictionTest {
 
     @Test
     public void shouldNotReturnErrorsWhenJurisdictionConnectionIsCAndIForValidCase() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DivorceOrDissolution.DISSOLUTION);
         caseData.setApplicationType(ApplicationType.SOLE_APPLICATION);
@@ -25,13 +26,16 @@ public class JurisdictionTest {
 
         jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_2_RESIDENT_SOLE, JurisdictionConnections.RESIDUAL_JURISDICTION_CP));
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         Assertions.assertThat(errors).isEmpty();
     }
 
     @Test
     public void shouldNotReturnErrorsWhenJurisdictionConnectionIsC2AndI2AndJForValidCase() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DivorceOrDissolution.DIVORCE);
         caseData.getApplication().getMarriageDetails().setFormationType(MarriageFormation.SAME_SEX_COUPLE);
@@ -44,65 +48,80 @@ public class JurisdictionTest {
             JurisdictionConnections.APP_1_RESIDENT_JOINT
         ));
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         Assertions.assertThat(errors).isEmpty();
     }
 
     @Test
     public void shouldReturnErrorWhenJurisdictionConnectionIsCForJointCase() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicationType(ApplicationType.JOINT_APPLICATION);
         Jurisdiction jurisdiction = new Jurisdiction();
 
         jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_2_RESIDENT_SOLE));
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         assertThat(errors, contains(CONNECTION + JurisdictionConnections.APP_2_RESIDENT_SOLE + CANNOT_EXIST));
     }
 
     @Test
     public void shouldReturnErrorWhenJurisdictionConnectionIsC2ForSoleCase() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicationType(ApplicationType.SOLE_APPLICATION);
         Jurisdiction jurisdiction = new Jurisdiction();
 
         jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_2_RESIDENT_JOINT));
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         assertThat(errors, contains(CONNECTION + JurisdictionConnections.APP_2_RESIDENT_JOINT + CANNOT_EXIST));
     }
 
     @Test
     public void shouldReturnErrorWhenJurisdictionConnectionIsJForSoleCase() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setApplicationType(ApplicationType.SOLE_APPLICATION);
         Jurisdiction jurisdiction = new Jurisdiction();
 
         jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_1_RESIDENT_JOINT));
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         assertThat(errors, contains(CONNECTION + JurisdictionConnections.APP_1_RESIDENT_JOINT + CANNOT_EXIST));
     }
 
     @Test
     public void shouldReturnErrorWhenJurisdictionConnectionIsIForDivorceCase() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DivorceOrDissolution.DIVORCE);
         Jurisdiction jurisdiction = new Jurisdiction();
 
         jurisdiction.setConnections(Set.of(JurisdictionConnections.RESIDUAL_JURISDICTION_CP));
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         assertThat(errors, contains(CONNECTION + JurisdictionConnections.RESIDUAL_JURISDICTION_CP + CANNOT_EXIST));
     }
 
     @Test
     public void shouldReturnErrorWhenJurisdictionConnectionIsI2ForMixedSexDivorce() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setDivorceOrDissolution(DivorceOrDissolution.DIVORCE);
         caseData.getApplication().getMarriageDetails().setFormationType(MarriageFormation.OPPOSITE_SEX_COUPLE);
@@ -110,18 +129,23 @@ public class JurisdictionTest {
 
         jurisdiction.setConnections(Set.of(JurisdictionConnections.RESIDUAL_JURISDICTION_D));
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         assertThat(errors, contains(CONNECTION + JurisdictionConnections.RESIDUAL_JURISDICTION_D + CANNOT_EXIST));
     }
 
     @Test
     public void shouldReturnErrorWhenJurisdictionConnectionsIsNull() {
+        //Given
         final CaseData caseData = caseData();
         Jurisdiction jurisdiction = new Jurisdiction();
 
+        //When
         List<String> errors = jurisdiction.validateJurisdiction(caseData);
 
+        //Then
         assertThat(errors, contains("JurisdictionConnections" + EMPTY));
     }
 }

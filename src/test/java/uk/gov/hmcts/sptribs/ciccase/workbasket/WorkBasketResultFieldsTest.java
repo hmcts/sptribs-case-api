@@ -23,10 +23,13 @@ class WorkBasketResultFieldsTest {
 
     @Test
     void shouldSetWorkBasketResultFields() throws Exception {
+        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        //When
         workBasketResultFields.configure(configBuilder);
 
+        //Then
         assertThat(getWorkBasketResultFields(configBuilder).getFields())
             .extracting("id",
                 "label",
@@ -37,24 +40,20 @@ class WorkBasketResultFieldsTest {
                     "Case Number",
                     null,
                     null),
-                tuple("applicationType",
-                    "Application Type",
+                tuple("cicCaseFullName",
+                    "Subject Name",
                     null,
                     null),
-                tuple("applicant1FirstName",
-                    "Applicant's First Name",
+                tuple("[STATE]",
+                    "Case Status",
                     null,
                     null),
-                tuple("applicant1LastName",
-                    "Applicant's Last Name",
+                tuple("hearingDate",
+                    "Hearing Date",
                     null,
                     null),
-                tuple("applicant2FirstName",
-                    "Respondent's First Name",
-                    null,
-                    null),
-                tuple("applicant2LastName",
-                    "Respondent's Last Name",
+                tuple("cicCaseApplicantFullName",
+                    "Applicant Name",
                     null,
                     null),
                 tuple("dueDate",

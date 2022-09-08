@@ -19,7 +19,7 @@ This API handles callbacks from CCD for the NFD case type.
                   │                            │
           ┌───────┴─────────┐        ┌─────────┴───────┐
           │                 │        │                 │
-          │ NFDIV-FRONTEND  │        │       XUI       │
+          │ sptribs-FRONTEND  │        │       XUI       │
           │                 │        │                 │
           └─────────────────┘        └─────────────────┘
 
@@ -36,7 +36,7 @@ To build the project execute the following command:
 
 ### Running the application locally
 
-You will need access to the nfdiv-aat vault and an active VPN to run locally as it depends on services in AAT.
+You will need access to the sptribs-aat vault and an active VPN to run locally as it depends on services in AAT.
 
 Run the application by executing the following command:
 

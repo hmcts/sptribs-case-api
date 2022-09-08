@@ -15,7 +15,7 @@ class AcknowledgementOfServiceTest {
 
     @Test
     void shouldSetNoticeOfProceedingsToSolicitorIfApplicantIsRepresented() {
-
+        //Given
         final Solicitor solicitor = Solicitor.builder()
             .name(TEST_SOLICITOR_NAME)
             .email(TEST_SOLICITOR_EMAIL)
@@ -26,17 +26,18 @@ class AcknowledgementOfServiceTest {
             .solicitorRepresented(YES)
             .build();
 
+        //When
         final AcknowledgementOfService acknowledgementOfService = AcknowledgementOfService.builder().build();
-
         acknowledgementOfService.setNoticeOfProceedings(applicant);
 
+        //Then
         assertThat(acknowledgementOfService.getNoticeOfProceedingsEmail()).isEqualTo(TEST_SOLICITOR_EMAIL);
         assertThat(acknowledgementOfService.getNoticeOfProceedingsSolicitorFirm()).isEqualTo(TEST_ORG_NAME);
     }
 
     @Test
     void shouldSetNoticeOfProceedingsToSolicitorWithNoOrganisationPolicy() {
-
+        //Given
         final Solicitor solicitor = Solicitor.builder()
             .name(TEST_SOLICITOR_NAME)
             .firmName(TEST_ORG_NAME)
@@ -47,17 +48,19 @@ class AcknowledgementOfServiceTest {
             .solicitorRepresented(YES)
             .build();
 
+        //When
         final AcknowledgementOfService acknowledgementOfService = AcknowledgementOfService.builder().build();
 
         acknowledgementOfService.setNoticeOfProceedings(applicant);
 
+        //Then
         assertThat(acknowledgementOfService.getNoticeOfProceedingsEmail()).isEqualTo(TEST_SOLICITOR_EMAIL);
         assertThat(acknowledgementOfService.getNoticeOfProceedingsSolicitorFirm()).isEqualTo(TEST_ORG_NAME);
     }
 
     @Test
     void shouldSetNoticeOfProceedingsEmailToApplicantIfApplicantNotIsRepresented() {
-
+        //Given
         final Solicitor solicitor = Solicitor.builder()
             .name(TEST_SOLICITOR_NAME)
             .email(TEST_SOLICITOR_EMAIL)
@@ -68,10 +71,12 @@ class AcknowledgementOfServiceTest {
             .email(TEST_USER_EMAIL)
             .build();
 
+        //When
         final AcknowledgementOfService acknowledgementOfService = AcknowledgementOfService.builder().build();
 
         acknowledgementOfService.setNoticeOfProceedings(applicant);
 
+        //Then
         assertThat(acknowledgementOfService.getNoticeOfProceedingsEmail()).isEqualTo(TEST_USER_EMAIL);
         assertThat(acknowledgementOfService.getNoticeOfProceedingsSolicitorFirm()).isNullOrEmpty();
     }

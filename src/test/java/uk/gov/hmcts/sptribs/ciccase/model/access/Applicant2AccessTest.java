@@ -20,9 +20,9 @@ class Applicant2AccessTest {
 
     @Test
     void shouldGrantApplicant2Access() {
-
+        //When
         final SetMultimap<HasRole, Permission> grants = new Applicant2Access().getGrants();
-
+        //Then
         assertThat(grants)
             .hasSize(7)
             .contains(

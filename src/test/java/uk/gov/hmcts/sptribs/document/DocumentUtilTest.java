@@ -53,9 +53,10 @@ class DocumentUtilTest {
 
     @Test
     void shouldConvertFromDocumentInfoToDocument() {
-
+        //When
         final Document document = documentFrom(documentInfo());
 
+        //Then
         assertThat(document)
             .extracting(URL, FILENAME, BINARY_URL)
             .contains(
@@ -66,9 +67,10 @@ class DocumentUtilTest {
 
     @Test
     void shouldCreateDivorceDocumentFromDocumentInfoAndDocumentType() {
-
+        //When
         final DivorceDocument divorceDocument = divorceDocumentFrom(documentInfo(), OTHER);
 
+        //Then
         assertThat(divorceDocument.getDocumentType()).isEqualTo(OTHER);
         assertThat(divorceDocument.getDocumentFileName()).isEqualTo(PDF_FILENAME);
         assertThat(divorceDocument
@@ -82,7 +84,7 @@ class DocumentUtilTest {
 
     @Test
     void shouldReturnListOfLetterOfGivenDocumentTypeIfPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(APPLICATION)
@@ -95,17 +97,19 @@ class DocumentUtilTest {
                 .build())
             .build();
 
+        //When
         final List<Letter> letters = lettersWithDocumentType(
             asList(doc1, doc2),
             MARRIAGE_CERTIFICATE);
 
+        //Then
         assertThat(letters.size()).isEqualTo(1);
         assertThat(letters.get(0).getDivorceDocument()).isSameAs(doc2.getValue());
     }
 
     @Test
     void shouldNotFindDocumentOfGivenDocumentTypeIfNotPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(APPLICATION)
@@ -118,28 +122,34 @@ class DocumentUtilTest {
                 .build())
             .build();
 
+        //When
         final List<Letter> letters = lettersWithDocumentType(
             asList(doc1, doc2),
             NAME_CHANGE_EVIDENCE);
 
+        //Then
         assertThat(letters.size()).isZero();
     }
 
     @Test
     void shouldReturnEmptyListIfNullDocumentList() {
+        //When
         final List<Letter> letters = lettersWithDocumentType(null, NAME_CHANGE_EVIDENCE);
+        //Then
         assertThat(letters.size()).isZero();
     }
 
     @Test
     void shouldReturnEmptyListIfEmptyDocumentList() {
+        //When
         final List<Letter> letters = lettersWithDocumentType(emptyList(), NAME_CHANGE_EVIDENCE);
+        //Then
         assertThat(letters.size()).isZero();
     }
 
     @Test
     void shouldReturnListOfLettersOfGivenDocumentTypesIfPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(APPLICATION)
@@ -158,61 +168,71 @@ class DocumentUtilTest {
                 .build())
             .build();
 
+        //When
         final List<Letter> letters = lettersWithDocumentType(
             asList(doc1, doc2, doc3),
             NAME_CHANGE_EVIDENCE);
 
+        //Then
         assertThat(letters.size()).isEqualTo(1);
         assertThat(letters.get(0).getDivorceDocument()).isSameAs(doc3.getValue());
     }
 
     @Test
     void shouldReturnTrueIfDocumentWithTypeD10IsPresent() {
-
+        //Given
         final ListValue<DivorceDocument> d10Document = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(D10)
                 .build())
             .build();
 
+        //When
         final boolean d10IsPresent = documentsWithDocumentType(
             singletonList(d10Document),
             D10);
 
+        //Then
         assertThat(d10IsPresent).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfDocumentWithTypeD10IsNotPresent() {
-
+        //Given
         final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
             .value(DivorceDocument.builder()
                 .documentType(APPLICATION)
                 .build())
             .build();
 
+        //When
         final boolean d10IsPresent = documentsWithDocumentType(
             singletonList(doc1),
             D10);
 
+        //Then
         assertThat(d10IsPresent).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfNullDocumentList() {
+        //When
         final boolean d10IsPresent = documentsWithDocumentType(null, D10);
+        //Then
         assertThat(d10IsPresent).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfEmptyDocumentList() {
+        //When
         final boolean d10IsPresent = documentsWithDocumentType(emptyList(), D10);
+        //Then
         assertThat(d10IsPresent).isFalse();
     }
 
     @Test
     void mapToLettersShouldReturnListOfLettersOfGivenDocumentType() {
-
+        //Given
         final ListValue<Document> doc1 = ListValue.<Document>builder()
             .value(Document.builder().filename("doc1.pdf").build())
             .build();
@@ -221,8 +241,10 @@ class DocumentUtilTest {
             .value(Document.builder().filename("doc2.pdf").build())
             .build();
 
+        //When
         final List<Letter> letters = mapToLetters(asList(doc1, doc2), NOTICE_OF_PROCEEDINGS_APP_1);
 
+        //Then
         assertThat(letters.size()).isEqualTo(2);
         assertThat(
             letters.stream().map(letter -> letter.getDivorceDocument().getDocumentFileName()).collect(Collectors.toList()))
@@ -273,19 +295,23 @@ class DocumentUtilTest {
 
     @Test
     public void isConfidentialShouldReturnTrueWhenDocumentTypeIsGeneralLetterAndGeneralLetterPartyIsApplicant() {
+        //When
         var caseData = CaseData.builder().build();
         caseData.getGeneralLetter().setGeneralLetterParties(APPLICANT);
         caseData.getApplicant1().setContactDetailsType(PRIVATE);
 
+        //Then
         assertTrue(isConfidential(caseData, GENERAL_LETTER));
     }
 
     @Test
     public void isConfidentialShouldReturnTrueWhenDocumentTypeIsGeneralLetterAndGeneralLetterPartyIsRespondent() {
+        //When
         var caseData = CaseData.builder().build();
         caseData.getGeneralLetter().setGeneralLetterParties(RESPONDENT);
         caseData.getApplicant2().setContactDetailsType(PRIVATE);
 
+        //Then
         assertTrue(isConfidential(caseData, GENERAL_LETTER));
     }
 

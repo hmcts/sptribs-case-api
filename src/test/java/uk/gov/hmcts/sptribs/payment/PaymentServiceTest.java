@@ -106,6 +106,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturnOrderSummaryWhenFeeEventIsAvailable() {
+        //Given
         doReturn(getFeeResponse())
             .when(feesAndPaymentsClient)
             .getPaymentServiceFee(
@@ -117,7 +118,10 @@ public class PaymentServiceTest {
                 anyString()
             );
 
+        //When
         OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent(SERVICE_DIVORCE, EVENT_ISSUE, KEYWORD_DIVORCE);
+
+        //Then
         assertThat(orderSummary.getPaymentReference()).isNull();
         assertThat(orderSummary.getPaymentTotal()).isEqualTo(String.valueOf(1000));// in pence
         assertThat(orderSummary.getFees())
@@ -142,6 +146,7 @@ public class PaymentServiceTest {
     @Test
     @Disabled
     public void shouldReturnOrderSummaryForServiceEventKeyword() {
+        //Given
         doReturn(getFeeResponse())
             .when(feesAndPaymentsClient)
             .getPaymentServiceFee(
@@ -153,7 +158,10 @@ public class PaymentServiceTest {
                 KEYWORD_BAILIFF
             );
 
+        //When
         OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent(SERVICE_OTHER, EVENT_ENFORCEMENT, KEYWORD_BAILIFF);
+
+        //Then
         assertThat(orderSummary.getPaymentReference()).isNull();
         assertThat(orderSummary.getPaymentTotal()).isEqualTo(String.valueOf(1000));// in pence
         assertThat(orderSummary.getFees())
@@ -177,6 +185,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldThrowFeignExceptionWhenFeeEventIsNotAvailable() {
+        //Given
         byte[] emptyBody = {};
         Request request = Request.create(GET, EMPTY, Map.of(), emptyBody, UTF_8, null);
 
@@ -201,6 +210,7 @@ public class PaymentServiceTest {
                 anyString()
             );
 
+        //When&Then
         assertThatThrownBy(() -> paymentService.getOrderSummaryByServiceEvent(SERVICE_DIVORCE, EVENT_ISSUE, KEYWORD_INVALID))
             .hasMessageContaining("404 Fee Not found")
             .isExactlyInstanceOf(FeignException.NotFound.class);
@@ -208,6 +218,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldProcessPbaPaymentSuccessfullyWhenPbaAccountIsValid() {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -222,9 +233,11 @@ public class PaymentServiceTest {
 
         when(responseEntity.getStatusCode()).thenReturn(CREATED);
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getErrorMessage()).isNull();
         assertThat(response.getHttpStatus()).isEqualTo(CREATED);
 
@@ -239,6 +252,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturn403WithErrorCodeCae0004WhenAccountIsDeleted() throws Exception {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -260,9 +274,11 @@ public class PaymentServiceTest {
                 any(CreditAccountPaymentRequest.class)
             );
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getHttpStatus()).isEqualTo(FORBIDDEN);
         assertThat(response.getErrorMessage())
             .isEqualTo(
@@ -274,6 +290,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturn403WithErrorCodeCae0003WhenAccountIsHold() throws Exception {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -295,9 +312,11 @@ public class PaymentServiceTest {
                 any(CreditAccountPaymentRequest.class)
             );
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getHttpStatus()).isEqualTo(FORBIDDEN);
         assertThat(response.getErrorMessage())
             .isEqualTo(
@@ -309,6 +328,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturn4InternalServerErrorWhenResponseEntityIsNull() {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -320,9 +340,11 @@ public class PaymentServiceTest {
             any(CreditAccountPaymentRequest.class)
         )).thenReturn(null);
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getHttpStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(response.getErrorMessage())
             .isEqualTo(
@@ -334,6 +356,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturn403WithErrorCodeCae0001WhenAccountHasInsufficientBalance() throws Exception {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -356,9 +379,11 @@ public class PaymentServiceTest {
                 any(CreditAccountPaymentRequest.class)
             );
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getHttpStatus()).isEqualTo(FORBIDDEN);
         assertThat(response.getErrorMessage())
             .isEqualTo(
@@ -370,6 +395,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturnGeneralErrorWhenErrorCodeIsUnknown() throws Exception {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -392,9 +418,11 @@ public class PaymentServiceTest {
                 any(CreditAccountPaymentRequest.class)
             );
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getHttpStatus()).isEqualTo(FORBIDDEN);
         assertThat(response.getErrorMessage())
             .isEqualTo(
@@ -406,6 +434,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturn404WhenPaymentAccountIsNotFound() {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -423,9 +452,11 @@ public class PaymentServiceTest {
                 any(CreditAccountPaymentRequest.class)
             );
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getHttpStatus()).isEqualTo(NOT_FOUND);
         assertThat(response.getErrorMessage())
             .isEqualTo(
@@ -438,6 +469,7 @@ public class PaymentServiceTest {
 
     @Test
     public void shouldReturnGeneralErrorWhenThereIsAnErrorParsingPaymentResponse() throws Exception {
+        //Given
         var caseData = caseData();
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -459,9 +491,11 @@ public class PaymentServiceTest {
                 any(CreditAccountPaymentRequest.class)
             );
 
+        //When
         PbaResponse response = paymentService.processPbaPayment(
             caseData, TEST_CASE_ID, solicitor(), PBA_NUMBER, orderSummaryWithFee(), FEE_ACCOUNT_REF);
 
+        //Then
         assertThat(response.getHttpStatus()).isEqualTo(FORBIDDEN);
         assertThat(response.getErrorMessage())
             .isEqualTo("Payment request failed. "
@@ -470,58 +504,10 @@ public class PaymentServiceTest {
             );
     }
 
-    private CaseData caseData() {
-        var caseData = caseDataWithOrderSummary();
-        caseData.getApplication().setPbaNumbers(getPbaNumbersForAccount("PBA0012345"));
-        caseData.getApplicant1().setSolicitor(
-            Solicitor
-                .builder()
-                .reference("1234")
-                .organisationPolicy(organisationPolicy())
-                .build()
-        );
-        return caseData;
-    }
-
-    private static CreditAccountPaymentResponse buildPaymentClientResponse(
-        String errorCode,
-        String errorMessage
-    ) {
-        return CreditAccountPaymentResponse.builder()
-            .dateCreated("2021-08-18T10:22:33.449+0000")
-            .status("Failed")
-            .paymentGroupReference("2020-1601893353478")
-            .statusHistories(
-                singletonList(
-                    StatusHistoriesItem.builder()
-                        .status("Failed")
-                        .errorCode(errorCode)
-                        .errorMessage(errorMessage)
-                        .dateCreated("2021-08-18T10:22:33.449+0000")
-                        .dateUpdated("2021-08-18T10:22:33.449+0000")
-                        .build()
-                )
-            )
-            .build();
-    }
-
-    private FeignException feignException(CreditAccountPaymentResponse creditAccountPaymentResponse) throws JsonProcessingException {
-        byte[] body = new ObjectMapper().writeValueAsString(creditAccountPaymentResponse).getBytes();
-        Request request = Request.create(POST, EMPTY, Map.of(), null, UTF_8, null);
-
-        return new FeignException.FeignClientException(HttpStatus.FORBIDDEN.value(), "error", request, body, emptyMap());
-    }
-
-    private Solicitor solicitor() {
-        return Solicitor
-            .builder()
-            .organisationPolicy(organisationPolicy())
-            .reference(TEST_REFERENCE)
-            .build();
-    }
 
     @Test
     public void getServiceCostShouldReturnFeeAmountWhenFeeEventIsAvailable() {
+        //Given
         FeeResponse feeResponse = getFeeResponse();
 
         doReturn(feeResponse)
@@ -535,6 +521,7 @@ public class PaymentServiceTest {
                 anyString()
             );
 
+        //When&Then
         Assertions.assertEquals(10.0,
             paymentService.getServiceCost(SERVICE_OTHER, EVENT_ENFORCEMENT, KEYWORD_BAILIFF));
 
@@ -579,4 +566,56 @@ public class PaymentServiceTest {
             .hasMessageContaining("404 Fee Not found")
             .isExactlyInstanceOf(FeignException.NotFound.class);
     }
+
+
+    private FeignException feignException(CreditAccountPaymentResponse creditAccountPaymentResponse) throws JsonProcessingException {
+        byte[] body = new ObjectMapper().writeValueAsString(creditAccountPaymentResponse).getBytes();
+        Request request = Request.create(POST, EMPTY, Map.of(), null, UTF_8, null);
+
+        return new FeignException.FeignClientException(HttpStatus.FORBIDDEN.value(), "error", request, body, emptyMap());
+    }
+
+    private Solicitor solicitor() {
+        return Solicitor
+            .builder()
+            .organisationPolicy(organisationPolicy())
+            .reference(TEST_REFERENCE)
+            .build();
+    }
+
+    private CaseData caseData() {
+        var caseData = caseDataWithOrderSummary();
+        caseData.getApplication().setPbaNumbers(getPbaNumbersForAccount("PBA0012345"));
+        caseData.getApplicant1().setSolicitor(
+            Solicitor
+                .builder()
+                .reference("1234")
+                .organisationPolicy(organisationPolicy())
+                .build()
+        );
+        return caseData;
+    }
+
+    private static CreditAccountPaymentResponse buildPaymentClientResponse(
+        String errorCode,
+        String errorMessage
+    ) {
+        return CreditAccountPaymentResponse.builder()
+            .dateCreated("2021-08-18T10:22:33.449+0000")
+            .status("Failed")
+            .paymentGroupReference("2020-1601893353478")
+            .statusHistories(
+                singletonList(
+                    StatusHistoriesItem.builder()
+                        .status("Failed")
+                        .errorCode(errorCode)
+                        .errorMessage(errorMessage)
+                        .dateCreated("2021-08-18T10:22:33.449+0000")
+                        .dateUpdated("2021-08-18T10:22:33.449+0000")
+                        .build()
+                )
+            )
+            .build();
+    }
+
 }

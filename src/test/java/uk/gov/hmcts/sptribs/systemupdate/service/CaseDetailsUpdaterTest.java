@@ -28,6 +28,7 @@ class CaseDetailsUpdaterTest {
 
     @Test
     void shouldReturnUpdatedCaseDetailsFromStartEventResponse() {
+        //Given
         final LocalDate now = LocalDate.now();
         final CaseTask caseTask = caseDetails -> {
             caseDetails.getData().setDueDate(now);
@@ -39,10 +40,12 @@ class CaseDetailsUpdaterTest {
                 .build())
             .build();
 
+        //When
         final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails = caseDetailsUpdater.updateCaseData(
             caseTask,
             startEventResponse);
 
+        //When
         assertThat(caseDetails.getData().getDueDate()).isEqualTo(now);
     }
 }

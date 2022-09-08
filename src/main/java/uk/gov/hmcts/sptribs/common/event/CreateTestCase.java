@@ -17,7 +17,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
+import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
@@ -44,10 +46,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String CASE_RECORD_DRAFT = "\r\nCase record for [DRAFT]";
     private final FeatureToggleService featureToggleService;
 
+    private static final CcdPageConfiguration selectParties =  new SelectParties();
+    private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
+    private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
+
     @Autowired
     private SubmissionService submissionService;
 
-    private static final CcdPageConfiguration selectParties = new SelectParties();
 
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
@@ -78,22 +83,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .submittedCallback(this::submitted)
                 .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
 
-
             caseCategory(pageBuilder);
-            selectParty(pageBuilder);
-            subjectCategory(pageBuilder);
+            buildSelectParty(pageBuilder);
+            subjectDetails.addTo(pageBuilder);
+            applicantDetails.addTo(pageBuilder);
 
-            pageBuilder.page("applicantDetailsObjects")
-                .pageShowConditions(map)
-                .label("applicantDetailsObject", "<h3>Who is the applicant in this case?</h3>\r\n" + CASE_RECORD_DRAFT)
-                .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getApplicantFullName)
-                .mandatory(CicCase::getApplicantPhoneNumber)
-                .mandatory(CicCase::getApplicantEmailAddress)
-                .optionalWithLabel(CicCase::getApplicantDateOfBirth, "")
-                .mandatoryWithLabel(CicCase::getApplicantContactDetailsPreference, "")
-                .mandatory(CicCase::getApplicantAddress, "cicCaseApplicantContactDetailsPreference = \"Post\"")
-                .done();
             pageBuilder.page("representativeDetailsObjects")
                 .pageShowConditions(map)
                 .label("representativeDetailsObject", "<h3>Who is the Representative of this case?(If Any)</h3>\r\n" + CASE_RECORD_DRAFT)
@@ -121,20 +115,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         }
     }
 
-    private void subjectCategory(PageBuilder pageBuilder) {
-        pageBuilder.page("subjectDetailsObjects")
-            .label("subjectDetailsObject", "<h3>Who is the subject of this case?</h3>\r\n" + CASE_RECORD_DRAFT)
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getFullName)
-            .optional(CicCase::getPhoneNumber)
-            .mandatoryWithLabel(CicCase::getDateOfBirth, "")
-            .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
-            .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
-            .mandatory(CicCase::getAddress,"cicCaseContactPreferenceType = \"Post\"")
-            .done();
-    }
-
-    private void selectParty(PageBuilder pageBuilder) {
+    private void buildSelectParty(PageBuilder pageBuilder) {
         selectParties.addTo(pageBuilder);
     }
 

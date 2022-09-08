@@ -56,6 +56,7 @@ class ApplicationIssuedOverseasNotificationTest {
 
     @Test
     void shouldNotifyApplicantOfServiceToOverseasRespondentWithEmail() {
+        //Given
         final CaseData data = validCaseDataForIssueApplication();
         data.setDueDate(LocalDate.now().plusDays(141));
         data.getApplication().setIssueDate(LocalDate.now());
@@ -63,8 +64,10 @@ class ApplicationIssuedOverseasNotificationTest {
         when(commonContent.mainTemplateVars(data, 1234567890123456L, data.getApplicant1(), data.getApplicant2()))
             .thenReturn(getMainTemplateVars());
 
+        //When
         applicationIssuedOverseasNotification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(OVERSEAS_RESPONDENT_HAS_EMAIL_APPLICATION_ISSUED),

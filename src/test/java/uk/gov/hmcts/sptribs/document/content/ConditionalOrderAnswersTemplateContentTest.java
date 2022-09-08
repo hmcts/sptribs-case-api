@@ -40,7 +40,7 @@ class ConditionalOrderAnswersTemplateContentTest {
 
     @Test
     void shouldApplyContentFromCaseDataForConditionalOrderAnswers() {
-
+        //Given
         setMockClock(clock);
 
         final Applicant applicant1 = Applicant.builder()
@@ -59,8 +59,10 @@ class ConditionalOrderAnswersTemplateContentTest {
             .applicant2(applicant2)
             .build();
 
+        //When
         final Map<String, Object> result = conditionalOrderAnswersTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(result).contains(
             entry("isSole", true),
             entry("isDivorce", true),

@@ -22,10 +22,13 @@ class CaseworkerAmendCaseTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
+        //given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        //when
         caseworkerAmendCase.configure(configBuilder);
 
+        //then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_AMEND_CASE);

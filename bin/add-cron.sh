@@ -3,7 +3,7 @@
 const { statSync } = require("fs");
 const { readdir, mkdir, writeFile, readFile } = require("fs").promises;
 const { resolve } = require('path');
-const nfdivNamespace = "/k8s/namespaces/nfdiv/";
+const sptribsNamespace = "/k8s/namespaces/sptribs/";
 
 async function getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true });
@@ -15,7 +15,7 @@ async function getFiles(dir) {
 }
 
 function getCronName(taskName) {
-  return "nfdiv-cron-" + taskName.match(/[A-Z0-9][a-z0-9]+/g).filter(part => part !== "Task" && part !== "System").join("-").toLowerCase();
+  return "sptribs-cron-" + taskName.match(/[A-Z0-9][a-z0-9]+/g).filter(part => part !== "Task" && part !== "System").join("-").toLowerCase();
 }
 
 function getClusterOverride(taskName, cronName, schedule, env) {
@@ -42,14 +42,14 @@ metadata:
 spec:
   releaseName: ${cronName}
   chart:
-    git: git@github.com:hmcts/nfdiv-cron
+    git: git@github.com:hmcts/sptribs-cron
     ref: 0.0.8
-    path: nfdiv-cron
+    path: sptribs-cron
   values:
     job:
-      image: hmctspublic.azurecr.io/nfdiv/case-api:prod-d25e51a-20210922052840 #{"$imagepolicy": "flux-system:sptribs-case-api"}
+      image: hmctspublic.azurecr.io/sptribs/case-api:prod-d25e51a-20210922052840 #{"$imagepolicy": "flux-system:sptribs-case-api"}
       keyVaults:
-        nfdiv:
+        sptribs:
           secrets:
             - name: AppInsightsInstrumentationKey
               alias: APP_INSIGHTS_KEY
@@ -77,7 +77,7 @@ async function main(taskName, cnpFluxPath, schedule, env) {
     process.exit(-1);
   }
 
-  const clusterOverlayPath = `/k8s/${env}/cluster-00-overlay/nfdiv/kustomization.yaml`;
+  const clusterOverlayPath = `/k8s/${env}/cluster-00-overlay/sptribs/kustomization.yaml`;
 
   let clusterOverlay;
   try {
@@ -96,7 +96,7 @@ async function main(taskName, cnpFluxPath, schedule, env) {
   }
 
   const cronName = getCronName(taskName);
-  const cronDirectory = cnpFluxPath + nfdivNamespace + cronName + "/";
+  const cronDirectory = cnpFluxPath + sptribsNamespace + cronName + "/";
 
   try {
     await mkdir(cronDirectory);
@@ -115,8 +115,8 @@ async function main(taskName, cnpFluxPath, schedule, env) {
   ]);
 
   const updatedOverlay = clusterOverlay
-                          .replace("bases:", "bases:\n" + `- ../../../namespaces/nfdiv/${cronName}/${cronName}.yaml`)
-                          .replace("patchesStrategicMerge:", "patchesStrategicMerge:\n" + `- ../../../namespaces/nfdiv/${cronName}/${env}-00.yaml`);
+                          .replace("bases:", "bases:\n" + `- ../../../namespaces/sptribs/${cronName}/${cronName}.yaml`)
+                          .replace("patchesStrategicMerge:", "patchesStrategicMerge:\n" + `- ../../../namespaces/sptribs/${cronName}/${env}-00.yaml`);
 
   writeFile(cnpFluxPath + clusterOverlayPath, updatedOverlay);
   console.log(`Added ${taskName} to cnp-flux-config.`);

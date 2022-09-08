@@ -26,7 +26,7 @@ class SetStateAfterSubmissionTest {
 
     @Test
     void shouldSetAwaitingHwfDecisionStateIfCitizenNeedsHelpWithFees() {
-
+        //Given
         final Application application = Application.builder()
             .applicant1HelpWithFees(HelpWithFees.builder()
                 .needHelp(YES)
@@ -42,8 +42,10 @@ class SetStateAfterSubmissionTest {
         caseDetails.setData(caseData);
         caseDetails.setState(Draft);
 
+        //When
         final CaseDetails<CaseData, State> result = setStateAfterSubmission.apply(caseDetails);
 
+        //Then
         assertThat(result.getState()).isEqualTo(Submitted);
     }
 }

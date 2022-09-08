@@ -47,6 +47,7 @@ class NotificationServiceTest {
 
     @Test
     void shouldInvokeNotificationClientToSendEmailInEnglish() throws NotificationClientException {
+        //Given
         String templateId = UUID.randomUUID().toString();
 
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -63,6 +64,7 @@ class NotificationServiceTest {
             anyString()
         )).thenReturn(sendEmailResponse);
 
+        //When
         notificationService.sendEmail(
             EMAIL_ADDRESS,
             SAVE_SIGN_OUT,
@@ -70,6 +72,7 @@ class NotificationServiceTest {
             ENGLISH
         );
 
+        //Then
         verify(notificationClient).sendEmail(
             eq(templateId),
             eq(EMAIL_ADDRESS),
@@ -84,6 +87,7 @@ class NotificationServiceTest {
 
     @Test
     void shouldInvokeNotificationClientToSendEmailInWelsh() throws NotificationClientException {
+        //Given
         String templateId = UUID.randomUUID().toString();
 
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -100,6 +104,7 @@ class NotificationServiceTest {
             anyString()
         )).thenReturn(sendEmailResponse);
 
+        //When
         notificationService.sendEmail(
             EMAIL_ADDRESS,
             SAVE_SIGN_OUT,
@@ -107,6 +112,7 @@ class NotificationServiceTest {
             WELSH
         );
 
+        //Then
         verify(notificationClient).sendEmail(
             eq(templateId),
             eq(EMAIL_ADDRESS),
@@ -122,6 +128,7 @@ class NotificationServiceTest {
     @Test
     void shouldThrowNotificationExceptionWhenClientFailsToSendEmail()
         throws NotificationClientException {
+        //Given
         String templateId = UUID.randomUUID().toString();
 
         doThrow(new NotificationClientException("some message"))
@@ -132,6 +139,7 @@ class NotificationServiceTest {
                 ENGLISH, Map.of(SAVE_SIGN_OUT.name(), templateId)
             ));
 
+        //When&Then
         assertThatThrownBy(() -> notificationService.sendEmail(
             EMAIL_ADDRESS,
             SAVE_SIGN_OUT,

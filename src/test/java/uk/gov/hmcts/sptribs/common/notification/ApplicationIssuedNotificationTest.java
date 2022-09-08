@@ -106,6 +106,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToSoleApplicant1WithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDueDate(LocalDate.now().plusDays(141));
         data.getApplication().setIssueDate(LocalDate.now());
@@ -119,8 +120,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLICANT_APPLICATION_ACCEPTED),
@@ -137,6 +140,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToSoleApplicant1WithDissolutionContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.setDueDate(LocalDate.now().plusDays(141));
@@ -151,8 +155,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLICANT_APPLICATION_ACCEPTED),
@@ -169,6 +175,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldNotSendEmailToSoleApplicant1IfPersonalService() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDueDate(LocalDate.now().plusDays(141));
         data.getApplication().setIssueDate(LocalDate.now());
@@ -177,13 +184,16 @@ public class ApplicationIssuedNotificationTest {
         Map<String, String> divorceTemplateVars = new HashMap<>();
         divorceTemplateVars.putAll(getMainTemplateVars());
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService, commonContent);
     }
 
     @Test
     void shouldSendEmailToSoleRespondentWithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDueDate(LocalDate.now().plusDays(141));
         data.getApplication().setIssueDate(LocalDate.now());
@@ -199,8 +209,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_RESPONDENT_APPLICATION_ACCEPTED),
@@ -216,6 +228,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToSoleRespondentWithDissolutionContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.setDueDate(LocalDate.now().plusDays(141));
@@ -234,8 +247,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_RESPONDENT_APPLICATION_ACCEPTED),
@@ -251,6 +266,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToJointApplicant1WithDivorceContent() {
+        //Given
         CaseData data = validJointApplicant1CaseData();
         data.setDueDate(LocalDate.now().plusDays(141));
         data.getApplication().setIssueDate(LocalDate.now());
@@ -261,8 +277,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(JOINT_APPLICATION_ACCEPTED),
@@ -279,6 +297,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToJointApplicant1WithDissolutionContent() {
+        //Given
         CaseData data = validJointApplicant1CaseData();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.setDueDate(LocalDate.now().plusDays(141));
@@ -291,8 +310,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(JOINT_APPLICATION_ACCEPTED),
@@ -309,6 +330,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant1WithWelshPartnerContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDivorceOrDissolution(DIVORCE);
         data.getApplicant1().setLanguagePreferenceWelsh(YesOrNo.YES);
@@ -324,8 +346,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant1(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_USER_EMAIL),
             eq(SOLE_APPLICANT_APPLICATION_ACCEPTED),
@@ -339,6 +363,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant2WithDivorceContent() {
+        //Given
         CaseData data = validJointApplicant1CaseData();
         data.setDueDate(LocalDate.now().plusDays(141));
         data.getApplication().setIssueDate(LocalDate.now());
@@ -349,8 +374,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(JOINT_APPLICATION_ACCEPTED),
@@ -367,6 +394,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailToApplicant2WithDissolutionContent() {
+        //Given
         CaseData data = validJointApplicant1CaseData();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.setDueDate(LocalDate.now().plusDays(141));
@@ -379,8 +407,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(JOINT_APPLICATION_ACCEPTED),
@@ -397,6 +427,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicantSolicitor() {
+        //Given
         final CaseData caseData = CaseData.builder()
             .divorceOrDissolution(DIVORCE)
             .applicant1(applicantRepresentedBySolicitor())
@@ -411,8 +442,10 @@ public class ApplicationIssuedNotificationTest {
 
         when(commonContent.basicTemplateVars(caseData, TEST_CASE_ID)).thenReturn(commonTemplateVars());
 
+        //When
         notification.sendToApplicant1Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             TEST_SOLICITOR_EMAIL,
             SOLE_APPLICANT_SOLICITOR_NOTICE_OF_PROCEEDINGS,
@@ -425,6 +458,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicantSolicitorOnReissue() {
+        //Given
         final CaseData caseData = CaseData.builder()
             .divorceOrDissolution(DIVORCE)
             .applicant1(applicantRepresentedBySolicitor())
@@ -439,8 +473,10 @@ public class ApplicationIssuedNotificationTest {
 
         when(commonContent.basicTemplateVars(caseData, TEST_CASE_ID)).thenReturn(commonTemplateVars());
 
+        //When
         notification.sendToApplicant1Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             TEST_SOLICITOR_EMAIL,
             SOLE_APPLICANT_SOLICITOR_NOTICE_OF_PROCEEDINGS_REISSUE,
@@ -453,7 +489,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendNotificationToRespondentSolicitorIfSoleApplicationAndNotSolicitorServiceWithoutSolicitorReference() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicationType(SOLE_APPLICATION)
             .applicant1(getApplicant())
@@ -465,8 +501,10 @@ public class ApplicationIssuedNotificationTest {
 
         when(commonContent.basicTemplateVars(caseData, TEST_CASE_ID)).thenReturn(commonTemplateVars());
 
+        //When
         notification.sendToApplicant2Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             TEST_SOLICITOR_EMAIL,
             RESPONDENT_SOLICITOR_NOTICE_OF_PROCEEDINGS,
@@ -479,7 +517,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendNotificationToRespondentSolicitorIfSoleApplicationAndNotSolicitorServiceWithSolicitorReference() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .applicationType(SOLE_APPLICATION)
             .applicant1(getApplicant())
@@ -493,8 +531,10 @@ public class ApplicationIssuedNotificationTest {
 
         when(commonContent.basicTemplateVars(caseData, TEST_CASE_ID)).thenReturn(commonTemplateVars());
 
+        //When
         notification.sendToApplicant2Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             TEST_SOLICITOR_EMAIL,
             RESPONDENT_SOLICITOR_NOTICE_OF_PROCEEDINGS,
@@ -507,7 +547,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendNotificationToApplicant2SolicitorIfJointApplicationAndNotSolicitorService() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .divorceOrDissolution(DIVORCE)
             .applicant1(applicantRepresentedBySolicitor())
@@ -523,8 +563,10 @@ public class ApplicationIssuedNotificationTest {
 
         when(commonContent.basicTemplateVars(caseData, TEST_CASE_ID)).thenReturn(commonTemplateVars());
 
+        //When
         notification.sendToApplicant2Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         verify(notificationService).sendEmail(
             TEST_SOLICITOR_EMAIL,
             JOINT_SOLICITOR_NOTICE_OF_PROCEEDINGS,
@@ -537,7 +579,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldNotSendNotificationToRespondentSolicitorIfSolicitorEmailIsNotSet() {
-
+        //Given
         final Applicant applicant2 = getApplicant2(FEMALE);
         applicant2.setSolicitor(Solicitor.builder().build());
         final CaseData caseData = CaseData.builder()
@@ -549,14 +591,16 @@ public class ApplicationIssuedNotificationTest {
                 .build())
             .build();
 
+        //When
         notification.sendToApplicant2Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldNotSendNotificationToRespondentSolicitorIfSolicitorService() {
-
+        //Given
         final Applicant applicant2 = getApplicant2(FEMALE);
         applicant2.setSolicitor(Solicitor.builder().build());
         final CaseData caseData = CaseData.builder()
@@ -568,14 +612,16 @@ public class ApplicationIssuedNotificationTest {
                 .build())
             .build();
 
+        //When
         notification.sendToApplicant2Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldSendPersonalServiceNotificationToApplicantSolicitorForDivorceApplication() {
-
+        //Given
         final CaseData caseData = CaseData.builder()
             .divorceOrDissolution(DIVORCE)
             .applicant1(applicantRepresentedBySolicitor())
@@ -589,8 +635,10 @@ public class ApplicationIssuedNotificationTest {
         when(commonContent.getProfessionalUsersSignInUrl(TEST_CASE_ID))
             .thenReturn("https://manage-case.aat.platform.hmcts.net/cases/case-details/" + TEST_CASE_ID);
 
+        //When
         notification.sendToApplicant1Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         Map<String, String> personalServiceTemplateVars = personalServiceTemplateVars();
         personalServiceTemplateVars.put(SIGN_IN_URL, commonContent.getProfessionalUsersSignInUrl(TEST_CASE_ID));
         personalServiceTemplateVars.put(APPLICATION_REFERENCE, TEST_CASE_ID.toString());
@@ -609,7 +657,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendPersonalServiceNotificationToApplicantSolicitorForDissolutionApplication() {
-
+        //Given
         Applicant applicant1 = applicantRepresentedBySolicitor();
         applicant1.getSolicitor().setReference("someRef");
 
@@ -626,8 +674,10 @@ public class ApplicationIssuedNotificationTest {
         when(commonContent.getProfessionalUsersSignInUrl(TEST_CASE_ID))
             .thenReturn("https://manage-case.aat.platform.hmcts.net/cases/case-details/" + TEST_CASE_ID);
 
+        //When
         notification.sendToApplicant1Solicitor(caseData, TEST_CASE_ID);
 
+        //Then
         Map<String, String> personalServiceTemplateVars = personalServiceTemplateVars();
         personalServiceTemplateVars.put(SIGN_IN_URL, commonContent.getProfessionalUsersSignInUrl(TEST_CASE_ID));
         personalServiceTemplateVars.put(APPLICATION_REFERENCE, TEST_CASE_ID.toString());
@@ -646,6 +696,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldNotSendEmailToSoleRespondentWhenBasedOverseas() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.setDueDate(LocalDate.now().plusDays(141));
@@ -660,13 +711,16 @@ public class ApplicationIssuedNotificationTest {
             .country("United States")
             .build());
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verifyNoInteractions(notificationService);
     }
 
     @Test
     void shouldSendEmailInWelshToSoleRespondentWithDivorceContent() {
+        //Given
         CaseData data = validCaseDataForIssueApplication();
         data.setDueDate(LocalDate.now().plusDays(141));
         data.getApplication().setIssueDate(LocalDate.now());
@@ -681,8 +735,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(SOLE_RESPONDENT_APPLICATION_ACCEPTED),
@@ -699,6 +755,7 @@ public class ApplicationIssuedNotificationTest {
 
     @Test
     void shouldSendEmailInWelshToApplicant2() {
+        //Given
         CaseData data = validJointApplicant1CaseData();
         data.setDivorceOrDissolution(DISSOLUTION);
         data.setDueDate(LocalDate.now().plusDays(141));
@@ -712,8 +769,10 @@ public class ApplicationIssuedNotificationTest {
         when(holdingPeriodService.getDueDateFor(data.getApplication().getIssueDate()))
             .thenReturn(data.getApplication().getIssueDate().plusDays(141));
 
+        //When
         notification.sendToApplicant2(data, 1234567890123456L);
 
+        //Then
         verify(notificationService).sendEmail(
             eq(TEST_APPLICANT_2_USER_EMAIL),
             eq(JOINT_APPLICATION_ACCEPTED),

@@ -38,7 +38,7 @@ class GenerateAosOverdueLetterDocumentTest {
 
     @Test
     void shouldGenerateAosOverdueDoc() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getApplicant1().setOffline(YES);
 
@@ -62,8 +62,10 @@ class GenerateAosOverdueLetterDocumentTest {
                 AOS_OVERDUE_LETTER_DOCUMENT_NAME
             );
 
+        //When
         final CaseDetails<CaseData, State> result = generateAosOverdueLetterDocument.apply(caseDetails);
 
+        //Then
         verify(caseDataDocumentService)
             .renderDocumentAndUpdateCaseData(
                 caseData,
