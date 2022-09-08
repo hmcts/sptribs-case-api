@@ -11,13 +11,13 @@ public class SubjectDetails implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("subjectDetails")
             .pageLabel("Who is the subject of this case?")
-            .label("subjectDetailsObject", "Who is the subject of this case?")
+            .label("subjectDetailsObject", "<h3>Who is the subject of this case?</h3>")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getFullName)
-            .optional(CicCase::getAddress)
             .optional(CicCase::getPhoneNumber)
             .mandatoryWithLabel(CicCase::getDateOfBirth, "")
             .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
+            .mandatory(CicCase::getAddress,"cicCaseContactPreferenceType = \"Post\"")
             .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
             .done();
     }

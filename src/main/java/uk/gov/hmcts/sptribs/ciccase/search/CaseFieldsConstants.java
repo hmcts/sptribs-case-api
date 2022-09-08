@@ -10,6 +10,7 @@ public final class CaseFieldsConstants {
     public static final String HEARING_LOCATION = "hearingLocation";
     public static final String APPLICANT_NAME = "cicCaseApplicantFullName";
     public static final String APPLICANT_TYPE = "applicationType";
+    public static final String SUBJECT_CICNAME = "subjectCICName";
     public static final String APPLICANT_1_FIRST_NAME = "applicant1FirstName";
     public static final String APPLICANT_1_LAST_NAME = "applicant1LastName";
     public static final String APPLICANT_2_FIRST_NAME = "applicant2FirstName";
