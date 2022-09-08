@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferencesDetailsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -23,6 +24,8 @@ import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -50,6 +53,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Autowired
     private SubmissionService submissionService;
 
+
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
     }
@@ -63,6 +67,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         if (env.contains(ENVIRONMENT_AAT)) {
             roles.add(SOLICITOR);
         }
+        Map<String, String> map = new HashMap<>();
+        map.put("applicantDetailsObjects","cicCasePartiesCICCONTAINS \"ApplicantCIC\"");
+        map.put("representativeDetailsObjects","cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
+
 
         if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
             PageBuilder pageBuilder = new PageBuilder(configBuilder
@@ -81,7 +89,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             applicantDetails.addTo(pageBuilder);
 
             pageBuilder.page("representativeDetailsObjects")
-                .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + CASE_RECORD_DRAFT)
+                .pageShowConditions(map)
+                .label("representativeDetailsObject", "<h3>Who is the Representative of this case?(If Any)</h3>\r\n" + CASE_RECORD_DRAFT)
                 .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getRepresentativeFullName)
                 .optional(CicCase::getRepresentativeOrgName)
@@ -92,11 +101,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .mandatory(CicCase::getRepresentativeEmailAddress, "cicCaseRepresentativeContactDetailsPreference = \"Email\"")
                 .mandatory(CicCase::getRepresentativeAddress, "cicCaseRepresentativeContactDetailsPreference = \"Post\"")
                 .done();
-            /*pageBuilder.page("objectContacts")
+            pageBuilder.page("objectContacts")
                 .label("objectContact", "Who should receive information about the case?")
                 .complex(CaseData::getCicCase)
-                .optional(CicCase::getContactDetailsPreference)
-                .done();*/
+                .complex(CicCase::getContactPreferenceCic,"")
+                .optional(ContactPreferencesDetailsCIC::getSubjectCIC,"cicCasePartiesCICCONTAINS \"SubjectCIC\"")
+                .optional(ContactPreferencesDetailsCIC::getApplicantCIC,"cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
+                .optional(ContactPreferencesDetailsCIC::getRepresentativeCic,"cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
+                .done();
+
             uploadDocuments(pageBuilder);
             furtherDetails(pageBuilder);
         }
@@ -142,13 +155,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         pageBuilder.page("objectFurtherDetails")
             .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getSchemeCic)
-            .optional(CicCase::getClaimLinkedToCic)
-            .optional(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
-            .optional(CicCase::getCompensationClaimLinkCIC)
-            .optional(CicCase::getPoliceAuthority)
-            .optional(CicCase::getFormReceivedInTime)
-            .optional(CicCase::getMissedTheDeadLineCic)
+            .mandatoryWithLabel(CicCase::getSchemeCic,"Scheme")
+            .mandatory(CicCase::getClaimLinkedToCic)
+            .mandatory(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
+            .mandatory(CicCase::getCompensationClaimLinkCIC)
+            .mandatory(CicCase::getPoliceAuthority)
+            .mandatory(CicCase::getFormReceivedInTime)
+            .mandatory(CicCase::getMissedTheDeadLineCic)
             .done();
     }
 
