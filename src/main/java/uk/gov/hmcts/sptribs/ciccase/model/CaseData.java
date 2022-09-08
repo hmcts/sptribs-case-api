@@ -66,9 +66,26 @@ public class CaseData {
         typeOverride = FixedRadioList,
         typeParameterOverride = "ApplicationType"
     )
-
-
     private ApplicationType applicationType;
+
+    @CCD(
+        label = "Case Status",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private State  caseStatus;
+
+    @CCD(
+        label = "Hearing Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate hearingDate;
+
+    @CCD(
+        label = "Hearing Location",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String  hearingLocation;
 
     @CCD(
         label = "Divorce or dissolution?",
