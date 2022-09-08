@@ -12,6 +12,7 @@ public enum SubjectCIC implements HasLabel {
     SUBJECT("Subject");
     private final String label;
     public boolean isSubject() {
+
         return SUBJECT.name().equalsIgnoreCase(this.name());
     }
 }

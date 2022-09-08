@@ -35,6 +35,7 @@ class CreateTestCaseTest {
     @InjectMocks
     private CreateTestCase createTestCase;
 
+
     @Test
     void shouldNotReturnErrorsIfApplicantUserIdIsValid() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
