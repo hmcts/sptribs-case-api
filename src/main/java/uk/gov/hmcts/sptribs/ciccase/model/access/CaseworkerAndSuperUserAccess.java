@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
@@ -18,7 +17,6 @@ public class CaseworkerAndSuperUserAccess implements HasAccessControl {
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
         grants.putAll(SOLICITOR, Permissions.READ);
-        grants.putAll(LEGAL_ADVISOR, Permissions.READ);
 
         grants.putAll(SUPER_USER, Permissions.CREATE_READ_UPDATE_DELETE);
 

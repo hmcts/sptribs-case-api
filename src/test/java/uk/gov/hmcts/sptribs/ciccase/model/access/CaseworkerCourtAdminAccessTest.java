@@ -12,7 +12,6 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
@@ -26,7 +25,6 @@ class CaseworkerCourtAdminAccessTest {
         assertThat(grants)
             .hasSize(9)
             .contains(
-                entry(LEGAL_ADVISOR, R),
                 entry(SUPER_USER, R),
                 entry(CASE_WORKER, C),
                 entry(CASE_WORKER, R),

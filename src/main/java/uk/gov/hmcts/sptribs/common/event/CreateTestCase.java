@@ -29,7 +29,6 @@ import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
@@ -71,7 +70,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
-                .grantHistoryOnly(SUPER_USER, CASE_WORKER, LEGAL_ADVISOR, SOLICITOR, CITIZEN));
+                .grantHistoryOnly(SUPER_USER, CASE_WORKER, SOLICITOR, CITIZEN));
 
             caseCategory(pageBuilder);
             buildSelectParty(pageBuilder);

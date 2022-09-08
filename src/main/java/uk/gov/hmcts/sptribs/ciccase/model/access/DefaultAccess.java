@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
@@ -23,7 +22,6 @@ public class DefaultAccess implements HasAccessControl {
         grants.putAll(SOLICITOR, Permissions.READ);
         grants.putAll(CITIZEN, Permissions.READ);
         grants.putAll(SUPER_USER, Permissions.READ);
-        grants.putAll(LEGAL_ADVISOR, Permissions.READ);
         grants.putAll(SYSTEMUPDATE, Permissions.CREATE_READ_UPDATE);
         return grants;
     }

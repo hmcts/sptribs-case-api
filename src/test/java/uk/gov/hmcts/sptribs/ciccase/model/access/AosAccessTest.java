@@ -12,7 +12,6 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
 class AosAccessTest {
@@ -29,7 +28,6 @@ class AosAccessTest {
                 entry(SYSTEMUPDATE, R),
                 entry(SYSTEMUPDATE, U),
                 entry(CASE_WORKER, R),
-                entry(LEGAL_ADVISOR, R),
                 entry(CITIZEN, R)
             );
     }
