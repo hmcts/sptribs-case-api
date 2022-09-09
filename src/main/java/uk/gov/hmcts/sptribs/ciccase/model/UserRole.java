@@ -11,8 +11,6 @@ public enum UserRole implements HasRole {
 
     // Common User roles
     SUPER_USER("caseworker-sptribs-superuser", "CRU"),
-
-    //TODO Create jiira for SYSTEM_UPDATE and SOLICITOR as they are added for AAT env
     SYSTEMUPDATE("caseworker-divorce-systemupdate", "CRU"),
     SOLICITOR("caseworker-divorce-solicitor", "CRU"),
     CREATOR("[CREATOR]", "CRU"),
