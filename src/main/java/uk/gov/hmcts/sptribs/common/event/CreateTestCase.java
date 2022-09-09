@@ -12,12 +12,15 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferencesDetailsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
+import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
@@ -38,14 +41,16 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-application";
-    private static final String CASE_RECORD_DRAFT = "\r\nCase record for [DRAFT]";
     private final FeatureToggleService featureToggleService;
 
     private static final CcdPageConfiguration selectParties =  new SelectParties();
     private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
+    private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
+    private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
 
     @Autowired
     private SubmissionService submissionService;
+
 
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
@@ -61,6 +66,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             roles.add(SOLICITOR);
         }
 
+
         if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
             PageBuilder pageBuilder = new PageBuilder(configBuilder
                 .event(TEST_CREATE)
@@ -74,42 +80,21 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
             caseCategory(pageBuilder);
             buildSelectParty(pageBuilder);
-            subjectCategory(pageBuilder);
+            subjectDetails.addTo(pageBuilder);
             applicantDetails.addTo(pageBuilder);
-
-            pageBuilder.page("representativeDetailsObjects")
-                .label("representativeDetailsObject", "Who is the Representative of this case?(If Any)\r\n" + CASE_RECORD_DRAFT)
-                .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getRepresentativeFullName)
-                .optional(CicCase::getRepresentativeOrgName)
-                .mandatory(CicCase::getRepresentativePhoneNumber)
-                .optional(CicCase::getRepresentativeReference)
-                .mandatoryWithLabel(CicCase::getIsRepresentativeQualified, "")
-                .mandatory(CicCase::getRepresentativeContactDetailsPreference)
-                .mandatory(CicCase::getRepresentativeEmailAddress, "cicCaseRepresentativeContactDetailsPreference = \"Email\"")
-                .mandatory(CicCase::getRepresentativeAddress, "cicCaseRepresentativeContactDetailsPreference = \"Post\"")
-                .done();
+            representativeDetails.addTo(pageBuilder);
             pageBuilder.page("objectContacts")
                 .label("objectContact", "Who should receive information about the case?")
                 .complex(CaseData::getCicCase)
-                .optional(CicCase::getContactDetailsPreference)
+                .complex(CicCase::getContactPreferenceCic,"")
+                .optional(ContactPreferencesDetailsCIC::getSubjectCIC,"cicCasePartiesCICCONTAINS \"SubjectCIC\"")
+                .optional(ContactPreferencesDetailsCIC::getApplicantCIC,"cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
+                .optional(ContactPreferencesDetailsCIC::getRepresentativeCic,"cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
                 .done();
+
             uploadDocuments(pageBuilder);
             furtherDetails(pageBuilder);
         }
-    }
-
-    private void subjectCategory(PageBuilder pageBuilder) {
-        pageBuilder.page("subjectDetailsObjects")
-            .label("subjectDetailsObject", "Who is the subject of this case?\r\n" + CASE_RECORD_DRAFT)
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getFullName)
-            .optional(CicCase::getAddress)
-            .optional(CicCase::getPhoneNumber)
-            .mandatoryWithLabel(CicCase::getDateOfBirth, "")
-            .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
-            .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
-            .done();
     }
 
     private void buildSelectParty(PageBuilder pageBuilder) {
@@ -152,13 +137,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         pageBuilder.page("objectFurtherDetails")
             .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getSchemeCic)
-            .optional(CicCase::getClaimLinkedToCic)
-            .optional(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
-            .optional(CicCase::getCompensationClaimLinkCIC)
-            .optional(CicCase::getPoliceAuthority)
-            .optional(CicCase::getFormReceivedInTime)
-            .optional(CicCase::getMissedTheDeadLineCic)
+            .mandatoryWithLabel(CicCase::getSchemeCic,"Scheme")
+            .mandatory(CicCase::getClaimLinkedToCic)
+            .mandatory(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
+            .mandatory(CicCase::getCompensationClaimLinkCIC)
+            .mandatory(CicCase::getPoliceAuthority)
+            .mandatory(CicCase::getFormReceivedInTime)
+            .mandatory(CicCase::getMissedTheDeadLineCic)
             .done();
     }
 

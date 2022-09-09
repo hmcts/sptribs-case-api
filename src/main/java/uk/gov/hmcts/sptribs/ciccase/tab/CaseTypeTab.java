@@ -46,6 +46,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildDocumentsTab(configBuilder);
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
+        buildCasePartiesTab(configBuilder);
     }
 
     private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -84,8 +85,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .showCondition("applicationType=\"soleApplication\" AND "
                 + notShowForState(
-                    Draft, AwaitingHWFDecision, AwaitingPayment, Submitted, AwaitingDocuments,
-                    AwaitingAos, AosDrafted, AosOverdue, AwaitingService))
+                Draft, AwaitingHWFDecision, AwaitingPayment, Submitted, AwaitingDocuments,
+                AwaitingAos, AosDrafted, AosOverdue, AwaitingService))
             .field("applicant2Offline", "applicationType=\"NEVER_SHOW\"")
             .label("LabelAosTabOnlineResponse-Heading", "applicant2Offline=\"No\"", "## This is an online AoS response")
             .label("LabelAosTabOfflineResponse-Heading", "applicant2Offline=\"Yes\"", "## This is an offline AoS response")
@@ -168,7 +169,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseCaseReceivedDate")
             .field("cicCaseCaseSubcategory")
             .field("cicCaseComment")
-            .field("cicCaseContactDetailsPreference")
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
             .field("cicCaseFullName")
@@ -194,5 +194,35 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseApplicantAddress")
             .label("submission-details", null, "### Submission details")
             .field("dateSubmitted");
+    }
+
+    private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseParties", "Case Parties")
+            .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
+            .label("Applicant's details", null, "### Applicant's details")
+            .field("cicCaseApplicantCIC")
+            .field("cicCaseApplicantFullName")
+            .field("cicCaseApplicantEmailAddress")
+            .field("cicCaseApplicantPhoneNumber")
+            .field("cicCaseApplicantDateOfBirth")
+            .field("cicCaseApplicantAddress")
+
+            .label("Representative's details", null, "### Representative's details")
+            .field("cicCaseRepresentativeCIC")
+            .field("cicCaseRepresentativeFullName")
+            .field("cicCaseRepresentativeOrgName")
+            .field("cicCaseRepresentativeAddress")
+            .field("cicCaseRepresentativePhoneNumber")
+            .field("cicCaseRepresentativeEmailAddress")
+            .field("cicCaseRepresentativeReference")
+            .field("cicCaseIsRepresentativeQualified")
+            .field("cicCaseRepresentativeContactDetailsPreference")
+            .field("cicCaseRepresentativeAddress")
+            .label("Respondant's details", null, "### Respondant's details")
+            .field("cicCaseRespondantName")
+            .field("cicCaseRespondantOrganisation")
+            .field("cicCaseRespondantEmail");
+
+
     }
 }
