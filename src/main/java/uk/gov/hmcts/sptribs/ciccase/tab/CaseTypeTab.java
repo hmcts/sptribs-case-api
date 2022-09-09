@@ -16,7 +16,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingPayment;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingService;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.tab.TabShowCondition.notShowForState;
@@ -82,7 +81,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     //TODO: Need to revisit this tab once the field stated in the ticket sptribs-595 are available
     private void buildAosTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("aosDetails", "AoS")
-            .forRoles(CASE_WORKER, SUPER_USER, APPLICANT_1_SOLICITOR)
+            .forRoles(CASE_WORKER, SUPER_USER)
             .showCondition("applicationType=\"soleApplication\" AND "
                 + notShowForState(
                     Draft, AwaitingHWFDecision, AwaitingPayment, Submitted, AwaitingDocuments,
