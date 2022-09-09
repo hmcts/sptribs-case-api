@@ -15,7 +15,6 @@ public enum UserRole implements HasRole {
     //TODO Create jiira for SYSTEM_UPDATE and SOLICITOR as they are added for AAT env
     SYSTEMUPDATE("caseworker-divorce-systemupdate", "CRU"),
     SOLICITOR("caseworker-divorce-solicitor", "CRU"),
-    CITIZEN("citizen", "CRU"),
     CREATOR("[CREATOR]", "CRU"),
 
     // CIC User roles

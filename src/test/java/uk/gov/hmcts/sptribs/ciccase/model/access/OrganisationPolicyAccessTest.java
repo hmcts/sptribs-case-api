@@ -11,7 +11,7 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -27,9 +27,9 @@ class OrganisationPolicyAccessTest {
         assertThat(grants)
             .hasSize(12)
             .contains(
-                entry(CITIZEN, C),
-                entry(CITIZEN, R),
-                entry(CITIZEN, U),
+                entry(CITIZEN_CIC, C),
+                entry(CITIZEN_CIC, R),
+                entry(CITIZEN_CIC, U),
                 entry(SOLICITOR, C),
                 entry(SOLICITOR, R),
                 entry(SOLICITOR, U),
