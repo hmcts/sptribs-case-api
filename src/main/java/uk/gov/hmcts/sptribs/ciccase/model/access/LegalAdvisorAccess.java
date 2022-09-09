@@ -6,14 +6,11 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
-
+//TODO: Remove this class as LEGAL-ADVISOR is reformatted
 public class LegalAdvisorAccess implements HasAccessControl {
     @Override
     public SetMultimap<HasRole, Permission> getGrants() {
-        SetMultimap<HasRole, Permission> grants = HashMultimap.create();
-        grants.putAll(LEGAL_ADVISOR, CRU);
-        return grants;
+        //SetMultimap<HasRole, Permission> grants = HashMultimap.create();
+        return HashMultimap.create();
     }
 }

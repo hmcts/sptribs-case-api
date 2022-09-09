@@ -21,8 +21,7 @@ import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -57,8 +56,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .description("")
             .showSummary()
             .showEventNotes()
-            .grant(CREATE_READ_UPDATE_DELETE, CASE_WORKER, SUPER_USER)
-            .grantHistoryOnly(LEGAL_ADVISOR)
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
     }
