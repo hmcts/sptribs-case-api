@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingPayment;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingService;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.tab.TabShowCondition.notShowForState;
 
@@ -50,7 +50,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("summary", "Summary")
-            .forRoles(CASE_WORKER, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("case-details", null, "### Case details")
             .field("cicCaseFullName")
             .field("cicCaseDateOfBirth")
@@ -81,7 +81,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     //TODO: Need to revisit this tab once the field stated in the ticket sptribs-595 are available
     private void buildAosTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("aosDetails", "AoS")
-            .forRoles(CASE_WORKER, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .showCondition("applicationType=\"soleApplication\" AND "
                 + notShowForState(
                     Draft, AwaitingHWFDecision, AwaitingPayment, Submitted, AwaitingDocuments,
@@ -109,7 +109,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildPaymentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("paymentDetailsCourtAdmin", "Payment")
-            .forRoles(CASE_WORKER, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("LabelApplicant1-PaymentHeading", IS_JOINT, "### The applicant")
             .field("applicant1HWFReferenceNumber")
             .label("LabelApplicant2-PaymentHeading", IS_JOINT_AND_HWF_ENTERED, "### ${labelContentTheApplicant2UC}")
@@ -156,13 +156,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildNotesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("notes", "Notes")
-            .forRoles(CASE_WORKER, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .field(CaseData::getNotes);
     }
 
     private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseDetails", "Case Details")
-            .forRoles(CASE_WORKER, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("case-details", null, "### Case details")
             .field("cicCaseCaseCategory")
             .field("cicCaseCaseReceivedDate")

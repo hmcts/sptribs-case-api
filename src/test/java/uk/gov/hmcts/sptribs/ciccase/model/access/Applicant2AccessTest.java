@@ -10,7 +10,7 @@ import static org.assertj.guava.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
@@ -26,7 +26,7 @@ class Applicant2AccessTest {
             .hasSize(6)
             .contains(
                 entry(SYSTEMUPDATE, R),
-                entry(CASE_WORKER, R),
+                entry(COURT_ADMIN_CIC, R),
                 entry(CITIZEN, R),
                 entry(CREATOR, R),
                 entry(SYSTEMUPDATE, C),

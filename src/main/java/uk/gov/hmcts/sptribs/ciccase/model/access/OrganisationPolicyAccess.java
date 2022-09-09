@@ -6,8 +6,8 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
@@ -23,7 +23,7 @@ public class OrganisationPolicyAccess implements HasAccessControl {
         grants.putAll(SOLICITOR, CREATE_READ_UPDATE_DELETE);
 
         grants.putAll(SUPER_USER, READ);
-        grants.putAll(CASE_WORKER, READ);
+        grants.putAll(COURT_ADMIN_CIC, READ);
         grants.putAll(SYSTEMUPDATE, CREATE_READ_UPDATE);
         return grants;
     }
