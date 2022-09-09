@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
+import uk.gov.hmcts.sptribs.caseworker.model.Stay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
@@ -203,6 +204,13 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseNote>> notes;
+
+    @CCD(
+        label = "Stay",
+        typeParameterOverride = "Stay",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Stay stay;
 
     @CCD(
         label = "Add a case note",
