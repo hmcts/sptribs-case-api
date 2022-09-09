@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.Stay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -16,10 +15,12 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import javax.servlet.http.HttpServletRequest;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.*;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -52,7 +53,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .pageLabel("Add Stay")
             .complex(CaseData::getStay)
             .mandatoryWithLabel(Stay::getStayReason, "")
-            .mandatory(Stay::getFlagType, "stay_stayReason = \"stay_stayReason-other\"")
+            .mandatory(Stay::getFlagType, "stayStayReason = \"other\"")
             .mandatoryWithLabel(Stay::getExpirationDate, "")
             .optional(Stay::getAdditionalDetail, "");
     }

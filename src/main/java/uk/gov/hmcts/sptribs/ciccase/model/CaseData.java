@@ -205,12 +205,10 @@ public class CaseData {
     )
     private List<ListValue<CaseNote>> notes;
 
-    @CCD(
-        label = "Stay",
-        typeParameterOverride = "Stay",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Stay stay;
+    @JsonUnwrapped(prefix = "stay")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Stay stay = new Stay();
 
     @CCD(
         label = "Add a case note",
