@@ -14,7 +14,6 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ORGANISATION_CASE_ACCESS_ADMINISTRATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
@@ -27,7 +26,7 @@ class CaseworkerAccessWithCAATest {
         final SetMultimap<HasRole, Permission> grants = new CaseworkerWithCAAAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(16)
+            .hasSize(13)
             .contains(
                 entry(CITIZEN, R),
                 entry(SOLICITOR, R),
@@ -39,9 +38,6 @@ class CaseworkerAccessWithCAATest {
                 entry(SYSTEMUPDATE, R),
                 entry(SYSTEMUPDATE, U),
                 entry(SYSTEMUPDATE, D),
-                entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, C),
-                entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, R),
-                entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, U),
                 entry(CREATOR, C),
                 entry(CREATOR, R),
                 entry(CREATOR, U)

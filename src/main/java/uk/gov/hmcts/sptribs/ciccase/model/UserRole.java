@@ -18,8 +18,6 @@ public enum UserRole implements HasRole {
     SYSTEMUPDATE("caseworker-divorce-systemupdate", "CRU"),
     SOLICITOR("caseworker-divorce-solicitor", "CRU"),
 
-    ORGANISATION_CASE_ACCESS_ADMINISTRATOR("caseworker-caa", "CRU"),
-
     CITIZEN("citizen", "CRU"),
     CREATOR("[CREATOR]", "CRU");
 
