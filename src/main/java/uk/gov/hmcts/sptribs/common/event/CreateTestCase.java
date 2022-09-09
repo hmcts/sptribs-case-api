@@ -18,14 +18,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -43,12 +42,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-application";
-    private static final String CASE_RECORD_DRAFT = "\r\nCase record for [DRAFT]";
     private final FeatureToggleService featureToggleService;
 
     private static final CcdPageConfiguration selectParties =  new SelectParties();
     private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
+    private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
 
     @Autowired
     private SubmissionService submissionService;
@@ -67,9 +66,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         if (env.contains(ENVIRONMENT_AAT)) {
             roles.add(SOLICITOR);
         }
-        Map<String, String> map = new HashMap<>();
-        map.put("applicantDetailsObjects","cicCasePartiesCICCONTAINS \"ApplicantCIC\"");
-        map.put("representativeDetailsObjects","cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
 
 
         if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
@@ -87,20 +83,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             buildSelectParty(pageBuilder);
             subjectDetails.addTo(pageBuilder);
             applicantDetails.addTo(pageBuilder);
-
-            pageBuilder.page("representativeDetailsObjects")
-                .pageShowConditions(map)
-                .label("representativeDetailsObject", "<h3>Who is the Representative of this case?(If Any)</h3>\r\n" + CASE_RECORD_DRAFT)
-                .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getRepresentativeFullName)
-                .optional(CicCase::getRepresentativeOrgName)
-                .mandatory(CicCase::getRepresentativePhoneNumber)
-                .optional(CicCase::getRepresentativeReference)
-                .mandatoryWithLabel(CicCase::getIsRepresentativeQualified, "")
-                .mandatory(CicCase::getRepresentativeContactDetailsPreference)
-                .mandatory(CicCase::getRepresentativeEmailAddress, "cicCaseRepresentativeContactDetailsPreference = \"Email\"")
-                .mandatory(CicCase::getRepresentativeAddress, "cicCaseRepresentativeContactDetailsPreference = \"Post\"")
-                .done();
+            representativeDetails.addTo(pageBuilder);
             pageBuilder.page("objectContacts")
                 .label("objectContact", "Who should receive information about the case?")
                 .complex(CaseData::getCicCase)

@@ -14,6 +14,7 @@ public class ApplicantDetails implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
         map.put("applicantDetailsObjects","cicCasePartiesCICCONTAINS \"ApplicantCIC\"");
+        map.put("representativeDetailsObjects","cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
         pageBuilder.page("applicantDetailsObjects")
             .pageLabel("Who is the applicant in this case?")
             .label("applicantDetails", "<h3>Who is the applicant in this case?</h3>\r\n")
