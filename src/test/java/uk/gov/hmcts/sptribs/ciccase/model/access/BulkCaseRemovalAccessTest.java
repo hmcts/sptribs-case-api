@@ -25,7 +25,7 @@ class BulkCaseRemovalAccessTest {
         final SetMultimap<HasRole, Permission> grants = new BulkCaseRemovalAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(11)
+            .hasSize(10)
             .contains(
                 entry(CITIZEN, R),
                 entry(SOLICITOR, R),

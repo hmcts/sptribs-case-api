@@ -25,7 +25,7 @@ class CaseworkerAccessTest {
         final SetMultimap<HasRole, Permission> grants = new CaseworkerAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(13)
+            .hasSize(10)
             .contains(
                 entry(CITIZEN, R),
                 entry(SOLICITOR, R),

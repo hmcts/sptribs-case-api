@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 public class LegalAdvisorAccess implements HasAccessControl {
     @Override
     public SetMultimap<HasRole, Permission> getGrants() {
-        SetMultimap<HasRole, Permission> grants = HashMultimap.create();
-        return grants;
+        //SetMultimap<HasRole, Permission> grants = HashMultimap.create();
+        return HashMultimap.create();
     }
 }

@@ -22,7 +22,7 @@ public class CaseworkerBulkScanAccessTest {
         final SetMultimap<HasRole, Permission> grants = new CaseworkerBulkScanAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(11)
+            .hasSize(8)
             .contains(
                 entry(SUPER_USER, R),
                 entry(CASE_WORKER, C),

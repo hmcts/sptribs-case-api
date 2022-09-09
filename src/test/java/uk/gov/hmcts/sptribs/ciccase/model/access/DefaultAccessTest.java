@@ -25,7 +25,7 @@ class DefaultAccessTest {
         final SetMultimap<HasRole, Permission> grants = new DefaultAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(11)
+            .hasSize(10)
             .contains(
                 entry(CREATOR, C),
                 entry(CREATOR, R),

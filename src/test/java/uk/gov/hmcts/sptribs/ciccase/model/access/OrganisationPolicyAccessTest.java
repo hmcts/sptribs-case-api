@@ -26,7 +26,7 @@ class OrganisationPolicyAccessTest {
         final SetMultimap<HasRole, Permission> grants = new OrganisationPolicyAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(16)
+            .hasSize(15)
             .contains(
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, C),
                 entry(ORGANISATION_CASE_ACCESS_ADMINISTRATOR, R),

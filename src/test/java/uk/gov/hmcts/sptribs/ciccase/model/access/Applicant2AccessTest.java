@@ -23,7 +23,7 @@ class Applicant2AccessTest {
         final SetMultimap<HasRole, Permission> grants = new Applicant2Access().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(7)
+            .hasSize(6)
             .contains(
                 entry(SYSTEMUPDATE, R),
                 entry(CASE_WORKER, R),
