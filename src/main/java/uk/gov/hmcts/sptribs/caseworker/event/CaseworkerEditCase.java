@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 
@@ -27,6 +28,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private final CcdPageConfiguration editSelectedPartiesDetails = new SelectParties();
     private final CcdPageConfiguration editSubjectDetails = new SubjectDetails();
     private final CcdPageConfiguration editApplicantDetails = new ApplicantDetails();
+    private final CcdPageConfiguration editRepresentativeDetails = new RepresentativeDetails();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -35,6 +37,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         editSelectedPartiesDetails.addTo(pageBuilder);
         editSubjectDetails.addTo(pageBuilder);
         editApplicantDetails.addTo(pageBuilder);
+        editRepresentativeDetails.addTo(pageBuilder);
     }
 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
