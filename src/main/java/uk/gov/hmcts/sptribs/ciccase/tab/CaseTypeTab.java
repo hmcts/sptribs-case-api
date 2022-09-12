@@ -198,7 +198,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseParties", "Case Parties")
-            .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Applicant's details", null, "### Applicant's details")
             .field("cicCaseApplicantCIC")
             .field("cicCaseApplicantFullName")
