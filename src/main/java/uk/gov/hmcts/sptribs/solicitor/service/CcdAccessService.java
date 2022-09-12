@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 
 @Service
@@ -32,36 +31,6 @@ public class CcdAccessService {
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
-
-    @Retryable(value = {FeignException.class, RuntimeException.class})
-    public void addApplicant1SolicitorRole(String solicitorIdamToken, Long caseId, String orgId) {
-        User solicitorUser = idamService.retrieveUser(solicitorIdamToken);
-        User systemUpdateUser = idamService.retrieveSystemUpdateUserDetails();
-        String solicitorUserId = solicitorUser.getUserDetails().getId();
-
-        log.info("Adding roles {} to case Id {} and user Id {}",
-            APPLICANT_1_SOLICITOR,
-            caseId,
-            solicitorUserId
-        );
-
-        String idamToken = systemUpdateUser.getAuthToken();
-        String s2sToken = authTokenGenerator.generate();
-
-        caseAssignmentApi.removeCaseUserRoles(
-            idamToken,
-            s2sToken,
-            getCaseAssignmentRequest(caseId, solicitorUserId, orgId, CREATOR)
-        );
-
-        caseAssignmentApi.addCaseUserRoles(
-            idamToken,
-            s2sToken,
-            getCaseAssignmentRequest(caseId, solicitorUserId, orgId, APPLICANT_1_SOLICITOR)
-        );
-
-        log.info("Successfully added the applicant's solicitor roles to case Id {} ", caseId);
-    }
 
     @Retryable(value = {FeignException.class, RuntimeException.class})
     public void addRoleToCase(String userId, Long caseId, String orgId, UserRole role) {
@@ -96,7 +65,7 @@ public class CcdAccessService {
             .stream()
             .map(CaseAssignmentUserRole::getCaseRole)
             .collect(Collectors.toList());
-        return userRoles.contains(CREATOR.getRole()) || userRoles.contains(APPLICANT_1_SOLICITOR.getRole());
+        return userRoles.contains(CREATOR.getRole());
     }
 
     public void removeUsersWithRole(Long caseId, List<String> roles) {

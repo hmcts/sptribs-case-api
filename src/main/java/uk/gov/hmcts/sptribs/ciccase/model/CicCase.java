@@ -104,29 +104,50 @@ public class CicCase {
     private Set<RepresentativeCIC> representativeCIC;
 
     @CCD(
+        label = "Respondant name ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String respondantName = "Appeals team";
+
+    @CCD(
+        label = "Respondant organisation ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String respondantOrganisation = "CICA";
+
+    @CCD(
+        label = "Respondant email  ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String respondantEmail = "appeals.team@cica.gov.uk";
+
+    @CCD(
         label = "Subject Full Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fullName;
 
-    @CCD(label = "Subject Address")
+    @CCD(label = "Address")
     private AddressGlobalUK address;
 
     @CCD(
-        label = "Subject Phone number",
+        label = "Phone number",
         regex = "^[0-9 +().-]{9,}$"
     )
     private String phoneNumber;
 
     @CCD(
-        label = "Subject Email address",
+        label = "Email address",
         typeOverride = Email
     )
     private String email;
 
 
     @CCD(
-        label = "Subject Date of birth",
+        label = "Date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -134,13 +155,14 @@ public class CicCase {
 
 
     @CCD(
-        label = "What is subject contact preference type?",
+        label = "What is their contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactPreferenceType;
 
 
     @CCD(
+        label = "Scheme",
         typeOverride = FixedList,
         typeParameterOverride = "SchemeCic",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -240,6 +262,9 @@ public class CicCase {
     )
     private YesOrNo isRepresentativeQualified;
 
+    private YesOrNo  representativeDetailsObjects;
+
+
     @CCD(
         label = "Police authority management incident",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -257,7 +282,7 @@ public class CicCase {
     private YesOrNo missedTheDeadLineCic;
 
     @CCD(
-        label = "Have any claims linked to this case?",
+        label = "Have any claims linked to this case  been lodged with CICA? ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
 
     )
@@ -283,14 +308,15 @@ public class CicCase {
     private YesOrNo isRepresentativePresent;
 
     @CCD(
-        label = "Who should receive information about the claim?",
+        label = "Contact Details Preference",
         typeOverride = MultiSelectList,
         typeParameterOverride = "PartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<PartiesCIC> contactDetailsPreference;
-
+    private ContactPreferencesDetailsCIC contactPreferenceCic;
     private CaseDocumentsCIC caseDocumentsCIC;
+    private YesOrNo selectedCheckBox;
 
 
 }

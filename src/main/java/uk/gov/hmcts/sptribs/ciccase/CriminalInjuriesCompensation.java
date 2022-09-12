@@ -9,8 +9,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-
 @Component
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, UserRole> {
@@ -25,7 +23,6 @@ public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, 
 
         configBuilder.caseType(CASE_TYPE, "CIC Case Type", "Handling of the dissolution of marriage");
         configBuilder.jurisdiction(JURISDICTION, "CIC", "Family Divorce: dissolution of marriage");
-        configBuilder.omitHistoryForRoles(APPLICANT_1_SOLICITOR);
 
         // to shutter the service within xui uncomment this line
         // configBuilder.shutterService();
