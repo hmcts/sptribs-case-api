@@ -15,7 +15,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewPaperCase;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -43,7 +43,7 @@ public class CaseworkerCorrectPaperCase implements CCDConfig<CaseData, State, Us
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .showEventNotes()
-            .grant(CREATE_READ_UPDATE_DELETE, CASE_WORKER, SUPER_USER));
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(final CaseDetails<CaseData, State> details) {

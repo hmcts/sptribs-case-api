@@ -104,29 +104,50 @@ public class CicCase {
     private Set<RepresentativeCIC> representativeCIC;
 
     @CCD(
-        label = "Full Name",
+        label = "Respondant name ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String respondantName = "Appeals team";
+
+    @CCD(
+        label = "Respondant organisation ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String respondantOrganisation = "CICA";
+
+    @CCD(
+        label = "Respondant email  ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String respondantEmail = "appeals.team@cica.gov.uk";
+
+    @CCD(
+        label = "Subject Full Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fullName;
 
-    @CCD(label = "Address")
+    @CCD(label = "Subject Address")
     private AddressGlobalUK address;
 
     @CCD(
-        label = "Phone number",
+        label = "Subject Phone number",
         regex = "^[0-9 +().-]{9,}$"
     )
     private String phoneNumber;
 
     @CCD(
-        label = "Email address",
+        label = "Subject Email address",
         typeOverride = Email
     )
     private String email;
 
 
     @CCD(
-        label = "Date of birth",
+        label = "Subject Date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -134,13 +155,14 @@ public class CicCase {
 
 
     @CCD(
-        label = "What is their contact preference type?",
+        label = "What is subject contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactPreferenceType;
 
 
     @CCD(
+        label = "Scheme",
         typeOverride = FixedList,
         typeParameterOverride = "SchemeCic",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -154,41 +176,41 @@ public class CicCase {
     private String cicaReferenceNumber;
 
     @CCD(
-        label = "Full Name",
+        label = "Applicant Full Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String applicantFullName;
 
-    @CCD(label = "Address")
+    @CCD(label = "Applicant Address")
     private AddressGlobalUK applicantAddress;
 
     @CCD(
-        label = "Phone number",
+        label = "Applicant Phone number",
         regex = "^[0-9 +().-]{9,}$"
     )
     private String applicantPhoneNumber;
 
     @CCD(
-        label = "Email address",
+        label = "Applicant Email address",
         typeOverride = Email
     )
     private String applicantEmailAddress;
 
     @CCD(
-        label = "Date of birth",
+        label = "Applicant Date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate applicantDateOfBirth;
 
     @CCD(
-        label = "What is their contact preference?",
+        label = "What is applicant contact preference?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType applicantContactDetailsPreference;
 
     @CCD(
-        label = "Full Name",
+        label = "Representative Full Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String representativeFullName;
@@ -205,30 +227,30 @@ public class CicCase {
     )
     private String representativeReference;
 
-    @CCD(label = "Address")
+    @CCD(label = "Representative Address")
     private AddressGlobalUK representativeAddress;
 
     @CCD(
-        label = "Contact number",
+        label = "Representative Contact number",
         regex = "^[0-9 +().-]{9,}$"
     )
     private String representativePhoneNumber;
 
     @CCD(
-        label = "Email address",
+        label = "Representative Email address",
         typeOverride = Email
     )
     private String representativeEmailAddress;
 
     @CCD(
-        label = "Date of birth",
+        label = "Representative Date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate representativeDateOfBirth;
 
     @CCD(
-        label = "What is their contact preference?",
+        label = "What is representative contact preference?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType representativeContactDetailsPreference;
@@ -239,6 +261,9 @@ public class CicCase {
 
     )
     private YesOrNo isRepresentativeQualified;
+
+    private YesOrNo  representativeDetailsObjects;
+
 
     @CCD(
         label = "Police authority management incident",
@@ -257,7 +282,7 @@ public class CicCase {
     private YesOrNo missedTheDeadLineCic;
 
     @CCD(
-        label = "Have any claims linked to this case?",
+        label = "Have any claims linked to this case  been lodged with CICA? ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
 
     )
@@ -289,8 +314,9 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<PartiesCIC> contactDetailsPreference;
-
+    private ContactPreferencesDetailsCIC contactPreferenceCic;
     private CaseDocumentsCIC caseDocumentsCIC;
+    private YesOrNo selectedCheckBox;
 
 
 }

@@ -11,45 +11,28 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import java.util.List;
 
 import static java.util.List.of;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ALTERNATIVE_SERVICE_TYPE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_ADDRESS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_EMAIL;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_FIRM_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_HWF;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_1_LAST_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_2_ADDRESS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_2_EMAIL;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_2_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_2_LAST_NAME;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_NAME;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.EVIDENCE_HANDLED;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.GENERAL_REFERRAL_URGENT_CASE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.MARRIAGE_DATE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.URGENT_CASE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_LOCATION;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_REFERENCE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_ADDRESS;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_DATE_OF_BIRTH;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
 
 @Component
 public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
 
     public static final List<SearchField<UserRole>> SEARCH_FIELD_LIST = of(
-        SearchField.<UserRole>builder().label("CCD reference").id(CCD_REFERENCE).build(),
+        SearchField.<UserRole>builder().label("Case Number").id(CCD_REFERENCE).build(),
         SearchField.<UserRole>builder().label("Case status (state)").id(CASE_STATE).build(),
-        SearchField.<UserRole>builder().label("Marriage date").id(MARRIAGE_DATE).build(),
-        SearchField.<UserRole>builder().label("HWF reference").id(APPLICANT_1_HWF).build(),
-        SearchField.<UserRole>builder().label("Urgent case").id(URGENT_CASE).build(),
-        SearchField.<UserRole>builder().label("Urgent general referral case").id(GENERAL_REFERRAL_URGENT_CASE).build(),
-        SearchField.<UserRole>builder().label("Solicitor firm name").id(APPLICANT_1_FIRM_NAME).build(),
-        SearchField.<UserRole>builder().label("Type of service").id(ALTERNATIVE_SERVICE_TYPE).build(),
-        SearchField.<UserRole>builder().label("Applicant postcode").id(APPLICANT_1_ADDRESS).listElementCode("PostCode").build(),
-        SearchField.<UserRole>builder().label("Respondent postcode").id(APPLICANT_2_ADDRESS).listElementCode("PostCode").build(),
-        SearchField.<UserRole>builder().label("Applicant email").id(APPLICANT_1_EMAIL).build(),
-        SearchField.<UserRole>builder().label("Respondent email").id(APPLICANT_2_EMAIL).build(),
-        SearchField.<UserRole>builder().label("Applicant first name").id(APPLICANT_1_FIRST_NAME).build(),
-        SearchField.<UserRole>builder().label("Applicant last name").id(APPLICANT_1_LAST_NAME).build(),
-        SearchField.<UserRole>builder().label("Respondent first name").id(APPLICANT_2_FIRST_NAME).build(),
-        SearchField.<UserRole>builder().label("Respondent last name").id(APPLICANT_2_LAST_NAME).build(),
-        SearchField.<UserRole>builder().label("Supplementary evidence handled").id(EVIDENCE_HANDLED).build()
+        SearchField.<UserRole>builder().label("Case status (state)").id(CASE_STATE).build(),
+        SearchField.<UserRole>builder().label("Hearing Location").id(HEARING_LOCATION).build(),
+        SearchField.<UserRole>builder().label("Subject Name").id(SUBJECT_NAME).build(),
+        SearchField.<UserRole>builder().label("Subject PostCode").id(SUBJECT_ADDRESS).listElementCode("PostCode").build(),
+        SearchField.<UserRole>builder().label("Subject Date of Birth").id(SUBJECT_DATE_OF_BIRTH).build(),
+        SearchField.<UserRole>builder().label("Applicant Name").id(APPLICANT_NAME).build(),
+        SearchField.<UserRole>builder().label("Representative Reference").id(REPRESENTATIVE_REFERENCE).build()
     );
 
     @Override
