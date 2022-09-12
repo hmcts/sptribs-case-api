@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
@@ -47,6 +48,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
+    private static final CcdPageConfiguration furtherDetails = new FurtherDetails();
 
     @Autowired
     private SubmissionService submissionService;
@@ -93,7 +95,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .done();
 
             uploadDocuments(pageBuilder);
-            furtherDetails(pageBuilder);
+            furtherDetails.addTo(pageBuilder);
         }
     }
 
@@ -130,20 +132,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 + "\n.labelled clearly, e.g. applicant-name-B1-for.pdf\n" + "<h3>Already uploaded files:</h3>\n" + "\n-None\n")
             .label("documentsUploadObjets2", "Add a file\n" + "\nUpload a file to the system")
             .optional(CicCase::getCaseDocumentsCIC)
-            .done();
-    }
-
-    private void furtherDetails(PageBuilder pageBuilder) {
-        pageBuilder.page("objectFurtherDetails")
-            .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
-            .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getSchemeCic,"Scheme")
-            .mandatory(CicCase::getClaimLinkedToCic)
-            .mandatory(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
-            .mandatory(CicCase::getCompensationClaimLinkCIC)
-            .mandatory(CicCase::getPoliceAuthority)
-            .mandatory(CicCase::getFormReceivedInTime)
-            .mandatory(CicCase::getMissedTheDeadLineCic)
             .done();
     }
 
