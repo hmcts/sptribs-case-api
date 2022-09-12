@@ -6,16 +6,17 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
@@ -34,12 +35,13 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .name("Stay the Case")
             .description("Stay the Case")
             .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::stayed)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE,
-                CASE_WORKER)
+                COURT_ADMIN_CIC)
             .grant(CREATE_READ_UPDATE_DELETE,
                 SUPER_USER)
-            .grantHistoryOnly(LEGAL_ADVISOR))
+            .grantHistoryOnly(SUPER_USER))
             .page("addStay")
             .pageLabel("Add Stay")
             .complex(CaseData::getCaseStay)
@@ -60,6 +62,13 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseStayed)
+            .build();
+    }
+
+    public SubmittedCallbackResponse stayed(CaseDetails<CaseData, State> details,
+                                            CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Stay Added to Case"))
             .build();
     }
 }
