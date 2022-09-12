@@ -1,20 +1,16 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.Stay;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.idam.IdamService;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
@@ -29,11 +25,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_STAY_THE_CASE = "caseworker-stay-the-case";
 
-    @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
-    private IdamService idamService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -51,11 +42,11 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .grantHistoryOnly(LEGAL_ADVISOR))
             .page("addStay")
             .pageLabel("Add Stay")
-            .complex(CaseData::getStay)
-            .mandatoryWithLabel(Stay::getStayReason, "")
-            .mandatory(Stay::getFlagType, "stayStayReason = \"other\"")
-            .mandatoryWithLabel(Stay::getExpirationDate, "")
-            .optional(Stay::getAdditionalDetail, "");
+            .complex(CaseData::getCaseStay)
+            .mandatoryWithLabel(CaseStay::getStayReason, "")
+            .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"")
+            .mandatoryWithLabel(CaseStay::getExpirationDate, "")
+            .optional(CaseStay::getAdditionalDetail, "");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(

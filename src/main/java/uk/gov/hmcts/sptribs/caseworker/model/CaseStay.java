@@ -22,7 +22,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Stay {
+public class CaseStay {
 
     @CCD(
         label = "Stay Reason",
