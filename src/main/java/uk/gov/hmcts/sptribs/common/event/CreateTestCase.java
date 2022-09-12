@@ -128,8 +128,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 + "\n<h3>Files should be:</h3>\n"
                 + "\n.Uploading seperatly and not in one large file\n" + "\n.a maximum of 1000MB in size (large files must be split)\n"
                 + "\n.labelled clearly, e.g. applicant-name-B1-for.pdf\n" + "<h3>Already uploaded files:</h3>\n" + "\n-None\n")
-            .label("documentsUploadObjets2", "Add a file\n" + "\nUpload a file to the system")
-            .optional(CicCase::getCaseDocumentsCIC)
+            .optionalWithLabel(CicCase::getCaseDocumentsCIC, "File Attachments")
             .done();
     }
 
