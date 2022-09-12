@@ -175,7 +175,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         data = submittedDetails.getData();
         state = submittedDetails.getState();
 
-        data.getCicCase().setIsRepresentativePresent(YesOrNo.YES);
+        setIsRepresentativePresent(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -192,6 +192,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
             .build();
+    }
+
+    private void setIsRepresentativePresent(CaseData data) {
+        if (null != data.getCicCase().getRepresentativeFullName()) {
+            data.getCicCase().setIsRepresentativePresent(YesOrNo.YES);
+        } else {
+            data.getCicCase().setIsRepresentativePresent(YesOrNo.NO);
+        }
     }
 
 
