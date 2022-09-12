@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.assertj.guava.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 
 class DefaultStateAccessExcludingCAATest {
@@ -19,10 +18,9 @@ class DefaultStateAccessExcludingCAATest {
         final SetMultimap<HasRole, Permission> grants = new DefaultStateAccessExcludingCAA().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(2)
+            .hasSize(1)
             .contains(
-                entry(CREATOR, R),
-                entry(APPLICANT_1_SOLICITOR, R)
+                entry(CREATOR, R)
             );
     }
 }
