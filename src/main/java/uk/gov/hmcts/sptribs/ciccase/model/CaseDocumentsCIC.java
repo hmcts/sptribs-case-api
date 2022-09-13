@@ -31,7 +31,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 public class CaseDocumentsCIC {
 
     @CCD(
-        label = "Add a file" + "\nUpload a file to the system",
+        label = "Upload a file to the system",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
         access = {DefaultAccess.class}

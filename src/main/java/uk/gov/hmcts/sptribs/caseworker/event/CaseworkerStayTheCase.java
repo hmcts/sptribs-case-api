@@ -17,8 +17,9 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
@@ -37,11 +38,8 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayed)
             .showEventNotes()
-            .grant(CREATE_READ_UPDATE,
-                COURT_ADMIN_CIC)
-            .grant(CREATE_READ_UPDATE_DELETE,
-                SUPER_USER)
-            .grantHistoryOnly(SUPER_USER))
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grantHistoryOnly(SOLICITOR))
             .page("addStay")
             .pageLabel("Add Stay")
             .complex(CaseData::getCaseStay)

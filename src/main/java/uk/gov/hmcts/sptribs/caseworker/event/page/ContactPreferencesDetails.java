@@ -20,20 +20,21 @@ public class ContactPreferencesDetails implements CcdPageConfiguration {
             .optional(ContactPreferencesDetailsCIC::getSubjectCIC, "cicCasePartiesCICCONTAINS \"SubjectCIC\"")
             .optional(ContactPreferencesDetailsCIC::getApplicantCIC, "cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
             .optional(ContactPreferencesDetailsCIC::getRepresentativeCic, "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
-            // .mandatoryWithLabel(CicCase::getPartiesCIC, "")
             .done();
 
 
-        //pageBuilder.page("objectSubjects", this::midEvent)
-        // .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
-        //.pageLabel("Who are the parties in this case?")
-        //.complex(CaseData::getCicCase)
-        //.mandatoryWithLabel(CicCase::getPartiesCIC, "")
-        //            .done();
+        /*pageBuilder
+            .page("objectSubjects", this::midEvent)
+            .label("subjectObject", "Which parties are named on the tribunal form?\r\n" + "\r\nCase record for [DRAFT]")
+            .pageLabel("Who are the parties in this case?")
+            .complex(CaseData::getCicCase)
+            .mandatoryWithLabel(CicCase::getPartiesCIC, "")
+            .done();*/
     }
 
-    /*
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+
+
+    /*private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
@@ -46,9 +47,7 @@ public class ContactPreferencesDetails implements CcdPageConfiguration {
             .data(data)
             .errors(errors)
             .build();
-    }
-    */
-
+    }*/
 }
 
 
