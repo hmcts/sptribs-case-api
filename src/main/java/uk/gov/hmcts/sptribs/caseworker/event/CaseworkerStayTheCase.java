@@ -31,6 +31,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .event(CASEWORKER_STAY_THE_CASE)
             .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
             .name("Stay the Case")
+            .showSummary()
             .description("Stay the Case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .showEventNotes()
