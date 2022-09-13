@@ -14,6 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
+import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
@@ -34,6 +36,8 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private final CcdPageConfiguration editSubjectDetails = new SubjectDetails();
     private final CcdPageConfiguration editApplicantDetails = new ApplicantDetails();
     private final CcdPageConfiguration editRepresentativeDetails = new RepresentativeDetails();
+    private static final CcdPageConfiguration editFurtherDetails = new FurtherDetails();
+    private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
     @Autowired
     private SubmissionService submissionService;
@@ -46,6 +50,8 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         editSubjectDetails.addTo(pageBuilder);
         editApplicantDetails.addTo(pageBuilder);
         editRepresentativeDetails.addTo(pageBuilder);
+        editContactPreferenceDetails.addTo(pageBuilder);
+        editFurtherDetails.addTo(pageBuilder);
     }
 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

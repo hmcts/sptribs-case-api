@@ -314,7 +314,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<PartiesCIC> contactDetailsPreference;
-    private ContactPreferencesDetailsCIC contactPreferenceCic;
     private CaseDocumentsCIC caseDocumentsCIC;
     private YesOrNo selectedCheckBox;
 

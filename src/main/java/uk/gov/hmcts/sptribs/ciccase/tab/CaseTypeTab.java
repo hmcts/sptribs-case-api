@@ -199,7 +199,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseParties", "Case Parties")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
-            .label("Applicant's details", null, "### Applicant's details")
+            .label("Applicant's details", "cicCaseApplicantFullName!=\"\"", "### Applicant's details")
             .field("cicCaseApplicantCIC")
             .field("cicCaseApplicantFullName")
             .field("cicCaseApplicantEmailAddress")
@@ -207,7 +207,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseApplicantDateOfBirth")
             .field("cicCaseApplicantAddress")
 
-            .label("Representative's details", null, "### Representative's details")
+            .label("Representative's details", "cicCaseRepresentativeFullName!=\"\"", "### Representative's details")
             .field("cicCaseRepresentativeCIC")
             .field("cicCaseRepresentativeFullName")
             .field("cicCaseRepresentativeOrgName")

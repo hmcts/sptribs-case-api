@@ -12,12 +12,13 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferencesDetailsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
+import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
@@ -47,6 +48,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
+    private static final CcdPageConfiguration furtherDetails = new FurtherDetails();
+    private static final CcdPageConfiguration contactPreferenceDetails = new ContactPreferenceDetails();
 
     @Autowired
     private SubmissionService submissionService;
@@ -83,17 +86,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             subjectDetails.addTo(pageBuilder);
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
-            pageBuilder.page("objectContacts")
-                .label("objectContact", "Who should receive information about the case?")
-                .complex(CaseData::getCicCase)
-                .complex(CicCase::getContactPreferenceCic,"")
-                .optional(ContactPreferencesDetailsCIC::getSubjectCIC,"cicCasePartiesCICCONTAINS \"SubjectCIC\"")
-                .optional(ContactPreferencesDetailsCIC::getApplicantCIC,"cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
-                .optional(ContactPreferencesDetailsCIC::getRepresentativeCic,"cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
-                .done();
+            contactPreferenceDetails.addTo(pageBuilder);
 
             uploadDocuments(pageBuilder);
-            furtherDetails(pageBuilder);
+            furtherDetails.addTo(pageBuilder);
         }
     }
 
@@ -128,22 +124,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 + "\n<h3>Files should be:</h3>\n"
                 + "\n.Uploading seperatly and not in one large file\n" + "\n.a maximum of 1000MB in size (large files must be split)\n"
                 + "\n.labelled clearly, e.g. applicant-name-B1-for.pdf\n" + "<h3>Already uploaded files:</h3>\n" + "\n-None\n")
-            .label("documentsUploadObjets2", "Add a file\n" + "\nUpload a file to the system")
-            .optional(CicCase::getCaseDocumentsCIC)
-            .done();
-    }
-
-    private void furtherDetails(PageBuilder pageBuilder) {
-        pageBuilder.page("objectFurtherDetails")
-            .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
-            .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getSchemeCic,"Scheme")
-            .mandatory(CicCase::getClaimLinkedToCic)
-            .mandatory(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
-            .mandatory(CicCase::getCompensationClaimLinkCIC)
-            .mandatory(CicCase::getPoliceAuthority)
-            .mandatory(CicCase::getFormReceivedInTime)
-            .mandatory(CicCase::getMissedTheDeadLineCic)
+            .optionalWithLabel(CicCase::getCaseDocumentsCIC, "File Attachments")
             .done();
     }
 
