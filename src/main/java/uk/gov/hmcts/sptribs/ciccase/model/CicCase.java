@@ -130,24 +130,24 @@ public class CicCase {
     )
     private String fullName;
 
-    @CCD(label = "Address")
+    @CCD(label = "Subject Address")
     private AddressGlobalUK address;
 
     @CCD(
-        label = "Phone number",
+        label = "Subject Phone number",
         regex = "^[0-9 +().-]{9,}$"
     )
     private String phoneNumber;
 
     @CCD(
-        label = "Email address",
+        label = "Subject Email address",
         typeOverride = Email
     )
     private String email;
 
 
     @CCD(
-        label = "Date of birth",
+        label = "Subject Date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -155,7 +155,7 @@ public class CicCase {
 
 
     @CCD(
-        label = "What is their contact preference type?",
+        label = "What is subject contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactPreferenceType;
