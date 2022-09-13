@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
@@ -49,6 +50,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
     private static final CcdPageConfiguration furtherDetails = new FurtherDetails();
+    private static final CcdPageConfiguration contactPreferenceDetails = new ContactPreferenceDetails();
 
     @Autowired
     private SubmissionService submissionService;
@@ -85,14 +87,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             subjectDetails.addTo(pageBuilder);
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
-            pageBuilder.page("objectContacts")
-                .label("objectContact", "Who should receive information about the case?")
-                .complex(CaseData::getCicCase)
-                .complex(CicCase::getContactPreferenceCic,"")
-                .optional(ContactPreferencesDetailsCIC::getSubjectCIC,"cicCasePartiesCICCONTAINS \"SubjectCIC\"")
-                .optional(ContactPreferencesDetailsCIC::getApplicantCIC,"cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
-                .optional(ContactPreferencesDetailsCIC::getRepresentativeCic,"cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
-                .done();
+            contactPreferenceDetails.addTo(pageBuilder);
 
             uploadDocuments(pageBuilder);
             furtherDetails.addTo(pageBuilder);
