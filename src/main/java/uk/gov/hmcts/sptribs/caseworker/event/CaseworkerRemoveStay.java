@@ -6,12 +6,13 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCasePendingReview;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -37,7 +38,11 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("removeStay")
-            .pageLabel("Remove Stay");
+            .pageLabel("Remove Stay")
+            .complex(CaseData::getRemoveCaseStay)
+            .mandatory(RemoveCaseStay::getStayRemoveReason)
+            .mandatory(RemoveCaseStay::getStayRemoveOtherDescription, "removeStayStayRemoveReason = \"Other\"")
+            .optional(RemoveCaseStay::getAdditionalDetail, "");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -47,10 +52,10 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-
+        caseData.setCaseStay(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseStayed)
+            .state(NewCasePendingReview)
             .build();
     }
 }
