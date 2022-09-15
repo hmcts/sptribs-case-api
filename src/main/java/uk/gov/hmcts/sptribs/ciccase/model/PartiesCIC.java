@@ -16,7 +16,7 @@ public enum PartiesCIC implements HasLabel {
     REPRESENTATIVE("Representative"),
 
     @JsonProperty("ApplicantCIC")
-    APPLICANT_CIC("Applicant (if different from subject).");
+    APPLICANT("Applicant (if different from subject).");
 
     private final String label;
 
@@ -29,6 +29,6 @@ public enum PartiesCIC implements HasLabel {
     }
 
     public boolean isApplicantCIC() {
-        return APPLICANT_CIC.name().equalsIgnoreCase(this.name());
+        return APPLICANT.name().equalsIgnoreCase(this.name());
     }
 }
