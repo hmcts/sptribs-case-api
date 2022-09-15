@@ -1,9 +1,12 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
+
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+
+
 
 public class ContactPreferenceDetails implements CcdPageConfiguration {
     @Override
@@ -16,4 +19,5 @@ public class ContactPreferenceDetails implements CcdPageConfiguration {
             .optional(CicCase::getRepresentativeCIC,"cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
             .done();
     }
+
 }
