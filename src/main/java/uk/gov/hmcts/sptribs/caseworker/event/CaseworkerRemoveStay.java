@@ -33,6 +33,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .event(CASEWORKER_REMOVE_STAY)
             .forStates(CaseStayed)
             .name("Remove Stay")
+            .showSummary(true)
             .description("Remove Stay")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayRemoved)
