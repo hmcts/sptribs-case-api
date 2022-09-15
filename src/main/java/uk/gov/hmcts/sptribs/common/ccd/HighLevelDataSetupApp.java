@@ -16,17 +16,10 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     private static final Logger logger = LoggerFactory.getLogger(HighLevelDataSetupApp.class);
 
     private static final CcdRoleConfig[] CCD_ROLES_NEEDED_FOR_NFD = {
-        new CcdRoleConfig("caseworker-divorce-courtadmin_beta", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-superuser", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-superuser", "PUBLIC"),
-        new CcdRoleConfig("caseworker-divorce-courtadmin-la", "PUBLIC"),
-        new CcdRoleConfig("caseworker-divorce-courtadmin", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-solicitor", "PUBLIC"),
-        new CcdRoleConfig("caseworker-divorce-pcqextractor", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-systemupdate", "PUBLIC"),
-        new CcdRoleConfig("caseworker-divorce-bulkscan", "PUBLIC"),
-        new CcdRoleConfig("caseworker-caa", "PUBLIC"),
-        new CcdRoleConfig("citizen", "PUBLIC"),
         new CcdRoleConfig("payments", "PUBLIC")
     };
 
