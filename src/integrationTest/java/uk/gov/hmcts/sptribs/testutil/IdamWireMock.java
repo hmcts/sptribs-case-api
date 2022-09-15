@@ -26,9 +26,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER_EMAIL;
 public final class IdamWireMock {
 
     public static final String SOLICITOR_ROLE = "caseworker-divorce-solicitor";
-    public static final String CASEWORKER_ROLE = "caseworker-divorce";
     public static final String SYSTEM_USER_ROLE = "caseworker-divorce-systemupdate";
-    public static final String CITIZEN_ROLE = "citizen";
+    public static final String COURT_ADMIN_CIC = "caseworker-sptribs-cic-courtadmin";
 
     private static final WireMockServer IDAM_SERVER = new WireMockServer(wireMockConfig().dynamicPort());
 

@@ -86,7 +86,7 @@ class BulkPrintServiceTest {
     @Test
     void shouldReturnLetterIdForValidRequest() throws IOException {
         //Given
-        List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
+        List<String> solicitorRoles = List.of("caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
 
@@ -212,7 +212,7 @@ class BulkPrintServiceTest {
     @Test
     void shouldReturnLetterIdForAosRespondentPackWithoutD10DocumentsWhenPrintRequestIsInvoked() throws IOException {
         //Given
-        List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
+        List<String> solicitorRoles = List.of("caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
 
@@ -337,7 +337,7 @@ class BulkPrintServiceTest {
     @Test
     void shouldReturnLetterIdForAosRespondentPackWithD10DocumentsWhenPrintRequestIsInvoked() throws IOException {
         //Given
-        List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
+        List<String> solicitorRoles = List.of("caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
 
@@ -466,7 +466,7 @@ class BulkPrintServiceTest {
     @Test
     void shouldReturnLetterIdForAosPackWithD10DocumentsWhenPrintRequestIsInvoked() throws IOException {
         //Given
-        List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
+        List<String> solicitorRoles = List.of("caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
 
@@ -701,7 +701,7 @@ class BulkPrintServiceTest {
     @Test
     void shouldReturnLetterIdForValidRequestForConfidentialDocuments() throws IOException {
         //Given
-        List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
+        List<String> solicitorRoles = List.of("caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
 
@@ -826,7 +826,7 @@ class BulkPrintServiceTest {
     private ListValue<DivorceDocument> getDivorceDocumentListValue(
         Supplier<ResponseEntity<Resource>> responseEntitySupplier) {
 
-        List<String> solicitorRoles = List.of("caseworker-divorce", "caseworker-divorce-solicitor");
+        List<String> solicitorRoles = List.of("caseworker-divorce-solicitor");
 
         String solicitorRolesCsv = String.join(",", solicitorRoles);
 

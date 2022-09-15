@@ -14,6 +14,9 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
+import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
+import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
@@ -203,6 +206,21 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseNote>> notes;
+
+    @JsonUnwrapped(prefix = "stay")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private CaseStay caseStay = new CaseStay();
+
+    @JsonUnwrapped(prefix = "link")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private LinkCase linkCase = new LinkCase();
+
+    @JsonUnwrapped(prefix = "removeStay")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private RemoveCaseStay removeCaseStay = new RemoveCaseStay();
 
     @CCD(
         label = "Add a case note",
