@@ -41,7 +41,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("removeStay")
-            .pageLabel("Remove Stay")
+            .label("removeStay","<h3>Remove stay from this case</h3>")
             .complex(CaseData::getRemoveCaseStay)
             .mandatory(RemoveCaseStay::getStayRemoveReason)
             .mandatory(RemoveCaseStay::getStayRemoveOtherDescription, "removeStayStayRemoveReason = \"Other\"")
