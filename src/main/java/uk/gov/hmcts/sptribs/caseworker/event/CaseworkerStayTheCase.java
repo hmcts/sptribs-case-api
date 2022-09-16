@@ -41,7 +41,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("addStay")
-            .label("addStay","Add a Stay to this case   ")
+            .label("addStay","<h3>Add a Stay to this case</h3>")
             .complex(CaseData::getCaseStay)
             .mandatoryWithLabel(CaseStay::getStayReason, "")
             .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"")

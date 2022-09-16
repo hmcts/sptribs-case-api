@@ -23,7 +23,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class RemoveCaseStay {
 
     @CCD(
-        label = "Stay Remove Reason",
+        label = "Why is the stay being removed from this case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private StayRemoveReason stayRemoveReason;
@@ -35,8 +35,7 @@ public class RemoveCaseStay {
     private String additionalDetail;
 
     @CCD(
-        label = "Enter Other reason",
-        typeOverride = TextArea
+        label = "Enter Other reason"
     )
     private String stayRemoveOtherDescription;
 }
