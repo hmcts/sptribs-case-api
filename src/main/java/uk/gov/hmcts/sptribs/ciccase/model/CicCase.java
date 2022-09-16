@@ -85,7 +85,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private Set<SubjectCIC> subjectCIC;
 
