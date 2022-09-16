@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerRemoveStay.CASEWORKER_REMOVE_STAY;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerStayTheCase.CASEWORKER_STAY_THE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -56,7 +55,7 @@ class CaseworkerCaseRemoveStayTest {
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         //Then
-        assert(response.getState().equals(State.NewCasePendingReview));
+        assert (response.getState().equals(State.NewCasePendingReview));
         assertThat(response.getData().getCaseStay()).isNull();
     }
 
