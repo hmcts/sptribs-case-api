@@ -94,7 +94,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private Set<ApplicantCIC> applicantCIC;
 
@@ -104,7 +103,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private Set<RepresentativeCIC> representativeCIC;
 
@@ -267,7 +265,7 @@ public class CicCase {
     )
     private YesOrNo isRepresentativeQualified;
 
-    private YesOrNo  representativeDetailsObjects;
+    private YesOrNo representativeDetailsObjects;
 
 
     @CCD(
