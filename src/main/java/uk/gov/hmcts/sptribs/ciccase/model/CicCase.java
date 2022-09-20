@@ -85,7 +85,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private Set<SubjectCIC> subjectCIC;
 
@@ -95,7 +94,7 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-      //  showCondition = "cicCasePartiesCICCONTAINS \"ApplicantCIC\""
+
     )
     private Set<ApplicantCIC> applicantCIC;
 
@@ -105,7 +104,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-       // showCondition = "cicCasePartiesCICCONTAINS \"RepresentativeCIC\""
     )
     private Set<RepresentativeCIC> representativeCIC;
 
@@ -313,13 +311,13 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
 
-//    @CCD(
-//        label = "Contact Details Preference",
-//        typeOverride = MultiSelectList,
-//        typeParameterOverride = "PartiesCIC",
-//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-//    )
-//    private Set<PartiesCIC> contactDetailsPreference;
+    @CCD(
+        label = "Contact Details Preference",
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "PartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<PartiesCIC> contactDetailsPreference;
     private CaseDocumentsCIC caseDocumentsCIC;
     private YesOrNo selectedCheckBox;
 

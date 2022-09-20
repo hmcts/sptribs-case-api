@@ -28,7 +28,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+        PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_LINK_CASE)
             .forStates(POST_SUBMISSION_STATES)
             .name("Link case")
@@ -36,9 +36,9 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             .description("Link case")
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR))
-            .page("linkCase")
-            .pageLabel("Link Case");
+            .grantHistoryOnly(SOLICITOR));
+
+        addWarning(pageBuilder);
     }
 
     @SneakyThrows
@@ -57,6 +57,14 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("Case Updated"))
             .build();
+    }
+
+    private void addWarning(PageBuilder pageBuilder) {
+        pageBuilder.page("beforeYouStart")
+            .pageLabel("Before you start")
+            .label("beforeYouStartLabel",
+                "If a group of linked cases has a lead case, you must start from the lead case.\n"
+                    + "\nIf the cases to be linked has no lead, you can start the journey from any of those cases");
     }
 
 }

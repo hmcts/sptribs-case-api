@@ -25,7 +25,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CaseStay {
 
     @CCD(
-        label = "Stay Reason",
+        label = "Why is a stay being added to this case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private StayReason stayReason;
@@ -44,8 +44,7 @@ public class CaseStay {
 
 
     @CCD(
-        label = "Enter a Flag TYpe",
-        typeOverride = TextArea
+        label = " Enter a flag type "
     )
     private String flagType;
 }
