@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import java.time.LocalDate;
 import java.util.Set;
 
-
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
@@ -86,7 +85,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private Set<SubjectCIC> subjectCIC;
 
@@ -96,7 +94,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-        //  showCondition = "cicCasePartiesCICCONTAINS \"ApplicantCIC\""
     )
     private Set<ApplicantCIC> applicantCIC;
 
@@ -106,7 +103,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-        // showCondition = "cicCasePartiesCICCONTAINS \"RepresentativeCIC\""
     )
     private Set<RepresentativeCIC> representativeCIC;
 
@@ -313,14 +309,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isRepresentativePresent;
-
-    //    @CCD(
-//        label = "Contact Details Preference",
-//        typeOverride = MultiSelectList,
-//        typeParameterOverride = "PartiesCIC",
-//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-//    )
-//    private Set<PartiesCIC> contactDetailsPreference;
     private CaseDocumentsCIC caseDocumentsCIC;
     private YesOrNo selectedCheckBox;
 
