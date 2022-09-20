@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Stream.ofNullable;
 import static uk.gov.hmcts.sptribs.ciccase.model.CaseDocuments.addDocumentToTop;
@@ -45,7 +46,7 @@ public class ProcessConfidentialDocumentsService {
             = ofNullable(caseDocuments.getDocumentsGenerated())
             .flatMap(Collection::stream)
             .filter(document -> isApplicableForConfidentiality(document.getValue().getDocumentType(), isApplicant1))
-            .toList();
+            .collect(Collectors.toUnmodifiableList());
 
         if (!CollectionUtils.isEmpty(documentsToMove)) {
 

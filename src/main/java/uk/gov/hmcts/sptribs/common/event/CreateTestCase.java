@@ -44,8 +44,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String TEST_CREATE = "create-test-application";
     private final FeatureToggleService featureToggleService;
 
-    private static final CcdPageConfiguration selectParties =  new SelectParties();
-    private static final CcdPageConfiguration applicantDetails =  new ApplicantDetails();
+    private static final CcdPageConfiguration selectParties = new SelectParties();
+    private static final CcdPageConfiguration applicantDetails = new ApplicantDetails();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
     private static final CcdPageConfiguration furtherDetails = new FurtherDetails();
@@ -86,7 +86,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             subjectDetails.addTo(pageBuilder);
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
-            contactPreferenceDetails.addTo(pageBuilder);
+            buildSelectPartys(pageBuilder);
+            //   contactPreferenceDetails.addTo(pageBuilder);
 
             uploadDocuments(pageBuilder);
             furtherDetails.addTo(pageBuilder);
@@ -96,6 +97,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private void buildSelectParty(PageBuilder pageBuilder) {
         selectParties.addTo(pageBuilder);
     }
+
+    private void buildSelectPartys(PageBuilder pageBuilder) {
+        contactPreferenceDetails.addTo(pageBuilder);
+    }
+
 
     private void caseCategory(PageBuilder pageBuilder) {
         pageBuilder
