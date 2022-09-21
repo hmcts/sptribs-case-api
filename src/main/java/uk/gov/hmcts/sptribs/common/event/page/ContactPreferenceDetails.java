@@ -15,7 +15,7 @@ import java.util.List;
 public class ContactPreferenceDetails implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("objectContacts")
+        pageBuilder.page("objectContacts",this::midEvent)
             .label("objectContact", "Who should receive information about the case?")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getSubjectCIC,"cicCasePartiesCICCONTAINS \"SubjectCIC\"")

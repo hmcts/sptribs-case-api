@@ -110,7 +110,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getCaseCategory, "")
             .mandatoryWithLabel(CicCase::getCaseSubcategory, "CIC Case Subcategory")
-            .optionalWithLabel(CicCase::getComment, "Comments")
             .done()
             .page("dateObjects")
             .label("dateObject", "when was the case Received?\r\n" + "\r\nCase Record for [DRAFT]\r\n" + "\r\nDate of receipt")
