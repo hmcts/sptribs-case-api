@@ -16,6 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
@@ -212,6 +213,12 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseStay caseStay = new CaseStay();
+
+
+    @JsonUnwrapped(prefix = "draft")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private DraftOrderCIC draftOrderCic = new DraftOrderCIC();
 
     @JsonUnwrapped(prefix = "link")
     @Builder.Default
