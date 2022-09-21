@@ -310,6 +310,14 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isRepresentativePresent;
+
+    @CCD(
+        label = "Contact Details Preference",
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "PartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<PartiesCIC> contactDetailsPreference;
     private CaseDocumentsCIC caseDocumentsCIC;
     private YesOrNo selectedCheckBox;
 
