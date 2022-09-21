@@ -1,14 +1,14 @@
-# No Fault Divorce Case API [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# No-Fault Divorce Case API [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This API handles callbacks from CCD for the NFD case type.
 
 ## Overview
 
-                        ┌────────────────┐
-                        │                │
+                        ┌──────────────────┐
+                        │                  │
                         │ SPTRIBS-CASE-API │
-                        │                │
-                        └───────▲────────┘
+                        │                  │
+                        └───────▲──────────┘
                                 │
                                 │
                         ┌───────▼────────┐
@@ -17,11 +17,11 @@ This API handles callbacks from CCD for the NFD case type.
                   │     │                │     │
                   │     └────────────────┘     │
                   │                            │
-          ┌───────┴─────────┐        ┌─────────┴───────┐
-          │                 │        │                 │
-          │ sptribs-FRONTEND  │        │       XUI       │
-          │                 │        │                 │
-          └─────────────────┘        └─────────────────┘
+          ┌───────┴───────────┐        ┌───────┴───────┐
+          │                   │        │               │
+          │ SPTRIBS-FRONTEND  │        │       XUI     │
+          │                   │        │               │
+          └───────────────────┘        └───────────────┘
 
 ## Building and deploying the application
 
@@ -85,7 +85,7 @@ TASK_NAME=SystemProgressHeldCasesTask java -jar sptribs-case-api.jar
 TASK_NAME=SystemProgressHeldCasesTask ./gradlew bootRun
 ```
 
-To configure a new cron in AAT please checkout the [cnp-flux-config](https://github.com/hmcts/cnp-flux-config/) repository and run:
+To configure a new cron in AAT please check out the [cnp-flux-config](https://github.com/hmcts/cnp-flux-config/) repository and run:
 
 ```
 ./bin/add-cron.sh SystemProgressHeldCasesTask ~/cnp-flux-config "0/10 * * * *"
