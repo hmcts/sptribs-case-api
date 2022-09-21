@@ -52,6 +52,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("summary", "Summary")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("LabelState", null, "#### Case Status:  ${[STATE]}")
             .label("case-details", null, "### Case details")
             .field("cicCaseFullName")
             .field("cicCaseDateOfBirth")

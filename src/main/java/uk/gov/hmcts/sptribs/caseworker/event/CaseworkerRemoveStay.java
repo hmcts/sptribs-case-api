@@ -7,15 +7,16 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStatNextState;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCasePendingReview;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -26,10 +27,18 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_REMOVE_STAY = "caseworker-remove-stay";
 
+    private static final CcdPageConfiguration nextStateAfterStay = new RemoveStatNextState();
+    private static final CcdPageConfiguration removeStay = new RemoveStay();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+        var pageBuilder = remove(configBuilder);
+        removeStay.addTo(pageBuilder);
+        nextStateAfterStay.addTo(pageBuilder);
+    }
+
+    public PageBuilder remove(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        return new PageBuilder(configBuilder
             .event(CASEWORKER_REMOVE_STAY)
             .forStates(CaseStayed)
             .name("Remove Stay")
@@ -39,13 +48,8 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .submittedCallback(this::stayRemoved)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR))
-            .page("removeStay")
-            .pageLabel("Remove Stay")
-            .complex(CaseData::getRemoveCaseStay)
-            .mandatory(RemoveCaseStay::getStayRemoveReason)
-            .mandatory(RemoveCaseStay::getStayRemoveOtherDescription, "removeStayStayRemoveReason = \"Other\"")
-            .optional(RemoveCaseStay::getAdditionalDetail, "");
+            .grantHistoryOnly(SOLICITOR));
+
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -56,14 +60,18 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
 
         var caseData = details.getData();
         caseData.setCaseStay(null);
+
+        State newState = State.valueOf(caseData.getCicCase().getAfterStayState().getName());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(NewCasePendingReview)
+            .state(newState)
             .build();
     }
 
     public SubmittedCallbackResponse stayRemoved(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
+        var caseData = details.getData();
+        caseData.setRemoveCaseStay(null);
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Stay Removed from Case"))
             .build();

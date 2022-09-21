@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.NextState;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -94,7 +95,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private Set<ApplicantCIC> applicantCIC;
 
@@ -104,7 +104,6 @@ public class CicCase {
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private Set<RepresentativeCIC> representativeCIC;
 
@@ -267,7 +266,7 @@ public class CicCase {
     )
     private YesOrNo isRepresentativeQualified;
 
-    private YesOrNo  representativeDetailsObjects;
+    private YesOrNo representativeDetailsObjects;
 
 
     @CCD(

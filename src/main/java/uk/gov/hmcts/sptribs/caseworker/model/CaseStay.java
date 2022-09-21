@@ -44,8 +44,7 @@ public class CaseStay {
 
 
     @CCD(
-        label = " Enter a flag type ",
-        typeOverride = TextArea
+        label = " Enter a flag type "
     )
     private String flagType;
 }
