@@ -217,8 +217,11 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "draft")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private DraftOrderCIC draftOrderCic = new DraftOrderCIC();
+    @CCD(
+        label = "Select order template ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
 
     @JsonUnwrapped(prefix = "link")
     @Builder.Default

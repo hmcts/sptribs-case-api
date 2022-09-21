@@ -297,6 +297,7 @@ public class CicCase {
     )
     private String caseNumber;
 
+
     @CCD(
         label = "Is there a representative?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

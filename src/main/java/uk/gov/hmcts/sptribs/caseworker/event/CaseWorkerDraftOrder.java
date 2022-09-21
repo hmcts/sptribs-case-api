@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -31,28 +32,25 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
         new PageBuilder(configBuilder
             .event(CASEWORKER_CREATE_DRAFT_ORDER)
             .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
-            .name("Create draft order")
+            .name("Create a draft order")
             .showSummary()
-            //  .description("Add a Stay to this case")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::stayed)
+            .submittedCallback(this::draftCreated)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("createDraftOrder")
-            .label("createDraftOrder", "Create draft order   ");
-        // .complex(CaseData::getDraftOrderCic);
-        // .mandatoryWithLabel(CaseStay::getStayReason, "")
-        // .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"")
-        // .mandatoryWithLabel(CaseStay::getExpirationDate, "")
-        // .optional(CaseStay::getAdditionalDetail, "");
+            .pageLabel("Select a order template")
+            .label("createDraftOrder", "Order template\n")
+            .complex(CaseData::getDraftOrderCIC)
+            .mandatoryWithLabel(DraftOrderCIC::getOrderTemplate,"")
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        //log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
 
@@ -62,7 +60,7 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
             .build();
     }
 
-    public SubmittedCallbackResponse stayed(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("#Draft order created"))
