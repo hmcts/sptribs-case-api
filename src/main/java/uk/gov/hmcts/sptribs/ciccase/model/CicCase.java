@@ -21,7 +21,6 @@ import java.util.Set;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @AllArgsConstructor
@@ -64,13 +63,6 @@ public class CicCase {
         access = {CaseworkerAccess.class}
     )
     private YesOrNo isLateTribunalApplicationReasonGiven;
-
-    @CCD(
-        label = "Comment",
-        typeOverride = TextArea,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String comment;
 
     @CCD(
         label = "Named Parties",
@@ -310,14 +302,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isRepresentativePresent;
-
-    @CCD(
-        label = "Contact Details Preference",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "PartiesCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<PartiesCIC> contactDetailsPreference;
     private CaseDocumentsCIC caseDocumentsCIC;
     private YesOrNo selectedCheckBox;
 
@@ -326,5 +310,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NextState afterStayState;
+
 
 }
