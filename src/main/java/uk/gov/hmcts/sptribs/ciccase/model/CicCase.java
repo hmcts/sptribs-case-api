@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.NextState;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -312,5 +313,10 @@ public class CicCase {
     private CaseDocumentsCIC caseDocumentsCIC;
     private YesOrNo selectedCheckBox;
 
+    @CCD(
+        label = "Next State",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NextState afterStayState;
 
 }

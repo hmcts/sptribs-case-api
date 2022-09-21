@@ -76,7 +76,7 @@ public class CaseData {
         label = "Case Status",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private State  caseStatus;
+    private State caseStatus;
 
     @CCD(
         label = "Hearing Date",
@@ -89,7 +89,7 @@ public class CaseData {
         label = "Hearing Location",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String  hearingLocation;
+    private String hearingLocation;
 
     @CCD(
         label = "Divorce or dissolution?",
@@ -422,5 +422,9 @@ public class CaseData {
             application.getApplicationPayments()
                 .add(new ListValue<>(UUID.randomUUID().toString(), payment));
         }
+    }
+
+    public RemoveCaseStay getRemoveCaseStay() {
+        return new RemoveCaseStay();
     }
 }
