@@ -15,13 +15,12 @@ import java.util.List;
 public class ContactPreferenceDetails implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder
-            .page("objectContacts", this::midEvent)
+        pageBuilder.page("objectContacts",this::midEvent)
             .label("objectContact", "Who should receive information about the case?")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getSubjectCIC, "cicCasePartiesCICCONTAINS \"SubjectCIC\"")
-            .optional(CicCase::getApplicantCIC, "cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
-            .optional(CicCase::getRepresentativeCIC, "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
+            .optional(CicCase::getSubjectCIC,"cicCasePartiesCICCONTAINS \"SubjectCIC\"")
+            .optional(CicCase::getApplicantCIC,"cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
+            .optional(CicCase::getRepresentativeCIC,"cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
             .done();
     }
 
