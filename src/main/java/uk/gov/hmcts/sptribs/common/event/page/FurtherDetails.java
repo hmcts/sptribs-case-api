@@ -17,7 +17,7 @@ public class FurtherDetails implements CcdPageConfiguration {
             .mandatory(CicCase::getCompensationClaimLinkCIC)
             .mandatory(CicCase::getPoliceAuthority, "cicCaseCompensationClaimLinkCIC = \"Yes\"")
             .mandatory(CicCase::getFormReceivedInTime)
-            .mandatory(CicCase::getMissedTheDeadLineCic, "cicCaseFormReceivedInTime = \"Yes\"")
+            .mandatory(CicCase::getMissedTheDeadLineCic, "cicCaseFormReceivedInTime = \"Yes\" OR cicCaseFormReceivedInTime = \"No\"")
             .done();
     }
 }
