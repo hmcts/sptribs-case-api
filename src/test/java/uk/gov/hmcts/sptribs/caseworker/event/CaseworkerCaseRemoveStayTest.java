@@ -8,7 +8,9 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.NextState;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -45,17 +47,20 @@ class CaseworkerCaseRemoveStayTest {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
-
+        final CicCase cicCase = new CicCase();
+        cicCase.setAfterStayState(NextState.CaseManagement);
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         //Then
-        assert (response.getState().equals(State.NewCasePendingReview));
+        assert (response.getState().equals(State.CaseManagement));
         assertThat(response.getData().getCaseStay()).isNull();
     }
 
