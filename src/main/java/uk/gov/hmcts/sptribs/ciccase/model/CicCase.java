@@ -267,7 +267,7 @@ public class CicCase {
     )
     private String policeAuthority;
     @CCD(
-        label = "Has the tribunal form received in time?",
+        label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo formReceivedInTime;
@@ -278,7 +278,7 @@ public class CicCase {
     private YesOrNo missedTheDeadLineCic;
 
     @CCD(
-        label = "Have any claims linked to this case  been lodged with CICA? ",
+        label = "Have any claims linked to this case been lodged with CICA? ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
 
     )
