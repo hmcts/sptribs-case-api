@@ -58,6 +58,9 @@ sourceSets {
   }
 }
 
+ext{
+  set('snakeyaml.version', '1.32')
+}
 
 java {
   toolchain {
