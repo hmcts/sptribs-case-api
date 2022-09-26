@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
@@ -20,9 +22,17 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_CASE_FLAG = "caseworker-case-flag";
 
+
+    private static final CcdPageConfiguration flagAdditionalInfo = new FlagAdditionalInfo();
+
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        var pageBuilder = caseFlag(configBuilder);
+        flagAdditionalInfo.addTo(pageBuilder);
+    }
+
+    public PageBuilder caseFlag(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        return new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
             .forStates(POST_SUBMISSION_STATES)
             .name("Create a case flag")
