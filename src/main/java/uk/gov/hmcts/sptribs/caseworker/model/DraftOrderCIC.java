@@ -24,6 +24,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 public class DraftOrderCIC {
 
     @CCD(
+        label = "Order template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
