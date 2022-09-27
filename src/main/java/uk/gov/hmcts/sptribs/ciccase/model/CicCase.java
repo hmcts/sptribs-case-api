@@ -74,7 +74,6 @@ public class CicCase {
 
     @CCD(
 
-        label = "Case information recipient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -83,7 +82,6 @@ public class CicCase {
 
     @CCD(
 
-        label = "Case information recipient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -92,12 +90,34 @@ public class CicCase {
 
     @CCD(
 
-        label = "Case information recipient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<RepresentativeCIC> representativeCIC;
+
+    @CCD(
+
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "SubjectCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<SubjectCIC> flagPartySubject;
+
+    @CCD(
+
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ApplicantCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ApplicantCIC> flagPartyApplicant;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "RepresentativeCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<RepresentativeCIC> flagPartyRepresentative;
 
     @CCD(
         label = "Respondant name ",
