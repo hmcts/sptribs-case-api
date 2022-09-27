@@ -49,10 +49,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR))
-            .page("addFlag")
-            .label("addFlag", "<H2>Add a Flag to this case</H2>")
-        ;
+            .grantHistoryOnly(SOLICITOR));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
