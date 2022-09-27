@@ -21,6 +21,7 @@ class StateTest {
             .toArray(new State[State.values().length]);
 
         //assertThat(State.values()).containsExactly(sortedStates);
+
     }
 
     private String getCcdName(State state) {
