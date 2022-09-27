@@ -40,7 +40,7 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("createDraftOrder")
-            .pageLabel("Select a order template")
+            .pageLabel("Select order template")
             .label("createDraftOrder", "Order template\n")
             .complex(CaseData::getDraftOrderCIC)
             .mandatoryWithLabel(DraftOrderCIC::getOrderTemplate,"")
