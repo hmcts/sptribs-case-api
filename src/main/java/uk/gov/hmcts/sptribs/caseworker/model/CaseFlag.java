@@ -8,9 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 @Data
 @NoArgsConstructor
@@ -18,17 +15,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LinkCase {
-
+public class CaseFlag {
     @CCD(
-        label = "Enter case number",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CaseLink caseNumber;
+        label = "Explain why you are creating this flag.\n"
+            + "Do not include any sensitive information such as personal details.",
+        regex = "^[a-zA-Z]{0,200}$",
+        hint = "You can enter up to 200 characters")
+    private String additionalDetail;
 
-    @CCD(
-        label = "Why should these cases be linked?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private LinkCaseReason linkCaseReason;
+
 }

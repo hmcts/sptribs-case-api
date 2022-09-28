@@ -5,10 +5,12 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+
+import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
+
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStatNextState;
-import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStay;
+
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -16,7 +18,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -24,32 +26,30 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_REMOVE_STAY = "caseworker-remove-stay";
+public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
+    public static final String CASEWORKER_CASE_FLAG = "caseworker-case-flag";
 
-    private static final CcdPageConfiguration nextStateAfterStay = new RemoveStatNextState();
-    private static final CcdPageConfiguration removeStay = new RemoveStay();
+
+    private static final CcdPageConfiguration flagAdditionalInfo = new FlagAdditionalInfo();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = remove(configBuilder);
-        removeStay.addTo(pageBuilder);
-        nextStateAfterStay.addTo(pageBuilder);
+        var pageBuilder = caseFlag(configBuilder);
+        flagAdditionalInfo.addTo(pageBuilder);
     }
 
-    public PageBuilder remove(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public PageBuilder caseFlag(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
-            .event(CASEWORKER_REMOVE_STAY)
-            .forStates(CaseStayed)
-            .name("Remove Stay")
-            .showSummary(true)
-            .description("Remove Stay")
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::stayRemoved)
+            .event(CASEWORKER_CASE_FLAG)
+            .forStates(POST_SUBMISSION_STATES)
+            .name("Create a case flag")
+            .showSummary()
+            .description("Create a case flag")
             .showEventNotes()
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -59,21 +59,16 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-        caseData.setCaseStay(null);
 
-        State newState = State.valueOf(caseData.getCicCase().getAfterStayState().getName());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(newState)
             .build();
     }
 
-    public SubmittedCallbackResponse stayRemoved(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse flagCreated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
-        caseData.setRemoveCaseStay(null);
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Stay Removed from Case"))
+            .confirmationHeader(format("# Case Flag created %n## This Flag has been added to case"))
             .build();
     }
 }

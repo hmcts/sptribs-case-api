@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -39,6 +40,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             .grantHistoryOnly(SOLICITOR));
 
         addWarning(pageBuilder);
+        addSelectCase(pageBuilder);
     }
 
     @SneakyThrows
@@ -64,7 +66,16 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             .pageLabel("Before you start")
             .label("beforeYouStartLabel",
                 "If a group of linked cases has a lead case, you must start from the lead case.\n"
-                    + "\nIf the cases to be linked has no lead, you can start the journey from any of those cases");
+                    + "\nIf the cases to be linked has no lead, you can start the linking journey from any of those cases");
+    }
+
+    private void addSelectCase(PageBuilder pageBuilder) {
+        pageBuilder.page("selectCase")
+            .pageLabel("Select a case you want to link to this case")
+            .complex(CaseData::getLinkCase)
+            .mandatory(LinkCase::getCaseNumber)
+            .mandatoryWithLabel(LinkCase::getLinkCaseReason, "Select all that apply")
+            .done();
     }
 
 }
