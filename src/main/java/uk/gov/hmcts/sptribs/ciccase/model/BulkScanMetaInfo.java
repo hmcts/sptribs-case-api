@@ -30,19 +30,5 @@ public class BulkScanMetaInfo {
     @Builder.Default
     private List<ListValue<String>> warnings = new ArrayList<>();
 
-    @CCD(
-        label = "Bulk Scan Envelopes",
-        typeOverride = Collection,
-        typeParameterOverride = "BulkScanEnvelope",
-        access = {CaseworkerAccess.class}
-    )
-    private List<ListValue<BulkScanEnvelope>> bulkScanEnvelopes;
-
-    @CCD(
-        label = "Exception record reference",
-        access = {CaseworkerAccess.class}
-    )
-    private String bulkScanCaseReference;
-
     private YesOrNo evidenceHandled;
 }
