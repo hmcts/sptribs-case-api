@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class LaunchDarklyConfiguration {
 
     @Bean
-    public LDClient ldClient(@Value("${launchdarkly.sdk-key}") String sdkKey,
+    public LDClient ldClient(@Value("${launchdarkly.sdk-key:x}") String sdkKey,
                              @Value("${launchdarkly.offline-mode:false}") Boolean offlineMode
     ) {
         LDConfig config = new LDConfig.Builder()
