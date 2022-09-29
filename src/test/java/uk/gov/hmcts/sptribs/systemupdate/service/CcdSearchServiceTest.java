@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.systemupdate.service;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,11 +21,8 @@ import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsListConverter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.concat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
@@ -41,7 +37,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingPronouncement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Holding;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.DUE_DATE;
