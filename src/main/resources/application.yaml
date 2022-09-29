@@ -213,7 +213,7 @@ uk:
             BAILIFF_SERVICE_SUCCESSFUL: ${BAILIFF_SERVICE_SUCCESSFUL_NOTIFICATION_ID:61332826-713e-49a7-ba37-563cb9261c65}
 
 s2s-authorised:
-  services: ${S2S_AUTHORISED_SERVICES:ccd_data,bulk_scan_processor,bulk_scan_orchestrator}
+  services: ${S2S_AUTHORISED_SERVICES:ccd_data}
 
 idam:
   s2s-auth:
@@ -397,10 +397,6 @@ payment:
   service:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://payment-api-aat.service.core-compute-aat.internal}
-
-bulk-action:
-  min-cases: ${BULK_ACTION_BATCH_SIZE_MIN:30}
-  page-size: ${BULK_ACTION_BATCH_SIZE_MAX:50}
 
 SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 

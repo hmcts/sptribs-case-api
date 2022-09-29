@@ -125,7 +125,6 @@ ccd:
       users:
         - divorce_as_caseworker_beta@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_solicitor@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
-        - divorce_as_caseworker_bulk_scanner@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_superuser@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_la@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_admin@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted

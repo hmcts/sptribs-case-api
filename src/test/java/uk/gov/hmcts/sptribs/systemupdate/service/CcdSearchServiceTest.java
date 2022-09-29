@@ -54,7 +54,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.feignException;
 class CcdSearchServiceTest {
 
     public static final int PAGE_SIZE = 100;
-    public static final int BULK_LIST_MAX_PAGE_SIZE = 50;
 
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
@@ -71,7 +70,6 @@ class CcdSearchServiceTest {
     @BeforeEach
     void setPageSize() {
         setField(ccdSearchService, "pageSize", PAGE_SIZE);
-        setField(ccdSearchService, "bulkActionPageSize", BULK_LIST_MAX_PAGE_SIZE);
     }
 
     @Test
@@ -298,62 +296,6 @@ class CcdSearchServiceTest {
     }
 
     @Test
-    void shouldReturnAllPagesOfCasesInStateAwaitingPronouncement() {
-        //Given
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
-        final SearchResult searchResult1 = SearchResult.builder().total(PAGE_SIZE)
-            .cases(createCaseDetailsList(PAGE_SIZE)).build();
-        final SearchResult searchResult2 = SearchResult.builder().total(1)
-            .cases(createCaseDetailsList(1)).build();
-        final List<CaseDetails> expectedCases = concat(searchResult1.getCases().stream(), searchResult2.getCases().stream())
-            .collect(toList());
-
-        when(coreCaseDataApi.searchCases(
-            SYSTEM_UPDATE_AUTH_TOKEN,
-            SERVICE_AUTHORIZATION,
-            CASE_TYPE,
-            searchSourceBuilderForAwaitingPronouncementCases(0).toString()))
-            .thenReturn(searchResult1);
-        when(coreCaseDataApi.searchCases(
-            SYSTEM_UPDATE_AUTH_TOKEN,
-            SERVICE_AUTHORIZATION,
-            CASE_TYPE,
-            searchSourceBuilderForAwaitingPronouncementCases(100).toString()))
-            .thenReturn(searchResult2);
-        when(caseDetailsListConverter.convertToListOfValidCaseDetails(expectedCases)).thenReturn(createConvertedCaseDetailsList(101));
-
-        //When
-        final Deque<List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State>>> allPages =
-            ccdSearchService.searchAwaitingPronouncementCasesAllPages(user, SERVICE_AUTHORIZATION);
-
-        //Then
-        assertThat(allPages.size()).isEqualTo(3);
-        assertThat(allPages.poll().size()).isEqualTo(BULK_LIST_MAX_PAGE_SIZE);
-        assertThat(allPages.poll().size()).isEqualTo(BULK_LIST_MAX_PAGE_SIZE);
-        assertThat(allPages.poll().size()).isEqualTo(1);
-    }
-
-    @Test
-    void shouldThrowCcdSearchFailedExceptionIfSearchingCasesInAwaitingPronouncementAllPagesFails() {
-        //Given
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
-
-        doThrow(feignException(422, "some error")).when(coreCaseDataApi)
-            .searchCases(
-                SYSTEM_UPDATE_AUTH_TOKEN,
-                SERVICE_AUTHORIZATION,
-                CASE_TYPE,
-                searchSourceBuilderForAwaitingPronouncementCases(0).toString());
-
-        //When&Then
-        final CcdSearchCaseException exception = assertThrows(
-            CcdSearchCaseException.class,
-            () -> ccdSearchService.searchAwaitingPronouncementCasesAllPages(user, SERVICE_AUTHORIZATION));
-
-        assertThat(exception.getMessage()).contains("Failed to complete search for Cases with state of [AwaitingPronouncement]");
-    }
-
-    @Test
     void shouldReturnCasesFromCcdWithMatchingCaseReferences() {
         //Given
         final List<String> caseReferences = List.of(
@@ -425,19 +367,4 @@ class CcdSearchServiceTest {
             .size(pageSize);
     }
 
-    private SearchSourceBuilder searchSourceBuilderForAwaitingPronouncementCases(final int from) {
-        QueryBuilder stateQuery = matchQuery(STATE, AwaitingPronouncement);
-        QueryBuilder bulkListingCaseId = existsQuery("data.bulkListCaseReference");
-
-        QueryBuilder query = boolQuery()
-            .must(stateQuery)
-            .mustNot(bulkListingCaseId);
-
-        return SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(query)
-            .from(from)
-            .size(PAGE_SIZE);
-    }
 }
