@@ -40,9 +40,6 @@ class SubmitAosServiceTest {
     @Mock
     private GenerateAosResponseLetterDocument generateAosResponseLetterDocument;
 
-    @Mock
-    private SendAosResponseLetterPackToApplicant sendAosResponseLetterPackToApplicant;
-
     @InjectMocks
     private SubmitAosService submitAosService;
 
@@ -58,7 +55,6 @@ class SubmitAosServiceTest {
         when(addRespondentAnswersLink.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(sendAosNotifications.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(generateAosResponseLetterDocument.apply(caseDetails)).thenReturn(expectedCaseDetails);
-        when(sendAosResponseLetterPackToApplicant.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
         //When
         final CaseDetails<CaseData, State> result = submitAosService.submitAos(caseDetails);
@@ -72,7 +68,6 @@ class SubmitAosServiceTest {
         verify(addRespondentAnswersLink).apply(caseDetails);
         verify(sendAosNotifications).apply(caseDetails);
         verify(generateAosResponseLetterDocument).apply(caseDetails);
-        verify(sendAosResponseLetterPackToApplicant).apply(caseDetails);
     }
 
     @Test
@@ -86,7 +81,6 @@ class SubmitAosServiceTest {
         when(addRespondentAnswersLink.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(sendAosNotifications.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(generateAosResponseLetterDocument.apply(caseDetails)).thenReturn(expectedCaseDetails);
-        when(sendAosResponseLetterPackToApplicant.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
         //When
         final CaseDetails<CaseData, State> result = submitAosService.submitOfflineAos(caseDetails);
@@ -99,6 +93,5 @@ class SubmitAosServiceTest {
         verify(addRespondentAnswersLink).apply(caseDetails);
         verify(sendAosNotifications).apply(caseDetails);
         verify(generateAosResponseLetterDocument).apply(caseDetails);
-        verify(sendAosResponseLetterPackToApplicant).apply(caseDetails);
     }
 }
