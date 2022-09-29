@@ -295,10 +295,6 @@ public class CaseData {
     @CCD(typeOverride = CasePaymentHistoryViewer)
     private String paymentHistoryField;
 
-    @JsonUnwrapped
-    @Builder.Default
-    private BulkScanMetaInfo bulkScanMetaInfo = new BulkScanMetaInfo();
-
     @CCD(
         label = "General letters",
         typeOverride = Collection,
