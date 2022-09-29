@@ -51,9 +51,6 @@ public class CaseworkerCreateGeneralLetterIT {
     private DocumentIdProvider documentIdProvider;
 
     @MockBean
-    private GeneralLetterPrinter generalLetterPrinter;
-
-    @MockBean
     private Clock clock;
 
     @BeforeAll
