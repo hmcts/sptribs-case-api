@@ -21,7 +21,7 @@ public class CaseFlag {
     @CCD(
         label = "Explain why you are creating this flag.\n"
             + "Do not include any sensitive information such as personal details.",
-        regex = "^[a-zA-Z]{0,200}$",
+        regex = "^.{0,200}$",
         hint = "You can enter up to 200 characters")
     private String additionalDetail;
 
