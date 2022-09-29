@@ -195,7 +195,7 @@ def sonarExclusions = [
 
 sonarqube {
   properties {
-    property "sonar.projectName", "SpTribs :: sptribs-case-api"
+    property "sonar.projectName", "sptribs :: sptribs-case-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform:sptribs-case-api"
     property "sonar.coverage.jacoco.xmlReportPaths", "${projectDir}/build/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.exclusions", sonarExclusions.join(', ')
