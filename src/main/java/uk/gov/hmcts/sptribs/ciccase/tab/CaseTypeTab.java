@@ -38,7 +38,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
-        buildWarningsTab(configBuilder);
         buildStateTab(configBuilder);
         buildAosTab(configBuilder);
         buildPaymentTab(configBuilder);
@@ -66,12 +65,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRepresentativePhoneNumber")
             .field("cicCaseRepresentativeEmailAddress")
             .field("cicCaseRepresentativeReference");
-    }
-
-    private void buildWarningsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("transformationAndOcrWarningsTab", "Warnings")
-            .showCondition("warnings!=\"\"")
-            .field("warnings");
     }
 
     private void buildStateTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

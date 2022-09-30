@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosResponseLetterPackToApplicant;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.service.task.AddRespondentAnswersLink;
@@ -41,9 +40,6 @@ class SubmitAosServiceTest {
     @Mock
     private GenerateAosResponseLetterDocument generateAosResponseLetterDocument;
 
-    @Mock
-    private SendAosResponseLetterPackToApplicant sendAosResponseLetterPackToApplicant;
-
     @InjectMocks
     private SubmitAosService submitAosService;
 
@@ -59,7 +55,6 @@ class SubmitAosServiceTest {
         when(addRespondentAnswersLink.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(sendAosNotifications.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(generateAosResponseLetterDocument.apply(caseDetails)).thenReturn(expectedCaseDetails);
-        when(sendAosResponseLetterPackToApplicant.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
         //When
         final CaseDetails<CaseData, State> result = submitAosService.submitAos(caseDetails);
@@ -73,7 +68,6 @@ class SubmitAosServiceTest {
         verify(addRespondentAnswersLink).apply(caseDetails);
         verify(sendAosNotifications).apply(caseDetails);
         verify(generateAosResponseLetterDocument).apply(caseDetails);
-        verify(sendAosResponseLetterPackToApplicant).apply(caseDetails);
     }
 
     @Test
@@ -87,7 +81,6 @@ class SubmitAosServiceTest {
         when(addRespondentAnswersLink.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(sendAosNotifications.apply(caseDetails)).thenReturn(expectedCaseDetails);
         when(generateAosResponseLetterDocument.apply(caseDetails)).thenReturn(expectedCaseDetails);
-        when(sendAosResponseLetterPackToApplicant.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
         //When
         final CaseDetails<CaseData, State> result = submitAosService.submitOfflineAos(caseDetails);
@@ -100,6 +93,5 @@ class SubmitAosServiceTest {
         verify(addRespondentAnswersLink).apply(caseDetails);
         verify(sendAosNotifications).apply(caseDetails);
         verify(generateAosResponseLetterDocument).apply(caseDetails);
-        verify(sendAosResponseLetterPackToApplicant).apply(caseDetails);
     }
 }

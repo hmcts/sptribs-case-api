@@ -24,7 +24,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerBulkScanAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
@@ -253,12 +252,6 @@ public class CaseData {
     )
     private String note;
 
-    @CCD(
-        label = "Bulk list case reference",
-        access = {CaseworkerAccess.class}
-    )
-    private String bulkListCaseReference;
-
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
@@ -277,7 +270,7 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "paperForm")
     @Builder.Default
-    @CCD(access = {CaseworkerBulkScanAccess.class})
+    @CCD(access = {CaseworkerAccess.class}) // TODO: Santoshini: check if its ok to change to caseworkeraccess
     private PaperFormDetails paperFormDetails = new PaperFormDetails();
 
     @CCD(
@@ -295,10 +288,6 @@ public class CaseData {
 
     @CCD(typeOverride = CasePaymentHistoryViewer)
     private String paymentHistoryField;
-
-    @JsonUnwrapped
-    @Builder.Default
-    private BulkScanMetaInfo bulkScanMetaInfo = new BulkScanMetaInfo();
 
     @CCD(
         label = "General letters",

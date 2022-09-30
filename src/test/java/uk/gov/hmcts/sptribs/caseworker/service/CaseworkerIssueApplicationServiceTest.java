@@ -10,8 +10,6 @@ import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateApplicant1NoticeOfPr
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateApplicant2NoticeOfProceedings;
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateD10Form;
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateDivorceApplication;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosPackToApplicant;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosPackToRespondent;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SendApplicationIssueNotifications;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SetDueDateAfterIssue;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SetIssueDate;
@@ -45,16 +43,10 @@ class CaseworkerIssueApplicationServiceTest {
     private GenerateApplicant1NoticeOfProceeding generateApplicant1NoticeOfProceeding;
 
     @Mock
-    private SendAosPackToRespondent sendAosPackToRespondent;
-
-    @Mock
     private SendApplicationIssueNotifications sendApplicationIssueNotifications;
 
     @Mock
     private SetDueDateAfterIssue setDueDateAfterIssue;
-
-    @Mock
-    private SendAosPackToApplicant sendAosPackToApplicant;
 
     @Mock
     private GenerateD10Form generateD10Form;
@@ -85,10 +77,8 @@ class CaseworkerIssueApplicationServiceTest {
         when(generateApplicant1NoticeOfProceeding.apply(caseDetails)).thenReturn(caseDetails);
         when(divorceApplicationRemover.apply(caseDetails)).thenReturn(caseDetails);
         when(generateDivorceApplication.apply(caseDetails)).thenReturn(caseDetails);
-        when(sendAosPackToRespondent.apply(caseDetails)).thenReturn(caseDetails);
         when(setDueDateAfterIssue.apply(caseDetails)).thenReturn(caseDetails);
         when(sendApplicationIssueNotifications.apply(caseDetails)).thenReturn(caseDetails);
-        when(sendAosPackToApplicant.apply(caseDetails)).thenReturn(caseDetails);
         when(generateD10Form.apply(caseDetails)).thenReturn(caseDetails);
 
         //When

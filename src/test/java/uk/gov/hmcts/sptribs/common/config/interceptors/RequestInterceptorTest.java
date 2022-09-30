@@ -33,7 +33,7 @@ public class RequestInterceptorTest {
 
     @BeforeEach
     public void setUp() {
-        setField(requestInterceptor, "authorisedServices", List.of("ccd_data", "bulk_scan_processor", "bulk_scan_orchestrator"));
+        setField(requestInterceptor, "authorisedServices", List.of("ccd_data"));
     }
 
     @Test
