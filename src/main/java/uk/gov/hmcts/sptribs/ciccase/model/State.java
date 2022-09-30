@@ -352,13 +352,6 @@ public enum State {
     )
     NewCaseReceived("NewCaseReceived"),
 
-    @CCD(
-        label = "New case pending review",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCasePendingReview("NewCasePendingReview"),
-
 
     @CCD(
         label = "Case management",
@@ -381,12 +374,6 @@ public enum State {
     )
     AwaitingOutcome("AwaitingOutcome"),
 
-    @CCD(
-        label = "New case closed",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCaseClosed("NewCaseClosed"),
 
 
     @CCD(
@@ -396,13 +383,6 @@ public enum State {
     )
     CaseClosed("CaseClosed"),
 
-
-    @CCD(
-        label = "New case stayed",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCaseStayed("NewCaseStayed"),
 
 
     @CCD(

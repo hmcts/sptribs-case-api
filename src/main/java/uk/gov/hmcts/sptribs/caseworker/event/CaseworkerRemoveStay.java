@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStatNextState;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStay;
+import uk.gov.hmcts.sptribs.caseworker.model.NextState;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -34,7 +35,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = remove(configBuilder);
         removeStay.addTo(pageBuilder);
-        nextStateAfterStay.addTo(pageBuilder);
+        //nextStateAfterStay.addTo(pageBuilder);
     }
 
     public PageBuilder remove(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -60,6 +61,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
 
         var caseData = details.getData();
         caseData.setCaseStay(null);
+        caseData.getCicCase().setAfterStayState(NextState.CaseManagement);
 
         State newState = State.valueOf(caseData.getCicCase().getAfterStayState().getName());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
