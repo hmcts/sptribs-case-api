@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosResponseLetterPackToApplicant;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.service.task.AddRespondentAnswersLink;
@@ -38,9 +37,6 @@ public class SubmitAosService {
     @Autowired
     private GenerateAosResponseLetterDocument generateAosResponseLetterDocument;
 
-    @Autowired
-    private SendAosResponseLetterPackToApplicant sendAosResponseLetterPackToApplicant;
-
     public CaseDetails<CaseData, State> submitAos(final CaseDetails<CaseData, State> caseDetails) {
         return caseTasks(
             setSubmitAosState,
@@ -48,8 +44,7 @@ public class SubmitAosService {
             generateRespondentAnswersDoc,
             addRespondentAnswersLink,
             sendAosNotifications,
-            generateAosResponseLetterDocument,
-            sendAosResponseLetterPackToApplicant
+            generateAosResponseLetterDocument
         ).run(caseDetails);
     }
 
@@ -59,8 +54,7 @@ public class SubmitAosService {
             setSubmissionAndDueDate,
             addRespondentAnswersLink,
             sendAosNotifications,
-            generateAosResponseLetterDocument,
-            sendAosResponseLetterPackToApplicant
+            generateAosResponseLetterDocument
         ).run(caseDetails);
     }
 }

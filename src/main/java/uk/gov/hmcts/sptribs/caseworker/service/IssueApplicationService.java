@@ -8,8 +8,6 @@ import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateApplicant1NoticeOfPr
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateApplicant2NoticeOfProceedings;
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateD10Form;
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateDivorceApplication;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosPackToApplicant;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosPackToRespondent;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SendApplicationIssueNotifications;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SetDueDateAfterIssue;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SetIssueDate;
@@ -41,16 +39,10 @@ public class IssueApplicationService {
     private GenerateApplicant1NoticeOfProceeding generateApplicant1NoticeOfProceeding;
 
     @Autowired
-    private SendAosPackToRespondent sendAosPackToRespondent;
-
-    @Autowired
     private SendApplicationIssueNotifications sendApplicationIssueNotifications;
 
     @Autowired
     private SetDueDateAfterIssue setDueDateAfterIssue;
-
-    @Autowired
-    private SendAosPackToApplicant sendAosPackToApplicant;
 
     @Autowired
     private GenerateD10Form generateD10Form;
@@ -72,8 +64,6 @@ public class IssueApplicationService {
             divorceApplicationRemover,
             generateDivorceApplication,
             generateD10Form,
-            sendAosPackToRespondent,
-            sendAosPackToApplicant,
             sendApplicationIssueNotifications
         ).run(caseDetails);
     }

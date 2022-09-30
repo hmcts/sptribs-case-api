@@ -332,13 +332,6 @@ public enum State {
     PendingHearingOutcome("PendingHearingOutcome"),
 
     @CCD(
-        label = "Removed from bulk case",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    BulkCaseReject("BulkCaseReject"),
-
-    @CCD(
         label = "Submitted",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
