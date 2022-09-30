@@ -35,7 +35,6 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = remove(configBuilder);
         removeStay.addTo(pageBuilder);
-        //nextStateAfterStay.addTo(pageBuilder);
     }
 
     public PageBuilder remove(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
