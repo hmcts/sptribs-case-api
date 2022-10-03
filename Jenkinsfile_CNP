@@ -38,7 +38,7 @@ def secrets = [
                 secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
         ],
         'sptribs-${env}'    :[
-                secret('ccd-importer-username', 'DEFINITION_IMPORTER_USER_NAME'),
+                secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
                 secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
                 secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
                 secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
