@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStatNextState;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStay;
 import uk.gov.hmcts.sptribs.caseworker.model.NextState;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -28,7 +27,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_REMOVE_STAY = "caseworker-remove-stay";
 
-    private static final CcdPageConfiguration nextStateAfterStay = new RemoveStatNextState();
     private static final CcdPageConfiguration removeStay = new RemoveStay();
 
     @Override

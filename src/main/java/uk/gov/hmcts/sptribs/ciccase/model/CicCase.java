@@ -312,11 +312,5 @@ public class CicCase {
     )
     private NextState afterStayState;
 
-    @CCD(
-        label = "State",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private State state;
-
 
 }

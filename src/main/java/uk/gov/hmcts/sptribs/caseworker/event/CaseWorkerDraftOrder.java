@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -55,7 +56,7 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(State.NewCaseReceived)
+            .state(NewCaseReceived)
             .build();
     }
 
