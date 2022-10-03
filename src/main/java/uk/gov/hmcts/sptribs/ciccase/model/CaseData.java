@@ -234,10 +234,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private LinkCase linkCase = new LinkCase();
 
-    @JsonUnwrapped(prefix = "flag")
-    @Builder.Default
+    @JsonUnwrapped(prefix = "caseFlag")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private CaseFlag caseFlag = new CaseFlag();
+    private CaseFlag caseFlag;
 
     @JsonUnwrapped(prefix = "removeStay")
     @Builder.Default

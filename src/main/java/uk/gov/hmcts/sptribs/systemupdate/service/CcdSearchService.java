@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsListConverter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,9 +51,6 @@ public class CcdSearchService {
 
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
-
-    @Autowired
-    private CaseDetailsListConverter caseDetailsListConverter;
 
     public List<CaseDetails> searchForAllCasesWithQuery(
         final BoolQueryBuilder query, User user, String serviceAuth, final State... states) {

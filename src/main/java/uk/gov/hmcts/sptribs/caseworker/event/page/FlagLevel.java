@@ -11,9 +11,9 @@ public class FlagLevel implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("selectFlagLevel")
-            .label("selectFlagLevel", "<h3>Where should this flag be added?\n</h3>")
-            .complex(CaseData::getCaseFlag)
-            .mandatoryWithLabel(CaseFlag::getFlagLevel, "Case or Party Level?")
-            .done();
+                .label("selectFlagLevel", "<h2>Where should this flag be added?\n</h2>")
+                .complex(CaseData::getCaseFlag)
+                .mandatoryWithLabel(CaseFlag::getFlagLevel, "Case or Party Level?")
+                .done();
     }
 }
