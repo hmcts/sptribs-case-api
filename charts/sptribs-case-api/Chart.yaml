@@ -31,7 +31,3 @@ dependencies:
     version: 2.2.7
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
-  - name: sptribs-frontend
-    version: ~0.0.68
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: sptribs-frontend.enabled
