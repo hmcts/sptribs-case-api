@@ -22,7 +22,7 @@ public enum HearingType implements HasLabel {
     FINAL("Final"),
 
     @JsonProperty("Interlocutory")
-    INTERLUCOTORY("Interlocutory");
+    INTERLOCUTORY("Interlocutory");
 
     private final String label;
 }
