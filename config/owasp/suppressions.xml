@@ -67,4 +67,9 @@
       <cve>CVE-2020-11022</cve>
       <cve>CVE-2020-11023</cve>
     </suppress>
+    <suppress>
+      <notes>no updates yet for tomcat-embed-core and tomcat-embed-websocket</notes>
+      <cve>CVE-2022-34305</cve>
+      <cve>CVE-2021-43980</cve>
+    </suppress>
 </suppressions>
