@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 
 import java.util.Optional;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CONDITIONAL_ORDER_PRONOUNCED_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.CONDITIONAL_ORDER_GRANTED;
