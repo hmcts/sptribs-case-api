@@ -9,7 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinancialOrderFor.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinancialOrderFor.CHILDREN;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
