@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum HearingFormat {
 
-    @JsonProperty("FacetoFace")
+    @JsonProperty("Face to Face")
     FACE_TO_FACE("Face to face"),
 
     @JsonProperty("Hybrid")
