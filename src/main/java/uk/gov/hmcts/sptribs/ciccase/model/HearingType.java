@@ -10,13 +10,13 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 public enum HearingType implements HasLabel {
 
     @JsonProperty("Preliminary")
-    PRELIMINARY("Preliminary (SEN,DD,CS,PHL only)"),
+    PRELIMINARY("Preliminary (SEN, DD, CS, PHL only)"),
 
     @JsonProperty("CaseManagement")
     CASE_MANAGEMENT("Case management"),
 
     @JsonProperty("JudicialMediation")
-    JUDICIAL_MEDIATION("Judicial mediation (SEN,DD,CS,PHL only)"),
+    JUDICIAL_MEDIATION("Judicial mediation (SEN, DD, CS, PHL only)"),
 
     @JsonProperty("Final")
     FINAL("Final"),
