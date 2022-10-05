@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -29,7 +30,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
-            .forStates(POST_SUBMISSION_STATES)
+            .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
             .name("Record listing")
             .showSummary()
             .description("Record listing")
@@ -42,10 +43,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         addHearingTypeAndFormat(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    @SneakyThrows
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
@@ -61,11 +61,12 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         var data = details.getData();
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Stay Added to Case"))
-            /*.confirmationHeader(format("# Listing Record Created %n## A notification has been sent via email to: Subject, Representative, Respondent %n##" +
-                " If any changes are made to this hearing, remember to make those changes in this listing record %n##"))*/
+            .confirmationHeader(format("# Listing record created %n##" +
+                " A notification has been sent via email to: Subject, Representative, Respondent %n##" +
+                " If any changes are made to this hearing, remember to make those changes in this listing record"))
             .build();
     }
+
 
     private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")

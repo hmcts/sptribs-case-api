@@ -31,7 +31,7 @@ public class RecordListing {
         typeParameterOverride = "HearingType",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<HearingType> hearingType;
+    private HearingType hearingType;
 
     @CCD(
         label = "Hearing format",
@@ -39,6 +39,6 @@ public class RecordListing {
         typeParameterOverride = "HearingFormat",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<HearingFormat> hearingFormat;
+    private HearingFormat hearingFormat;
 
 }
