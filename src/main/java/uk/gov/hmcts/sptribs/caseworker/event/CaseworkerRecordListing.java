@@ -33,10 +33,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .name("Record listing")
             .showSummary()
             .description("Record listing")
-            .showEventNotes()
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
+            .showEventNotes()
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);
