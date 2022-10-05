@@ -18,9 +18,6 @@ xui-mo-webapp:
 aac-manage-case-assignment:
   enabled: false
 
-sptribs-frontend:
-  enabled: false
-
 idam-pr:
   enabled: false
 

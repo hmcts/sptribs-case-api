@@ -240,10 +240,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private RecordListing recordListing = new RecordListing();
 
-    @JsonUnwrapped(prefix = "flag")
-    @Builder.Default
+    @JsonUnwrapped(prefix = "caseFlag")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private CaseFlag caseFlag = new CaseFlag();
+    private CaseFlag caseFlag;
 
     @JsonUnwrapped(prefix = "removeStay")
     @Builder.Default

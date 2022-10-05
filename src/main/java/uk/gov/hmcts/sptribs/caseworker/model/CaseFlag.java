@@ -8,8 +8,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.FlagType;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,6 +30,11 @@ public class CaseFlag {
         hint = "You can enter up to 200 characters")
     private String additionalDetail;
 
+    @CCD(
+            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String otherDescription;
+
 
     @CCD(
         label = "Why is a stay being added to this case?",
@@ -38,5 +48,15 @@ public class CaseFlag {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private FlagParty partyLevel;
+
+    @CCD(
+            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagType flagType;
+
+    @CCD(
+            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<Flags>> caseFlags;
 
 }

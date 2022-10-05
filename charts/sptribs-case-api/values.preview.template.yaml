@@ -229,17 +229,6 @@ xui-mo-webapp:
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       CASE_TYPES: NFD
 
-sptribs-frontend:
-  enabled: true
-  nodejs:
-    imagePullPolicy: Always
-    releaseNameOverride: ${SERVICE_NAME}-frontend
-    image: hmctspublic.azurecr.io/sptribs/frontend:latest #pr-xxxx
-    ingressHost: frontend-${SERVICE_FQDN}
-    environment:
-      CCD_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      SKIP_DIV_CASE_CHECK: true
-
 aac-manage-case-assignment:
   enabled: true
   java:
