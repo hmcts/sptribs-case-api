@@ -52,6 +52,8 @@ public class CcdSearchService {
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
 
+
+
     public List<CaseDetails> searchForAllCasesWithQuery(
         final BoolQueryBuilder query, User user, String serviceAuth, final State... states) {
 
