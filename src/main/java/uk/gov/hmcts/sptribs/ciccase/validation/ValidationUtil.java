@@ -12,7 +12,7 @@ import java.util.List;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class ValidationUtil {
@@ -114,21 +114,6 @@ public final class ValidationUtil {
 
         return caseData.getApplication().getJurisdiction().validateJurisdiction(caseData);
     }
-
-    /*public static List<String> validateCasesAcceptedToListForHearing(BulkActionCaseData caseData) {
-        final List<ListValue<CaseLink>> casesAcceptedToListForHearing = caseData.getCasesAcceptedToListForHearing();
-        final List<String> caseReferences = caseData.getBulkListCaseDetails().stream()
-            .map(c -> c.getValue().getCaseReference().getCaseReference())
-            .collect(toList());
-
-        final boolean anyDuplicateCases = !casesAcceptedToListForHearing.stream().allMatch(new HashSet<>()::add);
-        final boolean anyNewCasesAdded =
-            casesAcceptedToListForHearing.stream().anyMatch(caseLink -> !caseReferences.contains(caseLink.getValue().getCaseReference()));
-
-        return anyDuplicateCases || anyNewCasesAdded
-            ? singletonList("You can only remove cases from the list of cases accepted to list for hearing.")
-            : emptyList();
-    }*/
 
     private static boolean isLessThanOneYearAgo(LocalDate date) {
         return !date.isAfter(LocalDate.now())

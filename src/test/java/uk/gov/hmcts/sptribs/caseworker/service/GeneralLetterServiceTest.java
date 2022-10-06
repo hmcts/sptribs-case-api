@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateGeneralLetter;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendGeneralLetter;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
@@ -22,9 +21,6 @@ public class GeneralLetterServiceTest {
     @Mock
     private GenerateGeneralLetter generateGeneralLetter;
 
-    @Mock
-    private SendGeneralLetter sendGeneralLetter;
-
     @InjectMocks
     private GeneralLetterService service;
 
@@ -37,7 +33,6 @@ public class GeneralLetterServiceTest {
         caseDetails.setId(1L);
 
         when(generateGeneralLetter.apply(caseDetails)).thenReturn(caseDetails);
-        when(sendGeneralLetter.apply(caseDetails)).thenReturn(caseDetails);
 
         //Wehn
         final CaseDetails<CaseData, State> response = service.processGeneralLetter(caseDetails);
@@ -48,6 +43,5 @@ public class GeneralLetterServiceTest {
         assertThat(response.getData()).isEqualTo(expectedCaseData);
 
         verify(generateGeneralLetter).apply(caseDetails);
-        verify(sendGeneralLetter).apply(caseDetails);
     }
 }

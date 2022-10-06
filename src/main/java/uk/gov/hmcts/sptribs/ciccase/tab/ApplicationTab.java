@@ -78,7 +78,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getApplicationType)
             .field(CaseData::getDivorceOrDissolution)
             .field(CaseData::getDivorceUnit)
-            .field(CaseData::getBulkListCaseReference)
             .field(CaseData::getHyphenatedCaseRef, NEVER_SHOW);
     }
 
