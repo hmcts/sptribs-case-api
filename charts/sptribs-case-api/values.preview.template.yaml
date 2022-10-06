@@ -23,6 +23,8 @@ java:
           alias: IDAM_SYSTEM_UPDATE_USERNAME
         - name: idam-systemupdate-password
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
+        - name: launchdarkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
 
 ccd:
   ccd:
@@ -125,7 +127,6 @@ ccd:
       users:
         - divorce_as_caseworker_beta@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_solicitor@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
-        - divorce_as_caseworker_bulk_scanner@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_superuser@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_la@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_admin@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
@@ -227,17 +228,6 @@ xui-mo-webapp:
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       CASE_TYPES: NFD
-
-sptribs-frontend:
-  enabled: true
-  nodejs:
-    imagePullPolicy: Always
-    releaseNameOverride: ${SERVICE_NAME}-frontend
-    image: hmctspublic.azurecr.io/sptribs/frontend:latest #pr-xxxx
-    ingressHost: frontend-${SERVICE_FQDN}
-    environment:
-      CCD_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      SKIP_DIV_CASE_CHECK: true
 
 aac-manage-case-assignment:
   enabled: true

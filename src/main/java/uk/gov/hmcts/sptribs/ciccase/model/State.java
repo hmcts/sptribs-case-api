@@ -332,13 +332,6 @@ public enum State {
     PendingHearingOutcome("PendingHearingOutcome"),
 
     @CCD(
-        label = "Removed from bulk case",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    BulkCaseReject("BulkCaseReject"),
-
-    @CCD(
         label = "Submitted",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
@@ -351,13 +344,6 @@ public enum State {
         access = {DefaultStateAccessExcludingCAA.class}
     )
     NewCaseReceived("NewCaseReceived"),
-
-    @CCD(
-        label = "New case pending review",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCasePendingReview("NewCasePendingReview"),
 
 
     @CCD(
@@ -381,12 +367,6 @@ public enum State {
     )
     AwaitingOutcome("AwaitingOutcome"),
 
-    @CCD(
-        label = "New case closed",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCaseClosed("NewCaseClosed"),
 
 
     @CCD(
@@ -396,13 +376,6 @@ public enum State {
     )
     CaseClosed("CaseClosed"),
 
-
-    @CCD(
-        label = "New case stayed",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCaseStayed("NewCaseStayed"),
 
 
     @CCD(

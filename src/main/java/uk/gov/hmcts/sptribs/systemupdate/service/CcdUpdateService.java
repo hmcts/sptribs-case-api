@@ -138,65 +138,6 @@ public class CcdUpdateService {
         }
     }
 
-    /*@Retryable(value = {FeignException.class, RuntimeException.class})
-    public void updateBulkCaseWithRetries(final CaseDetails caseDetails,
-                                          final String eventId,
-                                          final User authorization,
-                                          final String serviceAuth,
-                                          final Long caseId) {
-
-        log.info("Submit event for Case ID: {}, Event ID: {}", caseId, eventId);
-        try {
-            final String userId = authorization.getUserDetails().getId();
-
-            final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-                authorization.getAuthToken(),
-                serviceAuth,
-                userId,
-                JURISDICTION,
-                BulkActionCaseTypeConfig.CASE_TYPE,
-                String.valueOf(caseId),
-                eventId
-            );
-
-            final CaseDataContent caseDataContent = ccdCaseDataContentProvider.createCaseDataContent(
-                startEventResponse,
-                DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY,
-                DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                caseDetails.getData());
-
-            coreCaseDataApi.submitEventForCaseWorker(
-                authorization.getAuthToken(),
-                serviceAuth,
-                userId,
-                JURISDICTION,
-                BulkActionCaseTypeConfig.CASE_TYPE,
-                String.valueOf(caseId),
-                true,
-                caseDataContent);
-        } catch (final FeignException e) {
-            final String message = format("Submit Event Failed for Case ID: %s, Event ID: %s", caseId, eventId);
-            log.info(message, e);
-            log.info(e.contentUTF8());
-
-            throw new CcdManagementException(e.status(), message, e);
-        }
-    }*/
-
-    /*public void submitBulkActionEvent(final uk.gov.hmcts.ccd.sdk.api.CaseDetails<BulkActionCaseData, BulkActionState> caseDetails,
-                                      final String eventId,
-                                      final User user,
-                                      final String serviceAuth) {
-
-        updateBulkCaseWithRetries(
-            caseDetailsConverter.convertToReformModelFromBulkActionCaseDetails(caseDetails),
-            eventId,
-            user,
-            serviceAuth,
-            caseDetails.getId()
-        );
-    }*/
-
     private void startAndSubmitEventForCaseworkers(final CaseDetails caseDetails,
                                                    final String eventId,
                                                    final String serviceAuth,

@@ -8,8 +8,6 @@ import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateApplicant1NoticeOfPr
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateApplicant2NoticeOfProceedings;
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateD10Form;
 import uk.gov.hmcts.sptribs.caseworker.service.task.GenerateDivorceApplication;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosPackToApplicant;
-import uk.gov.hmcts.sptribs.caseworker.service.task.SendAosPackToRespondent;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SendApplicationIssueNotifications;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SetPostIssueState;
 import uk.gov.hmcts.sptribs.caseworker.service.task.SetReIssueAndDueDate;
@@ -41,16 +39,10 @@ public class ReIssueApplicationService {
     private GenerateApplicant1NoticeOfProceeding generateApplicant1NoticeOfProceeding;
 
     @Autowired
-    private SendAosPackToRespondent sendAosPackToRespondent;
-
-    @Autowired
     private SendApplicationIssueNotifications sendApplicationIssueNotifications;
 
     @Autowired
     private SetReIssueAndDueDate setReIssueAndDueDate;
-
-    @Autowired
-    private SendAosPackToApplicant sendAosPackToApplicant;
 
     @Autowired
     private GenerateD10Form generateD10Form;
@@ -91,8 +83,6 @@ public class ReIssueApplicationService {
                 generateApplicant2NoticeOfProceedings,
                 generateDivorceApplication,
                 generateD10Form,
-                sendAosPackToRespondent,
-                sendAosPackToApplicant,
                 sendApplicationIssueNotifications
             ).run(caseDetails);
         } else if (REISSUE_CASE.equals(reissueOption)) {
@@ -104,8 +94,6 @@ public class ReIssueApplicationService {
                 generateApplicant2NoticeOfProceedings,
                 generateDivorceApplication,
                 generateD10Form,
-                sendAosPackToRespondent,
-                sendAosPackToApplicant,
                 sendApplicationIssueNotifications
             ).run(caseDetails);
         } else {

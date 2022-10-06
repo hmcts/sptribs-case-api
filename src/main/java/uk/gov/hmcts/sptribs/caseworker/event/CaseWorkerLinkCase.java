@@ -66,7 +66,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             .pageLabel("Before you start")
             .label("beforeYouStartLabel",
                 "If a group of linked cases has a lead case, you must start from the lead case.\n"
-                    + "\nIf the cases to be linked has no lead, you can start the journey from any of those cases");
+                    + "\nIf the cases to be linked has no lead, you can start the linking journey from any of those cases");
     }
 
     private void addSelectCase(PageBuilder pageBuilder) {

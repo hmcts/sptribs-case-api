@@ -213,7 +213,7 @@ uk:
             BAILIFF_SERVICE_SUCCESSFUL: ${BAILIFF_SERVICE_SUCCESSFUL_NOTIFICATION_ID:61332826-713e-49a7-ba37-563cb9261c65}
 
 s2s-authorised:
-  services: ${S2S_AUTHORISED_SERVICES:ccd_data,bulk_scan_processor,bulk_scan_orchestrator}
+  services: ${S2S_AUTHORISED_SERVICES:ccd_data}
 
 idam:
   s2s-auth:
@@ -237,6 +237,9 @@ fee:
 s2s:
   stub: false
 
+launchDarkly:
+  sdk-key: ${LAUNCH_DARKLY_SDK_KEY:}
+  env: ${ENVIRONMENT:local}
 core_case_data:
   api:
     url: ${CASE_DATA_STORE_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
@@ -254,7 +257,6 @@ docmosis:
       RESPONDENT_ANSWERS: NFD_Respondent_Answers_Eng.docx #TODO: update content
       CERTIFICATE_OF_SERVICE: NFD_Certificate_Of_Service.docx #TODO: update content
       SERVICE_ORDER: NFD_Service_Order_V2.docx #TODO: update content
-      BULK_CASE_PRONOUNCEMENT: NFD_Pronouncement_List_V2.docx
       CERTIFICATE_OF_ENTITLEMENT: NFD_Certificate_Of_Entitlement_V2.docx
       DIVORCE_SOLE_APPLICANT_1_ANSWERS: NFD_CP_Sole_Applicant_1_Answers_V3.docx
       DIVORCE_JOINT_APPLICANT_1_ANSWERS: NFD_CP_Joint_Applicant_1_Answers_V3.docx
@@ -289,7 +291,6 @@ docmosis:
       RESPONDENT_ANSWERS: ${RESPONDENT_ANSWERS_TEMPLATE_ID:NFD_Respondent_Answers_Eng.docx}
       CERTIFICATE_OF_SERVICE: NFD_Certificate_Of_Service.docx #TODO: update content
       SERVICE_ORDER: ${SERVICE_ORDER_TEMPLATE_ID:NFD_Service_Order_V2.docx}
-      BULK_CASE_PRONOUNCEMENT: NFD_Pronouncement_List_V2.docx  #TODO: update content
       NOTICE_OF_PROCEEDINGS: NFD_Notice_Of_Proceedings_Sole_V2.docx  #TODO: update content
       NOTICE_OF_PROCEEDINGS_RESP: NFD_Notice_Of_Proceedings_Sole_Respondent.docx #TODO: update content
       NOTICE_OF_PROCEEDINGS_OVERSEAS_RESP: NFD_Notice_Of_Proceedings_Overseas_Sole_V2.docx #TODO: update content
@@ -397,10 +398,6 @@ payment:
   service:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://payment-api-aat.service.core-compute-aat.internal}
-
-bulk-action:
-  min-cases: ${BULK_ACTION_BATCH_SIZE_MIN:30}
-  page-size: ${BULK_ACTION_BATCH_SIZE_MAX:50}
 
 SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
