@@ -11,10 +11,10 @@ public class FlagTypePage implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("selectFlagType")
-                .label("selectFlagType", "<h2>Select flag Type\n</h2>")
-                .complex(CaseData::getCaseFlag)
-                .mandatory(CaseFlag::getFlagType)
-                .mandatory(CaseFlag::getOtherDescription, "caseFlagFlagType = \"Other\"")
-                .done();
+            .label("selectFlagType", "<h2>Select flag type\n</h2>")
+            .complex(CaseData::getCaseFlag)
+            .mandatory(CaseFlag::getFlagType)
+            .mandatory(CaseFlag::getOtherDescription, "caseFlagFlagType = \"Other\"")
+            .done();
     }
 }
