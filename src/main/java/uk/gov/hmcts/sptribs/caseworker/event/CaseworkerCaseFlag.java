@@ -78,7 +78,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         var caseFlag = caseData.getCaseFlag();
         var flag = new Flags();
         var flagDetail = new FlagDetail();
-        flagDetail.setName(caseFlag.getFlagType().getDescription());
+        flagDetail.setName(caseFlag.getFlagType().getLabel());
         flagDetail.setFlagCode(caseFlag.getFlagType().getFlagCode());
         flagDetail.setFlagComment(caseFlag.getAdditionalDetail());
         flagDetail.setOtherDescription(caseFlag.getOtherDescription());
@@ -91,7 +91,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 flag.setPartyName(caseData.getCicCase().getFullName());
                 flag.setRoleOnCase(PartiesCIC.SUBJECT.getLabel());
             } else if (null != caseData.getCicCase().getFlagPartyRepresentative()
-                    && caseData.getCicCase().getFlagPartyRepresentative().size() > 0) {
+                && caseData.getCicCase().getFlagPartyRepresentative().size() > 0) {
                 flag.setPartyName(caseData.getCicCase().getRepresentativeFullName());
                 flag.setRoleOnCase(PartiesCIC.REPRESENTATIVE.getLabel());
             }
@@ -102,10 +102,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             List<ListValue<FlagDetail>> listValues = new ArrayList<>();
 
             var listValue = ListValue
-                    .<FlagDetail>builder()
-                    .id("1")
-                    .value(flagDetail)
-                    .build();
+                .<FlagDetail>builder()
+                .id("1")
+                .value(flagDetail)
+                .build();
 
             listValues.add(listValue);
 
@@ -113,9 +113,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
-                    .<FlagDetail>builder()
-                    .value(flagDetail)
-                    .build();
+                .<FlagDetail>builder()
+                .value(flagDetail)
+                .build();
 
             flag.getDetails().add(0, listValue);
             flag.getDetails().forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
@@ -124,10 +124,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             List<ListValue<Flags>> listValues = new ArrayList<>();
 
             var listValue = ListValue
-                    .<Flags>builder()
-                    .id("1")
-                    .value(flag)
-                    .build();
+                .<Flags>builder()
+                .id("1")
+                .value(flag)
+                .build();
 
             listValues.add(listValue);
 
@@ -135,13 +135,13 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
-                    .<Flags>builder()
-                    .value(flag)
-                    .build();
+                .<Flags>builder()
+                .value(flag)
+                .build();
 
             caseData.getCaseFlag().getCaseFlags().add(0, listValue);
             caseData.getCaseFlag().getCaseFlags()
-                    .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
 
         caseData.getCicCase().setFlagPartyApplicant(null);
