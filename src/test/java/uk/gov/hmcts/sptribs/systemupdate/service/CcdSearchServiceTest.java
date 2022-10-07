@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
@@ -36,8 +35,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Holding;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.DUE_DATE;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.STATE;
@@ -67,39 +64,6 @@ class CcdSearchServiceTest {
         setField(ccdSearchService, "pageSize", PAGE_SIZE);
     }
 
-    @Test
-    void shouldReturnCasesWithGivenStateBeforeTodayWithoutFlag() {
-        //Given
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
-        final int from = 0;
-        final int pageSize = 100;
-        final SearchResult expected = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
-        final BoolQueryBuilder query = boolQuery()
-            .must(matchQuery(STATE, AwaitingApplicant2Response))
-            .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()))
-            .mustNot(matchQuery("data.applicant2ReminderSent", YesOrNo.YES));
-
-        SearchSourceBuilder sourceBuilder = SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(query)
-            .from(from)
-            .size(pageSize);
-
-        when(coreCaseDataApi.searchCases(
-            SYSTEM_UPDATE_AUTH_TOKEN,
-            SERVICE_AUTHORIZATION,
-            CASE_TYPE,
-            sourceBuilder.toString()))
-            .thenReturn(expected);
-
-        //When
-        final SearchResult result = ccdSearchService.searchForCasesWithQuery(from, pageSize, query, user, SERVICE_AUTHORIZATION);
-
-        //Then
-        assertThat(result.getTotal()).isEqualTo(100);
-        assertThat(result).isEqualTo(expected);
-    }
 
     @Test
     void shouldReturnAllCasesWithGivenState() {
@@ -126,107 +90,6 @@ class CcdSearchServiceTest {
 
         //When
         final List<CaseDetails> searchResult = ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION, Submitted);
-
-        //Then
-        assertThat(searchResult.size()).isEqualTo(101);
-    }
-
-    @Test
-    void shouldReturnAllCasesInHolding() {
-        //Given
-        final BoolQueryBuilder query = boolQuery()
-            .must(matchQuery(STATE, Holding))
-            .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
-
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
-        final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
-        final SearchResult expected2 = SearchResult.builder().total(1).cases(createCaseDetailsList(1)).build();
-
-        SearchSourceBuilder sourceBuilder1 = SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(
-                boolQuery()
-                    .must(matchQuery(STATE, Holding))
-                    .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()))
-            )
-            .from(0)
-            .size(PAGE_SIZE);
-
-        SearchSourceBuilder sourceBuilder2 = SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(
-                boolQuery()
-                    .must(matchQuery(STATE, Holding))
-                    .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()))
-            )
-            .from(PAGE_SIZE)
-            .size(PAGE_SIZE);
-
-        when(coreCaseDataApi.searchCases(
-            SYSTEM_UPDATE_AUTH_TOKEN,
-            SERVICE_AUTHORIZATION,
-            CASE_TYPE,
-            sourceBuilder1.toString()))
-            .thenReturn(expected1);
-        when(coreCaseDataApi.searchCases(
-            SYSTEM_UPDATE_AUTH_TOKEN,
-            SERVICE_AUTHORIZATION,
-            CASE_TYPE,
-            sourceBuilder2.toString()))
-            .thenReturn(expected2);
-
-        //When
-        final List<CaseDetails> searchResult = ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION, Holding);
-
-        //Then
-        assertThat(searchResult.size()).isEqualTo(101);
-    }
-
-    @Test
-    void shouldReturnAllCasesWithGivenStateWhenFlagIsPassed() {
-        //Given
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
-        final int from = 0;
-        final SearchResult expected = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
-        final SearchResult expected2 = SearchResult.builder().total(1).cases(createCaseDetailsList(1)).build();
-        final BoolQueryBuilder query = boolQuery()
-            .must(matchQuery("state", AwaitingApplicant2Response))
-            .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()))
-            .mustNot(matchQuery("data.applicant2ReminderSent", YesOrNo.YES));
-
-        SearchSourceBuilder sourceBuilder = SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(query)
-            .from(from)
-            .size(PAGE_SIZE);
-
-        SearchSourceBuilder sourceBuilder2 = SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(query)
-            .from(PAGE_SIZE)
-            .size(PAGE_SIZE);
-
-        when(coreCaseDataApi.searchCases(
-            SYSTEM_UPDATE_AUTH_TOKEN,
-            SERVICE_AUTHORIZATION,
-            CASE_TYPE,
-            sourceBuilder.toString()))
-            .thenReturn(expected);
-
-        when(coreCaseDataApi.searchCases(
-            SYSTEM_UPDATE_AUTH_TOKEN,
-            SERVICE_AUTHORIZATION,
-            CASE_TYPE,
-            sourceBuilder2.toString()))
-            .thenReturn(expected2);
-
-        //When
-        final List<CaseDetails> searchResult = ccdSearchService.searchForAllCasesWithQuery(
-            query, user, SERVICE_AUTHORIZATION, AwaitingApplicant2Response);
 
         //Then
         assertThat(searchResult.size()).isEqualTo(101);
