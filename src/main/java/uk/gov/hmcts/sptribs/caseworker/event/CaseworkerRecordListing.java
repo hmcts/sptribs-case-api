@@ -59,6 +59,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+        var data = details.getData();
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n##"
                 + " A notification has been sent via email to: Subject, Representative, Respondent %n##"
