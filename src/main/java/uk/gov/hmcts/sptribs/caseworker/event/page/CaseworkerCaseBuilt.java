@@ -35,7 +35,6 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
             .name("Case built")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            //.showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
