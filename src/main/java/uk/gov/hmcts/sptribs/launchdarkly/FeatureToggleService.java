@@ -17,7 +17,7 @@ public class FeatureToggleService {
     private final String environment;
 
     @Autowired
-    public FeatureToggleService(LDClientInterface internalClient, @Value("${launchdarkly.env}") String environment) {
+    public FeatureToggleService(LDClientInterface internalClient, @Value("${launchdarkly.env:local}") String environment) {
         this.internalClient = internalClient;
         this.environment = environment;
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));

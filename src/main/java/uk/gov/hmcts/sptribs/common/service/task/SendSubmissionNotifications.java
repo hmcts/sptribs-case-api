@@ -7,8 +7,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHWFDecision;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 
 @Component
@@ -22,7 +20,7 @@ public class SendSubmissionNotifications implements CaseTask {
         final Long caseId = caseDetails.getId();
         final State state = caseDetails.getState();
 
-        if (state == Submitted || state == AwaitingHWFDecision && isEmpty(caseData.getApplication().getMissingDocumentTypes())) {
+        if (state == Submitted) {
             log.info("Sending application submitted notifications for case : {}", caseId);
             //notificationDispatcher.send(applicationSubmittedNotification, caseData, caseId);
         }

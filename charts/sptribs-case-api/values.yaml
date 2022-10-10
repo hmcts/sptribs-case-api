@@ -18,9 +18,6 @@ xui-mo-webapp:
 aac-manage-case-assignment:
   enabled: false
 
-sptribs-frontend:
-  enabled: false
-
 idam-pr:
   enabled: false
 
@@ -45,6 +42,8 @@ java:
           alias: S2S_SECRET
         - name: idam-secret
           alias: IDAM_CLIENT_SECRET
+        - name: launchdarkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
         - name: idam-systemupdate-username
           alias: IDAM_SYSTEM_UPDATE_USERNAME
         - name: idam-systemupdate-password
@@ -68,8 +67,6 @@ java:
     PRD_API_BASEURL : "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     SEND_LETTER_SERVICE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     PAYMENT_API_BASEURL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    BULK_ACTION_BATCH_SIZE_MIN: 30
-    BULK_ACTION_BATCH_SIZE_MAX: 50
     CITIZEN_UPDATE_CASE_STATE_ENABLED: false
     SERVICE_AUTH_MICROSERVICE: sptribs_case_api
     SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal

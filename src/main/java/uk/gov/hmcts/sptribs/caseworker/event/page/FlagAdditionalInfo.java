@@ -11,9 +11,9 @@ public class FlagAdditionalInfo implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("flagAdditionalInfo")
-            .label("flagAdditionalInfo", "<h3>Add comments for this flag (Optional)\n</h3>")
-            .complex(CaseData::getCaseFlag)
-            .optional(CaseFlag::getAdditionalDetail)
-            .done();
+                .label("flagAdditionalInfo", "<h2>Add comments for this flag (Optional)\n</h2>")
+                .complex(CaseData::getCaseFlag)
+                .optional(CaseFlag::getAdditionalDetail)
+                .done();
     }
 }

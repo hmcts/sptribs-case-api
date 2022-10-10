@@ -15,49 +15,6 @@ import java.util.EnumSet;
 public enum State {
 
     @CCD(
-        label = "20 week holding period",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-
-    )
-    Holding("Holding"),
-
-    @CCD(
-        label = "AoS awaiting",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingAos("AwaitingAos"),
-
-    @CCD(
-        label = "AoS drafted",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AosDrafted("AosDrafted"),
-
-    @CCD(
-        label = "AoS overdue",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AosOverdue("AosOverdue"),
-
-    @CCD(
-        label = "Applicant 2 approved",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class, SolicitorAccess.class}
-    )
-    Applicant2Approved("Applicant2Approved"),
-
-    @CCD(
-        label = "Application awaiting payment",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingPayment("AwaitingPayment"),
-
-    @CCD(
         label = "Application rejected",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccess.class}
@@ -70,35 +27,6 @@ public enum State {
         access = {DefaultStateAccess.class}
     )
     Withdrawn("Withdrawn"),
-
-
-    @CCD(
-        label = "Awaiting admin clarification",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class, LegalAdvisorAccess.class}
-    )
-    AwaitingAdminClarification("AwaitingAdminClarification"),
-
-    @CCD(
-        label = "Awaiting alternative service",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingAlternativeService("AwaitingAlternativeService"),
-
-    @CCD(
-        label = "Awaiting amended application",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class, LegalAdvisorAccess.class}
-    )
-    AwaitingAmendedApplication("AwaitingAmendedApplication"),
-
-    @CCD(
-        label = "Awaiting applicant",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    AwaitingDocuments("AwaitingDocuments"),
 
     @CCD(
         label = "Awaiting applicant 1 response",
@@ -122,60 +50,11 @@ public enum State {
     AwaitingBailiffReferral("AwaitingBailiffReferral"),
 
     @CCD(
-        label = "Awaiting bailiff service",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingBailiffService("AwaitingBailiffService"),
-
-    @CCD(
-        label = "Awaiting clarification",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class, LegalAdvisorAccess.class}
-    )
-    AwaitingClarification("AwaitingClarification"),
-
-    @CCD(
         label = "Awaiting conditional order",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccess.class}
     )
     AwaitingConditionalOrder("AwaitingConditionalOrder"),
-
-    @CCD(
-        label = "Awaiting DWP response",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingDwpResponse("AwaitingDWPResponse"),
-
-    @CCD(
-        label = "Awaiting final order",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingFinalOrder("AwaitingFinalOrder"),
-
-    @CCD(
-        label = "Awaiting general consideration",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingGeneralConsideration("AwaitingGeneralConsideration"),
-
-    @CCD(
-        label = "Awaiting general referral payment",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingGeneralReferralPayment("AwaitingGeneralReferralPayment"),
-
-    @CCD(
-        label = "Awaiting HWF decision",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    AwaitingHWFDecision("AwaitingHWFDecision"),
 
     @CCD(
         label = "Awaiting joint conditional order",
@@ -332,13 +211,6 @@ public enum State {
     PendingHearingOutcome("PendingHearingOutcome"),
 
     @CCD(
-        label = "Removed from bulk case",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    BulkCaseReject("BulkCaseReject"),
-
-    @CCD(
         label = "Submitted",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
@@ -351,13 +223,6 @@ public enum State {
         access = {DefaultStateAccessExcludingCAA.class}
     )
     NewCaseReceived("NewCaseReceived"),
-
-    @CCD(
-        label = "New case pending review",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCasePendingReview("NewCasePendingReview"),
 
 
     @CCD(
@@ -381,12 +246,6 @@ public enum State {
     )
     AwaitingOutcome("AwaitingOutcome"),
 
-    @CCD(
-        label = "New case closed",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCaseClosed("NewCaseClosed"),
 
 
     @CCD(
@@ -396,13 +255,6 @@ public enum State {
     )
     CaseClosed("CaseClosed"),
 
-
-    @CCD(
-        label = "New case stayed",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCaseStayed("NewCaseStayed"),
 
 
     @CCD(
@@ -416,7 +268,6 @@ public enum State {
         Draft,
         AwaitingApplicant1Response,
         AwaitingApplicant2Response,
-        Applicant2Approved,
         Withdrawn,
         Rejected
     ));
@@ -424,46 +275,18 @@ public enum State {
     public static final EnumSet<State> POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED = EnumSet.complementOf(EnumSet.of(
         Draft,
         AwaitingApplicant1Response,
-        AwaitingApplicant2Response,
-        Applicant2Approved
-    ));
-
-    public static final EnumSet<State> STATES_NOT_WITHDRAWN_OR_REJECTED = EnumSet.complementOf(EnumSet.of(
-        Withdrawn,
-        Rejected
+        AwaitingApplicant2Response
     ));
 
     public static final EnumSet<State> PRE_RETURN_TO_PREVIOUS_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
         AwaitingApplicant1Response,
         AwaitingApplicant2Response,
-        Applicant2Approved,
         AwaitingPronouncement,
         Withdrawn,
         Rejected
     ));
 
-    public static final EnumSet<State> POST_ISSUE_STATES = EnumSet.complementOf(EnumSet.of(
-        Draft,
-        AwaitingApplicant1Response,
-        AwaitingApplicant2Response,
-        Applicant2Approved,
-        AwaitingPayment,
-        AwaitingHWFDecision,
-        AwaitingDocuments,
-        Submitted,
-        Withdrawn,
-        Rejected
-    ));
-
-    public static final State[] AOS_STATES = {
-        Holding, AwaitingConditionalOrder, IssuedToBailiff, AwaitingBailiffService, AwaitingBailiffReferral,
-        AwaitingServiceConsideration, AwaitingServicePayment, AwaitingAlternativeService, AwaitingDwpResponse,
-        AwaitingJudgeClarification, GeneralConsiderationComplete, AwaitingGeneralReferralPayment, AwaitingGeneralConsideration,
-        GeneralApplicationReceived, PendingHearingOutcome
-    };
-
     private final String name;
-
 }
 
