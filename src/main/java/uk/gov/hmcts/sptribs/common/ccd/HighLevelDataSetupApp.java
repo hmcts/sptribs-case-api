@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.befta.dse.ccd.CcdEnvironment;
 import uk.gov.hmcts.befta.dse.ccd.CcdRoleConfig;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
+import uk.gov.hmcts.befta.util.BeftaUtils;
 import uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation;
 
 import java.util.List;
@@ -61,5 +62,11 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         return List.of(
             "build/ccd-config/ccd-" + CriminalInjuriesCompensation.CASE_TYPE + "-" + environmentName + ".xlsx"
         );
+    }
+
+    @Override
+    public void createRoleAssignments() {
+        // Do not create role assignments.
+        BeftaUtils.defaultLog("Will NOT create role assignments!");
     }
 }
