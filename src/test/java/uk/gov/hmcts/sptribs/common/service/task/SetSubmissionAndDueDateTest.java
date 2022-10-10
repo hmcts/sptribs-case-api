@@ -14,9 +14,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Holding;
 import static uk.gov.hmcts.sptribs.testutil.ClockTestUtil.getExpectedLocalDate;
 import static uk.gov.hmcts.sptribs.testutil.ClockTestUtil.getExpectedLocalDateTime;
 import static uk.gov.hmcts.sptribs.testutil.ClockTestUtil.setMockClock;
@@ -33,30 +31,6 @@ class SetSubmissionAndDueDateTest {
 
     @InjectMocks
     private SetSubmissionAndDueDate setSubmissionAndDueDate;
-
-    @Test
-    void shouldSetDueDateAndDateAosSubmittedIfStateIsDisputed() {
-        //Given
-        setMockClock(clock);
-
-        final LocalDate issueDate = getExpectedLocalDate();
-
-        final CaseData caseData = caseData();
-        caseData.getApplication().setIssueDate(issueDate);
-
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setState(Holding);
-        caseDetails.setData(caseData);
-
-        when(holdingPeriodService.getDueDateFor(issueDate)).thenReturn(issueDate);
-
-        //When
-        final CaseDetails<CaseData, State> result = setSubmissionAndDueDate.apply(caseDetails);
-
-        //Then
-        assertThat(result.getData().getAcknowledgementOfService().getDateAosSubmitted()).isEqualTo(getExpectedLocalDateTime());
-        assertThat(result.getData().getDueDate()).isEqualTo(issueDate);
-    }
 
     @Test
     void shouldNotSetDueDateAndDateAosSubmittedIfStateHasNotChanged() {
