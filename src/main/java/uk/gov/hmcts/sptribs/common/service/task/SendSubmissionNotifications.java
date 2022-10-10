@@ -16,7 +16,6 @@ public class SendSubmissionNotifications implements CaseTask {
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
 
-        final CaseData caseData = caseDetails.getData();
         final Long caseId = caseDetails.getId();
         final State state = caseDetails.getState();
 
