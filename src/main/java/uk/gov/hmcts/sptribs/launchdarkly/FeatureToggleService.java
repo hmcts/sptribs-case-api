@@ -17,14 +17,14 @@ public class FeatureToggleService {
     private final String environment;
 
     @Autowired
-    public FeatureToggleService(LDClientInterface internalClient, @Value("${launchdarkly.env}") String environment) {
+    public FeatureToggleService(LDClientInterface internalClient, @Value("${launchdarkly.env:local}") String environment) {
         this.internalClient = internalClient;
         this.environment = environment;
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
-    public boolean isFeatureEnabled(String feature) {
-        return internalClient.boolVariation(feature, createLDUser().build(), false);
+    public boolean isCicCreateCaseFeatureEnabled() {
+        return internalClient.boolVariation("CIC-Create-Case", createLDUser().build(), true);
     }
 
     public boolean isFeatureEnabled(String feature, LDUser user) {

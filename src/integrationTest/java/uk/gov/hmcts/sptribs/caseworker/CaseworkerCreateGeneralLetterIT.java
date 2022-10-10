@@ -14,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.caseworker.service.print.GeneralLetterPrinter;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.DocumentIdProvider;
 import uk.gov.hmcts.sptribs.testutil.ClockTestUtil;
@@ -50,9 +49,6 @@ public class CaseworkerCreateGeneralLetterIT {
 
     @MockBean
     private DocumentIdProvider documentIdProvider;
-
-    @MockBean
-    private GeneralLetterPrinter generalLetterPrinter;
 
     @MockBean
     private Clock clock;

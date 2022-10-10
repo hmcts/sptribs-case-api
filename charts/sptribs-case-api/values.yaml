@@ -18,24 +18,21 @@ xui-mo-webapp:
 aac-manage-case-assignment:
   enabled: false
 
-nfdiv-frontend:
-  enabled: false
-
 idam-pr:
   enabled: false
 
 java:
   applicationPort: 4013
-  image: 'hmctspublic.azurecr.io/nfdiv/case-api:latest'
+  image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'
   ingressHost: sptribs-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-  aadIdentityName: nfdiv
+  aadIdentityName: sptribs
   autoscaling:
     enabled: true
     maxReplicas: 9
     minReplicas: 6
     targetCPUUtilizationPercentage: 80 # Default is 80% target CPU utilization
   keyVaults:
-    nfdiv:
+    sptribs:
       secrets:
         - name: AppInsightsInstrumentationKey
           alias: APP_INSIGHTS_KEY
@@ -45,6 +42,8 @@ java:
           alias: S2S_SECRET
         - name: idam-secret
           alias: IDAM_CLIENT_SECRET
+        - name: launchdarkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
         - name: idam-systemupdate-username
           alias: IDAM_SYSTEM_UPDATE_USERNAME
         - name: idam-systemupdate-password
@@ -52,12 +51,12 @@ java:
         - name: app-insights-connection-string
           alias: app-insights-connection-string
   environment:
-    NOTIFY_TEMPLATE_SIGN_IN_DIVORCE_URL: https://nfdiv-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/
-    NOTIFY_TEMPLATE_SIGN_IN_DISSOLUTION_URL: https://nfdiv-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/
-    NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL: https://nfdiv-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/applicant2
-    NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DISSOLUTION_URL: https://nfdiv-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/applicant2
-    NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DIVORCE_URL: https://nfdiv-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/respondent
-    NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DISSOLUTION_URL: https://nfdiv-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/respondent
+    NOTIFY_TEMPLATE_SIGN_IN_DIVORCE_URL: https://sptribs-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/
+    NOTIFY_TEMPLATE_SIGN_IN_DISSOLUTION_URL: https://sptribs-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/
+    NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL: https://sptribs-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/applicant2
+    NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DISSOLUTION_URL: https://sptribs-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/applicant2
+    NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DIVORCE_URL: https://sptribs-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/respondent
+    NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DISSOLUTION_URL: https://sptribs-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/respondent
     S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FEE_API_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     IDAM_API_REDIRECT_URL: https://div-pfe-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/authenticated
@@ -68,9 +67,7 @@ java:
     PRD_API_BASEURL : "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     SEND_LETTER_SERVICE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     PAYMENT_API_BASEURL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    BULK_ACTION_BATCH_SIZE_MIN: 30
-    BULK_ACTION_BATCH_SIZE_MAX: 50
     CITIZEN_UPDATE_CASE_STATE_ENABLED: false
-    SERVICE_AUTH_MICROSERVICE: nfdiv_case_api
+    SERVICE_AUTH_MICROSERVICE: sptribs_case_api
     SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/cases/case-details/

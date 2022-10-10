@@ -16,12 +16,14 @@ class AlternativeServiceUtilTest {
 
     @Test
     public void shouldAddNewServiceApplicationToCollectionAndSetApplicationToNull() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getAlternativeService().setAlternativeServiceType(DEEMED);
 
+        //When
         caseData.archiveAlternativeServiceApplicationOnCompletion();
 
+        //Then
         assertThat(caseData.getAlternativeServiceOutcomes()).isNotNull();
         assertThat(caseData.getAlternativeServiceOutcomes().size()).isEqualTo(1);
         assertThat(caseData.getAlternativeService()).isNull();
@@ -29,7 +31,7 @@ class AlternativeServiceUtilTest {
 
     @Test
     public void shouldAddSecondServiceApplicationToCollectionIfOneExists() {
-
+        //Given
         final CaseData caseData = caseData();
         caseData.getAlternativeService().setAlternativeServiceType(DEEMED);
         caseData.archiveAlternativeServiceApplicationOnCompletion();
@@ -41,8 +43,11 @@ class AlternativeServiceUtilTest {
         caseData.setAlternativeService(new AlternativeService());
         caseData.getAlternativeService().setAlternativeServiceType(BAILIFF);
         caseData.getAlternativeService().getBailiff().setSuccessfulServedByBailiff(YesOrNo.YES);
+
+        //When
         caseData.archiveAlternativeServiceApplicationOnCompletion();
 
+        //Then
         assertThat(caseData.getAlternativeServiceOutcomes().size()).isEqualTo(3);
         assertThat(caseData.getAlternativeServiceOutcomes().get(0).getValue().getAlternativeServiceType()).isEqualTo(BAILIFF);
         assertThat(caseData.getAlternativeServiceOutcomes().get(0).getValue().getSuccessfulServedByBailiff())
@@ -54,25 +59,30 @@ class AlternativeServiceUtilTest {
 
     @Test
     public void shouldNotAddToServiceApplicationCollectionIfServiceApplicationIsNull() {
+        //Given
         final CaseData caseData = caseData();
         caseData.setAlternativeService(null);
+        //When
         caseData.archiveAlternativeServiceApplicationOnCompletion();
+        //Then
         assertThat(caseData.getAlternativeServiceOutcomes()).isNull();
     }
 
     @Test
     public void assertIsApplicationGrantedYes() {
         final CaseData caseData = caseData();
+        //When
         caseData.getAlternativeService().setServiceApplicationGranted(YesOrNo.YES);
-
+        //Then
         assertThat(caseData.getAlternativeService().isApplicationGranted()).isTrue();
     }
 
     @Test
     public void assertIsApplicationGrantedNo() {
         final CaseData caseData = caseData();
+        //When
         caseData.getAlternativeService().setServiceApplicationGranted(YesOrNo.NO);
-
+        //Then
         assertThat(caseData.getAlternativeService().isApplicationGranted()).isFalse();
     }
 }

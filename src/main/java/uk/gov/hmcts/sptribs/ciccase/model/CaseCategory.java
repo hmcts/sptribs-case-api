@@ -11,12 +11,9 @@ public enum CaseCategory implements HasLabel {
     @JsonProperty("Assessment")
     ASSESSMENT("Assessment"),
 
-    @JsonProperty("Legibility")
-    LEGIBILITY("Legibility");
+    @JsonProperty("Eligibility")
+    ELIGIBILITY("Eligibility");
 
     private final String label;
 
-    public boolean isAssessment() {
-        return ASSESSMENT.name().equalsIgnoreCase(this.name());
-    }
 }

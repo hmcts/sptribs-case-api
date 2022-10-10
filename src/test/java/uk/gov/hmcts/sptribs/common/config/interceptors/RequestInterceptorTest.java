@@ -33,11 +33,12 @@ public class RequestInterceptorTest {
 
     @BeforeEach
     public void setUp() {
-        setField(requestInterceptor, "authorisedServices", List.of("ccd_data", "bulk_scan_processor", "bulk_scan_orchestrator"));
+        setField(requestInterceptor, "authorisedServices", List.of("ccd_data"));
     }
 
     @Test
     public void shouldAppendBearerPrefixWhenServiceAuthDoesNotIncludeBearerPrefix() throws Exception {
+        //Given
         when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
             .thenReturn("ccd_data");
 
@@ -46,6 +47,7 @@ public class RequestInterceptorTest {
 
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
+        //When&Then
         assertThat(requestInterceptor.preHandle(request, response, null)).isTrue();
 
         verify(validator).getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX);
@@ -53,6 +55,7 @@ public class RequestInterceptorTest {
 
     @Test
     public void shouldNotAppendBearerPrefixWhenServiceAuthIncludesBearerPrefix() throws Exception {
+        //Given
         when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
             .thenReturn("ccd_data");
 
@@ -60,6 +63,7 @@ public class RequestInterceptorTest {
         var response = mock(HttpServletResponse.class);
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(AUTH_TOKEN_WITH_BEARER_PREFIX);
 
+        //When&Then
         assertThat(requestInterceptor.preHandle(request, response, null)).isTrue();
 
         verify(validator).getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX);

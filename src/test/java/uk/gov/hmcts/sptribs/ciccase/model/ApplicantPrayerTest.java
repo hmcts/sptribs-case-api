@@ -15,7 +15,7 @@ public class ApplicantPrayerTest {
 
     @Test
     void shouldReturnWarningsWhenDivorceApplicant1DetailsAreValidatedAndPrayerForChildrenAndApplicantAreNotConfirmed() {
-
+        //When
         var applicant1 = Applicant
             .builder()
             .financialOrder(YES)
@@ -28,6 +28,7 @@ public class ApplicantPrayerTest {
             .applicant1(applicant1)
             .build();
 
+        //Then
         assertThat(applicant1.getApplicantPrayer().validatePrayerApplicant1(caseData))
             .containsExactlyInAnyOrder(
                 "Applicant 1 must confirm prayer to dissolve their marriage (get a divorce)",
@@ -38,7 +39,7 @@ public class ApplicantPrayerTest {
 
     @Test
     void shouldReturnWarningsWhenDissolutionApplicant1DetailsAreValidatedAndPrayerForChildrenAndApplicantAreNotConfirmed() {
-
+        //When
         var applicant1 = Applicant
             .builder()
             .financialOrder(YES)
@@ -51,6 +52,7 @@ public class ApplicantPrayerTest {
             .applicant1(applicant1)
             .build();
 
+        //Then
         assertThat(applicant1.getApplicantPrayer().validatePrayerApplicant1(caseData))
             .containsExactlyInAnyOrder(
                 "Applicant 1 must confirm prayer to end their civil partnership",
@@ -61,7 +63,7 @@ public class ApplicantPrayerTest {
 
     @Test
     void shouldReturnWarningsWhenDivorceApplicant2DetailsAreValidatedAndPrayerForChildrenAndApplicantAreNotConfirmed() {
-
+        //When
         var applicant2 = Applicant
             .builder()
             .financialOrder(YES)
@@ -74,6 +76,7 @@ public class ApplicantPrayerTest {
             .applicant2(applicant2)
             .build();
 
+        //Then
         assertThat(applicant2.getApplicantPrayer().validatePrayerApplicant2(caseData))
             .containsExactlyInAnyOrder(
                 "Applicant 2 must confirm prayer to dissolve their marriage (get a divorce)",
@@ -84,7 +87,7 @@ public class ApplicantPrayerTest {
 
     @Test
     void shouldReturnWarningsWhenDissolutionApplicant2DetailsAreValidatedAndPrayerForChildrenAndApplicantAreNotConfirmed() {
-
+        //When
         var applicant2 = Applicant
             .builder()
             .financialOrder(YES)
@@ -97,6 +100,7 @@ public class ApplicantPrayerTest {
             .applicant2(applicant2)
             .build();
 
+        //Then
         assertThat(applicant2.getApplicantPrayer().validatePrayerApplicant2(caseData))
             .containsExactlyInAnyOrder(
                 "Applicant 2 must confirm prayer to end their civil partnership",

@@ -13,9 +13,9 @@ management:
 
 spring:
   application:
-    name: NFDIV Case API
+    name: sptribs Case API
   config:
-    import: "optional:configtree:/mnt/secrets/nfdiv/"
+    import: "optional:configtree:/mnt/secrets/sptribs/"
   main:
     allow-bean-definition-overriding: true
 
@@ -35,12 +35,12 @@ uk:
         baseUrl: https://api.notifications.service.gov.uk
       email:
         templateVars:
-          signInDivorceUrl: ${NOTIFY_TEMPLATE_SIGN_IN_DIVORCE_URL:https://nfdiv-apply-for-divorce.aat.platform.hmcts.net/}
-          applicant2SignInDivorceUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL:https://nfdiv-apply-for-divorce.aat.platform.hmcts.net/applicant2}
-          applicant2SignInDissolutionUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DISSOLUTION_URL:https://nfdiv-end-civil-partnership.aat.platform.hmcts.net/applicant2}
-          respondentSignInDivorceUrl: ${NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DIVORCE_URL:https://nfdiv-apply-for-divorce.aat.platform.hmcts.net/respondent}
-          respondentSignInDissolutionUrl: ${NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DISSOLUTION_URL:https://nfdiv-end-civil-partnership.aat.platform.hmcts.net/respondent}
-          signInDissolutionUrl: ${NOTIFY_TEMPLATE_SIGN_IN_DISSOLUTION_URL:https://nfdiv-end-civil-partnership.aat.platform.hmcts.net/}
+          signInDivorceUrl: ${NOTIFY_TEMPLATE_SIGN_IN_DIVORCE_URL:https://sptribs-apply-for-divorce.aat.platform.hmcts.net/}
+          applicant2SignInDivorceUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL:https://sptribs-apply-for-divorce.aat.platform.hmcts.net/applicant2}
+          applicant2SignInDissolutionUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DISSOLUTION_URL:https://sptribs-end-civil-partnership.aat.platform.hmcts.net/applicant2}
+          respondentSignInDivorceUrl: ${NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DIVORCE_URL:https://sptribs-apply-for-divorce.aat.platform.hmcts.net/respondent}
+          respondentSignInDissolutionUrl: ${NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DISSOLUTION_URL:https://sptribs-end-civil-partnership.aat.platform.hmcts.net/respondent}
+          signInDissolutionUrl: ${NOTIFY_TEMPLATE_SIGN_IN_DISSOLUTION_URL:https://sptribs-end-civil-partnership.aat.platform.hmcts.net/}
           signInProfessionalUsersUrl: ${NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL:https://manage-case.aat.platform.hmcts.net/cases/case-details/}
           divorceCourtEmail: divorcecase@justice.gov.uk
           dissolutionCourtEmail: divorcecase@justice.gov.uk
@@ -213,13 +213,13 @@ uk:
             BAILIFF_SERVICE_SUCCESSFUL: ${BAILIFF_SERVICE_SUCCESSFUL_NOTIFICATION_ID:61332826-713e-49a7-ba37-563cb9261c65}
 
 s2s-authorised:
-  services: ${S2S_AUTHORISED_SERVICES:ccd_data,bulk_scan_processor,bulk_scan_orchestrator}
+  services: ${S2S_AUTHORISED_SERVICES:ccd_data}
 
 idam:
   s2s-auth:
     url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
-    microservice: nfdiv_case_api
+    microservice: sptribs_case_api
   api:
     url: ${IDAM_API_BASEURL:http://localhost:5000}
   systemupdate:
@@ -237,6 +237,9 @@ fee:
 s2s:
   stub: false
 
+launchDarkly:
+  sdk-key: ${LAUNCH_DARKLY_SDK_KEY:}
+  env: ${ENVIRONMENT:local}
 core_case_data:
   api:
     url: ${CASE_DATA_STORE_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
@@ -254,7 +257,6 @@ docmosis:
       RESPONDENT_ANSWERS: NFD_Respondent_Answers_Eng.docx #TODO: update content
       CERTIFICATE_OF_SERVICE: NFD_Certificate_Of_Service.docx #TODO: update content
       SERVICE_ORDER: NFD_Service_Order_V2.docx #TODO: update content
-      BULK_CASE_PRONOUNCEMENT: NFD_Pronouncement_List_V2.docx
       CERTIFICATE_OF_ENTITLEMENT: NFD_Certificate_Of_Entitlement_V2.docx
       DIVORCE_SOLE_APPLICANT_1_ANSWERS: NFD_CP_Sole_Applicant_1_Answers_V3.docx
       DIVORCE_JOINT_APPLICANT_1_ANSWERS: NFD_CP_Joint_Applicant_1_Answers_V3.docx
@@ -289,7 +291,6 @@ docmosis:
       RESPONDENT_ANSWERS: ${RESPONDENT_ANSWERS_TEMPLATE_ID:NFD_Respondent_Answers_Eng.docx}
       CERTIFICATE_OF_SERVICE: NFD_Certificate_Of_Service.docx #TODO: update content
       SERVICE_ORDER: ${SERVICE_ORDER_TEMPLATE_ID:NFD_Service_Order_V2.docx}
-      BULK_CASE_PRONOUNCEMENT: NFD_Pronouncement_List_V2.docx  #TODO: update content
       NOTICE_OF_PROCEEDINGS: NFD_Notice_Of_Proceedings_Sole_V2.docx  #TODO: update content
       NOTICE_OF_PROCEEDINGS_RESP: NFD_Notice_Of_Proceedings_Sole_Respondent.docx #TODO: update content
       NOTICE_OF_PROCEEDINGS_OVERSEAS_RESP: NFD_Notice_Of_Proceedings_Overseas_Sole_V2.docx #TODO: update content
@@ -320,8 +321,8 @@ docmosis:
       NFD_NOP_AS2_SOLE_APP1_SOL_SS: NFD_Notice_Of_Proceedings_Sole_Applicant_Solicitor_Registered_V3.docx
       CONDITIONAL_ORDER_PRONOUNCED: NFD_Conditional_Order_Pronounced.docx
   templateVars:
-    applicant2SignInDivorceUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL:https://nfdiv-apply-for-divorce.aat.platform.hmcts.net/applicant2}
-    applicant2SignInDissolutionUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DISSOLUTION_URL:https://nfdiv-end-civil-partnership.aat.platform.hmcts.net/applicant2}
+    applicant2SignInDivorceUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL:https://sptribs-apply-for-divorce.aat.platform.hmcts.net/applicant2}
+    applicant2SignInDissolutionUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DISSOLUTION_URL:https://sptribs-end-civil-partnership.aat.platform.hmcts.net/applicant2}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
@@ -398,11 +399,7 @@ payment:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://payment-api-aat.service.core-compute-aat.internal}
 
-bulk-action:
-  min-cases: ${BULK_ACTION_BATCH_SIZE_MIN:30}
-  page-size: ${BULK_ACTION_BATCH_SIZE_MAX:50}
-
-SERVICE_AUTH_MICROSERVICE: nfdiv_case_api
+SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}

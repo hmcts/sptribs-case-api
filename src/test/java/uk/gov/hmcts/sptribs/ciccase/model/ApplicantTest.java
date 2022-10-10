@@ -36,82 +36,85 @@ class ApplicantTest {
 
     @Test
     void shouldBeRepresentedIfSolicitorIsNotNullAndSolicitorEmailIsNotEmpty() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitor(Solicitor.builder()
                 .email("solicitor@example.com")
                 .build())
             .solicitorRepresented(YES)
             .build();
-
+        //Then
         assertThat(applicant.isRepresented()).isTrue();
     }
 
     @Test
     void shouldNotBeRepresentedIfSolicitorIsNullOrSolicitorEmailIsEmpty() {
-
+        //When
         final Applicant applicantNoSolicitor = Applicant.builder().build();
 
         final Applicant applicantNoSolicitorEmail = Applicant.builder()
             .solicitor(Solicitor.builder().build())
             .build();
 
+        //Then
         assertThat(applicantNoSolicitor.isRepresented()).isFalse();
         assertThat(applicantNoSolicitorEmail.isRepresented()).isFalse();
     }
 
     @Test
     void shouldReturnTrueIfContactDetailsAreConfidential() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .contactDetailsType(PRIVATE)
             .build();
 
+        //Then
         assertThat(applicant.isConfidentialContactDetails()).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfContactDetailsAreNotConfidential() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .contactDetailsType(PUBLIC)
             .build();
-
+        //Then
         assertThat(applicant.isConfidentialContactDetails()).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfContactDetailsAreSetToNull() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .build();
-
+        //Then
         assertThat(applicant.isConfidentialContactDetails()).isFalse();
     }
 
     @Test
     void shouldReturnTrueIfAppliedForFinancialOrder() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(YES)
             .build();
-
+        //Then
         assertThat(applicant.appliedForFinancialOrder()).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfNotAppliedForFinancialOrder() {
-
+        //When
         final Applicant applicant = Applicant.builder()
             .financialOrder(NO)
             .build();
 
+        //Then
         assertThat(applicant.appliedForFinancialOrder()).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfAppliedForFinancialOrderIsSetToNull() {
-
+        //When
         final Applicant applicant1 = Applicant.builder()
             .address(AddressGlobalUK.builder().country("UK").build())
             .build();
@@ -119,21 +122,25 @@ class ApplicantTest {
             .address(AddressGlobalUK.builder().country("United Kingdom").build())
             .build();
 
+        //Then
         assertThat(applicant1.appliedForFinancialOrder()).isFalse();
         assertThat(applicant2.appliedForFinancialOrder()).isFalse();
     }
 
     @Test
     void shouldReturnTrueIfNotUkOrUnitedKingdom() {
+        //When
         final Applicant applicant = Applicant.builder()
             .address(AddressGlobalUK.builder().country("France").build())
             .build();
 
+        //Then
         assertThat(applicant.isBasedOverseas()).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfUkOrUnitedKingdom() {
+        //When
         final Applicant applicant1 = Applicant.builder()
             .address(AddressGlobalUK.builder().country("UK").build())
             .build();
@@ -141,12 +148,14 @@ class ApplicantTest {
             .address(AddressGlobalUK.builder().country("United Kingdom").build())
             .build();
 
+        //Then
         assertThat(applicant1.isBasedOverseas()).isFalse();
         assertThat(applicant2.isBasedOverseas()).isFalse();
     }
 
     @Test
     void shouldReturnTrueIfScottishAddress() {
+        //When
         final Applicant applicant1 = Applicant.builder()
             .address(AddressGlobalUK.builder().country("UK").postCode("KA27 8AB").build())
             .build();
@@ -157,6 +166,7 @@ class ApplicantTest {
             .address(AddressGlobalUK.builder().country("Scotland").build())
             .build();
 
+        //Then
         assertThat(applicant1.isBasedOverseas()).isTrue();
         assertThat(applicant2.isBasedOverseas()).isTrue();
         assertThat(applicant3.isBasedOverseas()).isTrue();
@@ -164,24 +174,29 @@ class ApplicantTest {
 
     @Test
     void shouldReturnFalseIfGreatBritain() {
+        //When
         final Applicant applicant = Applicant.builder()
             .address(AddressGlobalUK.builder().country("Great Britain").build())
             .build();
 
+        //Then
         assertThat(applicant.isBasedOverseas()).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfGreatBritainAndCaseInsensitive() {
+        //When
         final Applicant applicant = Applicant.builder()
             .address(AddressGlobalUK.builder().country("great britain").build())
             .build();
 
+        //Then
         assertThat(applicant.isBasedOverseas()).isFalse();
     }
 
     @Test
     void shouldReturnFalseIfApplicantIsRepresentedWhenCheckingIsBasedOverseas() {
+        //When
         final Applicant applicant = Applicant.builder()
             .address(AddressGlobalUK.builder().country("France").build())
             .solicitorRepresented(YES)
@@ -190,22 +205,27 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.isBasedOverseas()).isFalse();
     }
 
     @Test
     void shouldReturnReturnFalseIfAddressNotSet() {
+        //When
         final Applicant applicant = Applicant.builder().build();
 
+        //Then
         assertThat(applicant.isBasedOverseas()).isFalse();
     }
 
     @Test
     void shouldReturnThrowErrorIfCountryIsBlank() {
+        //When
         final Applicant applicant = Applicant.builder()
             .address(AddressGlobalUK.builder().build())
             .build();
 
+        //Then
         assertThat(applicant.isBasedOverseas()).isFalse();
     }
 
@@ -223,6 +243,7 @@ class ApplicantTest {
 
     @Test
     void shouldReturnSolicitorAddressIfRepresentedWhenRequestingCorrespondenceAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(YES)
             .solicitor(Solicitor.builder()
@@ -230,11 +251,13 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getCorrespondenceAddress()).isEqualTo("solicitor address");
     }
 
     @Test
     void shouldReturnSolicitorAddressWithFirmNameIfRepresentedWhenRequestingCorrespondenceAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(YES)
             .solicitor(Solicitor.builder()
@@ -243,11 +266,13 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getCorrespondenceAddress()).isEqualTo("Test Organisation\nsolicitor address");
     }
 
     @Test
     void shouldReturnApplicantAddressIfNotRepresentedWhenRequestingCorrespondenceAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(NO)
             .contactDetailsType(PUBLIC)
@@ -262,22 +287,26 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getCorrespondenceAddress())
             .isEqualTo("Correspondence Address\nLine 2\nLine 3\nPost Town\nCounty\nPost Code\nUK");
     }
 
     @Test
     void shouldReturnNullIfNotRepresentedAndAddressIsNullWhenRequestingCorrespondenceAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(NO)
             .contactDetailsType(PUBLIC)
             .build();
 
+        //Then
         assertThat(applicant.getCorrespondenceAddress()).isNull();
     }
 
     @Test
     void shouldReturnNullIfNotRepresentedAndPrivateContactDetailsWhenRequestingCorrespondenceAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(NO)
             .contactDetailsType(PRIVATE)
@@ -292,11 +321,13 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getCorrespondenceAddress()).isNull();
     }
 
     @Test
     void shouldReturnSolicitorAddressIfRepresentedWhenRequestingPostalAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(YES)
             .solicitor(Solicitor.builder()
@@ -304,11 +335,13 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getPostalAddress()).isEqualTo("solicitor address");
     }
 
     @Test
     void shouldReturnApplicantAddressIfNotRepresentedWhenRequestingPostalAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(NO)
             .contactDetailsType(PUBLIC)
@@ -323,22 +356,26 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getPostalAddress())
             .isEqualTo("Correspondence Address\nLine 2\nLine 3\nPost Town\nPost Code");
     }
 
     @Test
     void shouldReturnNullIfNotRepresentedAndAddressIsNullWhenRequestingPostalAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(NO)
             .contactDetailsType(PUBLIC)
             .build();
 
+        //Then
         assertThat(applicant.getPostalAddress()).isNull();
     }
 
     @Test
     void shouldReturnApplicantAddressIfNotRepresentedAndPrivateContactDetailsWhenRequestingCorrespondenceAddress() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(NO)
             .contactDetailsType(PRIVATE)
@@ -353,12 +390,14 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getPostalAddress())
             .isEqualTo("Correspondence Address\nLine 2\nLine 3\nPost Town\nPost Code");
     }
 
     @Test
     void shouldSplitAddressLine1WhenItIsMoreThan25CharactersAndAppendToLine2() {
+        //When
         final Applicant applicant = Applicant.builder()
             .solicitorRepresented(NO)
             .contactDetailsType(PRIVATE)
@@ -372,6 +411,7 @@ class ApplicantTest {
                 .build())
             .build();
 
+        //Then
         assertThat(applicant.getPostalAddress())
             .isEqualTo("Correspondence Apartment\nCorrespondence Street,Line 2,\nLine 3,\nPost Town\nPost Code");
     }

@@ -11,9 +11,14 @@ public enum ContactPreferenceType implements HasLabel {
 
 
 
-    @JsonProperty("Preference")
+    @JsonProperty("Email")
     EMAIL("Email", "Email"),
+    @JsonProperty("Post")
     POST("Post", "Post");
     private String type;
     private final String label;
+    public boolean isEmail() {
+        return EMAIL.name().equalsIgnoreCase(this.name());
+    }
+
 }

@@ -21,6 +21,7 @@ class StateTest {
             .toArray(new State[State.values().length]);
 
         //assertThat(State.values()).containsExactly(sortedStates);
+
     }
 
     private String getCcdName(State state) {
@@ -30,7 +31,7 @@ class StateTest {
             if (null == annotation) {
                 throw new AssertionError("CCD name not set for State");
             }
-            return annotation.name();
+            return annotation.label();
         } catch (final NoSuchFieldException e) {
             throw new AssertionError("Field not found in State");
         }

@@ -70,12 +70,15 @@ public class GeneralLetterTemplateContentTest {
 
     @Test
     public void shouldMapTemplateContentWhenRecipientIsApplicant1() {
+        //Given
         var caseData = buildCaseDataWithGeneralLetter(GeneralParties.APPLICANT);
 
         when(commonContent.getPartner(any(), any())).thenReturn("wife");
 
+        //When
         final Map<String, Object> templateContent = generalLetterTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(ISSUE_DATE, "16 March 2022"),
             entry(CASE_REFERENCE, FORMATTED_TEST_CASE_ID),
@@ -90,12 +93,15 @@ public class GeneralLetterTemplateContentTest {
 
     @Test
     public void shouldMapTemplateContentWhenRecipientIsApplicant2() {
+        //Given
         var caseData = buildCaseDataWithGeneralLetter(GeneralParties.RESPONDENT);
 
         when(commonContent.getPartner(any(), any())).thenReturn("husband");
 
+        //When
         final Map<String, Object> templateContent = generalLetterTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         assertThat(templateContent).contains(
             entry(ISSUE_DATE, "16 March 2022"),
             entry(CASE_REFERENCE, FORMATTED_TEST_CASE_ID),
@@ -110,6 +116,7 @@ public class GeneralLetterTemplateContentTest {
 
     @Test
     public void shouldMapTemplateContentWhenRecipientIsOther() {
+        //Given
         var caseData = buildCaseDataWithGeneralLetter(GeneralParties.OTHER);
         caseData.setDivorceOrDissolution(DivorceOrDissolution.DISSOLUTION);
         caseData.setApplicationType(ApplicationType.SOLE_APPLICATION);
@@ -120,8 +127,10 @@ public class GeneralLetterTemplateContentTest {
                 .postCode("B1 XXX")
             .build());
 
+        //When
         final Map<String, Object> templateContent = generalLetterTemplateContent.apply(caseData, TEST_CASE_ID);
 
+        //Then
         verifyNoInteractions(commonContent);
 
         assertThat(templateContent).contains(

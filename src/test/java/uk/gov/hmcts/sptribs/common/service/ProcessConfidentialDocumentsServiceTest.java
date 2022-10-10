@@ -59,7 +59,7 @@ public class ProcessConfidentialDocumentsServiceTest {
 
     @Test
     public void processDocumentsShouldMoveNOPDocumentsToConfidentialDocumentsGeneratedWhenContactIsPrivateForBothApplicants() {
-
+        //Given
         CaseData caseData = CaseData.builder()
             .applicant1(Applicant.builder().contactDetailsType(ContactDetailsType.PRIVATE).build())
             .applicant2(Applicant.builder().contactDetailsType(ContactDetailsType.PRIVATE).build())
@@ -68,8 +68,10 @@ public class ProcessConfidentialDocumentsServiceTest {
                 .build())
             .build();
 
+        //When
         documentsService.processDocuments(caseData, TEST_CASE_ID);
 
+        //Then
         List<ListValue<DivorceDocument>> nonConfidentialDocuments = caseData.getDocuments().getDocumentsGenerated();
         List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
@@ -90,7 +92,7 @@ public class ProcessConfidentialDocumentsServiceTest {
 
     @Test
     public void processDocumentsShouldMoveNOPDocumentsToConfidentialDocumentsGeneratedWhenContactIsPrivateForApplicant1() {
-
+        //Given
         CaseData caseData = CaseData.builder()
             .applicant1(Applicant.builder().contactDetailsType(ContactDetailsType.PRIVATE).build())
             .documents(CaseDocuments.builder()
@@ -98,8 +100,10 @@ public class ProcessConfidentialDocumentsServiceTest {
                 .build())
             .build();
 
+        //When
         documentsService.processDocuments(caseData, caseData.getApplicant1(), true);
 
+        //Then
         List<ListValue<DivorceDocument>> nonConfidentialDocuments = caseData.getDocuments().getDocumentsGenerated();
         List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
@@ -121,7 +125,7 @@ public class ProcessConfidentialDocumentsServiceTest {
 
     @Test
     public void processDocumentsShouldMoveNOPDocumentsToConfidentialDocumentsGeneratedWhenContactIsPrivateForApplicant2() {
-
+        //Given
         CaseData caseData = CaseData.builder()
             .applicant2(Applicant.builder().contactDetailsType(ContactDetailsType.PRIVATE).build())
             .documents(CaseDocuments.builder()
@@ -129,8 +133,10 @@ public class ProcessConfidentialDocumentsServiceTest {
                 .build())
             .build();
 
+        //When
         documentsService.processDocuments(caseData, caseData.getApplicant2(), false);
 
+        //Then
         List<ListValue<DivorceDocument>> nonConfidentialDocuments = caseData.getDocuments().getDocumentsGenerated();
         List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
@@ -152,7 +158,7 @@ public class ProcessConfidentialDocumentsServiceTest {
 
     @Test
     public void processDocumentsShouldNotMoveConfidentialDocumentsToDocumentsGeneratedWhenContactIsNotPrivateForApplicant1() {
-
+        //Given
         CaseData caseData = CaseData.builder()
             .applicant1(Applicant.builder().contactDetailsType(ContactDetailsType.PUBLIC).build())
             .documents(CaseDocuments.builder()
@@ -161,8 +167,10 @@ public class ProcessConfidentialDocumentsServiceTest {
                 .build())
             .build();
 
+        //When
         documentsService.processDocuments(caseData, caseData.getApplicant1(), true);
 
+        //Then
         List<ListValue<DivorceDocument>> nonConfidentialDocuments = caseData.getDocuments().getDocumentsGenerated();
         List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments = caseData.getDocuments().getConfidentialDocumentsGenerated();
 
@@ -184,7 +192,7 @@ public class ProcessConfidentialDocumentsServiceTest {
 
     @Test
     public void processDocumentsShouldNotMoveConfidentialDocumentsToDocumentsGeneratedWhenContactIsNotPrivateForApplicant2() {
-
+        //Given
         CaseData caseData = CaseData.builder()
             .applicant2(Applicant.builder().contactDetailsType(ContactDetailsType.PUBLIC).build())
             .documents(CaseDocuments.builder()
@@ -193,8 +201,10 @@ public class ProcessConfidentialDocumentsServiceTest {
                 .build())
             .build();
 
+        //When
         documentsService.processDocuments(caseData, caseData.getApplicant2(), false);
 
+        //Then
         List<ListValue<DivorceDocument>> nonConfidentialDocuments = caseData.getDocuments().getDocumentsGenerated();
         List<ListValue<ConfidentialDivorceDocument>> confidentialDocuments = caseData.getDocuments().getConfidentialDocumentsGenerated();
 

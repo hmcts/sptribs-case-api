@@ -9,7 +9,7 @@ java:
     CASE_DATA_STORE_BASEURL: "http://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
   keyVaults:
-    nfdiv:
+    sptribs:
       secrets:
         - name: AppInsightsInstrumentationKey-Preview
           alias: APP_INSIGHTS_KEY
@@ -23,6 +23,8 @@ java:
           alias: IDAM_SYSTEM_UPDATE_USERNAME
         - name: idam-systemupdate-password
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
+        - name: launchdarkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
 
 ccd:
   ccd:
@@ -67,8 +69,8 @@ ccd:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,divorce_frontend,nfdiv_case_api
-        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,fpl_case_service,finrem_case_orchestration,iac,divorce_frontend,civil_service,nfdiv_case_api
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,divorce_frontend,sptribs_case_api
+        CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,fpl_case_service,finrem_case_orchestration,iac,divorce_frontend,civil_service,sptribs_case_api
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
@@ -125,7 +127,6 @@ ccd:
       users:
         - divorce_as_caseworker_beta@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_solicitor@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
-        - divorce_as_caseworker_bulk_scanner@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_superuser@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_la@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
         - divorce_as_caseworker_admin@mailinator.com|DIVORCE|NO_FAULT_DIVORCE|Submitted
@@ -227,17 +228,6 @@ xui-mo-webapp:
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       CASE_TYPES: NFD
-
-nfdiv-frontend:
-  enabled: true
-  nodejs:
-    imagePullPolicy: Always
-    releaseNameOverride: ${SERVICE_NAME}-frontend
-    image: hmctspublic.azurecr.io/nfdiv/frontend:latest #pr-xxxx
-    ingressHost: frontend-${SERVICE_FQDN}
-    environment:
-      CCD_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      SKIP_DIV_CASE_CHECK: true
 
 aac-manage-case-assignment:
   enabled: true

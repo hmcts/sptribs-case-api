@@ -31,7 +31,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 public class CaseDocumentsCIC {
 
     @CCD(
-        label = "Add a file" + "\nUpload a file to the system",
+        label = "Upload a file to the system",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
         access = {DefaultAccess.class}
@@ -53,6 +53,8 @@ public class CaseDocumentsCIC {
         return list;
     }
 
+
+
     public static <T> List<ListValue<T>> sortByNewest(final List<ListValue<T>> previous, final List<ListValue<T>> updated) {
         if (isEmpty(previous)) {
             return updated;
@@ -72,21 +74,20 @@ public class CaseDocumentsCIC {
         return sortDocuments(documentsWithoutIds);
     }
 
-    private static <T> List<ListValue<T>> sortDocuments(final Map<Boolean, List<ListValue<T>>> documentsWithoutIds) {
+    public static <T> List<ListValue<T>> sortDocuments(final Map<Boolean, List<ListValue<T>>> documentsWithoutIds) {
         final List<ListValue<T>> sortedDocuments = new ArrayList<>();
         final var newDocuments = documentsWithoutIds.get(true);
-        final var previousDocuments = documentsWithoutIds.getOrDefault(false, new ArrayList<>());
+
 
         if (null != newDocuments) {
             sortedDocuments.addAll(0, newDocuments); // add new documents to start of the list
-            sortedDocuments.addAll(1, previousDocuments);
             sortedDocuments.forEach(
                 uploadedDocumentListValue -> uploadedDocumentListValue.setId(String.valueOf(randomUUID()))
             );
             return sortedDocuments;
         }
 
-        return previousDocuments;
+        return documentsWithoutIds.getOrDefault(false, new ArrayList<>());
     }
 
     public static <T> boolean hasAddedDocuments(final List<ListValue<T>> after,

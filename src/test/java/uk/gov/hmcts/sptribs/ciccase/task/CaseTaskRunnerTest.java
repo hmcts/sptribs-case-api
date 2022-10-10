@@ -13,11 +13,12 @@ class CaseTaskRunnerTest {
 
     @Test
     void shouldReturnReducedFunctionWrappedInCaseTaskRunnerAndBeAppliedToCaseDetails() {
-
+        //Given
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
 
+        //When
         final CaseDetails<CaseData, State> result = caseTasks(
             cd -> {
                 cd.getData().setApplicant1(Applicant.builder().firstName("first name").build());
@@ -26,6 +27,7 @@ class CaseTaskRunnerTest {
             new TestCaseTask()
         ).run(caseDetails);
 
+        //Then
         assertThat(result.getData().getApplicant1())
             .extracting(Applicant::getFirstName, Applicant::getLastName)
             .contains("first name", "last name");

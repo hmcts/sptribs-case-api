@@ -74,6 +74,7 @@ public class NoticeOfProceedingSolicitorContentTest {
 
     @Test
     public void shouldMapTemplateContentForSoleDivorceApplication() {
+        //Given
         Applicant applicant1 = applicantRepresentedBySolicitor();
         applicant1.getSolicitor().setOrganisationPolicy(organisationPolicy());
         applicant1.getSolicitor().setAddress(ADDRESS);
@@ -92,8 +93,10 @@ public class NoticeOfProceedingSolicitorContentTest {
         when(holdingPeriodService.getRespondByDateFor(APPLICATION_ISSUE_DATE))
             .thenReturn(APPLICATION_ISSUE_DATE.plusDays(16));
 
+        //When
         final Map<String, Object> templateContent = applicantSolicitorNopContent.apply(caseData, TEST_CASE_ID, true);
 
+        //Then
         assertThat(templateContent)
             .contains(
                 entry(ISSUE_DATE, "30 March 2022"),
@@ -119,6 +122,7 @@ public class NoticeOfProceedingSolicitorContentTest {
 
     @Test
     public void shouldMapTemplateContentForReissueSoleDivorceApplication() {
+        //Given
         Applicant applicant1 = applicantRepresentedBySolicitor();
         applicant1.getSolicitor().setOrganisationPolicy(organisationPolicy());
         applicant1.getSolicitor().setAddress(ADDRESS);
@@ -138,8 +142,10 @@ public class NoticeOfProceedingSolicitorContentTest {
         when(holdingPeriodService.getRespondByDateFor(APPLICATION_ISSUE_DATE))
             .thenReturn(APPLICATION_ISSUE_DATE.plusDays(16));
 
+        //When
         final Map<String, Object> templateContent = applicantSolicitorNopContent.apply(caseData, TEST_CASE_ID, true);
 
+        //Then
         assertThat(templateContent).contains(
             entry(ISSUE_DATE, "30 March 2022"),
             entry(DUE_DATE, "15 April 2022"),
@@ -164,6 +170,7 @@ public class NoticeOfProceedingSolicitorContentTest {
 
     @Test
     public void shouldMapTemplateContentForJointDivorceApplicationWithOneSolicitorApplyingForBothParties() {
+        //Given
         Applicant applicant1 = applicantRepresentedBySolicitor();
         applicant1.getSolicitor().setOrganisationPolicy(organisationPolicy());
         applicant1.getSolicitor().setAddress(ADDRESS);
@@ -181,8 +188,10 @@ public class NoticeOfProceedingSolicitorContentTest {
                 .build())
             .build();
 
+        //When
         final Map<String, Object> templateContent = applicantSolicitorNopContent.apply(caseData, TEST_CASE_ID, true);
 
+        //Then
         assertThat(templateContent)
             .doesNotContain(
                 entry(DUE_DATE, "15 April 2022"))

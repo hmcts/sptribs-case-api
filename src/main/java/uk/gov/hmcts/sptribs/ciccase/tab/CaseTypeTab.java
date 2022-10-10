@@ -7,20 +7,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AosDrafted;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AosOverdue;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingAos;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingDocuments;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHWFDecision;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingPayment;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingService;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASE_WORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.LEGAL_ADVISOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.tab.TabShowCondition.notShowForState;
 
 @Component
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
@@ -39,19 +27,34 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        buildWarningsTab(configBuilder);
+        buildSummaryTab(configBuilder);
         buildStateTab(configBuilder);
         buildAosTab(configBuilder);
         buildPaymentTab(configBuilder);
         buildLanguageTab(configBuilder);
         buildDocumentsTab(configBuilder);
         buildNotesTab(configBuilder);
+        buildCaseDetailsTab(configBuilder);
+        buildCasePartiesTab(configBuilder);
     }
 
-    private void buildWarningsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("transformationAndOcrWarningsTab", "Warnings")
-            .showCondition("warnings!=\"\"")
-            .field("warnings");
+    private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("summary", "Summary")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("LabelState", null, "#### Case Status:  ${[STATE]}")
+            .label("case-details", null, "### Case details")
+            .field("cicCaseFullName")
+            .field("cicCaseDateOfBirth")
+            .field("cicCaseEmail")
+            .field(CaseData::getHyphenatedCaseRef)
+            .field("cicCaseIsRepresentativePresent")
+            .label("representativeDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
+            .field("cicCaseIsRepresentativeQualified")
+            .field("cicCaseRepresentativeOrgName")
+            .field("cicCaseRepresentativeFullName")
+            .field("cicCaseRepresentativePhoneNumber")
+            .field("cicCaseRepresentativeEmailAddress")
+            .field("cicCaseRepresentativeReference");
     }
 
     private void buildStateTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -60,15 +63,11 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("LabelState", null, "#### Case State:  ${[STATE]}");
     }
 
-    //TODO: Need to revisit this tab once the field stated in the ticket NFDIV-595 are available
+    //TODO: Need to revisit this tab once the field stated in the ticket sptribs-595 are available
     private void buildAosTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("aosDetails", "AoS")
-            .forRoles(CASE_WORKER, LEGAL_ADVISOR,
-                SUPER_USER, APPLICANT_1_SOLICITOR)
-            .showCondition("applicationType=\"soleApplication\" AND "
-                + notShowForState(
-                    Draft, AwaitingHWFDecision, AwaitingPayment, Submitted, AwaitingDocuments,
-                    AwaitingAos, AosDrafted, AosOverdue, AwaitingService))
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .showCondition("applicationType=\"soleApplication\"")
             .field("applicant2Offline", "applicationType=\"NEVER_SHOW\"")
             .label("LabelAosTabOnlineResponse-Heading", "applicant2Offline=\"No\"", "## This is an online AoS response")
             .label("LabelAosTabOfflineResponse-Heading", "applicant2Offline=\"Yes\"", "## This is an offline AoS response")
@@ -92,7 +91,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildPaymentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("paymentDetailsCourtAdmin", "Payment")
-            .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("LabelApplicant1-PaymentHeading", IS_JOINT, "### The applicant")
             .field("applicant1HWFReferenceNumber")
             .label("LabelApplicant2-PaymentHeading", IS_JOINT_AND_HWF_ENTERED, "### ${labelContentTheApplicant2UC}")
@@ -139,7 +138,76 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildNotesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("notes", "Notes")
-            .forRoles(CASE_WORKER, LEGAL_ADVISOR, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .field(CaseData::getNotes);
+    }
+
+    private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseDetails", "Case Details")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("case-details", null, "### Case details")
+            .field("cicCaseCaseCategory")
+            .field("cicCaseCaseReceivedDate")
+            .field("cicCaseCaseSubcategory")
+            .field("cicCaseDateOfBirth")
+            .field("cicCaseEmail")
+            .field("cicCaseFullName")
+            .field("cicCasePhoneNumber")
+            .label("objectSubjects", null, "### Object Subjects")
+            .field("cicCaseSubjectCIC")
+            .field("cicCaseRepresentativeCIC")
+            .field("cicCaseRepresentativeFullName")
+            .field("cicCaseRepresentativeOrgName")
+            .field("cicCaseRepresentativeAddress")
+            .field("cicCaseRepresentativePhoneNumber")
+            .field("cicCaseRepresentativeEmailAddress")
+            .field("cicCaseRepresentativeReference")
+            .field("cicCaseIsRepresentativeQualified")
+            .field("cicCaseRepresentativeContactDetailsPreference")
+            .field("cicCaseAddress")
+            .label("applicantDetails", null, "### Applicant Details")
+            .field("cicCaseApplicantFullName")
+            .field("cicCaseApplicantDateOfBirth")
+            .field("cicCaseApplicantPhoneNumber")
+            .field("cicCaseApplicantContactDetailsPreference")
+            .field("cicCaseApplicantEmailAddress")
+            .field("cicCaseApplicantAddress")
+            .label("submission-details", null, "### Submission details")
+            .field("dateSubmitted");
+    }
+
+    private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseParties", "Case Parties")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("Subject's details",null,"### Subject's details")
+            .field("cicCaseFullName")
+            .field("cicCaseEmail")
+            .field("cicCasePhoneNumber")
+            .field("cicCaseDateOfBirth")
+            .field("cicCaseContactPreferenceType")
+            .field("cicCaseAddress")
+            .label("Applicant's details", "cicCaseApplicantFullName!=\"\"", "### Applicant's details")
+            .field("cicCaseApplicantFullName")
+            .field("cicCaseApplicantEmailAddress")
+            .field("cicCaseApplicantPhoneNumber")
+            .field("cicCaseApplicantDateOfBirth")
+            .field("cicCaseApplicantContactDetailsPreference")
+            .field("cicCaseApplicantAddress")
+            .label("Representative's details", "cicCaseRepresentativeFullName!=\"\"", "### Representative's details")
+            .field("cicCaseRepresentativeFullName")
+            .field("cicCaseRepresentativeOrgName")
+            .field("cicCaseRepresentativeAddress")
+            .field("cicCaseRepresentativePhoneNumber")
+            .field("cicCaseRepresentativeEmailAddress")
+            .field("cicCaseRepresentativeReference")
+            .field("cicCaseIsRepresentativeQualified")
+            .field("cicCaseRepresentativeContactDetailsPreference")
+            .field("cicCaseRepresentativeAddress")
+            .label("Respondant's details", null, "### Respondant's details")
+            .field("cicCaseRespondantName")
+            .field("cicCaseRespondantOrganisation")
+            .field("cicCaseRespondantEmail");
+
+
     }
 }
