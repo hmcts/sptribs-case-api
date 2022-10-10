@@ -21,12 +21,10 @@ public class SendSubmissionNotifications implements CaseTask {
 
         if (state == Submitted) {
             log.info("Sending application submitted notifications for case : {}", caseId);
-            //notificationDispatcher.send(applicationSubmittedNotification, caseData, caseId);
         }
 
         log.info("Sending outstanding action notification if awaiting documents for case : {}", caseId);
-        //notificationDispatcher.send(applicationOutstandingActionNotification, caseData, caseId);
-
+        
         return caseDetails;
     }
 }
