@@ -16,18 +16,15 @@ public class SendSubmissionNotifications implements CaseTask {
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
 
-        // final CaseData caseData = caseDetails.getData();
         final Long caseId = caseDetails.getId();
         final State state = caseDetails.getState();
 
         if (state == Submitted) {
             log.info("Sending application submitted notifications for case : {}", caseId);
-            //notificationDispatcher.send(applicationSubmittedNotification, caseData, caseId);
         }
 
         log.info("Sending outstanding action notification if awaiting documents for case : {}", caseId);
-        //notificationDispatcher.send(applicationOutstandingActionNotification, caseData, caseId);
-
+        
         return caseDetails;
     }
 }
