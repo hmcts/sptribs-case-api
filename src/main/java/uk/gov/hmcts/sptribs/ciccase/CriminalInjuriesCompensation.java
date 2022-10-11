@@ -24,7 +24,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, 
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
         configBuilder.caseType(CcdCaseType.CIC.name(), "CIC Case Type", CcdCaseType.CIC.getDescription());
-        configBuilder.jurisdiction(CcdServiceCode.CIC.getCcdServiceName(), "CIC", CcdServiceCode.CIC.getCcdServiceDescription());
+        configBuilder.jurisdiction(JURISDICTION, "CIC", CcdServiceCode.CIC.getCcdServiceDescription());
 
         // to shutter the service within xui uncomment this line
         // configBuilder.shutterService();
