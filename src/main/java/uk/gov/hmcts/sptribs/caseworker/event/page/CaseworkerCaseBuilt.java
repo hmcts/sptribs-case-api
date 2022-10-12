@@ -54,7 +54,6 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        //TODO: Update the message in confirmation page
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case built successful"))
             .build();
