@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
+import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
+import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -22,6 +24,9 @@ public class CftLibConfig implements CFTLibConfigurer {
     @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
     String defName;
 
+    @Value("Submitted")
+    String state;
+
 
     @Autowired
     CCDDefinitionGenerator configWriter;
@@ -33,7 +38,13 @@ public class CftLibConfig implements CFTLibConfigurer {
             "TEST_CASE_WORKER_USER@mailinator.com",
             "TEST_SOLICITOR@mailinator.com",
             "divorce_as_caseworker_admin@mailinator.com")) {
-            lib.createProfile(p, "DIVORCE", "NO_FAULT_DIVORCE", "Submitted");
+            lib.createProfile(p, "DIVORCE", "NO_FAULT_DIVORCE", state);
+            lib.createProfile(p, CcdServiceCode.CIC.getCcdServiceName(), CcdCaseType.CIC.name(), state);
+            lib.createProfile(p, CcdServiceCode.CS.getCcdServiceName(), CcdCaseType.CS.name(), state);
+            lib.createProfile(p, CcdServiceCode.MH.getCcdServiceName(), CcdCaseType.MH.name(), state);
+            lib.createProfile(p, CcdServiceCode.PHL.getCcdServiceName(), CcdCaseType.PHL.name(), state);
+            lib.createProfile(p, CcdServiceCode.SEN.getCcdServiceName(), CcdCaseType.SEN.name(), state);
+            lib.createProfile(p, CcdServiceCode.DD.getCcdServiceName(), CcdCaseType.DD.name(), state);
         }
 
         lib.createRoles(
