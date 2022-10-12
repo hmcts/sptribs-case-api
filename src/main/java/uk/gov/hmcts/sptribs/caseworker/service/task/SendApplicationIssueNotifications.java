@@ -7,19 +7,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationIssuedNotification;
-import uk.gov.hmcts.sptribs.common.notification.ApplicationIssuedOverseasNotification;
 import uk.gov.hmcts.sptribs.notification.NotificationDispatcher;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingService;
 
 @Component
 public class SendApplicationIssueNotifications implements CaseTask {
 
     @Autowired
     private ApplicationIssuedNotification applicationIssuedNotification;
-
-    @Autowired
-    private ApplicationIssuedOverseasNotification applicationIssuedOverseasNotification;
 
     @Autowired
     private NotificationDispatcher notificationDispatcher;
@@ -31,13 +26,6 @@ public class SendApplicationIssueNotifications implements CaseTask {
         final Long caseId = caseDetails.getId();
 
         notificationDispatcher.send(applicationIssuedNotification, caseData, caseId);
-
-        if (caseDetails.getState() == AwaitingService
-            && caseData.getApplicationType().isSole()
-            && (caseData.getApplicant2().isBasedOverseas()
-            || caseData.getApplication().isPersonalServiceMethod())) {
-            notificationDispatcher.send(applicationIssuedOverseasNotification, caseData, caseId);
-        }
 
         return caseDetails;
     }
