@@ -16,7 +16,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class DocAssemblyService {
-
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
 
@@ -29,6 +28,7 @@ public class DocAssemblyService {
     @Autowired
     private DocmosisTemplateProvider docmosisTemplateProvider;
 
+
     public DocumentInfo renderDocument(final Map<String, Object> templateContent,
                                        final Long caseId,
                                        final String authorisation,
@@ -37,6 +37,7 @@ public class DocAssemblyService {
                                        final String filename) {
 
         final String templateName = docmosisTemplateProvider.templateNameFor(templateId, languagePreference);
+        System.out.println("===========================================___________=++++++++++++++=" + templateName);
 
         final DocAssemblyRequest docAssemblyRequest =
             DocAssemblyRequest
