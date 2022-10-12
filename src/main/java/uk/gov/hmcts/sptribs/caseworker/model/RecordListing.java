@@ -13,8 +13,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
-import java.util.Set;
-
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 
 @Data
@@ -31,7 +29,7 @@ public class RecordListing {
         typeParameterOverride = "HearingType",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<HearingType> hearingType;
+    private HearingType hearingType;
 
     @CCD(
         label = "Hearing format",
@@ -39,6 +37,6 @@ public class RecordListing {
         typeParameterOverride = "HearingFormat",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<HearingFormat> hearingFormat;
+    private HearingFormat hearingFormat;
 
 }

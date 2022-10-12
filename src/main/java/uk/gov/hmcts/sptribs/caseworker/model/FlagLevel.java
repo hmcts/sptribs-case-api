@@ -10,10 +10,10 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 public enum FlagLevel implements HasLabel {
 
     @JsonProperty("PartyLevel")
-    PARTY_LEVEL("PartyLevel", "PartyLevel"),
+    PARTY_LEVEL("PartyLevel", "Party"),
 
     @JsonProperty("CaseLevel")
-    CASE_LEVEL("CaseLevel", "CaseLevel");
+    CASE_LEVEL("CaseLevel", "Case");
 
 
     private final String type;

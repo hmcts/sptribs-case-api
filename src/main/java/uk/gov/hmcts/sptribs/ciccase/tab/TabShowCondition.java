@@ -11,12 +11,6 @@ public final class TabShowCondition {
     private TabShowCondition() {
     }
 
-    public static String notShowForState(final State... states) {
-        return Stream.of(states)
-            .map(State::getName)
-            .collect(joining("\" AND [STATE]!=\"", "[STATE]!=\"", "\""));
-    }
-
     public static String showForState(final State... states) {
         return Stream.of(states)
             .map(State:: getName)
