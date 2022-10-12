@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -61,9 +60,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Listing record created %n##"
-                + " A notification has been sent via email to: Subject, Representative, Respondent %n##"
-                + " If any changes are made to this hearing, remember to make those changes in this listing record"))
+            .confirmationHeader(format("# Listing record created"))
             .build();
     }
 
