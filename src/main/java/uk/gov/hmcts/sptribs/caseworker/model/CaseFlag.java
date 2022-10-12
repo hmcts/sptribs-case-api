@@ -78,7 +78,6 @@ public class CaseFlag {
     )
     private List<ListValue<CaseFlagDisplay>> caseLevelFlags;
 
-    @SuppressWarnings("unchecked")
     public List<ListValue<CaseFlagDisplay>> getPartyLevelFlags() {
         List<ListValue<CaseFlagDisplay>> responseList = new ArrayList<>();
         if (this.caseFlags != null) {
@@ -93,7 +92,6 @@ public class CaseFlag {
         ).collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
     public List<ListValue<CaseFlagDisplay>> getCaseLevelFlags() {
         List<ListValue<CaseFlagDisplay>> responseList = new ArrayList<>();
         if (this.caseFlags != null) {
@@ -108,8 +106,6 @@ public class CaseFlag {
         ).collect(Collectors.toList());
     }
 
-
-    @SuppressWarnings("unchecked")
     private List<ListValue<CaseFlagDisplay>> addToList(ListValue<Flags> flag, List<ListValue<CaseFlagDisplay>> responseList) {
 
         CaseFlagDisplay display = new CaseFlagDisplay(flag.getValue().getPartyName(),
