@@ -37,23 +37,13 @@ public class HearingDate {
     @JsonFormat(pattern = "HH:mm")
     private LocalDateTime startTime;
 
-    @CCD(
-        label = "Will this hearing take place across a number of days?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private YesOrNo numberOfDays;
-
 
     @JsonCreator
     public HearingDate(@JsonProperty("hearingDate") LocalDate hearinngDate,
                        @JsonProperty("session") HearingSession session,
-                       @JsonProperty("startTime") LocalDateTime startTime,
-                       @JsonProperty("numberOfDays") YesOrNo numberOfDays) {
+                       @JsonProperty("startTime") LocalDateTime startTime) {
         this.hearingDate = hearinngDate;
         this.session = session;
         this.startTime = startTime;
-        this.numberOfDays = numberOfDays;
-
-
     }
 }
