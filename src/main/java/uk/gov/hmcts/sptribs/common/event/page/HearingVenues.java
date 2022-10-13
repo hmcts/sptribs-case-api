@@ -33,10 +33,9 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(RecordListing::getHearingVenue)
             .optional(RecordListing::getRoomAtVenue)
             .optional(RecordListing::getAddlInstr)
-            .label("hearingDateObj", "<h4>Hearing date</h4>")
-            .mandatory(RecordListing::getHearingDate)
+            .label("hearingDateObj", "<h4>Hearing 1,date and start time</h4>")
+            .mandatory(RecordListing::getHearingDateTime)
             .mandatory(RecordListing::getSession)
-            .mandatory(RecordListing::getStartTime)
             .mandatory(RecordListing::getNumberOfDays)
             .mandatory(RecordListing::getAdditionalHearingDate, "recordNumberOfDays = \"Yes\"")
             .done();
