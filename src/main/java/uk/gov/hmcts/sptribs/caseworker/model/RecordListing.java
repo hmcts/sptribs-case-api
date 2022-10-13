@@ -81,20 +81,14 @@ public class RecordListing {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate hearingDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime hearingDateTime;
 
     @CCD(
         label = "Session",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingSession session;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonFormat(pattern = "HH:mm")
-    private LocalDateTime startTime;
 
     @CCD(
         label = "Will this hearing take place across a number of days?",
