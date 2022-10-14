@@ -430,6 +430,9 @@ bootWithCCD {
             environment key, value
         }
         //environment 'CITIZEN_UPDATE_CASE_STATE_ENABLED', 'true'
+      environment 'RSE_LIB_CLEAN_BOOT', 'true'
+      environment 'launchdarkly.env', 'localhost'
+      environment 'launchdarkly.sdk-key', 'sdk-2fecca97-0702-4e9d-a3d7-203c2b481d4b'
     }
 }
 

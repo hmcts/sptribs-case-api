@@ -11,11 +11,23 @@
     "node": ">=12.0.0"
   },
   "scripts": {
+    "test": "npx codeceptjs run --config e2e/codecept.conf.ts --grep @test",
     "prepublishOnly": "npm run genCaseTypeConsts && npm run genCitizenEventNameConsts && npm run genCommonEventNameConsts && npm run genSystemEventNameConsts && npm run genCourtLabelConsts",
     "genCaseTypeConsts": "grep -rh \\\"public static final String\\\" ./src/main/java/uk/gov/hmcts/sptribs/ciccase/NoFaultDivorce.java | sed \\\"s/    public static final String/export const/\\\" >> ./build/ts/index.ts",
     "genCitizenEventNameConsts": "grep -rh \"public static final String\" ./src/main/java/uk/gov/hmcts/sptribs/citizen/event | sed \"s/    public static final String/export const/\" >> ./build/ts/index.ts",
     "genCommonEventNameConsts": "grep -rh \"public static final String\" ./src/main/java/uk/gov/hmcts/sptribs/common/event | sed \"s/    public static final String/export const/\" >> ./build/ts/index.ts",
     "genSystemEventNameConsts": "grep -rh \"public static final String\" ./src/main/java/uk/gov/hmcts/sptribs/systemupdate/event | sed \"s/    public static final String/export const/\" >> ./build/ts/index.ts",
     "genCourtLabelConsts": "grep -rh \\\"public static final String\\\" ./src/main/java/uk/gov/hmcts/sptribs/ciccase/constant | sed \\\"s/    public static final String/export const/\\\" >> ./build/ts/index.ts"
+  },
+  "dependencies": {
+    "@codeceptjs/ui": "^0.4.7",
+    "codeceptjs": "^3.3.6"
+  },
+  "devDependencies": {
+    "@codeceptjs/configure": "^0.10.0",
+    "@types/node": "18.8.4",
+    "playwright": "^1.27.1",
+    "ts-node": "10.9.1",
+    "typescript": "4.8.4"
   }
 }
