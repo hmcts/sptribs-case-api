@@ -15,11 +15,14 @@ export const config: CodeceptJS.MainConfig = {
     Playwright: {
       url: 'http://localhost:3000',
       show: true,
-      browser: 'chromium'
+      browser: 'chromium',
+      waitForNavigation: 'networkidle0',
+      waitForTimeout: 30000,
+      waitForAction: 200
     }
   },
   include: {
-    I: './custom_steps.ts'
+    I: './steps_file.ts'
   },
   plugins: {
     autoDelay: {

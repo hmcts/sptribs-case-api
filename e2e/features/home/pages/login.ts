@@ -18,7 +18,9 @@ class LoginPage {
 
   acceptCookies () {
     I.click(buttons.acceptCookies);
+    I.waitForInvisible(buttons.acceptCookies);
     I.click(buttons.hideMessage);
+    I.waitForInvisible(buttons.hideMessage);
   }
 
   login (email: string, password: string) {
