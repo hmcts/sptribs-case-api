@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -8,17 +8,14 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -26,60 +23,39 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
-
-    private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+    public static final String CASEWORKER_CASE_BUILT = "caseworker-case-built";
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(CASEWORKER_RECORD_LISTING)
-            .forStates(CaseManagement)
-            .name("Record listing")
-            .showSummary()
-            .description("Record listing")
+    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        new PageBuilder(configBuilder
+            .event(CASEWORKER_CASE_BUILT)
+            .forStates(Submitted)
+            .name("Case built")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
-
-        addHearingTypeAndFormat(pageBuilder);
-        addListingDetails(pageBuilder);
     }
 
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
+        log.info("Caseworker case built callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(AwaitingHearing)
+            .state(CaseManagement)
             .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Listing record created"))
+            .confirmationHeader(format("# Case built successful"))
             .build();
-    }
-
-    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat")
-            .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .done();
-    }
-
-    private void addListingDetails(PageBuilder pageBuilder) {
-        hearingVenues.addTo(pageBuilder);
     }
 }
