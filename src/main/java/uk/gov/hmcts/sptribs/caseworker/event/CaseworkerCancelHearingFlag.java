@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.caseworker.event.page.HearingCancellationReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingDateSelect;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -24,13 +23,11 @@ public class CaseworkerCancelHearingFlag implements CCDConfig<CaseData, State, U
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
 
     private static final CcdPageConfiguration hearingDateSelect = new HearingDateSelect();
-    private static final CcdPageConfiguration hearingCancellationReasonSelect = new HearingCancellationReasonSelect();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = cancelStart(configBuilder);
         hearingDateSelect.addTo(pageBuilder);
-        hearingCancellationReasonSelect.addTo(pageBuilder);
     }
 
     public PageBuilder cancelStart(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -40,9 +37,11 @@ public class CaseworkerCancelHearingFlag implements CCDConfig<CaseData, State, U
             .name("Cancel hearing")
             .description("Cancel hearing")
             .showEventNotes()
+            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
     }
+
 
 }
