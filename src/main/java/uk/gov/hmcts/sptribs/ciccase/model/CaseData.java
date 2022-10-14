@@ -280,7 +280,7 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "paperForm")
     @Builder.Default
-    @CCD(access = {CaseworkerAccess.class}) // TODO: Santoshini: check if its ok to change to caseworkeraccess
+    @CCD(access = {CaseworkerAccess.class})
     private PaperFormDetails paperFormDetails = new PaperFormDetails();
 
     @CCD(
