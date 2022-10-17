@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.DocumentManagementClient;
+import uk.gov.hmcts.sptribs.hearingvenue.LocationClient;
 import uk.gov.hmcts.sptribs.payment.FeesAndPaymentsClient;
 import uk.gov.hmcts.sptribs.payment.PaymentPbaClient;
 import uk.gov.hmcts.sptribs.solicitor.client.organisation.OrganisationClient;
@@ -35,6 +36,7 @@ import javax.annotation.PostConstruct;
         ServiceAuthorisationApi.class,
         CaseUserApi.class,
         FeesAndPaymentsClient.class,
+        LocationClient.class,
         DocAssemblyClient.class,
         CoreCaseDataApi.class,
         CaseAssignmentApi.class,

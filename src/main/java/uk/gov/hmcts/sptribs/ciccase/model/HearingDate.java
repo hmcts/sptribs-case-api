@@ -7,11 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,8 +20,8 @@ public class HearingDate {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate hearingDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime hearingDateTime;
 
     @CCD(
         label = "Session",
@@ -31,19 +29,10 @@ public class HearingDate {
     )
     private HearingSession session;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime startTime;
-
-
     @JsonCreator
-    public HearingDate(@JsonProperty("hearingDate") LocalDate hearinngDate,
-                       @JsonProperty("session") HearingSession session,
-                       @JsonProperty("startTime") LocalDateTime startTime) {
-        this.hearingDate = hearinngDate;
+    public HearingDate(@JsonProperty("hearingDate") LocalDateTime hearingDateTime,
+                       @JsonProperty("session") HearingSession session) {
+        this.hearingDateTime = hearingDateTime;
         this.session = session;
-        this.startTime = startTime;
     }
 }

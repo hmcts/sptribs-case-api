@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
@@ -54,7 +55,7 @@ public class RecordListing {
         label = "Hearing venue",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String hearingVenue;
+    private DynamicList hearingVenues;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -97,7 +98,7 @@ public class RecordListing {
     private YesOrNo numberOfDays;
 
     @CCD(
-        label = "Add another hearing date",
+        label = "Hearing, date and start time",
         typeOverride = Collection,
         typeParameterOverride = "HearingDate",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

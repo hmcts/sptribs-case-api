@@ -22,18 +22,17 @@ import java.util.List;
 @Component
 public class HearingVenues implements CcdPageConfiguration {
 
-    @Autowired
-    private PaymentService paymentService;
+
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("listingDetails", this::midEvent)
             .label("listingDetailsObj", "<h1>Listing details</h1>")
             .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingVenue)
+            .mandatory(RecordListing::getHearingVenues)
             .optional(RecordListing::getRoomAtVenue)
             .optional(RecordListing::getAddlInstr)
-            .label("hearingDateObj", "<h4>Hearing 1,date and start time</h4>")
+            .label("hearingDateObj", "<h4>Hearing, date and start time</h4>")
             .mandatory(RecordListing::getHearingDateTime)
             .mandatory(RecordListing::getSession)
             .mandatory(RecordListing::getNumberOfDays)
@@ -45,7 +44,7 @@ public class HearingVenues implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent("other", "enforcement", "BailiffServeDoc");
+
 
         data.getRecordListing().setHearingVenueName("name");
         data.getRecordListing().setHearingVenueAddress("address");
