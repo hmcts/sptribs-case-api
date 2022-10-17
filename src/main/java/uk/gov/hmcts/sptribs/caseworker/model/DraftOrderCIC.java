@@ -41,16 +41,5 @@ public class DraftOrderCIC {
     )
     private String mainContentToBeEdited;
 
-//    @CCD(
-//        //hint = "Amend content as required",
-//        //typeOverride = Collection,
-//        access = {CaseworkerAndSuperUserAccess.class}
-//    )
-    //private DocmosisTemplatesConfig docmosis;
-
-//    private DocmosisTemplatesConfig getDocmosis() {
-//        return docmosis;
-//    }
-
 
 }
