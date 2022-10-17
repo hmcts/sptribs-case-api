@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -10,19 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.config.DocmosisTemplatesConfig;
-import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
-import uk.gov.hmcts.sptribs.document.DocAssemblyService;
-import uk.gov.hmcts.sptribs.document.content.DraftEditTemplateContentCIC;
-import uk.gov.hmcts.sptribs.idam.IdamService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
@@ -30,10 +19,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.GENERAL_LETTER;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.GENERAL_LETTER_TEMPLATE_ID;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME;
 
 @Component
 @Slf4j
@@ -42,16 +27,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
     public static final String CIC_CASE_FULL_NAME = "cicCaseFullName";
 
-    @Autowired
-    private CaseDataDocumentService caseDataDocumentService;
-    @Autowired
-    private DraftEditTemplateContentCIC templateContent;
-    @Autowired
-    private DocAssemblyService docAssemblyService;
-    @Autowired
-    private IdamService idamService;
-    @Autowired
-    private DocmosisTemplatesConfig docmosisTemplatesConfig;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
@@ -68,7 +44,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         editDraftOrder(pageBuilder);
 
 
-
     }
 
 
@@ -79,21 +54,19 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .label("editableDraft", "Draft to be edited")
             .complex(CaseData::getDraftOrderCIC)
             .mandatory(DraftOrderCIC::getOrderTemplate, "")
-            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\n<h4>First tier tribunal Health lists</h4>\n\n" +
-                "<h3>IN THE MATTER OF THE NATIONAL HEALTH SERVICES (PERFORMERS LISTS)(ENGLAND) REGULATIONS 2013</h2>\n\n"
-                + "&lt; &lt; CaseNumber &gt; &gt; \n"
+            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\n<h4>First tier tribunal Health lists</h4>\n\n"
+                + "<h3>IN THE MATTER OF THE NATIONAL HEALTH SERVICES (PERFORMERS LISTS)(ENGLAND) REGULATIONS 2013</h2>\n\n"
+                + "&lt; &lt; CaseNumber &gt; &gt;\n"
                 + "\nBETWEEN\n"
-                + "\n&lt; &lt; SubjectName &gt; &gt; \n"
+                + "\n&lt; &lt; SubjectName &gt; &gt;\n"
                 + "\nApplicant\n" + "\n<RepresentativeName>" + "\nRespondent<hr>"
                 + "\n<h3>Main content</h3>\n\n ")
             .optional(DraftOrderCIC::getMainContentToBeEdited)
-            .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n" +
-                "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
+            .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
+                + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
 
             .done();
     }
-
-
 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
