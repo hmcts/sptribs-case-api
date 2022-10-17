@@ -274,6 +274,7 @@ public class CaseData {
     @JsonUnwrapped
     private RetiredFields retiredFields;
 
+
     @CCD(
         label = "Case number",
         access = {CaseworkerAccess.class}

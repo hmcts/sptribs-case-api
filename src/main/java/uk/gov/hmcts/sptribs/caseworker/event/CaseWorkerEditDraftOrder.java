@@ -12,10 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -24,55 +22,68 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-    DocmosisTemplateProvider doc = new DocmosisTemplateProvider();
+public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String CASEWORKER_CREATE_DRAFT_ORDER = "caseworker-create-draft-order";
+    public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
+    public static final String CIC_CASE_FULL_NAME = "cicCaseFullName";
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
-                .event(CASEWORKER_CREATE_DRAFT_ORDER)
+                .event(CASEWORKER_EDIT_DRAFT_ORDER)
                 .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
-                .name("Create draft order")
+                .name("Edit draft order")
                 .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
+                //.aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
-        createDraftOrder(pageBuilder);
+        editDraftOrder(pageBuilder);
+
 
     }
 
 
-
-    private void createDraftOrder(PageBuilder pageBuilder) {
-        pageBuilder.page("createDraftOrder")
-            .pageLabel("Select order template")
+    private void editDraftOrder(PageBuilder pageBuilder) {
+        pageBuilder
+            .page("editDraftOrder")
+            .pageLabel("Edit order")
+            .label("editableDraft", "Draft to be edited")
             .complex(CaseData::getDraftOrderCIC)
-            .mandatoryWithLabel(DraftOrderCIC::getOrderTemplate, "")
+            .mandatory(DraftOrderCIC::getOrderTemplate, "")
+            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\n<h4>First tier tribunal Health lists</h4>\n\n"
+                + "<h3>IN THE MATTER OF THE NATIONAL HEALTH SERVICES (PERFORMERS LISTS)(ENGLAND) REGULATIONS 2013</h2>\n\n"
+                + "&lt; &lt; CaseNumber &gt; &gt;\n"
+                + "\nBETWEEN\n"
+                + "\n&lt; &lt; SubjectName &gt; &gt;\n"
+                + "\nApplicant\n" + "\n<RepresentativeName>" + "\nRespondent<hr>"
+                + "\n<h3>Main content</h3>\n\n ")
+            .optional(DraftOrderCIC::getMainContentToBeEdited)
+            .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
+                + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
+
             .done();
     }
+
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
-        var caseData = details.getData();
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(NewCaseReceived)
+            .state(State.NewCaseReceived)
             .build();
+
     }
 
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("Draft order created"))
+            .confirmationHeader(format("Draft order edited"))
             .build();
     }
 }
