@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.config.DocmosisTemplatesConfig;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.content.DraftEditTemplateContentCIC;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.GENERAL_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME;
@@ -64,7 +66,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         editDraftOrder(pageBuilder);
-        previewOrder(pageBuilder);
+
 
 
     }
@@ -91,17 +93,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .done();
     }
 
-    private void previewOrder(PageBuilder pageBuilder) {
-        pageBuilder
-            .page("previewOrder",this::aboutToSubmit)
-            .pageLabel("Preview order")
-            .label("previewDraft", " Order preview")
-           // .optional(d)
-            .label("make Changes","To make changes, choose 'Edit order'\n\n"+
-                "If you are happy , continue to the next screen.")
-
-            .done();
-    }
 
 
 
@@ -109,46 +100,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
-        final String templateId = "GENERAL_DIRECTIONS";  //ST-CIC-STD-ENG-CIC6_General_Directions.docx
-        final String filename = "ST-CIC-STD-ENG-CIC_General_Directions";
-        var caseData = details.getData();
-        var caseId = details.getId();
-
-      //  final String caseDataMap2 = docmosisTemplatesConfig.getTemplateVars().put("cicCaseFullName", CIC_CASE_FULL_NAME);
-
-        Map<String, Object> caseDataMap = new HashMap<>();
-        caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
-        caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
-//        caseDataMap.put("petitionerMiddleName", TEST_MIDDLE_NAME);
-//        caseDataMap.put("petitionerLastName", TEST_LAST_NAME);
-//        caseDataMap.put("divorceOrDissolution", DivorceOrDissolution.DIVORCE);
-//        caseDataMap.put("petitionerEmail", TEST_USER_EMAIL);
-
-
-        final var documentInfo = docAssemblyService.renderDocument(
-            caseDataMap,
-            null,
-            authorisation,
-            templateId,
-            LanguagePreference.ENGLISH,
-            filename
-        );
-        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOCCCCCCCCCc------------------------++++++++++++++++++++++++++++++++"+ documentInfo);
-
-
-//        caseDataDocumentService.renderDocumentAndUpdateCaseData(
-//            caseData,
-//            GENERAL_LETTER,
-//            templateContent.apply(caseData, caseId),
-//            caseId,
-//            GENERAL_LETTER_TEMPLATE_ID,
-//            LanguagePreference.ENGLISH,
-//            CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME
-//        );
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
             .state(State.NewCaseReceived)
             .build();
 
