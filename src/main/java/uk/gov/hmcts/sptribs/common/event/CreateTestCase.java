@@ -87,7 +87,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
             buildSelectPartys(pageBuilder);
-            //   contactPreferenceDetails.addTo(pageBuilder);
+
 
             uploadDocuments(pageBuilder);
             furtherDetails.addTo(pageBuilder);
