@@ -73,7 +73,7 @@ public class CicCase {
     private Set<PartiesCIC> partiesCIC;
 
     @CCD(
-
+        label = "Case information recepient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -81,7 +81,7 @@ public class CicCase {
     private Set<SubjectCIC> subjectCIC;
 
     @CCD(
-
+        label = "Case information recepient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -89,7 +89,7 @@ public class CicCase {
     private Set<ApplicantCIC> applicantCIC;
 
     @CCD(
-
+        label = "Case information recepient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
