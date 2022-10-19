@@ -18,8 +18,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.hearingvenue.LocationService;
+import uk.gov.hmcts.sptribs.payment.PaymentService;
+import uk.gov.hmcts.sptribs.payment.model.Payment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +44,13 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+    private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
 
     @Autowired
-    private LocationService hearingVenuwService;
+    private LocationService locationService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -60,54 +67,31 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
-        addHearingTypeAndFormat(pageBuilder);
-        addListingDetails(pageBuilder);
+        hearingTypeAndFormat.addTo(pageBuilder);
+        hearingVenues.addTo(pageBuilder);
     }
 
     private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
 
         var caseData = details.getData();
 
-        //OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent("other", "enforcement", "BailiffServeDoc");
+        /*OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent("other", "enforcement", "BailiffServeDoc");
+
+        caseData.getRecordListing().setHearingVenues(DynamicList
+            .builder()
+            .value(DynamicListElement.builder().label(String.valueOf(orderSummary.getPaymentTotal())).build())
+            .listItems(List.of(DynamicListElement.builder().label(orderSummary.getPaymentTotal()).code(UUID.randomUUID()).build()))
+            .build());*/
 
         //populatePbaDynamicList(orderSummary, caseData.getRecordListing());
 
-        caseData.getRecordListing().setHearingVenues(hearingVenuwService.getHearingVenuesByRegion());
+        caseData.getRecordListing().setRegions(locationService.getRegionList());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
             .build();
     }
-
-    public DynamicList populatePbaDynamicList(OrderSummary orderSummary, RecordListing recordListing) {
-        List<String> listValues = new ArrayList<>();
-        listValues.add("123");
-        listValues.add("abc");
-        List<DynamicListElement> pbaAccountNumbers = listValues
-            .stream()
-            .map(pbaNumber -> DynamicListElement.builder().label(pbaNumber).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
-
-        return DynamicList
-            .builder()
-            .value(DynamicListElement.builder().label("pbaNumber").code(UUID.randomUUID()).build())
-            .listItems(pbaAccountNumbers)
-            .build();
-    }
-
-    /*private List<String> retrievePbaNumbers() {
-        String solicitorAuthToken = httpServletRequest.getHeader(AUTHORIZATION);
-        UserDetails solUserDetails = idamService.retrieveUser(solicitorAuthToken).getUserDetails();
-        String solicitorEmail = solUserDetails.getEmail();
-
-        ResponseEntity<PbaOrganisationResponse> responseEntity =
-            pbaRefDataClient.retrievePbaNumbers(solicitorAuthToken, authTokenGenerator.generate(), solicitorEmail);
-
-        PbaOrganisationResponse pbaOrganisationResponse = Objects.requireNonNull(responseEntity.getBody());
-
-        return pbaOrganisationResponse.getOrganisationEntityResponse().getPaymentAccount();
-    }*/
 
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -127,18 +111,5 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created"))
             .build();
-    }
-
-    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat")
-            .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .done();
-    }
-
-    private void addListingDetails(PageBuilder pageBuilder) {
-        hearingVenues.addTo(pageBuilder);
     }
 }
