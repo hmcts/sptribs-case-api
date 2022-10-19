@@ -18,16 +18,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.hearingvenue.LocationService;
 import uk.gov.hmcts.sptribs.payment.PaymentService;
-import uk.gov.hmcts.sptribs.payment.model.Payment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -40,11 +37,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRole> {
-
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
-    private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
 
     @Autowired
     private LocationService locationService;
@@ -67,7 +62,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
-        hearingTypeAndFormat.addTo(pageBuilder);
+        addHearingTypeAndFormat(pageBuilder);
         hearingVenues.addTo(pageBuilder);
     }
 
@@ -75,15 +70,14 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         var caseData = details.getData();
 
+        // TODO: Santoshini: Remove below working Payment service refdata call
         /*OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent("other", "enforcement", "BailiffServeDoc");
 
-        caseData.getRecordListing().setHearingVenues(DynamicList
+        caseData.getRecordListing().setRegions(DynamicList
             .builder()
             .value(DynamicListElement.builder().label(String.valueOf(orderSummary.getPaymentTotal())).build())
             .listItems(List.of(DynamicListElement.builder().label(orderSummary.getPaymentTotal()).code(UUID.randomUUID()).build()))
             .build());*/
-
-        //populatePbaDynamicList(orderSummary, caseData.getRecordListing());
 
         caseData.getRecordListing().setRegions(locationService.getRegionList());
 
@@ -94,7 +88,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     }
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+    private AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
 
@@ -106,10 +100,43 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+    private SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created"))
+            .build();
+    }
+
+    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
+        pageBuilder.page("hearingTypeAndFormat", this::midEvent)
+            .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
+            .complex(CaseData::getRecordListing)
+            .mandatory(RecordListing::getHearingType)
+            .mandatory(RecordListing::getHearingFormat)
+            .done();
+    }
+
+    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                   CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData caseData = details.getData();
+        final List<String> errors = new ArrayList<>();
+        /*String regionId = caseData.getRecordListing().getSelectedRegionId();
+
+        if(null != regionId) {
+            caseData.getRecordListing().setHearingVenues(locationService.getHearingVenuesByRegion(regionId));
+        }*/
+
+        OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent("other", "enforcement", "BailiffServeDoc");
+
+        caseData.getRecordListing().setHearingVenues(DynamicList
+            .builder()
+            .value(DynamicListElement.builder().label(String.valueOf(orderSummary.getPaymentTotal())).build())
+            .listItems(List.of(DynamicListElement.builder().label(orderSummary.getPaymentTotal()).code(UUID.randomUUID()).build()))
+            .build());
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .errors(errors)
             .build();
     }
 }
