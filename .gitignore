@@ -34,3 +34,6 @@ ccd-definitions/definitions/development
 ### aat env file ###
 .aat-env
 
+# Terraform
+.terraform.lock.hcl
+.terraform
