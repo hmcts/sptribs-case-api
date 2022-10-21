@@ -42,6 +42,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);
+        addOtherInformation(pageBuilder);
     }
 
     @SneakyThrows
@@ -64,13 +65,24 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-
     private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")
             .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
+            .done();
+    }
+
+    private void addOtherInformation(PageBuilder pageBuilder) {
+        pageBuilder.page("otherInformation")
+            .label("otherInformationObj", "<h1>Other information</h1>")
+            .complex(CaseData::getRecordListing)
+            .readonly(RecordListing::getImportantInfoText)
+            .label("otherInfoLabel",
+            "\nThis may include any reasonable adjustments that need to be made, or details"
+                + "\n of anyone who should be excluded from attending this hearing. (Optional)\n")
+            .optional(RecordListing::getImportantInfoDetails)
             .done();
     }
 }

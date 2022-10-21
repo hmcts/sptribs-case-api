@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
@@ -38,5 +39,17 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingFormat hearingFormat;
+
+    @CCD(
+        label = "Enter any other important information about this hearing.",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String importantInfoText;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String importantInfoDetails;
 
 }
