@@ -20,6 +20,7 @@ import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 
 @Data
@@ -332,5 +333,11 @@ public class CicCase {
     )
     private NextState afterStayState;
 
-
+    @CCD(
+        label = "Case Status",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "State",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private State testState;
 }
