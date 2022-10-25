@@ -1,5 +1,6 @@
-const I = actor();
+import hasSelector from '../../../helpers/browser_helper';
 
+const I = actor();
 const fields = {
   username: '#username',
   password: '#password',
@@ -23,13 +24,14 @@ class LoginPage {
     I.waitForInvisible(buttons.hideMessage);
   }
 
-  login (email: string, password: string) {
+  async login (email: string, password: string) {
+    if(new hasSelector(buttons.acceptCookies))
+      this.acceptCookies ();
     I.waitForVisible(fields.username, 60);
     I.fillField(fields.username, email);
     I.fillField(fields.password, password);
     I.click(buttons.submit);
     I.waitInUrl('/cases', 60)
-    // I.seeInCurrentUrl('/cases');
   }
   
 };

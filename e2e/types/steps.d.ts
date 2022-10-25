@@ -12,6 +12,7 @@ declare const within: (selector: string, callback: Function) => void;
 declare namespace CodeceptJS {
   export interface I {
     login: (login) => any;
+    createCase: () => any
     amOnPage: (amOnPage) => any;
     click: (click) => any;
     fillField: (locator: string | object, value: string | undefined) => any;
@@ -23,7 +24,7 @@ declare namespace CodeceptJS {
     checkOption: (field: string | object, context=any) => any;
     // @ts-ignore
     waitForElement: (locator, sec=any) => any;
-    waitForVisible: (waitForVisible) => any;
+    waitForVisible: (locator, sec=any) => any;
     seeInCurrentUrl : (seeInCurrentUrl) => any;
   }
 }

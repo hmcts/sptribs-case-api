@@ -19,10 +19,13 @@ export const config: CodeceptJS.MainConfig = {
       waitForNavigation: 'networkidle0',
       waitForTimeout: 30000,
       waitForAction: 200
-    }
+    },
+    BrowserHelpers: {
+      require: './helpers/browser_helper.ts',
+    },
   },
   include: {
-    I: './steps_file.ts'
+    I: './custom_steps.ts'
   },
   plugins: {
     autoDelay: {
