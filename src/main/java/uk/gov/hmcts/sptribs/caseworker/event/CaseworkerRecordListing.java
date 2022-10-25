@@ -42,6 +42,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);
+        addRemoteHearingInfo(pageBuilder);
     }
 
     @SneakyThrows
@@ -64,13 +65,21 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-
     private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")
             .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
+            .done();
+    }
+
+    private void addRemoteHearingInfo(PageBuilder pageBuilder) {
+        pageBuilder.page("remoteHearingInformation")
+            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
+            .complex(CaseData::getRecordListing)
+            .optional(RecordListing::getVideoCallLink)
+            .optional(RecordListing::getConferenceCallNumber)
             .done();
     }
 }
