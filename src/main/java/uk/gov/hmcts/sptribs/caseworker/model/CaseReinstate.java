@@ -28,7 +28,7 @@ public class CaseReinstate {
     private ReinstateReason reinstateReason;
 
     @CCD(
-        label = "Additional information related to the case reinstatement (Optional)",
+        label = "Additional information related to the case reinstatement",
         typeOverride = TextArea
     )
     private String additionalDetail;

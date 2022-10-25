@@ -340,4 +340,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private State testState;
+
+    @CCD(
+        label = "Minus days from today to set close date ",
+        regex = "^\\d+$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String days;
 }
