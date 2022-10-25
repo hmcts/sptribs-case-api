@@ -78,7 +78,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         pageBuilder.page("otherInformation")
             .label("otherInformationObj", "<h1>Other information</h1>")
             .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getImportantInfoText)
             .label("otherInfoLabel",
             "\nThis may include any reasonable adjustments that need to be made, or details"
                 + "\n of anyone who should be excluded from attending this hearing. (Optional)\n")

@@ -47,6 +47,7 @@ public class RecordListing {
     private String importantInfoText;
 
     @CCD(
+        label = "Enter any other important information about this hearing.",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )
