@@ -39,4 +39,15 @@ public class RecordListing {
     )
     private HearingFormat hearingFormat;
 
+    @CCD(
+        label = "Video call link",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String videoCallLink;
+
+    @CCD(
+        label = "Conference call number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String conferenceCallNumber;
 }
