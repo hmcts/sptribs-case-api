@@ -57,7 +57,7 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
         State newState = State.valueOf(caseData.getCicCase().getTestState().getName());
 
         if (newState == CaseClosed || newState == Withdrawn) {
-            caseData.setClosureDate(LocalDate.now().minusDays(5));
+            caseData.setClosureDate(LocalDate.now());
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
