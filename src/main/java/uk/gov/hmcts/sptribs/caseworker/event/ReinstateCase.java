@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -25,14 +26,16 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
-    private static final CcdPageConfiguration reinstateWarning = new ReinstateWarning();
 
+    private static final CcdPageConfiguration reinstateWarning = new ReinstateWarning();
+    private static final CcdPageConfiguration reinstateReason = new ReinstateReasonSelect();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
         var pageBuilder = reinstateCase(configBuilder);
         reinstateWarning.addTo(pageBuilder);
+        reinstateReason.addTo(pageBuilder);
     }
 
     public PageBuilder reinstateCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -40,7 +43,6 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .event(CASEWORKER_REINSTATE_CASE)
             .forStates(CaseClosed)
             .name("Reinstate case")
-            .showSummary()
             .description("Reinstate case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::closed)
