@@ -115,7 +115,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         var caseData = details.getData();
         var caseId = details.getId();
 
-      //  final String caseDataMap2 = docmosisTemplatesConfig.getTemplateVars().put("cicCaseFullName", CIC_CASE_FULL_NAME);
+      final String caseDataMap2 = docmosisTemplatesConfig.getTemplateVars().put("cicCaseFullName", CIC_CASE_FULL_NAME);
 
         Map<String, Object> caseDataMap = new HashMap<>();
         caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);

@@ -7,13 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.common.config.DocmosisTemplatesConfig;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -27,7 +25,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DraftOrderCIC {
-   // @Autowired
 
 
     @CCD(
@@ -38,6 +35,14 @@ public class DraftOrderCIC {
     )
     private OrderTemplate orderTemplate;
 
+//    @CCD(
+//        label = "Order template page",
+//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+//        typeOverride = Collection,
+//        typeParameterOverride = "OrderTemplate"
+//    )
+//    private OrderTemplate orderTemplatePage;
+
     @CCD(
         hint = "Amend content as required",
         typeOverride = TextArea,
@@ -45,16 +50,7 @@ public class DraftOrderCIC {
     )
     private String mainContentToBeEdited;
 
-//    @CCD(
-//        //hint = "Amend content as required",
-//        //typeOverride = Collection,
-//        access = {CaseworkerAndSuperUserAccess.class}
-//    )
-    //private DocmosisTemplatesConfig docmosis;
 
-//    private DocmosisTemplatesConfig getDocmosis() {
-//        return docmosis;
-//    }
 
 
 }
