@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseReinstate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
@@ -33,11 +34,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
 import uk.gov.hmcts.sptribs.payment.model.Payment;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
@@ -314,11 +317,29 @@ public class CaseData {
         typeParameterOverride = "GeneralLetterDetails"
     )
     private List<ListValue<GeneralLetterDetails>> generalLetters;
+    @CCD(
+        label = "Closure Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate closureDate;
+
+    @CCD(
+        label = "Closed Days",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String closedDayCount;
+
+    @CCD(
+        label = "Case Reinstate",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseReinstate caseReinstate;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
-        String temp = String.format("%016d", caseId);
-        return String.format("%4s-%4s-%4s-%4s",
+        String temp = format("%016d", caseId);
+        return format("%4s-%4s-%4s-%4s",
             temp.substring(0, 4),
             temp.substring(4, 8),
             temp.substring(8, 12),
@@ -451,5 +472,15 @@ public class CaseData {
 
     public RemoveCaseStay getRemoveCaseStay() {
         return new RemoveCaseStay();
+    }
+
+    public String getClosedDayCount() {
+        if (null != closureDate) {
+            LocalDate now = LocalDate.now();
+            Period period = Period.between(closureDate,now);
+            return format("This case has been closed for %d days", period.getDays());
+        }
+        return "";
+
     }
 }

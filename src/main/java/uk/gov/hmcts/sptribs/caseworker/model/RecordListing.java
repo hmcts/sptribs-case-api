@@ -41,10 +41,16 @@ public class RecordListing {
     private HearingFormat hearingFormat;
 
     @CCD(
-        label = "Enter any other important information about this hearing.",
+        label = "Video call link",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String importantInfoText;
+    private String videoCallLink;
+
+    @CCD(
+        label = "Conference call number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String conferenceCallNumber;
 
     @CCD(
         label = "Important hearing information",
@@ -52,5 +58,4 @@ public class RecordListing {
         typeOverride = TextArea
     )
     private String importantInfoDetails;
-
 }
