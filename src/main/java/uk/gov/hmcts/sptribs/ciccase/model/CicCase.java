@@ -325,6 +325,7 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
     private CaseDocumentsCIC caseDocumentsCIC;
+    private CaseDocumentsCIC reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(
