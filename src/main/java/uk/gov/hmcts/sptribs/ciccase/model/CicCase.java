@@ -325,6 +325,7 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
     private CaseDocumentsCIC caseDocumentsCIC;
+    private CaseDocumentsCIC reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(
@@ -340,4 +341,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private State testState;
+
+    @CCD(
+        label = "Minus days from today to set close date ",
+        regex = "^\\d+$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String days;
 }

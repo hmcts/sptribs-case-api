@@ -45,7 +45,8 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
             .page("testChangeState")
             .label("testChangeState", "<H2>Test change state</H2>")
             .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getTestState, "");
+            .mandatoryWithLabel(CicCase::getTestState, "")
+            .optional(CicCase::getDays);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -57,7 +58,7 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
         State newState = State.valueOf(caseData.getCicCase().getTestState().getName());
 
         if (newState == CaseClosed || newState == Withdrawn) {
-            caseData.setClosureDate(LocalDate.now());
+            caseData.setClosureDate(LocalDate.now().minusDays(Long.parseLong(caseData.getCicCase().getDays())));
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
