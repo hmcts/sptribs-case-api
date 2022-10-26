@@ -34,6 +34,12 @@ export = () => {
           this.click('Continue');
           createCasePage.fillIdentifiedPartiesForm();
           this.click('Continue');
+          createCasePage.fillSubjectDetailsForm('post');
+          this.click('Continue');
+          createCasePage.fillApplicantDetailsForm('post');
+          this.click('Continue');
+          createCasePage.fillRepresentativeDetailsForm('post');
+          this.click('Continue');
         },
 
         async signOut() {

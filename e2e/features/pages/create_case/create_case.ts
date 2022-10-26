@@ -28,7 +28,7 @@ const identifiedPartiesSelectors = {
     applicant: '#cicCasePartiesCIC-ApplicantCIC',
 }
 
-const subjectSelectors = {
+const subjectDetailsSelectors = {
     subjectFullName: '#cicCaseFullName',
     subjectPhoneNumber: '#cicCasePhoneNumber',
     subjectDobDay: '#cicCaseDateOfBirth-day',
@@ -39,8 +39,31 @@ const subjectSelectors = {
     subjectEmailAddress: '#cicCaseEmail',
 }
 
+const applicantDetailsSelectors = {
+  applicantFullName: '#cicCaseApplicantFullName',
+  applicantPhoneNumber: '#cicCaseApplicantPhoneNumber',
+  applicantEmailAddress: '#cicCaseApplicantEmailAddress',
+  applicantDobDay: '#cicCaseApplicantDateOfBirth-day',
+  applicantDobMonth: '#cicCaseApplicantDateOfBirth-month',
+  applicantDobYear: '#cicCaseApplicantDateOfBirth-year',
+  applicantContactPreferenceEmail: '#cicCaseApplicantContactDetailsPreference-Email',
+  applicantContactPreferencePost: '#cicCaseApplicantContactDetailsPreference-Post'
+}
+
+const representativeDetailsSelectors = {
+  representativeFullName: '#cicCaseRepresentativeFullName',
+  representativeOrganisation: '#cicCaseRepresentativeOrgName',
+  representativeContactNumber: '#cicCaseRepresentativePhoneNumber',
+  representativeEmailAddress: '#cicCaseRepresentativeEmailAddress',
+  representativeReference: '#cicCaseRepresentativeReference',
+  representativeLegallyQualifiedYes: '#cicCaseIsRepresentativeQualified_Yes',
+  representativeLegallyQualifiedNo: '#cicCaseIsRepresentativeQualified_No',
+  representativeContactPreferenceEmail: '#cicCaseRepresentativeContactDetailsPreference-Email',
+  representativeContactPreferencePost: '#cicCaseRepresentativeContactDetailsPreference-Post'
+}
+
 const addressSelectors = {
-    addressPostCodeLookUp: '#cicCaseAddress_cicCaseAddress_postcodeLookup',
+    addressPostCodeLookUp: '#cicCaseAddress_cicCaseAddress_postcodeInput',
     addressList: '#cicCaseAddress_cicCaseAddress_addressList',
     buildingAndStreet: '#cicCaseAddress__detailAddressLine1',
     addressLine2: '#cicCaseAddress__detailAddressLine2',
@@ -80,23 +103,68 @@ class CreateCasePage {
   }
 
   fillSubjectDetailsForm(contactPreference: string) {
-    I.fillField(subjectSelectors.subjectFullName, 'Subject xyz');
-    I.fillField(subjectSelectors.subjectPhoneNumber, '0178253643');
-    I.fillField(subjectSelectors.subjectDobDay, '12');
-    I.fillField(subjectSelectors.subjectDobMonth, '5');
-    I.fillField(subjectSelectors.subjectDobYear, '1990');
+    I.fillField(subjectDetailsSelectors.subjectFullName, 'Subject xyz');
+    I.fillField(subjectDetailsSelectors.subjectPhoneNumber, '0178253643');
+    I.fillField(subjectDetailsSelectors.subjectDobDay, '12');
+    I.fillField(subjectDetailsSelectors.subjectDobMonth, '5');
+    I.fillField(subjectDetailsSelectors.subjectDobYear, '1990');
     if(contactPreference.toLowerCase() == 'email') {
-        I.click(subjectSelectors.subjectContactPreferenceEmail);
-        I.waitForVisible(subjectSelectors.subjectEmailAddress, 1);
-        I.fillField(subjectSelectors.subjectEmailAddress, 'subject@email.com')
+        I.click(subjectDetailsSelectors.subjectContactPreferenceEmail);
+        I.waitForVisible(subjectDetailsSelectors.subjectEmailAddress, 1);
+        I.fillField(subjectDetailsSelectors.subjectEmailAddress, 'subject@email.com');
     } else if(contactPreference.toLowerCase() == 'post') {
-        I.click(subjectSelectors.subjectContactPreferencePost);
+        I.click(subjectDetailsSelectors.subjectContactPreferencePost);
         I.waitForVisible(addressSelectors.addressPostCodeLookUp, 3);
+        this.fillAddressDetails();
+    }
+  }
+
+  fillApplicantDetailsForm(contactPreference: string) {
+    I.fillField(applicantDetailsSelectors.applicantFullName, 'Subject xyz');
+    I.fillField(applicantDetailsSelectors.applicantPhoneNumber, '0178253643');
+    I.fillField(applicantDetailsSelectors.applicantEmailAddress, 'applicant@email.com');
+    I.fillField(applicantDetailsSelectors.applicantDobDay, '5');
+    I.fillField(applicantDetailsSelectors.applicantDobMonth, '12');
+    I.fillField(applicantDetailsSelectors.applicantDobYear, '1995');
+    if(contactPreference.toLowerCase() == 'email') {
+        I.click(applicantDetailsSelectors.applicantContactPreferenceEmail);
+    } else if(contactPreference.toLowerCase() == 'post') {
+        I.click(applicantDetailsSelectors.applicantContactPreferencePost);
+        // I.waitForVisible(addressSelectors.addressPostCodeLookUp, 3);
+        this.fillAddressDetails();
+    }
+  }
+
+  fillRepresentativeDetailsForm(contactPreference: string) {
+    I.fillField(representativeDetailsSelectors.representativeFullName, 'Representative qwerty');
+    I.fillField(representativeDetailsSelectors.representativeOrganisation, 'Test Solicitors');
+    I.fillField(representativeDetailsSelectors.representativeContactNumber, '0178253643');
+    I.fillField(representativeDetailsSelectors.representativeReference, 'representative@email.com');
+    I.click(representativeDetailsSelectors.representativeLegallyQualifiedYes);
+    if(contactPreference.toLowerCase() == 'email') {
+        I.click(representativeDetailsSelectors.representativeContactPreferenceEmail);
+        I.waitForVisible(representativeDetailsSelectors.representativeEmailAddress, 1);
+        I.fillField(representativeDetailsSelectors.representativeEmailAddress, 'representative@email.com');
+    } else if(contactPreference.toLowerCase() == 'post') {
+        I.click(representativeDetailsSelectors.representativeContactPreferencePost);
+        // I.waitForVisible(addressSelectors.addressPostCodeLookUp, 3);
+        this.fillAddressDetails();
     }
   }
 
   fillAddressDetails () {
-
+    // I.waitForVisible(addressSelectors.addressPostCodeLookUp, 3);
+    // I.fillField(addressSelectors.addressPostCodeLookUp, 'S');
+    // I.click('Find address');
+    // I.waitForVisible(addressSelectors.addressList, 3);
+    // I.selectOption(addressSelectors.addressList, '1 Rse Way, London');
+    // I.fillField(addressSelectors.addressLine2, 'Address Line 2');
+    // I.fillField(addressSelectors.addressLine3, 'Address Line 3');
+    I.fillField('Enter a UK postcode', 'S');
+    I.click('Find address');
+    I.selectOption('Select an address', '1 Rse Way, London');
+    I.fillField('Address Line 2', 'Address Line 2');
+    I.fillField('Address Line 3', 'Address Line 3');
   }
 };
 
