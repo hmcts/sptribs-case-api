@@ -43,6 +43,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         addHearingTypeAndFormat(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
+        addOtherInformation(pageBuilder);
     }
 
     @SneakyThrows
@@ -80,6 +81,17 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .complex(CaseData::getRecordListing)
             .optional(RecordListing::getVideoCallLink)
             .optional(RecordListing::getConferenceCallNumber)
+            .done();
+    }
+
+    private void addOtherInformation(PageBuilder pageBuilder) {
+        pageBuilder.page("otherInformation")
+            .label("otherInformationObj", "<h1>Other information</h1>")
+            .complex(CaseData::getRecordListing)
+            .label("otherInfoLabel",
+                "\nEnter any other important information about this hearing. This may include any reasonable adjustments that need to be made, or details" +
+                    "\n of anyone who should be excluded from attending this hearing.\n")
+            .optional(RecordListing::getImportantInfoDetails)
             .done();
     }
 }
