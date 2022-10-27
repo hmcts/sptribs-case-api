@@ -12,7 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import java.time.Clock;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.testutil.ClockTestUtil.*;
+import static uk.gov.hmcts.sptribs.testutil.ClockTestUtil.getExpectedLocalDateTime;
+import static uk.gov.hmcts.sptribs.testutil.ClockTestUtil.setMockClock;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
