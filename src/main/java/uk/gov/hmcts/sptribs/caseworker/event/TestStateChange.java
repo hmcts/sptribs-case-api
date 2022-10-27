@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.time.LocalDate;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -38,7 +37,7 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .description("Test change state")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::closed)
+            .submittedCallback(this::changed)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
@@ -58,7 +57,11 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
         State newState = State.valueOf(caseData.getCicCase().getTestState().getName());
 
         if (newState == CaseClosed || newState == Withdrawn) {
-            caseData.setClosureDate(LocalDate.now().minusDays(Long.parseLong(caseData.getCicCase().getDays())));
+            if (null != caseData.getCicCase().getDays()) {
+                caseData.setClosureDate(LocalDate.now().minusDays(Long.parseLong(caseData.getCicCase().getDays())));
+            } else {
+                caseData.setClosureDate(LocalDate.now());
+            }
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -66,10 +69,10 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
             .build();
     }
 
-    public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
-                                            CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse changed(CaseDetails<CaseData, State> details,
+                                             CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# State changed"))
+            .confirmationHeader("# State changed")
             .build();
     }
 }

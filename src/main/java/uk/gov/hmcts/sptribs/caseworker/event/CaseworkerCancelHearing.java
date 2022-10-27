@@ -19,7 +19,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseworkerCancelHearingFlag implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
 
     private static final CcdPageConfiguration hearingDateSelect = new HearingDateSelect();
