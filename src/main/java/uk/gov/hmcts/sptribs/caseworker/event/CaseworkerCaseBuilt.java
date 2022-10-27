@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker.event.page;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -55,7 +54,7 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case built successful"))
+            .confirmationHeader("# Case built successful")
             .build();
     }
 }
