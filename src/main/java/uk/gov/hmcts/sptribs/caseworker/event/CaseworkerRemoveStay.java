@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -72,7 +71,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
         var caseData = details.getData();
         caseData.setRemoveCaseStay(null);
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Stay Removed from Case"))
+            .confirmationHeader("# Stay Removed from Case")
             .build();
     }
 }
