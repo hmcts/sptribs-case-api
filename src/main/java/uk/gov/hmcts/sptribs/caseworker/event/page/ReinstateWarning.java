@@ -13,7 +13,7 @@ public class ReinstateWarning implements CcdPageConfiguration {
             .page("reinstateWarning")
             .label("reinstateWarning", "<h1>Are you sure you want to reinstate this case?</h1>")
             .readonlyWithLabel(CaseData::getClosedDayCount, " ")
-            .label("reinstateWarningCheck", "Check that it meets all requirements before reinstating")
+            .label("reinstateWarningCheck", "Check that it meets all requirements before reinstating it")
             .done();
     }
 }
