@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FileNameUtilTest {
+class FileNameUtilTest {
 
     @Test
     void shouldFormatDocumentName() {
