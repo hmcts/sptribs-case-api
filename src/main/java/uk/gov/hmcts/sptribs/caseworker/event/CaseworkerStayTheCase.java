@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -41,7 +40,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("addStay")
-            .label("addStay","<H2>Add a Stay to this case</H2>")
+            .label("addStay", "<H2>Add a Stay to this case</H2>")
             .complex(CaseData::getCaseStay)
             .mandatoryWithLabel(CaseStay::getStayReason, "")
             .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"")
@@ -54,9 +53,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
-
         var caseData = details.getData();
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseStayed)
@@ -66,7 +63,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     public SubmittedCallbackResponse stayed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Stay Added to Case"))
+            .confirmationHeader("# Stay Added to Case")
             .build();
     }
 }

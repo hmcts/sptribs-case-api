@@ -151,7 +151,6 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCaseFlag().setFlagType(null);
         caseData.getCaseFlag().setAdditionalDetail(null);
         caseData.getCaseFlag().setOtherDescription(null);
-        caseData.getCaseFlag().setPartyLevel(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
