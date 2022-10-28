@@ -63,7 +63,7 @@ public class CaseWorkerLinkCaseTest {
         SubmittedCallbackResponse stayedResponse = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCaseStay()).isNotNull();
+        assertThat(response.getData().getLinkCase()).isNotNull();
         assertThat(stayedResponse).isNotNull();
     }
 }

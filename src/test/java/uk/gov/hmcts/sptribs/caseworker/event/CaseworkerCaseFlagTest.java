@@ -12,9 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerCaseFlag.CASEWORKER_CASE_FLAG;
@@ -49,10 +54,15 @@ class CaseworkerCaseFlagTest {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
-        CaseFlag caseFlag = new CaseFlag();
+        final CaseFlag caseFlag = new CaseFlag();
         caseFlag.setFlagType(FlagType.OTHER);
         caseFlag.setAdditionalDetail("some detail");
         caseFlag.setFlagLevel(FlagLevel.PARTY_LEVEL);
+        final CicCase cicCase = new CicCase();
+        final Set<ApplicantCIC> set = new HashSet<>();
+        set.add(ApplicantCIC.APPLICANT_CIC);
+        cicCase.setApplicantCIC(set);
+        cicCase.setApplicantFullName("Jane Doe");
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -66,7 +76,7 @@ class CaseworkerCaseFlagTest {
         SubmittedCallbackResponse stayedResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCaseStay()).isNotNull();
+        assertThat(response.getData().getCaseFlag()).isNotNull();
         assertThat(stayedResponse).isNotNull();
     }
 

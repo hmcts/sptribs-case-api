@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.NextState;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.StayRemoveReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -51,7 +50,6 @@ class CaseworkerRemoveStayTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
-        cicCase.setAfterStayState(NextState.CaseManagement);
         caseData.setCicCase(cicCase);
         RemoveCaseStay removeCaseStay = new RemoveCaseStay();
         removeCaseStay.setStayRemoveReason(StayRemoveReason.OTHER);
