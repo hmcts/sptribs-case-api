@@ -12,6 +12,11 @@ class ApplicationTypeTest {
     }
 
     @Test
+    void shouldReturnLabel() {
+        assertThat(ApplicationType.SOLE_APPLICATION.getLabel()).isEqualTo("Sole Application");
+    }
+
+    @Test
     void shouldReturnFalseIfJointApplicationType() {
         assertThat(ApplicationType.JOINT_APPLICATION.isSole()).isFalse();
     }

@@ -73,7 +73,7 @@ public class CaseworkerEditCaseTest {
         SubmittedCallbackResponse stayedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCaseStay()).isNotNull();
+        assertThat(response.getData()).isNotNull();
         assertThat(stayedResponse).isNotNull();
     }
 
