@@ -9,7 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -46,6 +48,10 @@ public class CaseWorkerDraftOrderTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
+        draftOrderCIC.setOrderTemplate(OrderTemplate.DMIREPORTS);
+        draftOrderCIC.setMainContentToBeEdited("content");
+        caseData.setDraftOrderCIC(draftOrderCIC);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -56,7 +62,8 @@ public class CaseWorkerDraftOrderTest {
         SubmittedCallbackResponse stayedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCaseStay()).isNotNull();
+        assertThat(response.getData().getDraftOrderCIC()).isNotNull();
+        assertThat(response.getData().getDraftOrderCIC().getOrderTemplate().getLabel()).isEqualTo("Medical Evidence - DMI Reports");
         assertThat(stayedResponse).isNotNull();
     }
 }

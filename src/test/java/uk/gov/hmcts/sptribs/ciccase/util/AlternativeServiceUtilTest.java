@@ -1,8 +1,10 @@
 package uk.gov.hmcts.sptribs.ciccase.util;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.AlternativeService;
+import uk.gov.hmcts.sptribs.ciccase.model.AlternativeServiceOutcome;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +28,10 @@ class AlternativeServiceUtilTest {
         //Then
         assertThat(caseData.getAlternativeServiceOutcomes()).isNotNull();
         assertThat(caseData.getAlternativeServiceOutcomes().size()).isEqualTo(1);
+        ListValue<AlternativeServiceOutcome> alternativeServiceOutcome = caseData.getAlternativeServiceOutcomes().get(0);
+        assert (alternativeServiceOutcome.getValue().getAlternativeServiceType().equals(DEEMED));
+        assertThat(alternativeServiceOutcome.getId()).isNotNull();
+        assertThat(alternativeServiceOutcome.getValue().getReceivedServiceAddedDate()).isNotNull();
         assertThat(caseData.getAlternativeService()).isNull();
     }
 
