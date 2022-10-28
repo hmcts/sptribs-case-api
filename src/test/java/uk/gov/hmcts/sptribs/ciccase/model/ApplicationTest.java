@@ -123,6 +123,54 @@ class ApplicationTest {
     }
 
     @Test
+    void shouldReturnTruePaperCasePaymentMethodSet() {
+        //When
+        final var application = Application.builder()
+            .paperCasePaymentMethod(PaperCasePaymentMethod.CHEQUE_OR_POSTAL_ORDER)
+            .build();
+
+        //Then
+        assertThat(application.getPaperCasePaymentMethod().getLabel()).isEqualTo("Cheque/Postal Order");
+    }
+
+    @Test
+    void shouldReturnTrueReissueOptionSet() {
+        //When
+        final var application = Application.builder()
+            .reissueOption(ReissueOption.REISSUE_CASE)
+            .build();
+
+        //Then
+        assertThat(application.getReissueOption().getLabel()).isEqualTo("Reissue Case");
+    }
+
+    @Test
+    void shouldReturnTrueProgressPaperCaseSet() {
+        //When
+        final var application = Application.builder()
+            .progressPaperCase(ProgressPaperCase.AWAITING_DOCUMENTS)
+            .build();
+
+        //Then
+        assertThat(application.getProgressPaperCase().getLabel()).isEqualTo("Awaiting applicant");
+    }
+
+    @Test
+    void shouldReturnTrueRejectReasonSet() {
+        //When
+        final RejectReason rejectReason = new RejectReason();
+        rejectReason.setRejectReasonType(RejectReasonType.INCORRECT_INFO);
+        rejectReason.setRejectDetails("some detail");
+        final var application = Application.builder()
+            .rejectReason(rejectReason)
+            .build();
+
+        //Then
+        assertThat(application.getRejectReason().getRejectDetails()).isNotNull();
+        assertThat(application.getRejectReason().getRejectReasonType().getLabel()).isEqualTo("Incorrect information");
+    }
+
+    @Test
     void shouldReturnFalseIfStatementOfTruthIsNoForApplicant1() {
         //When
         final var application = Application.builder()
@@ -344,7 +392,9 @@ class ApplicationTest {
         //When
         final Application application = Application.builder()
             .applicant1HelpWithFees(HelpWithFees.builder()
+                .appliedForFees(YES)
                 .needHelp(YES)
+                .referenceNumber("number")
                 .build())
             .build();
         //Then
