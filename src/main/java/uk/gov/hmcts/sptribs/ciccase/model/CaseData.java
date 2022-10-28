@@ -34,7 +34,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
 import uk.gov.hmcts.sptribs.payment.model.Payment;
 
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -477,8 +477,8 @@ public class CaseData {
     public String getClosedDayCount() {
         if (null != closureDate) {
             LocalDate now = LocalDate.now();
-            Period period = Period.between(closureDate,now);
-            return format("This case has been closed for %d days", period.getDays());
+            long days = ChronoUnit.DAYS.between(closureDate, now);
+            return format("This case has been closed for %d days", days);
         }
         return "";
 
