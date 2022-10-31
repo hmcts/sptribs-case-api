@@ -9,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class SolicitorAddressPopulatorTest {
 
     @Test
-    public void shouldPopulateEmptyAddress(){
+    public void shouldPopulateEmptyAddress() {
 
         OrganisationContactInformation organisationContactInformation = OrganisationContactInformation.builder().country(null).build();
 
@@ -18,7 +18,7 @@ public class SolicitorAddressPopulatorTest {
     }
 
     @Test
-    public void shouldPopulateFullAddress(){
+    public void shouldPopulateFullAddress() {
 
         OrganisationContactInformation organisationContactInformation = OrganisationContactInformation.builder()
             .addressLine1("100")
@@ -30,7 +30,8 @@ public class SolicitorAddressPopulatorTest {
             .country("UK")
             .build();
 
-        assertThat(SolicitorAddressPopulator.populateSolicitorAddress(organisationContactInformation), is("100\nCharles Street\nGreat Town\nLIECESTER\n7E12 PFD\nUK"));
+        assertThat(SolicitorAddressPopulator.populateSolicitorAddress(organisationContactInformation),
+            is("100\nCharles Street\nGreat Town\nLIECESTER\n7E12 PFD\nUK"));
 
     }
 }
