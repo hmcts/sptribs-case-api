@@ -24,6 +24,8 @@ applicationinsights-agent-*.jar
 *.log
 .vscode/
 node_modules/
+e2e/output
+e2e/test-results
 *.xls
 *.xlsx
 yarn-error.log

@@ -1,7 +1,6 @@
 import loginPage from './pages/login';
 import createCasePage from './pages/create_case';
 import config from './config';
-// import output from 'codeceptjs';
 
 const selectors = {
   signed_in_selector: 'exui-header',
@@ -15,12 +14,10 @@ const buttons = {
   start_button: 'Start'
 }
 
-
 // declare namespace CodeceptJS
 export = () => {
     return actor({
         async login(user) {
-            const signOutElement = await this.grabTextFrom(selectors.sign_in_page_title);
             if (await this.hasSelector(selectors.signed_in_selector)) {
                 await this.signOut();
             }
@@ -31,6 +28,7 @@ export = () => {
                 loginPage.login(user, config.password);
             }, selectors.sign_in_page_title);
         },
+
         async createCase() {
           await this.login(config.username);
           await this.waitForVisible('h2', 60);

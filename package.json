@@ -11,7 +11,8 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "test": "npx codeceptjs run --config e2e/codecept.conf.ts --grep @test",
+    "clean": "rm -rf node_modules/",
+    "test:e2e": "MOCHAWESOME_REPORTFILENAME=e2e REPORT_DIR=e2e/test-results REPORT_FILE=e2e/test-results/results.xml npx codeceptjs run --config e2e/codecept.conf.ts --grep @test --reporter mocha-multi --verbose",
     "prepublishOnly": "npm run genCaseTypeConsts && npm run genCitizenEventNameConsts && npm run genCommonEventNameConsts && npm run genSystemEventNameConsts && npm run genCourtLabelConsts",
     "genCaseTypeConsts": "grep -rh \\\"public static final String\\\" ./src/main/java/uk/gov/hmcts/sptribs/ciccase/NoFaultDivorce.java | sed \\\"s/    public static final String/export const/\\\" >> ./build/ts/index.ts",
     "genCitizenEventNameConsts": "grep -rh \"public static final String\" ./src/main/java/uk/gov/hmcts/sptribs/citizen/event | sed \"s/    public static final String/export const/\" >> ./build/ts/index.ts",
@@ -19,13 +20,12 @@
     "genSystemEventNameConsts": "grep -rh \"public static final String\" ./src/main/java/uk/gov/hmcts/sptribs/systemupdate/event | sed \"s/    public static final String/export const/\" >> ./build/ts/index.ts",
     "genCourtLabelConsts": "grep -rh \\\"public static final String\\\" ./src/main/java/uk/gov/hmcts/sptribs/ciccase/constant | sed \\\"s/    public static final String/export const/\\\" >> ./build/ts/index.ts"
   },
-  "dependencies": {
-    "@codeceptjs/ui": "^0.4.7",
-    "codeceptjs": "^3.3.6"
-  },
   "devDependencies": {
     "@codeceptjs/configure": "^0.10.0",
     "@types/node": "18.8.4",
+    "codeceptjs": "^3.3.6",
+    "mocha-multi": "^1.1.6",
+    "mochawesome": "^7.1.3",
     "playwright": "^1.27.1",
     "ts-node": "10.9.1",
     "typescript": "4.8.4"
