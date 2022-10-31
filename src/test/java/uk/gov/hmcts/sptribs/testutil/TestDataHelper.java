@@ -23,6 +23,8 @@ import uk.gov.hmcts.ccd.sdk.type.ScannedDocument;
 import uk.gov.hmcts.ccd.sdk.type.ScannedDocumentType;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantPrayer;
 import uk.gov.hmcts.sptribs.ciccase.model.Application;
@@ -60,7 +62,6 @@ import uk.gov.hmcts.sptribs.notification.CommonContent;
 import uk.gov.hmcts.sptribs.payment.model.FeeResponse;
 import uk.gov.hmcts.sptribs.payment.model.Payment;
 import uk.gov.hmcts.sptribs.payment.model.PaymentStatus;
-import uk.gov.hmcts.sptribs.solicitor.client.organisation.OrganisationContactInformation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -117,6 +118,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FEE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SIGN_IN_DISSOLUTION_TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SIGN_IN_DIVORCE_TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_2_USER_EMAIL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_LAST_NAME;
@@ -662,16 +664,6 @@ public class TestDataHelper {
             .build();
     }
 
-    public static OrganisationContactInformation organisationContactInformation() {
-        return OrganisationContactInformation
-            .builder()
-            .addressLine1("addressLine1")
-            .addressLine2("addressLine2")
-            .addressLine3("addressLine3")
-            .townCity("townCity")
-            .country("country")
-            .build();
-    }
 
     public static String getFeeResponseAsJson() throws JsonProcessingException {
         return OBJECT_MAPPER.writeValueAsString(getFeeResponse());
@@ -977,5 +969,15 @@ public class TestDataHelper {
         caseData.setApplicant1(getApplicantWithAddress());
         caseData.setApplicant2(getApplicantWithAddress());
         return caseData;
+    }
+
+    public static User getUser() {
+        UserDetails userDetails = UserDetails
+            .builder()
+            .forename("testFname")
+            .surname("testSname")
+            .build();
+
+        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
     }
 }

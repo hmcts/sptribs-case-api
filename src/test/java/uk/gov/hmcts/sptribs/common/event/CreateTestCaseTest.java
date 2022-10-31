@@ -11,11 +11,15 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
+import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,12 +33,15 @@ class CreateTestCaseTest {
     @Mock
     private FeatureToggleService featureToggleService;
 
-    @Mock
-    private SubmissionService submissionService;
-
     @InjectMocks
     private CreateTestCase createTestCase;
 
+
+    @InjectMocks
+    private SelectParties selectParties;
+
+    @InjectMocks
+    private ContactPreferenceDetails contactPreferenceDetails;
 
     @Test
     void shouldNotReturnErrorsIfApplicantUserIdIsValid() {
@@ -66,4 +73,45 @@ class CreateTestCaseTest {
             .contains("create-test-application");
     }
 
+
+    @Test
+    void shouldSelectSubject() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().partiesCIC(Set.of(PartiesCIC.APPLICANT)).build();
+        final CaseData caseData = CaseData.builder()
+            .caseInvite(CaseInvite.builder()
+                .applicant2UserId(UUID.randomUUID().toString())
+                .build())
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isNotNull();
+    }
+
+
+    @Test
+    void shouldSelectContactPreference() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().partiesCIC(Set.of(PartiesCIC.APPLICANT)).build();
+        final CaseData caseData = CaseData.builder()
+            .caseInvite(CaseInvite.builder()
+                .applicant2UserId(UUID.randomUUID().toString())
+                .build())
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPreferenceDetails.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isNotNull();
+    }
 }
