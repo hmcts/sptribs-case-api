@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.model.Status;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -77,6 +78,8 @@ class CaseworkerCaseFlagTest {
 
         //Then
         assertThat(response.getData().getCaseFlag()).isNotNull();
+        CaseFlag responseFlag = response.getData().getCaseFlag();
+        assert (responseFlag.getCaseFlags().get(0).getValue().getDetails().get(0).getValue().getStatus().equals(Status.ACTIVE.getLabel()));
         assertThat(stayedResponse).isNotNull();
     }
 
