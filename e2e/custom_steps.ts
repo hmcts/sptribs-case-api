@@ -1,5 +1,5 @@
-import loginPage from './features/pages/login/login';
-import createCasePage from './features/pages/create_case/create_case';
+import loginPage from './pages/login';
+import createCasePage from './pages/create_case';
 import config from './config';
 // import output from 'codeceptjs';
 
@@ -9,11 +9,17 @@ const selectors = {
   sign_in_page_title: 'h1'
 }
 
+const buttons = {
+  continue_button: 'Continue',
+  save_and_continue_button: 'Save and continue',
+  start_button: 'Start'
+}
+
 
 // declare namespace CodeceptJS
 export = () => {
     return actor({
-        login: async function(user) {
+        async login(user) {
             const signOutElement = await this.grabTextFrom(selectors.sign_in_page_title);
             if (await this.hasSelector(selectors.signed_in_selector)) {
                 await this.signOut();
@@ -26,20 +32,36 @@ export = () => {
             }, selectors.sign_in_page_title);
         },
         async createCase() {
+          await this.login(config.username);
+          await this.waitForVisible('h2', 60);
+          await this.see('Filters', 'h2');
+          await this.click('Create case');
           createCasePage.selectCaseFilters();
-          this.click('Start');
+          await this.click(buttons.start_button);
           createCasePage.fillCaseCategorisationForm();
-          this.click('Continue');
+          await this.click(buttons.continue_button);
           createCasePage.fillCaseReceivedDateForm();
-          this.click('Continue');
+          await this.click(buttons.continue_button);
           createCasePage.fillIdentifiedPartiesForm();
-          this.click('Continue');
+          await this.click(buttons.continue_button);
           createCasePage.fillSubjectDetailsForm('post');
-          this.click('Continue');
+          await this.click(buttons.continue_button);
           createCasePage.fillApplicantDetailsForm('post');
-          this.click('Continue');
+          await this.click(buttons.continue_button);
           createCasePage.fillRepresentativeDetailsForm('post');
-          this.click('Continue');
+          await this.click(buttons.continue_button);
+          createCasePage.fillContactPreferencesForm();
+          await this.click(buttons.continue_button);
+          createCasePage.uploadFiles();
+          await this.click(buttons.continue_button);
+          createCasePage.fillFurtherDetailsForm();
+          await this.click(buttons.continue_button);
+          await this.see('Check your answers', 'h2');
+          await this.click(buttons.save_and_continue_button);
+          await this.see('Case Created', 'h1');
+          let caseNumber = await this.grabTextFrom('//h2[2]');
+          console.log(caseNumber);
+          return caseNumber;
         },
 
         async signOut() {
@@ -48,7 +70,7 @@ export = () => {
             }, selectors.signed_out_selector);
           },
 
-        async retryUntilExists(action, locator, maxNumberOfTries = 6) {
+        async retryUntilExists(action, locator, maxNumberOfTries = 3) {
             for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
               console.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
               if (tryNumber > 1 && await this.hasSelector(locator)) {

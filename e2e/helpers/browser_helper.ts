@@ -1,7 +1,5 @@
+import Helper from '@codeceptjs/helper'
 class BrowserHelpers extends Helper {
-  static hasSelector(acceptCookies: string) {
-    throw new Error('Method not implemented.');
-  }
 
   getHelper() {
     return this.helpers['Playwright'] || this.helpers['WebDriver'];
@@ -51,4 +49,5 @@ class BrowserHelpers extends Helper {
   }
 };
 
+// export = new BrowserHelpers(config);
 export = BrowserHelpers;
