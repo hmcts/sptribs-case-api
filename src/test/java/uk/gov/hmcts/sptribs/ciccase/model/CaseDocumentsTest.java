@@ -50,6 +50,21 @@ class CaseDocumentsTest {
     }
 
     @Test
+    void shouldReturnTrueIfBeforeIsEmptyAndAfterHasAddedDocumentSort() {
+        //When
+        final ListValue<ScannedDocument> doc1 =
+            getDocumentListValue("http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003", "d9d.pdf", CHERISHED);
+
+        final List<ListValue<ScannedDocument>> before = emptyList();
+        final List<ListValue<ScannedDocument>> after = List.of(doc1);
+        final List<ListValue<ScannedDocument>> sorted = CaseDocuments.sortByNewest(after,after);
+
+        //Then
+        assertThat(CaseDocuments.hasAddedDocuments(after, before)).isTrue();
+        assertThat(sorted.get(0).getId()).isNotNull();
+    }
+
+    @Test
     void shouldReturnTrueIfBeforeIsNullAndAfterHasDocument() {
         //When
         final ListValue<ScannedDocument> doc1 =
