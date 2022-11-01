@@ -96,20 +96,6 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void shouldHandleInvalidResourceException() {
-        //Given
-        final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
-
-        //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleInvalidResourceException();
-
-        //Then
-        Assertions.assertThat(actualResponse).isNotNull();
-
-    }
-
-    @Test
     public void shouldHandleInvalidDataException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();

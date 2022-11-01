@@ -76,19 +76,6 @@ public final class DocumentUtil {
             .collect(toList());
     }
 
-    public static List<Letter> lettersWithConfidentialDocumentType(final List<ListValue<ConfidentialDivorceDocument>> documents,
-                                                                   final ConfidentialDocumentsReceived documentType) {
-
-        final AtomicInteger letterIndex = new AtomicInteger();
-
-        return ofNullable(documents)
-            .flatMap(Collection::stream)
-            .map(ListValue::getValue)
-            .filter(document -> documentType.equals(document.getConfidentialDocumentsReceived()))
-            .map(confidentialDivorceDocument -> new Letter(confidentialDivorceDocument, letterIndex.incrementAndGet()))
-            .collect(toList());
-    }
-
     public static List<Letter> mapToLetters(final List<ListValue<Document>> documents, final DocumentType documentType) {
 
         final AtomicInteger letterIndex = new AtomicInteger();

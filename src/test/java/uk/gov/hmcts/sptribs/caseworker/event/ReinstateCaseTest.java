@@ -9,11 +9,18 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseReinstate;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.ReinstateCase.CASEWORKER_REINSTATE_CASE;
@@ -51,6 +58,17 @@ class ReinstateCaseTest {
         caseReinstate.setReinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR);
         caseReinstate.setAdditionalDetail("some detail");
         caseData.setCaseReinstate(caseReinstate);
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        CaseDocumentsCIC caseDocumentsCIC = CaseDocumentsCIC.builder().applicantDocumentsUploaded(List.of(documentListValue)).build();
+        final CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(caseDocumentsCIC)
+            .build();
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -64,8 +82,12 @@ class ReinstateCaseTest {
         //Then
         assertThat(response.getData().getCaseReinstate()).isNotNull();
         CaseReinstate responseCaseReinstate = response.getData().getCaseReinstate();
-        Assertions.assertEquals(responseCaseReinstate.getReinstateReason(), ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR);
+        Assertions.assertEquals(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR, responseCaseReinstate.getReinstateReason());
         assertThat(responseCaseReinstate.getAdditionalDetail()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
+            .get(0).getValue().getDocumentEmailContent()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
+            .get(0).getValue().getDocumentLink()).isNotNull();
 
     }
 
