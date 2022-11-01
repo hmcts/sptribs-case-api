@@ -51,7 +51,9 @@ public class DraftApplicationRemovalServiceTest {
 
         //Then
         assertThat(actualDocumentsList).containsExactlyInAnyOrder(divorceDocumentListValue);
-
+        assertThat(actualDocumentsList.get(0).getValue().getDocumentDateAdded()).isNull();
+        assertThat(actualDocumentsList.get(0).getValue().getDocumentEmailContent()).isNull();
+        assertThat(actualDocumentsList.get(0).getValue().getDocumentComment()).isNull();
         verify(idamService).retrieveSystemUpdateUserDetails();
         verifyNoInteractions(authTokenGenerator, documentManagementClient);
     }

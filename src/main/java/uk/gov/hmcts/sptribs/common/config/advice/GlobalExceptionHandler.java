@@ -12,13 +12,11 @@ import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceException;
 import uk.gov.hmcts.sptribs.common.exception.InvalidDataException;
 import uk.gov.hmcts.sptribs.common.exception.UnsupportedFormTypeException;
-import uk.gov.hmcts.sptribs.document.print.exception.InvalidResourceException;
 import uk.gov.hmcts.sptribs.endpoint.model.output.BspErrorResponse;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
 import static java.util.Collections.singletonList;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.ResponseEntity.status;
 
@@ -62,12 +60,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(InvalidResourceException.class)
-    public ResponseEntity<Object> handleInvalidResourceException() {
-        return new ResponseEntity<>(
-            INTERNAL_SERVER_ERROR
-        );
-    }
 
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<Object> handleInvalidDataException(InvalidDataException exception) {
