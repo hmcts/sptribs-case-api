@@ -46,7 +46,7 @@ class TestStateChangeTest {
     }
 
     @Test
-    public void shouldSuccessfullySetState() {
+    void shouldSuccessfullySetState() {
         //Given
         final CaseData caseData = caseData();
         CaseReinstate caseReinstate = new CaseReinstate();
@@ -69,7 +69,7 @@ class TestStateChangeTest {
     }
 
     @Test
-    public void shouldSuccessfullySetStateWithDays() {
+    void shouldSuccessfullySetStateWithDays() {
         //Given
         final CaseData caseData = caseData();
         CaseReinstate caseReinstate = new CaseReinstate();
@@ -92,7 +92,7 @@ class TestStateChangeTest {
         //Then
         assertThat(response.getData()).isNotNull();
         assertThat(changedResponse).isNotNull();
-        assertThat(response.getData().getClosureDate().isBefore(LocalDate.now().minusDays(2)));
+        assertThat(response.getData().getClosureDate()).isBefore(LocalDate.now().minusDays(2));
     }
 
 }

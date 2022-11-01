@@ -51,7 +51,7 @@ class CaseworkerCaseFlagTest {
     }
 
     @Test
-    public void shouldSuccessfullyAddFlag() {
+    void shouldSuccessfullyAddFlag() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");

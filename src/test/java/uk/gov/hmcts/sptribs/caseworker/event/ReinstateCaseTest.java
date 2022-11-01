@@ -44,7 +44,7 @@ class ReinstateCaseTest {
     }
 
     @Test
-    public void shouldSuccessfullyReinstateTheCase() {
+    void shouldSuccessfullyReinstateTheCase() {
         //Given
         final CaseData caseData = caseData();
         final CaseReinstate caseReinstate = new CaseReinstate();
@@ -64,7 +64,7 @@ class ReinstateCaseTest {
         //Then
         assertThat(response.getData().getCaseReinstate()).isNotNull();
         CaseReinstate responseCaseReinstate = response.getData().getCaseReinstate();
-        Assertions.assertEquals(responseCaseReinstate.getReinstateReason(), ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR);
+        Assertions.assertEquals(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR, responseCaseReinstate.getReinstateReason());
         assertThat(responseCaseReinstate.getAdditionalDetail()).isNotNull();
 
     }

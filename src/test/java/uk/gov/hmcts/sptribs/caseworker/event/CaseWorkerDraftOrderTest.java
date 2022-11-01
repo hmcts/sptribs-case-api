@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseWorkerDraftOrderTest {
+class CaseWorkerDraftOrderTest {
     @InjectMocks
     private CaseWorkerDraftOrder caseWorkerDraftOrder;
 
@@ -43,7 +43,7 @@ public class CaseWorkerDraftOrderTest {
     }
 
     @Test
-    public void shouldSuccessfullySaveDraftOrder() {
+    void shouldSuccessfullySaveDraftOrder() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
