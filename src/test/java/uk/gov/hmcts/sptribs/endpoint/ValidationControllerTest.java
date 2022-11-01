@@ -15,7 +15,7 @@ import static uk.gov.hmcts.sptribs.endpoint.data.ValidationStatus.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.ocrDataValidationRequest;
 
 @ExtendWith(MockitoExtension.class)
-public class ValidationControllerTest {
+class ValidationControllerTest {
 
     @InjectMocks
     private ValidationController controller;
@@ -35,8 +35,22 @@ public class ValidationControllerTest {
         //When
         ResponseEntity<OcrValidationResponse> response = controller.validate(invalidFormType, request);
 
-        //When
+        //Then
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
         assertThat(response.getBody()).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    void shouldReturnNullIfValidFormTypePassed() {
+        //Given
+        final String validFormType = "D8";
+        final OcrDataValidationRequest request = ocrDataValidationRequest();
+
+        //When
+        ResponseEntity<OcrValidationResponse> response = controller.validate(validFormType, request);
+
+        //Then
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isNull();
     }
 }
