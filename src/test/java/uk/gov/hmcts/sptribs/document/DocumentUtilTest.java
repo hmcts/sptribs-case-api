@@ -105,6 +105,7 @@ class DocumentUtilTest {
         //Then
         assertThat(letters.size()).isEqualTo(1);
         assertThat(letters.get(0).getDivorceDocument()).isSameAs(doc2.getValue());
+        assertThat(letters.get(0).getCount()).isGreaterThan(0);
     }
 
     @Test
