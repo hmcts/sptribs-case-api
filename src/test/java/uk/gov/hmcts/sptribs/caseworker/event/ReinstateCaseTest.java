@@ -51,7 +51,7 @@ class ReinstateCaseTest {
     }
 
     @Test
-    public void shouldSuccessfullyReinstateTheCase() {
+    void shouldSuccessfullyReinstateTheCase() {
         //Given
         final CaseData caseData = caseData();
         final CaseReinstate caseReinstate = new CaseReinstate();

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,14 +27,14 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseworkerEditCaseTest {
+class CaseworkerEditCaseTest {
     @InjectMocks
     private CaseworkerEditCase caseworkerEditCase;
 
     @Mock
-    private  SubmissionService submissionService;
+    private SubmissionService submissionService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         caseworkerEditCase = new CaseworkerEditCase(submissionService);
     }
@@ -55,7 +55,7 @@ public class CaseworkerEditCaseTest {
     }
 
     @Test
-    public void shouldSuccessfullyEditCase() {
+    void shouldSuccessfullyEditCase() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
