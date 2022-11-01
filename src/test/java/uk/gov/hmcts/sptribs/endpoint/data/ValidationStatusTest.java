@@ -8,13 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.endpoint.data.ValidationStatus.*;
+import static uk.gov.hmcts.sptribs.endpoint.data.ValidationStatus.ERRORS;
+import static uk.gov.hmcts.sptribs.endpoint.data.ValidationStatus.SUCCESS;
+import static uk.gov.hmcts.sptribs.endpoint.data.ValidationStatus.WARNINGS;
 
 @ExtendWith(MockitoExtension.class)
 class ValidationStatusTest {
 
     @Test
-    void shouldReturnValidationStatusERRORSIfNonEmptyErrorsPassed() {
+    void shouldReturnValidationStatusErrorSIfNonEmptyErrorsPassed() {
         //Given
         List<String> errors = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
@@ -28,7 +30,7 @@ class ValidationStatusTest {
     }
 
     @Test
-    void shouldReturnValidationStatusERRORSIfNonEmptyErrorsAndWarningsPassed() {
+    void shouldReturnValidationStatusErrorSIfNonEmptyErrorsAndWarningsPassed() {
         //Given
         List<String> errors = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
@@ -43,7 +45,7 @@ class ValidationStatusTest {
     }
 
     @Test
-    void shouldReturnValidationStatusWARNINGSIfEmptyErrorsAndNonEmptyWarningsPassed() {
+    void shouldReturnValidationStatusWarningsIfEmptyErrorsAndNonEmptyWarningsPassed() {
         //Given
         List<String> errors = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
@@ -57,7 +59,7 @@ class ValidationStatusTest {
     }
 
     @Test
-    void shouldReturnValidationStatusSUCCESSIfEmptyErrorsAndWarningsPassed() {
+    void shouldReturnValidationStatusSuccessIfEmptyErrorsAndWarningsPassed() {
         //Given
         List<String> errors = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
