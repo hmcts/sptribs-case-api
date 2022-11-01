@@ -6,7 +6,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.sptribs.payment.model.Payment;
-import uk.gov.hmcts.sptribs.payment.model.PaymentStatus;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ class ApplicationTest {
     void shouldReturnTrueIfApplicationHasBeenPaidFor() {
         //Given
         final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(payment(55000, SUCCESS)));
+        payments.add(paymentValue(TestDataHelper.payment(55000, SUCCESS)));
 
         //When
         final var application = Application.builder()
@@ -42,13 +42,20 @@ class ApplicationTest {
 
         //Then
         assertThat(application.hasBeenPaidFor()).isTrue();
+        assertThat(application.getApplicationPayments().get(0).getValue().getFeeCode()).isNotNull();
+        assertThat(application.getApplicationPayments().get(0).getValue().getChannel()).isNotNull();
+        assertThat(application.getApplicationPayments().get(0).getValue().getReference()).isNotNull();
+        assertThat(application.getApplicationPayments().get(0).getValue().getTransactionId()).isNotNull();
+        assertThat(application.getApplicationPayments().get(0).getValue().getCreated()).isNotNull();
+        assertThat(application.getApplicationPayments().get(0).getValue().getUpdated()).isNotNull();
+
     }
 
     @Test
     void shouldReturnFalseIfApplicationHasNotBeenPaidFor() {
         //Given
         final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(payment(55000, SUCCESS)));
+        payments.add(paymentValue(TestDataHelper.payment(55000, SUCCESS)));
 
         final var applicationNullOrderSummary = Application.builder()
             .applicationPayments(payments)
@@ -74,9 +81,9 @@ class ApplicationTest {
     void shouldReturnSuccessfulPaymentTotalForApplicationPayments() {
         //Given
         final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(payment(500, SUCCESS)));
-        payments.add(paymentValue(payment(50, SUCCESS)));
-        payments.add(paymentValue(payment(50, DECLINED)));
+        payments.add(paymentValue(TestDataHelper.payment(500, SUCCESS)));
+        payments.add(paymentValue(TestDataHelper.payment(50, SUCCESS)));
+        payments.add(paymentValue(TestDataHelper.payment(50, DECLINED)));
 
         //When
         final var application = Application.builder()
@@ -91,9 +98,9 @@ class ApplicationTest {
     void shouldReturnLastPaymentStatusAndNullIfEmptyOrNull() {
         //Given
         final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(payment(500, SUCCESS)));
-        payments.add(paymentValue(payment(50, SUCCESS)));
-        payments.add(paymentValue(payment(50, DECLINED)));
+        payments.add(paymentValue(TestDataHelper.payment(500, SUCCESS)));
+        payments.add(paymentValue(TestDataHelper.payment(50, SUCCESS)));
+        payments.add(paymentValue(TestDataHelper.payment(50, DECLINED)));
 
         //When
         final var applicationMultiple = Application.builder()
@@ -475,11 +482,5 @@ class ApplicationTest {
             .build();
     }
 
-    private Payment payment(final int amount, final PaymentStatus paymentStatus) {
-        return Payment.builder()
-            .created(LocalDateTime.now())
-            .amount(amount)
-            .status(paymentStatus)
-            .build();
-    }
+
 }

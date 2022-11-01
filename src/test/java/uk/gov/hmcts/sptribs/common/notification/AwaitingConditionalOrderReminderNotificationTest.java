@@ -27,7 +27,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ApplicationType.SOLE_APPLICATIO
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_REMINDER;
+import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.CITIZEN_APPLY_FOR_CONDITIONAL_ORDER;
+import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLICITOR_AWAITING_CONDITIONAL_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_2_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
@@ -193,5 +195,51 @@ class AwaitingConditionalOrderReminderNotificationTest {
 
         //Then
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldSendNotificationToApplicant1Solicitor() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setApplicationType(JOINT_APPLICATION);
+        caseData.getApplicant1().setSolicitor(Solicitor.builder().email(TEST_SOLICITOR_EMAIL).name(TEST_SOLICITOR_NAME).build());
+        caseData.getApplicant1().setSolicitorRepresented(YES);
+        caseData.getApplicant1().setEmail(TEST_APPLICANT_2_USER_EMAIL);
+
+        //When
+        awaitingConditionalOrderReminderNotification.sendToApplicant1Solicitor(caseData, 1234567890123456L);
+
+        //Then
+        verify(notificationService).sendEmail(
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(SOLICITOR_AWAITING_CONDITIONAL_ORDER),
+            argThat(allOf(
+                hasEntry(SOLICITOR_NAME, TEST_SOLICITOR_NAME)
+            )),
+            eq(ENGLISH)
+        );
+    }
+
+    @Test
+    void shouldSendNotificationToApplicant2Solicitor() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setApplicationType(JOINT_APPLICATION);
+        caseData.getApplicant2().setSolicitor(Solicitor.builder().email(TEST_SOLICITOR_EMAIL).name(TEST_SOLICITOR_NAME).build());
+        caseData.getApplicant2().setSolicitorRepresented(YES);
+        caseData.getApplicant2().setEmail(TEST_APPLICANT_2_USER_EMAIL);
+
+        //When
+        awaitingConditionalOrderReminderNotification.sendToApplicant2Solicitor(caseData, 1234567890123456L);
+
+        //Then
+        verify(notificationService).sendEmail(
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(SOLICITOR_AWAITING_CONDITIONAL_ORDER),
+            argThat(allOf(
+                hasEntry(SOLICITOR_NAME, TEST_SOLICITOR_NAME)
+            )),
+            eq(ENGLISH)
+        );
     }
 }
