@@ -19,8 +19,6 @@ import uk.gov.hmcts.sptribs.document.DocumentManagementClient;
 import uk.gov.hmcts.sptribs.hearingvenue.LocationClient;
 import uk.gov.hmcts.sptribs.payment.FeesAndPaymentsClient;
 import uk.gov.hmcts.sptribs.payment.PaymentPbaClient;
-import uk.gov.hmcts.sptribs.solicitor.client.organisation.OrganisationClient;
-import uk.gov.hmcts.sptribs.solicitor.client.pba.PbaRefDataClient;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
 
 import java.util.TimeZone;
@@ -41,8 +39,6 @@ import javax.annotation.PostConstruct;
         CoreCaseDataApi.class,
         CaseAssignmentApi.class,
         DocumentManagementClient.class,
-        OrganisationClient.class,
-        PbaRefDataClient.class,
         PaymentPbaClient.class
     }
 )

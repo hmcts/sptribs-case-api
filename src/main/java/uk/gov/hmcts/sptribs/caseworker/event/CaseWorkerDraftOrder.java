@@ -12,8 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -24,8 +24,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_CREATE_DRAFT_ORDER = "caseworker-create-draft-order";
+    DocmosisTemplateProvider doc = new DocmosisTemplateProvider();
 
+    public static final String CASEWORKER_CREATE_DRAFT_ORDER = "caseworker-create-draft-order";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -33,7 +34,7 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
             configBuilder
                 .event(CASEWORKER_CREATE_DRAFT_ORDER)
                 .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
-                .name("Create a draft order")
+                .name("Create draft order")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
@@ -41,12 +42,14 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createDraftOrder(pageBuilder);
+
     }
+
+
 
     private void createDraftOrder(PageBuilder pageBuilder) {
         pageBuilder.page("createDraftOrder")
             .pageLabel("Select order template")
-            .label("createDraftOrder", "")
             .complex(CaseData::getDraftOrderCIC)
             .mandatoryWithLabel(DraftOrderCIC::getOrderTemplate, "")
             .done();
@@ -68,7 +71,7 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("#Draft order created"))
+            .confirmationHeader("Draft order created")
             .build();
     }
 }

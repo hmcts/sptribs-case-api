@@ -28,6 +28,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.*;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
@@ -129,5 +131,24 @@ public class RecordListing {
     public String getSelectedVenueName() {
         return this.getHearingVenues().getValue().getLabel();
     }
+
+    @CCD(
+        label = "Video call link",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String videoCallLink;
+
+    @CCD(
+        label = "Conference call number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String conferenceCallNumber;
+
+    @CCD(
+        label = "Important hearing information",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String importantInfoDetails;
 
 }

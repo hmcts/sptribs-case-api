@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.NextState;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -20,6 +19,7 @@ import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 
 @Data
@@ -73,7 +73,7 @@ public class CicCase {
     private Set<PartiesCIC> partiesCIC;
 
     @CCD(
-
+        label = "Case information recepient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -81,7 +81,7 @@ public class CicCase {
     private Set<SubjectCIC> subjectCIC;
 
     @CCD(
-
+        label = "Case information recepient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "ApplicantCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -89,7 +89,7 @@ public class CicCase {
     private Set<ApplicantCIC> applicantCIC;
 
     @CCD(
-
+        label = "Case information recepient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -324,13 +324,21 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
     private CaseDocumentsCIC caseDocumentsCIC;
+    private CaseDocumentsCIC reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(
-        label = "Next State",
+        label = "Case Status",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "State",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private NextState afterStayState;
+    private State testState;
 
-
+    @CCD(
+        label = "Minus days from today to set close date ",
+        regex = "^\\d+$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String days;
 }
