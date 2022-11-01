@@ -239,6 +239,7 @@ public class PaymentServiceTest {
 
         //Then
         assertThat(response.getErrorMessage()).isNull();
+        assertThat(response.getPaymentReference()).isNull();
         assertThat(response.getHttpStatus()).isEqualTo(CREATED);
 
         verify(httpServletRequest).getHeader(AUTHORIZATION);
