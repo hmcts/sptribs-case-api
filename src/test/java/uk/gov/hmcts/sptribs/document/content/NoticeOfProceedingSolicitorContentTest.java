@@ -43,6 +43,7 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_DIVORCE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_JOINT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.FORMATTED_TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.applicantRepresentedBySolicitor;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.organisationPolicy;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.respondent;
@@ -106,12 +107,12 @@ public class NoticeOfProceedingSolicitorContentTest {
                 entry(APPLICANT_1_LAST_NAME, "test_last_name"),
                 entry(APPLICANT_2_FIRST_NAME, "applicant_2_first_name"),
                 entry(APPLICANT_2_LAST_NAME, "test_last_name"),
-                entry(SOLICITOR_NAME, "The Solicitor"),
+                entry(SOLICITOR_NAME, TEST_SOLICITOR_NAME),
                 entry(SOLICITOR_ADDRESS, ADDRESS),
                 entry(SOLICITOR_REFERENCE, "12345"),
                 entry(APPLICANT_SOLICITOR_LABEL, "Applicant's solicitor"),
                 entry(APPLICANT_SOLICITOR_REGISTERED, true),
-                entry(SOLICITOR_NAME_WITH_DEFAULT_VALUE, "The Solicitor"),
+                entry(SOLICITOR_NAME_WITH_DEFAULT_VALUE, TEST_SOLICITOR_NAME),
                 entry(IS_JOINT, false),
                 entry(IS_DIVORCE, true),
                 entry(CTSC_CONTACT_DETAILS, CTSC_CONTACT))
@@ -154,12 +155,12 @@ public class NoticeOfProceedingSolicitorContentTest {
             entry(APPLICANT_1_LAST_NAME, "test_last_name"),
             entry(APPLICANT_2_FIRST_NAME, "applicant_2_first_name"),
             entry(APPLICANT_2_LAST_NAME, "test_last_name"),
-            entry(SOLICITOR_NAME, "The Solicitor"),
+            entry(SOLICITOR_NAME, TEST_SOLICITOR_NAME),
             entry(SOLICITOR_ADDRESS, ADDRESS),
             entry(SOLICITOR_REFERENCE, "12345"),
             entry(APPLICANT_SOLICITOR_LABEL, "Applicant's solicitor"),
             entry(APPLICANT_SOLICITOR_REGISTERED, true),
-            entry(SOLICITOR_NAME_WITH_DEFAULT_VALUE, "The Solicitor"),
+            entry(SOLICITOR_NAME_WITH_DEFAULT_VALUE, TEST_SOLICITOR_NAME),
             entry(IS_JOINT, false),
             entry(IS_DIVORCE, true),
             entry(CTSC_CONTACT_DETAILS, CTSC_CONTACT),
@@ -206,10 +207,10 @@ public class NoticeOfProceedingSolicitorContentTest {
                 entry(IS_DIVORCE, true),
                 entry(APPLICANT_SOLICITOR_LABEL, "Applicants solicitor"),
                 entry(APPLICANT_SOLICITOR_REGISTERED, true),
-                entry(SOLICITOR_NAME, "The Solicitor"),
+                entry(SOLICITOR_NAME, TEST_SOLICITOR_NAME),
                 entry(SOLICITOR_ADDRESS, ADDRESS),
                 entry(SOLICITOR_REFERENCE, "Not provided"),
-                entry(SOLICITOR_NAME_WITH_DEFAULT_VALUE, "The Solicitor"),
+                entry(SOLICITOR_NAME_WITH_DEFAULT_VALUE, TEST_SOLICITOR_NAME),
                 entry(CTSC_CONTACT_DETAILS, CTSC_CONTACT));
 
         verifyNoInteractions(holdingPeriodService);
