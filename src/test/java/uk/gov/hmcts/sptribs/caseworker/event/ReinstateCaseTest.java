@@ -98,7 +98,7 @@ class ReinstateCaseTest {
     }
 
     @Test
-    public void shouldReturnErrorsIfApplicantSelectedWithNoApplicant() {
+    public void shouldReturnErrorsIfNoNotificationPartySelected() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
