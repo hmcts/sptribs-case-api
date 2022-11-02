@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.event.page.NotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseReinstate;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -30,11 +31,16 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
+
 @ExtendWith(MockitoExtension.class)
 class ReinstateCaseTest {
 
     @InjectMocks
     private ReinstateCase reinstateCase;
+
+
+    @InjectMocks
+    private NotifyParties notifyParties;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -89,6 +95,17 @@ class ReinstateCaseTest {
         assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
             .get(0).getValue().getDocumentLink()).isNotNull();
 
+    }
+
+    @Test
+    public void shouldReturnErrorsIfNoNotificationPartySelected() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
     }
 
 }

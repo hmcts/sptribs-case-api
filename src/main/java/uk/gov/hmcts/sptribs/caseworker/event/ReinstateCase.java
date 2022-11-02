@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.NotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
@@ -29,6 +30,8 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration reinstateWarning = new ReinstateWarning();
     private static final CcdPageConfiguration reinstateReason = new ReinstateReasonSelect();
     private static final CcdPageConfiguration reinstateDocuments = new ReinstateUploadDocuments();
+    private static final CcdPageConfiguration notifyParties = new NotifyParties();
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -37,6 +40,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         reinstateWarning.addTo(pageBuilder);
         reinstateReason.addTo(pageBuilder);
         reinstateDocuments.addTo(pageBuilder);
+        notifyParties.addTo(pageBuilder);
     }
 
     public PageBuilder reinstateCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
