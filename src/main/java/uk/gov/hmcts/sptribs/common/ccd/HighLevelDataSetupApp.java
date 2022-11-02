@@ -63,10 +63,4 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
             "build/ccd-config/ccd-" + CriminalInjuriesCompensation.CASE_TYPE + "-" + environmentName + ".xlsx"
         );
     }
-
-    @Override
-    public void createRoleAssignments() {
-        // Do not create role assignments.
-        BeftaUtils.defaultLog("Will NOT create role assignments!");
-    }
 }
