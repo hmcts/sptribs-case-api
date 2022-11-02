@@ -324,6 +324,10 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
     private CaseDocumentsCIC caseDocumentsCIC;
+    @CCD(
+        label = "Reinstate Documents",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private CaseDocumentsCIC reinstateDocuments;
     private YesOrNo selectedCheckBox;
 

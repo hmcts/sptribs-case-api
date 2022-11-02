@@ -18,9 +18,10 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
             .label("reinstateUploadAdvice", "Files should be:\n"
                 + "  *  uploaded separately and not in one large file\n"
                 + "  *  a maximum of 100MB in size (larger files must be split)\n"
-                + "  *  labelled clearly, e.g. applicant-name-B1-form.pdf\n")
-            .optionalWithLabel(CicCase::getReinstateDocuments, "Add a file\n"
+                + "  *  labelled clearly, e.g. applicant-name-B1-form.pdf\n"
+                + "\nAdd a file\n"
                 + "Upload a file to the system")
+            .optionalWithLabel(CicCase::getReinstateDocuments, "Reinstate Documents")
             .done();
 
     }
