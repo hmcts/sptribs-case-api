@@ -30,7 +30,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_STAY_THE_CASE)
-            .forStates(CaseManagement)
+            .forStates(CaseManagement, CaseStayed)
             .name("Stay the Case")
             .showSummary()
             .description("Add a Stay to this case")
