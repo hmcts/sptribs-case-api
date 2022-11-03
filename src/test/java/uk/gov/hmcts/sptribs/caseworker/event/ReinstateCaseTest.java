@@ -11,7 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.event.page.NotifyParties;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseReinstate;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -38,9 +38,6 @@ class ReinstateCaseTest {
     @InjectMocks
     private ReinstateCase reinstateCase;
 
-
-    @InjectMocks
-    private NotifyParties notifyParties;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -84,9 +81,13 @@ class ReinstateCaseTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse responseReinstate =
+            reinstateCase.reinstated(updatedCaseDetails, beforeDetails);
 
         //Then
+        assertThat(responseReinstate).isNotNull();
         assertThat(response.getData().getCaseReinstate()).isNotNull();
+        assertThat(response.getState()).isEqualTo(State.CaseManagement);
         CaseReinstate responseCaseReinstate = response.getData().getCaseReinstate();
         Assertions.assertEquals(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR, responseCaseReinstate.getReinstateReason());
         assertThat(responseCaseReinstate.getAdditionalDetail()).isNotNull();
@@ -97,15 +98,5 @@ class ReinstateCaseTest {
 
     }
 
-    @Test
-    public void shouldReturnErrorsIfNoNotificationPartySelected() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        caseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors()).hasSize(1);
-    }
 
 }
