@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.NotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
@@ -16,7 +17,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -50,6 +53,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .name("Reinstate case")
             .description("Reinstate case")
             .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::reinstated)
             .showEventNotes()
             .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
@@ -64,6 +68,15 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         var caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(CaseManagement)
+            .build();
+    }
+
+    public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
+                                                CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
+                + ". %n##  A notification will be sent via email to: Subject, Representative, Respondent"))
             .build();
     }
 
