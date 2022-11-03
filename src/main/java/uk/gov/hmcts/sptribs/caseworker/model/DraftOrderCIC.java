@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -28,22 +30,15 @@ public class DraftOrderCIC {
 
 
     @CCD(
-        label = "Order template",
+        label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
     private OrderTemplate orderTemplate;
 
-//    @CCD(
-//        label = "Order template page",
-//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-//        typeOverride = Collection,
-//        typeParameterOverride = "OrderTemplate"
-//    )
-//    private OrderTemplate orderTemplatePage;
-
     @CCD(
+        label = "Main Content",
         hint = "Amend content as required",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}

@@ -58,7 +58,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
                 .name("Edit draft order")
                 .showSummary()
-                //.aboutToSubmitCallback(this::aboutToSubmit)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
@@ -92,14 +92,15 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     }
 
     private void previewOrder(PageBuilder pageBuilder) {
+
         pageBuilder
             .page("previewOrder",this::aboutToSubmit)
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
-           // .optional(d)
+            //.complex(CaseData::getDraftOrderCIC)
+           // .readonly(DraftOrderCIC::getUrl)
             .label("make Changes","To make changes, choose 'Edit order'\n\n"+
                 "If you are happy , continue to the next screen.")
-
             .done();
     }
 
@@ -115,9 +116,13 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         var caseData = details.getData();
         var caseId = details.getId();
 
-      final String caseDataMap2 = docmosisTemplatesConfig.getTemplateVars().put("cicCaseFullName", CIC_CASE_FULL_NAME);
+        log.info("Sending document request for template : {} case id: {}", filename, caseId);
+     // final String caseDataMap2 = docmosisTemplatesConfig.getTemplateVars().put("cicCaseFullName", CIC_CASE_FULL_NAME);
+
 
         Map<String, Object> caseDataMap = new HashMap<>();
+
+      //  caseDataMap =  templateContent.apply(caseData, caseId);
         caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
         caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
 //        caseDataMap.put("petitionerMiddleName", TEST_MIDDLE_NAME);
@@ -128,7 +133,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
         final var documentInfo = docAssemblyService.renderDocument(
             caseDataMap,
-            null,
+            caseId,
             authorisation,
             templateId,
             LanguagePreference.ENGLISH,
@@ -137,7 +142,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOCCCCCCCCCc------------------------++++++++++++++++++++++++++++++++"+ documentInfo);
 
 
-//        caseDataDocumentService.renderDocumentAndUpdateCaseData(
+//         caseDataDocumentService.renderDocumentAndUpdateCaseData(
 //            caseData,
 //            GENERAL_LETTER,
 //            templateContent.apply(caseData, caseId),
@@ -146,7 +151,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 //            LanguagePreference.ENGLISH,
 //            CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME
 //        );
-
+//
+//        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOCCCCCCCCCc------------------------++++++++++++++++++++++++++++++++");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.NewCaseReceived)
@@ -157,7 +163,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("Draft order edited"))
+            .confirmationHeader(format("When you have finished drafting this order,you can send it to parties in this case."))
             .build();
     }
 }

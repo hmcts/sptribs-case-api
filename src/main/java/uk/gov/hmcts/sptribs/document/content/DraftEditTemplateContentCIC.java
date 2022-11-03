@@ -62,8 +62,8 @@ public class DraftEditTemplateContentCIC {
 
         final Map<String, Object> templateContent = new HashMap<>();
 
-        log.info("For ccd case reference {} and type(divorce/dissolution) {} ", caseId, caseData.getDivorceOrDissolution());
-
+        //log.info("For ccd case reference {} and type(divorce/dissolution) {} ", caseId, caseData.getDivorceOrDissolution());
+        log.info("Sending document request for template : {} case id: {}",caseId,caseData.getDraftOrderCIC());
         final Application application = caseData.getApplication();
 //        final Applicant applicant1 = caseData.getApplicant1();
 //        final Applicant applicant2 = caseData.getApplicant2();
