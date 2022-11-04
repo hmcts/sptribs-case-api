@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseReinstate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
@@ -330,11 +329,6 @@ public class CaseData {
     )
     private String closedDayCount;
 
-    @CCD(
-        label = "Case Reinstate",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CaseReinstate caseReinstate;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
