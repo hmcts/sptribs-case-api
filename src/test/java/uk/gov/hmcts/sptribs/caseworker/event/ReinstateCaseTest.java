@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseReinstate;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
@@ -57,10 +55,6 @@ class ReinstateCaseTest {
     void shouldSuccessfullyReinstateTheCase() {
         //Given
         final CaseData caseData = caseData();
-        final CaseReinstate caseReinstate = new CaseReinstate();
-        caseReinstate.setReinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR);
-        caseReinstate.setAdditionalDetail("some detail");
-        caseData.setCaseReinstate(caseReinstate);
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
@@ -68,7 +62,9 @@ class ReinstateCaseTest {
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CaseDocumentsCIC caseDocumentsCIC = CaseDocumentsCIC.builder().applicantDocumentsUploaded(List.of(documentListValue)).build();
-        final CicCase cicCase = CicCase.builder()
+        CicCase cicCase = CicCase.builder()
+            .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
+            .reinstateAdditionalDetail("some detail")
             .reinstateDocuments(caseDocumentsCIC)
             .build();
         caseData.setCicCase(cicCase);
@@ -86,15 +82,10 @@ class ReinstateCaseTest {
 
         //Then
         assertThat(responseReinstate).isNotNull();
-        assertThat(response.getData().getCaseReinstate()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
-        CaseReinstate responseCaseReinstate = response.getData().getCaseReinstate();
-        Assertions.assertEquals(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR, responseCaseReinstate.getReinstateReason());
-        assertThat(responseCaseReinstate.getAdditionalDetail()).isNotNull();
         assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
             .get(0).getValue().getDocumentEmailContent()).isNotNull();
-        assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
-            .get(0).getValue().getDocumentLink()).isNotNull();
 
     }
 
