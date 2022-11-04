@@ -20,12 +20,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.hearingvenue.model.Region;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.*;
@@ -127,18 +124,6 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<HearingDate>> additionalHearingDate;
-
-    /*@JsonIgnore
-    public void setRegions(Region[] regions) {
-        this.regions = regions;
-    }
-
-    @JsonIgnore
-    public String getSelectedRegionId() {
-        Optional<Region> region = Arrays.stream(this.regions).filter(v -> v.getDescription().equals(getSelectedRegionVal())).findFirst();
-        String regionId = region.isPresent() ? region.get().getRegion_id() : null;
-        return regionId;
-    }*/
 
     @JsonIgnore
     public String getSelectedRegionVal() {

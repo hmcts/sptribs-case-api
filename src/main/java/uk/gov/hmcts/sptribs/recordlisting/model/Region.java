@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.hearingvenue.model;
+package uk.gov.hmcts.sptribs.recordlisting.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,16 +7,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegionResponse {
+public class Region {
 
-    @JsonProperty("regions")
-    private Region[] regions;
+    @JsonProperty("region_id")
+    private String region_id;
+
+    @JsonProperty("description")
+    private String description;
+
+    @JsonProperty("welsh_description")
+    private String welsh_description;
 
 }

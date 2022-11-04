@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
-import uk.gov.hmcts.sptribs.hearingvenue.LocationService;
+import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-import static uk.gov.hmcts.sptribs.hearingvenue.HearingVenueConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
 
 @Component
 @Slf4j
@@ -66,10 +66,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
 
         caseData.getRecordListing().setRegionList(locationService.populateRegionDynamicList());
-
-        /*Optional<Region> region = Arrays.stream(regions).filter(v -> v.getDescription().equals(caseData.getRecordListing().getSelectedRegionVal())).findFirst();
-        String regionId = region.isPresent() ? region.get().getRegion_id() : null;
-        caseData.getRecordListing().setSelectedRegionId(regionId);*/
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

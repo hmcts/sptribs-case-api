@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.hearingvenue;
+package uk.gov.hmcts.sptribs.recordlisting;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,11 +7,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.hearingvenue.model.HearingVenue;
-import uk.gov.hmcts.sptribs.hearingvenue.model.HearingVenueResponse;
-import uk.gov.hmcts.sptribs.hearingvenue.model.Region;
-import uk.gov.hmcts.sptribs.hearingvenue.model.RegionResponse;
-import uk.gov.hmcts.sptribs.payment.model.CreditAccountPaymentResponse;
+import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
+import uk.gov.hmcts.sptribs.recordlisting.model.Region;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,7 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.hearingvenue.HearingVenueConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
 
 @Service
 @Slf4j
@@ -66,35 +63,31 @@ public class LocationService {
             "ALL"
         );
 
-        Region[] regions = Optional.ofNullable(regionResponseEntity)
+        return Optional.ofNullable(regionResponseEntity)
             .map(response ->
                 Optional.ofNullable(response.getBody())
                     .orElseGet(() -> null)
             )
             .orElseGet(() -> null);
-
-        return regions;
     }
 
-    private HearingVenue[] getCourtVenues(String region) {
+    private HearingVenue[] getCourtVenues(String regionId) {
         ResponseEntity<HearingVenue[]> hearingVenueResponseEntity =  locationClient.getHearingVenues(
             authTokenGenerator.generate(),
             httpServletRequest.getHeader(AUTHORIZATION),
-            "1",
+            regionId,
             "Y",
             "Y",
             "Court",
             "N"
         );
 
-        HearingVenue[] hearingVenuws = Optional.ofNullable(hearingVenueResponseEntity)
+        return Optional.ofNullable(hearingVenueResponseEntity)
             .map(response ->
                 Optional.ofNullable(response.getBody())
                     .orElseGet(() -> null)
             )
             .orElseGet(() -> null);
-
-        return hearingVenuws;
     }
 
     private DynamicList populateVenueDynamicList(HearingVenue[] hearingVenues) {
@@ -112,7 +105,5 @@ public class LocationService {
             .listItems(hearingVenueList)
             .build();
     }
-
-
 
 }
