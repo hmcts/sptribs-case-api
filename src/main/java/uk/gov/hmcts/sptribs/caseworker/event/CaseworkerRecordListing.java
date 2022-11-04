@@ -56,12 +56,12 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);
-        addListingDetails(pageBuilder);
+        hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
 
         var caseData = details.getData();
 
@@ -93,18 +93,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat", this::midEvent)
-            .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .mandatory(RecordListing::getRegionList)
-            .done();
-    }
-
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
         final List<String> errors = new ArrayList<>();
         String selectedRegion = caseData.getRecordListing().getSelectedRegionVal();
@@ -118,6 +108,16 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .data(caseData)
             .errors(errors)
             .build();
+    }
+
+    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
+        pageBuilder.page("hearingTypeAndFormat", this::midEvent)
+            .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
+            .complex(CaseData::getRecordListing)
+            .mandatory(RecordListing::getHearingType)
+            .mandatory(RecordListing::getHearingFormat)
+            .mandatory(RecordListing::getRegionList)
+            .done();
     }
 
     private String getRegionId(String selectedRegion) {
@@ -146,9 +146,5 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     + "\n of anyone who should be excluded from attending this hearing.\n")
             .optional(RecordListing::getImportantInfoDetails)
             .done();
-    }
-
-    private void addListingDetails(PageBuilder pageBuilder) {
-        hearingVenues.addTo(pageBuilder);
     }
 }
