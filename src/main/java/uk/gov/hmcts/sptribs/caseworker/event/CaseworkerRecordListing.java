@@ -65,7 +65,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         var caseData = details.getData();
 
-        caseData.getRecordListing().setRegionList(locationService.populateRegionDynamicList());
+        caseData.getRecordListing().setRegionList(locationService.getAllRegions());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

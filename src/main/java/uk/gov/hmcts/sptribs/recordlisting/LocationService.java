@@ -39,24 +39,12 @@ public class LocationService {
         return populateVenueDynamicList(hearingVenues);
     }
 
-    public DynamicList populateRegionDynamicList() {
-        Region[] regions = getRegionList();
-
-        List<String> regionList = Arrays.asList(regions).stream().map(v-> v.getRegion_id() + HYPHEN + v.getDescription()).collect(Collectors.toList());
-
-        List<DynamicListElement> regionDynamicList = regionList
-            .stream()
-            .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
-
-        return DynamicList
-            .builder()
-            .value(DynamicListElement.builder().label("region").code(UUID.randomUUID()).build())
-            .listItems(regionDynamicList)
-            .build();
+    public DynamicList getAllRegions() {
+        final var regions = getRegions();
+        return populateRegionDynamicList(regions);
     }
 
-    private Region[] getRegionList() {
+    private Region[] getRegions() {
         ResponseEntity<Region[]> regionResponseEntity = locationClient.getRegions(
             authTokenGenerator.generate(),
             httpServletRequest.getHeader(AUTHORIZATION),
@@ -88,6 +76,20 @@ public class LocationService {
                     .orElseGet(() -> null)
             )
             .orElseGet(() -> null);
+    }
+
+    private DynamicList populateRegionDynamicList(Region[] regions) {
+        List<String> regionList = Arrays.asList(regions).stream().map(v-> v.getRegion_id() + HYPHEN + v.getDescription()).collect(Collectors.toList());
+        List<DynamicListElement> regionDynamicList = regionList
+            .stream()
+            .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
+
+        return DynamicList
+            .builder()
+            .value(DynamicListElement.builder().label("region").code(UUID.randomUUID()).build())
+            .listItems(regionDynamicList)
+            .build();
     }
 
     private DynamicList populateVenueDynamicList(HearingVenue[] hearingVenues) {

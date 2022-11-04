@@ -37,7 +37,7 @@ public class HearingVenue {
     private String court_type;
 
     @JsonProperty("region_id")
-    private Double region_id;
+    private String region_id;
 
     @JsonProperty("region")
     private String region;

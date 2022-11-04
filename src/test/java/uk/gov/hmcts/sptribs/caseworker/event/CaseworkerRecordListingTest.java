@@ -33,7 +33,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseworkerRecordListingTest {
+class CaseworkerRecordListingTest {
     @InjectMocks
     private CaseworkerRecordListing caseworkerRecordListing;
 
@@ -55,7 +55,7 @@ public class CaseworkerRecordListingTest {
     }
 
     @Test
-    public void shouldSuccessfullyUpdateRecordListingData() {
+    void shouldSuccessfullyUpdateRecordListingData() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -83,7 +83,7 @@ public class CaseworkerRecordListingTest {
     }
 
     @Test
-    public void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
+    void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -92,18 +92,18 @@ public class CaseworkerRecordListingTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        when(locationService.populateRegionDynamicList()).thenReturn(getMockedRegionData());
+        when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response.getData().getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
-        assertThat(response.getData().getRecordListing().getRegionList().getListItems().size()).isEqualTo(1);
+        assertThat(response.getData().getRecordListing().getRegionList().getListItems()).hasSize(1);
         assertThat(response.getData().getRecordListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
 
     }
 
     @Test
-    public void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
+    void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -123,7 +123,7 @@ public class CaseworkerRecordListingTest {
         //Then
 
         assertThat(response.getData().getRecordListing().getHearingVenues().getValue().getLabel()).isEqualTo("venue");
-        assertThat(response.getData().getRecordListing().getHearingVenues().getListItems().size()).isEqualTo(1);
+        assertThat(response.getData().getRecordListing().getHearingVenues().getListItems()).hasSize(1);
         assertThat(response.getData().getRecordListing().getHearingVenues().getListItems().get(0).getLabel()).isEqualTo("venue");
 
     }
