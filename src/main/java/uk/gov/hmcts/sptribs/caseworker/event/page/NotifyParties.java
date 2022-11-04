@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class NotifyParties implements CcdPageConfiguration {
@@ -47,9 +49,9 @@ public class NotifyParties implements CcdPageConfiguration {
 
     private boolean checkNull(CaseData data) {
         return null != data.getCicCase()
-            && (null == data.getCicCase().getNotifyPartySubject() || data.getCicCase().getNotifyPartySubject().isEmpty())
-            && (null == data.getCicCase().getNotifyPartyRepresentative() || data.getCicCase().getNotifyPartyRepresentative().isEmpty())
-            && (null == data.getCicCase().getNotifyPartyRespondent() || data.getCicCase().getNotifyPartyRespondent().isEmpty());
+            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
+            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent());
 
     }
 }
