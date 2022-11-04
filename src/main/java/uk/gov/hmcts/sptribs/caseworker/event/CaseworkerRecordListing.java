@@ -8,9 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -20,19 +17,18 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.hearingvenue.LocationService;
-import uk.gov.hmcts.sptribs.payment.PaymentService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.hearingvenue.HearingVenueConstants.HYPHEN;
 
 @Component
 @Slf4j
@@ -43,9 +39,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     @Autowired
     private LocationService locationService;
-
-    @Autowired
-    private PaymentService paymentService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -63,6 +56,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);
+        addListingDetails(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
     }
@@ -71,16 +65,11 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         var caseData = details.getData();
 
-        // TODO: Santoshini: Remove below working Payment service refdata call
-        /*OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent("other", "enforcement", "BailiffServeDoc");
+        caseData.getRecordListing().setRegionList(locationService.populateRegionDynamicList());
 
-        caseData.getRecordListing().setRegions(DynamicList
-            .builder()
-            .value(DynamicListElement.builder().label(String.valueOf(orderSummary.getPaymentTotal())).build())
-            .listItems(List.of(DynamicListElement.builder().label(orderSummary.getPaymentTotal()).code(UUID.randomUUID()).build()))
-            .build());*/
-
-        caseData.getRecordListing().setRegions(locationService.getRegionList());
+        /*Optional<Region> region = Arrays.stream(regions).filter(v -> v.getDescription().equals(caseData.getRecordListing().getSelectedRegionVal())).findFirst();
+        String regionId = region.isPresent() ? region.get().getRegion_id() : null;
+        caseData.getRecordListing().setSelectedRegionId(regionId);*/
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -114,6 +103,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
+            .mandatory(RecordListing::getRegionList)
             .done();
     }
 
@@ -121,24 +111,24 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
         final List<String> errors = new ArrayList<>();
-        /*String regionId = caseData.getRecordListing().getSelectedRegionId();
+        String selectedRegion = caseData.getRecordListing().getSelectedRegionVal();
+        String regionId = getRegionId(selectedRegion);
 
         if(null != regionId) {
             caseData.getRecordListing().setHearingVenues(locationService.getHearingVenuesByRegion(regionId));
-        }*/
-
-        OrderSummary orderSummary = paymentService.getOrderSummaryByServiceEvent("other", "enforcement", "BailiffServeDoc");
-
-        caseData.getRecordListing().setHearingVenues(DynamicList
-            .builder()
-            .value(DynamicListElement.builder().label(String.valueOf(orderSummary.getPaymentTotal())).build())
-            .listItems(List.of(DynamicListElement.builder().label(orderSummary.getPaymentTotal()).code(UUID.randomUUID()).build()))
-            .build());
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();
+    }
+
+    private String getRegionId(String selectedRegion) {
+        String[] values = Arrays.stream(selectedRegion.split(HYPHEN))
+            .map(String::trim)
+            .toArray(String[]::new);
+        return values.length >0 ? values[0] : null;
     }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
@@ -160,5 +150,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     + "\n of anyone who should be excluded from attending this hearing.\n")
             .optional(RecordListing::getImportantInfoDetails)
             .done();
+    }
+
+    private void addListingDetails(PageBuilder pageBuilder) {
+        hearingVenues.addTo(pageBuilder);
     }
 }

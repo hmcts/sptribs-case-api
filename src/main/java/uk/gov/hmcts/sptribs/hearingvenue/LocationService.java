@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.hearingvenue;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -10,15 +11,18 @@ import uk.gov.hmcts.sptribs.hearingvenue.model.HearingVenue;
 import uk.gov.hmcts.sptribs.hearingvenue.model.HearingVenueResponse;
 import uk.gov.hmcts.sptribs.hearingvenue.model.Region;
 import uk.gov.hmcts.sptribs.hearingvenue.model.RegionResponse;
+import uk.gov.hmcts.sptribs.payment.model.CreditAccountPaymentResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.hearingvenue.HearingVenueConstants.HYPHEN;
 
 @Service
 @Slf4j
@@ -34,46 +38,68 @@ public class LocationService {
     private LocationClient locationClient;
 
     public DynamicList getHearingVenuesByRegion(String regionId) {
-        final var hearingVenueResponse = getCourtVenues(regionId);
-        DynamicList hearingVenues = populateVenueDynamicList(hearingVenueResponse.getHearingVenues());
-
-        return hearingVenues;
+        final var hearingVenues = getCourtVenues(regionId);
+        return populateVenueDynamicList(hearingVenues);
     }
 
-    public DynamicList getRegionList() {
-        final var regionResponse = getRegions();
-        DynamicList regionList = populateRegionDynamicList(regionResponse.getRegions());
+    public DynamicList populateRegionDynamicList() {
+        Region[] regions = getRegionList();
 
-        return regionList;
+        List<String> regionList = Arrays.asList(regions).stream().map(v-> v.getRegion_id() + HYPHEN + v.getDescription()).collect(Collectors.toList());
+
+        List<DynamicListElement> regionDynamicList = regionList
+            .stream()
+            .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
+
+        return DynamicList
+            .builder()
+            .value(DynamicListElement.builder().label("region").code(UUID.randomUUID()).build())
+            .listItems(regionDynamicList)
+            .build();
     }
 
-    private HearingVenueResponse getCourtVenues(String region) {
-        final var hearingVenueResponse = locationClient.getHearingVenues(
-            authTokenGenerator.generate(),
-            httpServletRequest.getHeader(AUTHORIZATION),
-            region,
-            Optional.of("Y"),
-            Optional.of("Y"),
-            Optional.of("Court"),
-            Optional.of("N")
-        );
-
-        return hearingVenueResponse;
-    }
-
-    private RegionResponse getRegions() {
-        final var regionResponse = locationClient.getRegions(
+    private Region[] getRegionList() {
+        ResponseEntity<Region[]> regionResponseEntity = locationClient.getRegions(
             authTokenGenerator.generate(),
             httpServletRequest.getHeader(AUTHORIZATION),
             "ALL"
         );
 
-        return regionResponse;
+        Region[] regions = Optional.ofNullable(regionResponseEntity)
+            .map(response ->
+                Optional.ofNullable(response.getBody())
+                    .orElseGet(() -> null)
+            )
+            .orElseGet(() -> null);
+
+        return regions;
     }
 
-    private DynamicList populateVenueDynamicList(List<HearingVenue> hearingVenues) {
+    private HearingVenue[] getCourtVenues(String region) {
+        ResponseEntity<HearingVenue[]> hearingVenueResponseEntity =  locationClient.getHearingVenues(
+            authTokenGenerator.generate(),
+            httpServletRequest.getHeader(AUTHORIZATION),
+            "1",
+            "Y",
+            "Y",
+            "Court",
+            "N"
+        );
 
-        List<String> venueList = hearingVenues.stream().map(v -> v.getVenue_name()).collect(Collectors.toList());
+        HearingVenue[] hearingVenuws = Optional.ofNullable(hearingVenueResponseEntity)
+            .map(response ->
+                Optional.ofNullable(response.getBody())
+                    .orElseGet(() -> null)
+            )
+            .orElseGet(() -> null);
+
+        return hearingVenuws;
+    }
+
+    private DynamicList populateVenueDynamicList(HearingVenue[] hearingVenues) {
+
+        List<String> venueList = Arrays.asList(hearingVenues).stream().map(v -> v.getVenue_name()).collect(Collectors.toList());
 
         List<DynamicListElement> hearingVenueList = venueList
             .stream()
@@ -87,20 +113,6 @@ public class LocationService {
             .build();
     }
 
-    private DynamicList populateRegionDynamicList(List<Region> regions) {
 
-        List<String> regionList = regions.stream().map(v -> v.getRegion()).collect(Collectors.toList());
-
-        List<DynamicListElement> hearingVenueList = regionList
-            .stream()
-            .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
-
-        return DynamicList
-            .builder()
-            .value(DynamicListElement.builder().label("region").code(UUID.randomUUID()).build())
-            .listItems(hearingVenueList)
-            .build();
-    }
 
 }

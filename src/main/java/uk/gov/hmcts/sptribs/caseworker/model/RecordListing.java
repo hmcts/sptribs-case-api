@@ -20,9 +20,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.hearingvenue.model.Region;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,6 +39,11 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RecordListing {
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String selectedRegionId;
 
     @CCD(
         label = "Hearing type",
@@ -65,7 +71,7 @@ public class RecordListing {
         label = "Region",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DynamicList regions;
+    private DynamicList regionList;
 
     @CCD(
         typeOverride = MultiSelectList,
@@ -122,9 +128,21 @@ public class RecordListing {
     )
     private List<ListValue<HearingDate>> additionalHearingDate;
 
+    /*@JsonIgnore
+    public void setRegions(Region[] regions) {
+        this.regions = regions;
+    }
+
     @JsonIgnore
     public String getSelectedRegionId() {
-        return this.getRegions().getValue().getLabel();
+        Optional<Region> region = Arrays.stream(this.regions).filter(v -> v.getDescription().equals(getSelectedRegionVal())).findFirst();
+        String regionId = region.isPresent() ? region.get().getRegion_id() : null;
+        return regionId;
+    }*/
+
+    @JsonIgnore
+    public String getSelectedRegionVal() {
+        return this.getRegionList().getValue().getLabel();
     }
 
     @JsonIgnore

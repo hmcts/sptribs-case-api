@@ -110,7 +110,7 @@ public class HearingVenue {
     private String venue_ou_code;
 
     @JsonProperty("mrd_building_location_id")
-    private Double mrd_building_location_id;
+    private String mrd_building_location_id;
 
     @JsonProperty("mrd_venue_id")
     private String mrd_venue_id;

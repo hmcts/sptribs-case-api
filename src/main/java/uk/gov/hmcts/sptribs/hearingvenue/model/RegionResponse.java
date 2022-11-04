@@ -17,6 +17,6 @@ import java.util.List;
 public class RegionResponse {
 
     @JsonProperty("regions")
-    private List<Region> regions;
+    private Region[] regions;
 
 }

@@ -44,7 +44,7 @@ public class CaseworkerRecordListingTest {
     }
 
     @Test
-    public void shouldSuccessfullyStayTheCase() {
+    public void shouldSuccessfullyUpdateRecordListingData() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();

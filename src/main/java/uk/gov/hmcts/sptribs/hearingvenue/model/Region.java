@@ -17,10 +17,10 @@ public class Region {
     @JsonProperty("region_id")
     private String region_id;
 
-    @JsonProperty("region")
-    private String region;
+    @JsonProperty("description")
+    private String description;
 
-    @JsonProperty("welsh_region")
-    private String welsh_region;
+    @JsonProperty("welsh_description")
+    private String welsh_description;
 
 }
