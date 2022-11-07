@@ -24,11 +24,11 @@ public class DisabilityDiscrimination implements CCDConfig<CaseData, State, User
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.DD.name(), "DD Case Type", CcdCaseType.DD.getDescription());
+        configBuilder.caseType(CcdCaseType.ST_SEND.name(), "DD Case Type", CcdCaseType.ST_SEND.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.DD.getCcdServiceDescription());
 
 
-        // to shutter the service within xui uncomment this line
+        // to shutter the service within xui, uncomment this line
         // configBuilder.shutterService();
         log.info("Building definition for " + System.getenv().getOrDefault("ENVIRONMENT", ""));
     }
