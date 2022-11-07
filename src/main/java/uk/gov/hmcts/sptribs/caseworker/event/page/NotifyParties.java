@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -23,23 +24,22 @@ public class NotifyParties implements CcdPageConfiguration {
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
             .label("app", "")
-            .readonlyWithLabel(CicCase::getApplicantFullName, " ")
-            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ")
-            .label("rep", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .label("rep", "")
+            .readonlyWithLabel(CicCase::getRespondantName, " ")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (checkNull(data)) {
             errors.add("One field must be selected.");
         }
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
@@ -48,9 +48,9 @@ public class NotifyParties implements CcdPageConfiguration {
 
     private boolean checkNull(CaseData data) {
         return null != data.getCicCase()
-            && (null == data.getCicCase().getNotifyPartySubject() || data.getCicCase().getNotifyPartySubject().isEmpty())
-            && (null == data.getCicCase().getNotifyPartyApplicant() || data.getCicCase().getNotifyPartyApplicant().isEmpty())
-            && (null == data.getCicCase().getNotifyPartyRepresentative() || data.getCicCase().getNotifyPartyRepresentative().isEmpty());
+            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
+            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent());
 
     }
 }

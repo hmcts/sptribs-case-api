@@ -11,19 +11,18 @@ import lombok.NoArgsConstructor;
 import org.apache.groovy.parser.antlr4.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseReinstate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
+import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
@@ -31,15 +30,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
-import uk.gov.hmcts.sptribs.payment.model.Payment;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -52,7 +48,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.Gender.MALE;
 import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
 import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.HUSBAND;
 import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.WIFE;
-import static uk.gov.hmcts.sptribs.payment.model.PaymentStatus.SUCCESS;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -330,11 +325,12 @@ public class CaseData {
     )
     private String closedDayCount;
 
+
     @CCD(
-        label = "Case Reinstate",
+        label = "Send Order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseReinstate caseReinstate;
+    private SendOrder sendOrder;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
@@ -374,13 +370,13 @@ public class CaseData {
 
     public void archiveAlternativeServiceApplicationOnCompletion() {
 
-        AlternativeService alternativeService = this.getAlternativeService();
+        AlternativeService alternativeSrv = this.getAlternativeService();
 
-        if (null != alternativeService) {
+        if (null != alternativeSrv) {
 
-            alternativeService.setReceivedServiceAddedDate(LocalDate.now());
+            alternativeSrv.setReceivedServiceAddedDate(LocalDate.now());
 
-            AlternativeServiceOutcome alternativeServiceOutcome = alternativeService.getOutcome();
+            AlternativeServiceOutcome alternativeServiceOutcome = alternativeSrv.getOutcome();
 
             if (isEmpty(this.getAlternativeServiceOutcomes())) {
 
@@ -440,34 +436,6 @@ public class CaseData {
         this.getApplicant1().setGender(app1Gender);
         this.getApplicant2().setGender(app2Gender);
         this.getApplication().setDivorceWho(whoDivorcing);
-    }
-
-    @JsonIgnore
-    public void updateCaseDataWithPaymentDetails(
-        OrderSummary applicationFeeOrderSummary,
-        CaseData caseData,
-        String paymentReference
-    ) {
-        var payment = Payment
-            .builder()
-            .amount(parseInt(applicationFeeOrderSummary.getPaymentTotal()))
-            .channel("online")
-            .feeCode(applicationFeeOrderSummary.getFees().get(0).getValue().getCode())
-            .reference(paymentReference)
-            .status(SUCCESS)
-            .build();
-
-
-        var application = caseData.getApplication();
-
-        if (isEmpty(application.getApplicationPayments())) {
-            List<ListValue<Payment>> payments = new ArrayList<>();
-            payments.add(new ListValue<>(UUID.randomUUID().toString(), payment));
-            application.setApplicationPayments(payments);
-        } else {
-            application.getApplicationPayments()
-                .add(new ListValue<>(UUID.randomUUID().toString(), payment));
-        }
     }
 
     public RemoveCaseStay getRemoveCaseStay() {
