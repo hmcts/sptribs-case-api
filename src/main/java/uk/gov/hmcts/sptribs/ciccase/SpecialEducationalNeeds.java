@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 @Slf4j
 public class SpecialEducationalNeeds implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String CASE_TYPE = "SEN";
+    public static final String CASE_TYPE = "SEND";
     public static final String JURISDICTION = "DIVORCE";
 
     @Override
@@ -24,7 +24,7 @@ public class SpecialEducationalNeeds implements CCDConfig<CaseData, State, UserR
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.ST_SEND.name(), "SEN Case Type", CcdCaseType.ST_SEND.getDescription());
+        configBuilder.caseType(CcdCaseType.ST_SEND.name(), "SEND Case Type", CcdCaseType.ST_SEND.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.SEN.getCcdServiceDescription());
 
 
