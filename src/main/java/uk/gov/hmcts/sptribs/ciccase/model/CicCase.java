@@ -370,6 +370,12 @@ public class CicCase {
     private YesOrNo selectedCheckBox;
 
     @CCD(
+        label = "",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseDocumentsCIC orderFile;
+
+    @CCD(
         label = "Case Status",
         typeOverride = FixedRadioList,
         typeParameterOverride = "State",
