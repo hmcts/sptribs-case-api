@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.sptribs.caseworker.event.page.OrderIssuingSelect;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
@@ -29,11 +31,16 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
-
+    private static final CcdPageConfiguration orderIssuingSelect = new OrderIssuingSelect();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+        var pageBuilder = send(configBuilder);
+        orderIssuingSelect.addTo(pageBuilder);
+    }
+
+    public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
             .forStates(AwaitingApplicant1Response,
                 AwaitingApplicant2Response,

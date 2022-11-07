@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class NotifyParties implements CcdPageConfiguration {
