@@ -24,7 +24,7 @@ public class CareStandards implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.CS.name(), "CS Case Type", CcdCaseType.CS.getDescription());
+        configBuilder.caseType(CcdCaseType.ST_CS.name(), "CS Case Type", CcdCaseType.ST_CS.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.CS.getCcdServiceDescription());
 
 

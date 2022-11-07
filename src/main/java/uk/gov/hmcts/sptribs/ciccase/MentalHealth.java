@@ -24,7 +24,7 @@ public class MentalHealth implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.MH.name(), "MH Case Type", CcdCaseType.MH.getDescription());
+        configBuilder.caseType(CcdCaseType.ST_MH.name(), "MH Case Type", CcdCaseType.ST_MH.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.MH.getCcdServiceDescription());
 
 

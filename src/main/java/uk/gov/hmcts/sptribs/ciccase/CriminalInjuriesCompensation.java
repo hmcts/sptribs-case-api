@@ -24,7 +24,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, 
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.CIC.name(), "CIC Case Type", CcdCaseType.CIC.getDescription());
+        configBuilder.caseType(CcdCaseType.ST_CIC.name(), "CIC Case Type", CcdCaseType.ST_CIC.getDescription());
         configBuilder.jurisdiction(JURISDICTION, "CIC", CcdServiceCode.CIC.getCcdServiceDescription());
 
 

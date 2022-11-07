@@ -24,7 +24,7 @@ public class PrimaryHealthLists implements CCDConfig<CaseData, State, UserRole> 
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.PHL.name(), "PHL Case Type", CcdCaseType.PHL.getDescription());
+        configBuilder.caseType(CcdCaseType.ST_PHL.name(), "PHL Case Type", CcdCaseType.ST_PHL.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.PHL.getCcdServiceDescription());
 
 
