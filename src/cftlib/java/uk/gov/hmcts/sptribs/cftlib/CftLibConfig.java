@@ -39,12 +39,12 @@ public class CftLibConfig implements CFTLibConfigurer {
             "TEST_SOLICITOR@mailinator.com",
             "divorce_as_caseworker_admin@mailinator.com")) {
             lib.createProfile(p, "DIVORCE", "NO_FAULT_DIVORCE", state);
-            lib.createProfile(p, CcdServiceCode.CIC.getCcdServiceName(), CcdCaseType.CIC.name(), state);
-            lib.createProfile(p, CcdServiceCode.CS.getCcdServiceName(), CcdCaseType.CS.name(), state);
-            lib.createProfile(p, CcdServiceCode.MH.getCcdServiceName(), CcdCaseType.MH.name(), state);
-            lib.createProfile(p, CcdServiceCode.PHL.getCcdServiceName(), CcdCaseType.PHL.name(), state);
-            lib.createProfile(p, CcdServiceCode.SEN.getCcdServiceName(), CcdCaseType.SEN.name(), state);
-            lib.createProfile(p, CcdServiceCode.DD.getCcdServiceName(), CcdCaseType.DD.name(), state);
+            lib.createProfile(p, CcdServiceCode.CIC.getCcdServiceName(), CcdCaseType.ST_CIC.name(), state);
+            lib.createProfile(p, CcdServiceCode.CS.getCcdServiceName(), CcdCaseType.ST_CS.name(), state);
+            lib.createProfile(p, CcdServiceCode.MH.getCcdServiceName(), CcdCaseType.ST_MH.name(), state);
+            lib.createProfile(p, CcdServiceCode.PHL.getCcdServiceName(), CcdCaseType.ST_PHL.name(), state);
+            lib.createProfile(p, CcdServiceCode.SEN.getCcdServiceName(), CcdCaseType.ST_SEND.name(), state);
+            lib.createProfile(p, CcdServiceCode.DD.getCcdServiceName(), CcdCaseType.ST_SEND.name(), state);
         }
 
         lib.createRoles(
@@ -87,7 +87,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             .start()
             .waitFor();
         if (code != 0) {
-            throw new RuntimeException("Error converting ccd json to xlsx");
+            throw new CftLibConfigException("Error converting ccd json to xlsx");
         }
     }
 }
