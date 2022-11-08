@@ -28,11 +28,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
+
 @Component
 @Slf4j
 public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
     public static final String CIC_CASE_FULL_NAME = "cicCaseFullName";
+
 
     @Autowired
     private DocAssemblyService docAssemblyService;
@@ -40,7 +43,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     private IdamService idamService;
     @Autowired
     private DocmosisTemplatesConfig docmosisTemplatesConfig;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
@@ -68,16 +70,16 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .label("editableDraft", "Draft to be edited")
             .complex(CaseData::getDraftOrderCIC)
             .mandatory(DraftOrderCIC::getOrderTemplate, "")
-            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\n<h4>First tier tribunal Health lists</h4>\n\n"
-                + "<h3>IN THE MATTER OF THE NATIONAL HEALTH SERVICES (PERFORMERS LISTS)(ENGLAND) REGULATIONS 2013</h2>\n\n"
+            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\n<h4>First tier tribunal Health lists</h4>\n\n" +
+                "<h3>IN THE MATTER OF THE NATIONAL HEALTH SERVICES (PERFORMERS LISTS)(ENGLAND) REGULATIONS 2013</h2>\n\n"
                 + "&lt; &lt; CaseNumber &gt; &gt; \n"
                 + "\nBETWEEN\n"
                 + "\n&lt; &lt; SubjectName &gt; &gt; \n"
                 + "\nApplicant\n" + "\n<RepresentativeName>" + "\nRespondent<hr>"
                 + "\n<h3>Main content</h3>\n\n ")
             .optional(DraftOrderCIC::getMainContentToBeEdited)
-            .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
-                + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
+            .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n" +
+                "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
 
             .done();
     }
@@ -85,15 +87,14 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     private void previewOrder(PageBuilder pageBuilder) {
 
         pageBuilder
-            .page("previewOrder", this::aboutToSubmit)
+            .page("previewOrder",this::aboutToSubmit)
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
-            //.complex(CaseData::getDraftOrderCIC)
-            // .readonly(DraftOrderCIC::getUrl)
-            .label("make Changes", "To make changes, choose 'Edit order'\n\n"
-                + "If you are happy , continue to the next screen.")
+            .label("make Changes","To make changes, choose 'Edit order'\n\n"+
+                "If you are happy , continue to the next screen.")
             .done();
     }
+
 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -101,7 +102,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
-        final String templateId = "GENERAL_DIRECTIONS";
+        final String templateId = "GENERAL_DIRECTIONS";  //ST-CIC-STD-ENG-CIC6_General_Directions.docx
         final String filename = "ST-CIC-STD-ENG-CIC_General_Directions";
         var caseData = details.getData();
         var caseId = details.getId();
@@ -109,10 +110,12 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         log.info("Sending document request for template : {} case id: {}", filename, caseId);
 
 
+
         Map<String, Object> caseDataMap = new HashMap<>();
 
         caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
         caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
+
 
 
         final var documentInfo = docAssemblyService.renderDocument(
@@ -123,20 +126,9 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             LanguagePreference.ENGLISH,
             filename
         );
-        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOCCCCCCCCCc------------------------++++++++++++++++++++++++++++++++" + documentInfo);
+        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOCCCCCCCCCc------------------------++++++++++++++++++++++++++++++++"+ documentInfo);
 
 
-//         caseDataDocumentService.renderDocumentAndUpdateCaseData(
-//            caseData,
-//            GENERAL_LETTER,
-//            templateContent.apply(caseData, caseId),
-//            caseId,
-//            GENERAL_LETTER_TEMPLATE_ID,
-//            LanguagePreference.ENGLISH,
-//            CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME
-//        );
-//
-//        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOCCCCCCCCCc------------------------++++++++++++++++++++++++++++++++");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.Draft)

@@ -233,6 +233,7 @@ public class CaseData {
         label = "Select order template ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    // private List<ListValue<DraftOrderCIC> draftOrderCIC = new ArrayList<>();
     private DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
 
 
