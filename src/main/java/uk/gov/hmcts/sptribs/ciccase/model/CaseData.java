@@ -235,6 +235,7 @@ public class CaseData {
     )
     private DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
 
+
     @JsonUnwrapped(prefix = "link")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})

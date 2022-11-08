@@ -3,52 +3,16 @@ package uk.gov.hmcts.sptribs.document.content;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.Application;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
-import uk.gov.hmcts.sptribs.document.content.provider.ApplicantTemplateDataProvider;
 import uk.gov.hmcts.sptribs.document.content.provider.ApplicationTemplateDataProvider;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_COURT_CASE_DETAILS;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_EMAIL;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_FINANCIAL_ORDER;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_FULL_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_LAST_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_MARRIAGE_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_MIDDLE_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_1_POSTAL_ADDRESS;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_2_COURT_CASE_DETAILS;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_2_FINANCIAL_ORDER;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_2_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_2_FULL_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_2_LAST_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_2_MARRIAGE_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.APPLICANT_2_MIDDLE_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CCD_CASE_REFERENCE;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CIVIL_PARTNERSHIP;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CONDITIONAL_ORDER_DIVORCE_OR_CIVIL_PARTNERSHIP;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DIVORCE_OR_DISSOLUTION;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DIVORCE_OR_END_CIVIL_PARTNERSHIP;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HAS_FINANCIAL_ORDER_APPLICANT_1;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HAS_FINANCIAL_ORDER_APPLICANT_2;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HAS_OTHER_COURT_CASES_APPLICANT_1;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HAS_OTHER_COURT_CASES_APPLICANT_2;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.ISSUE_DATE;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.ISSUE_DATE_POPULATED;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.JURISDICTIONS;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.MARRIAGE;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.MARRIAGE_OR_CIVIL_PARTNERSHIP;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.MARRIAGE_OR_RELATIONSHIP;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.RELATIONSHIP;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.GENERAL_DIRECTIONS;
-import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
 
-import static uk.gov.hmcts.sptribs.notification.FormatUtil.formatId;
 
 @Component
 @Slf4j

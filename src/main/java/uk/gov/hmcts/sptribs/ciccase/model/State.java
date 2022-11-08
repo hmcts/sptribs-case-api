@@ -19,6 +19,19 @@ public enum State {
         access = {DefaultStateAccess.class}
     )
     Rejected("Rejected"),
+    @CCD(
+        label = "Application completed",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccess.class}
+    )
+    Completed("Completed"),
+
+    @CCD(
+        label = "Application Sent",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccess.class}
+    )
+    Sent("Sent"),
 
     @CCD(
         label = "Application withdrawn",
