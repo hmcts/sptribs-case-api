@@ -15,11 +15,15 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.ReinstateCase.CASEWORKER_REINSTATE_CASE;
@@ -28,7 +32,6 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-
 
 @ExtendWith(MockitoExtension.class)
 class ReinstateCaseTest {
@@ -65,6 +68,9 @@ class ReinstateCaseTest {
         CicCase cicCase = CicCase.builder()
             .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
             .reinstateAdditionalDetail("some detail")
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .reinstateDocuments(caseDocumentsCIC)
             .build();
         caseData.setCicCase(cicCase);
@@ -82,6 +88,9 @@ class ReinstateCaseTest {
 
         //Then
         assertThat(responseReinstate).isNotNull();
+        assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
+        assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
+        assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
         assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
         assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
