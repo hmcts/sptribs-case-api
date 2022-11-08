@@ -72,7 +72,7 @@ class LocationServiceTest {
 
         DynamicList regionList = locationService.getAllRegions();
 
-        assertThat(regionList.getListItems()).hasSize(0);
+        assertThat(regionList.getListItems()).isEmpty();
     }
 
     @Test
@@ -107,6 +107,6 @@ class LocationServiceTest {
 
         DynamicList regionList = locationService.getHearingVenuesByRegion("1");
 
-        assertThat(regionList.getListItems()).hasSize(0);
+        assertThat(regionList.getListItems()).isEmpty();
     }
 }

@@ -129,26 +129,6 @@ class CaseworkerRecordListingTest {
 
     }
 
-    @Test
-    void shouldNotPopulateHearingVenueIfNullRegionDataReturned() {
-        //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setRegionList(getEmptyListData());
-        caseData.setRecordListing(recordListing);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
-
-        assertThat(response.getData().getRecordListing().getHearingVenues()).isNull();
-    }
-
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
@@ -175,16 +155,4 @@ class CaseworkerRecordListingTest {
             .build();
     }
 
-    private DynamicList getEmptyListData() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("label")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(new ArrayList<>())
-            .build();
-    }
 }
