@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.sendcase;
+package uk.gov.hmcts.sptribs.ciccase;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

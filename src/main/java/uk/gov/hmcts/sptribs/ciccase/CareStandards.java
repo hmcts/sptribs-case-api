@@ -1,13 +1,13 @@
-package uk.gov.hmcts.sptribs.cscase;
+package uk.gov.hmcts.sptribs.ciccase;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.cscase.model.CaseData;
-import uk.gov.hmcts.sptribs.cscase.model.RetiredFields;
-import uk.gov.hmcts.sptribs.cscase.model.State;
-import uk.gov.hmcts.sptribs.cscase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
