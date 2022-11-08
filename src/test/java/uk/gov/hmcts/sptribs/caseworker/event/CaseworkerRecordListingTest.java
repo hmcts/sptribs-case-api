@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

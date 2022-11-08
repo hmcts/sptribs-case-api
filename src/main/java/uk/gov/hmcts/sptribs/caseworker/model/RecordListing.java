@@ -145,31 +145,6 @@ public class RecordListing {
     )
     private String regionsMessage;
 
-    /*@CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    public YesOrNo getHearingVenuesAvailable() {
-        return this.hearingVenuesAvailable;
-    }
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    public void setHearingVenuesAvailable(YesOrNo hearingVenuesAvailable) {
-        this.hearingVenuesAvailable = hearingVenuesAvailable;
-    }*/
-
-
-    @JsonIgnore
-    public String getSelectedRegionVal() {
-        return this.getRegionList().getValue().getLabel();
-    }
-
-    @JsonIgnore
-    public String getSelectedVenueName() {
-        return this.getHearingVenues().getValue().getLabel();
-    }
-
     @CCD(
         label = "Video call link",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -188,5 +163,15 @@ public class RecordListing {
         typeOverride = TextArea
     )
     private String importantInfoDetails;
+
+    @JsonIgnore
+    public String getSelectedRegionVal() {
+        return this.getRegionList().getValue().getLabel();
+    }
+
+    @JsonIgnore
+    public String getSelectedVenueName() {
+        return this.getHearingVenues().getValue().getLabel();
+    }
 
 }

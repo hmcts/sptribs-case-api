@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.recordlisting;
 
-public class RecordListingConstants {
+public final class RecordListingConstants {
 
     public static final String REGION_ID = "region_id";
     public static final String REGION_ID_1 = "regionId";

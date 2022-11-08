@@ -93,7 +93,7 @@ public class LocationService {
             .orElseGet(() -> null);
     }
 
-    private DynamicList populateRegionDynamicList(Region[] regions) {
+    private DynamicList populateRegionDynamicList(Region... regions) {
         List<String> regionList = Objects.nonNull(regions)
             ? Arrays.asList(regions).stream().map(v -> v.getRegionId() + HYPHEN + v.getDescription()).collect(Collectors.toList())
             : new ArrayList<>();
@@ -110,7 +110,7 @@ public class LocationService {
             .build();
     }
 
-    private DynamicList populateVenueDynamicList(HearingVenue[] hearingVenues) {
+    private DynamicList populateVenueDynamicList(HearingVenue... hearingVenues) {
         List<String> venueList = Objects.nonNull(hearingVenues)
             ? Arrays.asList(hearingVenues).stream().map(HearingVenue::getVenueName).collect(Collectors.toList())
             : new ArrayList<>();
