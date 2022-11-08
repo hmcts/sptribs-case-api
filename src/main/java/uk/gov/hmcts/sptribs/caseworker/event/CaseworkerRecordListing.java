@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -18,9 +19,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -62,10 +61,13 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-
         var caseData = details.getData();
+        DynamicList regionList = locationService.getAllRegions();
+        caseData.getRecordListing().setRegionList(regionList);
 
-        caseData.getRecordListing().setRegionList(locationService.getAllRegions());
+        if (regionList.getListItems().isEmpty()) {
+            caseData.getRecordListing().setRegionsMessage("Unable to retrieve Region data");
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -96,17 +98,19 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        final List<String> errors = new ArrayList<>();
         String selectedRegion = caseData.getRecordListing().getSelectedRegionVal();
         String regionId = getRegionId(selectedRegion);
 
-        if(null != regionId) {
-            caseData.getRecordListing().setHearingVenues(locationService.getHearingVenuesByRegion(regionId));
+        if (null != regionId) {
+            DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
+            caseData.getRecordListing().setHearingVenues(hearingVenueList);
+            if (hearingVenueList.getListItems().isEmpty()) {
+                caseData.getRecordListing().setHearingVenuesMessage("Unable to retrieve Hearing Venues data");
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .errors(errors)
             .build();
     }
 
@@ -116,6 +120,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
+            .readonly(RecordListing::getRegionsMessage)
             .mandatory(RecordListing::getRegionList)
             .done();
     }
@@ -124,7 +129,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         String[] values = Arrays.stream(selectedRegion.split(HYPHEN))
             .map(String::trim)
             .toArray(String[]::new);
-        return values.length >0 ? values[0] : null;
+        return values.length > 0 ? values[0] : null;
     }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.recordlisting;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +11,14 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
 import uk.gov.hmcts.sptribs.recordlisting.model.Region;
 
-import javax.servlet.http.HttpServletRequest;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
@@ -45,11 +47,17 @@ public class LocationService {
     }
 
     private Region[] getRegions() {
-        ResponseEntity<Region[]> regionResponseEntity = locationClient.getRegions(
-            authTokenGenerator.generate(),
-            httpServletRequest.getHeader(AUTHORIZATION),
-            "ALL"
-        );
+        ResponseEntity<Region[]> regionResponseEntity = null;
+
+        try {
+            regionResponseEntity = locationClient.getRegions(
+                authTokenGenerator.generate(),
+                httpServletRequest.getHeader(AUTHORIZATION),
+                "ALL");
+        } catch (FeignException exception) {
+            log.error("Unable to get Region data from reference data with exception {}",
+                exception.getMessage());
+        }
 
         return Optional.ofNullable(regionResponseEntity)
             .map(response ->
@@ -60,15 +68,22 @@ public class LocationService {
     }
 
     private HearingVenue[] getCourtVenues(String regionId) {
-        ResponseEntity<HearingVenue[]> hearingVenueResponseEntity =  locationClient.getHearingVenues(
-            authTokenGenerator.generate(),
-            httpServletRequest.getHeader(AUTHORIZATION),
-            regionId,
-            "Y",
-            "Y",
-            "Court",
-            "N"
-        );
+        ResponseEntity<HearingVenue[]> hearingVenueResponseEntity = null;
+
+        try {
+            hearingVenueResponseEntity = locationClient.getHearingVenues(
+                authTokenGenerator.generate(),
+                httpServletRequest.getHeader(AUTHORIZATION),
+                regionId,
+                "Y",
+                "Y",
+                "Court",
+                "N"
+            );
+        } catch (FeignException exception) {
+            log.error("Unable to get Hearing venue data from reference data with exception {}",
+                exception.getMessage());
+        }
 
         return Optional.ofNullable(hearingVenueResponseEntity)
             .map(response ->
@@ -79,7 +94,10 @@ public class LocationService {
     }
 
     private DynamicList populateRegionDynamicList(Region[] regions) {
-        List<String> regionList = Arrays.asList(regions).stream().map(v-> v.getRegion_id() + HYPHEN + v.getDescription()).collect(Collectors.toList());
+        List<String> regionList = Objects.nonNull(regions)
+            ? Arrays.asList(regions).stream().map(v -> v.getRegionId() + HYPHEN + v.getDescription()).collect(Collectors.toList())
+            : new ArrayList<>();
+
         List<DynamicListElement> regionDynamicList = regionList
             .stream()
             .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
@@ -93,8 +111,9 @@ public class LocationService {
     }
 
     private DynamicList populateVenueDynamicList(HearingVenue[] hearingVenues) {
-
-        List<String> venueList = Arrays.asList(hearingVenues).stream().map(v -> v.getVenue_name()).collect(Collectors.toList());
+        List<String> venueList = Objects.nonNull(hearingVenues)
+            ? Arrays.asList(hearingVenues).stream().map(HearingVenue::getVenueName).collect(Collectors.toList())
+            : new ArrayList<>();
 
         List<DynamicListElement> hearingVenueList = venueList
             .stream()

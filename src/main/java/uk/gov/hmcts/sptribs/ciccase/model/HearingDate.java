@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -18,21 +18,33 @@ import java.time.LocalDateTime;
 public class HearingDate {
 
     @CCD(
+        displayOrder = 1,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime hearingDateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate hearingVenueDate;
 
     @CCD(
         label = "Session",
+        displayOrder = 2,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingSession session;
 
+    @CCD(
+        label = "Start time",
+        displayOrder = 3,
+        regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingTime;
+
     @JsonCreator
-    public HearingDate(@JsonProperty("hearingDate") LocalDateTime hearingDateTime,
-                       @JsonProperty("session") HearingSession session) {
-        this.hearingDateTime = hearingDateTime;
+    public HearingDate(@JsonProperty("hearingVenueDate") LocalDate hearingVenueDate,
+                       @JsonProperty("session") HearingSession session,
+                       @JsonProperty("hearingTime") String hearingTime) {
+        this.hearingVenueDate = hearingVenueDate;
         this.session = session;
+        this.hearingTime = hearingTime;
     }
 }

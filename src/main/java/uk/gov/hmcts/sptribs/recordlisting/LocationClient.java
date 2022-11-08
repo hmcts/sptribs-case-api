@@ -2,13 +2,15 @@ package uk.gov.hmcts.sptribs.recordlisting;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.GetMapping;
 import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
 import uk.gov.hmcts.sptribs.recordlisting.model.Region;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.IS_CASE_MANAGEMENT_LOCATION;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.IS_HEARING_LOCATION;
@@ -16,8 +18,6 @@ import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.IS_TEMPO
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.LOCATION_TYPE;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ID;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ID_1;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(name = "location-client", url = "${location.api.baseUrl}")
 public interface LocationClient {

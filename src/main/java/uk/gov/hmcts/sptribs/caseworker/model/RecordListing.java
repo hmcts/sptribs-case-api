@@ -21,12 +21,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.*;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
@@ -78,11 +79,13 @@ public class RecordListing {
     private Set<VenueNotListed> venueNotListedOption;
 
     @CCD(
+        label = "Venue Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String hearingVenueName;
 
     @CCD(
+        label = "Venue Address",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String hearingVenueAddress;
@@ -102,8 +105,15 @@ public class RecordListing {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private LocalDateTime hearingDateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate hearingDate;
+
+    @CCD(
+        label = "Start time",
+        regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingTime;
 
     @CCD(
         label = "Session",
@@ -118,12 +128,37 @@ public class RecordListing {
     private YesOrNo numberOfDays;
 
     @CCD(
-        label = "Hearing, date and start time",
+        label = "Hearing date",
         typeOverride = Collection,
         typeParameterOverride = "HearingDate",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<HearingDate>> additionalHearingDate;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingVenuesMessage;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String regionsMessage;
+
+    /*@CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    public YesOrNo getHearingVenuesAvailable() {
+        return this.hearingVenuesAvailable;
+    }
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    public void setHearingVenuesAvailable(YesOrNo hearingVenuesAvailable) {
+        this.hearingVenuesAvailable = hearingVenuesAvailable;
+    }*/
+
 
     @JsonIgnore
     public String getSelectedRegionVal() {

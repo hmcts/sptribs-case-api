@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -22,12 +23,17 @@ public class HearingVenues implements CcdPageConfiguration {
         pageBuilder.page("listingDetails", this::midEvent)
             .label("listingDetailsObj", "<h1>Listing details</h1>")
             .complex(CaseData::getRecordListing)
+            .readonly(RecordListing::getHearingVenuesMessage)
             .mandatory(RecordListing::getHearingVenues)
+            .optional(RecordListing::getVenueNotListedOption)
+            .optional(RecordListing::getHearingVenueName, "recordVenueNotListedOption= \"VenueNotListed\"")
+            .optional(RecordListing::getHearingVenueAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
             .optional(RecordListing::getRoomAtVenue)
             .optional(RecordListing::getAddlInstr)
-            .label("hearingDateObj", "<h4>Hearing, date and start time</h4>")
-            .mandatory(RecordListing::getHearingDateTime)
+            .label("hearingDateObj", "<h4>Hearing date</h4>")
+            .mandatory(RecordListing::getHearingDate)
             .mandatory(RecordListing::getSession)
+            .mandatory(RecordListing::getHearingTime)
             .mandatory(RecordListing::getNumberOfDays)
             .mandatory(RecordListing::getAdditionalHearingDate, "recordNumberOfDays = \"Yes\"")
             .done();
@@ -37,9 +43,12 @@ public class HearingVenues implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
+        final RecordListing recordListing = data.getRecordListing();
 
-        data.getRecordListing().setHearingVenueName(data.getRecordListing().getSelectedVenueName());
-        data.getRecordListing().setHearingVenueAddress(data.getRecordListing().getSelectedVenueName());
+        if (!recordListing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
+            recordListing.setHearingVenueName(data.getRecordListing().getSelectedVenueName());
+            recordListing.setHearingVenueAddress(data.getRecordListing().getSelectedVenueName());
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

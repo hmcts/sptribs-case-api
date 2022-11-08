@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
 class LocationServiceTest {
@@ -50,7 +50,7 @@ class LocationServiceTest {
 
         var regionResponse = Region
             .builder()
-            .region_id("1")
+            .regionId("1")
             .description("region")
             .build();
         when(regionResponseEntity.getBody()).thenReturn(new Region[]{regionResponse});
@@ -64,6 +64,18 @@ class LocationServiceTest {
     }
 
     @Test
+    void shouldReturnEmptyDynamicListWhenExceptionFromRegionRefdataCall() {
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(locationClient.getRegions(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,"ALL"))
+            .thenReturn(null);
+
+        DynamicList regionList = locationService.getAllRegions();
+
+        assertThat(regionList.getListItems()).hasSize(0);
+    }
+
+    @Test
     void shouldPopulateHearingVenueDynamicList() {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -73,8 +85,8 @@ class LocationServiceTest {
 
         var hearingVenueResponse = HearingVenue
             .builder()
-            .region_id("1")
-            .venue_name("venue")
+            .regionId("1")
+            .venueName("venue")
             .build();
         when(hearingVenueResponseEntity.getBody()).thenReturn(new HearingVenue[]{hearingVenueResponse});
 
@@ -84,5 +96,17 @@ class LocationServiceTest {
         assertThat(hearingVenueList).isNotNull();
         assertThat(hearingVenueList.getListItems()).extracting("label").containsExactlyInAnyOrder("venue");
 
+    }
+
+    @Test
+    void shouldReturnEmptyDynamicListWhenExceptionFromHearingVenueRefdataCall() {
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,"1", "Y", "Y", "Court", "N"))
+            .thenReturn(null);
+
+        DynamicList regionList = locationService.getHearingVenuesByRegion("1");
+
+        assertThat(regionList.getListItems()).hasSize(0);
     }
 }

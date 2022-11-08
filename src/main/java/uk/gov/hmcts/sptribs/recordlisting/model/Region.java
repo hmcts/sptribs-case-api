@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 public class Region {
 
     @JsonProperty("region_id")
-    private String region_id;
+    private String regionId;
 
     @JsonProperty("description")
     private String description;
 
     @JsonProperty("welsh_description")
-    private String welsh_description;
+    private String welshDescription;
 
 }
