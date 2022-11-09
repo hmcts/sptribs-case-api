@@ -29,7 +29,7 @@ uk:
           welsh:
             SAVE_SIGN_OUT: '70dd0a1e-047f-4baa-993a-e722db17d8ac'
 
-idam:lea
+idam:
   s2s-auth:
     url: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     secret: AAAAAAAAAAAAAAAA

@@ -98,7 +98,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("When you have finished drafting this order,you can send it to parties in this case."))
+            .confirmationHeader("When you have finished drafting this order,you can send it to parties in this case.")
             .build();
     }
 }
