@@ -16,10 +16,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
     @Test
-    public void shouldHandleNotificationException() {
+    void shouldHandleNotificationException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
         final NotificationException notificationException = mock(NotificationException.class);
@@ -37,7 +37,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void shouldHandleUnAuthorisedServiceException() {
+    void shouldHandleUnAuthorisedServiceException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
         final UnAuthorisedServiceException unAuthorisedServiceException = new UnAuthorisedServiceException("error");
@@ -52,7 +52,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void shouldHandleFeignException() {
+    void shouldHandleFeignException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
         final FeignException feignException = mock(FeignException.class);
@@ -67,7 +67,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void shouldHandleInvalidTokenException() {
+    void shouldHandleInvalidTokenException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
 
@@ -80,7 +80,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void shouldHandleUnsupportedFormTypeException() {
+    void shouldHandleUnsupportedFormTypeException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
         final UnsupportedFormTypeException unsupportedFormTypeException = mock(UnsupportedFormTypeException.class);
@@ -96,21 +96,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void shouldHandleInvalidResourceException() {
-        //Given
-        final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
-
-        //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleInvalidResourceException();
-
-        //Then
-        Assertions.assertThat(actualResponse).isNotNull();
-
-    }
-
-    @Test
-    public void shouldHandleInvalidDataException() {
+    void shouldHandleInvalidDataException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
         final InvalidDataException invalidDataException = mock(InvalidDataException.class);

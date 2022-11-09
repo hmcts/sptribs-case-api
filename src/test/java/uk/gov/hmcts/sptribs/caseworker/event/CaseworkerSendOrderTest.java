@@ -11,14 +11,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerCancelHearing.CASEWORKER_CANCEL_HEARING;
+import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerSendOrder.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 
 @ExtendWith(MockitoExtension.class)
-class CaseworkerCancelHearingTest {
+class CaseworkerSendOrderTest {
     @InjectMocks
-    private CaseworkerCancelHearing caseworkerCancelHearing;
+    private CaseworkerSendOrder caseworkerSendOrder;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -26,12 +26,12 @@ class CaseworkerCancelHearingTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseworkerCancelHearing.configure(configBuilder);
+        caseworkerSendOrder.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_CANCEL_HEARING);
+            .contains(CASEWORKER_SEND_ORDER);
     }
 
 }

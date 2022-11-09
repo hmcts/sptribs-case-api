@@ -130,7 +130,7 @@ public enum State {
     ));
 
 
-    public static final EnumSet<State> ALL_STATES = EnumSet.complementOf(EnumSet.of(
+    protected static final EnumSet<State> ALL_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
         AwaitingApplicant1Response,
         AwaitingApplicant2Response,

@@ -47,7 +47,7 @@ class CaseworkerStayTheCaseTest {
     }
 
     @Test
-    public void shouldSuccessfullyListRecording() {
+    void shouldSuccessfullyListRecording() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
@@ -72,7 +72,7 @@ class CaseworkerStayTheCaseTest {
         assertThat(response.getData().getCaseStay()).isNotNull();
         assertThat(stayedResponse).isNotNull();
         CaseStay stay = response.getData().getCaseStay();
-        Assertions.assertEquals(stay.getStayReason(), StayReason.AWAITING_OUTCOME_OF_LINKED_CASE);
+        Assertions.assertEquals(StayReason.AWAITING_OUTCOME_OF_LINKED_CASE, stay.getStayReason());
         assertThat(stay.getAdditionalDetail()).isNotNull();
         assertThat(stay.getExpirationDate()).isNotNull();
         assertThat(stay.getFlagType()).isNull();

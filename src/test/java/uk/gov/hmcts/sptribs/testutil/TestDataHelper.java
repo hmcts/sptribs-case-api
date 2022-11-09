@@ -328,6 +328,19 @@ public class TestDataHelper {
         return caseData;
     }
 
+    public static Payment payment(final int amount, final PaymentStatus paymentStatus) {
+        return Payment.builder()
+            .created(LocalDateTime.now())
+            .updated(LocalDateTime.now())
+            .amount(amount)
+            .channel("online")
+            .feeCode("FEE0001")
+            .status(paymentStatus)
+            .reference("paymentRef")
+            .transactionId("ge7po9h5bhbtbd466424src9tk")
+            .build();
+    }
+
     public static CaseData caseDataWithStatementOfTruth() {
         OrderSummary orderSummary = OrderSummary.builder().paymentTotal("55000").build();
 
@@ -632,7 +645,7 @@ public class TestDataHelper {
     }
 
     public static ListValue<ConfidentialDivorceDocument> confidentialDocumentWithType(final ConfidentialDocumentsReceived documentType,
-                                                              final String documentId) {
+                                                                                      final String documentId) {
         String documentUrl = "http://localhost:8080/" + documentId;
 
         Document ccdDocument = new Document(

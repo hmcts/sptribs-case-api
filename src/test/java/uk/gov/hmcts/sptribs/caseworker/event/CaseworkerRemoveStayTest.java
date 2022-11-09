@@ -45,7 +45,7 @@ class CaseworkerRemoveStayTest {
     }
 
     @Test
-    public void shouldSuccessfullyRemoveStayFromCase() {
+    void shouldSuccessfullyRemoveStayFromCase() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
