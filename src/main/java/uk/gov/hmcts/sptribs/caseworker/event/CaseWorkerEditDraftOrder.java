@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -10,15 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.DocAssemblyService;
-import uk.gov.hmcts.sptribs.idam.IdamService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
@@ -33,13 +26,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
-    public static final String CIC_CASE_FULL_NAME = "cicCaseFullName";
 
-
-    @Autowired
-    private DocAssemblyService docAssemblyService;
-    @Autowired
-    private IdamService idamService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -100,34 +87,9 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
-        final String templateId = "GENERAL_DIRECTIONS";
-        final var caseData = details.getData();
-        final String filename = "ST-CIC-STD-ENG-CIC_General_Directions";
-
-        var caseId = details.getId();
-
-        log.info("Sending document request for template : {} case id: {}", filename, caseId);
-
-
-        Map<String, Object> caseDataMap = new HashMap<>();
-
-        caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
-        caseDataMap.put("cicCaseFullName", CIC_CASE_FULL_NAME);
-
-
-        docAssemblyService.renderDocument(
-            caseDataMap,
-            caseId,
-            authorisation,
-            templateId,
-            LanguagePreference.ENGLISH,
-            filename
-        );
 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
             .state(State.Draft)
             .build();
 

@@ -47,12 +47,6 @@ public class CaseFlag {
     private FlagLevel flagLevel;
 
 
-    @CCD(
-        label = "Why is a stay being added to this case?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagParty partyLevel;
-
     //TODO:Flag types will be in CCD config generator after ref data team is ready
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -64,4 +58,13 @@ public class CaseFlag {
     )
     private List<ListValue<Flags>> caseFlags;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<CaseFlagDisplay>> partyLevelFlags;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<CaseFlagDisplay>> caseLevelFlags;
 }

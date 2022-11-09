@@ -59,7 +59,9 @@ withPipeline(type, product, component) {
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
-      enableHighLevelDataSetup()
+      if(params.environment != 'prod') {
+        enableHighLevelDataSetup()
+      }
     }
 
     after('test') {

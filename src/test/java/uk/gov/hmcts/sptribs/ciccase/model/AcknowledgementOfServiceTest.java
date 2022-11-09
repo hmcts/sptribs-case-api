@@ -31,6 +31,8 @@ class AcknowledgementOfServiceTest {
         acknowledgementOfService.setNoticeOfProceedings(applicant);
 
         //Then
+        assert (!acknowledgementOfService.isDisputed());
+        assert (!acknowledgementOfService.hasApplicantBeenNotifiedDisputeFormOverdue());
         assertThat(acknowledgementOfService.getNoticeOfProceedingsEmail()).isEqualTo(TEST_SOLICITOR_EMAIL);
         assertThat(acknowledgementOfService.getNoticeOfProceedingsSolicitorFirm()).isEqualTo(TEST_ORG_NAME);
     }

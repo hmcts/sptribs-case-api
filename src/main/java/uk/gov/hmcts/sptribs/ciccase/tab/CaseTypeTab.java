@@ -28,6 +28,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
+        buildFlagsTab(configBuilder);
         buildStateTab(configBuilder);
         buildAosTab(configBuilder);
         buildPaymentTab(configBuilder);
@@ -145,6 +146,15 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getNotes);
     }
 
+    private void buildFlagsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("flags", "Flags")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("partyLevel", "caseFlagPartyLevelFlags!=\"\"", "Party level flags")
+            .field("caseFlagPartyLevelFlags")
+            .label("caseLevel", "caseFlagCaseLevelFlags!=\"\"", "Case level flags")
+            .field("caseFlagCaseLevelFlags");
+    }
+
     private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseDetails", "Case Details")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
@@ -182,7 +192,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseParties", "Case Parties")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
-            .label("Subject's details",null,"### Subject's details")
+            .label("Subject's details", null, "### Subject's details")
             .field("cicCaseFullName")
             .field("cicCaseEmail")
             .field("cicCasePhoneNumber")

@@ -278,4 +278,3 @@ idam-pr:
     divorce:
       - https://frontend-${SERVICE_FQDN}/oauth2/callback
       - https://frontend-${SERVICE_FQDN}/oauth2/callback-applicant2
-

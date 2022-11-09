@@ -14,9 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -31,7 +30,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
-            .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
+            .forStates(CaseManagement)
             .name("Record listing")
             .showSummary()
             .description("Record listing")
@@ -42,6 +41,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);
+        addRemoteHearingInfo(pageBuilder);
+        addOtherInformation(pageBuilder);
     }
 
     @SneakyThrows
@@ -53,19 +54,16 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)
+            .state(AwaitingHearing)
             .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Listing record created %n##"
-                + " A notification has been sent via email to: Subject, Representative, Respondent %n##"
-                + " If any changes are made to this hearing, remember to make those changes in this listing record"))
+            .confirmationHeader("# Listing record created")
             .build();
     }
-
 
     private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")
@@ -73,6 +71,27 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
+            .done();
+    }
+
+    private void addRemoteHearingInfo(PageBuilder pageBuilder) {
+        pageBuilder.page("remoteHearingInformation")
+            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
+            .complex(CaseData::getRecordListing)
+            .optional(RecordListing::getVideoCallLink)
+            .optional(RecordListing::getConferenceCallNumber)
+            .done();
+    }
+
+    private void addOtherInformation(PageBuilder pageBuilder) {
+        pageBuilder.page("otherInformation")
+            .label("otherInformationObj", "<h1>Other information</h1>")
+            .complex(CaseData::getRecordListing)
+            .label("otherInfoLabel",
+                "\nEnter any other important information about this hearing."
+                    + " This may include any reasonable adjustments that need to be made, or details"
+                    + "\n of anyone who should be excluded from attending this hearing.\n")
+            .optional(RecordListing::getImportantInfoDetails)
             .done();
     }
 }

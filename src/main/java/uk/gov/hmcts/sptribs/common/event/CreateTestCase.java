@@ -124,11 +124,12 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .label("upload", "<h1>Upload tribunal forms</h1>")
             .complex(CaseData::getCicCase)
             .label("documentUploadObjectLabel",
-                 "\nPlease upload a copy of the completed tribunal form, as well as any"
-                + " supporting documents or other information that has been supplied.\n"
-                + "\n<h3>Files should be:</h3>\n"
-                + "\n- uploaded separately, and not in one large file\n" + "\n- a maximum of 100MB in size (large files must be split)\n"
-                + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n")
+                "\nPlease upload a copy of the completed tribunal form, as well as any"
+                    + " supporting documents or other information that has been supplied.\n"
+                    + "\n<h3>Files should be:</h3>\n"
+                    + "\n- uploaded separately, and not in one large file\n"
+                    + "\n- a maximum of 100MB in size (large files must be split)\n"
+                    + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n")
             .optionalWithLabel(CicCase::getCaseDocumentsCIC, "File Attachments")
             .done();
     }
