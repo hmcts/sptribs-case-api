@@ -122,9 +122,11 @@ class CaseworkerRecordListingTest {
 
         //Then
 
-        assertThat(response.getData().getRecordListing().getHearingVenues().getValue().getLabel()).isEqualTo("venue");
+        assertThat(response.getData().getRecordListing().getHearingVenues()
+            .getValue().getLabel()).isEqualTo("courtname-courtAddress");
         assertThat(response.getData().getRecordListing().getHearingVenues().getListItems()).hasSize(1);
-        assertThat(response.getData().getRecordListing().getHearingVenues().getListItems().get(0).getLabel()).isEqualTo("venue");
+        assertThat(response.getData().getRecordListing().getHearingVenues()
+            .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
 
     }
 
@@ -144,7 +146,7 @@ class CaseworkerRecordListingTest {
     private DynamicList getMockedHearingVenueData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
-            .label("venue")
+            .label("courtname-courtAddress")
             .code(UUID.randomUUID())
             .build();
         return DynamicList

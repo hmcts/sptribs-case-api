@@ -86,7 +86,8 @@ class LocationServiceTest {
         var hearingVenueResponse = HearingVenue
             .builder()
             .regionId("1")
-            .venueName("venue")
+            .courtName("courtName")
+            .courtAddress("courtAddress")
             .build();
         when(hearingVenueResponseEntity.getBody()).thenReturn(new HearingVenue[]{hearingVenueResponse});
 
@@ -94,7 +95,30 @@ class LocationServiceTest {
 
         //Then
         assertThat(hearingVenueList).isNotNull();
-        assertThat(hearingVenueList.getListItems()).extracting("label").containsExactlyInAnyOrder("venue");
+        assertThat(hearingVenueList.getListItems()).extracting("label").containsExactlyInAnyOrder("courtName-courtAddress");
+
+    }
+
+    @Test
+    void shouldPopulateHearingVenueDynamicListWithMissingCourtAddress() {
+        //When
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,"1", "Y"))
+            .thenReturn(hearingVenueResponseEntity);
+
+        var hearingVenueResponse = HearingVenue
+            .builder()
+            .regionId("1")
+            .courtName("courtName")
+            .build();
+        when(hearingVenueResponseEntity.getBody()).thenReturn(new HearingVenue[]{hearingVenueResponse});
+
+        DynamicList hearingVenueList = locationService.getHearingVenuesByRegion("1");
+
+        //Then
+        assertThat(hearingVenueList).isNotNull();
+        assertThat(hearingVenueList.getListItems()).extracting("label").containsExactlyInAnyOrder("courtName-null");
 
     }
 
