@@ -121,7 +121,6 @@ class CaseworkerRecordListingTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
-
         assertThat(response.getData().getRecordListing().getHearingVenues()
             .getValue().getLabel()).isEqualTo("courtname-courtAddress");
         assertThat(response.getData().getRecordListing().getHearingVenues().getListItems()).hasSize(1);

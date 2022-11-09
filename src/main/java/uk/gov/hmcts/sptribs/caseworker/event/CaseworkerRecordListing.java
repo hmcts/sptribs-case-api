@@ -66,11 +66,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         DynamicList regionList = locationService.getAllRegions();
         caseData.getRecordListing().setRegionList(regionList);
 
-        if (regionList.getListItems().isEmpty()) {
-            caseData.getRecordListing().setRegionsMessage("Unable to retrieve Region data");
-        } else {
-            caseData.getRecordListing().setRegionsMessage("");
-        }
+        String regionMessage = regionList.getListItems().isEmpty() ? "Unable to retrieve Region data" : "";
+        caseData.getRecordListing().setRegionsMessage(regionMessage);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -107,11 +104,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (null != regionId) {
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
             caseData.getRecordListing().setHearingVenues(hearingVenueList);
-            if (hearingVenueList.getListItems().isEmpty()) {
-                caseData.getRecordListing().setHearingVenuesMessage("Unable to retrieve Hearing Venues data");
-            } else {
-                caseData.getRecordListing().setHearingVenuesMessage("");
-            }
+
+            String hearingVenueMessage = hearingVenueList.getListItems().isEmpty() ? "Unable to retrieve Hearing Venues data" : "";
+            caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
+
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
