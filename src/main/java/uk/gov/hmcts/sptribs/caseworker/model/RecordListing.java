@@ -170,7 +170,7 @@ public class RecordListing {
     }
 
     @JsonIgnore
-    public String getSelectedVenueName() {
+    public String getSelectedVenue() {
         return this.getHearingVenues().getValue().getLabel();
     }
 

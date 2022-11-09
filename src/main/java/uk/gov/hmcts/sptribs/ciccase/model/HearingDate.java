@@ -29,7 +29,7 @@ public class HearingDate {
         displayOrder = 2,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private HearingSession session;
+    private HearingSession hearingVenueSession;
 
     @CCD(
         label = "Start time",
@@ -37,14 +37,14 @@ public class HearingDate {
         regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String hearingTime;
+    private String hearingVenueTime;
 
     @JsonCreator
     public HearingDate(@JsonProperty("hearingVenueDate") LocalDate hearingVenueDate,
-                       @JsonProperty("session") HearingSession session,
-                       @JsonProperty("hearingTime") String hearingTime) {
+                       @JsonProperty("session") HearingSession hearingVenueSession,
+                       @JsonProperty("hearingTime") String hearingVenueTime) {
         this.hearingVenueDate = hearingVenueDate;
-        this.session = session;
-        this.hearingTime = hearingTime;
+        this.hearingVenueSession = hearingVenueSession;
+        this.hearingVenueTime = hearingVenueTime;
     }
 }

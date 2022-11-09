@@ -9,6 +9,7 @@ public final class RecordListingConstants {
     public static final String LOCATION_TYPE = "location_type";
     public static final String IS_TEMPORARY_LOCATION = "is_temporary_location";
     public static final String HYPHEN = "-";
+    public static final String REGION_ALL = "ALL";
 
     private RecordListingConstants() {
     }

@@ -28,10 +28,7 @@ public interface LocationClient {
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @RequestHeader(AUTHORIZATION) final String authorisation,
         @RequestParam(REGION_ID) final String regionId,
-        @RequestParam(IS_CASE_MANAGEMENT_LOCATION) final String isCaseManagementLocation,
-        @RequestParam(IS_HEARING_LOCATION) final String isHearingLocation,
-        @RequestParam(LOCATION_TYPE) final String locationType,
-        @RequestParam(IS_TEMPORARY_LOCATION) final String isTemporaryLocation
+        @RequestParam(IS_HEARING_LOCATION) final String isHearingLocation
     );
 
     @GetMapping(value = "/refdata/location/regions",

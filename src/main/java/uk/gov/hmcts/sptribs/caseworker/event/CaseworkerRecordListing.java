@@ -55,6 +55,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);
+        addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
@@ -67,6 +68,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         if (regionList.getListItems().isEmpty()) {
             caseData.getRecordListing().setRegionsMessage("Unable to retrieve Region data");
+        } else {
+            caseData.getRecordListing().setRegionsMessage("");
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -106,6 +109,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             caseData.getRecordListing().setHearingVenues(hearingVenueList);
             if (hearingVenueList.getListItems().isEmpty()) {
                 caseData.getRecordListing().setHearingVenuesMessage("Unable to retrieve Hearing Venues data");
+            } else {
+                caseData.getRecordListing().setHearingVenuesMessage("");
             }
         }
 
@@ -115,12 +120,19 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     }
 
     private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat", this::midEvent)
+        pageBuilder.page("hearingTypeAndFormat")
             .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
             .readonly(RecordListing::getRegionsMessage)
+            .done();
+    }
+
+    private void addRegionInfo(PageBuilder pageBuilder) {
+        pageBuilder.page("regionInfo", this::midEvent)
+            .label("regionInfoObj", "<h1>Region Data</h1>")
+            .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getRegionList)
             .done();
     }

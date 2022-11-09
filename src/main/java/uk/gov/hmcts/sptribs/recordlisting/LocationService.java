@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ALL;
 
 @Service
 @Slf4j
@@ -53,7 +54,7 @@ public class LocationService {
             regionResponseEntity = locationClient.getRegions(
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
-                "ALL");
+                REGION_ALL);
         } catch (FeignException exception) {
             log.error("Unable to get Region data from reference data with exception {}",
                 exception.getMessage());
@@ -75,11 +76,7 @@ public class LocationService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 regionId,
-                "Y",
-                "Y",
-                "Court",
-                "N"
-            );
+                "Y");
         } catch (FeignException exception) {
             log.error("Unable to get Hearing venue data from reference data with exception {}",
                 exception.getMessage());
@@ -100,6 +97,7 @@ public class LocationService {
 
         List<DynamicListElement> regionDynamicList = regionList
             .stream()
+            .sorted()
             .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
@@ -112,11 +110,12 @@ public class LocationService {
 
     private DynamicList populateVenueDynamicList(HearingVenue... hearingVenues) {
         List<String> venueList = Objects.nonNull(hearingVenues)
-            ? Arrays.asList(hearingVenues).stream().map(HearingVenue::getVenueName).collect(Collectors.toList())
+            ? Arrays.asList(hearingVenues).stream().map(v -> v.getCourtName() + HYPHEN + v.getCourtAddress()).collect(Collectors.toList())
             : new ArrayList<>();
 
         List<DynamicListElement> hearingVenueList = venueList
             .stream()
+            .sorted()
             .map(venue -> DynamicListElement.builder().label(venue).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 

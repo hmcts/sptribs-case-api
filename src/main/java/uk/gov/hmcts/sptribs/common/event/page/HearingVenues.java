@@ -12,7 +12,10 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
 
 @Slf4j
 @Component
@@ -46,13 +49,21 @@ public class HearingVenues implements CcdPageConfiguration {
         final RecordListing recordListing = data.getRecordListing();
 
         if (!recordListing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
-            recordListing.setHearingVenueName(data.getRecordListing().getSelectedVenueName());
-            recordListing.setHearingVenueAddress(data.getRecordListing().getSelectedVenueName());
+            String selectedVenue = data.getRecordListing().getSelectedVenue();
+            recordListing.setHearingVenueName(getCourtDetails(selectedVenue, 0));
+            recordListing.setHearingVenueAddress(getCourtDetails(selectedVenue, 1));
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
             .build();
+    }
+
+    private String getCourtDetails(String selectedVenue, int index) {
+        String[] values = Arrays.stream(selectedVenue.split(HYPHEN))
+            .map(String::trim)
+            .toArray(String[]::new);
+        return values.length > 0 ? values[index] : null;
     }
 }
