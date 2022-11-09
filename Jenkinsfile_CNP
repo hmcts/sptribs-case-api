@@ -51,9 +51,15 @@ def secrets = [
 def pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
 
+def vaultOverrides = [
+  'preview': 'aat',
+  'prod': 'aat',
+]
+
 withPipeline(type, product, component) {
     enableAksStagingDeployment()
     disableLegacyDeployment()
+    overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     enableSlackNotifications('#special-tribunals-builds')
