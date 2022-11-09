@@ -235,6 +235,10 @@ fee:
   api:
     baseUrl: ${FEE_API_URL:http://fees-register-api-aat.service.core-compute-aat.internal}
 
+location:
+  api:
+    baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
+
 s2s:
   stub: false
 
