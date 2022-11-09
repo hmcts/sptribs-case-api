@@ -80,7 +80,7 @@ class LocationServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,"1", "Y", "Y", "Court", "N"))
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,"1", "Y"))
             .thenReturn(hearingVenueResponseEntity);
 
         var hearingVenueResponse = HearingVenue
@@ -102,7 +102,7 @@ class LocationServiceTest {
     void shouldReturnEmptyDynamicListWhenExceptionFromHearingVenueRefdataCall() {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,"1", "Y", "Y", "Court", "N"))
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,"1", "Y"))
             .thenReturn(null);
 
         DynamicList regionList = locationService.getHearingVenuesByRegion("1");
