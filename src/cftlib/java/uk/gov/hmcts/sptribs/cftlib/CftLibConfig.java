@@ -21,8 +21,23 @@ import java.util.List;
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
-    @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
-    String defName;
+    @Value("ccd-ST_CIC-${CCD_DEF_NAME:dev}.xlsx")
+    String cicDefName;
+
+    @Value("ccd-ST_CS-${CCD_DEF_NAME:dev}.xlsx")
+    String csDefName;
+
+    @Value("ccd-ST_DD-${CCD_DEF_NAME:dev}.xlsx")
+    String ddDefName;
+
+    @Value("ccd-ST_MH-${CCD_DEF_NAME:dev}.xlsx")
+    String mhDefName;
+
+    @Value("ccd-ST_PHL-${CCD_DEF_NAME:dev}.xlsx")
+    String phlDefName;
+
+    @Value("ccd-ST_SEN-${CCD_DEF_NAME:dev}.xlsx")
+    String senDefName;
 
     @Value("Submitted")
     String state;
@@ -43,8 +58,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             lib.createProfile(p, CcdServiceCode.CS.getCcdServiceName(), CcdCaseType.ST_CS.name(), state);
             lib.createProfile(p, CcdServiceCode.MH.getCcdServiceName(), CcdCaseType.ST_MH.name(), state);
             lib.createProfile(p, CcdServiceCode.PHL.getCcdServiceName(), CcdCaseType.ST_PHL.name(), state);
-            lib.createProfile(p, CcdServiceCode.SEN.getCcdServiceName(), CcdCaseType.ST_SEND.name(), state);
-            lib.createProfile(p, CcdServiceCode.DD.getCcdServiceName(), CcdCaseType.ST_SEND.name(), state);
+            lib.createProfile(p, CcdServiceCode.SEN.getCcdServiceName(), CcdCaseType.ST_SEN.name(), state);
+            lib.createProfile(p, CcdServiceCode.DD.getCcdServiceName(), CcdCaseType.ST_DD.name(), state);
         }
 
         lib.createRoles(
@@ -69,8 +84,19 @@ public class CftLibConfig implements CFTLibConfigurer {
         // Generate and import CCD definitions
         generateCCDDefinition();
 
-        var nfdDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + defName));
-        lib.importDefinition(nfdDefinition);
+        var cicDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + cicDefName));
+        var csDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + csDefName));
+        var ddDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + ddDefName));
+        var mhDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + mhDefName));
+        var phlDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + phlDefName));
+        var senDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + senDefName));
+
+        lib.importDefinition(cicDefinition);
+        lib.importDefinition(csDefinition);
+        lib.importDefinition(ddDefinition);
+        lib.importDefinition(mhDefinition);
+        lib.importDefinition(phlDefinition);
+        lib.importDefinition(senDefinition);
     }
 
     /**

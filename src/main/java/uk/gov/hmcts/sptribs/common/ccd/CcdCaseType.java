@@ -13,7 +13,8 @@ public enum CcdCaseType {
     ST_CS("Care Standards"),
     ST_MH("Mental Health"),
     ST_PHL("Primary Health Lists"),
-    ST_SEND("Special Educational Needs, Disability Discrimination");
+    ST_SEN("Special Educational Needs"),
+    ST_DD("Disability Discrimination");
 
     @JsonValue
     private final String description;

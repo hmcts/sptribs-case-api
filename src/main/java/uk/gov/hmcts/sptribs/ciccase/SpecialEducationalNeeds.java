@@ -25,7 +25,7 @@ public class SpecialEducationalNeeds implements CCDConfig<SpecialEducationalNeed
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.ST_SEND.name(), "SEND Case Type", CcdCaseType.ST_SEND.getDescription());
+        configBuilder.caseType(CcdCaseType.ST_SEN.name(), "SEND Case Type", CcdCaseType.ST_SEN.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.SEN.getCcdServiceDescription());
 
 
