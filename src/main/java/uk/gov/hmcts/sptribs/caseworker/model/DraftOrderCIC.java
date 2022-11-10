@@ -27,7 +27,7 @@ public class DraftOrderCIC {
 
 
     @CCD(
-        label = "Order template",
+        label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
@@ -35,6 +35,7 @@ public class DraftOrderCIC {
     private OrderTemplate orderTemplate;
 
     @CCD(
+        label = "Main Content",
         hint = "Amend content as required",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
