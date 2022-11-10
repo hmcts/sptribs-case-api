@@ -80,15 +80,15 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         messageLine2.append("%n##  A notification will be sent via email to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             messageLine2.append("Subject, ");
-            cicCase.setNotifyPartySubject(null);
+            cicCase.getNotifyPartySubject().clear();
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             messageLine2.append("Respondent, ");
-            cicCase.setNotifyPartyRespondent(null);
+            cicCase.getNotifyPartyRespondent().clear();
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             messageLine2.append("Representative, ");
-            cicCase.setNotifyPartyRepresentative(null);
+            cicCase.getNotifyPartyRepresentative().clear();
         }
 
         return SubmittedCallbackResponse.builder()
