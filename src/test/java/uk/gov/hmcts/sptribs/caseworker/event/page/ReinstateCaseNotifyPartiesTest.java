@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.NotifyParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
@@ -17,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReinstateCaseNotifyPartiesTest {
 
     @InjectMocks
-    private NotifyParties notifyParties;
+    private ReinstateNotifyParties reinstateNotifyParties;
 
     @Test
     void shouldReturnErrorsIfNoNotificationPartySelected() {
@@ -25,7 +24,7 @@ class ReinstateCaseNotifyPartiesTest {
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = reinstateNotifyParties.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
     }
