@@ -8,19 +8,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.DisabilityDiscriminationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 
 @Component
 @Slf4j
-public class DisabilityDiscrimination implements CCDConfig<CaseData, State, UserRole> {
+public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminationData, State, UserRole> {
 
     public static final String CASE_TYPE = "DD";
     public static final String JURISDICTION = "DIVORCE";
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<DisabilityDiscriminationData, State, UserRole> configBuilder) {
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
