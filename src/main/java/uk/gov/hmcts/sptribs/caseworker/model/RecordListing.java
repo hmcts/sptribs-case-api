@@ -164,6 +164,12 @@ public class RecordListing {
     )
     private String importantInfoDetails;
 
+    @CCD(
+        label = "How would you like to create the hearing notice?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private OrderIssuingType hearingNotice;
+
     @JsonIgnore
     public String getSelectedRegionVal() {
         return this.getRegionList().getValue().getLabel();
