@@ -241,6 +241,7 @@ public class CaseData {
     )
     private DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
 
+
     @JsonUnwrapped(prefix = "link")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -326,11 +327,10 @@ public class CaseData {
     private String closedDayCount;
 
 
-    @CCD(
-        label = "Send Order",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private SendOrder sendOrder;
+    @JsonUnwrapped(prefix = "sendOrder")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private SendOrder sendOrder = new SendOrder();
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

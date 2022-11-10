@@ -3,8 +3,13 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.OrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.OrderIssuingSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.UploadOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -32,11 +37,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     private static final CcdPageConfiguration orderIssuingSelect = new OrderIssuingSelect();
+    private static final CcdPageConfiguration uploadOrder = new UploadOrder();
+    private static final CcdPageConfiguration orderDueDates = new OrderDueDates();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = send(configBuilder);
         orderIssuingSelect.addTo(pageBuilder);
+        uploadOrder.addTo(pageBuilder);
+        orderDueDates.addTo(pageBuilder);
     }
 
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -60,4 +69,20 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .grantHistoryOnly(SOLICITOR));
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
+        var caseData = details.getData();
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
+    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
+                                            CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# ")
+            .build();
+    }
 }

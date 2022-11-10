@@ -7,14 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @RequiredArgsConstructor
 @Getter
-public enum OrderIssuingType implements HasLabel {
+public enum HearingNoticeOption implements HasLabel {
 
-    @JsonProperty("Issue and send an existing draft")
-    ISSUE_AND_SEND_AN_EXISTING_DRAFT("Issue and send an existing draft", "Issue and send an existing draft"),
+    @JsonProperty("Upload from your computer")
+    UPLOAD_FROM_COMPUTER("Upload from your computer", "Upload from your computer"),
 
-
-    @JsonProperty("Upload a new order from your computer")
-    UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER("Upload a new order from your computer", "Upload a new order from your computer");
+    @JsonProperty("Create from a template")
+    CREATE_FROM_TEMPLATE("Create from a template", "Create from a template");
 
     private final String reason;
     private final String label;

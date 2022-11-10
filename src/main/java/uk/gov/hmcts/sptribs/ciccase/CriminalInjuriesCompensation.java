@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 
+
 @Component
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, UserRole> {
@@ -26,6 +27,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, 
 
         configBuilder.caseType(CcdCaseType.CIC.name(), "CIC Case Type", CcdCaseType.CIC.getDescription());
         configBuilder.jurisdiction(JURISDICTION, "CIC", CcdServiceCode.CIC.getCcdServiceDescription());
+
 
 
         // to shutter the service within xui uncomment this line
