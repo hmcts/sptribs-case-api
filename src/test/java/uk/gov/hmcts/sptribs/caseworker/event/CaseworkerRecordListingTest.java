@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
@@ -66,6 +67,7 @@ class CaseworkerRecordListingTest {
         recordListing.setHearingType(HearingType.FINAL);
         recordListing.setImportantInfoDetails("some details");
         recordListing.setVideoCallLink("");
+        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
         caseData.setRecordListing(recordListing);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -79,6 +81,7 @@ class CaseworkerRecordListingTest {
         //Then
         assertThat(response.getData().getRecordListing().getHearingType().getLabel()).isEqualTo("Final");
         assertThat(response.getData().getRecordListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
+        assertThat(response.getData().getRecordListing().getTemplate()).isEqualTo(RecordListingTemplate.HEARING_INVITE_CVP);
         assertThat(stayedResponse).isNotNull();
     }
 
