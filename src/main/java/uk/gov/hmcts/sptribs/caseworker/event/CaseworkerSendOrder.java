@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.OrderIssuingSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.UploadOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -32,11 +33,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     private static final CcdPageConfiguration orderIssuingSelect = new OrderIssuingSelect();
+    private static final CcdPageConfiguration uploadOrder = new UploadOrder();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = send(configBuilder);
         orderIssuingSelect.addTo(pageBuilder);
+        uploadOrder.addTo(pageBuilder);
     }
 
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
