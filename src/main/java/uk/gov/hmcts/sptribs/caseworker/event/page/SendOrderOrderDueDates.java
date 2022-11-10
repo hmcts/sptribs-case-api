@@ -5,15 +5,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-public class OrderIssuingSelect implements CcdPageConfiguration {
+public class SendOrderOrderDueDates implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("selectOrderIssuingType")
-            .label("selectOrderIssuingType", "<h1>Select order\n</h1>")
-            .complex(CaseData::getSendOrder,"","","")
-            .mandatory(SendOrder::getOrderIssuingType)
+        pageBuilder.page("orderDueDates")
+            .label("orderDueDates", "<h1>Add a due date\n</h1>")
+            .complex(CaseData::getSendOrder, "", "", "")
+            .optional(SendOrder::getDueDates)
             .done();
     }
 }
