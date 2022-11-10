@@ -19,12 +19,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
+
 @Component
 @Slf4j
 public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
-    public static final String CIC_CASE_FULL_NAME = "cicCaseFullName";
 
 
     @Override
@@ -35,12 +35,13 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
                 .name("Edit draft order")
                 .showSummary()
-                //.aboutToSubmitCallback(this::aboutToSubmit)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         editDraftOrder(pageBuilder);
+        previewOrder(pageBuilder);
 
 
     }
@@ -55,10 +56,12 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .mandatory(DraftOrderCIC::getOrderTemplate, "")
             .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\n<h4>First tier tribunal Health lists</h4>\n\n"
                 + "<h3>IN THE MATTER OF THE NATIONAL HEALTH SERVICES (PERFORMERS LISTS)(ENGLAND) REGULATIONS 2013</h2>\n\n"
-                + "&lt; &lt; CaseNumber &gt; &gt;\n"
+                + "&lt; &lt; CaseNumber &gt; &gt; \n"
                 + "\nBETWEEN\n"
-                + "\n&lt; &lt; SubjectName &gt; &gt;\n"
-                + "\nApplicant\n" + "\n<RepresentativeName>" + "\nRespondent<hr>"
+                + "\n&lt; &lt; SubjectName &gt; &gt; \n"
+                + "\nApplicant\n"
+                + "\n<RepresentativeName>"
+                + "\nRespondent<hr>"
                 + "\n<h3>Main content</h3>\n\n ")
             .optional(DraftOrderCIC::getMainContentToBeEdited)
             .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
@@ -67,11 +70,26 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .done();
     }
 
+    private void previewOrder(PageBuilder pageBuilder) {
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit() {
+        pageBuilder
+            .page("previewOrder", this::aboutToSubmit)
+            .pageLabel("Preview order")
+            .label("previewDraft", " Order preview")
+            .label("make Changes", "To make changes, choose 'Edit order'\n\n"
+                + "If you are happy , continue to the next screen.")
+            .done();
+    }
+
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
+
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(State.NewCaseReceived)
+            .state(State.Draft)
             .build();
 
     }
@@ -79,7 +97,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Draft order edited")
+            .confirmationHeader("When you have finished drafting this order,you can send it to parties in this case.")
             .build();
     }
 }

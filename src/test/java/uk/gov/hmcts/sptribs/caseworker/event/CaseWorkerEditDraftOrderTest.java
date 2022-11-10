@@ -52,7 +52,7 @@ class CaseWorkerEditDraftOrderTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerEditDraftOrder.aboutToSubmit();
+            caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails,beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseWorkerEditDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
 
         //Then
