@@ -105,13 +105,14 @@ public class RecordListing {
     private String addlInstr;
 
     @CCD(
+        label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hearingDate;
 
     @CCD(
-        label = "Start time",
+        label = "Start time (24hr format)",
         regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -130,7 +131,7 @@ public class RecordListing {
     private YesOrNo numberOfDays;
 
     @CCD(
-        label = "Hearing date",
+        label = "Additional Hearing date",
         typeOverride = Collection,
         typeParameterOverride = "HearingDate",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -165,6 +166,12 @@ public class RecordListing {
         typeOverride = TextArea
     )
     private String importantInfoDetails;
+
+    @CCD(
+        label = "How would you like to create the hearing notice?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingNoticeOption hearingNotice;
 
     @CCD(
         label = "Templates",

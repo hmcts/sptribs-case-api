@@ -59,6 +59,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
+        addHearingNotice(pageBuilder);
         selectTemplate(pageBuilder);
     }
 
@@ -159,6 +160,14 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     + " This may include any reasonable adjustments that need to be made, or details"
                     + "\n of anyone who should be excluded from attending this hearing.\n")
             .optional(RecordListing::getImportantInfoDetails)
+            .done();
+    }
+
+    private void addHearingNotice(PageBuilder pageBuilder) {
+        pageBuilder.page("hearingNotice")
+            .label("hearingNoticeObj", "<h1>Create a hearing Notice</h1>")
+            .complex(CaseData::getRecordListing)
+            .mandatory(RecordListing::getHearingNotice)
             .done();
     }
 
