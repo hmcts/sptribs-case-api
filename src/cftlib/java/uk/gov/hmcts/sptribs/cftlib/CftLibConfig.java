@@ -14,8 +14,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 @Component
