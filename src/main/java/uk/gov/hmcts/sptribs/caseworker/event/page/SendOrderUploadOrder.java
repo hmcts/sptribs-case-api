@@ -9,7 +9,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UploadOrder implements CcdPageConfiguration {
+public class SendOrderUploadOrder implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
