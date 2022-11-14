@@ -69,7 +69,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         DynamicList regionList = locationService.getAllRegions();
         caseData.getRecordListing().setRegionList(regionList);
 
-        String regionMessage = regionList == null || (regionList != null && regionList.getListItems().isEmpty())
+        String regionMessage = regionList == null || regionList.getListItems().isEmpty()
             ? "Unable to retrieve Region data"
             : "";
         caseData.getRecordListing().setRegionsMessage(regionMessage);
@@ -110,7 +110,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
             caseData.getRecordListing().setHearingVenues(hearingVenueList);
 
-            String hearingVenueMessage = hearingVenueList == null || (hearingVenueList != null && hearingVenueList.getListItems().isEmpty())
+            String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
                 ? "Unable to retrieve Hearing Venues data"
                 : "";
             caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
@@ -141,10 +141,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     }
 
     private String getRegionId(String selectedRegion) {
-        String[] values = selectedRegion !=null ? Arrays.stream(selectedRegion.split(HYPHEN))
-            .map(String::trim)
-            .toArray(String[]::new) : null;
-        return ArrayUtils.isNotEmpty(values) ? values[0] : null;
+        String[] values = selectedRegion != null
+            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
+            : null;
+        return values != null && values.length > 0 ? values[0] : null;
     }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {

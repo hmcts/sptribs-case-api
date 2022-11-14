@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -62,9 +61,9 @@ public class HearingVenues implements CcdPageConfiguration {
     }
 
     private String getCourtDetails(String selectedVenue, int index) {
-        String[] values = selectedVenue != null ? Arrays.stream(selectedVenue.split(HYPHEN))
+        String[] values = (selectedVenue != null) ? Arrays.stream(selectedVenue.split(HYPHEN))
             .map(String::trim)
             .toArray(String[]::new) : null;
-        return ArrayUtils.isNotEmpty(values) ? values[index] : null;
+        return values != null && values.length > 0 ? values[index] : null;
     }
 }
