@@ -162,7 +162,7 @@ public final class DocmosisTemplateConstants {
     public static final String JUDGE_NAME = "judgeName";
     public static final String CO_PRONOUNCED_DATE = "coPronouncedDate";
     public static final String DATE_FO_ELIGIBLE_FROM = "dateFinalOrderEligibleFrom";
-    public static final String GENERAL_DIRECTIONS = "generalDirections";
+    public static final String GENERAL_DIRECTIONS = "GENERAL_DIRECTIONS";
 
     private DocmosisTemplateConstants() {
     }

@@ -47,7 +47,7 @@ class CaseworkerStayTheCaseTest {
     }
 
     @Test
-    void shouldSuccessfullyListRecording() {
+    void shouldSuccessfullyStayTheCase() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");

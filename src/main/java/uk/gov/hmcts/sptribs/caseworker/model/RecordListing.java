@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,12 +10,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingSession;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
@@ -23,6 +39,11 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RecordListing {
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String selectedRegionId;
 
     @CCD(
         label = "Hearing type",
@@ -39,6 +60,93 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingFormat hearingFormat;
+
+    @CCD(
+        label = "Hearing venue",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList hearingVenues;
+
+    @CCD(
+        label = "Region",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList regionList;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "VenueNotListed",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<VenueNotListed> venueNotListedOption;
+
+    @CCD(
+        label = "Venue Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingVenueName;
+
+    @CCD(
+        label = "Venue Address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingVenueAddress;
+
+    @CCD(
+        label = "Room at venue",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String roomAtVenue;
+
+    @CCD(
+        label = "Additional instructions and directions",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String addlInstr;
+
+    @CCD(
+        label = "Hearing Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate hearingDate;
+
+    @CCD(
+        label = "Start time (24hr format)",
+        regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingTime;
+
+    @CCD(
+        label = "Session",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingSession session;
+
+    @CCD(
+        label = "Will this hearing take place across a number of days?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo numberOfDays;
+
+    @CCD(
+        label = "Additional Hearing date",
+        typeOverride = Collection,
+        typeParameterOverride = "HearingDate",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<HearingDate>> additionalHearingDate;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingVenuesMessage;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String regionsMessage;
 
     @CCD(
         label = "Video call link",
@@ -58,4 +166,29 @@ public class RecordListing {
         typeOverride = TextArea
     )
     private String importantInfoDetails;
+
+    @CCD(
+        label = "How would you like to create the hearing notice?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingNoticeOption hearingNotice;
+
+    @CCD(
+        label = "Templates",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedList,
+        typeParameterOverride = "RecordListingTemplate"
+    )
+    private RecordListingTemplate template;
+
+    @JsonIgnore
+    public String getSelectedRegionVal() {
+        return this.getRegionList().getValue().getLabel();
+    }
+
+    @JsonIgnore
+    public String getSelectedVenue() {
+        return this.getHearingVenues().getValue().getLabel();
+    }
+
 }

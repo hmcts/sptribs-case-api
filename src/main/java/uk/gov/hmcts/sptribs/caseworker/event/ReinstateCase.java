@@ -2,12 +2,13 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.NotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
@@ -33,7 +34,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration reinstateWarning = new ReinstateWarning();
     private static final CcdPageConfiguration reinstateReason = new ReinstateReasonSelect();
     private static final CcdPageConfiguration reinstateDocuments = new ReinstateUploadDocuments();
-    private static final CcdPageConfiguration notifyParties = new NotifyParties();
+    private static final CcdPageConfiguration notifyParties = new ReinstateNotifyParties();
 
 
     @Override
@@ -74,9 +75,25 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
     public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
                                                 CaseDetails<CaseData, State> beforeDetails) {
+        var cicCase = details.getData().getCicCase();
+        final StringBuilder messageLine2 = new StringBuilder(100);
+        messageLine2.append("%n##  A notification will be sent via email to: ");
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            messageLine2.append("Subject, ");
+            cicCase.setNotifyPartySubject(null);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            messageLine2.append("Respondent, ");
+            cicCase.setNotifyPartyRespondent(null);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            messageLine2.append("Representative, ");
+            cicCase.setNotifyPartyRepresentative(null);
+        }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
-                + ". %n##  A notification will be sent via email to: Subject, Representative, Respondent"))
+                + ". %n## %s ", messageLine2.substring(0, messageLine2.length() - 2)))
             .build();
     }
 
