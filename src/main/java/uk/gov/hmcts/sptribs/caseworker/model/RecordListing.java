@@ -183,12 +183,12 @@ public class RecordListing {
 
     @JsonIgnore
     public String getSelectedRegionVal() {
-        return this.getRegionList().getValue().getLabel();
+        return this.getRegionList() != null ? this.getRegionList().getValue().getLabel() : null;
     }
 
     @JsonIgnore
     public String getSelectedVenue() {
-        return this.getHearingVenues().getValue().getLabel();
+        return this.getHearingVenues() != null ? this.getHearingVenues().getValue().getLabel() : null;
     }
 
 }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -68,7 +69,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         DynamicList regionList = locationService.getAllRegions();
         caseData.getRecordListing().setRegionList(regionList);
 
-        String regionMessage = regionList.getListItems().isEmpty() ? "Unable to retrieve Region data" : "";
+        String regionMessage = regionList == null || (regionList != null && regionList.getListItems().isEmpty())
+            ? "Unable to retrieve Region data"
+            : "";
         caseData.getRecordListing().setRegionsMessage(regionMessage);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -107,7 +110,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
             caseData.getRecordListing().setHearingVenues(hearingVenueList);
 
-            String hearingVenueMessage = hearingVenueList.getListItems().isEmpty() ? "Unable to retrieve Hearing Venues data" : "";
+            String hearingVenueMessage = hearingVenueList == null || (hearingVenueList != null && hearingVenueList.getListItems().isEmpty())
+                ? "Unable to retrieve Hearing Venues data"
+                : "";
             caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
 
         }
@@ -123,7 +128,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
-            .readonly(RecordListing::getRegionsMessage)
             .done();
     }
 
@@ -131,15 +135,16 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         pageBuilder.page("regionInfo", this::midEvent)
             .label("regionInfoObj", "<h1>Region Data</h1>")
             .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getRegionList)
+            .readonly(RecordListing::getRegionsMessage)
+            .optional(RecordListing::getRegionList)
             .done();
     }
 
     private String getRegionId(String selectedRegion) {
-        String[] values = Arrays.stream(selectedRegion.split(HYPHEN))
+        String[] values = selectedRegion !=null ? Arrays.stream(selectedRegion.split(HYPHEN))
             .map(String::trim)
-            .toArray(String[]::new);
-        return values.length > 0 ? values[0] : null;
+            .toArray(String[]::new) : null;
+        return ArrayUtils.isNotEmpty(values) ? values[0] : null;
     }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
