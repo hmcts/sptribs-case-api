@@ -77,7 +77,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
                                                 CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
         final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append("%n##  A notification will be sent via email to: ");
+        messageLine2.append(" A notification will be sent via email to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             messageLine2.append("Subject, ");
             cicCase.setNotifyPartySubject(null);
@@ -92,8 +92,8 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
-                + ". %n## %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+            .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened."
+                + " %s ", messageLine2.substring(0, messageLine2.length() - 2)))
             .build();
     }
 
