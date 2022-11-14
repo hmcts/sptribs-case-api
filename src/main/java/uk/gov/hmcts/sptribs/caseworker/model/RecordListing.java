@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingSession;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -103,13 +105,14 @@ public class RecordListing {
     private String addlInstr;
 
     @CCD(
+        label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hearingDate;
 
     @CCD(
-        label = "Start time",
+        label = "Start time (24hr format)",
         regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -128,7 +131,7 @@ public class RecordListing {
     private YesOrNo numberOfDays;
 
     @CCD(
-        label = "Hearing date",
+        label = "Additional Hearing date",
         typeOverride = Collection,
         typeParameterOverride = "HearingDate",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -163,6 +166,20 @@ public class RecordListing {
         typeOverride = TextArea
     )
     private String importantInfoDetails;
+
+    @CCD(
+        label = "How would you like to create the hearing notice?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingNoticeOption hearingNotice;
+
+    @CCD(
+        label = "Templates",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedList,
+        typeParameterOverride = "RecordListingTemplate"
+    )
+    private RecordListingTemplate template;
 
     @JsonIgnore
     public String getSelectedRegionVal() {

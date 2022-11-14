@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotifyParties implements CcdPageConfiguration {
+public class ReinstateNotifyParties implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
