@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SendOrder {
 
     @CCD(
@@ -30,4 +32,9 @@ public class SendOrder {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<DateModel>> dueDates;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DraftOrderCIC draftOrderCIC;
 }

@@ -60,6 +60,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
         addHearingNotice(pageBuilder);
+        selectTemplate(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -67,7 +68,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         DynamicList regionList = locationService.getAllRegions();
         caseData.getRecordListing().setRegionList(regionList);
 
-        String regionMessage = regionList.getListItems().isEmpty() ? "Unable to retrieve Region data" : "";
+        String regionMessage = regionList == null || regionList.getListItems().isEmpty()
+            ? "Unable to retrieve Region data"
+            : "";
         caseData.getRecordListing().setRegionsMessage(regionMessage);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -106,7 +109,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
             caseData.getRecordListing().setHearingVenues(hearingVenueList);
 
-            String hearingVenueMessage = hearingVenueList.getListItems().isEmpty() ? "Unable to retrieve Hearing Venues data" : "";
+            String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
+                ? "Unable to retrieve Hearing Venues data"
+                : "";
             caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
 
         }
@@ -122,7 +127,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
-            .readonly(RecordListing::getRegionsMessage)
             .done();
     }
 
@@ -130,15 +134,16 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         pageBuilder.page("regionInfo", this::midEvent)
             .label("regionInfoObj", "<h1>Region Data</h1>")
             .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getRegionList)
+            .readonly(RecordListing::getRegionsMessage)
+            .optional(RecordListing::getRegionList)
             .done();
     }
 
     private String getRegionId(String selectedRegion) {
-        String[] values = Arrays.stream(selectedRegion.split(HYPHEN))
-            .map(String::trim)
-            .toArray(String[]::new);
-        return values.length > 0 ? values[0] : null;
+        String[] values = selectedRegion != null
+            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
+            : null;
+        return values != null && values.length > 0 ? values[0] : null;
     }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
@@ -167,6 +172,14 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .label("hearingNoticeObj", "<h1>Create a hearing Notice</h1>")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingNotice)
+            .done();
+    }
+
+    private void selectTemplate(PageBuilder pageBuilder) {
+        pageBuilder.page("selectTemplate")
+            .label("selectTemplateObj", "<h1>Select a template</h1>")
+            .complex(CaseData::getRecordListing)
+            .mandatory(RecordListing::getTemplate)
             .done();
     }
 }

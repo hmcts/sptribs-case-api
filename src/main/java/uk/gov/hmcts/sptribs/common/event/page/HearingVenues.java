@@ -27,7 +27,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .label("listingDetailsObj", "<h1>Listing details</h1>")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getHearingVenuesMessage)
-            .mandatory(RecordListing::getHearingVenues)
+            .optional(RecordListing::getHearingVenues)
             .optional(RecordListing::getVenueNotListedOption)
             .optional(RecordListing::getHearingVenueName, "recordVenueNotListedOption= \"VenueNotListed\"")
             .optional(RecordListing::getHearingVenueAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
@@ -61,9 +61,9 @@ public class HearingVenues implements CcdPageConfiguration {
     }
 
     private String getCourtDetails(String selectedVenue, int index) {
-        String[] values = Arrays.stream(selectedVenue.split(HYPHEN))
+        String[] values = (selectedVenue != null) ? Arrays.stream(selectedVenue.split(HYPHEN))
             .map(String::trim)
-            .toArray(String[]::new);
-        return values.length > 0 ? values[index] : null;
+            .toArray(String[]::new) : null;
+        return values != null && values.length > 0 ? values[index] : null;
     }
 }
