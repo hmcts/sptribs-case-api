@@ -14,6 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,4 +28,10 @@ public class DateModel {
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
+
+    @CCD(
+        label = "Due Date information",
+        typeOverride = TextArea
+    )
+    private String information;
 }

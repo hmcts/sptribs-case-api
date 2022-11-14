@@ -29,7 +29,8 @@ public class SendOrder {
     private CaseDocumentsCIC orderFile;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Due Date"
     )
     private List<ListValue<DateModel>> dueDates;
 

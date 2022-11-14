@@ -55,7 +55,7 @@ class CaseworkerSendOrderTest {
     void shouldSuccessfullySendOrder() {
         //Given
 
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final SendOrder sendOrder = SendOrder.builder()
@@ -81,6 +81,7 @@ class CaseworkerSendOrderTest {
         assertThat(response).isNotNull();
         SendOrder order = response.getData().getSendOrder();
         assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
+        assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
         assertThat(order.getOrderIssuingType()).isNotNull();
         assertThat(order.getOrderFile()).isNull();
         assertThat(order.getDraftOrderCIC()).isNull();
