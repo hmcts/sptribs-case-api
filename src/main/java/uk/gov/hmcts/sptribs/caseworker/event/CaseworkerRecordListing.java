@@ -70,7 +70,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         String regionMessage = regionList == null || regionList.getListItems().isEmpty()
             ? "Unable to retrieve Region data"
-            : "";
+            : null;
         caseData.getRecordListing().setRegionsMessage(regionMessage);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -111,7 +111,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
             String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
                 ? "Unable to retrieve Hearing Venues data"
-                : "";
+                : null;
             caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
 
         }
