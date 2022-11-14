@@ -13,11 +13,13 @@ public class SendOrderAddDraftOrder implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        String pageName = "selectDraftOrder";
+        String pageNameUploadOrder = "uploadOrder";
+        String pageNameDraftOrder = "selectDraftOrder";
         Map<String, String> map = new HashMap<>();
-        map.put(pageName, "sendOrderOrderIssuingType = \"Issue and send an existing draft\"");
-        pageBuilder.page(pageName)
-            .label(pageName, "<h1>Select order\n</h1>")
+        map.put(pageNameDraftOrder, "sendOrderOrderIssuingType = \"DraftOrder\"");
+        map.put(pageNameUploadOrder, "sendOrderOrderIssuingType = \"UploadOrder\"");
+        pageBuilder.page(pageNameDraftOrder)
+            .label(pageNameDraftOrder, "<h1>Select order\n</h1>")
             .pageShowConditions(map)
             .complex(CaseData::getDraftOrderCIC, "", "", "")
             .readonly(DraftOrderCIC::getOrderTemplate)

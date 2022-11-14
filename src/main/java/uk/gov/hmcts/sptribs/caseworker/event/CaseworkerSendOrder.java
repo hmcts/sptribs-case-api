@@ -71,6 +71,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .name("Send order")
             .description("Send order")
             .showEventNotes()
+            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
