@@ -60,6 +60,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
         addHearingNotice(pageBuilder);
+        selectTemplate(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -167,6 +168,14 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .label("hearingNoticeObj", "<h1>Create a hearing Notice</h1>")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingNotice)
+            .done();
+    }
+
+    private void selectTemplate(PageBuilder pageBuilder) {
+        pageBuilder.page("selectTemplate")
+            .label("selectTemplateObj", "<h1>Select a template</h1>")
+            .complex(CaseData::getRecordListing)
+            .mandatory(RecordListing::getTemplate)
             .done();
     }
 }
