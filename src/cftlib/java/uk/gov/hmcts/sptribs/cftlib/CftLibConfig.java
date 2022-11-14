@@ -14,8 +14,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 @Component
@@ -81,39 +79,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             .getInputStream(), Charset.defaultCharset());
         lib.configureRoleAssignments(json);
 
-        // Generate and import CCD definitions
-        generateCCDDefinition();
-
-        var cicDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + cicDefName));
-        var csDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + csDefName));
-        var ddDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + ddDefName));
-        var mhDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + mhDefName));
-        var phlDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + phlDefName));
-        var senDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + senDefName));
-
-        lib.importDefinition(cicDefinition);
-        lib.importDefinition(csDefinition);
-        lib.importDefinition(ddDefinition);
-        lib.importDefinition(mhDefinition);
-        lib.importDefinition(phlDefinition);
-        lib.importDefinition(senDefinition);
-    }
-
-    /**
-     * Generate our JSON ccd definition and convert it to xlsx.
-     * Doing this at runtime in the CftlibConfig allows use of spring boot devtool's
-     * live reload functionality to rapidly edit and test code & definition changes.
-     */
-    private void generateCCDDefinition() throws Exception {
-        // Export the JSON config.
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
         // Run the gradle task to convert to xlsx.
-        var code = new ProcessBuilder("./gradlew", "buildCCDXlsx")
-            .inheritIO()
-            .start()
-            .waitFor();
-        if (code != 0) {
-            throw new CftLibConfigException("Error converting ccd json to xlsx");
-        }
+        lib.importJsonDefinition(new File("build/definitions/ST_CIC"));
     }
 }
