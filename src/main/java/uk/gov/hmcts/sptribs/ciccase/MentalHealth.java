@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.DisabilityDiscriminationData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.MentalHealthData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
@@ -34,6 +35,12 @@ public class MentalHealth implements CCDConfig<MentalHealthData, State, UserRole
 
         configBuilder.caseType(CcdCaseType.ST_MH.name(), "MH Case Type", CcdCaseType.ST_MH.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.MH.getCcdServiceDescription());
+
+        configBuilder.event("test")
+            .forState(State.AwaitingApplicant1Response)
+            .name("Test event")
+            .fields()
+            .mandatory(MentalHealthData::getHearingDate);
 
 
         // to shutter the service within xui uncomment this line

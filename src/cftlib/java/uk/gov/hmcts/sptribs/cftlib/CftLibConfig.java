@@ -82,5 +82,10 @@ public class CftLibConfig implements CFTLibConfigurer {
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
         // Run the gradle task to convert to xlsx.
         lib.importJsonDefinition(new File("build/definitions/ST_CIC"));
+        lib.importJsonDefinition(new File("build/definitions/ST_CS"));
+        lib.importJsonDefinition(new File("build/definitions/ST_DD"));
+        lib.importJsonDefinition(new File("build/definitions/ST_MH"));
+        lib.importJsonDefinition(new File("build/definitions/ST_PHL"));
+        lib.importJsonDefinition(new File("build/definitions/ST_SEN"));
     }
 }

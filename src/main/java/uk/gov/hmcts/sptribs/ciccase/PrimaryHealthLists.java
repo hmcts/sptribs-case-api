@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.DisabilityDiscriminationData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.PrimaryHealthListsData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
@@ -34,6 +35,12 @@ public class PrimaryHealthLists implements CCDConfig<PrimaryHealthListsData, Sta
 
         configBuilder.caseType(CcdCaseType.ST_PHL.name(), "PHL Case Type", CcdCaseType.ST_PHL.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.PHL.getCcdServiceDescription());
+
+        configBuilder.event("test")
+            .forState(State.AwaitingApplicant1Response)
+            .name("Test event")
+            .fields()
+            .mandatory(PrimaryHealthListsData::getHearingDate);
 
 
         // to shutter the service within xui uncomment this line

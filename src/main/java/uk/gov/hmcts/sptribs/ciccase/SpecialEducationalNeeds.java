@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.DisabilityDiscriminationData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.SpecialEducationalNeedsData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
@@ -34,6 +35,12 @@ public class SpecialEducationalNeeds implements CCDConfig<SpecialEducationalNeed
 
         configBuilder.caseType(CcdCaseType.ST_SEN.name(), "SEND Case Type", CcdCaseType.ST_SEN.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.SEN.getCcdServiceDescription());
+
+        configBuilder.event("test")
+            .forState(State.AwaitingApplicant1Response)
+            .name("Test event")
+            .fields()
+            .mandatory(SpecialEducationalNeedsData::getHearingDate);
 
 
         // to shutter the service within xui uncomment this line

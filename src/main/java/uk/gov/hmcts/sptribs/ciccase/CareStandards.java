@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CareStandardsData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
@@ -34,6 +35,12 @@ public class CareStandards implements CCDConfig<CareStandardsData, State, UserRo
 
         configBuilder.caseType(CcdCaseType.ST_CS.name(), "CS Case Type", CcdCaseType.ST_CS.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.CS.getCcdServiceDescription());
+
+        configBuilder.event("test")
+            .forState(State.AwaitingApplicant1Response)
+            .name("Test event")
+            .fields()
+            .mandatory(CareStandardsData::getHearingDate);
 
 
         // to shutter the service within xui uncomment this line
