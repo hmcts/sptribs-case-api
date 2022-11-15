@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.service;
 
 import com.google.common.collect.Lists;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,6 +78,11 @@ public class ProcessConfidentialDocumentsServiceTest {
 
         assertEquals(1, nonConfidentialDocuments.size());
         assertEquals(2, confidentialDocuments.size());
+        Assertions.assertNull(confidentialDocuments.get(0).getValue().getDocumentEmailContent());
+        org.assertj.core.api.Assertions.assertThat(confidentialDocuments.get(0).getValue().getDocumentLink()).isNotNull();
+        Assertions.assertNull(confidentialDocuments.get(0).getValue().getDocumentDateAdded());
+        Assertions.assertNull(confidentialDocuments.get(0).getValue().getDocumentComment());
+        Assertions.assertNull(confidentialDocuments.get(0).getValue().getDocumentFileName());
 
         assertEquals(DocumentType.APPLICATION,
             nonConfidentialDocuments.get(0).getValue().getDocumentType());
@@ -143,8 +149,8 @@ public class ProcessConfidentialDocumentsServiceTest {
         assertEquals(2, nonConfidentialDocuments.size());
         assertEquals(1, confidentialDocuments.size());
 
-        assertEquals(ConfidentialDocumentsReceived.NOTICE_OF_PROCEEDINGS_APP_2,
-            confidentialDocuments.get(0).getValue().getConfidentialDocumentsReceived());
+        assertEquals(ConfidentialDocumentsReceived.NOTICE_OF_PROCEEDINGS_APP_2.getLabel(),
+            confidentialDocuments.get(0).getValue().getConfidentialDocumentsReceived().getLabel());
 
         assertThat(
             nonConfidentialDocuments.stream()

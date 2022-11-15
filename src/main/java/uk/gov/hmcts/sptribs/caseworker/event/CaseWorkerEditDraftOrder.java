@@ -29,6 +29,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.GENERAL_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME;
@@ -94,13 +95,11 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     private void previewOrder(PageBuilder pageBuilder) {
 
         pageBuilder
-            .page("previewOrder",this::aboutToSubmit)
+            .page("previewOrder", this::aboutToSubmit)
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
-            //.complex(CaseData::getDraftOrderCIC)
-           // .readonly(DraftOrderCIC::getUrl)
-            .label("make Changes","To make changes, choose 'Edit order'\n\n"+
-                "If you are happy , continue to the next screen.")
+            .label("make Changes", "To make changes, choose 'Edit order'\n\n"
+                + "If you are happy , continue to the next screen.")
             .done();
     }
 
@@ -163,7 +162,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("When you have finished drafting this order,you can send it to parties in this case."))
+            .confirmationHeader("When you have finished drafting this order,you can send it to parties in this case.")
             .build();
     }
 }

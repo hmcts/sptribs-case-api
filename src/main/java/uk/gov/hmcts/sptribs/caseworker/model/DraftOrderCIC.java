@@ -28,7 +28,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DraftOrderCIC {
 
-
     @CCD(
         label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
@@ -44,8 +43,6 @@ public class DraftOrderCIC {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String mainContentToBeEdited;
-
-
 
 
 }

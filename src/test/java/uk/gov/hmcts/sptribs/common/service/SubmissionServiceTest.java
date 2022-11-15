@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.service.task.SendSubmissionNotifications;
-import uk.gov.hmcts.sptribs.common.service.task.SetApplicant2Email;
 import uk.gov.hmcts.sptribs.common.service.task.SetApplicantOfflineStatus;
 import uk.gov.hmcts.sptribs.common.service.task.SetDateSubmitted;
 import uk.gov.hmcts.sptribs.common.service.task.SetHyphenatedCaseRef;
@@ -32,9 +31,6 @@ class SubmissionServiceTest {
     private SetDateSubmitted setDateSubmitted;
 
     @Mock
-    private SetApplicant2Email setApplicant2Email;
-
-    @Mock
     private SetApplicantOfflineStatus setApplicantOfflineStatus;
 
     @Mock
@@ -52,7 +48,6 @@ class SubmissionServiceTest {
         when(setHyphenatedCaseRef.apply(caseDetails)).thenReturn(caseDetails);
         when(setStateAfterSubmission.apply(caseDetails)).thenReturn(caseDetails);
         when(setDateSubmitted.apply(caseDetails)).thenReturn(caseDetails);
-        when(setApplicant2Email.apply(caseDetails)).thenReturn(caseDetails);
         when(setApplicantOfflineStatus.apply(caseDetails)).thenReturn(caseDetails);
         when(sendSubmissionNotifications.apply(caseDetails)).thenReturn(expectedCaseDetails);
 
@@ -65,7 +60,6 @@ class SubmissionServiceTest {
         verify(setHyphenatedCaseRef).apply(caseDetails);
         verify(setStateAfterSubmission).apply(caseDetails);
         verify(setDateSubmitted).apply(caseDetails);
-        verify(setApplicant2Email).apply(caseDetails);
         verify(setApplicantOfflineStatus).apply(caseDetails);
         verify(sendSubmissionNotifications).apply(caseDetails);
     }

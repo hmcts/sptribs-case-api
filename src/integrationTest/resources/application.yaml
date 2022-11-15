@@ -51,6 +51,10 @@ fee:
   api:
     baseUrl: http://localhost:4010
 
+location:
+  api:
+    baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
+
 s2s:
   stub: true
 

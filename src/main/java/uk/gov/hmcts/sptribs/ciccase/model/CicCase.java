@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.NextState;
+import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -20,7 +20,9 @@ import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @AllArgsConstructor
@@ -95,6 +97,42 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<RepresentativeCIC> representativeCIC;
+
+
+    @CCD(
+
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "SubjectCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<SubjectCIC> notifyPartySubject;
+
+    @CCD(
+
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "RepresentativeCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<RepresentativeCIC> notifyPartyRepresentative;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "RespondentCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<RespondentCIC> notifyPartyRespondent;
+
+    @CCD(
+        label = "What is the reason for reinstating the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ReinstateReason reinstateReason;
+
+    @CCD(
+        label = "Additional information related to the case reinstatement",
+        typeOverride = TextArea
+    )
+    private String reinstateAdditionalDetail;
 
     @CCD(
 
@@ -324,13 +362,25 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
     private CaseDocumentsCIC caseDocumentsCIC;
+    @CCD(
+        label = "Reinstate Documents",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseDocumentsCIC reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(
-        label = "Next State",
+        label = "Case Status",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "State",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private NextState afterStayState;
+    private State testState;
 
-
+    @CCD(
+        label = "Minus days from today to set close date ",
+        regex = "^\\d+$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String days;
 }

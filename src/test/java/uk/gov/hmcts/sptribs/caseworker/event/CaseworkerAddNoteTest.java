@@ -10,13 +10,12 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -88,7 +87,7 @@ class CaseworkerAddNoteTest {
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(getCaseworkerUser());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -141,7 +140,7 @@ class CaseworkerAddNoteTest {
 
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(getCaseworkerUser());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -167,13 +166,4 @@ class CaseworkerAddNoteTest {
         verifyNoMoreInteractions(httpServletRequest, idamService);
     }
 
-    private User getCaseworkerUser() {
-        UserDetails userDetails = UserDetails
-            .builder()
-            .forename("testFname")
-            .surname("testSname")
-            .build();
-
-        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
-    }
 }

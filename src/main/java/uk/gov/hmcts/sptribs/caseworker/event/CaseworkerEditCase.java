@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -40,7 +39,11 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
     @Autowired
-    private SubmissionService submissionService;
+    private final SubmissionService submissionService;
+
+    public CaseworkerEditCase(SubmissionService submissionService) {
+        this.submissionService = submissionService;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -85,7 +88,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Updated"))
+            .confirmationHeader("# Case Updated")
             .build();
     }
 }

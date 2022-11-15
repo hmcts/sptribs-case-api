@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.notification.exception.NotificationTemplateException
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.mockito.ArgumentMatchers.eq;
@@ -141,6 +142,23 @@ class ServiceApplicationNotificationTest {
             )),
             eq(WELSH)
         );
+    }
+
+    @Test
+    void shoulThrowTemplaceException() {
+        //Given
+        CaseData data = validApplicant1CaseData();
+        data.getApplicant1().setLanguagePreferenceWelsh(YesOrNo.YES);
+        data.getAlternativeService().setAlternativeServiceType(DISPENSED);
+
+        //When&Then
+        assertThatThrownBy(() -> serviceApplicationNotification.sendToApplicant1(
+                data, ID
+            )
+        )
+            .isInstanceOf(NotificationTemplateException.class)
+            .hasMessageContaining("MISSING_FIELD_MESSAGE");
+
     }
 
     @Test

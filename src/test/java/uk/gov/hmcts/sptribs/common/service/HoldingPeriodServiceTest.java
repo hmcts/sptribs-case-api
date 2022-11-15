@@ -19,6 +19,7 @@ import static uk.gov.hmcts.sptribs.testutil.ClockTestUtil.setMockClock;
 class HoldingPeriodServiceTest {
 
     private static final int HOLDING_PERIOD_DAYS = 141;
+    private static final int RESPONSE_OFFSET_DAYS = 16;
 
     @Mock
     private Clock clock;
@@ -29,6 +30,7 @@ class HoldingPeriodServiceTest {
     @BeforeEach
     public void setUp() {
         setField(holdingPeriodService, "holdingPeriodInDays", HOLDING_PERIOD_DAYS);
+        setField(holdingPeriodService, "respondOffsetInDays", RESPONSE_OFFSET_DAYS);
     }
 
     @Test
@@ -76,5 +78,15 @@ class HoldingPeriodServiceTest {
         //Then
         assertThat(holdingPeriodService.isHoldingPeriodFinished(issueDate.plusDays(1))).isFalse();
         assertThat(holdingPeriodService.isHoldingPeriodFinished(issueDate.plusWeeks(1))).isFalse();
+    }
+
+    @Test
+    void shouldReturnRespondDateBasedOnIssueDate() {
+        //When
+        final LocalDate issueDate = getExpectedLocalDate();
+
+        //Then
+        assertThat(holdingPeriodService.getRespondByDateFor(issueDate))
+            .isEqualTo(issueDate.plusDays(RESPONSE_OFFSET_DAYS));
     }
 }
