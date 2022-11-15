@@ -17,6 +17,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
+import uk.gov.hmcts.sptribs.common.event.page.SelectTemplate;
+import uk.gov.hmcts.sptribs.common.event.page.UploadHearingNotice;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.Arrays;
@@ -35,6 +37,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+    private static final CcdPageConfiguration uploadHearingNotice = new UploadHearingNotice();
+    private static final CcdPageConfiguration selectTemplate = new SelectTemplate();
 
     @Autowired
     private LocationService locationService;
@@ -60,7 +64,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
         addHearingNotice(pageBuilder);
-        selectTemplate(pageBuilder);
+        uploadHearingNotice.addTo(pageBuilder);
+        selectTemplate.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -175,11 +180,4 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .done();
     }
 
-    private void selectTemplate(PageBuilder pageBuilder) {
-        pageBuilder.page("selectTemplate")
-            .label("selectTemplateObj", "<h1>Select a template</h1>")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getTemplate)
-            .done();
-    }
 }
