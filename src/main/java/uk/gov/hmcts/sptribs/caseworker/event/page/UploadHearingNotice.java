@@ -26,7 +26,7 @@ public class UploadHearingNotice  implements CcdPageConfiguration {
             .label("uploadObjectLabel",
                 "\nUpload a copy of the hearing notice that you want to add to this case."
                     + " It must be signed by the appropriate parties.\n"
-                    + "\n<h3>The hearing notice should be:</h3>\n"
+                    + "\nThe hearing notice should be:\n"
                     + "\n- a maximum of 100MB in size (larger files must be split)\n"
                     + "\n- labelled clearly, e.g. applicant-name-hearing-notice.pdf\n")
             .mandatoryWithLabel(RecordListing::getHearingNoticeDocuments, "Add a file")

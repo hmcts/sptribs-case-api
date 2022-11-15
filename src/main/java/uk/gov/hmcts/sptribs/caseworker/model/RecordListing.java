@@ -183,7 +183,6 @@ public class RecordListing {
     private RecordListingTemplate template;
 
     @CCD(
-        label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private CaseDocumentsCIC hearingNoticeDocuments;
