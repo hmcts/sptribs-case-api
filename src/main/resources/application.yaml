@@ -249,6 +249,12 @@ docmosis:
   templates:
     english:
       GENERAL_DIRECTIONS: ST-CIC-STD-ENG-CIC6_General_Directions.docx
+    welsh:
+      #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.
+      DIVORCE_APPLICATION_SOLE: ${DIVORCE_APPLICATION_SOLE_WELSH_TEMPLATE_ID:NFD_CP_Application_Sole_V5.docx}
+  templateVars:
+    #TO DO-below template var needs to be removed from here once some other template var for sp-tribs is in place here, left for keeping structure.
+    applicant2SignInDivorceUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL:https://sptribs-apply-for-divorce.aat.platform.hmcts.net/applicant2}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
