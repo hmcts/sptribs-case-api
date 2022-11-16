@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.DisabilityDiscriminationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
