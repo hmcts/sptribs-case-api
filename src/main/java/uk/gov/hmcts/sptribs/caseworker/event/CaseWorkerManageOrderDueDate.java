@@ -7,15 +7,12 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
-import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
-import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -24,35 +21,31 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 
+
+
 @Component
 @Slf4j
-public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-    private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
-    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
-
-    public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
-
+public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+
+
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
-                .event(CASEWORKER_EDIT_DRAFT_ORDER)
+                .event("Manage order due dates")
                 .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
-                .name("Edit draft order")
+                .name("Manage order due dates")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::draftCreated)
+                .submittedCallback(this::orderDatesManaged)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
 
-        editDraftOrder.addTo(pageBuilder);
-        previewDraftOrder.addTo(pageBuilder);
 
 
     }
-
 
 
 
@@ -61,17 +54,16 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(State.Draft)
+            .state(State.NewCaseReceived)
             .build();
 
     }
 
-    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse orderDatesManaged(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("When you have finished drafting this order,you can send it to parties in this case.")
+            .confirmationHeader("Order dates amended.")
             .build();
     }
 }
