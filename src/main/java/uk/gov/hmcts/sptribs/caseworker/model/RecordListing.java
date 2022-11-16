@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingSession;
@@ -180,6 +181,11 @@ public class RecordListing {
         typeParameterOverride = "RecordListingTemplate"
     )
     private RecordListingTemplate template;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseDocumentsCIC hearingNoticeDocuments;
 
     @JsonIgnore
     public String getSelectedRegionVal() {
