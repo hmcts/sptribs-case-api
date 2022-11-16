@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -78,7 +80,9 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         var cicCase = details.getData().getCicCase();
         final StringBuilder messageLine2 = new StringBuilder(100);
         messageLine2.append(" A notification will be sent via email to: ");
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && StringUtils.hasText(cicCase.getEmail())) {
             messageLine2.append("Subject, ");
             cicCase.setNotifyPartySubject(null);
         }
@@ -86,14 +90,36 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             messageLine2.append("Respondent, ");
             cicCase.setNotifyPartyRespondent(null);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
             messageLine2.append("Representative, ");
             cicCase.setNotifyPartyRepresentative(null);
         }
+        boolean post = false;
+        StringBuilder postMessage = new StringBuilder(100);
+        postMessage.append("It will be sent via post to:");
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && !ObjectUtils.isEmpty(cicCase.getAddress())) {
+            postMessage.append("Subject, ");
+            post = true;
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
+            postMessage.append("Representative, ");
+            post = true;
+        }
+        String message = "";
+        if (post) {
+            message = format("# Case reinstated %n##  The case record will now be reopened."
+                + " %s %n##  %s", messageLine2.substring(0, messageLine2.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+        } else {
+            message = format("# Case reinstated %n##  The case record will now be reopened. "
+                + " %s ", messageLine2.substring(0, messageLine2.length() - 2));
+
+        }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened."
-                + " %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+            .confirmationHeader(message)
             .build();
     }
 
