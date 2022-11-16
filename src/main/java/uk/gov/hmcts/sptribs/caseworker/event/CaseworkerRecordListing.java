@@ -10,6 +10,8 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectTemplate;
+import uk.gov.hmcts.sptribs.caseworker.event.page.UploadHearingNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -35,6 +37,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+    private static final CcdPageConfiguration uploadHearingNotice = new UploadHearingNotice();
+    private static final CcdPageConfiguration selectTemplate = new SelectTemplate();
 
     @Autowired
     private LocationService locationService;
@@ -60,7 +64,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
         addHearingNotice(pageBuilder);
-        selectTemplate(pageBuilder);
+        uploadHearingNotice.addTo(pageBuilder);
+        selectTemplate.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -70,7 +75,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         String regionMessage = regionList == null || regionList.getListItems().isEmpty()
             ? "Unable to retrieve Region data"
-            : "";
+            : null;
         caseData.getRecordListing().setRegionsMessage(regionMessage);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -111,7 +116,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
             String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
                 ? "Unable to retrieve Hearing Venues data"
-                : "";
+                : null;
             caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
 
         }
@@ -175,11 +180,4 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .done();
     }
 
-    private void selectTemplate(PageBuilder pageBuilder) {
-        pageBuilder.page("selectTemplate")
-            .label("selectTemplateObj", "<h1>Select a template</h1>")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getTemplate)
-            .done();
-    }
 }
