@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RecordListingNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -35,6 +36,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+    private static final CcdPageConfiguration notifyParties = new RecordListingNotifyParties();
 
     @Autowired
     private LocationService locationService;
@@ -59,6 +61,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
+        notifyParties.addTo(pageBuilder); // TODO: To be moved after selectTemplate once file upload error fixed
         addHearingNotice(pageBuilder);
         selectTemplate(pageBuilder);
     }
