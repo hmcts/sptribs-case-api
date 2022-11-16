@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
-import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -63,7 +61,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(State.Draft)
             .build();
 
     }

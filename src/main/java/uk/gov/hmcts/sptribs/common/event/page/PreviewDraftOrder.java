@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -27,9 +26,11 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
             .done();
 
     }
+
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
+
     ) {
 
 

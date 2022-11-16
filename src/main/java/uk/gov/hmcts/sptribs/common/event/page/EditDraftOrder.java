@@ -34,9 +34,10 @@ public class EditDraftOrder implements CcdPageConfiguration {
                 + "\n<RepresentativeName>"
                 + "\nRespondent<hr>"
                 + "\n<h3>Main content</h3>\n\n ")
-            .optional(DraftOrderCIC::getMainContentToBeEdited)
+            .optional(DraftOrderCIC::getMainContentForGeneralDirections,"draftOrderTemplateCONTAINS \"General Directions\"")
             .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
                 + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
+
 
             .done();
     }
@@ -48,7 +49,6 @@ public class EditDraftOrder implements CcdPageConfiguration {
 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(State.Draft)
             .build();
 
     }
