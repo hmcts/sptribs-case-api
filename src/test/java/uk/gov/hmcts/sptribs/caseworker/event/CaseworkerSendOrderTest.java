@@ -12,8 +12,11 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -52,13 +55,16 @@ class CaseworkerSendOrderTest {
     void shouldSuccessfullySendOrder() {
         //Given
 
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final SendOrder sendOrder = new SendOrder();
-        sendOrder.setDueDates(List.of(dates));
+        final SendOrder sendOrder = SendOrder.builder()
+            .dueDates(List.of(dates))
+            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .build();
         final CaseData caseData = caseData();
         caseData.setSendOrder(sendOrder);
+        caseData.setDraftOrderCIC(DraftOrderCIC.builder().orderTemplate(OrderTemplate.DMIREPORTS).build());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -75,6 +81,10 @@ class CaseworkerSendOrderTest {
         assertThat(response).isNotNull();
         SendOrder order = response.getData().getSendOrder();
         assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
+        assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
+        assertThat(order.getOrderIssuingType()).isNotNull();
+        assertThat(order.getOrderFile()).isNull();
+        assertThat(order.getDraftOrderCIC()).isNull();
     }
 
 }

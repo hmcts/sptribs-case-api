@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
@@ -39,6 +40,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
+    private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
 
@@ -46,6 +48,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = send(configBuilder);
         orderIssuingSelect.addTo(pageBuilder);
+        draftOrder.addTo(pageBuilder);
         uploadOrder.addTo(pageBuilder);
         orderDueDates.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
@@ -68,6 +71,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .name("Send order")
             .description("Send order")
             .showEventNotes()
+            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
