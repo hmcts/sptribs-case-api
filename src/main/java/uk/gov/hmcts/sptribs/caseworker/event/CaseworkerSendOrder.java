@@ -57,13 +57,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
-            .forStates(AwaitingApplicant1Response,
-                AwaitingApplicant2Response,
-                AwaitingConditionalOrder,
-                Withdrawn,
-                Rejected,
-                NewCaseReceived,
-                CaseManagement,
+            .forStates(CaseManagement,
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,
@@ -83,6 +77,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         var caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
     }
 

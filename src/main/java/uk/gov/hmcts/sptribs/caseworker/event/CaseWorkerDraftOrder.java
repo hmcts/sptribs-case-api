@@ -14,8 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.*;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -33,7 +32,7 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_CREATE_DRAFT_ORDER)
-                .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
+                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Create draft order")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
@@ -64,7 +63,7 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(NewCaseReceived)
+            .state(details.getState())
             .build();
     }
 
