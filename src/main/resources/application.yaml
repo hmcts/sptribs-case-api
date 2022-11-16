@@ -248,7 +248,7 @@ core_case_data:
 docmosis:
   templates:
     english:
-      GENERAL_DIRECTIONS: SPT-CIC6-STD-ENG-CIC6_General_Directions.doc
+      GENERAL_DIRECTIONS: ST-CIC-STD-ENG-CIC6_General_Directions.docx
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
