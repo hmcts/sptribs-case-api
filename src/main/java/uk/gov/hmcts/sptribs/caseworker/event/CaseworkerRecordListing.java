@@ -61,9 +61,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
-        recordListingNotifyParties.addTo(pageBuilder); // TODO: To be moved after selectTemplate once file upload error fixed
         addHearingNotice(pageBuilder);
         selectTemplate(pageBuilder);
+        recordListingNotifyParties.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

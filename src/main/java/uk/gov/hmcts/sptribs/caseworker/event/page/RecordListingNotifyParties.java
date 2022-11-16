@@ -20,7 +20,7 @@ public class RecordListingNotifyParties implements CcdPageConfiguration {
         pageBuilder.page("recordListingNotifyParties", this::midEvent)
             .label("recordListingNotifyParties", "<h1>Notify parties</h1>")
             .complex(CaseData::getCicCase)
-            .label("message", "Which parties would be notified of this listing?")
+            .label("notifyPartiesMessage", "Which parties would be notified of this listing?")
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
             .label("app", "")
