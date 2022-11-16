@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -95,23 +96,25 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append(" A notification will be sent via email to: ");
+        final StringBuilder emailMessage = getEmailMessage(cicCase);
 
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && StringUtils.hasText(cicCase.getEmail())) {
-            messageLine2.append("Subject, ");
-            cicCase.setNotifyPartySubject(null);
+        StringBuilder postMessage = getPostMessage(cicCase);
+        String message = "";
+        if (null != postMessage) {
+            message = format("# Order sent %n## "
+                + " %s %n##  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+        } else {
+            message = format("# Order sent %n## "
+                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine2.append("Respondent, ");
-            cicCase.setNotifyPartyRespondent(null);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
-            messageLine2.append("Representative, ");
-            cicCase.setNotifyPartyRepresentative(null);
-        }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(message)
+            .build();
+    }
+
+    private StringBuilder getPostMessage(final CicCase cicCase) {
         boolean post = false;
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to:");
@@ -125,18 +128,31 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             postMessage.append("Representative, ");
             post = true;
         }
-        String message = "";
         if (post) {
-            message = format("# Order sent %n## "
-                + " %s %n##  %s", messageLine2.substring(0, messageLine2.length() - 2), postMessage.substring(0, postMessage.length() - 2));
-        } else {
-            message = format("# Order sent %n## "
-                + " %s ", messageLine2.substring(0, messageLine2.length() - 2));
-
+            return postMessage;
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
-            .build();
+        return null;
     }
+
+    private StringBuilder getEmailMessage(final CicCase cicCase) {
+        final StringBuilder messageLine = new StringBuilder(100);
+        messageLine.append(" A notification will be sent via email to: ");
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && StringUtils.hasText(cicCase.getEmail())) {
+            messageLine.append("Subject, ");
+            cicCase.setNotifyPartySubject(null);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            messageLine.append("Respondent, ");
+            cicCase.setNotifyPartyRespondent(null);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
+            messageLine.append("Representative, ");
+            cicCase.setNotifyPartyRepresentative(null);
+        }
+        return messageLine;
+    }
+
 }
