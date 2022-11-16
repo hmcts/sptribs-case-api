@@ -51,8 +51,8 @@ spec:
       keyVaults:
         sptribs:
           secrets:
-            - name: AppInsightsInstrumentationKey
-              alias: APP_INSIGHTS_KEY
+            - name: app-insights-instrumentation-key
+            - name: app-insights-connection-string
             - name: uk-gov-notify-api-key
               alias: UK_GOV_NOTIFY_API_KEY
             - name: s2s-case-api-secret
