@@ -36,7 +36,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
-    private static final CcdPageConfiguration notifyParties = new RecordListingNotifyParties();
+    private static final CcdPageConfiguration recordListingNotifyParties = new RecordListingNotifyParties();
 
     @Autowired
     private LocationService locationService;
@@ -61,7 +61,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
-        notifyParties.addTo(pageBuilder); // TODO: To be moved after selectTemplate once file upload error fixed
+        recordListingNotifyParties.addTo(pageBuilder); // TODO: To be moved after selectTemplate once file upload error fixed
         addHearingNotice(pageBuilder);
         selectTemplate(pageBuilder);
     }
