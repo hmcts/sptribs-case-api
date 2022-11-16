@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -18,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
@@ -72,6 +76,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .description("Send order")
             .showEventNotes()
             .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::sent)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
@@ -88,8 +94,49 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
+        var cicCase = details.getData().getCicCase();
+        final StringBuilder messageLine2 = new StringBuilder(100);
+        messageLine2.append(" A notification will be sent via email to: ");
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && StringUtils.hasText(cicCase.getEmail())) {
+            messageLine2.append("Subject, ");
+            cicCase.setNotifyPartySubject(null);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            messageLine2.append("Respondent, ");
+            cicCase.setNotifyPartyRespondent(null);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
+            messageLine2.append("Representative, ");
+            cicCase.setNotifyPartyRepresentative(null);
+        }
+        boolean post = false;
+        StringBuilder postMessage = new StringBuilder(100);
+        postMessage.append("It will be sent via post to:");
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && !ObjectUtils.isEmpty(cicCase.getAddress())) {
+            postMessage.append("Subject, ");
+            post = true;
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
+            postMessage.append("Representative, ");
+            post = true;
+        }
+        String message = "";
+        if (post) {
+            message = format("# Order sent %n## "
+                + " %s %n##  %s", messageLine2.substring(0, messageLine2.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+        } else {
+            message = format("# Order sent %n## "
+                + " %s ", messageLine2.substring(0, messageLine2.length() - 2));
+
+        }
+
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# ")
+            .confirmationHeader(message)
             .build();
     }
 }
