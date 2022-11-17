@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.common.event.page;
+package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,13 +19,13 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
 @Component
-public class CreateDraftOrder implements CcdPageConfiguration {
+public class EditDraftOrder implements CcdPageConfiguration {
 
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("createDraftOrder")
+            .page("editDraftOrder")
             .pageLabel("Edit order")
             .label("editableDraft", "Draft to be edited")
             .complex(CaseData::getDraftOrderCIC)
@@ -87,6 +87,5 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .build();
 
     }
-
 
 }

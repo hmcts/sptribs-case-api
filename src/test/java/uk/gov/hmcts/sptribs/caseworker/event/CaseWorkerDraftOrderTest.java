@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerCreateDraftOrder.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -27,6 +28,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 class CaseWorkerDraftOrderTest {
     @InjectMocks
     private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
+
+    @InjectMocks
+    private PreviewDraftOrder previewDraftOrder;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -66,5 +70,23 @@ class CaseWorkerDraftOrderTest {
         assertThat(response.getData().getDraftOrderCIC().getOrderTemplate().getLabel()).isEqualTo("Medical Evidence - DMI Reports");
         assertThat(stayedResponse).isNotNull();
     }
+
+    @Test
+    void shouldSuccessfullyReviewCase() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
+        draftOrderCIC.setOrderTemplate(OrderTemplate.GENERALDIRECTIONS);
+        draftOrderCIC.setMainContentForGeneralDirections("content");
+        caseData.setDraftOrderCIC(draftOrderCIC);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            previewDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+
+    }
+
+
 }
 
