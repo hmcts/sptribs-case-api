@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -48,6 +49,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
+    private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -57,6 +59,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         uploadOrder.addTo(pageBuilder);
         orderDueDates.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
+        sendReminder.addTo(pageBuilder);
     }
 
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
