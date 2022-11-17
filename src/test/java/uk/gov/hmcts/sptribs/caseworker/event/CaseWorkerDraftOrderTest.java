@@ -50,7 +50,7 @@ class CaseWorkerDraftOrderTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
         draftOrderCIC.setOrderTemplate(OrderTemplate.DMIREPORTS);
-        draftOrderCIC.setMainContentToBeEdited("content");
+        draftOrderCIC.setMainContentForGeneralDirections("content");
         caseData.setDraftOrderCIC(draftOrderCIC);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
