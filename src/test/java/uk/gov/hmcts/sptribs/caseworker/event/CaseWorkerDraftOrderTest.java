@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerDraftOrder.CASEWORKER_CREATE_DRAFT_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerCreateDraftOrder.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 @ExtendWith(MockitoExtension.class)
 class CaseWorkerDraftOrderTest {
     @InjectMocks
-    private CaseWorkerDraftOrder caseWorkerDraftOrder;
+    private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

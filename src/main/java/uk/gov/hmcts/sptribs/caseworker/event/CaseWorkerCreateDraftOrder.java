@@ -7,12 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
+import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
+import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
@@ -23,8 +24,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-    DocmosisTemplateProvider doc = new DocmosisTemplateProvider();
+public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
+    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
 
     public static final String CASEWORKER_CREATE_DRAFT_ORDER = "caseworker-create-draft-order";
 
@@ -41,19 +43,12 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
-        createDraftOrder(pageBuilder);
+        createDraftOrder.addTo(pageBuilder);
+        previewDraftOrder.addTo(pageBuilder);
+
 
     }
 
-
-
-    private void createDraftOrder(PageBuilder pageBuilder) {
-        pageBuilder.page("createDraftOrder")
-            .pageLabel("Select order template")
-            .complex(CaseData::getDraftOrderCIC)
-            .mandatoryWithLabel(DraftOrderCIC::getOrderTemplate, "")
-            .done();
-    }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,

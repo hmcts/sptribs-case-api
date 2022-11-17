@@ -13,14 +13,14 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 @Slf4j
 @Component
-public class EditDraftOrder implements CcdPageConfiguration {
+public class CreateDraftOrder implements CcdPageConfiguration {
 
 
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("editDraftOrder")
+            .page("createDraftOrder")
             .pageLabel("Edit order")
             .label("editableDraft", "Draft to be edited")
             .complex(CaseData::getDraftOrderCIC)
@@ -34,7 +34,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
                 + "\n<RepresentativeName>"
                 + "\nRespondent<hr>"
                 + "\n<h3>Main content</h3>\n\n ")
-            .optional(DraftOrderCIC::getMainContentForGeneralDirections)
+            .optional(DraftOrderCIC::getMainContentForGeneralDirections,"draftOrderTemplate = \"GeneralDirections\"")
             .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
                 + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
 
