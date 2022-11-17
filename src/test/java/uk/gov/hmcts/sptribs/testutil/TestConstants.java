@@ -4,6 +4,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 
 public final class TestConstants {
     public static final String TEST_APPLICANT_2_USER_EMAIL = "applicant2@test.com";
+    public static final String TEST_SUBJECT_EMAIL = "subject2@test.com";
     public static final String TEST_USER_EMAIL = "test@test.com";
     public static final String TEST_SOLICITOR_EMAIL = "solicitor@test.com";
     public static final String TEST_SOLICITOR_NAME = "The Solicitor";
@@ -67,12 +68,28 @@ public final class TestConstants {
     public static final String SOLICITOR_MID_EVENT_RESPONSE = "classpath:solicitor-mid-event-response.json";
     public static final String SOLICITOR_MID_EVENT_ERROR = "classpath:solicitor-mid-event-error-response.json";
     public static final String LINE_1_LINE_2_CITY_POSTCODE = "line1\nline2\ncity\npostcode";
+
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")
         .addressLine2("line2")
         .postTown("city")
         .postCode("postcode")
         .build();
+
+    public static final AddressGlobalUK SUBJECT_ADDRESS = AddressGlobalUK.builder()
+        .addressLine1("line1")
+        .addressLine2("line2")
+        .postTown("city")
+        .postCode("postcode")
+        .build();
+
+    public static final AddressGlobalUK SOLICITOR_ADDRESS = AddressGlobalUK.builder()
+        .addressLine1("line1")
+        .addressLine2("line2")
+        .postTown("city")
+        .postCode("postcode")
+        .build();
+
     public static final String ACCESS_CODE = "6E69DKFX";
 
     public static final String SIGN_IN_DIVORCE_TEST_URL = "divorceTestUrl";

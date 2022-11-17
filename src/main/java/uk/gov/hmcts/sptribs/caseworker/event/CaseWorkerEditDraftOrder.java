@@ -7,11 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
+import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -23,6 +25,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+    private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
+    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
 
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
 
@@ -40,46 +44,14 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
-        editDraftOrder(pageBuilder);
-        previewOrder(pageBuilder);
+
+        editDraftOrder.addTo(pageBuilder);
+        previewDraftOrder.addTo(pageBuilder);
 
 
     }
 
 
-    private void editDraftOrder(PageBuilder pageBuilder) {
-        pageBuilder
-            .page("editDraftOrder")
-            .pageLabel("Edit order")
-            .label("editableDraft", "Draft to be edited")
-            .complex(CaseData::getDraftOrderCIC)
-            .mandatory(DraftOrderCIC::getOrderTemplate, "")
-            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\n<h4>First tier tribunal Health lists</h4>\n\n"
-                + "<h3>IN THE MATTER OF THE NATIONAL HEALTH SERVICES (PERFORMERS LISTS)(ENGLAND) REGULATIONS 2013</h2>\n\n"
-                + "&lt; &lt; CaseNumber &gt; &gt; \n"
-                + "\nBETWEEN\n"
-                + "\n&lt; &lt; SubjectName &gt; &gt; \n"
-                + "\nApplicant\n"
-                + "\n<RepresentativeName>"
-                + "\nRespondent<hr>"
-                + "\n<h3>Main content</h3>\n\n ")
-            .optional(DraftOrderCIC::getMainContentToBeEdited)
-            .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
-                + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
-
-            .done();
-    }
-
-    private void previewOrder(PageBuilder pageBuilder) {
-
-        pageBuilder
-            .page("previewOrder", this::aboutToSubmit)
-            .pageLabel("Preview order")
-            .label("previewDraft", " Order preview")
-            .label("make Changes", "To make changes, choose 'Edit order'\n\n"
-                + "If you are happy , continue to the next screen.")
-            .done();
-    }
 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -89,7 +61,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(State.Draft)
             .build();
 
     }
