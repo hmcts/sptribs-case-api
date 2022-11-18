@@ -164,5 +164,53 @@ class CaseworkerSendOrderTest {
         assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());
         assertThat(order.getReminderDays().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
+    @Test
+    void shouldSuccessfullySendOrderWithOnlyPost() {
+        //Given
+
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final ListValue<DateModel> dates = new ListValue<>();
+        dates.setValue(dateModel);
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        final SendOrder sendOrder = SendOrder.builder()
+            .dueDates(List.of(dates))
+            .yesOrNo(YesNo.YES)
+            .reminderDays(ReminderDays.DAY_COUNT_1)
+            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setSendOrder(sendOrder);
+        caseData.setCicCase(cicCase);
+        caseData.setDraftOrderCIC(DraftOrderCIC.builder().orderTemplate(OrderTemplate.DMIREPORTS).build());
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(sent).isNotNull();
+        assertThat(response).isNotNull();
+        SendOrder order = response.getData().getSendOrder();
+        assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
+        assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
+        assertThat(order.getOrderIssuingType()).isNotNull();
+        assertThat(order.getOrderFile()).isNull();
+        assertThat(order.getDraftOrderCIC()).isNull();
+        assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());
+        assertThat(order.getReminderDays().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
+    }
 
 }
