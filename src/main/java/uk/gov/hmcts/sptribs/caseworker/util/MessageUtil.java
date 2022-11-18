@@ -33,21 +33,27 @@ public final class MessageUtil {
     public static StringBuilder getEmailMessage(final CicCase cicCase) {
         final StringBuilder messageLine = new StringBuilder(100);
         messageLine.append(" A notification will be sent via email to: ");
-
+        boolean email = false;
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
             && StringUtils.hasText(cicCase.getEmail())) {
             messageLine.append("Subject, ");
             cicCase.setNotifyPartySubject(null);
+            email = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             messageLine.append("Respondent, ");
             cicCase.setNotifyPartyRespondent(null);
+            email = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
             && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
             messageLine.append("Representative, ");
             cicCase.setNotifyPartyRepresentative(null);
+            email = true;
         }
-        return messageLine;
+        if (email) {
+            return messageLine;
+        }
+        return null;
     }
 }
