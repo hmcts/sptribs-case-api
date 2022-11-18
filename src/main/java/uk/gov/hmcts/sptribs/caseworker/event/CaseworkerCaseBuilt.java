@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -30,7 +30,7 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_BUILT)
-            .forStates(NewCaseReceived)
+            .forStates(Submitted)
             .name("Case built")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
