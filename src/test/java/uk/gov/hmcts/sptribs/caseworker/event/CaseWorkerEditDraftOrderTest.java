@@ -46,7 +46,6 @@ class CaseWorkerEditDraftOrderTest {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
         draftOrderCIC.setOrderTemplate(OrderTemplate.DMIREPORTS);
         draftOrderCIC.setMainContentForGeneralDirections("General Directions");
@@ -56,7 +55,7 @@ class CaseWorkerEditDraftOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails);
         //  SubmittedCallbackResponse stayedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
 
         //  Then
