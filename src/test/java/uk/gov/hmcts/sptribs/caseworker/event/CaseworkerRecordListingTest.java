@@ -15,14 +15,19 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingNoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +76,10 @@ class CaseworkerRecordListingTest {
         recordListing.setHearingNotice(HearingNoticeOption.CREATE_FROM_TEMPLATE);
         recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
         caseData.setRecordListing(recordListing);
+        final CicCase cicCase = CicCase.builder().fullName("fullName").notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .representativeFullName("repFullName").notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+                .respondantName("respName").notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
