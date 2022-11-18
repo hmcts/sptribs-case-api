@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -82,6 +84,8 @@ class CaseworkerSendOrderTest {
             .build();
         final SendOrder sendOrder = SendOrder.builder()
             .dueDates(List.of(dates))
+            .yesOrNo(YesNo.YES)
+            .reminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
             .build();
         final CaseData caseData = caseData();
@@ -129,6 +133,8 @@ class CaseworkerSendOrderTest {
             .build();
         final SendOrder sendOrder = SendOrder.builder()
             .dueDates(List.of(dates))
+            .yesOrNo(YesNo.YES)
+            .reminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
             .build();
         final CaseData caseData = caseData();
@@ -155,6 +161,8 @@ class CaseworkerSendOrderTest {
         assertThat(order.getOrderIssuingType()).isNotNull();
         assertThat(order.getOrderFile()).isNull();
         assertThat(order.getDraftOrderCIC()).isNull();
+        assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());
+        assertThat(order.getReminderDays().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
 
 }
