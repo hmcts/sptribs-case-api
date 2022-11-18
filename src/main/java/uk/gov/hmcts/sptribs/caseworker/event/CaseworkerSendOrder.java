@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -18,6 +19,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
@@ -43,6 +47,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
+    private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -52,6 +57,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         uploadOrder.addTo(pageBuilder);
         orderDueDates.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
+        sendReminder.addTo(pageBuilder);
     }
 
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -72,6 +78,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .description("Send order")
             .showEventNotes()
             .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::sent)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
@@ -88,8 +96,23 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
+        var cicCase = details.getData().getCicCase();
+        final StringBuilder emailMessage = getEmailMessage(cicCase);
+
+        StringBuilder postMessage = getPostMessage(cicCase);
+        String message = "";
+        if (null != postMessage) {
+            message = format("# Order sent %n## "
+                + " %s %n##  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+        } else {
+            message = format("# Order sent %n## "
+                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+
+        }
+
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# ")
+            .confirmationHeader(message)
             .build();
     }
+
 }

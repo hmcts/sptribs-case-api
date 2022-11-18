@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -19,6 +18,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -76,25 +77,22 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
                                                 CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append(" A notification will be sent via email to: ");
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            messageLine2.append("Subject, ");
-            cicCase.setNotifyPartySubject(null);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine2.append("Respondent, ");
-            cicCase.setNotifyPartyRespondent(null);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            messageLine2.append("Representative, ");
-            cicCase.setNotifyPartyRepresentative(null);
+        final StringBuilder emailMessage = getEmailMessage(cicCase);
+        StringBuilder postMessage = getPostMessage(cicCase);
+        String message = "";
+        if (null != postMessage) {
+            message = format("# Case reinstated %n##  The case record will now be reopened."
+                + " %s %n##  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+        } else {
+            message = format("# Case reinstated %n##  The case record will now be reopened. "
+                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened."
-                + " %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+            .confirmationHeader(message)
             .build();
     }
+
 
 }

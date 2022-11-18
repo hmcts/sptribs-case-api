@@ -23,7 +23,7 @@ public class SendOrderAddDraftOrder implements CcdPageConfiguration {
             .pageShowConditions(map)
             .complex(CaseData::getDraftOrderCIC, "", "", "")
             .readonly(DraftOrderCIC::getOrderTemplate)
-            .mandatory(DraftOrderCIC::getMainContentToBeEdited)
+            .mandatory(DraftOrderCIC::getMainContentForGeneralDirections)
             .done();
     }
 }
