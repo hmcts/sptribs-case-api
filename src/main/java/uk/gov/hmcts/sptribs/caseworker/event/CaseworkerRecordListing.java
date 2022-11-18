@@ -83,7 +83,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(details.getState())
+            .state(CaseManagement)
             .build();
     }
 
