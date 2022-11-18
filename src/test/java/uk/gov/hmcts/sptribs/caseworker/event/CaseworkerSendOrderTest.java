@@ -164,6 +164,7 @@ class CaseworkerSendOrderTest {
         assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());
         assertThat(order.getReminderDays().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
+
     @Test
     void shouldSuccessfullySendOrderWithOnlyPost() {
         //Given
