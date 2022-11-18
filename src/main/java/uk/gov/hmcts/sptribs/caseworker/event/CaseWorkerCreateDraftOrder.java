@@ -39,9 +39,5 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .grantHistoryOnly(SOLICITOR));
         createDraftOrder.addTo(pageBuilder);
         previewDraftOrder.addTo(pageBuilder);
-
-
     }
-
-
 }
