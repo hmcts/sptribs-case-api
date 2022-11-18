@@ -45,8 +45,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final FeatureToggleService featureToggleService;
 
     private static final CcdPageConfiguration selectParties = new SelectParties();
-    private static final CcdPageConfiguration applicantDetails = new ApplicantDetails();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
+    private static final CcdPageConfiguration applicantDetails = new ApplicantDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
     private static final CcdPageConfiguration furtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration contactPreferenceDetails = new ContactPreferenceDetails();
