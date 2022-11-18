@@ -53,12 +53,19 @@ class CaseWorkerDraftOrderTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
         draftOrderCIC.setOrderTemplate(OrderTemplate.DMIREPORTS);
-        draftOrderCIC.setMainContentForGeneralDirections("content");
+        draftOrderCIC.setMainContentForGeneralDirections("General Directions");
         caseData.setDraftOrderCIC(draftOrderCIC);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        //  Then
+        assertThat(response.getData().getDraftOrderCICList()).isNotNull();
+        assertThat(response.getData().getDraftOrderCICList().get(0).getValue()
+            .getMainContentForGeneralDirections()).isEqualTo("General Directions");
 
     }
 
