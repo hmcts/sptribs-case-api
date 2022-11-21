@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -47,6 +48,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Create draft order")
                 .showSummary()
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
@@ -96,4 +99,10 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     }
 
+    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
+                                                  CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# Draft order created")
+            .build();
+    }
 }
