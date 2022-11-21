@@ -49,7 +49,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
-            .forStates(CaseManagement)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Record listing")
             .showSummary()
             .description("Record listing")
