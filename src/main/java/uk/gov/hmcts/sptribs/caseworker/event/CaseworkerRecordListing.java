@@ -123,7 +123,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")
-            .label("hearingTypeAndFormatObj", "<h1>Hearing type and format</h1>")
+            .pageLabel("Hearing type and format")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
