@@ -14,8 +14,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -30,7 +32,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_LINK_CASE)
-            .forStates(POST_SUBMISSION_STATES)
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Link case")
             .showSummary()
             .description("Link case")
@@ -49,7 +51,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
-            .state(NewCaseReceived)
+            .state(details.getState())
             .build();
     }
 

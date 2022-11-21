@@ -1,5 +1,5 @@
 {
-  "connectionString": "${file:/mnt/secrets/sptribs/AppInsightsInstrumentationKey}",
+  "connectionString": "${file:/mnt/secrets/sptribs/app-insights-connection-string}",
   "role": {
     "name": "sptribs-case-api"
   }
