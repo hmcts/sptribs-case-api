@@ -19,8 +19,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
