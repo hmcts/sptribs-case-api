@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
+import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
@@ -54,6 +55,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Autowired
     private SubmissionService submissionService;
 
+    @Autowired
+    private ApplicationReceivedNotification applicationReceivedNotification;
 
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
@@ -157,6 +160,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
         State state = details.getState();
+
+        applicationReceivedNotification.sendToSubject(data, details.getId());
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();

@@ -3,8 +3,7 @@ package uk.gov.hmcts.sptribs.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
-import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfig;
+import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
@@ -18,14 +17,15 @@ import java.util.UUID;
 @Slf4j
 public class NotificationServiceCIC {
 
+    private NotificationRequest notificationRequest;
+
     @Autowired
     private NotificationClient notificationClient;
 
     @Autowired
-    private EmailTemplatesConfig emailTemplatesConfig;
+    private EmailTemplatesConfigCIC emailTemplatesConfig;
 
-    public void sendEmail(NotificationRequest notificationRequest) {
-        // Get the required values from NotificationRequest
+    public void sendEmail() {
         String destinationAddress = notificationRequest.getDestinationAddress();
         EmailTemplateName template = notificationRequest.getTemplate();
         Map<String, String> templateVars = notificationRequest.getTemplateVars();
@@ -33,7 +33,7 @@ public class NotificationServiceCIC {
         String referenceId = UUID.randomUUID().toString();
 
         try {
-            String templateId = emailTemplatesConfig.getTemplates().get("language").get(template.name());
+            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
 
             log.info("Sending email for reference id : {} using template : {}", referenceId, templateId);
 
@@ -58,5 +58,9 @@ public class NotificationServiceCIC {
             );
             throw new NotificationException(notificationClientException);
         }
+    }
+
+    public void setNotificationRequest(NotificationRequest notificationRequest) {
+        this.notificationRequest = notificationRequest;
     }
 }
