@@ -233,6 +233,12 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DraftOrderCIC>> draftOrderCICList;
+
+
     @JsonUnwrapped(prefix = "draft")
     @Builder.Default
     @CCD(

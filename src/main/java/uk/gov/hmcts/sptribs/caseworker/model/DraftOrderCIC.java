@@ -40,7 +40,15 @@ public class DraftOrderCIC {
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String mainContentToBeEdited;
+    private String mainContentForGeneralDirections;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForDmiReports;
 
 
 }

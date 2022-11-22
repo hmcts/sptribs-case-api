@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RecordListingNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.UploadHearingNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
@@ -39,6 +40,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration uploadHearingNotice = new UploadHearingNotice();
     private static final CcdPageConfiguration selectTemplate = new SelectTemplate();
+    private static final CcdPageConfiguration recordListingNotifyParties = new RecordListingNotifyParties();
 
     @Autowired
     private LocationService locationService;
@@ -47,7 +49,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
-            .forStates(CaseManagement)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Record listing")
             .showSummary()
             .description("Record listing")
@@ -66,6 +68,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         addHearingNotice(pageBuilder);
         uploadHearingNotice.addTo(pageBuilder);
         selectTemplate.addTo(pageBuilder);
+        recordListingNotifyParties.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
