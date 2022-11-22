@@ -159,13 +159,12 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
-        State state = details.getState();
 
         applicationReceivedNotification.sendToSubject(data, details.getId());
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
-        state = submittedDetails.getState();
+        State state = submittedDetails.getState();
 
         setIsRepresentativePresent(data);
 

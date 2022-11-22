@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
+import uk.gov.service.notify.SendLetterResponse;
 
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +53,39 @@ public class NotificationServiceCIC {
 
         } catch (NotificationClientException notificationClientException) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
+                referenceId,
+                notificationClientException.getMessage(),
+                notificationClientException
+            );
+            throw new NotificationException(notificationClientException);
+        }
+    }
+
+    public void sendLetter() {
+        EmailTemplateName template = notificationRequest.getTemplate();
+        Map<String, String> templateVars = notificationRequest.getTemplateVars();
+
+        String referenceId = UUID.randomUUID().toString();
+
+        try {
+            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
+
+            log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
+
+            SendLetterResponse sendLetterResponse =
+                notificationClient.sendLetter(
+                    templateId,
+                    templateVars,
+                    referenceId
+                );
+
+            log.info("Successfully sent letter with notification id {} and reference {}",
+                sendLetterResponse.getNotificationId(),
+                sendLetterResponse.getReference().orElse(referenceId)
+            );
+
+        } catch (NotificationClientException notificationClientException) {
+            log.error("Failed to send letter. Reference ID: {}. Reason: {}",
                 referenceId,
                 notificationClientException.getMessage(),
                 notificationClientException

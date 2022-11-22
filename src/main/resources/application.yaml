@@ -43,6 +43,7 @@ uk:
           respondentEmail: appeals.team@cica.gov.uk
         templatesCIC:
           APPLICATION_RECEIVED: '5385bfc6-eb33-41f6-ad2b-590a4f427606'
+          CASE_STAYED: '23e1153e-c95c-4630-83eb-b0a272908e94'
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
