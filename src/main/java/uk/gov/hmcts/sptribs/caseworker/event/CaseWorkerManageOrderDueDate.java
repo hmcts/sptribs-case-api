@@ -34,6 +34,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
             .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
             .name("Manage order due dates")
             .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::orderDatesManaged)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR);
@@ -42,4 +44,21 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     }
 
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .state(details.getState())
+            .build();
+
+    }
+
+    public SubmittedCallbackResponse orderDatesManaged(CaseDetails<CaseData, State> details,
+                                                       CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("Order dates amended.")
+            .build();
+    }
 }
