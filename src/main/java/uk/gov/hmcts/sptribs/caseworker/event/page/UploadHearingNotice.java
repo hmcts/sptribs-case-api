@@ -20,7 +20,7 @@ public class UploadHearingNotice  implements CcdPageConfiguration {
         map.put("selectTemplateObj","recordHearingNotice = \"Create from a template\"");
         map.put("uploadHearingNoticeObj","recordHearingNotice = \"Upload from your computer\"");
         pageBuilder.page("uploadHearingNoticeObj")
-            .label("uploadHearingNotice", "<h1>Upload hearing notice</h1>")
+            .label("uploadHearingNoticeObj", "<h1>Upload hearing notice</h1>")
             .pageShowConditions(map)
             .complex(CaseData::getRecordListing)
             .label("uploadObjectLabel",
