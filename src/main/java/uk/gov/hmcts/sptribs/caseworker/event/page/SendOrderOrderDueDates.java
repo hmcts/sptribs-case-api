@@ -13,7 +13,7 @@ public class SendOrderOrderDueDates implements CcdPageConfiguration {
         pageBuilder.page("orderDueDates")
             .label("orderDueDates", "<h1>Add a due date\n</h1>")
             .complex(CaseData::getSendOrder, "", "", "")
-            .mandatory(SendOrder::getDueDates)
+            .optional(SendOrder::getDueDates)
             .done();
     }
 }
