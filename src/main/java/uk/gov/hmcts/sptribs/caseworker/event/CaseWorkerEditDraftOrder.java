@@ -45,8 +45,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Edit draft order")
                 .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
@@ -58,21 +56,4 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     }
 
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .build();
-
-    }
-
-    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("When you have finished drafting this order,you can send it to parties in this case.")
-            .build();
-    }
 }
