@@ -22,17 +22,11 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -63,13 +57,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
-            .forStates(AwaitingApplicant1Response,
-                AwaitingApplicant2Response,
-                AwaitingConditionalOrder,
-                Withdrawn,
-                Rejected,
-                NewCaseReceived,
-                CaseManagement,
+            .forStates(CaseManagement,
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,
@@ -91,6 +79,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         var caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
     }
 
@@ -101,13 +90,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
         StringBuilder postMessage = getPostMessage(cicCase);
         String message = "";
-        if (null != postMessage) {
-            message = format("# Order sent %n## "
+        if (null != postMessage && null != emailMessage) {
+            message = format("# Order sent  %n## "
                 + " %s %n##  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
-        } else {
+        } else if (null != emailMessage) {
             message = format("# Order sent %n## "
                 + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
 
+        } else if (null != postMessage) {
+            message = format("# Order sent %n## "
+                + " %s ", postMessage.substring(0, postMessage.length() - 2));
         }
 
         return SubmittedCallbackResponse.builder()

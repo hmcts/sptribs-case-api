@@ -22,11 +22,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 @ExtendWith(MockitoExtension.class)
 public class MessageUtilTest {
 
-
     @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
-
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
@@ -46,9 +44,24 @@ public class MessageUtilTest {
     }
 
     @Test
+    void shouldBeNull() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .build();
+
+        //When
+        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
+        StringBuilder resultPost = MessageUtil.getPostMessage(cicCase);
+
+        //Then
+        assertThat(resultEmail).isNull();
+        assertThat(resultPost).isNull();
+    }
+
+    @Test
     void shouldSuccessfullySendOrderWithPost() {
         //Given
-
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
