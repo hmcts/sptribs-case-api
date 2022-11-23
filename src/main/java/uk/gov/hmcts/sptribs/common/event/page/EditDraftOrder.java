@@ -34,7 +34,8 @@ public class EditDraftOrder implements CcdPageConfiguration {
                 + "\n<RepresentativeName>"
                 + "\nRespondent<hr>"
                 + "\n<h3>Main content</h3>\n\n ")
-            .optional(DraftOrderCIC::getMainContentForGeneralDirections)
+            .optional(DraftOrderCIC::getMainContentForGeneralDirections, "draftOrderTemplate = \"GeneralDirections\"")
+            .optional(DraftOrderCIC::getMainContentForDmiReports, "draftOrderTemplate = \"Medical Evidence - DMI Reports\"")
             .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
                 + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
 
