@@ -9,9 +9,12 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerCreateDraftOrder.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -26,6 +29,8 @@ class CaseWorkerDraftOrderTest {
     @InjectMocks
     private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
 
+    @InjectMocks
+    private PreviewDraftOrder previewDraftOrder;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -41,16 +46,15 @@ class CaseWorkerDraftOrderTest {
             .contains(CASEWORKER_CREATE_DRAFT_ORDER);
     }
 
-
-
-
     @Test
     void shouldSuccessfullySaveDraftOrder() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
+        draftOrderCIC.setMainContentForGeneralDirections("General Directions");
+        caseData.setDraftOrderCIC(draftOrderCIC);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -61,7 +65,62 @@ class CaseWorkerDraftOrderTest {
 
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
         //  Then
+        assertThat(response.getData().getDraftOrderCICList()).isNotNull();
         assertThat(draftCreatedResponse).isNotNull();
+        assertThat(response.getData().getDraftOrderCICList().get(0).getValue()
+            .getMainContentForGeneralDirections()).isEqualTo("General Directions");
+
+    }
+
+    @Test
+    void shouldSuccessfullySave2DraftOrder() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
+        draftOrderCIC.setMainContentForGeneralDirections("DMI Reports");
+        caseData.setDraftOrderCIC(draftOrderCIC);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getDraftOrderCICList()).hasSize(1);
+
+        final DraftOrderCIC draftOrderCIC2 = new DraftOrderCIC();
+        draftOrderCIC2.setMainContentForDmiReports("Da");
+        caseData.setDraftOrderCIC(draftOrderCIC2);
+        updatedCaseDetails.setData(caseData);
+        AboutToStartOrSubmitResponse<CaseData, State> response2 =
+            caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //  Then
+        assertThat(response2.getData().getDraftOrderCICList()).hasSize(2);
+
+    }
+
+    @Test
+    void shouldSuccessfullyReviewCase() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
+        draftOrderCIC.setOrderTemplate(OrderTemplate.GENERALDIRECTIONS);
+        draftOrderCIC.setMainContentForGeneralDirections("content");
+        caseData.setDraftOrderCIC(draftOrderCIC);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            previewDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //  Then
+        assertThat(response).isNotNull();
 
     }
 
