@@ -11,7 +11,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -27,7 +31,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
 
         configBuilder
             .event("Manage order due dates")
-            .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
+            .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
             .name("Manage order due dates")
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -46,7 +50,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     ) {
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(State.NewCaseReceived)
+            .state(details.getState())
             .build();
 
     }
