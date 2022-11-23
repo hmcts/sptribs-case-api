@@ -10,7 +10,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -20,7 +20,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -30,7 +30,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -40,7 +40,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -50,7 +50,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -60,7 +60,7 @@
         "roleCategory": "CITIZEN",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -70,7 +70,7 @@
         "roleCategory": "CITIZEN",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       }
     ],

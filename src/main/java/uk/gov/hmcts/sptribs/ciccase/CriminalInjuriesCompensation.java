@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
     public static final String CASE_TYPE = "CIC";
-    public static final String JURISDICTION = "DIVORCE";
+    public static final String JURISDICTION = "ST_CIC";
 
     @Override
     public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
@@ -32,8 +32,8 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.ST_CIC.name(), "CIC Case Type", CcdCaseType.ST_CIC.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, "CIC", CcdServiceCode.CIC.getCcdServiceDescription());
+        configBuilder.caseType(CcdCaseType.CIC.name(), "CIC Case Type", CcdCaseType.CIC.getDescription());
+        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_CIC.getCcdServiceDescription());
 
         configBuilder.event("test")
             .forState(State.AwaitingApplicant1Response)

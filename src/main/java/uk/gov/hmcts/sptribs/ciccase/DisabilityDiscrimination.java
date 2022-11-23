@@ -32,8 +32,8 @@ public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminat
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.ST_DD.name(), "DD Case Type", CcdCaseType.ST_DD.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.DD.getCcdServiceDescription());
+        configBuilder.caseType(CcdCaseType.DD.name(), "DD Case Type", CcdCaseType.DD.getDescription());
+        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_DD.getCcdServiceDescription());
 
         configBuilder.event("test")
             .forState(State.AwaitingApplicant1Response)
