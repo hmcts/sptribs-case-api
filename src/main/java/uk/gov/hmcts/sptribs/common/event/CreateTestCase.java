@@ -30,7 +30,6 @@ import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 import java.util.ArrayList;
 
 import static java.lang.String.format;
-import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -66,12 +65,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
-//        var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
-
-//        if (env.contains(ENVIRONMENT_AAT)) {
-            roles.add(SOLICITOR);
-//        }
-
+        roles.add(SOLICITOR);
 
         if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
             PageBuilder pageBuilder = new PageBuilder(configBuilder
