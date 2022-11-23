@@ -31,7 +31,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
 
-    public static final String CASEWORKER_CREATE_DRAFT_ORDER = "caseworker-create-draft-order";
+    public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

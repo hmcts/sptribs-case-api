@@ -2,20 +2,11 @@ package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 
 @Slf4j
@@ -26,7 +17,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("createDraftOrder",this::aboutToSubmit)
+            .page("createDraftOrder")
             .pageLabel("Edit order")
             .label("editableDraft", "Draft to be edited")
             .complex(CaseData::getDraftOrderCIC)
@@ -47,46 +38,6 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
-        var draftOrder = caseData.getDraftOrderCIC();
 
-        if (isEmpty(caseData.getDraftOrderCICList())) {
-            List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<DraftOrderCIC>builder()
-                .id("1")
-                .value(draftOrder)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.setDraftOrderCICList(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<DraftOrderCIC>builder()
-                .value(draftOrder)
-                .build();
-
-            caseData.getDraftOrderCICList().add(0, listValue); // always add new note as first element so that it is displayed on top
-
-            caseData.getDraftOrderCICList().forEach(
-                caseDraftOrderCic -> caseDraftOrderCic.setId(String.valueOf(listValueIndex.incrementAndGet()))
-            );
-
-        }
-
-        caseData.setDraftOrderCIC(null);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(details.getState())
-            .build();
-
-    }
 
 }
