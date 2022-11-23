@@ -40,7 +40,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Component
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
-    private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-application";
     private final FeatureToggleService featureToggleService;
 
