@@ -13,7 +13,7 @@ public final class MessageUtil {
     public static StringBuilder getPostMessage(final CicCase cicCase) {
         boolean post = false;
         StringBuilder postMessage = new StringBuilder(100);
-        postMessage.append("It will be sent via post to:");
+        postMessage.append("It will be sent via post to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
             && !ObjectUtils.isEmpty(cicCase.getAddress())) {
             postMessage.append("Subject, ");
