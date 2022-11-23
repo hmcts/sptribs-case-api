@@ -48,7 +48,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Create draft order")
                 .showSummary()
-               // .aboutToSubmitCallback(this::aboutToSubmit)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
