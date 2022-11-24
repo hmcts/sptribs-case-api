@@ -6,6 +6,7 @@ public final class TestConstants {
     public static final String TEST_APPLICANT_2_USER_EMAIL = "applicant2@test.com";
     public static final String TEST_SUBJECT_EMAIL = "subject2@test.com";
     public static final String TEST_USER_EMAIL = "test@test.com";
+    public static final String TEST_APPLICANT_EMAIL = "applicant@test.com";
     public static final String TEST_SOLICITOR_EMAIL = "solicitor@test.com";
     public static final String TEST_SOLICITOR_NAME = "The Solicitor";
     public static final String TEST_SOLICITOR_ADDRESS = "The Solicitor's Address";
