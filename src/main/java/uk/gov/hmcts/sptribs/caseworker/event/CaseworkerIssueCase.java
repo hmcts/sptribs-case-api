@@ -34,6 +34,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .name("Issue case to respondent")
             .description("Issue case to respondent\"")
             .showEventNotes()
+            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         issueCaseAdditionalDocument.addTo(pageBuilder);
