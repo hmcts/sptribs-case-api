@@ -43,23 +43,6 @@ class CreateTestCaseTest {
     @InjectMocks
     private ContactPreferenceDetails contactPreferenceDetails;
 
-    @Test
-    void shouldNotReturnErrorsIfApplicantUserIdIsValid() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .caseInvite(CaseInvite.builder()
-                .applicant2UserId(UUID.randomUUID().toString())
-                .build())
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).isNull();
-    }
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

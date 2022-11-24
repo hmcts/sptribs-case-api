@@ -91,14 +91,14 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         StringBuilder postMessage = getPostMessage(cicCase);
         String message = "";
         if (null != postMessage && null != emailMessage) {
-            message = format("# Order sent  %n## "
-                + " %s %n##  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+            message = format("# Order sent  %n"
+                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
         } else if (null != emailMessage) {
-            message = format("# Order sent %n## "
+            message = format("# Order sent %n ## "
                 + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
 
         } else if (null != postMessage) {
-            message = format("# Order sent %n## "
+            message = format("# Order sent %n ## "
                 + " %s ", postMessage.substring(0, postMessage.length() - 2));
         }
 
