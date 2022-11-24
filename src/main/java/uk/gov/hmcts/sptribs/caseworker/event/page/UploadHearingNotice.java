@@ -16,11 +16,13 @@ public class UploadHearingNotice  implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
+        final String uploadHearingNoticeObj = "uploadHearingNoticeObj1";
         Map<String, String> map = new HashMap<>();
         map.put("selectTemplateObj","recordHearingNotice = \"Create from a template\"");
-        map.put("uploadHearingNoticeObj1","recordHearingNotice = \"Upload from your computer\"");
-        pageBuilder.page("uploadHearingNoticeObj1")
-            .label("uploadHearingNoticeObj1", "<h1>Upload hearing notice</h1>")
+        map.put(uploadHearingNoticeObj,"recordHearingNotice = \"Upload from your computer\"");
+
+        pageBuilder.page(uploadHearingNoticeObj)
+            .label(uploadHearingNoticeObj, "<h1>Upload hearing notice</h1>")
             .pageShowConditions(map)
             .label("uploadObjectLabel1",
                 "\nUpload a copy of the hearing notice that you want to add to this case."

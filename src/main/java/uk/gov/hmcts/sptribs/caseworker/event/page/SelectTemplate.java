@@ -15,11 +15,13 @@ import java.util.Map;
 public class SelectTemplate implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
+        final String selectTemplateObj = "selectTemplateObj";
         Map<String, String> map = new HashMap<>();
-        map.put("selectTemplateObj","recordHearingNotice = \"Create from a template\"");
+        map.put(selectTemplateObj,"recordHearingNotice = \"Create from a template\"");
         map.put("uploadHearingNoticeObj1","recordHearingNotice = \"Upload from your computer\"");
-        pageBuilder.page("selectTemplateObj")
-            .label("selectTemplateObj", "<h1>Select a template</h1>")
+
+        pageBuilder.page(selectTemplateObj)
+            .label(selectTemplateObj, "<h1>Select a template</h1>")
             .pageShowConditions(map)
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getTemplate)
