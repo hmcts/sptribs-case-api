@@ -19,22 +19,22 @@ import java.util.List;
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
-    @Value("ccd-ST_CIC-${CCD_DEF_NAME:dev}.xlsx")
+    @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
     String cicDefName;
 
-    @Value("ccd-ST_CS-${CCD_DEF_NAME:dev}.xlsx")
+    @Value("ccd-CS-${CCD_DEF_NAME:dev}.xlsx")
     String csDefName;
 
-    @Value("ccd-ST_DD-${CCD_DEF_NAME:dev}.xlsx")
+    @Value("ccd-DD-${CCD_DEF_NAME:dev}.xlsx")
     String ddDefName;
 
-    @Value("ccd-ST_MH-${CCD_DEF_NAME:dev}.xlsx")
+    @Value("ccd-MH-${CCD_DEF_NAME:dev}.xlsx")
     String mhDefName;
 
-    @Value("ccd-ST_PHL-${CCD_DEF_NAME:dev}.xlsx")
+    @Value("ccd-PHL-${CCD_DEF_NAME:dev}.xlsx")
     String phlDefName;
 
-    @Value("ccd-ST_SEN-${CCD_DEF_NAME:dev}.xlsx")
+    @Value("ccd-SEN-${CCD_DEF_NAME:dev}.xlsx")
     String senDefName;
 
     @Value("Submitted")
@@ -67,6 +67,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-superuser",
             "caseworker-sptribs-cic-courtadmin",
             "citizen-sptribs-cic-dss",
+            "caseworker-st_cic",
             "caseworker-sptribs-cic-caseofficer",
             "caseworker-sptribs-cic-districtregistrar",
             "caseworker-sptribs-cic-districtjudge",
