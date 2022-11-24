@@ -18,17 +18,17 @@ public class UploadHearingNotice  implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
         map.put("selectTemplateObj","recordHearingNotice = \"Create from a template\"");
-        map.put("uploadHearingNoticeObj","recordHearingNotice = \"Upload from your computer\"");
-        pageBuilder.page("uploadHearingNoticeObj")
-            .label("uploadHearingNoticeObj", "<h1>Upload hearing notice</h1>")
+        map.put("uploadHearingNoticeObj1","recordHearingNotice = \"Upload from your computer\"");
+        pageBuilder.page("uploadHearingNoticeObj1")
+            .label("uploadHearingNoticeObj1", "<h1>Upload hearing notice</h1>")
             .pageShowConditions(map)
-            .complex(CaseData::getRecordListing)
-            .label("uploadObjectLabel",
+            .label("uploadObjectLabel1",
                 "\nUpload a copy of the hearing notice that you want to add to this case."
                     + " It must be signed by the appropriate parties.\n"
                     + "\nThe hearing notice should be:\n"
                     + "\n- a maximum of 100MB in size (larger files must be split)\n"
                     + "\n- labelled clearly, e.g. applicant-name-hearing-notice.pdf\n")
+            .complex(CaseData::getRecordListing)
             .mandatoryWithLabel(RecordListing::getHearingNoticeDocuments, "Add a file")
             .done();
     }

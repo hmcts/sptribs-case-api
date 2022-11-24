@@ -17,9 +17,9 @@ public class SelectTemplate implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
         map.put("selectTemplateObj","recordHearingNotice = \"Create from a template\"");
-        map.put("uploadHearingNoticeObj","recordHearingNotice = \"Upload from your computer\"");
+        map.put("uploadHearingNoticeObj1","recordHearingNotice = \"Upload from your computer\"");
         pageBuilder.page("selectTemplateObj")
-            .label("selectTemplate", "<h1>Select a template</h1>")
+            .label("selectTemplateObj", "<h1>Select a template</h1>")
             .pageShowConditions(map)
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getTemplate)
