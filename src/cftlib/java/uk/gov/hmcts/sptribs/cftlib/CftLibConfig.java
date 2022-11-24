@@ -80,12 +80,12 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.configureRoleAssignments(json);
 
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
-        // Run the gradle task to convert to xlsx.
-        lib.importJsonDefinition(new File("build/definitions/ST_CIC"));
-        lib.importJsonDefinition(new File("build/definitions/ST_CS"));
-        lib.importJsonDefinition(new File("build/definitions/ST_DD"));
-        lib.importJsonDefinition(new File("build/definitions/ST_MH"));
-        lib.importJsonDefinition(new File("build/definitions/ST_PHL"));
-        lib.importJsonDefinition(new File("build/definitions/ST_SEN"));
+        // Load the JSON definitions for each caseType.
+        lib.importJsonDefinition(new File("build/definitions/CIC"));
+        lib.importJsonDefinition(new File("build/definitions/CS"));
+        lib.importJsonDefinition(new File("build/definitions/DD"));
+        lib.importJsonDefinition(new File("build/definitions/MH"));
+        lib.importJsonDefinition(new File("build/definitions/PHL"));
+        lib.importJsonDefinition(new File("build/definitions/SEN"));
     }
 }
