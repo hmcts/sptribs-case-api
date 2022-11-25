@@ -26,7 +26,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("createDraftOrder",this::aboutToSubmit)
+            .page("createDraftOrder")
             .pageLabel("Edit order")
             .label("editableDraft", "Draft to be edited")
             .complex(CaseData::getDraftOrderCIC)
