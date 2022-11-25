@@ -10,7 +10,7 @@ public class FurtherDetails implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("furtherDetailsObject")
             .pageLabel("Enter further details about this case")
-            .label("LabelFurtherDetails", "<h3>Enter further details about this case</h3>\r\n")
+            .label("LabelFurtherDetails", "")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getSchemeCic,"Scheme")
             .mandatory(CicCase::getClaimLinkedToCic)
