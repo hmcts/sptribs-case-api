@@ -12,7 +12,6 @@ public enum DocumentType implements HasLabel {
 
     // New added doc types
 
-
     @JsonProperty("caseApplicationForm")
     @JsonAlias({"A Docs"})
     CASE_APPLICATION_FORM("Case Application Form"),
@@ -50,7 +49,7 @@ public enum DocumentType implements HasLabel {
     GENERAL_EVIDENCE("General Evidence"),
 
 
-   //old ones
+    //old for family divorce ones
     @JsonProperty("application")
     @JsonAlias("divorceApplication")
     APPLICATION("Application"),
