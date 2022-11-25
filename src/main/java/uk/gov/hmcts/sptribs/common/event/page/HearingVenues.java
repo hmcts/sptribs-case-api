@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -52,6 +53,10 @@ public class HearingVenues implements CcdPageConfiguration {
             String selectedVenue = data.getRecordListing().getSelectedVenue();
             recordListing.setHearingVenueName(getCourtDetails(selectedVenue, 0));
             recordListing.setHearingVenueAddress(getCourtDetails(selectedVenue, 1));
+        }
+
+        if(StringUtils.isBlank(recordListing.getHearingVenueName()) || StringUtils.isBlank(recordListing.getHearingVenueAddress())) {
+            errors.add("Please enter valid Hearing venue");
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
