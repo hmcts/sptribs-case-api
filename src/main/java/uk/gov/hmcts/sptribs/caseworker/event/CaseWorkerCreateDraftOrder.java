@@ -7,15 +7,19 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
+import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
+import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -23,17 +27,18 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-    DocmosisTemplateProvider doc = new DocmosisTemplateProvider();
+public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
+    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
 
-    public static final String CASEWORKER_CREATE_DRAFT_ORDER = "caseworker-create-draft-order";
+    public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_CREATE_DRAFT_ORDER)
-                .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
+                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Create draft order")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
@@ -41,18 +46,8 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
-        createDraftOrder(pageBuilder);
-
-    }
-
-
-
-    private void createDraftOrder(PageBuilder pageBuilder) {
-        pageBuilder.page("createDraftOrder")
-            .pageLabel("Select order template")
-            .complex(CaseData::getDraftOrderCIC)
-            .mandatoryWithLabel(DraftOrderCIC::getOrderTemplate, "")
-            .done();
+        createDraftOrder.addTo(pageBuilder);
+        previewDraftOrder.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -60,18 +55,16 @@ public class CaseWorkerDraftOrder implements CCDConfig<CaseData, State, UserRole
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
-        var caseData = details.getData();
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(NewCaseReceived)
+            .state(details.getState())
             .build();
+
     }
 
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
+                                                       CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Draft order created")
+            .confirmationHeader("Draft order created. ")
             .build();
     }
 }
