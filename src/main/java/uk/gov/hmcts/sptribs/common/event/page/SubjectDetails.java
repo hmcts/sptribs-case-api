@@ -11,7 +11,7 @@ public class SubjectDetails implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("subjectDetailsObject")
             .pageLabel("Who is the subject of this case?")
-            .label("LabelSubject", "<h3>Who is the subject of this case?</h3>\r\n")
+            .label("LabelSubject", "")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getFullName)
             .optional(CicCase::getPhoneNumber)
