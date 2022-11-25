@@ -16,7 +16,7 @@ public class RepresentativeDetails implements CcdPageConfiguration {
         map.put("representativeDetailsObjects","cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
         pageBuilder.page("representativeDetailsObjects")
             .pageLabel("Who is the Representative for this case?")
-            .label("LabelRepresentative", "<h3>Who is the Representative for this case?</h3>\r\n")
+            .label("LabelRepresentative", "")
             .pageShowConditions(map)
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getRepresentativeFullName)
