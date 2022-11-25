@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
@@ -233,6 +234,12 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DraftOrderCIC>> draftOrderCICList;
+
+
     @JsonUnwrapped(prefix = "draft")
     @Builder.Default
     @CCD(
@@ -325,6 +332,11 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String closedDayCount;
+
+    @JsonUnwrapped(prefix = "issueCase")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private CaseIssue caseIssue = new CaseIssue();
 
 
     @JsonUnwrapped(prefix = "sendOrder")

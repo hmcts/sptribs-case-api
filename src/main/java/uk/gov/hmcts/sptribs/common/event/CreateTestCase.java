@@ -48,8 +48,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private static final CcdPageConfiguration selectParties = new SelectParties();
-    private static final CcdPageConfiguration applicantDetails = new ApplicantDetails();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
+    private static final CcdPageConfiguration applicantDetails = new ApplicantDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
     private static final CcdPageConfiguration furtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration contactPreferenceDetails = new ContactPreferenceDetails();
@@ -117,12 +117,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        CaseData data = details.getData();
-        State state = details.getState();
-
         var submittedDetails = submissionService.submitApplication(details);
-        data = submittedDetails.getData();
-        state = submittedDetails.getState();
+        CaseData data = submittedDetails.getData();
+        State state = submittedDetails.getState();
 
         setIsRepresentativePresent(data);
 

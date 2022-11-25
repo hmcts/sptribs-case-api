@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -77,23 +77,20 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
                                                 CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
         final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append(" A notification will be sent via email to: ");
+        messageLine2.append(" A notification will be sent  to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             messageLine2.append("Subject, ");
-            cicCase.setNotifyPartySubject(null);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             messageLine2.append("Respondent, ");
-            cicCase.setNotifyPartyRespondent(null);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             messageLine2.append("Representative, ");
-            cicCase.setNotifyPartyRepresentative(null);
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened."
-                + " %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+            .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
+                + ". %n## %s ", messageLine2.substring(0, messageLine2.length() - 2)))
             .build();
     }
 

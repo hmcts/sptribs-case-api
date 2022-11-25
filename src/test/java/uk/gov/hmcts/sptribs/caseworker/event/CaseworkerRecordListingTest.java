@@ -15,14 +15,19 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingNoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,15 +67,8 @@ class CaseworkerRecordListingTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setConferenceCallNumber("");
-        recordListing.setHearingType(HearingType.FINAL);
-        recordListing.setImportantInfoDetails("some details");
-        recordListing.setVideoCallLink("");
-        recordListing.setHearingNotice(HearingNoticeOption.CREATE_FROM_TEMPLATE);
-        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
-        caseData.setRecordListing(recordListing);
+        caseData.setRecordListing(getMockRecordListing());
+        caseData.setCicCase(getMockCicCase());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -86,6 +84,7 @@ class CaseworkerRecordListingTest {
         assertThat(response.getData().getRecordListing().getHearingNotice()).isEqualTo(HearingNoticeOption.CREATE_FROM_TEMPLATE);
         assertThat(response.getData().getRecordListing().getTemplate()).isEqualTo(RecordListingTemplate.HEARING_INVITE_CVP);
         assertThat(stayedResponse).isNotNull();
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
@@ -133,6 +132,55 @@ class CaseworkerRecordListingTest {
         assertThat(response.getData().getRecordListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
 
+    }
+
+    @Test
+    void shouldReturnErrorsIfCaseDataIsNull() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    void shouldReturnErrorsIfNoNotificationPartySelected() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        caseData.setCicCase(CicCase.builder().build());
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    private CicCase getMockCicCase() {
+        return CicCase.builder().fullName("fullName").recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .representativeFullName("repFullName").recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .respondantName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+    }
+
+    private RecordListing getMockRecordListing() {
+        final RecordListing recordListing = new RecordListing();
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setConferenceCallNumber("");
+        recordListing.setHearingType(HearingType.FINAL);
+        recordListing.setImportantInfoDetails("some details");
+        recordListing.setVideoCallLink("");
+        recordListing.setHearingNotice(HearingNoticeOption.CREATE_FROM_TEMPLATE);
+        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
+        return recordListing;
     }
 
     private DynamicList getMockedRegionData() {

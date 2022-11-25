@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -23,21 +24,18 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-
-    public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
-
+public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
+    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
         configBuilder
-            .event(CASEWORKER_EDIT_DRAFT_ORDER)
+            .event("Manage order due dates")
             .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
-            .name("Edit draft order")
+            .name("Manage order due dates")
             .showSummary()
-            .submittedCallback(this::draftCreated)
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::orderDatesManaged)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR);
@@ -46,11 +44,21 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     }
 
 
-    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Draft order edited")
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .state(details.getState())
             .build();
+
     }
 
+    public SubmittedCallbackResponse orderDatesManaged(CaseDetails<CaseData, State> details,
+                                                       CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("Order dates amended.")
+            .build();
+    }
 }

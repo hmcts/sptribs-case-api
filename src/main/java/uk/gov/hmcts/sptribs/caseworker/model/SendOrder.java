@@ -29,7 +29,8 @@ public class SendOrder {
     private CaseDocumentsCIC orderFile;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Due Date"
     )
     private List<ListValue<DateModel>> dueDates;
 
@@ -37,4 +38,16 @@ public class SendOrder {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DraftOrderCIC draftOrderCIC;
+
+    @CCD(
+        label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesNo yesOrNo;
+
+    @CCD(
+        label = "How many days before the earliest due date should a reminder be sent?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ReminderDays reminderDays;
 }
