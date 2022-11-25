@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 
+
 @Slf4j
 @Component
 public class CreateDraftOrder implements CcdPageConfiguration {
@@ -36,5 +37,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
                 + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
             .done();
     }
+
+
 
 }
