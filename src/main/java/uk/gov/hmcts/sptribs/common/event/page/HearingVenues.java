@@ -55,7 +55,7 @@ public class HearingVenues implements CcdPageConfiguration {
             recordListing.setHearingVenueAddress(getCourtDetails(selectedVenue, 1));
         }
 
-        if(StringUtils.isBlank(recordListing.getHearingVenueName()) || StringUtils.isBlank(recordListing.getHearingVenueAddress())) {
+        if (StringUtils.isBlank(recordListing.getHearingVenueName()) || StringUtils.isBlank(recordListing.getHearingVenueAddress())) {
             errors.add("Please enter valid Hearing venue");
         }
 
