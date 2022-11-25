@@ -98,6 +98,12 @@ public class CicCase {
     )
     private Set<RepresentativeCIC> representativeCIC;
 
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ApplicantCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ApplicantCIC> notifyPartyApplicant;
 
     @CCD(
         typeOverride = MultiSelectList,
