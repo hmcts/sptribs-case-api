@@ -29,7 +29,10 @@ public class CriminalInjuriesCompensation implements CCDConfig<CaseData, State, 
         configBuilder.jurisdiction(JURISDICTION, "CIC", CcdServiceCode.CIC.getCcdServiceDescription());
 
 
-
+        for (UserRole role : UserRole.values())
+        {
+            configBuilder.caseRoleToAccessProfile(role).accessProfiles(UserRole.getAccessProfileName(role)).caseAccessCategories(role.getCaseTypePermissions());
+        }
         // to shutter the service within xui uncomment this line
         // configBuilder.shutterService();
         log.info("Building definition for " + System.getenv().getOrDefault("ENVIRONMENT", ""));
