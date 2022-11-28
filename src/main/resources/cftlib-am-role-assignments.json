@@ -15,6 +15,16 @@
       },
       {
         "roleType": "CASE",
+        "roleName": "idam:caseworker-st_cic",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
         "roleName": "[APPONESOLICITOR]",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
