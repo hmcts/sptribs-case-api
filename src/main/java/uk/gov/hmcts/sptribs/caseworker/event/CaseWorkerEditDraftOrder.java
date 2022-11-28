@@ -9,15 +9,25 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
+import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,15 +47,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
     private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
-
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
 
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
 
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
@@ -53,12 +62,11 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Edit draft order")
                 .showSummary()
-               // .aboutToSubmitCallback(this::aboutToSubmit)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
-
         editDraftOrder.addTo(pageBuilder);
         previewDraftOrder.addTo(pageBuilder);
 
@@ -106,10 +114,13 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     }
 
+
+
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Draft order edited")
+            .confirmationHeader("# Draft order updated\n Use 'Send order' "
+                + "to send the case documentation to parties in the case.")
             .build();
     }
 

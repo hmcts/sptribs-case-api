@@ -98,9 +98,14 @@ public class CicCase {
     )
     private Set<RepresentativeCIC> representativeCIC;
 
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ApplicantCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ApplicantCIC> notifyPartyApplicant;
 
     @CCD(
-
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -108,7 +113,6 @@ public class CicCase {
     private Set<SubjectCIC> notifyPartySubject;
 
     @CCD(
-
         typeOverride = MultiSelectList,
         typeParameterOverride = "RepresentativeCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -121,6 +125,27 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<RespondentCIC> notifyPartyRespondent;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "SubjectCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<SubjectCIC> recordNotifyPartySubject;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "RepresentativeCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<RepresentativeCIC> recordNotifyPartyRepresentative;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "RespondentCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<RespondentCIC> recordNotifyPartyRespondent;
 
     @CCD(
         label = "What is the reason for reinstating the case?",
