@@ -25,27 +25,30 @@ public class ApplicationReceivedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final Long caseId) {
         // Send Email
-        Map<String, String> templateVars = templateVars(caseData, caseId);
-        templateVars.put("TribunalName", "testtribunalName");
-        templateVars.put("CicCaseNumber", "123");
-        templateVars.put("CicCaseSubjectFullName", "testFullName");
-        templateVars.put("ContactName", "testContactName");
-
-        NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress("santoshini.jami@hmcts.net")
-            .template(EmailTemplateName.APPLICATION_RECEIVED)
-            .templateVars(templateVars)
-            .build();
-
-        notificationService.setNotificationRequest(request);
-        notificationService.sendEmail();
+        sendEmailNotification(caseData, caseId);
 
         //Send Letter
+        sendLetterNotification(caseData, caseId);
+    }
+
+    public void sendToApplicant(final CaseData caseData, final Long caseId) {
+        //No operation
+    }
+
+    public void sendToRepresentative(final CaseData caseData, final Long caseId) {
+        //No operation
+    }
+
+    public void sendToRespondent(final CaseData caseData, final Long caseId) {
+        //No operation
+    }
+
+    private void sendLetterNotification(CaseData caseData, Long caseId) {
         Map<String, String> templateVarsLetter = templateVars(caseData, caseId);
         templateVarsLetter.put("address_line_1", "Addrees 1");
         templateVarsLetter.put("address_line_2", "Address 2");
         templateVarsLetter.put("address_line_3", "Address 3");
-        templateVarsLetter.put("address_line_4", "Address 4");
+        templateVarsLetter.put("address_line_4", "G2 1DU");
         templateVarsLetter.put("TribunalName", "testtribunalName");
         templateVarsLetter.put("CicCaseNumber", "123");
         templateVarsLetter.put("CicCaseSubjectFullName", "testFullName");
@@ -63,16 +66,21 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         notificationService.sendLetter();
     }
 
-    public void sendToApplicant(final CaseData caseData, final Long caseId) {
-        //No operation
-    }
+    private void sendEmailNotification(final CaseData caseData, final Long caseId) {
+        Map<String, String> templateVars = templateVars(caseData, caseId);
+        templateVars.put("TribunalName", "testtribunalName");
+        templateVars.put("CicCaseNumber", "123");
+        templateVars.put("CicCaseSubjectFullName", "testFullName");
+        templateVars.put("ContactName", "testContactName");
 
-    public void sendToRepresentative(final CaseData caseData, final Long caseId) {
-        //No operation
-    }
+        NotificationRequest request = NotificationRequest.builder()
+            .destinationAddress("santoshini.jami@hmcts.net")
+            .template(EmailTemplateName.APPLICATION_RECEIVED)
+            .templateVars(templateVars)
+            .build();
 
-    public void sendToRespondent(final CaseData caseData, final Long caseId) {
-        //No operation
+        notificationService.setNotificationRequest(request);
+        notificationService.sendEmail();
     }
 
     private Map<String, String> templateVars(final CaseData caseData, final Long caseId) {
