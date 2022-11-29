@@ -1,8 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,13 +12,10 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -42,6 +37,7 @@ public class NotificationServiceCIC {
 
         if(notificationRequest.isHasEmailAttachment()) {
             addFileAttachment(templateVars, notificationRequest.getFileContents());
+            addFileAttachment1(templateVars, notificationRequest.getFileContents1());
         }
 
         String referenceId = UUID.randomUUID().toString();
@@ -116,6 +112,18 @@ public class NotificationServiceCIC {
             JSONObject jsonObject = nonNull(fileContents) ? notificationClient.prepareUpload(fileContents) : null;
             if(nonNull(jsonObject)) {
                 templateVars.put("TribunalOrder", jsonObject);
+            }
+        } catch (NotificationClientException e) {
+            log.info("unable to upload", e.getMessage());
+        }
+        return templateVars;
+    }
+
+    private Object addFileAttachment1(Map<String, Object> templateVars, byte[] fileContents) {
+        try {
+            JSONObject jsonObject = nonNull(fileContents) ? notificationClient.prepareUpload(fileContents) : null;
+            if(nonNull(jsonObject)) {
+                templateVars.put("TribunalOrder1", jsonObject);
             }
         } catch (NotificationClientException e) {
             log.info("unable to upload", e.getMessage());

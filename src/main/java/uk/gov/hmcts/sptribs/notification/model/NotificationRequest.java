@@ -13,5 +13,6 @@ public class NotificationRequest {
     private EmailTemplateName template;
     private Map<String, Object> templateVars;
     private byte [] fileContents;
+    private byte [] fileContents1;
     private boolean hasEmailAttachment;
 }

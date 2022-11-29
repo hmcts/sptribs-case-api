@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +52,7 @@ public class ApplicationNewOrderIssuedNotification implements PartiesNotificatio
 
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("sampleFile.txt").getFile());
+        File file1 = new File(classLoader.getResource("sampleFile1.txt").getFile());
 
         byte [] fileContents = null;
         try {
@@ -61,12 +61,20 @@ public class ApplicationNewOrderIssuedNotification implements PartiesNotificatio
             e.printStackTrace();
         }
 
+        byte [] fileContents1 = null;
+        try {
+            fileContents1 = FileUtils.readFileToByteArray(file1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress("santoshini.jami@hmcts.net")
-            .template(EmailTemplateName.APPLICATION_NEW_ORDER_ISSUED)
+            .template(EmailTemplateName.TEST_TEMPLATE)
             .templateVars(templateVars)
             .hasEmailAttachment(true)
             .fileContents(fileContents)
+            .fileContents1(fileContents1)
             .build();
 
         notificationService.setNotificationRequest(request);

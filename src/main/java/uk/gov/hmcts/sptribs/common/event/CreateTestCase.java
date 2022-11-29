@@ -127,10 +127,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         CaseData data = details.getData();
 
         //POC to send email and letter
-        applicationReceivedNotification.sendToSubject(data, details.getId());
+        //applicationReceivedNotification.sendToSubject(data, details.getId());
 
         // POC for sending email with attachment
-        //applicationNewOrderIssued.sendToSubject(data, details.getId());
+        applicationNewOrderIssued.sendToSubject(data, details.getId());
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
