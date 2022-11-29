@@ -7,6 +7,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.AdditionalDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
@@ -76,8 +78,15 @@ class CaseworkerIssueCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerIssueCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse issuedResponse = caseworkerIssueCase.issued(updatedCaseDetails, beforeDetails);
+
         //Then
-        assertThat(caseData.getCaseIssue().getAdditionalDocument()).doesNotContain(AdditionalDocument.TRIBUNAL_FORM);
-        assertThat(caseData.getCicCase().getNotifyPartyApplicant()).isNotNull();
+        assertThat(response.getData().getCaseIssue().getAdditionalDocument()).doesNotContain(AdditionalDocument.TRIBUNAL_FORM);
+        assertThat(response.getData().getCicCase().getNotifyPartyApplicant()).isNotNull();
+        assertThat(issuedResponse).isNotNull();
     }
 }
