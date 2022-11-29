@@ -45,21 +45,25 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
 @Autowired
 OrderService orderService;
     private static final CcdPageConfiguration manageOrderDueDates = new ManageOrderDueDates();
+    private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
         configBuilder
             .event("Manage order due dates")
-            .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
-            .name("Manage order due dates")
+            .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed,CaseStayed)
+            .name("Manage order due date")
+            .description("Manage order due date")
+            .showEventNotes()
             .showSummary()
-          //  .aboutToSubmitCallback(this::aboutToSubmit)
+            //.aboutToSubmitCallback(this::aboutToSubmit)
            //.submittedCallback(this::orderDatesManaged)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
         manageOrderDueDates.addTo(pageBuilder);
+        orderDueDates.addTo(pageBuilder);
 
     }
 
@@ -75,6 +79,7 @@ OrderService orderService;
         var draftOrder = caseData.getDueDate();
 
         var dueDatesList = details.getData();
+        //var duedates = dueDatesList.getDueDate().getSendOrder().getDueDates();
         var duedates = dueDatesList.getSendOrder().getDueDates();
         DynamicList dueDates = orderService.getDueDates(duedates);
 

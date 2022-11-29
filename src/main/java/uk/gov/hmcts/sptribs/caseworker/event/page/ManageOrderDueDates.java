@@ -34,54 +34,54 @@ public class ManageOrderDueDates implements CcdPageConfiguration {
             .mandatory(DraftOrderCIC::getOrderTemplate, "")
             .optional(DraftOrderCIC::getMainContentForGeneralDirections, "draftOrderTemplate = \"GeneralDirections\"")
             .optional(DraftOrderCIC::getMainContentForDmiReports, "draftOrderTemplate = \"Medical Evidence - DMI Reports\"")
-            .done()
+            .done();
            // .complex(CaseData::getSendOrder, "", "", "")
            //.optional(CaseData::getDueDate)
-            .complex(CaseData::getSendOrder, "", "", "")
-            .optional(SendOrder::getDueDates)
-            .done();
+//            .complex(CaseData::getSendOrder, "", "", "")
+//            .optional(SendOrder::getDueDates)
+//            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var dueDatesList = details.getData();
+        var dueDatesList = beforeDetails.getData();
         var duedates = dueDatesList.getSendOrder().getDueDates();
-        DynamicList dueDates = orderService.getDueDates(duedates);
-//        var caseData = details.getData();
-//        var draftOrder = caseData.getSendOrder().getDueDates();
-//
-//        if (isEmpty(draftOrder)) {
-//            List<ListValue<DateModel>> listValues = new ArrayList<>();
-//
-//            var listValue = ListValue
-//                .<DateModel>builder()
-//                .id("1")
-//                .value(caseData.getSendOrder().getDueDates().get(0).getValue())
-//                .build();
-//
-//            listValues.add(listValue);
-//
-//            caseData.getSendOrder().setDueDates(listValues);
-//        }else {
-//            AtomicInteger listValueIndex = new AtomicInteger(0);
-//            var listValue = ListValue
-//                .<DateModel>builder()
-//                .value(caseData.getSendOrder().getDueDates().get(0).getValue())
-//                .build();
-//
-//            List<ListValue<DateModel>> dueDates = caseData.getSendOrder().getDueDates();
-//            dueDates.add(0, listValue); // always add new note as first element so that it is displayed on top
-//
-////            caseData.getSendOrder().getDueDates().forEach(
-////                caseData.getSendOrder() ->  caseData.getSendOrder().setId(String.valueOf(listValueIndex.incrementAndGet()))
-////            );
-//
-//        }
+        //DynamicList dueDates = orderService.getDueDates(duedates);
+        var caseData = beforeDetails.getData();
+        var draftOrder = caseData.getSendOrder().getDueDates();
+
+        if (isEmpty(draftOrder)) {
+            List<ListValue<DateModel>> listValues = new ArrayList<>();
+
+            var listValue = ListValue
+                .<DateModel>builder()
+                .id("1")
+                .value(caseData.getSendOrder().getDueDates().get(0).getValue())
+                .build();
+
+            listValues.add(listValue);
+
+            caseData.getSendOrder().setDueDates(listValues);
+        }else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            var listValue = ListValue
+                .<DateModel>builder()
+                .value(caseData.getSendOrder().getDueDates().get(0).getValue())
+                .build();
+
+            List<ListValue<DateModel>> dueDatesListVal = caseData.getSendOrder().getDueDates();
+            dueDatesListVal.add(0, listValue); // always add new note as first element so that it is displayed on top
+
+//            caseData.getSendOrder().getDueDates().forEach(
+//                caseData.getSendOrder() ->  caseData.getSendOrder().setId(String.valueOf(listValueIndex.incrementAndGet()))
+//            );
+
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(details.getState())
+            .state(beforeDetails.getState())
             .build();
 
     }
