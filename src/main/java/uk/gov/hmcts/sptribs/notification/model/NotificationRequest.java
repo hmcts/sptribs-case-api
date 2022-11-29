@@ -11,5 +11,7 @@ import java.util.Map;
 public class NotificationRequest {
     private String destinationAddress;
     private EmailTemplateName template;
-    private Map<String, String> templateVars;
+    private Map<String, Object> templateVars;
+    private byte [] fileContents;
+    private boolean hasEmailAttachment;
 }

@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
+import uk.gov.hmcts.sptribs.common.notification.ApplicationNewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
@@ -60,6 +61,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
+
+    @Autowired
+    private ApplicationNewOrderIssuedNotification applicationNewOrderIssued;
 
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
@@ -122,7 +126,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
 
+        //POC to send email and letter
         applicationReceivedNotification.sendToSubject(data, details.getId());
+
+        // POC for sending email with attachment
+        //applicationNewOrderIssued.sendToSubject(data, details.getId());
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
