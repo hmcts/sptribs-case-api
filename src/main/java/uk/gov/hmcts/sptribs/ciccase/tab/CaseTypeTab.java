@@ -229,7 +229,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
                .label("Orders",null,"### Orders")
             .field("draftOrderTemplate")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
-            .field("draftMainContentForGeneralDirections","draftOrderTemplate = \"GeneralDirections\"");
+            .field("draftMainContentForCIC6General_Directions","draftOrderTemplate = \"CIC6_General_Directions\"");
 
 
 
