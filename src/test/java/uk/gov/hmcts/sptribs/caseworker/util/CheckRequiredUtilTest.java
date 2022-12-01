@@ -20,7 +20,7 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckNullSubjectRepresentativeRespondent() {
         //Given
         final CaseData caseData = new CaseData();
-        final CicCase cicCase=new CicCase();
+        final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
         //When
@@ -34,7 +34,7 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckNullSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();
-        final CicCase cicCase=new CicCase();
+        final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
         //When
@@ -48,7 +48,7 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();
-        final CicCase cicCase=new CicCase();
+        final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
         //When
@@ -62,7 +62,7 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckNullFlagSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();
-        final CicCase cicCase=new CicCase();
+        final CicCase cicCase = new CicCase();
         caseData.setCicCase(cicCase);
 
         //When
