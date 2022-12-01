@@ -41,6 +41,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .description("Manage order due date")
                 .showEventNotes()
                 .showSummary()
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::orderDatesManaged)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
