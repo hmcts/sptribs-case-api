@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrderTemplates;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -30,6 +31,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrderTemplates();
+    private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -48,6 +50,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .grantHistoryOnly(SOLICITOR));
 
         manageSelectOrderTemplates.addTo(pageBuilder);
+        amendOrderDueDates.addTo(pageBuilder);
 
 
     }
@@ -67,7 +70,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse orderDatesManaged(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Due dates amended.")
+            .confirmationHeader(" Due dates amended.")
             .build();
     }
 }
