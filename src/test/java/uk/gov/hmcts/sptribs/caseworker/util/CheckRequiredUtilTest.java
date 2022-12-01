@@ -20,6 +20,8 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckNullSubjectRepresentativeRespondent() {
         //Given
         final CaseData caseData = new CaseData();
+        final CicCase cicCase=new CicCase();
+        caseData.setCicCase(cicCase);
 
         //When
         boolean result = CheckRequiredUtil.checkNullSubjectRepresentativeRespondent(caseData);
@@ -32,6 +34,8 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckNullSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();
+        final CicCase cicCase=new CicCase();
+        caseData.setCicCase(cicCase);
 
         //When
         boolean result = CheckRequiredUtil.checkNullSubjectRepresentativeApplicant(caseData);
@@ -44,6 +48,8 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();
+        final CicCase cicCase=new CicCase();
+        caseData.setCicCase(cicCase);
 
         //When
         boolean result = CheckRequiredUtil.checkMultiSubjectRepresentativeApplicant(caseData);
@@ -56,6 +62,8 @@ public class CheckRequiredUtilTest {
     void shouldSuccessfullyCheckNullFlagSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();
+        final CicCase cicCase=new CicCase();
+        caseData.setCicCase(cicCase);
 
         //When
         boolean result = CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant(caseData);
