@@ -34,14 +34,14 @@ public final class CheckRequiredUtil {
     }
 
     public static boolean checkMultiSubjectRepresentativeApplicant(CaseData data) {
-        return null != data.getCicCase().getFlagPartySubject() && !data.getCicCase().getFlagPartySubject().isEmpty()
-            && (null != data.getCicCase().getFlagPartyApplicant() && !data.getCicCase().getFlagPartyApplicant().isEmpty()
-            || null != data.getCicCase().getFlagPartyRepresentative() && !data.getCicCase().getFlagPartyRepresentative().isEmpty())
-            || null != data.getCicCase().getFlagPartyApplicant() && !data.getCicCase().getFlagPartyApplicant().isEmpty()
-            && (null != data.getCicCase().getFlagPartySubject() && !data.getCicCase().getFlagPartySubject().isEmpty()
-            || null != data.getCicCase().getFlagPartyRepresentative() && !data.getCicCase().getFlagPartyRepresentative().isEmpty())
-            || null != data.getCicCase().getFlagPartyRepresentative() && !data.getCicCase().getFlagPartyRepresentative().isEmpty()
-            && (null != data.getCicCase().getFlagPartySubject() && !data.getCicCase().getFlagPartySubject().isEmpty()
-            || null != data.getCicCase().getFlagPartyApplicant() && !data.getCicCase().getFlagPartyApplicant().isEmpty());
+        return !CollectionUtils.isEmpty(data.getCicCase().getFlagPartySubject())
+            && (!CollectionUtils.isEmpty(data.getCicCase().getFlagPartyApplicant())
+            || !CollectionUtils.isEmpty(data.getCicCase().getFlagPartyRepresentative()))
+            || !CollectionUtils.isEmpty(data.getCicCase().getFlagPartyApplicant())
+            && (!CollectionUtils.isEmpty(data.getCicCase().getFlagPartySubject())
+            || !CollectionUtils.isEmpty(data.getCicCase().getFlagPartyRepresentative()))
+            || !CollectionUtils.isEmpty(data.getCicCase().getFlagPartyRepresentative())
+            && (!CollectionUtils.isEmpty(data.getCicCase().getFlagPartySubject())
+            || !CollectionUtils.isEmpty(data.getCicCase().getFlagPartyApplicant()));
     }
 }
