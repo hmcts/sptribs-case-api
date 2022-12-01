@@ -26,10 +26,10 @@ public class FlagParties implements CcdPageConfiguration {
                 .complex(CaseData::getCicCase)
                 .readonlyWithLabel(CicCase::getFullName, " ")
                 .optional(CicCase::getFlagPartySubject, "cicCaseFullName!=\"\" ")
-                .label("app", "")
+                .label("emptyLabelBeforeApplicantFlag", "")
                 .readonlyWithLabel(CicCase::getApplicantFullName, " ")
                 .optional(CicCase::getFlagPartyApplicant, "cicCaseApplicantFullName!=\"\" ")
-                .label("rep", "")
+                .label("emptyLabelBeforeRepresentativeFlag", "")
                 .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
                 .optional(CicCase::getFlagPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
                 .done();

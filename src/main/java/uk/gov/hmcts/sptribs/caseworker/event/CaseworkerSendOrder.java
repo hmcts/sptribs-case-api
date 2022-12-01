@@ -36,22 +36,22 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
-    private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
-    private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
-    private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
-    private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
-    private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
-    private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
+    private static final CcdPageConfiguration sendOrderOrderIssuingSelect = new SendOrderOrderIssuingSelect();
+    private static final CcdPageConfiguration sendOrderUploadOrder = new SendOrderUploadOrder();
+    private static final CcdPageConfiguration sendOrderAddDraftOrder = new SendOrderAddDraftOrder();
+    private static final CcdPageConfiguration sendOrderOrderDueDates = new SendOrderOrderDueDates();
+    private static final CcdPageConfiguration sendOrderNotifyParties = new SendOrderNotifyParties();
+    private static final CcdPageConfiguration sendOrderSendReminder = new SendOrderSendReminder();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = send(configBuilder);
-        orderIssuingSelect.addTo(pageBuilder);
-        draftOrder.addTo(pageBuilder);
-        uploadOrder.addTo(pageBuilder);
-        orderDueDates.addTo(pageBuilder);
-        notifyParties.addTo(pageBuilder);
-        sendReminder.addTo(pageBuilder);
+        sendOrderOrderIssuingSelect.addTo(pageBuilder);
+        sendOrderAddDraftOrder.addTo(pageBuilder);
+        sendOrderUploadOrder.addTo(pageBuilder);
+        sendOrderOrderDueDates.addTo(pageBuilder);
+        sendOrderNotifyParties.addTo(pageBuilder);
+        sendOrderSendReminder.addTo(pageBuilder);
     }
 
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
