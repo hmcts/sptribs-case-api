@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkMultiSubjectRepresentativeApplicant;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeApplicant;
+
 public class FlagParties implements CcdPageConfiguration {
 
     @Override
@@ -40,10 +43,10 @@ public class FlagParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNull(data)) {
+        if (checkNullSubjectRepresentativeApplicant(data)) {
             errors.add("One field must be selected.");
         }
-        if (checkMulti(data)) {
+        if (checkMultiSubjectRepresentativeApplicant(data)) {
             errors.add("Only one field must be selected.");
         }
 
@@ -53,25 +56,8 @@ public class FlagParties implements CcdPageConfiguration {
                 .build();
     }
 
-    private boolean checkNull(CaseData data) {
-        return null != data.getCicCase()
-                && (null == data.getCicCase().getFlagPartySubject() || data.getCicCase().getFlagPartySubject().size() == 0)
-                && (null == data.getCicCase().getFlagPartyApplicant() || data.getCicCase().getFlagPartyApplicant().size() == 0)
-                && (null == data.getCicCase().getFlagPartyRepresentative() || data.getCicCase().getFlagPartyRepresentative().size() == 0);
-
-    }
 
 
-    private boolean checkMulti(CaseData data) {
-        return null != data.getCicCase().getFlagPartySubject() && data.getCicCase().getFlagPartySubject().size() > 0
-                && (null != data.getCicCase().getFlagPartyApplicant() && data.getCicCase().getFlagPartyApplicant().size() > 0
-                || null != data.getCicCase().getFlagPartyRepresentative() && data.getCicCase().getFlagPartyRepresentative().size() > 0)
-                || null != data.getCicCase().getFlagPartyApplicant() && data.getCicCase().getFlagPartyApplicant().size() > 0
-                && (null != data.getCicCase().getFlagPartySubject() && data.getCicCase().getFlagPartySubject().size() > 0
-                || null != data.getCicCase().getFlagPartyRepresentative() && data.getCicCase().getFlagPartyRepresentative().size() > 0)
-                || null != data.getCicCase().getFlagPartyRepresentative() && data.getCicCase().getFlagPartyRepresentative().size() > 0
-                && (null != data.getCicCase().getFlagPartySubject() && data.getCicCase().getFlagPartySubject().size() > 0
-                || null != data.getCicCase().getFlagPartyApplicant() && data.getCicCase().getFlagPartyApplicant().size() > 0);
-    }
+
 }
 

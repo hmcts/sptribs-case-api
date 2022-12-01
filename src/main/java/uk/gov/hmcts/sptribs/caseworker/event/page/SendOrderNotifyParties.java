@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -11,6 +10,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeApplicant;
 
 public class SendOrderNotifyParties implements CcdPageConfiguration {
 
@@ -37,7 +38,7 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNull(data)) {
+        if (checkNullSubjectRepresentativeApplicant(data)) {
             errors.add("One field must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -46,12 +47,5 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
             .build();
     }
 
-    private boolean checkNull(CaseData data) {
-        return null != data.getCicCase()
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent());
-
-    }
 }
 
