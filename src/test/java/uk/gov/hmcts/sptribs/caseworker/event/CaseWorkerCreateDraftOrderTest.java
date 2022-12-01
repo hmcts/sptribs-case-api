@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
@@ -25,7 +24,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerDraftOrderTest {
+class CaseWorkerCreateDraftOrderTest {
     @InjectMocks
     private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
 
@@ -60,6 +59,7 @@ class CaseWorkerDraftOrderTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        assertThat(response).isNotNull();
 
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
         //  Then
@@ -76,8 +76,8 @@ class CaseWorkerDraftOrderTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
-        draftOrderCIC.setOrderTemplate(OrderTemplate.GENERALDIRECTIONS);
-        draftOrderCIC.setMainContentForGeneralDirections("content");
+        draftOrderCIC.setOrderTemplate(draftOrderCIC.getOrderTemplate());
+        draftOrderCIC.setMainContentForCIC6GeneralDirections("CIC6_General_Directions");
         caseData.setDraftOrderCIC(draftOrderCIC);
 
         //When

@@ -55,6 +55,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .build();

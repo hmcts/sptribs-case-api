@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class DraftOrderCIC {
 
 
@@ -40,7 +39,7 @@ public class DraftOrderCIC {
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String mainContentForGeneralDirections;
+    private String mainContentForCIC1Eligibility;
 
     @CCD(
         label = "Main Content",
@@ -48,7 +47,82 @@ public class DraftOrderCIC {
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String mainContentForDmiReports;
+    private String mainContentForCIC2Quantum;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC3Rule27;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC4BlankDecisionNotice1;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC6GeneralDirections;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC7MEDmiReports;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC8MEJointInstruction;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC10StrikeOutWarning;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC11StrikeOutDecisionNotice;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC12DecisionAnnex;
+
+    @CCD(
+        label = "Main Content",
+        hint = "Amend content as required",
+        typeOverride = TextArea,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String mainContentForCIC13ProFormaSummons;
+
+
+
 
 
 }
