@@ -53,6 +53,18 @@ public class CheckRequiredUtilTest {
     }
 
     @Test
+    void shouldSuccessfullyCheckNullFlagSubjectRepresentativeApplicant() {
+        //Given
+        final CaseData caseData = new CaseData();
+
+        //When
+        boolean result = CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant(caseData);
+
+        //Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithApplicant() {
         //Given
         final CaseData caseData = new CaseData();

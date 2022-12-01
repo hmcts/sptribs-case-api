@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkMultiSubjectRepresentativeApplicant;
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeApplicant;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant;
 
 public class FlagParties implements CcdPageConfiguration {
 
@@ -24,39 +24,36 @@ public class FlagParties implements CcdPageConfiguration {
         map.put("selectFlagParties", "caseFlagFlagLevel = \"PartyLevel\"");
 
         pageBuilder.page("selectFlagParties", this::midEvent)
-                .label("selectFlagParties", "<h2>Where should this flag be added?\n Party Flag applied to:</h2>")
-                .pageShowConditions(map)
-                .complex(CaseData::getCicCase)
-                .readonlyWithLabel(CicCase::getFullName, " ")
-                .optional(CicCase::getFlagPartySubject, "cicCaseFullName!=\"\" ")
-                .label("emptyLabelBeforeApplicantFlag", "")
-                .readonlyWithLabel(CicCase::getApplicantFullName, " ")
-                .optional(CicCase::getFlagPartyApplicant, "cicCaseApplicantFullName!=\"\" ")
-                .label("emptyLabelBeforeRepresentativeFlag", "")
-                .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-                .optional(CicCase::getFlagPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-                .done();
+            .label("selectFlagParties", "<h2>Where should this flag be added?\n Party Flag applied to:</h2>")
+            .pageShowConditions(map)
+            .complex(CaseData::getCicCase)
+            .readonlyWithLabel(CicCase::getFullName, " ")
+            .optional(CicCase::getFlagPartySubject, "cicCaseFullName!=\"\" ")
+            .label("emptyLabelBeforeApplicantFlag", "")
+            .readonlyWithLabel(CicCase::getApplicantFullName, " ")
+            .optional(CicCase::getFlagPartyApplicant, "cicCaseApplicantFullName!=\"\" ")
+            .label("emptyLabelBeforeRepresentativeFlag", "")
+            .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
+            .optional(CicCase::getFlagPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .done();
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullSubjectRepresentativeApplicant(data)) {
+        if (checkNullFlagSubjectRepresentativeApplicant(data)) {
             errors.add("One field must be selected.");
-        }
-        if (checkMultiSubjectRepresentativeApplicant(data)) {
+        } else if (checkMultiSubjectRepresentativeApplicant(data)) {
             errors.add("Only one field must be selected.");
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(data)
-                .errors(errors)
-                .build();
+            .data(data)
+            .errors(errors)
+            .build();
     }
-
-
 
 
 }

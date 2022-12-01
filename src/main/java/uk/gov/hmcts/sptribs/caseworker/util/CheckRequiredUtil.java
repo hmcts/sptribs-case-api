@@ -24,6 +24,15 @@ public final class CheckRequiredUtil {
 
     }
 
+
+    public static boolean checkNullFlagSubjectRepresentativeApplicant(CaseData data) {
+        return null != data.getCicCase()
+            && CollectionUtils.isEmpty(data.getCicCase().getFlagPartySubject())
+            && CollectionUtils.isEmpty(data.getCicCase().getFlagPartyRepresentative())
+            && CollectionUtils.isEmpty(data.getCicCase().getFlagPartyApplicant());
+
+    }
+
     public static boolean checkMultiSubjectRepresentativeApplicant(CaseData data) {
         return null != data.getCicCase().getFlagPartySubject() && !data.getCicCase().getFlagPartySubject().isEmpty()
             && (null != data.getCicCase().getFlagPartyApplicant() && !data.getCicCase().getFlagPartyApplicant().isEmpty()
