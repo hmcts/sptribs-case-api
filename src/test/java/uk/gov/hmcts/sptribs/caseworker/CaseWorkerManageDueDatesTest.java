@@ -57,8 +57,9 @@ class CaseWorkerManageDueDatesTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerManageOrderDueDate.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        SubmittedCallbackResponse draftCreatedResponse = caseWorkerManageOrderDueDate.orderDatesManaged(updatedCaseDetails, beforeDetails);
-        //  Then
+        SubmittedCallbackResponse draftCreatedResponse =
+            caseWorkerManageOrderDueDate.orderDatesManaged(updatedCaseDetails, beforeDetails);
+        //Then
         assertThat(draftCreatedResponse).isNotNull();
 
     }
