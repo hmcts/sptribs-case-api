@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
@@ -12,11 +11,8 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
-
-import static java.util.Objects.nonNull;
 
 @Service
 @Slf4j
@@ -30,15 +26,10 @@ public class NotificationServiceCIC {
     @Autowired
     private EmailTemplatesConfigCIC emailTemplatesConfig;
 
-    public void sendEmail() throws IOException {
+    public void sendEmail() {
         String destinationAddress = notificationRequest.getDestinationAddress();
         EmailTemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
-
-        if(notificationRequest.isHasEmailAttachment()) {
-            addFileAttachment(templateVars, notificationRequest.getFileContents());
-            addFileAttachment1(templateVars, notificationRequest.getFileContents1());
-        }
 
         String referenceId = UUID.randomUUID().toString();
 
@@ -107,27 +98,4 @@ public class NotificationServiceCIC {
         this.notificationRequest = notificationRequest;
     }
 
-    private Object addFileAttachment(Map<String, Object> templateVars, byte[] fileContents) {
-        try {
-            JSONObject jsonObject = nonNull(fileContents) ? notificationClient.prepareUpload(fileContents) : null;
-            if(nonNull(jsonObject)) {
-                templateVars.put("TribunalOrder", jsonObject);
-            }
-        } catch (NotificationClientException e) {
-            log.info("unable to upload", e.getMessage());
-        }
-        return templateVars;
-    }
-
-    private Object addFileAttachment1(Map<String, Object> templateVars, byte[] fileContents) {
-        try {
-            JSONObject jsonObject = nonNull(fileContents) ? notificationClient.prepareUpload(fileContents) : null;
-            if(nonNull(jsonObject)) {
-                templateVars.put("TribunalOrder1", jsonObject);
-            }
-        } catch (NotificationClientException e) {
-            log.info("unable to upload", e.getMessage());
-        }
-        return templateVars;
-    }
 }

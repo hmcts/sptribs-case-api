@@ -4,95 +4,84 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-
-import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
 
 @Component
 @Slf4j
 public class ApplicationReceivedNotification implements PartiesNotification {
 
+    private static final String CONTACT_NAME = "ContactName";
+    private static final String TRIBUNAL_NAME = "TribunalName";
+    private static final String CIC_CASE_NUMBER = "CicCaseNumber";
+    private static final String CIC_CASE_SUBJECT_NAME = "CicCaseSubjectFullName";
+
     @Autowired
     private NotificationServiceCIC notificationService;
 
     @Override
-    public void sendToSubject(final CaseData caseData, final Long caseId) {
-        // Send Email
-        sendEmailNotification(caseData, caseId);
+    public void sendToSubject(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        if (cicCase.getContactPreferenceType().isEmail()) {
+            Map<String, Object> templateVars = templateVars(cicCase, caseNumber);
+            templateVars.put(CONTACT_NAME, cicCase.getFullName());
 
-        //Send Letter
-        sendLetterNotification(caseData, caseId);
+            // Send Email
+            sendEmailNotification(cicCase.getEmail(), templateVars);
+        }
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final Long caseId) {
-        //No operation
+    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
+            Map<String, Object> templateVars = templateVars(cicCase, caseNumber);
+            templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
+
+            // Send Email
+            sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+        }
     }
 
     @Override
-    public void sendToRepresentative(final CaseData caseData, final Long caseId) {
-        //No operation
+    public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+            Map<String, Object> templateVars = templateVars(cicCase, caseNumber);
+            templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
+
+            // Send Email
+            sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+        }
     }
 
     @Override
-    public void sendToRespondent(final CaseData caseData, final Long caseId) {
+    public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         //No operation
     }
 
-    private void sendLetterNotification(CaseData caseData, Long caseId) {
-        Map<String, Object> templateVarsLetter = templateVars(caseData, caseId);
-        templateVarsLetter.put("address_line_1", "Addrees 1");
-        templateVarsLetter.put("address_line_2", "Address 2");
-        templateVarsLetter.put("address_line_3", "Address 3");
-        templateVarsLetter.put("address_line_4", "G2 1DU");
-        templateVarsLetter.put("TribunalName", "testtribunalName");
-        templateVarsLetter.put("CicCaseNumber", "123");
-        templateVarsLetter.put("CicCaseSubjectFullName", "testFullName");
-        templateVarsLetter.put("ContactName", "testContactName");
-        templateVarsLetter.put("StayExpirationDate", LocalDate.now().format(DATE_TIME_FORMATTER));
-        templateVarsLetter.put("stayStayReason", "testStayReason");
-        templateVarsLetter.put("stayAdditionalDetail", "testAddtionalDetails");
-
-        NotificationRequest letterRequest = NotificationRequest.builder()
-            .template(EmailTemplateName.CASE_STAYED)
-            .templateVars(templateVarsLetter)
-            .build();
-
-        notificationService.setNotificationRequest(letterRequest);
-        notificationService.sendLetter();
-    }
-
-    private void sendEmailNotification(final CaseData caseData, final Long caseId) {
-        Map<String, Object> templateVars = templateVars(caseData, caseId);
-        templateVars.put("TribunalName", "testtribunalName");
-        templateVars.put("CicCaseNumber", "123");
-        templateVars.put("CicCaseSubjectFullName", "testFullName");
-        templateVars.put("ContactName", "testContactName");
-
+    private void sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress("santoshini.jami@hmcts.net")
+            .destinationAddress(destinationAddress)
             .template(EmailTemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
             .build();
 
         notificationService.setNotificationRequest(request);
-        try {
-            notificationService.sendEmail();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        notificationService.sendEmail();
     }
 
-    private Map<String, Object> templateVars(final CaseData caseData, final Long caseId) {
+    private Map<String, Object> templateVars(final CicCase cicCase, final String caseNumber) {
         final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(TRIBUNAL_NAME, "Criminal Injuries Compensation Tribunal");
+        templateVars.put(CIC_CASE_NUMBER, caseNumber);
+        templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         return templateVars;
     }
 }
