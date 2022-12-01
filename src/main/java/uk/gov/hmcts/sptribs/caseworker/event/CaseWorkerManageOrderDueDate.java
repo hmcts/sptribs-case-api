@@ -70,7 +70,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse orderDatesManaged(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Due dates amended.")
+            .confirmationHeader(" Due dates amended.")
             .build();
     }
 }
