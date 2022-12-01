@@ -7,9 +7,12 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrderTemplates;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -26,28 +29,34 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrderTemplates();
+
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        PageBuilder pageBuilder = new PageBuilder(
+            configBuilder
+                .event("Manage order due dates")
+                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
+                .name("Manage order due date")
+                .description("Manage order due date")
+                .showEventNotes()
+                .showSummary()
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::orderDatesManaged)
+                .showEventNotes()
+                .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+                .grantHistoryOnly(SOLICITOR));
 
-        configBuilder
-            .event("Manage order due dates")
-            .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
-            .name("Manage order due dates")
-            .showSummary()
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::orderDatesManaged)
-            .showEventNotes()
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR);
+        manageSelectOrderTemplates.addTo(pageBuilder);
 
 
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
@@ -56,9 +65,9 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     }
 
     public SubmittedCallbackResponse orderDatesManaged(CaseDetails<CaseData, State> details,
-                                                       CaseDetails<CaseData, State> beforeDetails) {
+                                                  CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Order dates amended.")
+            .confirmationHeader("# Due dates amended.")
             .build();
     }
 }

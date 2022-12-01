@@ -18,7 +18,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("previewOrder", this::aboutToSubmit)
+            .page("previewOrder",this::aboutToSubmit)
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"
@@ -35,7 +35,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .state(State.Draft)
+            .state(details.getState())
             .build();
 
     }
