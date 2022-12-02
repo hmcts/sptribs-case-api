@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @RequiredArgsConstructor
 @Getter
-public enum HearingNoticeOption implements HasLabel {
+public enum NoticeOption implements HasLabel {
 
     @JsonProperty("Upload from your computer")
     UPLOAD_FROM_COMPUTER("Upload from your computer", "Upload from your computer"),
