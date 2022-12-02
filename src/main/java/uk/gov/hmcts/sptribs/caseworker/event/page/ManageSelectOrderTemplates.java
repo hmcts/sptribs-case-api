@@ -1,28 +1,21 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
 
-public class SendOrderAddDraftOrder implements CcdPageConfiguration {
+public class ManageSelectOrderTemplates implements CcdPageConfiguration {
+
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        String pageNameUploadOrder = "uploadOrder";
-        String pageNameDraftOrder = "selectDraftOrder";
-        Map<String, String> map = new HashMap<>();
-        map.put(pageNameDraftOrder, "sendOrderOrderIssuingType = \"DraftOrder\"");
-        map.put(pageNameUploadOrder, "sendOrderOrderIssuingType = \"UploadOrder\"");
-        pageBuilder.page(pageNameDraftOrder)
-            .label(pageNameDraftOrder, "<h1>Select order\n</h1>")
-            .pageShowConditions(map)
-            .complex(CaseData::getDraftOrderCIC, "", "", "")
-            .readonly(DraftOrderCIC::getOrderTemplate)
+
+        pageBuilder.page("dueDatesForOrders")
+            .label("dueDatesForOrder", "<h1>Select an order\n</h1>")
+            .complex(CaseData::getDraftOrderCIC)
+            .mandatory(DraftOrderCIC::getOrderTemplate, "")
             .optional(DraftOrderCIC::getMainContentForCIC1Eligibility, "draftOrderTemplate = \"CIC1_Eligibility\"")
             .optional(DraftOrderCIC::getMainContentForCIC2Quantum, "draftOrderTemplate = \"CIC2_Quantum\"")
             .optional(DraftOrderCIC::getMainContentForCIC3Rule27, "draftOrderTemplate = \"CIC3_Rule_27\"")
@@ -36,5 +29,8 @@ public class SendOrderAddDraftOrder implements CcdPageConfiguration {
             .optional(DraftOrderCIC::getMainContentForCIC12DecisionAnnex, "draftOrderTemplate = \"CIC12_Decision_Annex\"")
             .optional(DraftOrderCIC::getMainContentForCIC13ProFormaSummons, "draftOrderTemplate = \"CIC13_Pro_Forma_Summons\"")
             .done();
+
     }
+
+
 }

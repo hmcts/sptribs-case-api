@@ -41,8 +41,18 @@ public class CreateDraftOrder implements CcdPageConfiguration {
                 + "\n<RepresentativeName>"
                 + "\nRespondent<hr>"
                 + "\n<h3>Main content</h3>\n\n ")
-            .optional(DraftOrderCIC::getMainContentForGeneralDirections, "draftOrderTemplate = \"GeneralDirections\"")
-            .optional(DraftOrderCIC::getMainContentForDmiReports, "draftOrderTemplate = \"Medical Evidence - DMI Reports\"")
+            .optional(DraftOrderCIC::getMainContentForCIC1Eligibility, "draftOrderTemplate = \"CIC1_Eligibility\"")
+            .optional(DraftOrderCIC::getMainContentForCIC2Quantum, "draftOrderTemplate = \"CIC2_Quantum\"")
+            .optional(DraftOrderCIC::getMainContentForCIC3Rule27, "draftOrderTemplate = \"CIC3_Rule_27\"")
+            .optional(DraftOrderCIC::getMainContentForCIC4BlankDecisionNotice1, "draftOrderTemplate = \"CIC4_Blank_Decision_Notice_1\"")
+            .optional(DraftOrderCIC::getMainContentForCIC6GeneralDirections, "draftOrderTemplate = \"CIC6_General_Directions\"")
+            .optional(DraftOrderCIC::getMainContentForCIC7MEDmiReports, "draftOrderTemplate = \"CIC7_ME_Dmi_Reports\"")
+            .optional(DraftOrderCIC::getMainContentForCIC8MEJointInstruction, "draftOrderTemplate = \"CIC8_ME_Joint_Instruction\"")
+            .optional(DraftOrderCIC::getMainContentForCIC10StrikeOutWarning, "draftOrderTemplate = \"CIC10_Strike_Out_Warning\"")
+            .optional(DraftOrderCIC::getMainContentForCIC11StrikeOutDecisionNotice,
+                "draftOrderTemplate = \"CIC11_Strike_Out_Decision_Notice\"")
+            .optional(DraftOrderCIC::getMainContentForCIC12DecisionAnnex, "draftOrderTemplate = \"CIC12_Decision_Annex\"")
+            .optional(DraftOrderCIC::getMainContentForCIC13ProFormaSummons, "draftOrderTemplate = \"CIC13_Pro_Forma_Summons\"")
             .label("footer", "<h2>Footer</h2>\n First-tier Tribunal (Health,Education and Social Care)\n\n"
                 + "Date Issued &lt; &lt;  SaveDate &gt; &gt;")
             .done();
