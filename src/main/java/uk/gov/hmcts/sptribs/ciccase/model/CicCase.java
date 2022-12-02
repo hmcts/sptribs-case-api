@@ -408,4 +408,8 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String days;
+
+    private NotificationResponse subjectNotificationResponse;
+    private NotificationResponse applicantNotificationResponse;
+    private NotificationResponse repNotificationResponse;
 }

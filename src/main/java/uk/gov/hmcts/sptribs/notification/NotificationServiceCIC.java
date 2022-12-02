@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
-import uk.gov.service.notify.SendLetterResponse;
 
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +25,8 @@ public class NotificationServiceCIC {
     @Autowired
     private EmailTemplatesConfigCIC emailTemplatesConfig;
 
-    public void sendEmail() {
+    public SendEmailResponse sendEmail() {
+        SendEmailResponse sendEmailResponse = null;
         String destinationAddress = notificationRequest.getDestinationAddress();
         EmailTemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
@@ -38,7 +38,7 @@ public class NotificationServiceCIC {
 
             log.info("Sending email for reference id : {} using template : {}", referenceId, templateId);
 
-            SendEmailResponse sendEmailResponse =
+            sendEmailResponse =
                 notificationClient.sendEmail(
                     templateId,
                     destinationAddress,
@@ -59,39 +59,7 @@ public class NotificationServiceCIC {
             );
             throw new NotificationException(notificationClientException);
         }
-    }
-
-    public void sendLetter() {
-        EmailTemplateName template = notificationRequest.getTemplate();
-        Map<String, Object> templateVars = notificationRequest.getTemplateVars();
-
-        String referenceId = UUID.randomUUID().toString();
-
-        try {
-            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
-
-            log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
-
-            SendLetterResponse sendLetterResponse =
-                notificationClient.sendLetter(
-                    templateId,
-                    templateVars,
-                    referenceId
-                );
-
-            log.info("Successfully sent letter with notification id {} and reference {}",
-                sendLetterResponse.getNotificationId(),
-                sendLetterResponse.getReference().orElse(referenceId)
-            );
-
-        } catch (NotificationClientException notificationClientException) {
-            log.error("Failed to send letter. Reference ID: {}. Reason: {}",
-                referenceId,
-                notificationClientException.getMessage(),
-                notificationClientException
-            );
-            throw new NotificationException(notificationClientException);
-        }
+        return sendEmailResponse;
     }
 
     public void setNotificationRequest(NotificationRequest notificationRequest) {

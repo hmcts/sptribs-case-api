@@ -5,13 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.service.notify.SendEmailResponse;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import static java.util.Objects.nonNull;
 
 @Component
 @Slf4j
@@ -33,7 +40,8 @@ public class ApplicationReceivedNotification implements PartiesNotification {
             templateVars.put(CONTACT_NAME, cicCase.getFullName());
 
             // Send Email
-            sendEmailNotification(cicCase.getEmail(), templateVars);
+            SendEmailResponse sendEmailResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+            cicCase.setSubjectNotificationResponse(getNotificationResponse(sendEmailResponse));
         }
     }
 
@@ -45,7 +53,8 @@ public class ApplicationReceivedNotification implements PartiesNotification {
             templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
 
             // Send Email
-            sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            SendEmailResponse sendEmailResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            cicCase.setApplicantNotificationResponse(getNotificationResponse(sendEmailResponse));
         }
     }
 
@@ -57,7 +66,8 @@ public class ApplicationReceivedNotification implements PartiesNotification {
             templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
 
             // Send Email
-            sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            SendEmailResponse sendEmailResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            cicCase.setRepNotificationResponse(getNotificationResponse(sendEmailResponse));
         }
     }
 
@@ -66,7 +76,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         //No operation
     }
 
-    private void sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private SendEmailResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(destinationAddress)
             .template(EmailTemplateName.APPLICATION_RECEIVED)
@@ -74,7 +84,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
             .build();
 
         notificationService.setNotificationRequest(request);
-        notificationService.sendEmail();
+        return notificationService.sendEmail();
     }
 
     private Map<String, Object> templateVars(final CicCase cicCase, final String caseNumber) {
@@ -83,5 +93,19 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         return templateVars;
+    }
+
+    private NotificationResponse getNotificationResponse(final SendEmailResponse sendEmailResponse) {
+        String clientReference = nonNull(sendEmailResponse) ? sendEmailResponse.getReference().orElse(null) : null;
+        UUID id = nonNull(sendEmailResponse) ? sendEmailResponse.getNotificationId() : null;
+
+        return NotificationResponse.builder()
+            .id(id.toString())
+            .client_reference(clientReference)
+            .notificationType(NotificationType.EMAIL)
+            .updatedAtTime(LocalDateTime.now())
+            .createdAtTime(LocalDateTime.now())
+            .status("Received")
+            .build();
     }
 }
