@@ -172,7 +172,7 @@ public class RecordListing {
         label = "How would you like to create the hearing notice?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private HearingNoticeOption hearingNotice;
+    private NoticeOption hearingNotice;
 
     @CCD(
         label = "Templates",
