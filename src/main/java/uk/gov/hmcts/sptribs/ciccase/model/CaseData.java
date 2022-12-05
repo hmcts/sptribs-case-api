@@ -234,14 +234,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
-//    @CCD(
-//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-//       // typeOverride = Collection,
-//        //typeParameterOverride = "DraftOrderCIC"
-//    )
-//    private List<ListValue<DraftOrderCIC>> draftOrderCICList;
-
-
     @JsonUnwrapped(prefix = "draft")
     @Builder.Default
     @CCD(
@@ -339,7 +331,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseIssue caseIssue = new CaseIssue();
-
 
 
     @JsonUnwrapped(prefix = "sendOrder")

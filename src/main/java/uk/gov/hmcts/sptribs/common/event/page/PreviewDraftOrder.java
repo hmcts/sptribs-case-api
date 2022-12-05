@@ -2,11 +2,6 @@ package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -27,24 +22,6 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
 
     }
 
-//    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-//        final CaseDetails<CaseData, State> details,
-//        final CaseDetails<CaseData, State> beforeDetails
-//
-//    ) {
-//
-//
-//        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-//            .state(details.getState())
-//            .build();
-//
-//    }
-//
-//    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
-//                                                  CaseDetails<CaseData, State> beforeDetails) {
-//        return SubmittedCallbackResponse.builder()
-//            .confirmationHeader("When you have finished drafting this order,you can send it to parties in this case.")
-//            .build();
-//    }
+
 }
 
