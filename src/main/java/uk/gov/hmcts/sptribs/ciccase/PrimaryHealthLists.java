@@ -1,15 +1,19 @@
 package uk.gov.hmcts.sptribs.ciccase;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.PrimaryHealthListsData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.search.SearchInputFields.SEARCH_FIELD_LIST;
 import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESULT_FIELD_LIST;
@@ -20,7 +24,10 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 public class PrimaryHealthLists implements CCDConfig<PrimaryHealthListsData, State, UserRole> {
 
     public static final String CASE_TYPE = "PHL";
-    public static final String JURISDICTION = "DIVORCE";
+    public static final String JURISDICTION = "ST_PHL";
+
+    @Autowired
+    private List<CCDConfig<CaseData, State, UserRole>> cfgs;
 
     @Override
     public void configure(final ConfigBuilder<PrimaryHealthListsData, State, UserRole> configBuilder) {
@@ -34,6 +41,14 @@ public class PrimaryHealthLists implements CCDConfig<PrimaryHealthListsData, Sta
 
         configBuilder.caseType(CcdCaseType.PHL.name(), "PHL Case Type", CcdCaseType.PHL.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_PHL.getCcdServiceDescription());
+
+        // Apply the configuration of our base case type to our derived type.
+        // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.
+        @SuppressWarnings("unchecked")
+        var upcast = (ConfigBuilder<CaseData, State, UserRole>)(Object) configBuilder;
+        for (var cfg : cfgs) {
+            cfg.configure(upcast);
+        }
 
         configBuilder.event("test")
             .forState(State.AwaitingApplicant1Response)

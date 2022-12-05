@@ -3,12 +3,19 @@ package uk.gov.hmcts.sptribs.ciccase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
+import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCICCaseDataConfigBuilder;
@@ -19,10 +26,15 @@ public class CriminalInjuriesCompensationTest {
     @InjectMocks
     private CriminalInjuriesCompensation criminalInjuriesCompensation;
 
+    @Mock
+    private List<CCDConfig<CaseData, State, UserRole>> cfgs;
+
     @Test
+    @ExtendWith(MockitoExtension.class)
     void shouldAddSystemUpdateUserAccessToDraftStateWhenEnvironmentIsAat() {
         //Given
         final ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> configBuilder = createCICCaseDataConfigBuilder();
+        Mockito.when(cfgs.iterator()).thenReturn(Collections.emptyIterator());
 
         //When
         criminalInjuriesCompensation.configure(configBuilder);

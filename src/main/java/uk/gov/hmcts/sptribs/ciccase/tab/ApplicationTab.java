@@ -20,7 +20,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.caseType("Divorce", "Divorce", "Divorce");
         buildSoleApplicationTab(configBuilder);
         buildJointApplicationTab(configBuilder);
     }
