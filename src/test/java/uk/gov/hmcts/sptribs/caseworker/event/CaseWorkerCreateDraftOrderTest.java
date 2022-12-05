@@ -69,25 +69,25 @@ class CaseWorkerCreateDraftOrderTest {
 
 
 
-    @Test
-    void shouldSuccessfullyReviewCase() {
-        //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
-        draftOrderCIC.setOrderTemplate(draftOrderCIC.getOrderTemplate());
-        draftOrderCIC.setMainContentForCIC6GeneralDirections("CIC6_General_Directions");
-        caseData.setDraftOrderCIC(draftOrderCIC);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            previewDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //  Then
-        assertThat(response).isNotNull();
-
-    }
+//    @Test
+//    void shouldSuccessfullyReviewCase() {
+//        //Given
+//        final CaseData caseData = caseData();
+//        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+//        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+//        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
+//        draftOrderCIC.setOrderTemplate(draftOrderCIC.getOrderTemplate());
+//        draftOrderCIC.setMainContentForCIC6GeneralDirections("CIC6_General_Directions");
+//        caseData.setDraftOrderCIC(draftOrderCIC);
+//
+//        //When
+//        AboutToStartOrSubmitResponse<CaseData, State> response =
+//            previewDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+//
+//        //  Then
+//        assertThat(response).isNotNull();
+//
+//    }
 
 
 }

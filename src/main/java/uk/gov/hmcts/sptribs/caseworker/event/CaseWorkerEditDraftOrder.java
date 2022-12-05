@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -62,8 +63,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Edit draft order")
                 .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::draftCreated)
+               // .aboutToSubmitCallback(this::aboutToSubmit)
+                //.submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
@@ -72,55 +73,56 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
 
     }
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
-        var draftOrder = caseData.getDraftOrderCIC();
-
-        if (isEmpty(caseData.getDraftOrderCICList())) {
-            List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<DraftOrderCIC>builder()
-                .id("1")
-                .value(draftOrder)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.setDraftOrderCICList(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<DraftOrderCIC>builder()
-                .value(draftOrder)
-                .build();
-
-            caseData.getDraftOrderCICList().add(0, listValue); // always add new note as first element so that it is displayed on top
-
-            caseData.getDraftOrderCICList().forEach(
-                caseDraftOrderCic -> caseDraftOrderCic.setId(String.valueOf(listValueIndex.incrementAndGet()))
-            );
-
-        }
-
-        caseData.setDraftOrderCIC(null);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(details.getState())
-            .build();
-
-    }
-
-
-
-    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Draft order updated Use 'Send order' to send the case documentation to parties in the case.")
-            .build();
-    }
+//    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+//        final CaseDetails<CaseData, State> details,
+//        final CaseDetails<CaseData, State> beforeDetails
+//    ) {
+//        var caseData = details.getData();
+//        var draftOrder = caseData.getDraftOrderCIC();
+//
+//        if (isEmpty(caseData.getDraftOrderCICList())) {
+//            List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
+//
+//            var listValue = ListValue
+//                .<DraftOrderCIC>builder()
+//                .id("1")
+//                .value(draftOrder)
+//                .build();
+//
+//            listValues.add(listValue);
+//
+//            caseData.setDraftOrderCICList(listValues);
+//        } else {
+//            AtomicInteger listValueIndex = new AtomicInteger(0);
+//            var listValue = ListValue
+//                .<DraftOrderCIC>builder()
+//                .value(draftOrder)
+//                .build();
+//
+//            caseData.getDraftOrderCICList().add(0, listValue); // always add new note as first element so that it is displayed on top
+//
+//            caseData.getDraftOrderCICList().forEach(
+//                caseDraftOrderCic -> caseDraftOrderCic.setId(String.valueOf(listValueIndex.incrementAndGet()))
+//            );
+//
+//        }
+//
+//        caseData.setDraftOrderCIC(null);
+//        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+//            .data(caseData)
+//            .state(details.getState())
+//            .build();
+//
+//    }
+//
+//
+//
+//    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
+//                                                  CaseDetails<CaseData, State> beforeDetails) {
+//        return SubmittedCallbackResponse.builder()
+//            .confirmationHeader(format("# Draft order updated  \n Use 'Send order' to send the case documentation to parties in the case."))
+//            // .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
+//            .build();
+//    }
 
 }

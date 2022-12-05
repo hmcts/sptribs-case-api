@@ -8,10 +8,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+
+import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -31,11 +34,12 @@ public class DraftOrderCIC {
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
-    private OrderTemplate orderTemplate;
+    private OrderTemplate OrderTemplate;
 
     @CCD(
-        label = "Main Content",
+        label = "Main Content CIC1_Eligibility",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC1_Eligibility\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -44,6 +48,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC2_Quantum\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -52,6 +57,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC3_Rule_27\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -60,6 +66,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC4_Blank_Decision_Notice_1\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -68,6 +75,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC6_General_Directions\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -76,6 +84,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC7_ME_Dmi_Reports\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -84,6 +93,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC8_ME_Joint_Instruction\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -92,6 +102,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC10_Strike_Out_Warning\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -100,6 +111,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC11_Strike_Out_Decision_Notice\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -108,6 +120,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC12_Decision_Annex\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -116,6 +129,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "orderTemplate = \"CIC13_Pro_Forma_Summons\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
