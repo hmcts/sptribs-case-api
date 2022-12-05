@@ -18,7 +18,7 @@ public class IssueFinalDecisionSelectTemplate implements CcdPageConfiguration {
         map.put(pageNameSelectTemplate, "caseIssueFinalDecisionDecisionNotice = \"Create from a template\"");
         map.put(pageNameUpload, "caseIssueFinalDecisionDecisionNotice = \"Upload from your computer\"");
         pageBuilder.page(pageNameSelectTemplate)
-            .label(pageNameSelectTemplate, "<h1>Select a template</h1>")
+            .pageLabel("Select a template")
             .pageShowConditions(map)
             .complex(CaseData::getCaseIssueFinalDecision)
             .mandatory(CaseIssueFinalDecision::getIssueFinalDecisionTemplate)
