@@ -75,8 +75,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case issued %n##  This case has now been issued. "
-                + " %n## %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+            .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n##"
+                + "  %s ", messageLine2.substring(0, messageLine2.length() - 2)))
             .build();
     }
 }
