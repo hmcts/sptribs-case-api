@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -23,6 +24,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
 
     private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
+    private static final CcdPageConfiguration issueFinalDecisionSelectTemplate = new IssueFinalDecisionSelectTemplate();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -35,6 +37,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         issueFinalDecisionNotice.addTo(pageBuilder);
+        issueFinalDecisionSelectTemplate.addTo(pageBuilder);
     }
 
 }
