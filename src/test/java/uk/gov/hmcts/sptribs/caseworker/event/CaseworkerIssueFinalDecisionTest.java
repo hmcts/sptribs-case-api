@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -44,10 +45,13 @@ class CaseworkerIssueFinalDecisionTest {
         final CaseData caseData = caseData();
         final CaseIssueFinalDecision finalDecision = new CaseIssueFinalDecision();
         finalDecision.setDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE);
+        finalDecision.setIssueFinalDecisionTemplate(FinalDecisionTemplate.QUANTUM);
         caseData.setCaseIssueFinalDecision(finalDecision);
 
 
         //Then
         assertThat(caseData.getCaseIssueFinalDecision().getDecisionNotice()).isEqualTo(NoticeOption.CREATE_FROM_TEMPLATE);
+        assertThat(caseData.getCaseIssueFinalDecision().getIssueFinalDecisionTemplate().getId()).isEqualTo("SPT_CIC2_Quantum.docx");
+        assertThat(caseData.getCaseIssueFinalDecision().getIssueFinalDecisionTemplate().getLabel()).isEqualTo("Quantum");
     }
 }
