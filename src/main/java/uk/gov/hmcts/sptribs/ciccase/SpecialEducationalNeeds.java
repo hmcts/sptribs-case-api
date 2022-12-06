@@ -23,7 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 @Slf4j
 public class SpecialEducationalNeeds implements CCDConfig<SpecialEducationalNeedsData, State, UserRole> {
 
-    public static final String CASE_TYPE = "SEND";
+    public static final String CASE_TYPE = "SEN";
     public static final String JURISDICTION = "ST_SEN";
 
     @Autowired
@@ -39,7 +39,7 @@ public class SpecialEducationalNeeds implements CCDConfig<SpecialEducationalNeed
         configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
-        configBuilder.caseType(CcdCaseType.SEN.name(), "SEND Case Type", CcdCaseType.SEN.getDescription());
+        configBuilder.caseType(CcdCaseType.SEN.name(), "SEN Case Type", CcdCaseType.SEN.getDescription());
         configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_SEN.getCcdServiceDescription());
 
         // Apply the configuration of our base case type to our derived type.
