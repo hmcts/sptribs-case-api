@@ -11,7 +11,7 @@ public class SendOrderSendReminder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("sendOrderSendReminder")
-            .label("sendOrderSendReminder", "<h1>Select order\n</h1>")
+            .pageLabel("Select order")
             .complex(CaseData::getSendOrder)
             .mandatory(SendOrder::getYesOrNo)
             .mandatory(SendOrder::getReminderDays, "sendOrderYesOrNo = \"Yes\"")

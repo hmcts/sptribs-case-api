@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
@@ -338,11 +339,17 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
 
+    @CCD(
+        label = "OrderList",
+        typeOverride = Collection,
+        typeParameterOverride = "Order",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<Order>> orderList;
 
     @JsonUnwrapped(prefix = "sendOrder")
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private SendOrder sendOrder = new SendOrder();
+    private SendOrder sendOrder;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

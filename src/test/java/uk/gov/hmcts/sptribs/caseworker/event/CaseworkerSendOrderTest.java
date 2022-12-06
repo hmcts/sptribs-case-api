@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
@@ -106,10 +107,9 @@ class CaseworkerSendOrderTest {
         //Then
         assertThat(sent).isNotNull();
         assertThat(response).isNotNull();
-        SendOrder order = response.getData().getSendOrder();
+        Order order = response.getData().getOrderList().get(0).getValue();
         assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
-        assertThat(order.getOrderIssuingType()).isNotNull();
         assertThat(order.getOrderFile()).isNull();
         assertThat(order.getDraftOrderCIC()).isNull();
     }
@@ -155,10 +155,9 @@ class CaseworkerSendOrderTest {
         //Then
         assertThat(sent).isNotNull();
         assertThat(response).isNotNull();
-        SendOrder order = response.getData().getSendOrder();
+        Order order = response.getData().getOrderList().get(0).getValue();
         assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
-        assertThat(order.getOrderIssuingType()).isNotNull();
         assertThat(order.getOrderFile()).isNull();
         assertThat(order.getDraftOrderCIC()).isNull();
         assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());
@@ -204,10 +203,9 @@ class CaseworkerSendOrderTest {
         //Then
         assertThat(sent).isNotNull();
         assertThat(response).isNotNull();
-        SendOrder order = response.getData().getSendOrder();
+        Order order = response.getData().getOrderList().get(0).getValue();
         assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
-        assertThat(order.getOrderIssuingType()).isNotNull();
         assertThat(order.getOrderFile()).isNull();
         assertThat(order.getDraftOrderCIC()).isNull();
         assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());

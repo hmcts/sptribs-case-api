@@ -17,7 +17,7 @@ public class SendOrderAddDraftOrder implements CcdPageConfiguration {
         map.put(pageNameDraftOrder, "sendOrderOrderIssuingType = \"DraftOrder\"");
         map.put(pageNameUploadOrder, "sendOrderOrderIssuingType = \"UploadOrder\"");
         pageBuilder.page(pageNameDraftOrder)
-            .label(pageNameDraftOrder, "<h1>Select order\n</h1>")
+            .pageLabel("Select order")
             .pageShowConditions(map)
             .complex(CaseData::getDraftOrderCIC, "", "", "")
             .done();

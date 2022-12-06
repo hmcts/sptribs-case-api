@@ -11,7 +11,7 @@ public class SendOrderOrderIssuingSelect implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("selectOrderIssuingType")
-            .label("selectOrderIssuingType", "<h1>Select order\n</h1>")
+            .pageLabel("Select order")
             .complex(CaseData::getSendOrder,"","","")
             .mandatory(SendOrder::getOrderIssuingType)
             .done();

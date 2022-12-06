@@ -18,16 +18,16 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("notifyPartiesSendOrder", this::midEvent)
-            .label("notifyPartiesSendOrder", "<h1>Contact parties</h1>")
+        pageBuilder.page("caseWorkerSendOrderNotifyParties", this::midEvent)
+            .pageLabel("Contact parties")
             .complex(CaseData::getCicCase)
-            .label("message", "Who should receive this Order?")
+            .label("caseWorkerSendOrderMessage", "Who should receive this Order?")
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("app", "")
+            .label("caseWorkerSendOrderRepresentative", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("rep", "")
+            .label("caseWorkerSendOrderRespondent", "")
             .readonlyWithLabel(CicCase::getRespondantName, " ")
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
