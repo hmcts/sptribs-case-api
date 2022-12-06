@@ -16,7 +16,7 @@ public class IssueFinalDecisionNotice implements CcdPageConfiguration {
             .mandatory(CaseIssueFinalDecision::getDecisionNotice)
             .label("selectIssueNoticeOptionMessage", """
                The decision annex is automatically included via the
-               notification  – you do not need to attach it
+               notification  – you do not need to attach it.
 
 
                """)
