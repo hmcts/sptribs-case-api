@@ -81,6 +81,7 @@ public class NotificationServiceCIC {
             .notificationType(NotificationType.EMAIL)
             .updatedAtTime(LocalDateTime.now())
             .createdAtTime(LocalDateTime.now())
+            .status("Received")
             .build();
     }
 

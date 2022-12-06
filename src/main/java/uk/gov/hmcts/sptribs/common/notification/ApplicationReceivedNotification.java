@@ -35,9 +35,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
 
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
-            notificationResponse.setStatus("Received");
-
-            cicCase.setSubjNotificationResponse(notificationResponse);
+            cicCase.setSubjectNotifyList(notificationResponse);
         }
     }
 
@@ -50,8 +48,6 @@ public class ApplicationReceivedNotification implements PartiesNotification {
 
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
-            notificationResponse.setStatus("Received");
-
             cicCase.setAppNotificationResponse(notificationResponse);
         }
     }
@@ -65,8 +61,6 @@ public class ApplicationReceivedNotification implements PartiesNotification {
 
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
-            notificationResponse.setStatus("Received");
-
             cicCase.setRepNotificationResponse(notificationResponse);
         }
     }

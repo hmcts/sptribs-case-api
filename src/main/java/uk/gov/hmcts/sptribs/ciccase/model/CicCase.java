@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
@@ -388,6 +386,7 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isRepresentativePresent;
+
     private CaseDocumentsCIC caseDocumentsCIC;
     @CCD(
         label = "Reinstate Documents",
@@ -411,13 +410,10 @@ public class CicCase {
     )
     private String days;
 
-    @JsonUnwrapped(prefix = "testClass")
-    private TestClass testClass;
-
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private NotificationResponse subjNotificationResponse;
+    private NotificationResponse subjectNotifyList;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -428,4 +424,5 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse repNotificationResponse;
+
 }
