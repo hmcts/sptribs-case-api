@@ -48,9 +48,8 @@ public class CftLibConfig implements CFTLibConfigurer {
         }
 
         lib.createRoles(
-            "caseworker-divorce-superuser",
-            "caseworker-divorce-solicitor",
-            "caseworker-divorce-systemupdate",
+            "caseworker-sptribs-superuser",
+            "caseworker-sptribs-systemupdate",
             "caseworker-sptribs-superuser",
             "caseworker-sptribs-cic-courtadmin",
             "citizen-sptribs-cic-dss",
@@ -59,7 +58,9 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-cic-districtjudge",
             "caseworker-sptribs-cic-respondent",
             "caseworker",
-            "payments"
+            "payments",
+            "solicitor",
+            "solicitor-creator"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
