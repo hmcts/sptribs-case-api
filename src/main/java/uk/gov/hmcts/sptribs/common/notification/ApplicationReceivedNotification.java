@@ -14,14 +14,14 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
+
 @Component
 @Slf4j
 public class ApplicationReceivedNotification implements PartiesNotification {
-
-    private static final String CONTACT_NAME = "ContactName";
-    private static final String TRIBUNAL_NAME = "TribunalName";
-    private static final String CIC_CASE_NUMBER = "CicCaseNumber";
-    private static final String CIC_CASE_SUBJECT_NAME = "CicCaseSubjectFullName";
 
     @Autowired
     private NotificationServiceCIC notificationService;
