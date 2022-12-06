@@ -14,9 +14,8 @@ import uk.gov.service.notify.SendEmailResponse;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-
-import static java.util.Objects.nonNull;
 
 @Service
 @Slf4j
@@ -56,6 +55,7 @@ public class NotificationServiceCIC {
                 sendEmailResponse.getReference().orElse(referenceId)
             );
 
+            return getNotificationResponse(sendEmailResponse);
         } catch (NotificationClientException notificationClientException) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
                 referenceId,
@@ -64,7 +64,6 @@ public class NotificationServiceCIC {
             );
             throw new NotificationException(notificationClientException);
         }
-        return getNotificationResponse(sendEmailResponse);
     }
 
     public void setNotificationRequest(NotificationRequest notificationRequest) {
@@ -72,12 +71,15 @@ public class NotificationServiceCIC {
     }
 
     private NotificationResponse getNotificationResponse(final SendEmailResponse sendEmailResponse) {
-        String clientReference = nonNull(sendEmailResponse) ? sendEmailResponse.getReference().orElse(null) : null;
-        UUID id = nonNull(sendEmailResponse) ? sendEmailResponse.getNotificationId() : null;
+        Optional<String> reference = sendEmailResponse.getReference();
+        String clientReference = null;
+        if (reference.isPresent()) {
+            clientReference = reference.get();
+        }
 
         return NotificationResponse.builder()
-            .id(id.toString())
-            .client_reference(clientReference)
+            .id(sendEmailResponse.getNotificationId().toString())
+            .clientReference(clientReference)
             .notificationType(NotificationType.EMAIL)
             .updatedAtTime(LocalDateTime.now())
             .createdAtTime(LocalDateTime.now())

@@ -25,7 +25,7 @@ public class NotificationResponse {
         label = "Client Referemce",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String client_reference;
+    private String clientReference;
 
     @CCD(
         label = "Notification Type",

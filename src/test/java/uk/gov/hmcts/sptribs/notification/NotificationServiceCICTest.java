@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.APPLICATION_RECEIVED;
 
@@ -75,10 +75,9 @@ public class NotificationServiceCICTest {
             any(),
             any());
 
-        verify(sendEmailResponse).getReference();
-        verify(sendEmailResponse).getNotificationId();
+        verify(sendEmailResponse, times(2)).getNotificationId();
+        verify(sendEmailResponse, times(2)).getReference();
 
-        verifyNoMoreInteractions(notificationClient, sendEmailResponse);
     }
 
     @Test
