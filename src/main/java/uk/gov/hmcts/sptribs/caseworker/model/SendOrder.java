@@ -13,7 +13,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 
@@ -40,13 +42,15 @@ public class SendOrder {
     )
     private List<ListValue<DateModel>> dueDates;
 
+    @Builder.Default
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "GetAmendDateAsCompleted",
 
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private GetAmendDateAsCompleted markAsCompleted;
+    private Set<GetAmendDateAsCompleted> markAsCompleted = new HashSet<>();
+
 
 
     @CCD(
