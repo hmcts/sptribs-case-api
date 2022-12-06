@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.Search.SearchBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CareStandardsData;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,6 +38,15 @@ public final class ConfigTestUtil {
     public static ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> createCICCaseDataConfigBuilder() {
         return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
             CriminalInjuriesCompensationData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<CareStandardsData, State, UserRole> createCareStandardsDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            CareStandardsData.class,
             State.class,
             UserRole.class,
             new HashMap<>(),
