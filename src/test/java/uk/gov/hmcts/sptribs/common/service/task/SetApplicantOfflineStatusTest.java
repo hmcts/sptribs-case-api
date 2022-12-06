@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.OrganisationPolicy;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
@@ -48,7 +48,7 @@ class SetApplicantOfflineStatusTest {
                 .builder()
                 .organisationPolicy(
                     OrganisationPolicy
-                        .<UserRole>builder()
+                        .<UserRoleCIC>builder()
                         .organisation(
                             Organisation
                                 .builder()

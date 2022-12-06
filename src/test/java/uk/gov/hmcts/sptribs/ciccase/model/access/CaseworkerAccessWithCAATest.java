@@ -11,12 +11,12 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.CREATOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SUPER_USER_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SYSTEMUPDATE;
 
 class CaseworkerAccessWithCAATest {
 
@@ -30,7 +30,7 @@ class CaseworkerAccessWithCAATest {
             .contains(
                 entry(CITIZEN_CIC, R),
                 entry(SOLICITOR, R),
-                entry(SUPER_USER, R),
+                entry(SUPER_USER_CIC, R),
                 entry(COURT_ADMIN_CIC, C),
                 entry(COURT_ADMIN_CIC, R),
                 entry(COURT_ADMIN_CIC, U),

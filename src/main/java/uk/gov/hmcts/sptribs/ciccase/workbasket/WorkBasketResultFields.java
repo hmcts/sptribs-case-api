@@ -5,15 +5,15 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESULT_FIELD_LIST;
 
 @Component
-public class WorkBasketResultFields implements CCDConfig<CaseData, State, UserRole> {
+public class WorkBasketResultFields implements CCDConfig<CaseData, State, UserRoleCIC> {
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
 
         configBuilder
             .workBasketResultFields()

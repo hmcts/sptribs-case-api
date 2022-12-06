@@ -154,7 +154,7 @@ public class AcknowledgementOfService {
         noticeOfProceedingsEmail = applicant.getCorrespondenceEmail();
 
         if (applicant.isRepresented()) {
-            final OrganisationPolicy<UserRole> organisationPolicy = applicant.getSolicitor().getOrganisationPolicy();
+            final OrganisationPolicy<UserRoleCIC> organisationPolicy = applicant.getSolicitor().getOrganisationPolicy();
 
             if (nonNull(organisationPolicy)) {
                 noticeOfProceedingsSolicitorFirm = organisationPolicy.getOrganisation().getOrganisationName();

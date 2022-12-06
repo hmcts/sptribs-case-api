@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.CREATOR;
 
 @Service
 @Slf4j

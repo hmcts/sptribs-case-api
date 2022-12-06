@@ -49,7 +49,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.SolicitorService;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
 import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
@@ -667,8 +667,8 @@ public class TestDataHelper {
             .build();
     }
 
-    public static OrganisationPolicy<UserRole> organisationPolicy() {
-        return OrganisationPolicy.<UserRole>builder()
+    public static OrganisationPolicy<UserRoleCIC> organisationPolicy() {
+        return OrganisationPolicy.<UserRoleCIC>builder()
             .organisation(Organisation
                 .builder()
                 .organisationName(TEST_ORG_NAME)

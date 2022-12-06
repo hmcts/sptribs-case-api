@@ -10,24 +10,24 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
-public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRoleCIC> {
     public static final String CASEWORKER_STAY_THE_CASE = "caseworker-stay-the-case";
 
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_STAY_THE_CASE)
             .forStates(CaseManagement, CaseStayed)
@@ -37,7 +37,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayed)
             .showEventNotes()
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER_CIC)
             .grantHistoryOnly(SOLICITOR))
             .page("addStay")
             .label("addStay", "<H2>Add a Stay to this case</H2>")

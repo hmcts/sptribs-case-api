@@ -5,21 +5,21 @@ import uk.gov.hmcts.ccd.sdk.api.FieldCollection.FieldCollectionBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.MidEvent;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 public class PageBuilder {
 
-    private final EventBuilder<CaseData, UserRole, State> eventBuilder;
+    private final EventBuilder<CaseData, UserRoleCIC, State> eventBuilder;
 
-    public PageBuilder(final EventBuilder<CaseData, UserRole, State> eventBuilder) {
+    public PageBuilder(final EventBuilder<CaseData, UserRoleCIC, State> eventBuilder) {
         this.eventBuilder = eventBuilder;
     }
 
-    public FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>> page(final String id) {
+    public FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>> page(final String id) {
         return eventBuilder.fields().page(id);
     }
 
-    public FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>> page(
+    public FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>> page(
         final String id,
         final MidEvent<CaseData, State> callback) {
 

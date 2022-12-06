@@ -6,10 +6,10 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Tab;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 @Component
-public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
+public class ApplicationTab implements CCDConfig<CaseData, State, UserRoleCIC> {
 
     private static final String APPLICANT_1_CONTACT_DETAILS_PUBLIC = "applicant1ContactDetailsType!=\"private\"";
     private static final String APPLICANT_2_CONTACT_DETAILS_PUBLIC = "applicant2ContactDetailsType!=\"private\"";
@@ -19,13 +19,14 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
     private static final String NOT_NEW_PAPER_CASE = "newPaperCase!=\"Yes\"";
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         buildSoleApplicationTab(configBuilder);
         buildJointApplicationTab(configBuilder);
     }
 
-    private void buildSoleApplicationTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        final Tab.TabBuilder<CaseData, UserRole> tabBuilderForSoleApplication = configBuilder.tab("applicationDetailsSole", "Application")
+    private void buildSoleApplicationTab(ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
+        final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilderForSoleApplication
+            = configBuilder.tab("applicationDetailsSole", "Application")
             .showCondition("applicationType=\"soleApplication\"");
 
         addDynamicContentHiddenFields(tabBuilderForSoleApplication);
@@ -40,8 +41,9 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
         addApplicant1StatementOfTruth(tabBuilderForSoleApplication);
     }
 
-    private void buildJointApplicationTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        final Tab.TabBuilder<CaseData, UserRole> tabBuilderForJointApplication = configBuilder.tab("applicationDetailsJoint", "Application")
+    private void buildJointApplicationTab(ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
+        final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilderForJointApplication
+            = configBuilder.tab("applicationDetailsJoint", "Application")
             .showCondition("applicationType=\"jointApplication\"");
 
         addDynamicContentHiddenFields(tabBuilderForJointApplication);
@@ -56,7 +58,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
         addService(tabBuilderForJointApplication);
     }
 
-    private void addDynamicContentHiddenFields(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addDynamicContentHiddenFields(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .field("labelContentTheApplicantOrApplicant1", NEVER_SHOW)
             .field("labelContentTheApplicantOrApplicant1UC", NEVER_SHOW)
@@ -69,7 +71,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("labelContentMarriageOrCivilPartnershipUC", NEVER_SHOW);
     }
 
-    private void addHeaderFields(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addHeaderFields(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .field("createdDate")
             .field("dateSubmitted")
@@ -81,7 +83,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getHyphenatedCaseRef, NEVER_SHOW);
     }
 
-    private void addApplicant1(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addApplicant1(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .label("LabelApplicant1-Heading", null, "### ${labelContentTheApplicantOrApplicant1UC}")
             .field("applicant1FirstName")
@@ -122,7 +124,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("applicant1SolicitorAgreeToReceiveEmailsCheckbox", "applicant1SolicitorRepresented=\"Yes\"");
     }
 
-    private void addOtherCourtCases(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addOtherCourtCases(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .label("LabelApplicant1OtherProceedings-Heading", null, "#### ${labelContentTheApplicantOrApplicant1UC}'s other proceedings:")
             .field("applicant1LegalProceedings")
@@ -133,7 +135,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
                 "applicant1FinancialOrder=\"Yes\"");
     }
 
-    private void addApplicant2(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addApplicant2(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .label("LabelApplicant2-Heading", null, "### ${labelContentTheApplicant2UC}")
             .field("applicant2FirstName")
@@ -190,7 +192,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("applicant2StatementOfTruth", JOINT_APPLICATION);
     }
 
-    private void addMarriageAndCertificate(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addMarriageAndCertificate(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .label("LabelMarriage-Heading",
                 "divorceOrDissolution = \"divorce\"", "### Marriage and certificate")
@@ -209,13 +211,13 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("marriageCertifiedTranslation", "marriageCertificateInEnglish=\"No\"");
     }
 
-    private void addLegalConnections(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addLegalConnections(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .label("LabelJurisdiction-Heading", null, "### Jurisdiction")
             .field("jurisdictionConnections");
     }
 
-    private void addOtherProceedings(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addOtherProceedings(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .field("solUrgentCase")
             .field("solUrgentCaseSupportingInformation", "solUrgentCase=\"Yes\"")
@@ -227,7 +229,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("statementOfReconciliationComments");
     }
 
-    private void addService(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addService(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .label("Label-SolicitorService", "serviceMethod=\"solicitorService\"", "### Solicitor Service")
             .field("serviceMethod", SOLE_APPLICATION)
@@ -247,7 +249,7 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("solServiceServiceSotFirm", "serviceMethod=\"solicitorService\"");
     }
 
-    private void addApplicant1StatementOfTruth(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
+    private void addApplicant1StatementOfTruth(final Tab.TabBuilder<CaseData, UserRoleCIC> tabBuilder) {
         tabBuilder
             .field("applicant1StatementOfTruth");
     }

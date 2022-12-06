@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 import java.time.LocalDate;
 
@@ -35,7 +35,7 @@ class CaseworkerStayTheCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CaseData, State, UserRoleCIC> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseworkerStayTheCase.configure(configBuilder);

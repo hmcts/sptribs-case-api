@@ -9,7 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.Search;
 import uk.gov.hmcts.ccd.sdk.api.Search.SearchBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -24,11 +24,11 @@ public final class ConfigTestUtil {
     private ConfigTestUtil() {
     }
 
-    public static ConfigBuilderImpl<CaseData, State, UserRole> createCaseDataConfigBuilder() {
+    public static ConfigBuilderImpl<CaseData, State, UserRoleCIC> createCaseDataConfigBuilder() {
         return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
             CaseData.class,
             State.class,
-            UserRole.class,
+            UserRoleCIC.class,
             new HashMap<>(),
             ImmutableSet.copyOf(State.class.getEnumConstants())));
     }

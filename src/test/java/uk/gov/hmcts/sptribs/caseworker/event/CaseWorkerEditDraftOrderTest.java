@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerEditDraftOrder.CASEWORKER_EDIT_DRAFT_ORDER;
@@ -29,7 +29,7 @@ class CaseWorkerEditDraftOrderTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CaseData, State, UserRoleCIC> configBuilder = createCaseDataConfigBuilder();
 
         //When
         caseWorkerEditDraftOrder.configure(configBuilder);

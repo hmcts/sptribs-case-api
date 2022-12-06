@@ -19,7 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.util.List;
@@ -50,7 +50,7 @@ class ReinstateCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        final ConfigBuilderImpl<CaseData, State, UserRoleCIC> configBuilder = createCaseDataConfigBuilder();
 
         //When
         reinstateCase.configure(configBuilder);

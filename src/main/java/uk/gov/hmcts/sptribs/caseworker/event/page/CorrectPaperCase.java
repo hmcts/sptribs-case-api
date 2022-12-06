@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.PaperFormDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -41,7 +41,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>> fieldCollectionBuilder
+        FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>> fieldCollectionBuilder
             = pageBuilder
             .page("correctPaperCase", this::midEvent)
             .pageLabel(TITLE)
@@ -96,7 +96,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
     }
 
     private void buildApplicant1Fields(
-        FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>> fieldCollectionBuilder) {
+        FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>> fieldCollectionBuilder) {
 
         fieldCollectionBuilder
             .label("Label-CorrectApplicant1Details",
@@ -129,7 +129,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildApplicant2Fields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildApplicant2Fields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                            fieldCollectionBuilder) {
         fieldCollectionBuilder
             .label("Label-CorrectApplicant2Details",
@@ -168,7 +168,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildMarriageDetailFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildMarriageDetailFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                              fieldCollectionBuilder) {
         fieldCollectionBuilder
             .complex(CaseData::getApplication)
@@ -189,7 +189,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildJurisdictionFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildJurisdictionFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                              fieldCollectionBuilder) {
         fieldCollectionBuilder
             .complex(CaseData::getApplication)
@@ -200,7 +200,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildStatementOfBreakdownFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildStatementOfBreakdownFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                                      fieldCollectionBuilder) {
         fieldCollectionBuilder
             .label("Label-CorrectStatementOfIrretrievableBreakdown", "### Statement of irretrievable breakdown")
@@ -212,7 +212,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildExistingCaseDetailFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildExistingCaseDetailFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                                    fieldCollectionBuilder) {
         fieldCollectionBuilder
             .complex(CaseData::getApplicant1)
@@ -223,7 +223,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildSOTFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>> fieldCollectionBuilder) {
+    private void buildSOTFields(FieldCollectionBuilder<CaseData,State,EventBuilder<CaseData,UserRoleCIC,State>> fieldCollectionBuilder) {
         fieldCollectionBuilder
             .complex(CaseData::getApplication)
                 .label("Label-CorrectApplicant1SOTDetails",
@@ -239,7 +239,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildFinancialRemedyFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildFinancialRemedyFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                                 fieldCollectionBuilder) {
         fieldCollectionBuilder
             .complex(CaseData::getApplicant1)
@@ -257,7 +257,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildPrayerFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildPrayerFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                        fieldCollectionBuilder) {
         fieldCollectionBuilder
             .label("Label-CorrectPrayerDetails-App1",
@@ -283,7 +283,7 @@ public class CorrectPaperCase implements CcdPageConfiguration {
             .done();
     }
 
-    private void buildCourtFeeFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRole, State>>
+    private void buildCourtFeeFields(FieldCollectionBuilder<CaseData, State, EventBuilder<CaseData, UserRoleCIC, State>>
                                          fieldCollectionBuilder) {
         fieldCollectionBuilder
             .complex(CaseData::getApplication)

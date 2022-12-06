@@ -85,7 +85,7 @@ public class Solicitor {
         label = "Firm address/DX address",
         access = {OrganisationPolicyAccess.class}
     )
-    private OrganisationPolicy<UserRole> organisationPolicy;
+    private OrganisationPolicy<UserRoleCIC> organisationPolicy;
 
     @JsonIgnore
     public boolean hasOrgId() {

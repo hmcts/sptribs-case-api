@@ -18,7 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
@@ -30,15 +30,15 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
 
 @Component
 @Slf4j
-public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRoleCIC> {
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
@@ -50,7 +50,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private LocationService locationService;
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
             .forStates(CaseManagement, AwaitingHearing)
@@ -61,7 +61,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER_CIC)
             .grantHistoryOnly(SOLICITOR));
 
         addHearingTypeAndFormat(pageBuilder);

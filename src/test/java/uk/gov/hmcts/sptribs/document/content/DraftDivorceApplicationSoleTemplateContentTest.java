@@ -13,7 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.FinancialOrderFor;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.document.content.provider.ApplicantTemplateDataProvider;
 import uk.gov.hmcts.sptribs.document.content.provider.ApplicationTemplateDataProvider;
 
@@ -110,7 +110,7 @@ public class DraftDivorceApplicationSoleTemplateContentTest {
                 .name("Mr Sol")
                 .email("sol@solbros.com")
                 .organisationPolicy(
-                    OrganisationPolicy.<UserRole>builder()
+                    OrganisationPolicy.<UserRoleCIC>builder()
                         .organisation(
                             Organisation.builder()
                                 .organisationName("Sol Bros")

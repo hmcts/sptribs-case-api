@@ -13,13 +13,13 @@ import uk.gov.hmcts.ccd.sdk.api.FieldCollection;
 import uk.gov.hmcts.ccd.sdk.api.callback.MidEvent;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 @ExtendWith(MockitoExtension.class)
 class PageBuilderTest {
 
     @Mock
-    private Event.EventBuilder<CaseData, UserRole, State> eventBuilder;
+    private Event.EventBuilder<CaseData, UserRoleCIC, State> eventBuilder;
 
     @Mock
     private MidEvent midEvent;

@@ -6,7 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.SearchField;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 import java.util.List;
 
@@ -22,21 +22,21 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.LAST_STATE
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
 
 @Component
-public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> {
+public class SearchResultFields implements CCDConfig<CaseData, State, UserRoleCIC> {
 
-    public static final List<SearchField<UserRole>> SEARCH_RESULT_FIELD_LIST = of(
-        SearchField.<UserRole>builder().id(CCD_REFERENCE).label("Case Number").build(),
-        SearchField.<UserRole>builder().id(SUBJECT_NAME).label("Subject Name").build(),
-        SearchField.<UserRole>builder().id(CASE_STATE).label("Case Status").build(),
-        SearchField.<UserRole>builder().id(HEARING_DATE).label("Hearing Date").build(),
-        SearchField.<UserRole>builder().id(APPLICANT_NAME).label("Applicant Name").build(),
-        SearchField.<UserRole>builder().id(DUE_DATE).label("Due Date").build(),
-        SearchField.<UserRole>builder().id(LAST_MODIFIED_DATE).label("Last modified date").build(),
-        SearchField.<UserRole>builder().id(LAST_STATE_MODIFIED_DATE).label("Last state modified date").order(FIRST.ASCENDING).build()
+    public static final List<SearchField<UserRoleCIC>> SEARCH_RESULT_FIELD_LIST = of(
+        SearchField.<UserRoleCIC>builder().id(CCD_REFERENCE).label("Case Number").build(),
+        SearchField.<UserRoleCIC>builder().id(SUBJECT_NAME).label("Subject Name").build(),
+        SearchField.<UserRoleCIC>builder().id(CASE_STATE).label("Case Status").build(),
+        SearchField.<UserRoleCIC>builder().id(HEARING_DATE).label("Hearing Date").build(),
+        SearchField.<UserRoleCIC>builder().id(APPLICANT_NAME).label("Applicant Name").build(),
+        SearchField.<UserRoleCIC>builder().id(DUE_DATE).label("Due Date").build(),
+        SearchField.<UserRoleCIC>builder().id(LAST_MODIFIED_DATE).label("Last modified date").build(),
+        SearchField.<UserRoleCIC>builder().id(LAST_STATE_MODIFIED_DATE).label("Last state modified date").order(FIRST.ASCENDING).build()
     );
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         configBuilder
             .searchResultFields()
             .fields(SEARCH_RESULT_FIELD_LIST);

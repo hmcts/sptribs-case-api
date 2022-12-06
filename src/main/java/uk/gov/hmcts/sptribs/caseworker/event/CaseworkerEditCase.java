@@ -9,7 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
@@ -25,12 +25,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
-public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRoleCIC> {
 
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
@@ -49,7 +49,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         var pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
@@ -60,7 +60,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         editFurtherDetails.addTo(pageBuilder);
     }
 
-    private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
@@ -68,7 +68,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .description("")
             .showSummary()
             .showEventNotes()
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER_CIC)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
     }

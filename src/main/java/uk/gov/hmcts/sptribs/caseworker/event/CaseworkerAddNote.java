@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
@@ -26,14 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
-public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRoleCIC> {
     public static final String CASEWORKER_ADD_NOTE = "caseworker-add-note";
 
     @Autowired
@@ -46,7 +46,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
     private Clock clock;
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_ADD_NOTE)
             .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
@@ -57,7 +57,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
             .grant(CREATE_READ_UPDATE,
                 COURT_ADMIN_CIC)
             .grant(CREATE_READ_UPDATE_DELETE,
-                SUPER_USER))
+                SUPER_USER_CIC))
             .page("addCaseNotes")
             .pageLabel("Add case notes")
             .optional(CaseData::getNote);

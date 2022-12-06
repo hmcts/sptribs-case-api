@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
@@ -32,15 +32,15 @@ import java.util.ArrayList;
 import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Slf4j
 @Component
-public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
+public class CreateTestCase implements CCDConfig<CaseData, State, UserRoleCIC> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-application";
     private final FeatureToggleService featureToggleService;
@@ -64,8 +64,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var roles = new ArrayList<UserRole>();
+    public void configure(ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
+        var roles = new ArrayList<UserRoleCIC>();
         var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
 
         if (env.contains(ENVIRONMENT_AAT)) {
@@ -79,10 +79,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .initialState(Draft)
                 .name("Create Case")
                 .showSummary()
-                .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
+                .grant(CREATE_READ_UPDATE, roles.toArray(UserRoleCIC[]::new))
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
-                .grantHistoryOnly(SUPER_USER, COURT_ADMIN_CIC, SOLICITOR, CITIZEN_CIC));
+                .grantHistoryOnly(SUPER_USER_CIC, COURT_ADMIN_CIC, SOLICITOR, CITIZEN_CIC));
 
             categorisationDetails.addTo(pageBuilder);
             dateOfReceipt.addTo(pageBuilder);

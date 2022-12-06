@@ -12,7 +12,7 @@ class SolicitorTest {
     void shouldReturnTrueIfOrganisationIdIsSet() {
         //When
         final Solicitor solicitor = Solicitor.builder()
-            .organisationPolicy(OrganisationPolicy.<UserRole>builder()
+            .organisationPolicy(OrganisationPolicy.<UserRoleCIC>builder()
                 .organisation(Organisation.builder()
                     .organisationId("Org ID")
                     .build())
@@ -26,14 +26,14 @@ class SolicitorTest {
     void shouldReturnFalseIfOrganisationIdIsEmptyOrNull() {
         //When
         final Solicitor solicitor1 = Solicitor.builder()
-            .organisationPolicy(OrganisationPolicy.<UserRole>builder()
+            .organisationPolicy(OrganisationPolicy.<UserRoleCIC>builder()
                 .organisation(Organisation.builder()
                     .organisationId("")
                     .build())
                 .build())
             .build();
         final Solicitor solicitor2 = Solicitor.builder()
-            .organisationPolicy(OrganisationPolicy.<UserRole>builder()
+            .organisationPolicy(OrganisationPolicy.<UserRoleCIC>builder()
                 .organisation(Organisation.builder().build())
                 .build())
             .build();
@@ -46,7 +46,7 @@ class SolicitorTest {
     void shouldReturnFalseIfOrganisationIsNull() {
 
         final Solicitor solicitor = Solicitor.builder()
-            .organisationPolicy(OrganisationPolicy.<UserRole>builder().build())
+            .organisationPolicy(OrganisationPolicy.<UserRoleCIC>builder().build())
             .build();
 
         assertThat(solicitor.hasOrgId()).isFalse();

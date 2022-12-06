@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ public class HasRoleDeserializer extends StdDeserializer<HasRole> {
         JsonNode node = parser.readValueAsTree();
 
         return Arrays
-            .stream(UserRole.values())
+            .stream(UserRoleCIC.values())
             .filter(r -> r.getRole().equals(node.asText()))
             .findFirst()
             .get();

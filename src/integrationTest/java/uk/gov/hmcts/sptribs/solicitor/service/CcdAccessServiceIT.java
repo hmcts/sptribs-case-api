@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisati
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class CcdAccessServiceIT {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    private CaseAssignmentUserRolesRequest getCaseAssignmentUserRolesRequest(String orgId, UserRole role, String userId) {
+    private CaseAssignmentUserRolesRequest getCaseAssignmentUserRolesRequest(String orgId, UserRoleCIC role, String userId) {
         return CaseAssignmentUserRolesRequest.builder()
             .caseAssignmentUserRolesWithOrganisation(
                 List.of(

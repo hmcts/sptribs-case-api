@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrderTemplates;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -20,21 +20,21 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRoleCIC.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 
 @Component
 @Slf4j
-public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
+public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRoleCIC> {
 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrderTemplates();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
 
     @Override
-    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CaseData, State, UserRoleCIC> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event("Manage order due dates")
@@ -46,7 +46,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::orderDatesManaged)
                 .showEventNotes()
-                .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+                .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER_CIC)
                 .grantHistoryOnly(SOLICITOR));
 
         manageSelectOrderTemplates.addTo(pageBuilder);
