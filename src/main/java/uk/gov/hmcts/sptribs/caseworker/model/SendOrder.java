@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,15 +9,19 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.List;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class SendOrder {
 
     @CCD(
@@ -33,6 +39,15 @@ public class SendOrder {
         label = "Due Date"
     )
     private List<ListValue<DateModel>> dueDates;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "GetAmendDateAsCompleted",
+
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private GetAmendDateAsCompleted markAsCompleted;
+
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -22,8 +20,6 @@ public class SendOrderAddDraftOrder implements CcdPageConfiguration {
             .label(pageNameDraftOrder, "<h1>Select order\n</h1>")
             .pageShowConditions(map)
             .complex(CaseData::getDraftOrderCIC, "", "", "")
-            .readonly(DraftOrderCIC::getOrderTemplate)
-            .mandatory(DraftOrderCIC::getMainContentForGeneralDirections)
             .done();
     }
 }

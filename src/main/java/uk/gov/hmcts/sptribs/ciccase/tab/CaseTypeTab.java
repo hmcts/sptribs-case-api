@@ -41,7 +41,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
 
-
     private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("summary", "Summary")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
@@ -226,10 +225,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildOrderTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("orders", "Orders")
-               .label("Orders",null,"### Orders")
-            .field("draftOrderTemplate")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("Orders", null, "### Orders")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
-            .field("draftMainContentForGeneralDirections","draftOrderTemplate = \"GeneralDirections\"");
+            .field("cicCaseDraftOrderCICList");
 
 
 
