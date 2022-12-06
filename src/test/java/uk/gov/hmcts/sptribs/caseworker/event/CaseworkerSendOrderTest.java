@@ -91,7 +91,7 @@ class CaseworkerSendOrderTest {
         final CaseData caseData = caseData();
         caseData.setSendOrder(sendOrder);
         caseData.setCicCase(cicCase);
-        caseData.setDraftOrderCIC(DraftOrderCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
+        caseData.setDraftOrderCIC(DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -140,7 +140,7 @@ class CaseworkerSendOrderTest {
         final CaseData caseData = caseData();
         caseData.setSendOrder(sendOrder);
         caseData.setCicCase(cicCase);
-        caseData.setDraftOrderCIC(DraftOrderCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
+        caseData.setDraftOrderCIC(DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -189,7 +189,7 @@ class CaseworkerSendOrderTest {
         final CaseData caseData = caseData();
         caseData.setSendOrder(sendOrder);
         caseData.setCicCase(cicCase);
-        caseData.setDraftOrderCIC(DraftOrderCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
+        caseData.setDraftOrderCIC(DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);

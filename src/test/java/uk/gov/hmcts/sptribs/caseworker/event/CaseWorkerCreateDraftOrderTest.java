@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -64,28 +63,6 @@ class CaseWorkerCreateDraftOrderTest {
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
-
-    }
-
-
-
-    @Test
-    void shouldSuccessfullyReviewCase() {
-        //Given
-        final CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
-        draftOrderCIC.setOrderTemplate(draftOrderCIC.getOrderTemplate());
-        draftOrderCIC.setMainContentForCIC6GeneralDirections("CIC6_General_Directions");
-        caseData.setDraftOrderCIC(draftOrderCIC);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            previewDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //  Then
-        assertThat(response).isNotNull();
 
     }
 
