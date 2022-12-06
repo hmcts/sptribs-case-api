@@ -12,7 +12,7 @@ public class IssueCaseAdditionalDocument implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("selectAdditionalDocument")
-            .label("selectAdditionalDocument", "<h2>Select additional documentation</h2>")
+            .label("selectAdditionalDocument", "<h1>Select documentation</h1>")
             .complex(CaseData::getCaseIssue)
             .mandatory(CaseIssue::getAdditionalDocument)
             .label("tribunalDocuments", """

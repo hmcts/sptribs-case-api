@@ -225,20 +225,11 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildOrderTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("orders", "Orders")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Orders", null, "### Orders")
-            .field("draftOrderTemplate")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
-            .field("draftMainContentForCIC1Eligibility", "draftOrderTemplate = \"CIC1_Eligibility\"")
-            .field("draftMainContentForCIC2Quantum", "draftOrderTemplate = \"CIC2_Quantum\"")
-            .field("draftMainContentForCIC3Rule27", "draftOrderTemplate = \"CIC3_Rule_27\"")
-            .field("draftMainContentForCIC4BlankDecisionNotice1", "draftOrderTemplate = \"CIC4_Blank_Decision_Notice_1\"")
-            .field("draftMainContentForCIC6GeneralDirections", "draftOrderTemplate = \"CIC6_General_Directions\"")
-            .field("draftMainContentForCIC7MEDmiReports", "draftOrderTemplate = \"CIC7_ME_Dmi_Reports\"")
-            .field("draftMainContentForCIC8MEJointInstruction", "draftOrderTemplate = \"CIC8_ME_Joint_Instruction\"")
-            .field("draftMainContentForCIC10StrikeOutWarning", "draftOrderTemplate = \"CIC10_Strike_Out_Warning\"")
-            .field("draftMainContentForCIC11StrikeOutDecisionNotice", "draftOrderTemplate = \"CIC11_Strike_Out_Decision_Notice\"")
-            .field("draftMainContentForCIC12DecisionAnnex", "draftOrderTemplate = \"CIC12_Decision_Annex\"")
-            .field("draftMainContentForCIC13ProFormaSummons", "draftOrderTemplate = \"CIC13_Pro_Forma_Summons\"");
+            .field("cicCaseDraftOrderCICList");
+
 
 
     }
