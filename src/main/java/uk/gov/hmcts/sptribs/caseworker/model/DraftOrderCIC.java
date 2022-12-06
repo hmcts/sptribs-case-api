@@ -1,8 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
-
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +17,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 public class DraftOrderCIC {
 
@@ -31,11 +27,12 @@ public class DraftOrderCIC {
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
-    private OrderTemplate orderTemplate;
+    private OrderTemplate anOrderTemplate;
 
     @CCD(
-        label = "Main Content",
+        label = "Main Content CIC1_Eligibility",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC1_Eligibility\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -44,6 +41,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC2_Quantum\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -52,6 +50,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC3_Rule_27\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -60,6 +59,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC4_Blank_Decision_Notice_1\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -68,6 +68,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC6_General_Directions\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -76,6 +77,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC7_ME_Dmi_Reports\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -84,6 +86,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC8_ME_Joint_Instruction\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -92,6 +95,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC10_Strike_Out_Warning\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -100,6 +104,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC11_Strike_Out_Decision_Notice\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -108,6 +113,7 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC12_Decision_Annex\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
@@ -116,13 +122,11 @@ public class DraftOrderCIC {
     @CCD(
         label = "Main Content",
         hint = "Amend content as required",
+        showCondition = "anOrderTemplate = \"CIC13_Pro_Forma_Summons\"",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String mainContentForCIC13ProFormaSummons;
-
-
-
 
 
 }

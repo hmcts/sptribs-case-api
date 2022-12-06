@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingNoticeOption;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -81,7 +81,7 @@ class CaseworkerRecordListingTest {
         //Then
         assertThat(response.getData().getRecordListing().getHearingType().getLabel()).isEqualTo("Final");
         assertThat(response.getData().getRecordListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
-        assertThat(response.getData().getRecordListing().getHearingNotice()).isEqualTo(HearingNoticeOption.CREATE_FROM_TEMPLATE);
+        assertThat(response.getData().getRecordListing().getHearingNotice()).isEqualTo(NoticeOption.CREATE_FROM_TEMPLATE);
         assertThat(response.getData().getRecordListing().getTemplate()).isEqualTo(RecordListingTemplate.HEARING_INVITE_CVP);
         assertThat(stayedResponse).isNotNull();
         assertThat(response.getErrors()).isEmpty();
@@ -178,7 +178,7 @@ class CaseworkerRecordListingTest {
         recordListing.setHearingType(HearingType.FINAL);
         recordListing.setImportantInfoDetails("some details");
         recordListing.setVideoCallLink("");
-        recordListing.setHearingNotice(HearingNoticeOption.CREATE_FROM_TEMPLATE);
+        recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
         recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
         return recordListing;
     }
