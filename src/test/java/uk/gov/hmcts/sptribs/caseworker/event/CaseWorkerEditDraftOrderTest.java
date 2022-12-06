@@ -57,7 +57,7 @@ class CaseWorkerEditDraftOrderTest {
             caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
 
-        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditDraftOrder.draftUpdated(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
 
