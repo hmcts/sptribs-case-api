@@ -47,7 +47,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftUpdated)
-              //  .showEventNotes()
+                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         editDraftOrder.addTo(pageBuilder);
@@ -71,8 +71,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse draftUpdated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Draft order updated use 'Send order' to send the case documentation to parties in the case. ")
-          //  .confirmationHeader(format("# Draft order updated %n## use 'Send order' to send the case documentation to parties in the case. %n## %s"))
+           // .confirmationHeader("# Draft order updated.  use 'Send order' to send the case documentation to parties in the case. ")
+           .confirmationHeader(format("# Draft order updated %n## use 'Send order' to send the case documentation to parties in the case."))
             .build();
     }
 
