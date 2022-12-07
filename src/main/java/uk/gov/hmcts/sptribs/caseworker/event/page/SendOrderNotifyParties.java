@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeApplicant;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 
 public class SendOrderNotifyParties implements CcdPageConfiguration {
 
@@ -38,7 +38,7 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullSubjectRepresentativeApplicant(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One field must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

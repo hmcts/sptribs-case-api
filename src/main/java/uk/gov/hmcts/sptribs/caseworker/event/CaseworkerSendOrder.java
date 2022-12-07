@@ -1,11 +1,13 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
@@ -15,7 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
+import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -51,6 +53,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
     private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
 
+    @Autowired
+    private OrderService orderService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = send(configBuilder);
@@ -74,10 +79,21 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .description("Send order")
             .showEventNotes()
             .showSummary()
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::sent)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+        DynamicList draftList = orderService.getDraftOrderDynamicList(details);
+        caseData.getCicCase().setDraftList(draftList);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -85,13 +101,13 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        final SendOrder sendOrder = caseData.getSendOrder();
-        var order = Order.builder().draftOrderCIC(sendOrder.getDraftOrderCIC())
-            .orderFile(sendOrder.getOrderFile())
-            .dueDates(sendOrder.getDueDates())
-            .yesOrNo(sendOrder.getYesOrNo())
-            .reminderDays(sendOrder.getReminderDays()).build();
-        if (isEmpty(caseData.getOrderList())) {
+        var cicCase = caseData.getCicCase();
+        var order = Order.builder().draftOrder(cicCase.getDraftOrderCIC())
+            .uploadedFile(cicCase.getOrderFile())
+            .dueDateList(cicCase.getOrderDueDates())
+            .draftOrder(cicCase.getDraftOrderCIC())
+            .reminderDay(cicCase.getOrderReminderDays()).build();
+        if (isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
             var listValue = ListValue
@@ -102,7 +118,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
             listValues.add(listValue);
 
-            caseData.setOrderList(listValues);
+            caseData.getCicCase().setOrderList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
@@ -110,13 +126,17 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 .value(order)
                 .build();
 
-            caseData.getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
+            caseData.getCicCase().getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
 
-            caseData.getOrderList().forEach(caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+            caseData.getCicCase().getOrderList().forEach(
+                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
-
-        caseData.setSendOrder(null);
+        caseData.getCicCase().setOrderIssuingType(null);
+        caseData.getCicCase().setOrderFile(null);
+        caseData.getCicCase().setOrderReminderYesOrNo(null);
+        caseData.getCicCase().setOrderReminderDays(null);
+        caseData.getCicCase().setDraftOrderCIC(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())

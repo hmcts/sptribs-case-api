@@ -24,13 +24,13 @@ public class Order {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseDocumentsCIC orderFile;
+    private CaseDocumentsCIC uploadedFile;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Due Date"
     )
-    private List<ListValue<DateModel>> dueDates;
+    private List<ListValue<DateModel>> dueDateList;
 
     @CCD(
         typeOverride = MultiSelectList,
@@ -38,23 +38,17 @@ public class Order {
 
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private GetAmendDateAsCompleted markAsCompleted;
+    private GetAmendDateAsCompleted completed;
 
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DraftOrderCIC draftOrderCIC;
-
-    @CCD(
-        label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private YesNo yesOrNo;
+    private DraftOrderCIC draftOrder;
 
     @CCD(
         label = "How many days before the earliest due date should a reminder be sent?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private ReminderDays reminderDays;
+    private ReminderDays reminderDay;
 }
