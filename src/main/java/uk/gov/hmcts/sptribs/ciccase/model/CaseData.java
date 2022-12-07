@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
@@ -339,6 +340,11 @@ public class CaseData {
 
 
 
+
+    @JsonUnwrapped(prefix = "close")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private CloseCase closeCase = new CloseCase();
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
