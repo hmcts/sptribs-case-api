@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminationData, State, UserRole> {
 
     public static final String CASE_TYPE = "DD";
-    public static final String JURISDICTION = "ST_DD";
+    public static final String JURISDICTION = "ST_SEND";
 
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;

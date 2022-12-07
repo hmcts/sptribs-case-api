@@ -30,7 +30,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "DD", "jurisdiction": "ST_DD" },
+        "attributes": { "caseType": "DD", "jurisdiction": "ST_SEND" },
         "authorisations": []
       },
       {

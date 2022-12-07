@@ -57,7 +57,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             lib.createProfile(p, CcdServiceCode.ST_MH.name(), CcdCaseType.MH.name(), state);
             lib.createProfile(p, CcdServiceCode.ST_PHL.name(), CcdCaseType.PHL.name(), state);
             lib.createProfile(p, CcdServiceCode.ST_SEND.name(), CcdCaseType.SEN.name(), state);
-            lib.createProfile(p, CcdServiceCode.ST_DD.name(), CcdCaseType.DD.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_SEND.name(), CcdCaseType.DD.name(), state);
         }
 
         lib.createRoles(
