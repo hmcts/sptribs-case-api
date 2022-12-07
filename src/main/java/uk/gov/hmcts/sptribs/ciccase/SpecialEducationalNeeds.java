@@ -40,7 +40,7 @@ public class SpecialEducationalNeeds implements CCDConfig<SpecialEducationalNeed
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
         configBuilder.caseType(CcdCaseType.SEN.name(), "SEN Case Type", CcdCaseType.SEN.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_SEN.getCcdServiceDescription());
+        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_SEND.getCcdServiceDescription());
 
         // Apply the configuration of our base case type to our derived type.
         // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.
