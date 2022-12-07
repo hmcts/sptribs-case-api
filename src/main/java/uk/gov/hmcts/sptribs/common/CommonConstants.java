@@ -6,6 +6,9 @@ public final class CommonConstants {
     public static final String TRIBUNAL_NAME = "TribunalName";
     public static final String CIC_CASE_NUMBER = "CicCaseNumber";
     public static final String CIC_CASE_SUBJECT_NAME = "CicCaseSubjectFullName";
+    public static final String STAY_EXPIRATION_DATE = "StayExpirationDate";
+    public static final String STAY_REASON = "stayStayReason";
+    public static final String STAY_ADDITIONAL_DETAIL = "stayAdditionalDetail";
 
     private CommonConstants() {
     }

@@ -44,7 +44,7 @@ uk:
         templatesCIC:
           APPLICATION_NEW_ORDER_ISSUED: 'e451a469-e61d-4daf-95c3-e405448ececf'
           APPLICATION_RECEIVED: '5385bfc6-eb33-41f6-ad2b-590a4f427606'
-          CASE_STAYED: '23e1153e-c95c-4630-83eb-b0a272908e94'
+          CASE_STAYED: 'ce3e6749-0400-47fd-aa96-33e348c860ad'
           TEST_TEMPLATE: '8d20e578-21cd-42b8-b27f-d13095e499d6'
         templates:
           english:
