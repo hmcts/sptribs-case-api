@@ -23,7 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 @Slf4j
 public class CareStandards implements CCDConfig<CareStandardsData, State, UserRole> {
 
-    public static final String CASE_TYPE = "CS";
+    public static final String JURISDICTION_NAME = "CS";
     public static final String JURISDICTION = "ST_CS";
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
@@ -39,7 +39,7 @@ public class CareStandards implements CCDConfig<CareStandardsData, State, UserRo
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
         configBuilder.caseType(CcdCaseType.CS.name(), "CS Case Type", CcdCaseType.CS.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_CS.getCcdServiceDescription());
+        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CS.getCcdServiceDescription());
 
         // Apply the configuration of our base case type to our derived type.
         // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.

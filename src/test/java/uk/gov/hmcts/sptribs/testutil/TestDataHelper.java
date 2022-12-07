@@ -50,6 +50,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.SolicitorService;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
 import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
@@ -82,7 +83,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.ccd.sdk.type.ScannedDocumentType.FORM;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantPrayer.DissolveDivorce.DISSOLVE_DIVORCE;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicationType.JOINT_APPLICATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicationType.SOLE_APPLICATION;
@@ -517,7 +517,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .id(TEST_CASE_ID)
                     .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(CASE_TYPE)
+                    .caseTypeId(CcdCaseType.CIC.name())
                     .build()
             )
             .build();
@@ -536,7 +536,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .state(state)
                     .id(TEST_CASE_ID)
-                    .caseTypeId(CASE_TYPE)
+                    .caseTypeId(CcdCaseType.CIC.name())
                     .build()
             )
             .build();
@@ -556,7 +556,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .id(TEST_CASE_ID)
                     .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(CASE_TYPE)
+                    .caseTypeId(CcdCaseType.CIC.name())
                     .build()
             )
             .build();
@@ -800,7 +800,7 @@ public class TestDataHelper {
             .builder()
             .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
             .id(TEST_CASE_ID)
-            .caseTypeId(CASE_TYPE)
+            .caseTypeId(CcdCaseType.CIC.name())
             .build();
     }
 

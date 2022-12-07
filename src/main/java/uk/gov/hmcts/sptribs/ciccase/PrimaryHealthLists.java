@@ -23,7 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 @Slf4j
 public class PrimaryHealthLists implements CCDConfig<PrimaryHealthListsData, State, UserRole> {
 
-    public static final String CASE_TYPE = "PHL";
+    public static final String JURISDICTION_NAME = "PHL";
     public static final String JURISDICTION = "ST_PHL";
 
     @Autowired
@@ -40,7 +40,7 @@ public class PrimaryHealthLists implements CCDConfig<PrimaryHealthListsData, Sta
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
         configBuilder.caseType(CcdCaseType.PHL.name(), "PHL Case Type", CcdCaseType.PHL.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_PHL.getCcdServiceDescription());
+        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_PHL.getCcdServiceDescription());
 
         // Apply the configuration of our base case type to our derived type.
         // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.

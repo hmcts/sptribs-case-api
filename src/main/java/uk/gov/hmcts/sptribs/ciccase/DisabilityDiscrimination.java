@@ -23,7 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 @Slf4j
 public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminationData, State, UserRole> {
 
-    public static final String CASE_TYPE = "DD";
+    public static final String JURISDICTION_NAME = "SEND";
     public static final String JURISDICTION = "ST_SEND";
 
     @Autowired
@@ -40,7 +40,7 @@ public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminat
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
         configBuilder.caseType(CcdCaseType.DD.name(), "DD Case Type", CcdCaseType.DD.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_DD.getCcdServiceDescription());
+        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_DD.getCcdServiceDescription());
 
         // Apply the configuration of our base case type to our derived type.
         // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.

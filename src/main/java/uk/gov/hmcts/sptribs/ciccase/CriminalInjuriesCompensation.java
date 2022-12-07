@@ -23,7 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
-    public static final String CASE_TYPE = "CIC";
+    public static final String JURISDICTION_NAME = "CIC";
     public static final String JURISDICTION = "ST_CIC";
 
     @Autowired
@@ -40,7 +40,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
 
         configBuilder.caseType(CcdCaseType.CIC.name(), "CIC Case Type", CcdCaseType.CIC.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, CASE_TYPE, CcdServiceCode.ST_CIC.getCcdServiceDescription());
+        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CIC.getCcdServiceDescription());
 
         // Apply the configuration of our base case type to our derived type.
         // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.
