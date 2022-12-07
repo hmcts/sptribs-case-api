@@ -36,3 +36,4 @@ public enum UserRole implements HasRole {
     }
 
 }
+
