@@ -60,7 +60,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker",
             "payments",
             "solicitor",
-            "solicitor-creator"
+            "solicitor-creator",
+            "caseworker-divorce-superuser"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
