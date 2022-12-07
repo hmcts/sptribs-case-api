@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 public class SpecialEducationalNeeds implements CCDConfig<SpecialEducationalNeedsData, State, UserRole> {
 
     public static final String CASE_TYPE = "SEN";
-    public static final String JURISDICTION = "ST_SEN";
+    public static final String JURISDICTION = "ST_SEND";
 
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
