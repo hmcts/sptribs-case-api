@@ -39,8 +39,8 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
-            .page("closeCase")
-            .label("closeCase", "<H2>Close this case</H2>")
+            .page("closeCasePage")
+            .label("closeCasePage", "<H2>Close this case</H2>")
             .complex(CaseData::getCloseCase)
             .mandatoryWithLabel(CloseCase::getCloseCaseReason, "")
             .optional(CloseCase::getAdditionalDetail, "");
