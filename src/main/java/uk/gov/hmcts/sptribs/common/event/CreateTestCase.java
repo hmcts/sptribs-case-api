@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
+import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
@@ -57,6 +58,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Autowired
     private SubmissionService submissionService;
 
+    @Autowired
+    private ApplicationReceivedNotification applicationReceivedNotification;
 
     public CreateTestCase(FeatureToggleService featureToggleService) {
         this.featureToggleService = featureToggleService;
@@ -132,12 +135,29 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
-
         String claimNumber = data.getHyphenatedCaseRef();
+
+        sendApplicationReceivedNotification(claimNumber, data);
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
             .build();
+    }
+
+    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
+        CicCase cicCase = data.getCicCase();
+
+        if (!cicCase.getSubjectCIC().isEmpty()) {
+            applicationReceivedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (!cicCase.getApplicantCIC().isEmpty()) {
+            applicationReceivedNotification.sendToApplicant(data, caseNumber);
+        }
+
+        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+            applicationReceivedNotification.sendToRepresentative(data, caseNumber);
+        }
     }
 
     private void setIsRepresentativePresent(CaseData data) {
