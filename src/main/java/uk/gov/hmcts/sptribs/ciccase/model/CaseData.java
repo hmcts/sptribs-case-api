@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
@@ -340,10 +339,7 @@ public class CaseData {
     private CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
 
 
-    @JsonUnwrapped(prefix = "sendOrder")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private SendOrder sendOrder = new SendOrder();
+
 
     @JsonUnwrapped(prefix = "close")
     @Builder.Default
