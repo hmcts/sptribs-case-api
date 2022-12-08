@@ -20,7 +20,9 @@ import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.*;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
@@ -64,29 +66,31 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
 
     public SubmittedCallbackResponse issued(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
-        var cicCase = details.getData().getCicCase();
+        var data = details.getData();
+        var cicCase = data.getCicCase();
+        String caseNumber = data.getHyphenatedCaseRef();
         final StringBuilder messageLine2 = new StringBuilder(100);
         messageLine2.append(" A notification will be sent  to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             messageLine2.append("Subject, ");
-            caseIssuedNotification.sendToSubject(details.getData(), details.getId());
+            caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
             messageLine2.append("Applicant, ");
-            caseIssuedNotification.sendToApplicant(details.getData(), details.getId());
+            caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             messageLine2.append("Representative, ");
-            caseIssuedNotification.sendToRepresentative(details.getData(), details.getId());
+            caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine2.append("Representative, ");
-            caseIssuedNotification.sendToRespondent(details.getData(), details.getId());
+            messageLine2.append("Respondent, ");
+            caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case issued %n##  This case has now been issued. "
-                + " %n## %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+            .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n##"
+                + "  %s ", messageLine2.substring(0, messageLine2.length() - 2)))
             .build();
     }
 }

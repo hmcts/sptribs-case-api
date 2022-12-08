@@ -49,6 +49,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.SolicitorService;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
@@ -238,6 +239,15 @@ public class TestDataHelper {
 
     public static CaseData caseData() {
         return CaseData.builder()
+            .applicant1(getApplicant())
+            .divorceOrDissolution(DIVORCE)
+            .caseInvite(new CaseInvite(null, null, null))
+            .build();
+    }
+
+    public static CaseData closedCaseData() {
+        return CaseData.builder()
+            .caseStatus(State.Draft)
             .applicant1(getApplicant())
             .divorceOrDissolution(DIVORCE)
             .caseInvite(new CaseInvite(null, null, null))

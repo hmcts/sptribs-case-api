@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -15,9 +17,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
 
 import java.util.Set;
 
@@ -34,11 +38,15 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
+
 @ExtendWith(MockitoExtension.class)
 class CaseworkerIssueCaseTest {
 
     @InjectMocks
     private CaseworkerIssueCase caseworkerIssueCase;
+
+    @Mock
+    private CaseIssuedNotification caseIssuedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -66,12 +74,14 @@ class CaseworkerIssueCaseTest {
             .representativeAddress(SOLICITOR_ADDRESS)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
         caseIssue.setAdditionalDocument(Set.of(AdditionalDocument.APPLICANT_EVIDENCE));
         caseData.setCaseIssue(caseIssue);
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -79,9 +89,15 @@ class CaseworkerIssueCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerIssueCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        Mockito.doNothing().when(caseIssuedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(caseIssuedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(caseIssuedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(caseIssuedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
         SubmittedCallbackResponse issuedResponse = caseworkerIssueCase.issued(updatedCaseDetails, beforeDetails);
 
         //Then
