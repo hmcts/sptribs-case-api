@@ -247,17 +247,10 @@ public class TestDataHelper {
 
     public static CaseData closedCaseData() {
         return CaseData.builder()
-            .caseStatus(State.Draft)
+            .caseStatus(State.CaseManagement)
             .applicant1(getApplicant())
             .divorceOrDissolution(DIVORCE)
             .caseInvite(new CaseInvite(null, null, null))
-            .build();
-    }
-
-    public static CaseData invalidCaseData() {
-        return CaseData.builder()
-            .applicant1(getInvalidApplicant())
-            .divorceOrDissolution(DIVORCE)
             .build();
     }
 
