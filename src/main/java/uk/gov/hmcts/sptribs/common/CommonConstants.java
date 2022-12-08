@@ -10,6 +10,8 @@ public final class CommonConstants {
     public static final String STAY_REASON = "stayStayReason";
     public static final String STAY_ADDITIONAL_DETAIL = "stayAdditionalDetail";
 
+    public static final String CIC = "Criminal Injuries Compensation Tribunal";
+
     private CommonConstants() {
     }
 }

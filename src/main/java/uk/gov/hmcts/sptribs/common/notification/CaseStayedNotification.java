@@ -15,7 +15,10 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.common.CommonConstants.*;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_ADDITIONAL_DETAIL;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_EXPIRATION_DATE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_REASON;
 
 @Component
 @Slf4j
