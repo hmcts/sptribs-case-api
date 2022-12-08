@@ -34,7 +34,8 @@ public class SpecialEducationalNeedsTest {
     @ExtendWith(MockitoExtension.class)
     void shouldBuildConfigWithCorrectCcdCaseType() {
         //Given
-        final ConfigBuilderImpl<SpecialEducationalNeedsData, State, UserRole> configBuilder = createSpecialEducationalNeedsDataConfigBuilder();
+        final ConfigBuilderImpl<SpecialEducationalNeedsData, State, UserRole> configBuilder =
+            createSpecialEducationalNeedsDataConfigBuilder();
         Mockito.when(cfgs.iterator()).thenReturn(Collections.emptyIterator());
 
         //When

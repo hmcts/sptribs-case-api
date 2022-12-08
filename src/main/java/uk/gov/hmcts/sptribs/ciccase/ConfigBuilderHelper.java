@@ -7,15 +7,18 @@ import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.search.SearchInputFields.SEARCH_FIELD_LIST;
 import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESULT_FIELD_LIST;
 
-public class ConfigBuilderHelper {
+public final class ConfigBuilderHelper {
 
-    public static void configureWithMandatoryConfig(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder){
+    private ConfigBuilderHelper() {
+
+    }
+
+    public static void configureWithMandatoryConfig(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder) {
         // Each case type must define these mandatory bits of config.
         configBuilder.searchInputFields().fields(SEARCH_FIELD_LIST);
         configBuilder.searchResultFields().fields(SEARCH_RESULT_FIELD_LIST);
@@ -25,7 +28,8 @@ public class ConfigBuilderHelper {
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
     }
 
-    public static void configure(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder, List<CCDConfig<CaseData, State, UserRole>> configs){
+    public static void configure(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder,
+                                 List<CCDConfig<CaseData, State, UserRole>> configs) {
         // Apply the configuration of our base case type to our derived type.
         // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.
         @SuppressWarnings("unchecked")
@@ -35,7 +39,7 @@ public class ConfigBuilderHelper {
         }
     }
 
-    public static void configureWithTestEvent(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder){
+    public static void configureWithTestEvent(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder) {
         configBuilder.event("test")
             .forState(State.AwaitingApplicant1Response)
             .name("Test event")

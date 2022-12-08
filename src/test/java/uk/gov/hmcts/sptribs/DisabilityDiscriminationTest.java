@@ -34,7 +34,8 @@ public class DisabilityDiscriminationTest {
     @ExtendWith(MockitoExtension.class)
     void shouldBuildConfigWithCorrectCcdCaseType() {
         //Given
-        final ConfigBuilderImpl<DisabilityDiscriminationData, State, UserRole> configBuilder = createDisabilityDiscriminationDataConfigBuilder();
+        final ConfigBuilderImpl<DisabilityDiscriminationData, State, UserRole> configBuilder =
+            createDisabilityDiscriminationDataConfigBuilder();
         Mockito.when(cfgs.iterator()).thenReturn(Collections.emptyIterator());
 
         //When
