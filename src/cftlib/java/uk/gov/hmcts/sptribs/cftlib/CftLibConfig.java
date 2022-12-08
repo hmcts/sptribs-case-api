@@ -19,24 +19,6 @@ import java.util.List;
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
-    @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
-    String cicDefName;
-
-    @Value("ccd-CS-${CCD_DEF_NAME:dev}.xlsx")
-    String csDefName;
-
-    @Value("ccd-DD-${CCD_DEF_NAME:dev}.xlsx")
-    String ddDefName;
-
-    @Value("ccd-MH-${CCD_DEF_NAME:dev}.xlsx")
-    String mhDefName;
-
-    @Value("ccd-PHL-${CCD_DEF_NAME:dev}.xlsx")
-    String phlDefName;
-
-    @Value("ccd-SEN-${CCD_DEF_NAME:dev}.xlsx")
-    String senDefName;
-
     @Value("Submitted")
     String state;
 

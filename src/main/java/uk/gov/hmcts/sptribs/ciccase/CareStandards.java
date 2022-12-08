@@ -30,31 +30,14 @@ public class CareStandards implements CCDConfig<CareStandardsData, State, UserRo
 
     @Override
     public void configure(final ConfigBuilder<CareStandardsData, State, UserRole> configBuilder) {
-        // Each case type must define these mandatory bits of config.
-        configBuilder.searchInputFields().fields(SEARCH_FIELD_LIST);
-        configBuilder.searchResultFields().fields(SEARCH_RESULT_FIELD_LIST);
-        configBuilder.workBasketResultFields().fields(SEARCH_RESULT_FIELD_LIST);
-
-        configBuilder.addPreEventHook(RetiredFields::migrate);
-        configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
+        ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
         configBuilder.caseType(CcdCaseType.CS.name(), "CS Case Type", CcdCaseType.CS.getDescription());
         configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CS.getCcdServiceDescription());
 
-        // Apply the configuration of our base case type to our derived type.
-        // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.
-        @SuppressWarnings("unchecked")
-        var upcast = (ConfigBuilder<CaseData, State, UserRole>)(Object) configBuilder;
-        for (var cfg : cfgs) {
-            cfg.configure(upcast);
-        }
+        ConfigBuilderHelper.configure(configBuilder, cfgs);
 
-        configBuilder.event("test")
-            .forState(State.AwaitingApplicant1Response)
-            .name("Test event")
-            .fields()
-            .mandatory(CareStandardsData::getHearingDate);
-
+        ConfigBuilderHelper.configureWithTestEvent(configBuilder);
 
         // to shutter the service within xui uncomment this line
         // configBuilder.shutterService();
