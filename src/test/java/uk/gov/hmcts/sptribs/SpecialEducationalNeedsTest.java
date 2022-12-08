@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createSpecialEducationalNeedsDataConfigBuilder;
 
 @ExtendWith(MockitoExtension.class)
-public class SpecialEducationalNeedsTest {
+class SpecialEducationalNeedsTest {
 
     @InjectMocks
     private SpecialEducationalNeeds specialEducationalNeeds;

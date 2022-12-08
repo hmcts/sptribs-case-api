@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCareStandardsDataConfigBuilder;
 
 @ExtendWith(MockitoExtension.class)
-public class CareStandardsTest {
+class CareStandardsTest {
 
     @InjectMocks
     private CareStandards careStandards;

@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createDisabilityDiscriminationDataConfigBuilder;
 
 @ExtendWith(MockitoExtension.class)
-public class DisabilityDiscriminationTest {
+class DisabilityDiscriminationTest {
 
     @InjectMocks
     private DisabilityDiscrimination disabilityDiscrimination;

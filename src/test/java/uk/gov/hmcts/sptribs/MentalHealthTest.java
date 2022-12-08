@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createMentalHealthDataConfigBuilder;
 
 @ExtendWith(MockitoExtension.class)
-public class MentalHealthTest {
+class MentalHealthTest {
 
     @InjectMocks
     private MentalHealth mentalHealth;

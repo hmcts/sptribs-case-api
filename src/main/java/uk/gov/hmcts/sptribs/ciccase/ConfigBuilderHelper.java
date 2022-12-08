@@ -31,9 +31,9 @@ public final class ConfigBuilderHelper {
     public static void configure(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder,
                                  List<CCDConfig<CaseData, State, UserRole>> configs) {
         // Apply the configuration of our base case type to our derived type.
-        // TODO: Make CCDConfig APIs covariant to avoid this unchecked cast.
+        // CCDGenerator to do in future: Make CCDConfig APIs covariant to avoid this unchecked cast.
         @SuppressWarnings("unchecked")
-        var upcast = (ConfigBuilder<CaseData, State, UserRole>)configBuilder;
+        var upcast = (ConfigBuilder<CaseData, State, UserRole>) configBuilder;
         for (var config : configs) {
             config.configure(upcast);
         }
