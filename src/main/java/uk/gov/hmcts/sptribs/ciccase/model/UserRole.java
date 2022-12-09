@@ -10,18 +10,18 @@ import uk.gov.hmcts.ccd.sdk.api.HasRole;
 public enum UserRole implements HasRole {
 
     // Common User roles
-    SUPER_USER("IDAM:caseworker-divorce-superuser", "CRU"),
-    SYSTEMUPDATE("IDAM:caseworker-divorce-systemupdate", "CRU"),
-    SOLICITOR("IDAM:caseworker-divorce-solicitor", "CRU"),
+    SUPER_USER("caseworker-divorce-superuser", "CRU"),
+    SYSTEMUPDATE("caseworker-divorce-systemupdate", "CRU"),
+    SOLICITOR("caseworker-divorce-solicitor", "CRU"),
     CREATOR("[CREATOR]", "CRU"),
 
     // CIC User roles
-    SUPER_USER_CIC("IDAM:caseworker-sptribs-superuser", "CRU"),
-    COURT_ADMIN_CIC("IDAM:caseworker-sptribs-cic-courtadmin", "CRU"),
-    CASE_OFFICER_CIC("IDAM:caseworker-sptribs-cic-caseofficer", "CRU"),
-    DISTRICT_REGISTRAR_CIC("IDAM:caseworker-sptribs-cic-districtregistrar", "CRU"),
-    DISTRICT_JUDGE_CIC("IDAM:caseworker-sptribs-cic-districtjudge", "CRU"),
-    RESPONDENT_CIC("IDAM:caseworker-sptribs-cic-respondent", "CRU"),
+    SUPER_USER_CIC("caseworker-sptribs-superuser", "CRU"),
+    COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
+    CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
+    DISTRICT_REGISTRAR_CIC("caseworker-sptribs-cic-districtregistrar", "CRU"),
+    DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU"),
+    RESPONDENT_CIC("caseworker-sptribs-cic-respondent", "CRU"),
 
     HMCTS_STAFF("hmcts-staff", "CRU"),
     HMCTS_JUDICIARY("hmcts-judiciary", "CRU"),
