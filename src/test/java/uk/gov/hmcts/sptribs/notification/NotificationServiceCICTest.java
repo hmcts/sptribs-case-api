@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
+import uk.gov.service.notify.SendLetterResponse;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.APPLICATION_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.CASE_ISSUED_CITIZEN_POST;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceCICTest {
@@ -41,6 +43,9 @@ public class NotificationServiceCICTest {
 
     @Mock
     private SendEmailResponse sendEmailResponse;
+
+    @Mock
+    private SendLetterResponse sendLetterResponse;
 
     @Test
     void shouldInvokeNotificationClientToSendEmail() throws NotificationClientException {
@@ -81,6 +86,40 @@ public class NotificationServiceCICTest {
     }
 
     @Test
+    void shouldInvokeNotificationClientToSendLetter() throws NotificationClientException {
+        //Given
+        String templateId = UUID.randomUUID().toString();
+        Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+        NotificationRequest request = NotificationRequest.builder()
+            .template(CASE_ISSUED_CITIZEN_POST)
+            .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
+            .build();
+        notificationService.setNotificationRequest(request);
+
+        when(sendLetterResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
+        when(sendLetterResponse.getNotificationId()).thenReturn(UUID.randomUUID());
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
+
+        when(notificationClient.sendLetter(
+            eq(templateId),
+            any(),
+            any()
+        )).thenReturn(sendLetterResponse);
+
+        //When
+        notificationService.sendLetter();
+
+        //Then
+        verify(notificationClient).sendLetter(
+            eq(templateId),
+            any(),
+            any());
+
+        verify(sendLetterResponse, times(2)).getNotificationId();
+        verify(sendLetterResponse, times(2)).getReference();
+    }
+
+    @Test
     void shouldThrowNotificationExceptionWhenClientFailsToSendEmail()
         throws NotificationClientException {
         //Given
@@ -110,6 +149,37 @@ public class NotificationServiceCICTest {
         verify(notificationClient).sendEmail(
             eq(templateId),
             eq(EMAIL_ADDRESS),
+            any(),
+            any());
+    }
+
+    @Test
+    void shouldThrowNotificationExceptionWhenClientFailsToSendLetter()
+        throws NotificationClientException {
+        //Given
+        String templateId = UUID.randomUUID().toString();
+        Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+        NotificationRequest request = NotificationRequest.builder()
+            .template(CASE_ISSUED_CITIZEN_POST)
+            .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
+            .build();
+        notificationService.setNotificationRequest(request);
+
+        doThrow(new NotificationClientException("some message"))
+            .when(notificationClient).sendLetter(
+                eq(templateId),
+                any(),
+                any());
+
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
+
+        //When&Then
+        assertThatThrownBy(() -> notificationService.sendLetter())
+            .isInstanceOf(NotificationException.class)
+            .hasMessageContaining("some message");
+
+        verify(notificationClient).sendLetter(
+            eq(templateId),
             any(),
             any());
     }
