@@ -10,6 +10,12 @@ import uk.gov.hmcts.ccd.sdk.api.Search.SearchBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CareStandardsData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.DisabilityDiscriminationData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.MentalHealthData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.PrimaryHealthListsData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.SpecialEducationalNeedsData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -27,6 +33,60 @@ public final class ConfigTestUtil {
     public static ConfigBuilderImpl<CaseData, State, UserRole> createCaseDataConfigBuilder() {
         return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
             CaseData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> createCICCaseDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            CriminalInjuriesCompensationData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<CareStandardsData, State, UserRole> createCareStandardsDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            CareStandardsData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<MentalHealthData, State, UserRole> createMentalHealthDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            MentalHealthData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<PrimaryHealthListsData, State, UserRole> createPrimaryHealthListsDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            PrimaryHealthListsData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<DisabilityDiscriminationData, State, UserRole> createDisabilityDiscriminationDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            DisabilityDiscriminationData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<SpecialEducationalNeedsData, State, UserRole> createSpecialEducationalNeedsDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            SpecialEducationalNeedsData.class,
             State.class,
             UserRole.class,
             new HashMap<>(),
