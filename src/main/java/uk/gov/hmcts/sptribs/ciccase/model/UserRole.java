@@ -40,7 +40,7 @@ public enum UserRole implements HasRole {
         }
         return null;
     }
-    public static String getAccessProfileName(UserRole userRole) {
+    /*public static String getAccessProfileName(UserRole userRole) {
         for (UserRole role : UserRole.values()) {
             if (role.equals(userRole)) {
                 if (role.getRole().startsWith("IDAM:")) {
@@ -53,6 +53,6 @@ public enum UserRole implements HasRole {
             }
         }
         return null;
-    }
+    }*/
 
 }
