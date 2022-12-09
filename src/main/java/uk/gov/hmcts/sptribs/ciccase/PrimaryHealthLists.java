@@ -30,7 +30,11 @@ public class PrimaryHealthLists implements CCDConfig<PrimaryHealthListsData, Sta
     public void configure(final ConfigBuilder<PrimaryHealthListsData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
-        configBuilder.caseType(CcdCaseType.PHL.name(), "PHL Case Type", CcdCaseType.PHL.getDescription());
+        configBuilder.caseType(
+            CcdServiceCode.ST_PHL.getCaseType().getCaseName(),
+            CcdServiceCode.ST_PHL.getCaseType().name(),
+            CcdServiceCode.ST_PHL.getCaseType().getDescription());
+
         configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_PHL.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);

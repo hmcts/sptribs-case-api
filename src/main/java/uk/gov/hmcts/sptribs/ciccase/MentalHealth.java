@@ -30,7 +30,11 @@ public class MentalHealth implements CCDConfig<MentalHealthData, State, UserRole
     public void configure(final ConfigBuilder<MentalHealthData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
-        configBuilder.caseType(CcdCaseType.MH.name(), "MH Case Type", CcdCaseType.MH.getDescription());
+        configBuilder.caseType(
+            CcdServiceCode.ST_MH.getCaseType().getCaseName(),
+            CcdServiceCode.ST_MH.getCaseType().name(),
+            CcdServiceCode.ST_MH.getCaseType().getDescription());
+
         configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_MH.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);

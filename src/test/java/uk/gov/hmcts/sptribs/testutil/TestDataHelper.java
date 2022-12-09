@@ -527,7 +527,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .id(TEST_CASE_ID)
                     .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(CcdCaseType.CIC.name())
+                    .caseTypeId(CcdCaseType.CIC.getCaseName())
                     .build()
             )
             .build();
@@ -546,7 +546,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .state(state)
                     .id(TEST_CASE_ID)
-                    .caseTypeId(CcdCaseType.CIC.name())
+                    .caseTypeId(CcdCaseType.CIC.getCaseName())
                     .build()
             )
             .build();
@@ -566,7 +566,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .id(TEST_CASE_ID)
                     .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(CcdCaseType.CIC.name())
+                    .caseTypeId(CcdCaseType.CIC.getCaseName())
                     .build()
             )
             .build();
@@ -810,7 +810,7 @@ public class TestDataHelper {
             .builder()
             .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
             .id(TEST_CASE_ID)
-            .caseTypeId(CcdCaseType.CIC.name())
+            .caseTypeId(CcdCaseType.CIC.getCaseName())
             .build();
     }
 

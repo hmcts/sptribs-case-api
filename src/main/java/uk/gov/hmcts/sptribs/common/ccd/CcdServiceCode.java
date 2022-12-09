@@ -12,7 +12,7 @@ public enum CcdServiceCode {
     ST_CS("BCA1","CARE_STANDARDS",CcdCaseType.CS, "Special Tribunals: Care Standards"),
     ST_MH("BCA2","MENTAL_HEALTH", CcdCaseType.MH, "Special Tribunals: Mental Health"),
     ST_PHL("BCA3", "PRIMARY_HEALTH_LISTS", CcdCaseType.PHL, "Special Tribunals: Primary Health Lists"),
-    ST_SEND("BCA4", "SPECIAL_EDUCATIONAL_NEEDS_AND_DISABILITIES", CcdCaseType.SEN, "Special Tribunals: Special Educational Needs"),
+    ST_SEN("BCA4", "SPECIAL_EDUCATIONAL_NEEDS_AND_DISABILITIES", CcdCaseType.SEN, "Special Tribunals: Special Educational Needs"),
     ST_DD("BCA4", "SPECIAL_EDUCATIONAL_NEEDS_AND_DISABILITIES", CcdCaseType.DD, "Special Tribunals: Disability Discrimination");
 
     @JsonValue

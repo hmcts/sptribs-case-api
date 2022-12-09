@@ -96,7 +96,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CcdCaseType.CIC.name(),
+            CcdCaseType.CIC.getCaseName(),
             sourceBuilder.toString());
     }
 
@@ -120,7 +120,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CcdCaseType.CIC.name(),
+            CcdCaseType.CIC.getCaseName(),
             sourceBuilder.toString()
         ).getCases();
     }
@@ -143,7 +143,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CcdCaseType.CIC.name(),
+            CcdCaseType.CIC.getCaseName(),
             sourceBuilder.toString()
         ).getCases();
     }
