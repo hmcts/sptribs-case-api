@@ -31,7 +31,11 @@ public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminat
     public void configure(final ConfigBuilder<DisabilityDiscriminationData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
-        configBuilder.caseType(CcdCaseType.DD.name(), "DD Case Type", CcdCaseType.DD.getDescription());
+        configBuilder.caseType(
+            CcdServiceCode.ST_DD.getCaseType().getCaseName(),
+            CcdServiceCode.ST_DD.getCaseType().name(),
+            CcdServiceCode.ST_DD.getCaseType().getDescription());
+
         configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_DD.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);

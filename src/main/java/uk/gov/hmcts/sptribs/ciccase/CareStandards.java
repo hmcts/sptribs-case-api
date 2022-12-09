@@ -29,7 +29,11 @@ public class CareStandards implements CCDConfig<CareStandardsData, State, UserRo
     public void configure(final ConfigBuilder<CareStandardsData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
-        configBuilder.caseType(CcdCaseType.CS.name(), "CS Case Type", CcdCaseType.CS.getDescription());
+        configBuilder.caseType(
+            CcdServiceCode.ST_CS.getCaseType().getCaseName(),
+            CcdServiceCode.ST_CS.getCaseType().name(),
+            CcdServiceCode.ST_CS.getCaseType().getDescription());
+
         configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CS.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);

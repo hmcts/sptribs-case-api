@@ -30,7 +30,11 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
     public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
-        configBuilder.caseType(CcdCaseType.CIC.name(), "CIC Case Type", CcdCaseType.CIC.getDescription());
+        configBuilder.caseType(
+            CcdServiceCode.ST_CIC.getCaseType().getCaseName(),
+            CcdServiceCode.ST_CIC.getCaseType().name(),
+            CcdServiceCode.ST_CIC.getCaseType().getDescription());
+
         configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CIC.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);

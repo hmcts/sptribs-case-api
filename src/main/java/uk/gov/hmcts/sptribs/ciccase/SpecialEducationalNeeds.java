@@ -30,8 +30,12 @@ public class SpecialEducationalNeeds implements CCDConfig<SpecialEducationalNeed
     public void configure(final ConfigBuilder<SpecialEducationalNeedsData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
-        configBuilder.caseType(CcdCaseType.SEN.name(), "SEN Case Type", CcdCaseType.SEN.getDescription());
-        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_SEND.getCcdServiceDescription());
+        configBuilder.caseType(
+            CcdServiceCode.ST_SEN.getCaseType().getCaseName(),
+            CcdServiceCode.ST_SEN.getCaseType().name(),
+            CcdServiceCode.ST_SEN.getCaseType().getDescription());
+
+        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_SEN.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 
