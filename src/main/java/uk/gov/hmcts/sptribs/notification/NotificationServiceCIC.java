@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
+import uk.gov.service.notify.SendLetterResponse;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -66,6 +67,39 @@ public class NotificationServiceCIC {
         }
     }
 
+    public NotificationResponse sendLetter() {
+        EmailTemplateName template = notificationRequest.getTemplate();
+        Map<String, Object> templateVars = notificationRequest.getTemplateVars();
+
+        String referenceId = UUID.randomUUID().toString();
+
+        try {
+            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
+
+            log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
+
+            SendLetterResponse sendLetterResponse =
+                notificationClient.sendLetter(
+                    templateId,
+                    templateVars,
+                    referenceId
+                );
+
+            log.info("Successfully sent letter with notification id {} and reference {}",
+                sendLetterResponse.getNotificationId(),
+                sendLetterResponse.getReference().orElse(referenceId)
+            );
+            return getLetterNotificationResponse(sendLetterResponse);
+        } catch (NotificationClientException notificationClientException) {
+            log.error("Failed to send letter. Reference ID: {}. Reason: {}",
+                referenceId,
+                notificationClientException.getMessage(),
+                notificationClientException
+            );
+            throw new NotificationException(notificationClientException);
+        }
+    }
+
     public void setNotificationRequest(NotificationRequest notificationRequest) {
         this.notificationRequest = notificationRequest;
     }
@@ -87,4 +121,20 @@ public class NotificationServiceCIC {
             .build();
     }
 
+    private NotificationResponse getLetterNotificationResponse(final SendLetterResponse sendLetterResponse) {
+        Optional<String> reference = sendLetterResponse.getReference();
+        String clientReference = null;
+        if (reference.isPresent()) {
+            clientReference = reference.get();
+        }
+
+        return NotificationResponse.builder()
+            .id(sendLetterResponse.getNotificationId().toString())
+            .clientReference(clientReference)
+            .notificationType(NotificationType.POST)
+            .updatedAtTime(LocalDateTime.now())
+            .createdAtTime(LocalDateTime.now())
+            .status("Received")
+            .build();
+    }
 }
