@@ -10,7 +10,67 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-divorce-solicitor",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "SEN", "jurisdiction": "ST_SEND" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-divorce-solicitor",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "DD", "jurisdiction": "ST_SEND" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-divorce-solicitor",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CS", "jurisdiction": "ST_CS" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-divorce-solicitor",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "MH", "jurisdiction": "ST_MH" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-divorce-solicitor",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "PHL", "jurisdiction": "ST_PHL" },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "idam:caseworker-st_cic",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -20,7 +80,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -30,7 +90,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -40,7 +100,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -50,7 +110,7 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -60,7 +120,7 @@
         "roleCategory": "CITIZEN",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       },
       {
@@ -70,7 +130,7 @@
         "roleCategory": "CITIZEN",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CIC", "jurisdiction": "CIC" },
+        "attributes": { "caseType": "CIC", "jurisdiction": "ST_CIC" },
         "authorisations": []
       }
     ],
