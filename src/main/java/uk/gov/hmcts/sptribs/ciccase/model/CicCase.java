@@ -501,4 +501,13 @@ public class CicCase {
     )
     private NotificationResponse repNotificationResponse;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse subjectLetterNotifyList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse appLetterNotificationResponse;
 }
