@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -102,11 +104,20 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     ) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
-        var order = Order.builder().draftOrder(cicCase.getDraftOrderCIC())
+
+        var order = Order.builder()
             .uploadedFile(cicCase.getOrderFile())
             .dueDateList(cicCase.getOrderDueDates())
-            .draftOrder(cicCase.getDraftOrderCIC())
+            .parties(getRecipients(cicCase))
             .reminderDay(cicCase.getOrderReminderDays()).build();
+        String selectedDraft = caseData.getCicCase().getDraftList().getValue().getLabel();
+        String id = getId(selectedDraft);
+        var draftList = caseData.getCicCase().getDraftOrderCICList();
+        for (int i = 0; i < draftList.size(); i++) {
+            if (null != id && Integer.parseInt(id) == i) {
+                order.setDraftOrder(draftList.get(i).getValue());
+            }
+        }
         if (isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
@@ -136,7 +147,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
         caseData.getCicCase().setOrderReminderDays(null);
-        caseData.getCicCase().setDraftOrderCIC(null);
+        caseData.getCicCase().setOrderDueDates(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
