@@ -14,15 +14,10 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
-
-    @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
-    String defName;
 
     @Value("Submitted")
     String state;
@@ -39,55 +34,43 @@ public class CftLibConfig implements CFTLibConfigurer {
             "TEST_SOLICITOR@mailinator.com",
             "divorce_as_caseworker_admin@mailinator.com")) {
             lib.createProfile(p, "DIVORCE", "NO_FAULT_DIVORCE", state);
-            lib.createProfile(p, CcdServiceCode.CIC.getCcdServiceName(), CcdCaseType.CIC.name(), state);
-            lib.createProfile(p, CcdServiceCode.CS.getCcdServiceName(), CcdCaseType.CS.name(), state);
-            lib.createProfile(p, CcdServiceCode.MH.getCcdServiceName(), CcdCaseType.MH.name(), state);
-            lib.createProfile(p, CcdServiceCode.PHL.getCcdServiceName(), CcdCaseType.PHL.name(), state);
-            lib.createProfile(p, CcdServiceCode.SEN.getCcdServiceName(), CcdCaseType.SEN.name(), state);
-            lib.createProfile(p, CcdServiceCode.DD.getCcdServiceName(), CcdCaseType.DD.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_CIC.name(), CcdCaseType.CIC.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_CS.name(), CcdCaseType.CS.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_MH.name(), CcdCaseType.MH.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_PHL.name(), CcdCaseType.PHL.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_SEND.name(), CcdCaseType.SEN.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_SEND.name(), CcdCaseType.DD.name(), state);
         }
 
         lib.createRoles(
-            "caseworker-divorce-superuser",
-            "caseworker-divorce-solicitor",
-            "caseworker-divorce-systemupdate",
+            "caseworker-sptribs-superuser",
+            "caseworker-sptribs-systemupdate",
             "caseworker-sptribs-superuser",
             "caseworker-sptribs-cic-courtadmin",
             "citizen-sptribs-cic-dss",
+            "caseworker-st_cic",
             "caseworker-sptribs-cic-caseofficer",
             "caseworker-sptribs-cic-districtregistrar",
             "caseworker-sptribs-cic-districtjudge",
             "caseworker-sptribs-cic-respondent",
             "caseworker",
-            "payments"
+            "payments",
+            "solicitor",
+            "solicitor-creator",
+            "caseworker-divorce-superuser"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
             .getInputStream(), Charset.defaultCharset());
         lib.configureRoleAssignments(json);
 
-        // Generate and import CCD definitions
-        generateCCDDefinition();
-
-        var nfdDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + defName));
-        lib.importDefinition(nfdDefinition);
-    }
-
-    /**
-     * Generate our JSON ccd definition and convert it to xlsx.
-     * Doing this at runtime in the CftlibConfig allows use of spring boot devtool's
-     * live reload functionality to rapidly edit and test code & definition changes.
-     */
-    private void generateCCDDefinition() throws Exception {
-        // Export the JSON config.
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
-        // Run the gradle task to convert to xlsx.
-        var code = new ProcessBuilder("./gradlew", "buildCCDXlsx")
-            .inheritIO()
-            .start()
-            .waitFor();
-        if (code != 0) {
-            throw new RuntimeException("Error converting ccd json to xlsx");
-        }
+        // Load the JSON definitions for each caseType.
+        lib.importJsonDefinition(new File("build/definitions/CIC"));
+        lib.importJsonDefinition(new File("build/definitions/CS"));
+        lib.importJsonDefinition(new File("build/definitions/DD"));
+        lib.importJsonDefinition(new File("build/definitions/MH"));
+        lib.importJsonDefinition(new File("build/definitions/PHL"));
+        lib.importJsonDefinition(new File("build/definitions/SEN"));
     }
 }
