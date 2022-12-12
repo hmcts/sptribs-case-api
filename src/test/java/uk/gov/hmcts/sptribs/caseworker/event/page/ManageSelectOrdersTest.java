@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -19,34 +20,39 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @ExtendWith(MockitoExtension.class)
-class SendOrderAddDraftOrderTest {
+public class ManageSelectOrdersTest {
 
     @InjectMocks
-    private SendOrderAddDraftOrder sendOrderAddDraftOrder;
+    private ManageSelectOrders manageSelectOrders;
 
     @Test
     void shouldReturnErrorsIfNoNotificationPartySelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
-        ListValue<DraftOrderCIC> order = new ListValue<>();
+        final Order order = Order.builder()
+            .dueDateList(null)
+            .draftOrder(new DraftOrderCIC())
+            .build();
+        ListValue<Order> listValue = new ListValue<>();
+        listValue.setValue(order);
+        listValue.setId("0");
         final CicCase cicCase = CicCase.builder()
-            .draftOrderCICList(List.of(order))
-            .draftList(getDraftList())
+            .orderList(List.of(listValue))
+            .orderDynamicList(geOrderList())
             .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderAddDraftOrder.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getErrors()).isNull();
+        assertThat(response.getErrors()).hasSize(0);
     }
 
-    private DynamicList getDraftList() {
+    private DynamicList geOrderList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("0")
