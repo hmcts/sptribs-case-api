@@ -19,12 +19,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
@@ -235,15 +234,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
-    @JsonUnwrapped(prefix = "draft")
-    @Builder.Default
-    @CCD(
-        label = "Select order template ",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
-
-
     @JsonUnwrapped(prefix = "link")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -339,10 +329,12 @@ public class CaseData {
     private CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
 
 
-    @JsonUnwrapped(prefix = "sendOrder")
+    @JsonUnwrapped(prefix = "close")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private SendOrder sendOrder = new SendOrder();
+    @CCD(
+        label = "Close Case",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private CloseCase closeCase = new CloseCase();
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

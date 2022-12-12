@@ -4,19 +4,23 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
-import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
+import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -29,8 +33,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerSendOrder.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -51,6 +58,9 @@ class CaseworkerSendOrderTest {
     @InjectMocks
     private CaseworkerSendOrder caseworkerSendOrder;
 
+    @Mock
+    private OrderService orderService;
+
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
@@ -66,13 +76,37 @@ class CaseworkerSendOrderTest {
     }
 
     @Test
+    void shouldRunAboutToStart() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        updatedCaseDetails.setData(caseData);
+        when(orderService.getDraftOrderDynamicList(any())).thenReturn(null);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+    }
+
+    @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
 
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
+        draftOrderCICListValue.setValue(draftOrderCIC);
+        draftOrderCICListValue.setId("0");
         final CicCase cicCase = CicCase.builder()
+            .draftList(getDraftOrderList())
+            .draftOrderCICList(List.of(draftOrderCICListValue))
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
             .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
@@ -81,17 +115,13 @@ class CaseworkerSendOrderTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        final SendOrder sendOrder = SendOrder.builder()
-            .dueDates(List.of(dates))
-            .yesOrNo(YesNo.YES)
-            .reminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderDueDates(List.of(dates))
+            .orderReminderYesOrNo(YesNo.YES)
+            .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .build();
         final CaseData caseData = caseData();
-        caseData.setSendOrder(sendOrder);
         caseData.setCicCase(cicCase);
-        caseData.setDraftOrderCIC(DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -106,12 +136,10 @@ class CaseworkerSendOrderTest {
         //Then
         assertThat(sent).isNotNull();
         assertThat(response).isNotNull();
-        SendOrder order = response.getData().getSendOrder();
-        assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
-        assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
-        assertThat(order.getOrderIssuingType()).isNotNull();
-        assertThat(order.getOrderFile()).isNull();
-        assertThat(order.getDraftOrderCIC()).isNull();
+        Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
+        assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
+        assertThat(order.getUploadedFile()).isNull();
+        assertThat(order.getDraftOrder()).isNotNull();
     }
 
     @Test
@@ -121,7 +149,13 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
+        draftOrderCICListValue.setValue(draftOrderCIC);
+        draftOrderCICListValue.setId("0");
+
         final CicCase cicCase = CicCase.builder()
+            .draftOrderCICList(List.of(draftOrderCICListValue))
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
             .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
@@ -130,23 +164,19 @@ class CaseworkerSendOrderTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        final SendOrder sendOrder = SendOrder.builder()
-            .dueDates(List.of(dates))
-            .yesOrNo(YesNo.YES)
-            .reminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderDueDates(List.of(dates))
+            .orderReminderYesOrNo(YesNo.YES)
+            .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .draftList(getDraftOrderList())
             .build();
         final CaseData caseData = caseData();
-        caseData.setSendOrder(sendOrder);
         caseData.setCicCase(cicCase);
-        caseData.setDraftOrderCIC(DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -155,14 +185,11 @@ class CaseworkerSendOrderTest {
         //Then
         assertThat(sent).isNotNull();
         assertThat(response).isNotNull();
-        SendOrder order = response.getData().getSendOrder();
-        assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
-        assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
-        assertThat(order.getOrderIssuingType()).isNotNull();
-        assertThat(order.getOrderFile()).isNull();
-        assertThat(order.getDraftOrderCIC()).isNull();
-        assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());
-        assertThat(order.getReminderDays().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
+        Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
+        assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
+        assertThat(order.getUploadedFile()).isNull();
+        assertThat(order.getDraftOrder()).isNotNull();
+        assertThat(order.getReminderDay().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
 
     @Test
@@ -172,24 +199,27 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
+        draftOrderCICListValue.setValue(draftOrderCIC);
+        draftOrderCICListValue.setId("0");
+
         final CicCase cicCase = CicCase.builder()
+            .draftOrderCICList(List.of(draftOrderCICListValue))
+            .draftList(getDraftOrderList())
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        final SendOrder sendOrder = SendOrder.builder()
-            .dueDates(List.of(dates))
-            .yesOrNo(YesNo.YES)
-            .reminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderDueDates(List.of(dates))
+            .orderReminderYesOrNo(YesNo.YES)
+            .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .build();
         final CaseData caseData = caseData();
-        caseData.setSendOrder(sendOrder);
         caseData.setCicCase(cicCase);
-        caseData.setDraftOrderCIC(DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -204,14 +234,70 @@ class CaseworkerSendOrderTest {
         //Then
         assertThat(sent).isNotNull();
         assertThat(response).isNotNull();
-        SendOrder order = response.getData().getSendOrder();
-        assertThat(order.getDueDates().get(0).getValue().getDueDate()).isNotNull();
-        assertThat(order.getDueDates().get(0).getValue().getInformation()).isNotNull();
-        assertThat(order.getOrderIssuingType()).isNotNull();
-        assertThat(order.getOrderFile()).isNull();
-        assertThat(order.getDraftOrderCIC()).isNull();
-        assertThat(order.getYesOrNo().getLabel()).isEqualTo(YesNo.YES.getLabel());
-        assertThat(order.getReminderDays().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
+        Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
+        assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
+        assertThat(order.getUploadedFile()).isNull();
+        assertThat(order.getDraftOrder()).isNotNull();
+        assertThat(order.getReminderDay().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
 
+    @Test
+    void shouldSuccessfullySendOrderMultiple() {
+        //Given
+
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final ListValue<DateModel> dates = new ListValue<>();
+        dates.setValue(dateModel);
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
+        draftOrderCICListValue.setValue(draftOrderCIC);
+        draftOrderCICListValue.setId("0");
+        final CicCase cicCase = CicCase.builder()
+            .draftOrderCICList(List.of(draftOrderCICListValue))
+            .draftList(getDraftOrderList())
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderDueDates(List.of(dates))
+            .orderReminderYesOrNo(YesNo.YES)
+            .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        updatedCaseDetails.setData(caseData);
+        AboutToStartOrSubmitResponse<CaseData, State> response2 =
+            caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(sent).isNotNull();
+        assertThat(response).isNotNull();
+        assertThat(response2.getData().getCicCase().getOrderList()).hasSize(2);
+    }
+
+    private DynamicList getDraftOrderList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("0")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
 }

@@ -59,7 +59,7 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     protected List<String> getAllDefinitionFilesToLoadAt(String definitionsPath) {
         String environmentName = environment.name().toLowerCase(Locale.UK);
         return List.of(
-            "build/ccd-config/ccd-" + CriminalInjuriesCompensation.CASE_TYPE + "-" + environmentName + ".xlsx"
+            "build/ccd-config/ccd-" + CriminalInjuriesCompensation.JURISDICTION_NAME + "-" + environmentName + ".xlsx"
         );
     }
 }

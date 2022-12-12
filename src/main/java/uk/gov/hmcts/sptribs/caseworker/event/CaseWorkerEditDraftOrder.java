@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -45,7 +46,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .name("Edit draft order")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::draftCreated)
+                .submittedCallback(this::draftUpdated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
@@ -67,10 +68,11 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     }
 
-    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse draftUpdated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Draft order created. ")
+           // .confirmationHeader("# Draft order updated.  use 'Send order' to send the case documentation to parties in the case. ")
+           .confirmationHeader(format("# Draft order updated %n## Use 'Send order' to send the case documentation to parties in the case."))
             .build();
     }
 

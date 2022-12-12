@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
 @Slf4j
 @Component
