@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -42,7 +41,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CLOSE_THE_CASE)
-            .forStates(CaseManagement, AwaitingOutcome)
+            .forStates(CaseManagement)
             .name("Close the Case")
             .showSummary()
             .description("Close the case")
