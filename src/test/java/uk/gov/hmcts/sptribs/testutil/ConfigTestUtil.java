@@ -93,6 +93,60 @@ public final class ConfigTestUtil {
             ImmutableSet.copyOf(State.class.getEnumConstants())));
     }
 
+    public static ConfigBuilderImpl<CriminalInjuriesCompensationData, State, UserRole> createCICCaseDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            CriminalInjuriesCompensationData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<CareStandardsData, State, UserRole> createCareStandardsDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            CareStandardsData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<MentalHealthData, State, UserRole> createMentalHealthDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            MentalHealthData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<PrimaryHealthListsData, State, UserRole> createPrimaryHealthListsDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            PrimaryHealthListsData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<DisabilityDiscriminationData, State, UserRole> createDisabilityDiscriminationDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            DisabilityDiscriminationData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
+    public static ConfigBuilderImpl<SpecialEducationalNeedsData, State, UserRole> createSpecialEducationalNeedsDataConfigBuilder() {
+        return new ConfigBuilderImpl<>(new ResolvedCCDConfig<>(
+            SpecialEducationalNeedsData.class,
+            State.class,
+            UserRole.class,
+            new HashMap<>(),
+            ImmutableSet.copyOf(State.class.getEnumConstants())));
+    }
+
     @SuppressWarnings({"unchecked"})
     public static <T, S, R extends HasRole> Map<String, Event<T, R, S>> getEventsFrom(
         final ConfigBuilderImpl<T, S, R> configBuilder) {

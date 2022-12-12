@@ -211,6 +211,8 @@ class CaseworkerSendOrderTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response2 =
+            caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(sent).isNotNull();
