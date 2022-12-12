@@ -11,8 +11,5 @@ public enum GetAmendDateAsCompleted implements HasLabel {
     @JsonProperty("Mark as completed")
     MARKASCOMPLETED("Mark as completed");
     private final String label;
-//    public boolean isCmpleted() {
-//
-//        return MARKASCOMPLETED.name().equalsIgnoreCase(this.name());
-//    }
+
 }

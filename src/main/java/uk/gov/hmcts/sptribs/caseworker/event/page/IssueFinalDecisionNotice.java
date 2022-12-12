@@ -11,9 +11,15 @@ public class IssueFinalDecisionNotice implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("selectIssueNoticeOption")
-            .label("selectIssueNoticeOption", "<h1>Create a final decision notice</h1>")
+            .pageLabel("Create a final decision notice")
             .complex(CaseData::getCaseIssueFinalDecision)
             .mandatory(CaseIssueFinalDecision::getDecisionNotice)
+            .label("selectIssueNoticeOptionMessage", """
+               The decision annex is automatically included via the
+               notification  – you do not need to attach it.
+
+
+               """)
             .done();
     }
 }
