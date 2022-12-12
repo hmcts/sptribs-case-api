@@ -67,7 +67,7 @@ public class CaseStayedNotificationTest {
         NotificationRequest notificationRequest = notificationRequestArgumentCaptor.getValue();
         assert (notificationRequest.getDestinationAddress().equals(data.getCicCase().getEmail()));
         assert (notificationRequest.getTemplateVars().equals(templateVars));
-        assert (notificationRequest.getTemplate().equals(EmailTemplateName.CASE_STAYED));
+        assert (notificationRequest.getTemplate().equals(EmailTemplateName.CASE_STAYED_EMAIL));
 
         verify(notificationService).sendEmail();
     }
@@ -96,7 +96,7 @@ public class CaseStayedNotificationTest {
         NotificationRequest notificationRequest = notificationRequestArgumentCaptor.getValue();
         assert (notificationRequest.getDestinationAddress().equals(data.getCicCase().getApplicantEmailAddress()));
         assert (notificationRequest.getTemplateVars().equals(templateVars));
-        assert (notificationRequest.getTemplate().equals(EmailTemplateName.CASE_STAYED));
+        assert (notificationRequest.getTemplate().equals(EmailTemplateName.CASE_STAYED_EMAIL));
 
         verify(notificationService).sendEmail();
     }
@@ -125,7 +125,7 @@ public class CaseStayedNotificationTest {
         NotificationRequest notificationRequest = notificationRequestArgumentCaptor.getValue();
         assert (notificationRequest.getDestinationAddress().equals(data.getCicCase().getRepresentativeEmailAddress()));
         assert (notificationRequest.getTemplateVars().equals(templateVars));
-        assert (notificationRequest.getTemplate().equals(EmailTemplateName.CASE_STAYED));
+        assert (notificationRequest.getTemplate().equals(EmailTemplateName.CASE_STAYED_EMAIL));
 
         verify(notificationService).sendEmail();
     }

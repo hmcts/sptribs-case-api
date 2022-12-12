@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
@@ -35,14 +36,16 @@ public class CaseStayedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         CaseStay caseStay = caseData.getCaseStay();
 
-        if (cicCase.getContactPreferenceType().isEmail()) {
-            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
-            templateVars.put(CONTACT_NAME, cicCase.getFullName());
-            addCaseStayTemplateVars(caseStay, templateVars);
+        Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
+        templateVars.put(CONTACT_NAME, cicCase.getFullName());
+        addCaseStayTemplateVars(caseStay, templateVars);
 
-            // Send Email
+        if (cicCase.getContactPreferenceType().isEmail()) {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(notificationResponse);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase, templateVars);
+            sendLetterNotification(templateVars);
         }
     }
 
@@ -51,14 +54,16 @@ public class CaseStayedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         CaseStay caseStay = caseData.getCaseStay();
 
-        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
-            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
-            addCaseStayTemplateVars(caseStay, templateVars);
-            templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
+        Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
+        addCaseStayTemplateVars(caseStay, templateVars);
+        templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
 
-            // Send Email
+        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(notificationResponse);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase, templateVars);
+            sendLetterNotification(templateVars);
         }
     }
 
@@ -67,21 +72,23 @@ public class CaseStayedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         CaseStay caseStay = caseData.getCaseStay();
 
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
-            templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
-            addCaseStayTemplateVars(caseStay, templateVars);
+        Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
+        templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
+        addCaseStayTemplateVars(caseStay, templateVars);
 
-            // Send Email
+        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(notificationResponse);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase, templateVars);
+            sendLetterNotification(templateVars);
         }
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(destinationAddress)
-            .template(EmailTemplateName.CASE_STAYED)
+            .template(EmailTemplateName.CASE_STAYED_EMAIL)
             .templateVars(templateVars)
             .build();
 
@@ -89,10 +96,23 @@ public class CaseStayedNotification implements PartiesNotification {
         return notificationService.sendEmail();
     }
 
+    private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
+        NotificationRequest letterRequest = NotificationRequest.builder()
+            .template(EmailTemplateName.CASE_STAYED_POST)
+            .templateVars(templateVarsLetter)
+            .build();
+
+        notificationService.setNotificationRequest(letterRequest);
+        notificationService.sendLetter();
+    }
+
     private void addCaseStayTemplateVars(CaseStay caseStay, Map<String, Object> templateVars) {
         templateVars.put(STAY_EXPIRATION_DATE, caseStay.getExpirationDate());
         templateVars.put(STAY_REASON, caseStay.getStayReason().getLabel());
-        templateVars.put(STAY_ADDITIONAL_DETAIL, caseStay.getAdditionalDetail());
+
+        if(StringUtils.isNotEmpty(caseStay.getAdditionalDetail())) {
+            templateVars.put(STAY_ADDITIONAL_DETAIL, caseStay.getAdditionalDetail());
+        }
     }
 
 }
