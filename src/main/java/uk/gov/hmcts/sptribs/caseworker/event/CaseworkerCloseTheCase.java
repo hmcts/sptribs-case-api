@@ -7,14 +7,17 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseReasonSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -25,12 +28,21 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_CLOSE_THE_CASE = "caseworker-close-the-case";
 
+    private static final CcdPageConfiguration closeCaseWarning = new CloseCaseWarning();
+    private static final CcdPageConfiguration CloseCaseReasonSelect = new CloseCaseReasonSelect();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+
+        var pageBuilder = closeCase(configBuilder);
+        closeCaseWarning.addTo(pageBuilder);
+        CloseCaseReasonSelect.addTo(pageBuilder);
+    }
+
+    public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        return new PageBuilder(configBuilder
             .event(CASEWORKER_CLOSE_THE_CASE)
-            .forStates(Draft)
+            .forStates(CaseManagement, AwaitingOutcome)
             .name("Close the Case")
             .showSummary()
             .description("Close the case")
@@ -38,12 +50,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .submittedCallback(this::closed)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR))
-            .page("closeCasePage")
-            .label("closeCasePage", "<H2>Close this case</H2>")
-            .complex(CaseData::getCloseCase)
-            .mandatoryWithLabel(CloseCase::getCloseCaseReason, "")
-            .optional(CloseCase::getAdditionalDetail, "");
+            .grantHistoryOnly(SOLICITOR));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
