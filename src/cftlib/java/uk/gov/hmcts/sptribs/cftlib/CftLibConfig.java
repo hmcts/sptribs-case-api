@@ -9,20 +9,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
-import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
-
-    @Value("ccd-CIC-${CCD_DEF_NAME:dev}.xlsx")
-    String defName;
 
     @Value("Submitted")
     String state;
@@ -38,13 +32,12 @@ public class CftLibConfig implements CFTLibConfigurer {
             "TEST_CASE_WORKER_USER@mailinator.com",
             "TEST_SOLICITOR@mailinator.com",
             "divorce_as_caseworker_admin@mailinator.com")) {
-            lib.createProfile(p, "DIVORCE", "NO_FAULT_DIVORCE", state);
-            lib.createProfile(p, CcdServiceCode.CIC.getCcdServiceName(), CcdCaseType.CIC.name(), state);
-            lib.createProfile(p, CcdServiceCode.CS.getCcdServiceName(), CcdCaseType.CS.name(), state);
-            lib.createProfile(p, CcdServiceCode.MH.getCcdServiceName(), CcdCaseType.MH.name(), state);
-            lib.createProfile(p, CcdServiceCode.PHL.getCcdServiceName(), CcdCaseType.PHL.name(), state);
-            lib.createProfile(p, CcdServiceCode.SEN.getCcdServiceName(), CcdCaseType.SEN.name(), state);
-            lib.createProfile(p, CcdServiceCode.DD.getCcdServiceName(), CcdCaseType.DD.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_CIC.name(), CcdServiceCode.ST_CIC.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_CS.name(), CcdServiceCode.ST_CS.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_MH.name(), CcdServiceCode.ST_MH.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_PHL.name(), CcdServiceCode.ST_PHL.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_SEN.name(), CcdServiceCode.ST_SEN.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_DD.name(), CcdServiceCode.ST_DD.getCaseType().getCaseName(), state);
         }
 
         lib.createRoles(
@@ -53,6 +46,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-superuser",
             "caseworker-sptribs-cic-courtadmin",
             "citizen-sptribs-cic-dss",
+            "caseworker-st_cic",
             "caseworker-sptribs-cic-caseofficer",
             "caseworker-sptribs-cic-districtregistrar",
             "caseworker-sptribs-cic-districtjudge",
@@ -68,28 +62,13 @@ public class CftLibConfig implements CFTLibConfigurer {
             .getInputStream(), Charset.defaultCharset());
         lib.configureRoleAssignments(json);
 
-        // Generate and import CCD definitions
-        generateCCDDefinition();
-
-        var nfdDefinition = Files.readAllBytes(Path.of("build/ccd-config/" + defName));
-        lib.importDefinition(nfdDefinition);
-    }
-
-    /**
-     * Generate our JSON ccd definition and convert it to xlsx.
-     * Doing this at runtime in the CftlibConfig allows use of spring boot devtool's
-     * live reload functionality to rapidly edit and test code & definition changes.
-     */
-    private void generateCCDDefinition() throws Exception {
-        // Export the JSON config.
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
-        // Run the gradle task to convert to xlsx.
-        var code = new ProcessBuilder("./gradlew", "buildCCDXlsx")
-            .inheritIO()
-            .start()
-            .waitFor();
-        if (code != 0) {
-            throw new RuntimeException("Error converting ccd json to xlsx");
-        }
+        // Load the JSON definitions for each caseType.
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CIC.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CS.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_DD.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_MH.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_PHL.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_SEN.getCaseType().getCaseName()));
     }
 }

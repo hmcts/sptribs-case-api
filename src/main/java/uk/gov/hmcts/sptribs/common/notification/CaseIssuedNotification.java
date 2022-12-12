@@ -22,7 +22,7 @@ public class CaseIssuedNotification implements PartiesNotification {
     @Autowired
     private NotificationServiceCIC notificationService;
 
-    final String tribunalName = "Criminal Injuries Compensation Tribunal";
+    static final String tribunalName = "Criminal Injuries Compensation Tribunal";
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {

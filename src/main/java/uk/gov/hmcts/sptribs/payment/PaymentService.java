@@ -31,7 +31,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.Fee.getValueInPence;
-import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
+import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.JURISDICTION_NAME;
 import static uk.gov.hmcts.sptribs.payment.FeesAndPaymentsUtil.penceToPounds;
 import static uk.gov.hmcts.sptribs.payment.model.PbaErrorMessage.CAE0001;
 import static uk.gov.hmcts.sptribs.payment.model.PbaErrorMessage.CAE0003;
@@ -261,7 +261,7 @@ public class PaymentService {
         creditAccountPaymentRequest.setService(DIVORCE_SERVICE);
         creditAccountPaymentRequest.setCurrency(GBP);
         creditAccountPaymentRequest.setAccountNumber(pbaNumber);
-        creditAccountPaymentRequest.setCaseType(CASE_TYPE);
+        creditAccountPaymentRequest.setCaseType(JURISDICTION_NAME);
 
         creditAccountPaymentRequest.setOrganisationName(solicitor.getOrganisationPolicy().getOrganisation().getOrganisationName());
 

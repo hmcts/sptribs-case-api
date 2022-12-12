@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.MentalHealthData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.util.List;
@@ -17,24 +17,24 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
+public class MentalHealth implements CCDConfig<MentalHealthData, State, UserRole> {
 
-    public static final String JURISDICTION_NAME = "CIC";
-    public static final String JURISDICTION = "ST_CIC";
+    public static final String JURISDICTION_NAME = "MH";
+    public static final String JURISDICTION = "ST_MH";
 
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
 
     @Override
-    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<MentalHealthData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
         configBuilder.caseType(
-            CcdServiceCode.ST_CIC.getCaseType().getCaseName(),
-            CcdServiceCode.ST_CIC.getCaseType().name(),
-            CcdServiceCode.ST_CIC.getCaseType().getDescription());
+            CcdServiceCode.ST_MH.getCaseType().getCaseName(),
+            CcdServiceCode.ST_MH.getCaseType().name(),
+            CcdServiceCode.ST_MH.getCaseType().getDescription());
 
-        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CIC.getCcdServiceDescription());
+        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_MH.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 

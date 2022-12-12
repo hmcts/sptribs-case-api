@@ -57,7 +57,7 @@ class CloseCaseTest {
     }
 
     @Test
-    void shouldSuccessfullyChangeDraftStateToClosedState() {
+    void shouldSuccessfullyChangeCaseManagementStateToClosedState() {
 
         //Given
         final CaseData caseData = closedCaseData();
@@ -87,7 +87,7 @@ class CloseCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        assertThat(caseData.getCaseStatus()).isEqualTo(State.Draft);
+        assertThat(caseData.getCaseStatus()).isEqualTo(State.CaseManagement);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             closeCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
@@ -99,7 +99,5 @@ class CloseCaseTest {
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
 
-
     }
-
 }
