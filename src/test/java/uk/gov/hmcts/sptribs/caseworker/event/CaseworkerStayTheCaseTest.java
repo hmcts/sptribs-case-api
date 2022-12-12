@@ -13,10 +13,12 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerStayTheCase.CASEWORKER_STAY_THE_CASE;
@@ -50,6 +52,11 @@ class CaseworkerStayTheCaseTest {
     void shouldSuccessfullyStayTheCase() {
         //Given
         final CaseData caseData = caseData();
+        CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Collections.emptySet());
+        cicCase.setApplicantCIC(Collections.emptySet());
+        cicCase.setRepresentativeCIC(Collections.emptySet());
+        caseData.setCicCase(cicCase);
         caseData.setNote("This is a test note");
         CaseStay caseStay = new CaseStay();
         caseStay.setStayReason(StayReason.AWAITING_OUTCOME_OF_LINKED_CASE);

@@ -132,7 +132,11 @@ public class CaseStayedNotificationTest {
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
-        CaseStay caseStay = CaseStay.builder().expirationDate(stayCaseExpDate).stayReason(StayReason.OTHER).additionalDetail("addlDetail").build();
+        CaseStay caseStay = CaseStay.builder()
+            .expirationDate(stayCaseExpDate)
+            .stayReason(StayReason.OTHER)
+            .additionalDetail("addlDetail")
+            .build();
         CaseData caseData = CaseData.builder().cicCase(cicCase).caseStay(caseStay).build();
 
         return caseData;

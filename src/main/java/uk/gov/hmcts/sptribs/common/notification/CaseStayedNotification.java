@@ -110,7 +110,7 @@ public class CaseStayedNotification implements PartiesNotification {
         templateVars.put(STAY_EXPIRATION_DATE, caseStay.getExpirationDate());
         templateVars.put(STAY_REASON, caseStay.getStayReason().getLabel());
 
-        if(StringUtils.isNotEmpty(caseStay.getAdditionalDetail())) {
+        if (StringUtils.isNotEmpty(caseStay.getAdditionalDetail())) {
             templateVars.put(STAY_ADDITIONAL_DETAIL, caseStay.getAdditionalDetail());
         }
     }
