@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
-import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
@@ -65,11 +64,11 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
         // Load the JSON definitions for each caseType.
-        lib.importJsonDefinition(new File("build/definitions/"+CcdServiceCode.ST_CIC.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/"+CcdServiceCode.ST_CS.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/"+CcdServiceCode.ST_DD.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/"+CcdServiceCode.ST_MH.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/"+CcdServiceCode.ST_PHL.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/"+CcdServiceCode.ST_SEN.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CIC.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CS.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_DD.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_MH.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_PHL.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_SEN.getCaseType().getCaseName()));
     }
 }
