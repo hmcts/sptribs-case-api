@@ -31,7 +31,7 @@ uk:
   gov:
     notify:
       api:
-        key: ${UK_GOV_NOTIFY_API_KEY:dummy}
+        sptribskey: ${UK_GOV_NOTIFY_API_KEY_1:dummy}
         baseUrl: https://api.notifications.service.gov.uk
       email:
         templateVars:
