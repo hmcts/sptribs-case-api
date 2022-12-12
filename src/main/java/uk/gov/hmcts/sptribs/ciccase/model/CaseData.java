@@ -343,7 +343,9 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "close")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(
+        label = "Close Case",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CloseCase closeCase = new CloseCase();
 
     @JsonIgnore
