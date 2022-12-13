@@ -19,6 +19,7 @@ import java.util.List;
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
 
+    private static final String BUILD_DEFINITIONS = "build/definitions/";
     @Value("Submitted")
     String state;
 
@@ -71,11 +72,11 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
         // Load the JSON definitions for each caseType.
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CS.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_DD.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_MH.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CS.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_DD.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_MH.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName()));
     }
 }
