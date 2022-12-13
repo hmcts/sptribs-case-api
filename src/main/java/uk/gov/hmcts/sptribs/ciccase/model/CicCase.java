@@ -58,13 +58,6 @@ public class CicCase {
     )
     private List<ListValue<DateModel>> orderDueDates;
 
-    @CCD(
-        label = "Completed",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "GetAmendDateAsCompleted",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<GetAmendDateAsCompleted> orderMarkAsCompleted;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
