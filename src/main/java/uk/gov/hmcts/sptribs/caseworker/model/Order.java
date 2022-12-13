@@ -7,14 +7,11 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.List;
-import java.util.Set;
 
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 
 @Data
 @NoArgsConstructor
@@ -33,14 +30,6 @@ public class Order {
         label = "Due Dates"
     )
     private List<ListValue<DateModel>> dueDateList;
-
-    @CCD(
-        label = "Completed",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "GetAmendDateAsCompleted",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<GetAmendDateAsCompleted> completed;
 
 
     @CCD(
