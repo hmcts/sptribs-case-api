@@ -39,7 +39,6 @@ public class ManageSelectOrders implements CcdPageConfiguration {
         for (int i = 0; i < orderList.size(); i++) {
             if (selectedOrder.equals(orderList.get(i).getId())) {
                 cicCase.setOrderDueDates(orderList.get(i).getValue().getDueDateList());
-                cicCase.setOrderMarkAsCompleted(orderList.get(i).getValue().getCompleted());
                 break;
             }
         }
