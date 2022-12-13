@@ -34,7 +34,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_EXPIRATION_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_REASON;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseStayedNotificationTest {
+class CaseStayedNotificationTest {
     @Mock
     private NotificationServiceCIC notificationService;
 

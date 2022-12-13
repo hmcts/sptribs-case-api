@@ -20,7 +20,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.UNITED_KINGDOM;
 
 @Component
 public class NotificationHelper {
@@ -43,7 +42,7 @@ public class NotificationHelper {
         String addressLine5 = StringUtils.isNotEmpty(address.getCounty())
             ? address.getCounty() : NONE_PROVIDED;
         String addressLine6 = StringUtils.isNotEmpty(address.getCountry())
-            ? address.getCountry() : UNITED_KINGDOM;
+            ? address.getCountry() : NONE_PROVIDED;
         String addressLine7 = StringUtils.isNotEmpty(address.getPostCode())
             ? address.getPostCode() : NONE_PROVIDED;
 

@@ -23,7 +23,6 @@ public final class CommonConstants {
     public static final String ADDRESS_LINE_7 = "address_line_7";
 
     public static final String CIC = "Criminal Injuries Compensation Tribunal";
-    public static final String UNITED_KINGDOM = "United Kingdom";
 
     private CommonConstants() {
     }
