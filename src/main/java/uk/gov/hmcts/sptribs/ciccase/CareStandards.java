@@ -20,8 +20,6 @@ import java.util.List;
 @Slf4j
 public class CareStandards implements CCDConfig<CareStandardsData, State, UserRole> {
 
-    public static final String JURISDICTION_NAME = "CS";
-    public static final String JURISDICTION = "ST_CS";
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
 

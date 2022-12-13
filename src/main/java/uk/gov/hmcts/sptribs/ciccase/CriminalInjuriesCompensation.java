@@ -20,9 +20,6 @@ import java.util.List;
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
 
-    public static final String JURISDICTION_NAME = "CIC";
-    public static final String JURISDICTION = "ST_CIC";
-
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
 
