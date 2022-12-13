@@ -12,7 +12,6 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
         pageBuilder.page("caseworkerAmendDueDateEditDueDate")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getOrderDueDates)
-            .optional(CicCase::getOrderMarkAsCompleted)
             .done();
     }
 }
