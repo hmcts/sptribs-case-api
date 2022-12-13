@@ -40,7 +40,7 @@ public class CriminalInjuriesCompensationTest {
         criminalInjuriesCompensation.configure(configBuilder);
 
         //Then
-        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.CIC.getCaseName());
+        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.CIC.getCaseTypeName());
 
     }
 

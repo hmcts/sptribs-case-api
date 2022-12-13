@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
+import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
@@ -32,12 +33,18 @@ public class CftLibConfig implements CFTLibConfigurer {
             "TEST_CASE_WORKER_USER@mailinator.com",
             "TEST_SOLICITOR@mailinator.com",
             "divorce_as_caseworker_admin@mailinator.com")) {
-            lib.createProfile(p, CcdServiceCode.ST_CIC.name(), CcdServiceCode.ST_CIC.getCaseType().getCaseName(), state);
-            lib.createProfile(p, CcdServiceCode.ST_CS.name(), CcdServiceCode.ST_CS.getCaseType().getCaseName(), state);
-            lib.createProfile(p, CcdServiceCode.ST_MH.name(), CcdServiceCode.ST_MH.getCaseType().getCaseName(), state);
-            lib.createProfile(p, CcdServiceCode.ST_PHL.name(), CcdServiceCode.ST_PHL.getCaseType().getCaseName(), state);
-            lib.createProfile(p, CcdServiceCode.ST_SEN.name(), CcdServiceCode.ST_SEN.getCaseType().getCaseName(), state);
-            lib.createProfile(p, CcdServiceCode.ST_DD.name(), CcdServiceCode.ST_DD.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
+                CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(), state);
+            lib.createProfile(p, CcdJurisdiction.CARE_STANDARDS.getJurisdictionId(),
+                CcdServiceCode.ST_CS.getCaseType().getCaseTypeName(), state);
+            lib.createProfile(p, CcdJurisdiction.MENTAL_HEALTH.getJurisdictionId(),
+                CcdServiceCode.ST_MH.getCaseType().getCaseTypeName(), state);
+            lib.createProfile(p, CcdJurisdiction.PRIMARY_HEALTH_LISTS.getJurisdictionId(),
+                CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName(), state);
+            lib.createProfile(p, CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
+                CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName(), state);
+            lib.createProfile(p, CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
+                CcdServiceCode.ST_DD.getCaseType().getCaseTypeName(), state);
         }
 
         lib.createRoles(
@@ -64,11 +71,11 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
         // Load the JSON definitions for each caseType.
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CIC.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CS.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_DD.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_MH.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_PHL.getCaseType().getCaseName()));
-        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_SEN.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CS.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_DD.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_MH.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName()));
     }
 }

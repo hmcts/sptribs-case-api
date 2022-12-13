@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.befta.dse.ccd.CcdEnvironment;
 import uk.gov.hmcts.befta.dse.ccd.CcdRoleConfig;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
-import uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation;
 
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +58,7 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     protected List<String> getAllDefinitionFilesToLoadAt(String definitionsPath) {
         String environmentName = environment.name().toLowerCase(Locale.UK);
         return List.of(
-            "build/ccd-config/ccd-" + CriminalInjuriesCompensation.JURISDICTION_NAME + "-" + environmentName + ".xlsx"
+            "build/ccd-config/ccd-" + CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionName() + "-" + environmentName + ".xlsx"
         );
     }
 }

@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CareStandardsData;
+import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.util.List;
@@ -29,11 +30,12 @@ public class CareStandards implements CCDConfig<CareStandardsData, State, UserRo
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
         configBuilder.caseType(
-            CcdServiceCode.ST_CS.getCaseType().getCaseName(),
-            CcdServiceCode.ST_CS.getCaseType().name(),
+            CcdServiceCode.ST_CS.getCaseType().getCaseTypeName(),
+            CcdServiceCode.ST_CS.getCaseType().getCaseTypeAcronym(),
             CcdServiceCode.ST_CS.getCaseType().getDescription());
 
-        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CS.getCcdServiceDescription());
+        configBuilder.jurisdiction(CcdJurisdiction.CARE_STANDARDS.getJurisdictionId(), CcdJurisdiction.CARE_STANDARDS.getJurisdictionName(),
+            CcdServiceCode.ST_CS.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 
