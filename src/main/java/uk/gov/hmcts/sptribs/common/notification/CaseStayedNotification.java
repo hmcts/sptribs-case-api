@@ -16,10 +16,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_ADDITIONAL_DETAIL;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_EXPIRATION_DATE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_REASON;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.*;
 
 @Component
 @Slf4j
@@ -44,7 +41,7 @@ public class CaseStayedNotification implements PartiesNotification {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(notificationResponse);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase, templateVars);
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
     }
@@ -62,7 +59,7 @@ public class CaseStayedNotification implements PartiesNotification {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(notificationResponse);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase, templateVars);
+            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
     }
@@ -80,7 +77,7 @@ public class CaseStayedNotification implements PartiesNotification {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(notificationResponse);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase, templateVars);
+            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
     }
@@ -107,12 +104,12 @@ public class CaseStayedNotification implements PartiesNotification {
     }
 
     private void addCaseStayTemplateVars(CaseStay caseStay, Map<String, Object> templateVars) {
+        String additionalDetail = StringUtils.isNotEmpty(caseStay.getAdditionalDetail())
+            ? caseStay.getAdditionalDetail() : NONE_PROVIDED;
+
         templateVars.put(STAY_EXPIRATION_DATE, caseStay.getExpirationDate());
         templateVars.put(STAY_REASON, caseStay.getStayReason().getLabel());
-
-        if (StringUtils.isNotEmpty(caseStay.getAdditionalDetail())) {
-            templateVars.put(STAY_ADDITIONAL_DETAIL, caseStay.getAdditionalDetail());
-        }
+        templateVars.put(STAY_ADDITIONAL_DETAIL, additionalDetail);
     }
 
 }
