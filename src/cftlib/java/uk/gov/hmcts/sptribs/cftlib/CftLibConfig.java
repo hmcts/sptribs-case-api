@@ -70,7 +70,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             .getInputStream(), Charset.defaultCharset());
         lib.configureRoleAssignments(json);
 
-        configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
+        configWriter.generateAllCaseTypesToJSON(new File(BUILD_DEFINITIONS));
         // Load the JSON definitions for each caseType.
         lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
         lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CS.getCaseType().getCaseTypeName()));
