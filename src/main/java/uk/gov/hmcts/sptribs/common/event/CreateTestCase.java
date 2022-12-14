@@ -113,7 +113,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                     + "\n- a maximum of 100MB in size (large files must be split)\n"
                     + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n")
             .complex(CaseData::getCicCase)
-            .optionalWithLabel(CicCase::getCaseDocumentsCIC, "File Attachments")
+            .optionalWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
             .done();
     }
 
