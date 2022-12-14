@@ -37,18 +37,15 @@ public final class MessageUtil {
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
             && StringUtils.hasText(cicCase.getEmail())) {
             messageLine.append("Subject, ");
-            cicCase.setNotifyPartySubject(null);
             email = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             messageLine.append("Respondent, ");
-            cicCase.setNotifyPartyRespondent(null);
             email = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
             && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
             messageLine.append("Representative, ");
-            cicCase.setNotifyPartyRepresentative(null);
             email = true;
         }
         if (email) {

@@ -9,10 +9,9 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("amendOrderDueDates")
+        pageBuilder.page("caseworkerAmendDueDateEditDueDate")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getOrderDueDates)
-            .optional(CicCase::getOrderMarkAsCompleted)
             .done();
     }
 }

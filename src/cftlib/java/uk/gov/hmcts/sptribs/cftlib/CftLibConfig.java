@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
-import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
@@ -33,13 +32,12 @@ public class CftLibConfig implements CFTLibConfigurer {
             "TEST_CASE_WORKER_USER@mailinator.com",
             "TEST_SOLICITOR@mailinator.com",
             "divorce_as_caseworker_admin@mailinator.com")) {
-            lib.createProfile(p, "DIVORCE", "NO_FAULT_DIVORCE", state);
-            lib.createProfile(p, CcdServiceCode.ST_CIC.name(), CcdCaseType.CIC.name(), state);
-            lib.createProfile(p, CcdServiceCode.ST_CS.name(), CcdCaseType.CS.name(), state);
-            lib.createProfile(p, CcdServiceCode.ST_MH.name(), CcdCaseType.MH.name(), state);
-            lib.createProfile(p, CcdServiceCode.ST_PHL.name(), CcdCaseType.PHL.name(), state);
-            lib.createProfile(p, CcdServiceCode.ST_SEND.name(), CcdCaseType.SEN.name(), state);
-            lib.createProfile(p, CcdServiceCode.ST_SEND.name(), CcdCaseType.DD.name(), state);
+            lib.createProfile(p, CcdServiceCode.ST_CIC.name(), CcdServiceCode.ST_CIC.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_CS.name(), CcdServiceCode.ST_CS.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_MH.name(), CcdServiceCode.ST_MH.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_PHL.name(), CcdServiceCode.ST_PHL.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_SEN.name(), CcdServiceCode.ST_SEN.getCaseType().getCaseName(), state);
+            lib.createProfile(p, CcdServiceCode.ST_DD.name(), CcdServiceCode.ST_DD.getCaseType().getCaseName(), state);
         }
 
         lib.createRoles(
@@ -66,11 +64,11 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         configWriter.generateAllCaseTypesToJSON(new File("build/definitions"));
         // Load the JSON definitions for each caseType.
-        lib.importJsonDefinition(new File("build/definitions/CIC"));
-        lib.importJsonDefinition(new File("build/definitions/CS"));
-        lib.importJsonDefinition(new File("build/definitions/DD"));
-        lib.importJsonDefinition(new File("build/definitions/MH"));
-        lib.importJsonDefinition(new File("build/definitions/PHL"));
-        lib.importJsonDefinition(new File("build/definitions/SEN"));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CIC.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_CS.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_DD.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_MH.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_PHL.getCaseType().getCaseName()));
+        lib.importJsonDefinition(new File("build/definitions/" + CcdServiceCode.ST_SEN.getCaseType().getCaseName()));
     }
 }
