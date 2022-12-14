@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
+import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.payment.model.CreditAccountPaymentRequest;
 import uk.gov.hmcts.sptribs.payment.model.CreditAccountPaymentResponse;
 import uk.gov.hmcts.sptribs.payment.model.FeeResponse;
@@ -31,7 +32,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.Fee.getValueInPence;
-import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.JURISDICTION_NAME;
 import static uk.gov.hmcts.sptribs.payment.FeesAndPaymentsUtil.penceToPounds;
 import static uk.gov.hmcts.sptribs.payment.model.PbaErrorMessage.CAE0001;
 import static uk.gov.hmcts.sptribs.payment.model.PbaErrorMessage.CAE0003;
@@ -261,7 +261,7 @@ public class PaymentService {
         creditAccountPaymentRequest.setService(DIVORCE_SERVICE);
         creditAccountPaymentRequest.setCurrency(GBP);
         creditAccountPaymentRequest.setAccountNumber(pbaNumber);
-        creditAccountPaymentRequest.setCaseType(JURISDICTION_NAME);
+        creditAccountPaymentRequest.setCaseType(CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionName());
 
         creditAccountPaymentRequest.setOrganisationName(solicitor.getOrganisationPolicy().getOrganisation().getOrganisationName());
 
