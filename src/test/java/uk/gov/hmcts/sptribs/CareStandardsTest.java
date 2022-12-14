@@ -41,7 +41,7 @@ class CareStandardsTest {
         careStandards.configure(configBuilder);
 
         //Then
-        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.CS.getCaseName());
+        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.CS.getCaseTypeName());
 
     }
 

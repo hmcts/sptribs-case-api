@@ -78,13 +78,13 @@ class CcdSearchServiceTest {
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CcdCaseType.CIC.getCaseName(),
+            CcdCaseType.CIC.getCaseTypeName(),
             getSourceBuilder(0, PAGE_SIZE).toString()))
             .thenReturn(expected1);
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CcdCaseType.CIC.getCaseName(),
+            CcdCaseType.CIC.getCaseTypeName(),
             getSourceBuilder(PAGE_SIZE, PAGE_SIZE).toString()))
             .thenReturn(expected2);
 
@@ -119,7 +119,7 @@ class CcdSearchServiceTest {
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CcdCaseType.CIC.getCaseName(),
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()))
             .thenReturn(expected1);
 
@@ -142,7 +142,7 @@ class CcdSearchServiceTest {
             .searchCases(
                 SYSTEM_UPDATE_AUTH_TOKEN,
                 SERVICE_AUTHORIZATION,
-                CcdCaseType.CIC.getCaseName(),
+                CcdCaseType.CIC.getCaseTypeName(),
                 getSourceBuilder(0, PAGE_SIZE).toString());
 
         //When&Then
@@ -180,7 +180,7 @@ class CcdSearchServiceTest {
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CcdCaseType.CIC.getCaseName(),
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()))
             .thenReturn(expected);
 

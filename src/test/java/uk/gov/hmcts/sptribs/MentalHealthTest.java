@@ -41,7 +41,7 @@ class MentalHealthTest {
         mentalHealth.configure(configBuilder);
 
         //Then
-        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.MH.getCaseName());
+        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.MH.getCaseTypeName());
 
     }
 

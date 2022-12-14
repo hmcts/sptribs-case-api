@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.MentalHealthData;
+import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.util.List;
@@ -19,9 +20,6 @@ import java.util.List;
 @Slf4j
 public class MentalHealth implements CCDConfig<MentalHealthData, State, UserRole> {
 
-    public static final String JURISDICTION_NAME = "MH";
-    public static final String JURISDICTION = "ST_MH";
-
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
 
@@ -30,11 +28,12 @@ public class MentalHealth implements CCDConfig<MentalHealthData, State, UserRole
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
         configBuilder.caseType(
-            CcdServiceCode.ST_MH.getCaseType().getCaseName(),
-            CcdServiceCode.ST_MH.getCaseType().name(),
+            CcdServiceCode.ST_MH.getCaseType().getCaseTypeName(),
+            CcdServiceCode.ST_MH.getCaseType().getCaseTypeAcronym(),
             CcdServiceCode.ST_MH.getCaseType().getDescription());
 
-        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_MH.getCcdServiceDescription());
+        configBuilder.jurisdiction(CcdJurisdiction.MENTAL_HEALTH.getJurisdictionId(),
+            CcdJurisdiction.MENTAL_HEALTH.getJurisdictionName(), CcdServiceCode.ST_MH.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 
