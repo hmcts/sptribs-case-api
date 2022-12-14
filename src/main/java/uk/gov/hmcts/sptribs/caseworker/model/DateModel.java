@@ -34,7 +34,7 @@ public class DateModel {
     private String information;
 
     @CCD(
-        label = "Mark as Completed",
+        label = "Completed",
         typeOverride = MultiSelectList,
         typeParameterOverride = "GetAmendDateAsCompleted",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
