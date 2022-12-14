@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
@@ -25,7 +26,7 @@ public class CloseCase {
         label = "Why is this case being closed?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String closeCaseReason;
+    private CloseReason closeCaseReason;
 
     @CCD(
         label = "Provide additional details",
@@ -33,4 +34,9 @@ public class CloseCase {
     )
     private String additionalDetail;
 
+    @CCD(
+        label = "Which type of closure is this?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private State closeCaseType;
 }
