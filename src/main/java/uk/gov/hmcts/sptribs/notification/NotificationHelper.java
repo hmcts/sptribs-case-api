@@ -33,25 +33,12 @@ public class NotificationHelper {
     }
 
     public void addAddressTemplateVars(AddressGlobalUK address, Map<String, Object> templateVars) {
-        String addressLine2 = StringUtils.isNotEmpty(address.getAddressLine2())
-            ? address.getAddressLine2() : NONE_PROVIDED;
-        String addressLine3 = StringUtils.isNotEmpty(address.getAddressLine3())
-            ? address.getAddressLine3() : NONE_PROVIDED;
-        String addressLine4 = StringUtils.isNotEmpty(address.getPostTown())
-            ? address.getPostTown() : NONE_PROVIDED;
-        String addressLine5 = StringUtils.isNotEmpty(address.getCounty())
-            ? address.getCounty() : NONE_PROVIDED;
-        String addressLine6 = StringUtils.isNotEmpty(address.getCountry())
-            ? address.getCountry() : NONE_PROVIDED;
-        String addressLine7 = StringUtils.isNotEmpty(address.getPostCode())
-            ? address.getPostCode() : NONE_PROVIDED;
-
         templateVars.put(ADDRESS_LINE_1, address.getAddressLine1());
-        templateVars.put(ADDRESS_LINE_2, addressLine2);
-        templateVars.put(ADDRESS_LINE_3, addressLine3);
-        templateVars.put(ADDRESS_LINE_4, addressLine4);
-        templateVars.put(ADDRESS_LINE_5, addressLine5);
-        templateVars.put(ADDRESS_LINE_6, addressLine6);
-        templateVars.put(ADDRESS_LINE_7, addressLine7);
+        templateVars.put(ADDRESS_LINE_2, address.getAddressLine2());
+        templateVars.put(ADDRESS_LINE_3, address.getAddressLine3());
+        templateVars.put(ADDRESS_LINE_4, address.getPostTown());
+        templateVars.put(ADDRESS_LINE_5, address.getCounty());
+        templateVars.put(ADDRESS_LINE_6, address.getCountry());
+        templateVars.put(ADDRESS_LINE_7, address.getPostCode());
     }
 }
