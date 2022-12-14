@@ -65,7 +65,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
                                                        CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Draft order created. ")
+            .confirmationHeader("# Draft order created. ")
             .build();
     }
 }

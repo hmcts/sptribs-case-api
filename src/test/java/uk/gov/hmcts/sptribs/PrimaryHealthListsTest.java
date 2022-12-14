@@ -41,7 +41,7 @@ class PrimaryHealthListsTest {
         primaryHealthLists.configure(configBuilder);
 
         //Then
-        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.PHL.getCaseName());
+        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.PHL.getCaseTypeName());
 
     }
 

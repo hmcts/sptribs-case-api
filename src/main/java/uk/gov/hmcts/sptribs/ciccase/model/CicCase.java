@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -53,28 +54,11 @@ public class CicCase {
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String draftOrderCICListForDisplay;
-    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Due Date"
     )
     private List<ListValue<DateModel>> orderDueDates;
 
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "GetAmendDateAsCompleted",
-
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private GetAmendDateAsCompleted orderMarkAsCompleted;
-
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DraftOrderCIC draftOrderCIC;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -95,6 +79,11 @@ public class CicCase {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<Order>> orderList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList orderDynamicList;
 
 
     @CCD(
@@ -463,7 +452,15 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
 
-    private CaseDocumentsCIC caseDocumentsCIC;
+    //new
+    @CCD(
+        label = "Case Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<CICDocument>> applicantDocumentsUploaded;
+
     @CCD(
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
