@@ -42,7 +42,7 @@ class DisabilityDiscriminationTest {
         disabilityDiscrimination.configure(configBuilder);
 
         //Then
-        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.DD.getCaseName());
+        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.DD.getCaseTypeName());
 
     }
 
