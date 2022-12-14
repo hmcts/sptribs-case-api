@@ -45,7 +45,7 @@ public class ApplicantDetails implements CcdPageConfiguration {
             if (StringUtils.isEmpty(data.getCicCase().getApplicantAddress().getCountry())) {
                 errors.add("Country is mandatory");
             }
-            if(StringUtils.isEmpty(data.getCicCase().getApplicantAddress().getPostCode())) {
+            if (StringUtils.isEmpty(data.getCicCase().getApplicantAddress().getPostCode())) {
                 errors.add("PostCode is mandatory");
             }
         }
