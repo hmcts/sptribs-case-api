@@ -37,10 +37,10 @@ public class SubjectDetails implements CcdPageConfiguration {
 
         if (null != data.getCicCase() && null != data.getCicCase().getAddress()) {
             if (StringUtils.isEmpty(data.getCicCase().getAddress().getCountry())) {
-                errors.add("Country field is required");
+                errors.add("Country is mandatory");
             }
-            if(StringUtils.isEmpty(data.getCicCase().getAddress().getCountry())) {
-                errors.add("Country field is required");
+            if(StringUtils.isEmpty(data.getCicCase().getAddress().getPostCode())) {
+                errors.add("PostCode is mandatory");
             }
         }
 
