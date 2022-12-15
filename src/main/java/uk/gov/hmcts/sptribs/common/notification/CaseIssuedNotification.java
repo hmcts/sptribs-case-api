@@ -30,7 +30,6 @@ public class CaseIssuedNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsSubject = getCommonTemplateVars(caseNumber, cicCase.getFullName());
-        templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsSubject.put(CommonConstants.CONTACT_NAME, cicCase.getFullName());
 
         if (cicCase.getContactPreferenceType().isEmail()) {
