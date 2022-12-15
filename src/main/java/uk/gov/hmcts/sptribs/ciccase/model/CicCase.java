@@ -517,6 +517,11 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    private NotificationResponse resNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private NotificationResponse subjectLetterNotifyList;
 
     @CCD(
