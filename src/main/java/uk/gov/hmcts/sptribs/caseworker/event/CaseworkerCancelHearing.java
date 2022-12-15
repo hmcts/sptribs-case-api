@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -41,7 +41,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     public PageBuilder cancelStart(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CANCEL_HEARING)
-            .forStates(POST_SUBMISSION_STATES)
+            .forStates(AwaitingHearing)
             .name("Cancel hearing")
             .description("Cancel hearing")
             .showEventNotes()
