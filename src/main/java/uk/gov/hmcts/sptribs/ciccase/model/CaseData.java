@@ -80,11 +80,12 @@ public class CaseData {
     )
     private ApplicationType applicationType;
 
+    @Builder.Default
     @CCD(
         label = "Cancel Hearing",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CancelHearing cancelHearing;
+    private CancelHearing cancelHearing = new CancelHearing();
 
 
     @CCD(
