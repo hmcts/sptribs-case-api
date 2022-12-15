@@ -16,6 +16,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerRemoveStay.CASEWORKER_REMOVE_STAY;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -50,6 +52,9 @@ class CaseworkerRemoveStayTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Collections.emptySet());
+        cicCase.setApplicantCIC(Collections.emptySet());
+        cicCase.setRepresentativeCIC(Collections.emptySet());
         caseData.setCicCase(cicCase);
         RemoveCaseStay removeCaseStay = new RemoveCaseStay();
         removeCaseStay.setStayRemoveReason(StayRemoveReason.OTHER);
