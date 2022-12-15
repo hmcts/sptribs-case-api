@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.common.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -15,7 +14,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.common.CommonConstants.*;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 
 @Component
 @Slf4j
@@ -30,8 +29,6 @@ public class CaseUnstayedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        CaseStay caseStay = caseData.getCaseStay();
-
         Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getFullName());
 
@@ -39,7 +36,6 @@ public class CaseUnstayedNotification implements PartiesNotification {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(notificationResponse);
         } else {
-            addCaseUnStayTemplateVars(caseStay, templateVars);
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
@@ -48,8 +44,6 @@ public class CaseUnstayedNotification implements PartiesNotification {
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        CaseStay caseStay = caseData.getCaseStay();
-
         Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
 
@@ -57,7 +51,6 @@ public class CaseUnstayedNotification implements PartiesNotification {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(notificationResponse);
         } else {
-            addCaseUnStayTemplateVars(caseStay, templateVars);
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
@@ -66,8 +59,6 @@ public class CaseUnstayedNotification implements PartiesNotification {
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        CaseStay caseStay = caseData.getCaseStay();
-
         Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
 
@@ -75,7 +66,6 @@ public class CaseUnstayedNotification implements PartiesNotification {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(notificationResponse);
         } else {
-            addCaseUnStayTemplateVars(caseStay, templateVars);
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
@@ -102,8 +92,4 @@ public class CaseUnstayedNotification implements PartiesNotification {
         notificationService.sendLetter();
     }
 
-    private void addCaseUnStayTemplateVars(CaseStay caseStay, Map<String, Object> templateVars) {
-        templateVars.put(STAY_EXPIRATION_DATE, caseStay.getExpirationDate());
-        templateVars.put(STAY_REASON, caseStay.getStayReason().getLabel());
-    }
 }
