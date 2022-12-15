@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -28,6 +29,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
 
     private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
+    private static final CcdPageConfiguration reasonSelect = new CancelHearingReasonSelect();
 
     @Autowired
     private HearingService hearingService;
@@ -36,6 +38,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = cancelStart(configBuilder);
         hearingDateSelect.addTo(pageBuilder);
+        reasonSelect.addTo(pageBuilder);
     }
 
     public PageBuilder cancelStart(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
