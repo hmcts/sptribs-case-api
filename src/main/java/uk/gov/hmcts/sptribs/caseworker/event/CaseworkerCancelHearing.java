@@ -1,10 +1,15 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.caseworker.event.page.HearingDateSelect;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -22,7 +27,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
 
-    private static final CcdPageConfiguration hearingDateSelect = new HearingDateSelect();
+    private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
+
+    @Autowired
+    private HearingService hearingService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -38,10 +46,19 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             .description("Cancel hearing")
             .showEventNotes()
             .showSummary()
+            .aboutToStartCallback(this::aboutToStart)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+        DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
+        caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
 }
