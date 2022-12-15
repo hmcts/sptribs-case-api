@@ -43,6 +43,13 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 public class CicCase {
+
+    @CCD(
+        label = "Choose a hearing to cancel",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList hearingList;
+
     @CCD(
         label = "How would you like to issue an order?"
     )
