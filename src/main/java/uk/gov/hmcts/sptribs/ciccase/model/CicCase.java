@@ -43,6 +43,15 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 public class CicCase {
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ContactPartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ContactPartiesCIC> contactPartiesCIC;
+
+
     @CCD(
         label = "How would you like to issue an order?"
     )
