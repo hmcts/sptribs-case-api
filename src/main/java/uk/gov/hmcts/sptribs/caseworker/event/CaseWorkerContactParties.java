@@ -3,13 +3,18 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -20,7 +25,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-
 
 
 @Component
@@ -39,6 +43,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Contact parties")
                 .showSummary()
+                .aboutToSubmitCallback(this::abutToSubmit)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
@@ -46,5 +51,16 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> abutToSubmit(CaseDetails<CaseData, State> details,
+                                                                      CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        final List<String> errors = new ArrayList<>();
+
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
+    }
 
 }
