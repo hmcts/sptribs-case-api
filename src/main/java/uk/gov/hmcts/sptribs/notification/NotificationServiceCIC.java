@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Objects.nonNull;
 @Service
 @Slf4j
 public class NotificationServiceCIC {
@@ -104,6 +106,17 @@ public class NotificationServiceCIC {
         this.notificationRequest = notificationRequest;
     }
 
+    public  JSONObject prepareUpload(byte[] fileContent){
+
+        JSONObject jsonObjectFinalDecisionNotice = null;
+        try{
+            jsonObjectFinalDecisionNotice = nonNull(fileContent)
+                    ? notificationClient.prepareUpload(fileContent) : null;
+        } catch (NotificationClientException e) {
+            log.info("unable to upload", e.getMessage());
+    }
+        return jsonObjectFinalDecisionNotice;
+    }
     private NotificationResponse getNotificationResponse(final SendEmailResponse sendEmailResponse) {
         Optional<String> reference = sendEmailResponse.getReference();
         String clientReference = null;
