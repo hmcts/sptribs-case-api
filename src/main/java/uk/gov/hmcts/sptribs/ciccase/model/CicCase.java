@@ -50,6 +50,15 @@ public class CicCase {
     )
     private DynamicList hearingList;
 
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ContactPartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ContactPartiesCIC> contactPartiesCIC;
+
+
     @CCD(
         label = "How would you like to issue an order?"
     )
@@ -504,6 +513,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse repNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse resNotificationResponse;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
