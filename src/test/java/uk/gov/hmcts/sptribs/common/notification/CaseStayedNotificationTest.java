@@ -29,6 +29,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_ADDITIONAL_DETAIL;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_EXPIRATION_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_REASON;
@@ -204,6 +205,36 @@ class CaseStayedNotificationTest {
         templateVars.put(STAY_EXPIRATION_DATE, expDate);
         templateVars.put(STAY_REASON, data.getCaseStay().getStayReason().getLabel());
         templateVars.put(STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail());
+
+        //When
+        when(notificationHelper.commonTemplateVars(any(CicCase.class), anyString())).thenReturn(new HashMap<>());
+        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        caseStayedNotification.sendToRepresentative(data, "CN1");
+
+        //Then
+        verify(notificationService).setNotificationRequest(notificationRequestArgumentCaptor.capture());
+        NotificationRequest notificationRequest = notificationRequestArgumentCaptor.getValue();
+        assert (notificationRequest.getTemplateVars().equals(templateVars));
+        assert (notificationRequest.getTemplate().equals(EmailTemplateName.CASE_STAYED_POST));
+
+        verify(notificationService).sendLetter();
+    }
+
+    @Test
+    void shouldPopulateNoneProvidedForStayAdditionalDetail() {
+        //Given
+        LocalDate expDate = LocalDate.now();
+        final CaseData data = getMockCaseData(expDate);
+        data.getCaseStay().setAdditionalDetail(null);
+        data.getCicCase().setRepresentativeFullName("repFullName");
+        data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
+        data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
+
+        Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(CONTACT_NAME, data.getCicCase().getRepresentativeFullName());
+        templateVars.put(STAY_EXPIRATION_DATE, expDate);
+        templateVars.put(STAY_REASON, data.getCaseStay().getStayReason().getLabel());
+        templateVars.put(STAY_ADDITIONAL_DETAIL, NONE_PROVIDED);
 
         //When
         when(notificationHelper.commonTemplateVars(any(CicCase.class), anyString())).thenReturn(new HashMap<>());

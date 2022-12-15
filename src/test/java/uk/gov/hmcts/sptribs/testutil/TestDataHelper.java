@@ -25,6 +25,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
+import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantPrayer;
 import uk.gov.hmcts.sptribs.ciccase.model.Application;
@@ -44,9 +46,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.GeneralOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.GeneralOrderDivorceParties;
 import uk.gov.hmcts.sptribs.ciccase.model.GeneralOrderJudgeOrLegalAdvisorType;
 import uk.gov.hmcts.sptribs.ciccase.model.GeneralParties;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.HelpWithFees;
 import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.SolicitorService;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -995,5 +1001,29 @@ public class TestDataHelper {
             .build();
 
         return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+    }
+
+    public static RecordListing getRecordListing() {
+        final RecordListing recordListing = new RecordListing();
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setConferenceCallNumber("");
+        recordListing.setHearingType(HearingType.FINAL);
+        recordListing.setImportantInfoDetails("some details");
+        recordListing.setVideoCallLink("");
+        recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
+        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
+        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
+        return recordListing;
+    }
+
+    public static List<ListValue<HearingDate>> getAdditionalHearingDates() {
+        HearingDate date1 = HearingDate.builder().hearingVenueDate(LocalDate.now()).hearingVenueTime("11:00").build();
+        HearingDate date2 = HearingDate.builder().hearingVenueDate(LocalDate.now().minusDays(1)).hearingVenueTime("11:00").build();
+        List<ListValue<HearingDate>> list = new ArrayList<>();
+        ListValue<HearingDate> listValue1 = ListValue.<HearingDate>builder().value(date1).id("0").build();
+        ListValue<HearingDate> listValue2 = ListValue.<HearingDate>builder().value(date2).id("1").build();
+        list.add(listValue1);
+        list.add(listValue2);
+        return list;
     }
 }
