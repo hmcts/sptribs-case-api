@@ -7,17 +7,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 
 @Component
 @Slf4j
@@ -26,11 +23,14 @@ public class ApplicationReceivedNotification implements PartiesNotification {
     @Autowired
     private NotificationServiceCIC notificationService;
 
+    @Autowired
+    private NotificationHelper notificationHelper;
+
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         if (cicCase.getContactPreferenceType().isEmail()) {
-            Map<String, Object> templateVars = templateVars(cicCase, caseNumber);
+            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
             templateVars.put(CONTACT_NAME, cicCase.getFullName());
 
             // Send Email
@@ -43,7 +43,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
-            Map<String, Object> templateVars = templateVars(cicCase, caseNumber);
+            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
             templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
 
             // Send Email
@@ -56,7 +56,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            Map<String, Object> templateVars = templateVars(cicCase, caseNumber);
+            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
             templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
 
             // Send Email
@@ -76,13 +76,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         return notificationService.sendEmail();
     }
 
-    private Map<String, Object> templateVars(final CicCase cicCase, final String caseNumber) {
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(TRIBUNAL_NAME, "Criminal Injuries Compensation Tribunal");
-        templateVars.put(CIC_CASE_NUMBER, caseNumber);
-        templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        return templateVars;
-    }
+
 
 
 }
