@@ -37,7 +37,7 @@ public class PartiesToContact implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
 
-        if (null != data.getCicCase() && data.getCicCase().getContactPartiesCIC().size() == 0) {
+        if (null != data.getCicCase()  && null != data.getCicCase().getContactPartiesCIC()) {
             errors.add("One field  is mandatory.");
         }
 
