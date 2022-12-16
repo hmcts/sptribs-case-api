@@ -82,6 +82,30 @@ class CaseworkerContactPartiesTest {
         assertThat(response).isNotNull();
 
 
+
+
+    }
+
+
+
+    @Test
+    void shouldSuccessfullyMoveToNextPageWithError() {
+        final CaseData caseData = caseData();
+        CicCase cicCase = CicCase.builder().build();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
+        assertThat(response).isNotNull();
+        assertThat(response.getErrors()).hasSize(0);
+
+
+
+
     }
 
 }

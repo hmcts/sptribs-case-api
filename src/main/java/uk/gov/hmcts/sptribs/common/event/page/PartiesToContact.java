@@ -22,7 +22,7 @@ public class PartiesToContact implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("partiesToContact",this::midEvent)
+            .page("partiesToContact", this::midEvent)
             .complex(CaseData::getCicCase)
             .optional(CicCase::getContactPartiesCIC)
             .done()
@@ -37,8 +37,7 @@ public class PartiesToContact implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
 
-
-        if (null != data.getCicCase() &&  data.getCicCase().getContactPartiesCIC().size() == 0) {
+        if (null != data.getCicCase() && data.getCicCase().getContactPartiesCIC().size() == 0) {
             errors.add("One field  is mandatory.");
         }
 
