@@ -23,7 +23,6 @@ public class PartiesToContact implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("partiesToContact",this::midEvent)
-            .pageLabel("Contact Parties")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getContactPartiesCIC)
             .done()
