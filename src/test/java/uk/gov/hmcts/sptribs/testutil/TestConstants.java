@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.testutil;
 
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 
+import java.time.LocalDate;
+
 public final class TestConstants {
     public static final String TEST_APPLICANT_2_USER_EMAIL = "applicant2@test.com";
     public static final String TEST_SUBJECT_EMAIL = "subject2@test.com";
@@ -102,6 +104,10 @@ public final class TestConstants {
 
     public static final String TEST_DIVORCE_APPLICATION_SOLE_TEMPLATE_ID = "NFD_CP_Application_Sole_V5.docx";
     public static final String TEST_DIVORCE_APPLICATION_JOINT_TEMPLATE_ID = "NFD_CP_Application_Joint_V5.docx";
+
+    public static final LocalDate HEARING_DATE_1 = LocalDate.now();
+    public static final LocalDate HEARING_DATE_2 = LocalDate.now().minusDays(1);
+    public static final String HEARING_TIME = "11:00";
 
     private TestConstants() {
     }
