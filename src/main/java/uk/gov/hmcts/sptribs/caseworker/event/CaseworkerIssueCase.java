@@ -42,7 +42,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .event(CASEWORKER_ISSUE_CASE)
             .forStates(CaseManagement)
             .name("Issue case to respondent")
-            .description("Issue case to respondent\"")
+            .description("Issue case to respondent")
             .showEventNotes()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
