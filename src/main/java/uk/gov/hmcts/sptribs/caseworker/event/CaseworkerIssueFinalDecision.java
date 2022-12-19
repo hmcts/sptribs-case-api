@@ -1,10 +1,12 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -24,7 +26,11 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
 
     private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
-    private static final CcdPageConfiguration issueFinalDecisionSelectTemplate = new IssueFinalDecisionSelectTemplate();
+
+    @Autowired
+    private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
+
+    private static final CcdPageConfiguration issueFinalDecisionPreviewTemplate = new IssueFinalDecisionPreviewTemplate();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -38,6 +44,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .grantHistoryOnly(SOLICITOR));
         issueFinalDecisionNotice.addTo(pageBuilder);
         issueFinalDecisionSelectTemplate.addTo(pageBuilder);
+        issueFinalDecisionPreviewTemplate.addTo(pageBuilder);
     }
 
 }
