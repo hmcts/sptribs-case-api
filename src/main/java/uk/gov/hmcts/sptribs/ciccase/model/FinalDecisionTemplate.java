@@ -9,7 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum FinalDecisionTemplate implements HasLabel {
     @JsonProperty("Eligibility")
-    ELIGIBILITY("Eligibility", "SPT_CIC1_Eligibility.docx "),
+    ELIGIBILITY("Eligibility", "CIC6_General_Directions"),
 
     @JsonProperty("Quantum")
     QUANTUM("Quantum", "SPT_CIC2_Quantum.docx"),
