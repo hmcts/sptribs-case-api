@@ -77,7 +77,7 @@ public class CicCase {
     private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
-        label = "Create hearing summary",
+        label = "Choose a hearing to summarise",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList hearingSummaryList;
