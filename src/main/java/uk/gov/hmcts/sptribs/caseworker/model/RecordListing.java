@@ -186,6 +186,7 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private CaseDocumentsCIC hearingNoticeDocuments;
+    private CaseDocumentsCIC decisionNoteDocuments;
 
     @JsonIgnore
     public String getSelectedRegionVal() {
