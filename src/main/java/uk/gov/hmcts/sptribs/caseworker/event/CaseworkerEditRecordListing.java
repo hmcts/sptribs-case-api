@@ -126,7 +126,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Listing record created")
+            .confirmationHeader("# Listing record updated")
             .build();
     }
 
