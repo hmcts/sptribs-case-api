@@ -92,15 +92,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .build();
     }
 
-//    private void caseDataList(CaseData caseData) {
-//        DynamicList regionList = locationService.getAllRegions();
-//        caseData.getRecordListing().setRegionList(regionList);
-//
-//        String regionMessage = regionList == null || regionList.getListItems().isEmpty()
-//            ? "Unable to retrieve Region data"
-//            : null;
-//        caseData.getRecordListing().setRegionsMessage(regionMessage);
-//    }
+
 
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
