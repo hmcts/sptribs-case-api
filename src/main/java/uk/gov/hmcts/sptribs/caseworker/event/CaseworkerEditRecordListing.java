@@ -51,6 +51,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        CaseworkerRecordListing recordListing = new CaseworkerRecordListing();
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_RECORD_LISTING)
             .forStates(CaseManagement, AwaitingHearing)
@@ -156,7 +157,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     }
 
     private void addRegionInfo(PageBuilder pageBuilder) {
-        pageBuilder.page("regionInfo", this::midEvent)
+        CaseworkerRecordListing recordListing = new CaseworkerRecordListing();
+        pageBuilder.page("regionInfo", recordListing::midEvent)
             .label("regionInfoObj", "<h1>Region Data</h1>")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getRegionsMessage)
