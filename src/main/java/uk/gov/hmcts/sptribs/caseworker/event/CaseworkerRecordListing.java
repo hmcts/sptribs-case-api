@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.UploadHearingNotice;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListingHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -51,6 +52,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private RecordListingHelper recordListingHelper;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -133,19 +137,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        String selectedRegion = caseData.getRecordListing().getSelectedRegionVal();
-        String regionId = getRegionId(selectedRegion);
-
-        if (null != regionId) {
-            DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
-            caseData.getRecordListing().setHearingVenues(hearingVenueList);
-
-            String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
-                ? "Unable to retrieve Hearing Venues data"
-                : null;
-            caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
-
-        }
+        recordListingHelper.populatedRegionData(caseData,locationService);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
