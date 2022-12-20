@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.UploadHearingNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -26,7 +27,9 @@ import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -51,7 +54,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        CaseworkerRecordListing recordListing = new CaseworkerRecordListing();
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_RECORD_LISTING)
             .forStates(CaseManagement, AwaitingHearing)
@@ -103,7 +105,17 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         if (checkNullCondition(details.getData().getCicCase())) {
             errors.add("One party must be selected.");
         }
-
+        Set<NotificationParties> partiesSet = new HashSet<>();
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartySubject())) {
+            partiesSet.add(NotificationParties.SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRepresentative())) {
+            partiesSet.add(NotificationParties.REPRESENTATIVE);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
+            partiesSet.add(NotificationParties.RESPONDENT);
+        }
+        caseData.getRecordListing().setNotificationParties(partiesSet);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -157,8 +169,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     }
 
     private void addRegionInfo(PageBuilder pageBuilder) {
-        CaseworkerRecordListing recordListing = new CaseworkerRecordListing();
-        pageBuilder.page("regionInfo", recordListing::midEvent)
+        pageBuilder.page("regionInfo", this::midEvent)
             .label("regionInfoObj", "<h1>Region Data</h1>")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getRegionsMessage)

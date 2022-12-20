@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +14,16 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
-import uk.gov.hmcts.sptribs.ciccase.model.*;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.List;
@@ -28,12 +36,14 @@ import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerEditRecordListing.
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.*;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerEditRecordListingTest {
     @InjectMocks
-    private CaseworkerEditRecordListing caseworkerEditRecordListing;
+    private CaseworkerEditRecordListing caseworkerEditRecordList;
 
     @Mock
     private LocationService locationService;
@@ -44,7 +54,7 @@ class CaseworkerEditRecordListingTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseworkerEditRecordListing.configure(configBuilder);
+        caseworkerEditRecordList.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
@@ -72,8 +82,8 @@ class CaseworkerEditRecordListingTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerEditRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerEditRecordListing.submitted(updatedCaseDetails, beforeDetails);
+            caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse stayedResponse = caseworkerEditRecordList.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData().getRecordListing().getHearingType().getLabel()).isEqualTo("Final");
@@ -95,7 +105,7 @@ class CaseworkerEditRecordListingTest {
 
         //When
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordListing.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response.getData().getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
@@ -120,7 +130,7 @@ class CaseworkerEditRecordListingTest {
 
         //When
         when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordListing.midEvent(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData().getRecordListing().getHearingVenues()
@@ -141,7 +151,7 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
     }
@@ -157,12 +167,12 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
     }
 
-    @Disabled
+    @Test
     void shouldReturnErrorsIfAllNotificationPartiesSelected() {
         final CicCase cicCase = CicCase.builder()
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -179,7 +189,7 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().getRecordListing().getNotificationParties()).hasSize(3);
         assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
