@@ -18,7 +18,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 
 @Component
 @Slf4j
-public class ApplicationReceivedNotification implements PartiesNotification {
+public class CaseUnstayedNotification implements PartiesNotification {
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -29,46 +29,52 @@ public class ApplicationReceivedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        if (cicCase.getContactPreferenceType().isEmail()) {
-            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
-            templateVars.put(CONTACT_NAME, cicCase.getFullName());
+        Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
+        templateVars.put(CONTACT_NAME, cicCase.getFullName());
 
-            // Send Email
+        if (cicCase.getContactPreferenceType().isEmail()) {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(notificationResponse);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
+            sendLetterNotification(templateVars);
         }
     }
 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
-            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
-            templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
+        Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
+        templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
 
-            // Send Email
+        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(notificationResponse);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
+            sendLetterNotification(templateVars);
         }
     }
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
-            templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
+        Map<String, Object> templateVars = notificationHelper.commonTemplateVars(cicCase, caseNumber);
+        templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
 
-            // Send Email
+        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(notificationResponse);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
+            sendLetterNotification(templateVars);
         }
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(destinationAddress)
-            .template(EmailTemplateName.APPLICATION_RECEIVED)
+            .template(EmailTemplateName.CASE_UNSTAYED_EMAIL)
             .templateVars(templateVars)
             .build();
 
@@ -76,7 +82,14 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         return notificationService.sendEmail();
     }
 
+    private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
+        NotificationRequest letterRequest = NotificationRequest.builder()
+            .template(EmailTemplateName.CASE_UNSTAYED_POST)
+            .templateVars(templateVarsLetter)
+            .build();
 
-
+        notificationService.setNotificationRequest(letterRequest);
+        notificationService.sendLetter();
+    }
 
 }

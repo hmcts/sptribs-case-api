@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -38,6 +38,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerRecordListingTest {
@@ -64,10 +65,16 @@ class CaseworkerRecordListingTest {
     @Test
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
+        final CicCase cicCase = CicCase.builder()
+            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
         final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setRecordListing(getMockRecordListing());
+        caseData.setRecordListing(getRecordListing());
         caseData.setCicCase(getMockCicCase());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -165,23 +172,36 @@ class CaseworkerRecordListingTest {
         assertThat(response.getErrors()).hasSize(1);
     }
 
+    @Test
+    void shouldReturnErrorsIfAllNotificationPartiesSelected() {
+        final CicCase cicCase = CicCase.builder()
+            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getData().getRecordListing().getNotificationParties()).hasSize(3);
+        assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
+        assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
+    }
+
     private CicCase getMockCicCase() {
         return CicCase.builder().fullName("fullName").recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .representativeFullName("repFullName").recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .respondantName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
     }
 
-    private RecordListing getMockRecordListing() {
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setConferenceCallNumber("");
-        recordListing.setHearingType(HearingType.FINAL);
-        recordListing.setImportantInfoDetails("some details");
-        recordListing.setVideoCallLink("");
-        recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
-        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
-        return recordListing;
-    }
 
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
