@@ -169,12 +169,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .done();
     }
 
-    private String getRegionId(String selectedRegion) {
-        String[] values = selectedRegion != null
-            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
-            : null;
-        return values != null && values.length > 0 ? values[0] : null;
-    }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")
