@@ -9,13 +9,8 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 public enum HearingCancellationReason implements HasLabel {
 
-    @JsonProperty("RequestForR27DecisionAndNoTimeForInfill")
-    REQUEST_FOR_R27_DECISION_AND_NO_TIME_FOR_INFILL("Request for R27 decision and no time for infill",
-        "Request for R27 decision and no time for infill"),
-
-    @JsonProperty("noSuitableCasesThatAreReadyToList")
-    NO_SUITABLE_CASES_THAT_ARE_READY_TO_LIST("No suitable cases that are ready to list",
-        "No suitable cases that are ready to list"),
+    @JsonProperty("caseRejected")
+    CASE_REJECTED("Case Rejected", "Case Rejected"),
 
     @JsonProperty("consentOrderReceivedAndNoTimeForInfill")
     CONSENT_ORDER_RECEIVED_AND_NO_TIME_FOR_INFILL("Consent Order received and no time for infill",
@@ -24,8 +19,13 @@ public enum HearingCancellationReason implements HasLabel {
     @JsonProperty("incompletePanel")
     INCOMPLETE_PANEL("Incomplete Panel", "Incomplete Panel"),
 
-    @JsonProperty("caseRejected")
-    CASE_REJECTED("Case Rejected", "Case Rejected"),
+    @JsonProperty("noSuitableCasesThatAreReadyToList")
+    NO_SUITABLE_CASES_THAT_ARE_READY_TO_LIST("No suitable cases that are ready to list",
+        "No suitable cases that are ready to list"),
+
+    @JsonProperty("RequestForR27DecisionAndNoTimeForInfill")
+    REQUEST_FOR_R27_DECISION_AND_NO_TIME_FOR_INFILL("Request for R27 decision and no time for infill",
+        "Request for R27 decision and no time for infill"),
 
     @JsonProperty("venueUnavailable")
     VENUE_UNAVAILABLE("Venue Unavailable", "Venue Unavailable"),

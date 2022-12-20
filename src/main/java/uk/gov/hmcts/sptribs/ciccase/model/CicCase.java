@@ -52,6 +52,7 @@ public class CicCase {
 
 
     @CCD(
+        label = "Which parties do you want to contact?",
         typeOverride = MultiSelectList,
         typeParameterOverride = "ContactPartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 
 @Service
 @Slf4j
@@ -28,7 +28,7 @@ public class HearingService {
         if (!CollectionUtils.isEmpty(additionalHearingDateListValueList)) {
             for (ListValue<HearingDate> hearingDate : additionalHearingDateListValueList) {
                 String date = hearingDate.getValue().getHearingVenueDate().toString()
-                    + HYPHEN
+                    + SPACE
                     + hearingDate.getValue().getHearingVenueTime();
                 hearingDateList.add(date);
             }
