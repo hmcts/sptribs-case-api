@@ -59,7 +59,7 @@ public class CaseworkerChooseOutcome implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(caseData.getCloseCase().getCloseCaseType())
+            .state(caseData.getCloseCase().getCloseCaseReason().getType())
             .build();
     }
 
