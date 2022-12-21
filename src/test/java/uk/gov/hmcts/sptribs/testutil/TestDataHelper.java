@@ -1011,7 +1011,8 @@ public class TestDataHelper {
         recordListing.setHearingType(HearingType.FINAL);
         recordListing.setImportantInfoDetails("some details");
         recordListing.setVideoCallLink("");
-        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
+        recordListing.setHearingDate(LocalDate.now());
+        recordListing.setHearingTime("10:00");
         return recordListing;
     }
 
