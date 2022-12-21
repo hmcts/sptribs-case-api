@@ -1015,7 +1015,8 @@ public class TestDataHelper {
         recordListing.setVideoCallLink("");
         recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
         recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
-        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
+        recordListing.setHearingDate(LocalDate.now());
+        recordListing.setHearingTime("10:00");
         return recordListing;
     }
 

@@ -11,39 +11,46 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Locale.UK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 
 @Service
 @Slf4j
 public class HearingService {
     public DynamicList getHearingDateDynamicList(final CaseDetails<CaseData, State> caseDetails) {
+        final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         CaseData data = caseDetails.getData();
         List<ListValue<HearingDate>> additionalHearingDateListValueList = data.getRecordListing().getAdditionalHearingDate();
+        String hearingDate = data.getRecordListing().getHearingDate().format(dateFormatter)
+            + SPACE
+            + data.getRecordListing().getHearingTime();
         List<String> hearingDateList = new ArrayList<>();
+        hearingDateList.add(hearingDate);
         if (!CollectionUtils.isEmpty(additionalHearingDateListValueList)) {
-            for (ListValue<HearingDate> hearingDate : additionalHearingDateListValueList) {
-                String date = hearingDate.getValue().getHearingVenueDate().toString()
+            for (ListValue<HearingDate> additionalHearingDate : additionalHearingDateListValueList) {
+                String date = additionalHearingDate.getValue().getHearingVenueDate().format(dateFormatter)
                     + SPACE
-                    + hearingDate.getValue().getHearingVenueTime();
+                    + additionalHearingDate.getValue().getHearingVenueTime();
                 hearingDateList.add(date);
             }
-            List<DynamicListElement> dynamicListElements = hearingDateList
-                .stream()
-                .sorted()
-                .map(date -> DynamicListElement.builder().label(date).code(UUID.randomUUID()).build())
-                .collect(Collectors.toList());
-
-            return DynamicList
-                .builder()
-                .value(DynamicListElement.builder().label("date").code(UUID.randomUUID()).build())
-                .listItems(dynamicListElements)
-                .build();
         }
-        return null;
+        List<DynamicListElement> dynamicListElements = hearingDateList
+            .stream()
+            .sorted()
+            .map(date -> DynamicListElement.builder().label(date).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
+
+        return DynamicList
+            .builder()
+            .value(DynamicListElement.builder().label("date").code(UUID.randomUUID()).build())
+            .listItems(dynamicListElements)
+            .build();
     }
 }
