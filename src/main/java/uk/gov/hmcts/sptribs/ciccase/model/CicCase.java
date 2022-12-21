@@ -52,7 +52,6 @@ public class CicCase {
 
 
     @CCD(
-        label = "Which parties do you want to contact?",
         typeOverride = MultiSelectList,
         typeParameterOverride = "ContactPartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -76,6 +75,11 @@ public class CicCase {
     )
     private List<ListValue<DateModel>> orderDueDates;
 
+    @CCD(
+        label = "Choose a hearing to summarise",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList hearingSummaryList;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",

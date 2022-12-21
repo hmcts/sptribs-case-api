@@ -12,13 +12,11 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
-import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -88,8 +86,6 @@ class CaseworkerRecordListingTest {
         //Then
         assertThat(response.getData().getRecordListing().getHearingType().getLabel()).isEqualTo("Final");
         assertThat(response.getData().getRecordListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
-        assertThat(response.getData().getRecordListing().getHearingNotice()).isEqualTo(NoticeOption.CREATE_FROM_TEMPLATE);
-        assertThat(response.getData().getRecordListing().getTemplate()).isEqualTo(RecordListingTemplate.HEARING_INVITE_CVP);
         assertThat(stayedResponse).isNotNull();
         assertThat(response.getErrors()).isEmpty();
     }

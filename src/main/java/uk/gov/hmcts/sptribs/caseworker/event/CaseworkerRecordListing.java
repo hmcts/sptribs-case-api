@@ -12,8 +12,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SelectTemplate;
-import uk.gov.hmcts.sptribs.caseworker.event.page.UploadHearingNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -45,8 +43,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
-    private static final CcdPageConfiguration uploadHearingNotice = new UploadHearingNotice();
-    private static final CcdPageConfiguration selectTemplate = new SelectTemplate();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
     @Autowired
@@ -72,9 +68,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
         addOtherInformation(pageBuilder);
-        addHearingNotice(pageBuilder);
-        uploadHearingNotice.addTo(pageBuilder);
-        selectTemplate.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
 
@@ -202,14 +195,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     + " This may include any reasonable adjustments that need to be made, or details"
                     + "\n of anyone who should be excluded from attending this hearing.\n")
             .optional(RecordListing::getImportantInfoDetails)
-            .done();
-    }
-
-    private void addHearingNotice(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingNotice")
-            .label("hearingNoticeObj", "<h1>Create a hearing Notice</h1>")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingNotice)
             .done();
     }
 
