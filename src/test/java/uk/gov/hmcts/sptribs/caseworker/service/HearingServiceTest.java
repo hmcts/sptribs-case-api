@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDatesOneDate;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +24,7 @@ class HearingServiceTest {
     void shouldPopulateHearingDateDynamicList() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().recordListing(getRecordListing()).build();
+        caseData.getRecordListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
         details.setData(caseData);
         //When
 
@@ -33,16 +35,16 @@ class HearingServiceTest {
     }
 
     @Test
-    void shouldPopulateHearingDateDynamicListNull() {
+    void shouldPopulateHearingDateDynamicListWhenAdditionalHearingDatesNull() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
+        final CaseData caseData = CaseData.builder().recordListing(getRecordListing()).build();
         details.setData(caseData);
         //When
 
-        DynamicList regionList = hearingService.getHearingDateDynamicList(details);
+        DynamicList hearingList = hearingService.getHearingDateDynamicList(details);
 
         //Then
-        assertThat(regionList).isNull();
+        assertThat(hearingList).isNotNull();
     }
 
 }
