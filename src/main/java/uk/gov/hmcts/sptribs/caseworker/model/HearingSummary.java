@@ -9,8 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingSummaryHearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 
 @Data
 @NoArgsConstructor
@@ -24,5 +28,21 @@ public class HearingSummary {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList hearingSummaryList;
+
+    @CCD(
+        label = "Hearing type",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingSummaryHearingType",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingSummaryHearingType hearingType;
+
+    @CCD(
+        label = "Hearing format",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingFormat",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingFormat hearingFormat;
 
 }

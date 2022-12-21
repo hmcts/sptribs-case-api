@@ -56,7 +56,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
-        caseData.getCicCase().setHearingSummaryList(hearingDateDynamicList);
+        caseData.getHearingSummary().setHearingSummaryList(hearingDateDynamicList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
