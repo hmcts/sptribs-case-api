@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +98,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Listing record created")
+            .confirmationHeader("# Listing record updated")
             .build();
     }
 

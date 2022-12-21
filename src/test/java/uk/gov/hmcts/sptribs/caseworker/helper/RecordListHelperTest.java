@@ -33,7 +33,7 @@ class RecordListHelperTest {
 
         //When
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-        recordListHelper.regionData(caseData, locationService);
+        recordListHelper.regionData(caseData);
 
         //Then
         assertThat(caseData.getRecordListing().getRegionList()).isNotNull();
@@ -54,7 +54,6 @@ class RecordListHelperTest {
             .listItems(List.of(listItem))
             .build();
     }
-
 
 
 }

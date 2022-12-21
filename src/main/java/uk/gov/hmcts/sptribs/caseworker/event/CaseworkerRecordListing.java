@@ -9,9 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -21,15 +21,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -45,8 +42,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
+
     @Autowired
-    private LocationService locationService;
+    private RecordListHelper recordListHelper;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -73,13 +71,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList regionList = locationService.getAllRegions();
-        caseData.getRecordListing().setRegionList(regionList);
-
-        String regionMessage = regionList == null || regionList.getListItems().isEmpty()
-            ? "Unable to retrieve Region data"
-            : null;
-        caseData.getRecordListing().setRegionsMessage(regionMessage);
+        recordListHelper.regionData(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -126,19 +118,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        String selectedRegion = caseData.getRecordListing().getSelectedRegionVal();
-        String regionId = getRegionId(selectedRegion);
-
-        if (null != regionId) {
-            DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
-            caseData.getRecordListing().setHearingVenues(hearingVenueList);
-
-            String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
-                ? "Unable to retrieve Hearing Venues data"
-                : null;
-            caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
-
-        }
+        recordListHelper.populatedVenuesData(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -168,13 +148,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .readonly(RecordListing::getRegionsMessage)
             .optional(RecordListing::getRegionList)
             .done();
-    }
-
-    private String getRegionId(String selectedRegion) {
-        String[] values = selectedRegion != null
-            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
-            : null;
-        return values != null && values.length > 0 ? values[0] : null;
     }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
