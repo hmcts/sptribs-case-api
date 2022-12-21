@@ -74,7 +74,7 @@ class CaseworkerContactPartiesTest {
     @Test
     void shouldSuccessfullyMoveToNextPage() {
         final CaseData caseData = caseData();
-        CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.APPLICANTTOCONTACT)).build();
+        CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT)).build();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -93,7 +93,7 @@ class CaseworkerContactPartiesTest {
     void shouldSuccessfullyMoveToNextPageWithOutError() {
         final CaseData caseData = caseData();
 
-        CicCase cicCase1 = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.APPLICANTTOCONTACT)).build();
+        CicCase cicCase1 = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT)).build();
         caseData.setCicCase(cicCase1);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -108,63 +108,6 @@ class CaseworkerContactPartiesTest {
 
     }
 
-    @Test
-    void shouldSuccessfullyMoveToNextPage() {
-        final CaseData caseData = caseData();
-        CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.APPLICANTTOCONTACT)).build();
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
-        assertThat(response).isNotNull();
-
-
-    }
-
-
-    @Test
-    void shouldSuccessfullyMoveToNextPageWithOutError() {
-        final CaseData caseData = caseData();
-
-        CicCase cicCase1 = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.APPLICANTTOCONTACT)).build();
-        caseData.setCicCase(cicCase1);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
-        assertThat(response).isNotNull();
-        assertThat(response.getErrors()).hasSize(0);
-
-
-    }
-
-
-    @Test
-    void shouldSuccessfullyMoveToNextPageWithError() {
-        final CaseData caseData = caseData();
-
-        CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of()).build();
-        caseData.setCicCase(cicCase);
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
-        assertThat(response).isNotNull();
-        assertThat(response.getErrors()).hasSize(1);
-
-
-    }
 
     @Test
     void shouldSuccessfullyMoveToNextPageWithError() {
