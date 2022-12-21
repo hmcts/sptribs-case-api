@@ -4,12 +4,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectTemplate;
@@ -17,8 +15,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.UploadHearingNotice;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListingHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -26,14 +22,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -93,7 +83,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     }
 
 
-
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
@@ -119,13 +108,11 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        recordListingHelper.populatedRegionData(caseData,locationService);
+        recordListingHelper.populatedRegionData(caseData, locationService);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
-
-
 
 
     private void addRegionInfo(PageBuilder pageBuilder) {

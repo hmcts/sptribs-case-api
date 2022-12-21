@@ -27,12 +27,10 @@ import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -137,7 +135,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        recordListingHelper.populatedRegionData(caseData,locationService);
+        recordListingHelper.populatedRegionData(caseData, locationService);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
