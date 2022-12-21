@@ -14,8 +14,10 @@ public class HearingTypeAndFormat implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingSummaryHearingTypeAndFormat")
+        pageBuilder
+            .page("hearingSummaryHearingTypeAndFormat")
             .pageLabel("Hearing type and format")
+            .label("LabelHearingSummaryHearingTypeAndFormat", "")
             .complex(CaseData::getHearingSummary)
             .mandatory(HearingSummary::getHearingType)
             .mandatory(HearingSummary::getHearingFormat)
