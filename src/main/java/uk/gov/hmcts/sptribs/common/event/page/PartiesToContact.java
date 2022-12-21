@@ -24,6 +24,7 @@ public class PartiesToContact implements CcdPageConfiguration {
         pageBuilder
             .page("partiesToContact", this::midEvent)
             .complex(CaseData::getCicCase)
+            .label("contactPartiesLabel","Which parties do you want to contact?")
             .optional(CicCase::getContactPartiesCIC)
             .done()
             .complex(CaseData::getContactParties)
@@ -39,7 +40,7 @@ public class PartiesToContact implements CcdPageConfiguration {
 
         if (null != data.getCicCase() && null != data.getCicCase().getContactPartiesCIC()
             && data.getCicCase().getContactPartiesCIC().size() == 0) {
-            errors.add("One field  is mandatory.");
+            errors.add("Which parties do you want to contact?. is required.");
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
