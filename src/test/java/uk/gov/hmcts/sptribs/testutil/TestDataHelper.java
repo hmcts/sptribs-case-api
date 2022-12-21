@@ -1027,8 +1027,6 @@ public class TestDataHelper {
         recordListing.setHearingType(HearingType.FINAL);
         recordListing.setImportantInfoDetails("some details");
         recordListing.setVideoCallLink("");
-        recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
-        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
         recordListing.setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
         return recordListing;
     }
