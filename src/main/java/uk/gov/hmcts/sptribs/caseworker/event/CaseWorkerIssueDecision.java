@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -22,14 +21,15 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
+        /*PageBuilder pageBuilder = new PageBuilder(*/
+        configBuilder
             .event(CASEWORKER_ISSUE_DECISION)
             .forStates(AwaitingOutcome)
             .name("Issue decision")
             .description("Issue decision")
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR));
+            .grantHistoryOnly(SOLICITOR);//);
     }
 
 }
