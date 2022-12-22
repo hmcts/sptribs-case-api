@@ -61,11 +61,11 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
-        addHearingTypeAndFormat(pageBuilder);
+        recordListHelper.addHearingTypeAndFormat(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
-        addRemoteHearingInfo(pageBuilder);
-        addOtherInformation(pageBuilder);
+        recordListHelper.addRemoteHearingInfo(pageBuilder);
+        recordListHelper.addOtherInformation(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
 
@@ -87,7 +87,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullCondition(details.getData().getCicCase())) {
+        if (recordListHelper.checkNullCondition(details.getData().getCicCase())) {
             errors.add("One party must be selected.");
         }
         Set<NotificationParties> partiesSet = new HashSet<>();
@@ -125,21 +125,21 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    private boolean checkNullCondition(CicCase cicCase) {
-        return null != cicCase
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartySubject())
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
-    }
+    //    private boolean checkNullCondition(CicCase cicCase) {
+    //        return null != cicCase
+    //            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartySubject())
+    //            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRepresentative())
+    //            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
+    //    }
 
-    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat")
-            .pageLabel("Hearing type and format")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .done();
-    }
+    //    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
+    //        pageBuilder.page("hearingTypeAndFormat")
+    //            .pageLabel("Hearing type and format")
+    //            .complex(CaseData::getRecordListing)
+    //            .mandatory(RecordListing::getHearingType)
+    //            .mandatory(RecordListing::getHearingFormat)
+    //            .done();
+    //    }
 
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
@@ -150,26 +150,26 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .done();
     }
 
-    private void addRemoteHearingInfo(PageBuilder pageBuilder) {
-        pageBuilder.page("remoteHearingInformation")
-            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
-            .complex(CaseData::getRecordListing)
-            .optional(RecordListing::getVideoCallLink)
-            .optional(RecordListing::getConferenceCallNumber)
-            .done();
-    }
+    //    private void addRemoteHearingInfo(PageBuilder pageBuilder) {
+    //        pageBuilder.page("remoteHearingInformation")
+    //            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
+    //            .complex(CaseData::getRecordListing)
+    //            .optional(RecordListing::getVideoCallLink)
+    //            .optional(RecordListing::getConferenceCallNumber)
+    //            .done();
+    //    }
 
-    private void addOtherInformation(PageBuilder pageBuilder) {
-        pageBuilder.page("otherInformation")
-            .label("otherInformationObj", "<h1>Other information</h1>")
-            .complex(CaseData::getRecordListing)
-            .label("otherInfoLabel",
-                "\nEnter any other important information about this hearing."
-                    + " This may include any reasonable adjustments that need to be made, or details"
-                    + "\n of anyone who should be excluded from attending this hearing.\n")
-            .optional(RecordListing::getImportantInfoDetails)
-            .done();
-    }
+    //    private void addOtherInformation(PageBuilder pageBuilder) {
+    //        pageBuilder.page("otherInformation")
+    //            .label("otherInformationObj", "<h1>Other information</h1>")
+    //            .complex(CaseData::getRecordListing)
+    //            .label("otherInfoLabel",
+    //                "\nEnter any other important information about this hearing."
+    //                    + " This may include any reasonable adjustments that need to be made, or details"
+    //                    + "\n of anyone who should be excluded from attending this hearing.\n")
+    //            .optional(RecordListing::getImportantInfoDetails)
+    //            .done();
+    //    }
 
 
 }

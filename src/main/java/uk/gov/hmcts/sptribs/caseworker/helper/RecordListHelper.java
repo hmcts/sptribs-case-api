@@ -3,8 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.Arrays;
@@ -50,5 +54,43 @@ public class RecordListHelper {
             ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
             : null;
         return values != null && values.length > 0 ? values[0] : null;
+    }
+
+
+    public boolean checkNullCondition(CicCase cicCase) {
+        return null != cicCase
+            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartySubject())
+            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
+    }
+
+    public void addHearingTypeAndFormat(PageBuilder pageBuilder) {
+        pageBuilder.page("hearingTypeAndFormat")
+            .pageLabel("Hearing type and format")
+            .complex(CaseData::getRecordListing)
+            .mandatory(RecordListing::getHearingType)
+            .mandatory(RecordListing::getHearingFormat)
+            .done();
+    }
+
+    public void addRemoteHearingInfo(PageBuilder pageBuilder) {
+        pageBuilder.page("remoteHearingInformation")
+            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
+            .complex(CaseData::getRecordListing)
+            .optional(RecordListing::getVideoCallLink)
+            .optional(RecordListing::getConferenceCallNumber)
+            .done();
+    }
+
+    public void addOtherInformation(PageBuilder pageBuilder) {
+        pageBuilder.page("otherInformation")
+            .label("otherInformationObj", "<h1>Other information</h1>")
+            .complex(CaseData::getRecordListing)
+            .label("otherInfoLabel",
+                "\nEnter any other important information about this hearing."
+                    + " This may include any reasonable adjustments that need to be made, or details"
+                    + "\n of anyone who should be excluded from attending this hearing.\n")
+            .optional(RecordListing::getImportantInfoDetails)
+            .done();
     }
 }
