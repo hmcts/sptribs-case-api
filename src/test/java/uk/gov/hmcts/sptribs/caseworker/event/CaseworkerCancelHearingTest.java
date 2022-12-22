@@ -39,6 +39,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDates;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListingWithOneHearingDate;
 
@@ -90,6 +91,7 @@ class CaseworkerCancelHearingTest {
             .hearingList(getDynamicList())
             .build();
         final RecordListing recordListing = getRecordListing();
+        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
@@ -121,6 +123,7 @@ class CaseworkerCancelHearingTest {
             .hearingList(getDynamicList())
             .build();
         final RecordListing recordListing = getRecordListing();
+        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
