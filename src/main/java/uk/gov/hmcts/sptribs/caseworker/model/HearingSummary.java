@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class HearingSummary {
     @CCD(
         label = "Choose a hearing to summarise",
