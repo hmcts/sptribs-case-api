@@ -10,10 +10,10 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionTemplate;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerIssueFinalDecision.CASEWORKER_ISSUE_FINAL_DECISION;
@@ -56,5 +56,26 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getId()).isEqualTo("SPT_CIC2_Quantum.docx");
         assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getLabel()).isEqualTo("Quantum");
+    }
+
+    @Test
+    void shouldSuccessfullyAddFinalDecisionRecipients() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = caseData.getCicCase();
+        Set<FinalDecisionRecipientSubjectCIC> subjectCICSet = new HashSet<>();
+        subjectCICSet.add(FinalDecisionRecipientSubjectCIC.SUBJECT);
+        cicCase.setRecipientSubjectCIC(subjectCICSet);
+        Set<FinalDecisionRecipientRepresentativeCIC> representativeCICSet = new HashSet<>();
+        representativeCICSet.add(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE);
+        cicCase.setRecipientRepresentativeCIC(representativeCICSet);
+        Set<FinalDecisionRecipientRespondentCIC> respondentCICSet = new HashSet<>();
+        respondentCICSet.add(FinalDecisionRecipientRespondentCIC.RESPONDENT);
+        cicCase.setRecipientRespondentCIC(respondentCICSet);
+
+        //Then
+        assertThat(caseData.getCicCase().getRecipientSubjectCIC().contains(FinalDecisionRecipientSubjectCIC.SUBJECT));
+        assertThat(caseData.getCicCase().getRecipientRepresentativeCIC().contains(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE));
+        assertThat(caseData.getCicCase().getRecipientRespondentCIC().contains(FinalDecisionRecipientRespondentCIC.RESPONDENT));
     }
 }
