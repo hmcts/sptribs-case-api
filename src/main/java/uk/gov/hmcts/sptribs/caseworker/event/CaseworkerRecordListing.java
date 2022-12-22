@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -61,7 +60,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
 
         recordListHelper.addHearingTypeAndFormat(pageBuilder);
-        addRegionInfo(pageBuilder);
+        recordListHelper.addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         recordListHelper.addRemoteHearingInfo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);
@@ -114,23 +113,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
-        recordListHelper.populatedVenuesData(caseData);
 
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
-
-    private void addRegionInfo(PageBuilder pageBuilder) {
-        pageBuilder.page("regionInfo", this::midEvent)
-            .label("regionInfoObj", "<h1>Region Data</h1>")
-            .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getRegionsMessage)
-            .optional(RecordListing::getRegionList)
-            .done();
-    }
 
 }

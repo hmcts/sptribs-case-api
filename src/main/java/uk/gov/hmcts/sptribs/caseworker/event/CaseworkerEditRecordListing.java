@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -56,10 +55,11 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
+
+        recordListHelper.addRegionInfo(pageBuilder);
         recordListHelper.addHearingTypeAndFormat(pageBuilder);
-        addRegionInfo(pageBuilder);
-        hearingVenues.addTo(pageBuilder);
         recordListHelper.addRemoteHearingInfo(pageBuilder);
+        hearingVenues.addTo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
@@ -100,25 +100,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
-        recordListHelper.populatedVenuesData(caseData);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
-
-
-    private void addRegionInfo(PageBuilder pageBuilder) {
-        pageBuilder.page("regionInfo", this::midEvent)
-            .label("regionInfoObj", "<h1>Region Data</h1>")
-            .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getRegionsMessage)
-            .optional(RecordListing::getRegionList)
-            .done();
-    }
 
 
 }

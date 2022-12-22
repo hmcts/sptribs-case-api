@@ -41,6 +41,7 @@ class RecordListHelperTest {
 
     }
 
+
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()

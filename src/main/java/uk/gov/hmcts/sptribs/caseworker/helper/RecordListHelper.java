@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
@@ -64,6 +67,17 @@ public class RecordListHelper {
             && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
     }
 
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData caseData = details.getData();
+        populatedVenuesData(caseData);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
     public void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")
             .pageLabel("Hearing type and format")
@@ -91,6 +105,16 @@ public class RecordListHelper {
                     + " This may include any reasonable adjustments that need to be made, or details"
                     + "\n of anyone who should be excluded from attending this hearing.\n")
             .optional(RecordListing::getImportantInfoDetails)
+            .done();
+    }
+
+
+    public void addRegionInfo(PageBuilder pageBuilder) {
+        pageBuilder.page("regionInfo", this::midEvent)
+            .label("regionInfoObj", "<h1>Region Data</h1>")
+            .complex(CaseData::getRecordListing)
+            .readonly(RecordListing::getRegionsMessage)
+            .optional(RecordListing::getRegionList)
             .done();
     }
 }
