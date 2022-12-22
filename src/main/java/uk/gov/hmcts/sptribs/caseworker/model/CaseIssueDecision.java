@@ -24,7 +24,7 @@ public class CaseIssueDecision {
         label = "Templates",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
-        typeParameterOverride = "DecisionTemplate"
+        typeParameterOverride = "FinalDecisionTemplate"
     )
     private DecisionTemplate issueDecisionTemplate;
 }
