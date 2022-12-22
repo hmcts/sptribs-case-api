@@ -25,7 +25,7 @@ public class CloseCase {
         label = "Why is this case being closed?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String closeCaseReason;
+    private CloseReason closeCaseReason;
 
     @CCD(
         label = "Provide additional details",
