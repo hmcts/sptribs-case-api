@@ -21,8 +21,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 @Service
 @Slf4j
 public class RecordListHelper {
-    @Autowired
-    private LocationService locationService;
+    private LocationService locationService = new LocationService();
 
     public void regionData(CaseData caseData) {
         DynamicList regionList = locationService.getAllRegions();

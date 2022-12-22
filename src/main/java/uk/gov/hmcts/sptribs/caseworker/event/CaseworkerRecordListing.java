@@ -41,8 +41,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
 
-    @Autowired
-    private RecordListHelper recordListHelper;
+
+    private RecordListHelper recordListHelper = new RecordListHelper();
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

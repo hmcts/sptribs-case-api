@@ -36,8 +36,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
-    @Autowired
-    private RecordListHelper recordListHelper;
+
+    private RecordListHelper recordListHelper = new RecordListHelper();
 
 
     @Override
