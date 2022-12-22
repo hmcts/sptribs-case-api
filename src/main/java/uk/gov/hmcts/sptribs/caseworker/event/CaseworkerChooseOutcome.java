@@ -66,7 +66,7 @@ public class CaseworkerChooseOutcome implements CCDConfig<CaseData, State, UserR
     public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case closed")
+            .confirmationHeader("# Case " + details.getData().getCloseCase().getCloseCaseReason().getLabel())
             .build();
     }
 }
