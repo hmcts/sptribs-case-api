@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantPrayer;
@@ -52,7 +51,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.HelpWithFees;
 import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.SolicitorService;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -121,6 +119,9 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.WIFE_JOINT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_2_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_2_LAST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.FEE_CODE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FEE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SIGN_IN_DISSOLUTION_TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SIGN_IN_DIVORCE_TEST_URL;
@@ -1010,15 +1011,34 @@ public class TestDataHelper {
         recordListing.setHearingType(HearingType.FINAL);
         recordListing.setImportantInfoDetails("some details");
         recordListing.setVideoCallLink("");
-        recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
-        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
-        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
+        recordListing.setHearingDate(LocalDate.now());
+        recordListing.setHearingTime("10:00");
         return recordListing;
     }
 
+    public static RecordListing getRecordListingWithOneHearingDate() {
+        final RecordListing recordListing = new RecordListing();
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setConferenceCallNumber("");
+        recordListing.setHearingType(HearingType.FINAL);
+        recordListing.setImportantInfoDetails("some details");
+        recordListing.setVideoCallLink("");
+        recordListing.setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        return recordListing;
+    }
+
+
+    public static List<ListValue<HearingDate>> getAdditionalHearingDatesOneDate() {
+        HearingDate date1 = HearingDate.builder().hearingVenueDate(HEARING_DATE_1).hearingVenueTime(HEARING_TIME).build();
+        List<ListValue<HearingDate>> list = new ArrayList<>();
+        ListValue<HearingDate> listValue1 = ListValue.<HearingDate>builder().value(date1).id("0").build();
+        list.add(listValue1);
+        return list;
+    }
+
     public static List<ListValue<HearingDate>> getAdditionalHearingDates() {
-        HearingDate date1 = HearingDate.builder().hearingVenueDate(LocalDate.now()).hearingVenueTime("11:00").build();
-        HearingDate date2 = HearingDate.builder().hearingVenueDate(LocalDate.now().minusDays(1)).hearingVenueTime("11:00").build();
+        HearingDate date1 = HearingDate.builder().hearingVenueDate(HEARING_DATE_1).hearingVenueTime(HEARING_TIME).build();
+        HearingDate date2 = HearingDate.builder().hearingVenueDate(HEARING_DATE_2).hearingVenueTime(HEARING_TIME).build();
         List<ListValue<HearingDate>> list = new ArrayList<>();
         ListValue<HearingDate> listValue1 = ListValue.<HearingDate>builder().value(date1).id("0").build();
         ListValue<HearingDate> listValue2 = ListValue.<HearingDate>builder().value(date2).id("1").build();

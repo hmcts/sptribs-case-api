@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +25,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 public class MessageUtilTest {
 
     @Test
-    void shouldSuccessfullySendOrderWithEmail() {
+    void shouldSuccessfullyGenerateEmailMessage() {
         //Given
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -38,6 +40,31 @@ public class MessageUtilTest {
 
         //When
         StringBuilder result = MessageUtil.getEmailMessage(cicCase);
+
+        //Then
+        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateEmailMessageWithParties() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .email(TEST_SUBJECT_EMAIL)
+            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.RESPONDENT);
+        parties.add(NotificationParties.REPRESENTATIVE);
+        parties.add(NotificationParties.SUBJECT);
+
+        //When
+        StringBuilder result = MessageUtil.getEmailMessage(cicCase, parties);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -60,7 +87,7 @@ public class MessageUtilTest {
     }
 
     @Test
-    void shouldSuccessfullySendOrderWithPost() {
+    void shouldSuccessfullyGeneratePostMessage() {
         //Given
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -75,6 +102,30 @@ public class MessageUtilTest {
 
         //When
         StringBuilder result = MessageUtil.getPostMessage(cicCase);
+
+        //Then
+        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+    }
+
+    @Test
+    void shouldSuccessfullyGeneratePostMessageWithParties() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.SUBJECT);
+        parties.add(NotificationParties.RESPONDENT);
+        parties.add(NotificationParties.REPRESENTATIVE);
+        //When
+        StringBuilder result = MessageUtil.getPostMessage(cicCase, parties);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
