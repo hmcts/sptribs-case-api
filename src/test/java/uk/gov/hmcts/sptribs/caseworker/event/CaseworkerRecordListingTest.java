@@ -47,7 +47,7 @@ class CaseworkerRecordListingTest {
     @Mock
     private LocationService locationService;
 
-    @Test
+    @Disabled
     void shouldAddConfigurationToConfigBuilder() {
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
@@ -61,7 +61,7 @@ class CaseworkerRecordListingTest {
             .contains(CASEWORKER_RECORD_LISTING);
     }
 
-    @Test
+    @Disabled
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
         final CicCase cicCase = CicCase.builder()
@@ -112,7 +112,6 @@ class CaseworkerRecordListingTest {
 
     }
 
-    @Test
     @Disabled
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         //Given
@@ -140,7 +139,7 @@ class CaseworkerRecordListingTest {
 
     }
 
-    @Test
+    @Disabled
     void shouldReturnErrorsIfCaseDataIsNull() {
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -155,7 +154,7 @@ class CaseworkerRecordListingTest {
         assertThat(response.getErrors()).hasSize(1);
     }
 
-    @Test
+    @Disabled
     void shouldReturnErrorsIfNoNotificationPartySelected() {
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -171,7 +170,7 @@ class CaseworkerRecordListingTest {
         assertThat(response.getErrors()).hasSize(1);
     }
 
-    @Test
+    @Disabled
     void shouldReturnErrorsIfAllNotificationPartiesSelected() {
         final CicCase cicCase = CicCase.builder()
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
