@@ -532,4 +532,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse appLetterNotificationResponse;
+
+    @CCD(
+        label = "Decision notice documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<CICDocument>> decisionDocumentsUploaded;
 }
