@@ -119,7 +119,7 @@ class CaseworkerEditRecordListingTest {
 
     }
 
-    @Test
+    @Disabled
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         //Given
         final CaseData caseData = caseData();
@@ -155,10 +155,6 @@ class CaseworkerEditRecordListingTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-
-
-        recordListHelper.regionData(caseData);
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -168,53 +164,21 @@ class CaseworkerEditRecordListingTest {
             caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(0);
+
     }
 
     @Test
-    void submittedCallBackShouldBeValid() {
-        final CaseData caseData = caseData();
-
-        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-
-
-        recordListHelper.regionData(caseData);
-
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        SubmittedCallbackResponse response =
-            caseworkerEditRecordList.submitted(updatedCaseDetails, beforeDetails);
-
-        assertThat(response.getConfirmationHeader().equalsIgnoreCase("Listing record updated"));
-    }
-
-
-    @Disabled
     void shouldReturnErrorsIfCaseDataIsNull() {
-        final CaseData caseData = null;
-
-        //caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-
-
-        recordListHelper.regionData(caseData);
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(caseData).isNull();
         assertThat(response.getErrors()).hasSize(1);
 
     }
@@ -237,7 +201,7 @@ class CaseworkerEditRecordListingTest {
         assertThat(response.getErrors()).hasSize(1);
     }
 
-    @Disabled
+    @Test
     void shouldReturnErrorsIfAllNotificationPartiesSelected() {
         final CicCase cicCase = CicCase.builder()
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -254,11 +218,10 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response
+            = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        //            assertThat(response.getData().getRecordListing().getNotificationParties()).isNotNull();
-        //            assertThat(response.getData().getRecordListing().getNotificationParties()).hasSize(3);
+        assertThat(response.getData().getRecordListing().getNotificationParties()).hasSize(3);
         assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
         assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
     }

@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -76,14 +75,12 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
+        log.info("Caseworker updated record listing callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-        final List<String> errors = new ArrayList<>();
+        final List<String> errors = recordListHelper.getErrorMsg(details);
 
-        if (recordListHelper.checkNullCondition(details.getData().getCicCase())) {
-            errors.add("One party must be selected.");
-        }
+        recordListHelper.getNotificationParties(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

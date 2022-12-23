@@ -9,11 +9,16 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
@@ -74,6 +79,30 @@ public class RecordListHelper {
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+    }
+
+
+    public void getNotificationParties(CaseData caseData) {
+        Set<NotificationParties> partiesSet = new HashSet<>();
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartySubject())) {
+            partiesSet.add(NotificationParties.SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRepresentative())) {
+            partiesSet.add(NotificationParties.REPRESENTATIVE);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
+            partiesSet.add(NotificationParties.RESPONDENT);
+        }
+        caseData.getRecordListing().setNotificationParties(partiesSet);
+    }
+
+    public List<String> getErrorMsg(CaseDetails<CaseData, State> details) {
+        final List<String> errors = new ArrayList<>();
+
+        if (checkNullCondition(details.getData().getCicCase())) {
+            errors.add("One party must be selected.");
+        }
+        return errors;
     }
 
     public void addHearingTypeAndFormat(PageBuilder pageBuilder) {
