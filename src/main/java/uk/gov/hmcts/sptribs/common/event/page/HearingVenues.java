@@ -22,10 +22,13 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 @Component
 public class HearingVenues implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "recordVenueNotListedOption=\"ALWAYS_HIDE\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("listingDetails", this::midEvent)
             .label("listingDetailsObj", "<h1>Listing details</h1>")
+            .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getHearingVenuesMessage)
             .optional(RecordListing::getHearingVenues)
@@ -33,7 +36,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(RecordListing::getHearingVenueName, "recordVenueNotListedOption= \"VenueNotListed\"")
             .mandatory(RecordListing::getHearingVenueAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
             .optional(RecordListing::getRoomAtVenue)
-            .optional(RecordListing::getAddlInstr)
+            .optional(RecordListing::getAddlInstr, "currentEvent = \"caseworker-record-listing\"")
             .label("hearingDateObj", "<h4>Hearing date</h4>")
             .mandatory(RecordListing::getHearingDate)
             .mandatory(RecordListing::getSession)

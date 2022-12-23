@@ -330,6 +330,12 @@ public class CaseData {
     )
     private String closedDayCount;
 
+    @CCD(
+        label = "Event",
+        access = {DefaultAccess.class}
+    )
+    private String currentEvent;
+
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})

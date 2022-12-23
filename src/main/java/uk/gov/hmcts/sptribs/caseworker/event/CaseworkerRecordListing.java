@@ -82,7 +82,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             ? "Unable to retrieve Region data"
             : null;
         caseData.getRecordListing().setRegionsMessage(regionMessage);
-
+        caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
@@ -111,6 +111,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             partiesSet.add(NotificationParties.RESPONDENT);
         }
         caseData.getRecordListing().setNotificationParties(partiesSet);
+        caseData.setCurrentEvent("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
