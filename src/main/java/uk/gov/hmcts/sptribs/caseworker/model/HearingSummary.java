@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingSummaryHearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
@@ -21,7 +20,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class HearingSummary {
     @CCD(
         label = "Choose a hearing to summarise",
@@ -32,10 +30,10 @@ public class HearingSummary {
     @CCD(
         label = "Hearing type",
         typeOverride = FixedRadioList,
-        typeParameterOverride = "HearingSummaryHearingType",
+        typeParameterOverride = "HearingType",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private HearingSummaryHearingType hearingType;
+    private HearingType hearingType;
 
     @CCD(
         label = "Hearing format",
