@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
 
+    private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
@@ -63,7 +65,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
-        addHearingTypeAndFormat(pageBuilder);
+        hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         addRemoteHearingInfo(pageBuilder);
@@ -150,15 +152,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartySubject())
             && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRepresentative())
             && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
-    }
-
-    private void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat")
-            .pageLabel("Hearing type and format")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .done();
     }
 
     private void addRegionInfo(PageBuilder pageBuilder) {
