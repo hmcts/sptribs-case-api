@@ -35,7 +35,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
 
-
     private final RecordListHelper recordListHelper = new RecordListHelper();
 
     @Override
@@ -96,7 +95,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .confirmationHeader("# Listing record created")
             .build();
     }
-
 
 
 }
