@@ -1,8 +1,13 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.*;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -25,14 +30,14 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (null != data.getCicCase()
-            && (null == data.getCicCase().getRecipientSubjectCIC() || data.getCicCase().getRecipientSubjectCIC().size() == 0)
-            && (null == data.getCicCase().getRecipientRepresentativeCIC() || data.getCicCase().getRecipientRepresentativeCIC().size() == 0)
-            && (null == data.getCicCase().getRecipientRespondentCIC() || data.getCicCase().getRecipientRespondentCIC().size() == 0)) {
+            && CollectionUtils.isEmpty(data.getCicCase().getRecipientSubjectCIC())
+            && CollectionUtils.isEmpty(data.getCicCase().getRecipientRepresentativeCIC())
+            && CollectionUtils.isEmpty(data.getCicCase().getRecipientRespondentCIC())) {
             errors.add("One field must be selected.");
         }
         if (null != data.getCicCase()
