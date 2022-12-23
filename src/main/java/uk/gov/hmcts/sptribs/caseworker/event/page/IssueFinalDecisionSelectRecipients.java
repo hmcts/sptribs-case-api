@@ -38,9 +38,9 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
         if (null != data.getCicCase()
             && null != data.getCicCase().getRecipientRepresentativeCIC()
             && data.getCicCase().getRecipientRepresentativeCIC().contains(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE)
-            && (null == data.getCicCase().getPartiesCIC()|| !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE))
+            && (null == data.getCicCase().getRepresentativeCIC() || !data.getCicCase().getRepresentativeCIC().contains(RepresentativeCIC.REPRESENTATIVE))
         ) {
-            errors.add("A representative has not been specified for this case.");
+            errors.add("A representative has not been set to receive information about the case.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

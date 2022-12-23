@@ -81,11 +81,11 @@ public class IssueFinalDecisionSelectRecipientsTest {
     void shouldBeValidIfRepresentativeSelectedWithRepresentativeDetails() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Set<FinalDecisionRecipientRepresentativeCIC> representativeCICSet = new HashSet<>();
-        representativeCICSet.add(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE);
-        final Set<PartiesCIC> partiesCICSet = new HashSet<>();
-        partiesCICSet.add(PartiesCIC.REPRESENTATIVE);
-        final CicCase cicCase = CicCase.builder().recipientRepresentativeCIC(representativeCICSet).partiesCIC(partiesCICSet).build();
+        final Set<FinalDecisionRecipientRepresentativeCIC> decisionRepresentativeCICSet = new HashSet<>();
+        decisionRepresentativeCICSet.add(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE);
+        final Set<RepresentativeCIC> representativeCICSet = new HashSet<>();
+        representativeCICSet.add(RepresentativeCIC.REPRESENTATIVE);
+        final CicCase cicCase = CicCase.builder().recipientRepresentativeCIC(decisionRepresentativeCICSet).representativeCIC(representativeCICSet).build();
 
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
