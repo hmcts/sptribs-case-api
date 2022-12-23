@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.helper;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -21,7 +20,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 @Service
 @Slf4j
 public class RecordListHelper {
-    private LocationService locationService = new LocationService();
+    private final LocationService locationService = new LocationService();
 
     public void regionData(CaseData caseData) {
         DynamicList regionList = locationService.getAllRegions();

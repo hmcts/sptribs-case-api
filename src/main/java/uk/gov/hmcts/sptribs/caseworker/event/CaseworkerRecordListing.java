@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -42,7 +41,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
 
 
-    private RecordListHelper recordListHelper = new RecordListHelper();
+    private final RecordListHelper recordListHelper = new RecordListHelper();
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

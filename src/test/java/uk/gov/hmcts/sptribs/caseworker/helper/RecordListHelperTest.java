@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
@@ -71,7 +70,7 @@ class RecordListHelperTest {
     }
 
     @Test
-    void shouldMidEventMethodSuccessfullyPopulateHearingVenueData(){
+    void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -94,12 +93,7 @@ class RecordListHelperTest {
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
 
 
-
     }
-
-
-
-
 
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement

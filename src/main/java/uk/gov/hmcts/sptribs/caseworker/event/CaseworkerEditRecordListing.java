@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -37,7 +36,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
 
-    private RecordListHelper recordListHelper = new RecordListHelper();
+    private final RecordListHelper recordListHelper = new RecordListHelper();
 
 
     @Override
@@ -99,7 +98,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .confirmationHeader("# Listing record updated")
             .build();
     }
-
 
 
 }
