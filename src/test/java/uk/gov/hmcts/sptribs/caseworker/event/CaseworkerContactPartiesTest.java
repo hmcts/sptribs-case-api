@@ -10,7 +10,14 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.ciccase.model.*;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondantCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 
 import java.util.HashSet;
@@ -96,7 +103,8 @@ class CaseworkerContactPartiesTest {
         Set<RepresentativeCIC> rep = new HashSet<>();
         Set<RespondantCIC> res = new HashSet<>();
 
-        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub).representativeContactParties(rep).respondant(res).build();
+        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
+            .representativeContactParties(rep).respondant(res).build();
         caseData.setContactParties(contactParties);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();

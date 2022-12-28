@@ -36,14 +36,6 @@ public class PartiesToContact implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-//        if (null != data.getContactParties() && null == data.getContactParties().getRepresentativeContactParties()
-//            && null ==  data.getContactParties().getSubjectContactParties()
-//            && null ==  data.getContactParties().getRespondant()) {
-//
-//            errors.add("Which parties do you want to contact?. is required.");
-//
-//        }
-
 
         if (null != data.getContactParties() && data.getContactParties().getRepresentativeContactParties().size() == 0
             && data.getContactParties().getSubjectContactParties().size() == 0
