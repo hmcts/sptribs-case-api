@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @Getter
 @AllArgsConstructor
-public enum HearingType implements HasLabel {
+public enum HearingSummaryHearingType implements HasLabel {
 
     @JsonProperty("CaseManagement")
     CASE_MANAGEMENT("Case management"),

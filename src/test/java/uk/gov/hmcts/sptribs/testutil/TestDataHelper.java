@@ -25,7 +25,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantPrayer;
@@ -52,7 +53,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.HelpWithFees;
 import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.SolicitorService;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -259,6 +259,21 @@ public class TestDataHelper {
             .caseStatus(State.CaseManagement)
             .applicant1(getApplicant())
             .divorceOrDissolution(DIVORCE)
+            .caseInvite(new CaseInvite(null, null, null))
+            .build();
+    }
+
+    public static CaseData awaitingOutcomeData() {
+
+        CloseCase closeCase = new CloseCase();
+        closeCase.setCloseCaseReason(CloseReason.Rejected);
+        closeCase.setAdditionalDetail("case rejected");
+
+        return CaseData.builder()
+            .caseStatus(State.AwaitingOutcome)
+            .applicant1(getApplicant())
+            .divorceOrDissolution(DIVORCE)
+            .closeCase(closeCase)
             .caseInvite(new CaseInvite(null, null, null))
             .build();
     }
@@ -1013,9 +1028,8 @@ public class TestDataHelper {
         recordListing.setHearingType(HearingType.FINAL);
         recordListing.setImportantInfoDetails("some details");
         recordListing.setVideoCallLink("");
-        recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
-        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
-        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
+        recordListing.setHearingDate(LocalDate.now());
+        recordListing.setHearingTime("10:00");
         return recordListing;
     }
 
@@ -1026,8 +1040,6 @@ public class TestDataHelper {
         recordListing.setHearingType(HearingType.FINAL);
         recordListing.setImportantInfoDetails("some details");
         recordListing.setVideoCallLink("");
-        recordListing.setHearingNotice(NoticeOption.CREATE_FROM_TEMPLATE);
-        recordListing.setTemplate(RecordListingTemplate.HEARING_INVITE_CVP);
         recordListing.setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
         return recordListing;
     }

@@ -118,7 +118,28 @@ public enum State {
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
-    CaseStayed("CaseStayed");
+    CaseStayed("CaseStayed"),
+
+    @CCD(
+        label = "Case Strike Out",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    StrikeOut("StrikeOut"),
+
+    @CCD(
+        label = "Case Concession",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    Concession("Concession"),
+
+    @CCD(
+        label = "Case Discharge",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    Discharge("Discharge");
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
