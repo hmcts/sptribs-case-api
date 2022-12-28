@@ -67,10 +67,14 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     }
 
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
+                                                      CaseDetails<CaseData, State> beforeDetails) {
+
+
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via email to:Subject , Respondent."))
+            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via email to:"
+            ))
             .build();
+
     }
 
 }
