@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,14 +9,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.ciccase.model.*;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,22 +88,31 @@ class CaseworkerContactPartiesTest {
     }
 
 
-    @Disabled
+    @Test
     void shouldNotSuccessfullyMoveToNextPageWithError() {
         final CaseData caseData = caseData();
 
-        CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of()).build();
-        cicCase.getContactPartiesCIC().size();
-        caseData.setCicCase(cicCase);
-        caseData.getContactParties().setRepresentativeContactParties(Set.of());
+        Set<SubjectCIC> sub = new HashSet<>();
+        Set<RepresentativeCIC> rep = new HashSet<>();
+        Set<RespondantCIC> res = new HashSet<>();
+
+        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub).representativeContactParties(rep).respondant(res).build();
+        caseData.setContactParties(contactParties);
+
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
         AboutToStartOrSubmitResponse<CaseData, State> response =
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
-        assertThat(response).isNull();
+
+
+        assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(0);
+        assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(0);
+        assertThat(caseData.getContactParties().getRespondant()).hasSize(0);
+        assertThat(response).isNotNull();
         assertThat(response.getErrors()).hasSize(1);
 
 
