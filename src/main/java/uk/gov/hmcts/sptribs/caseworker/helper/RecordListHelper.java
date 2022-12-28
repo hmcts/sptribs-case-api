@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.helper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -25,9 +26,12 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 @Service
 @Slf4j
 public class RecordListHelper {
-    private final LocationService locationService = new LocationService();
+
+    @Autowired
+    private LocationService locationService;
 
     public void regionData(CaseData caseData) {
+
         DynamicList regionList = locationService.getAllRegions();
         caseData.getRecordListing().setRegionList(regionList);
 
@@ -39,6 +43,7 @@ public class RecordListHelper {
 
 
     public void populatedVenuesData(CaseData caseData) {
+
         String selectedRegion = caseData.getRecordListing().getSelectedRegionVal();
         String regionId = getRegionId(selectedRegion);
 
@@ -70,20 +75,9 @@ public class RecordListHelper {
             && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
     }
 
-
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
-        populatedVenuesData(caseData);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
-
-
     public void getNotificationParties(CaseData caseData) {
         Set<NotificationParties> partiesSet = new HashSet<>();
+
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
         }
@@ -93,13 +87,14 @@ public class RecordListHelper {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
+
         caseData.getRecordListing().setNotificationParties(partiesSet);
     }
 
-    public List<String> getErrorMsg(CaseDetails<CaseData, State> details) {
+    public List<String> getErrorMsg(CicCase cicCase) {
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullCondition(details.getData().getCicCase())) {
+        if (checkNullCondition(cicCase)) {
             errors.add("One party must be selected.");
         }
         return errors;
@@ -136,12 +131,4 @@ public class RecordListHelper {
     }
 
 
-    public void addRegionInfo(PageBuilder pageBuilder) {
-        pageBuilder.page("regionInfo", this::midEvent)
-            .label("regionInfoObj", "<h1>Region Data</h1>")
-            .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getRegionsMessage)
-            .optional(RecordListing::getRegionList)
-            .done();
-    }
 }

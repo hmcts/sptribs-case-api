@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,19 +17,18 @@ import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerEditRecordListing.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -43,14 +41,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerEditRecordListingTest {
-    //    @InjectMocks
-
-    @Mock
-    private LocationService locationService;
-    private CaseworkerEditRecordListing caseworkerEditRecordList = new CaseworkerEditRecordListing();
-
 
     @InjectMocks
+    private CaseworkerEditRecordListing caseworkerEditRecordList;
+
+    @Mock
     private RecordListHelper recordListHelper;
 
     @Test
@@ -97,7 +92,7 @@ class CaseworkerEditRecordListingTest {
         assertThat(response.getErrors()).isEmpty();
     }
 
-    @Disabled
+    @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
         //Given
         final CaseData caseData = caseData();
@@ -108,18 +103,14 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-        recordListHelper.regionData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
 
         //Then
-        assertThat(response.getData().getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
-        assertThat(response.getData().getRecordListing().getRegionList().getListItems()).hasSize(1);
-        assertThat(response.getData().getRecordListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+        assertThat(response.getState().getName()).isEqualTo("CaseManagement");
 
     }
 
-    @Disabled
+    @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         //Given
         final CaseData caseData = caseData();
@@ -134,16 +125,11 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            recordListHelper.midEvent(updatedCaseDetails, beforeDetails);
+            caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getRecordListing().getHearingVenues()
-            .getValue().getLabel()).isEqualTo("courtname-courtAddress");
-        assertThat(response.getData().getRecordListing().getHearingVenues().getListItems()).hasSize(1);
-        assertThat(response.getData().getRecordListing().getHearingVenues()
-            .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
+        assertThat(response).isNotNull();
 
     }
 
@@ -154,7 +140,6 @@ class CaseworkerEditRecordListingTest {
         caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -177,32 +162,15 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        when(recordListHelper.getErrorMsg(any())).thenReturn(List.of("One party must be selected."));
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
 
     }
 
-
     @Test
-    void shouldReturnErrorsIfNoNotificationPartySelected() {
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        caseData.setCicCase(CicCase.builder().build());
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        assertThat(response.getErrors()).hasSize(1);
-    }
-
-    @Test
-    void shouldReturnErrorsIfAllNotificationPartiesSelected() {
+    void shouldChangeStateOnAboutToSubmit() {
         final CicCase cicCase = CicCase.builder()
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
@@ -221,9 +189,7 @@ class CaseworkerEditRecordListingTest {
         AboutToStartOrSubmitResponse<CaseData, State> response
             = caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getData().getRecordListing().getNotificationParties()).hasSize(3);
-        assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
-        assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
+        assertThat(response.getState().getName()).isEqualTo("AwaitingHearing");
     }
 
     private CicCase getMockCicCase() {

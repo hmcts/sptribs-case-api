@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,13 +42,13 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 @ExtendWith(MockitoExtension.class)
 class CaseworkerRecordListingTest {
 
-    //    @Autowired
-    //    private CaseworkerRecordListing caseworkerRecordListing;
     @Mock
     private LocationService locationService;
-    private CaseworkerRecordListing caseworkerRecordListing = new CaseworkerRecordListing();
 
     @InjectMocks
+    private CaseworkerRecordListing caseworkerRecordListing;
+
+    @Mock
     private RecordListHelper recordListHelper;
 
     @Test
@@ -97,7 +96,7 @@ class CaseworkerRecordListingTest {
     }
 
 
-    @Disabled
+    @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
         //Given
         final CaseData caseData = caseData();
@@ -118,7 +117,7 @@ class CaseworkerRecordListingTest {
 
     }
 
-    @Disabled
+    @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         //Given
         final CaseData caseData = caseData();
@@ -134,7 +133,7 @@ class CaseworkerRecordListingTest {
 
         //When
         when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
-        AboutToStartOrSubmitResponse<CaseData, State> response = recordListHelper.midEvent(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData().getRecordListing().getHearingVenues()

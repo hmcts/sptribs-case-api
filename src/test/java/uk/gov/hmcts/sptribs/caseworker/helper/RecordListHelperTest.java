@@ -1,12 +1,11 @@
 package uk.gov.hmcts.sptribs.caseworker.helper;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
@@ -25,13 +24,12 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled
 class RecordListHelperTest {
 
-    //    @InjectMocks
-    private RecordListHelper recordListHelper = new RecordListHelper();
-
     @InjectMocks
+    private RecordListHelper recordListHelper;
+
+    @Mock
     private LocationService locationService;
 
     @Test
@@ -50,15 +48,12 @@ class RecordListHelperTest {
 
         //When
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-        AboutToStartOrSubmitResponse<CaseData, State> response = recordListHelper.midEvent(updatedCaseDetails, beforeDetails);
+        recordListHelper.regionData(caseData);
 
         //Then
-        assertThat(response.getData().getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
-        assertThat(response.getData().getRecordListing().getRegionList().getListItems()).hasSize(1);
-        assertThat(response.getData().getRecordListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getHearingList()).isNull();
+        assertThat(caseData.getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
+        assertThat(caseData.getRecordListing().getRegionList().getListItems()).hasSize(1);
+        assertThat(caseData.getRecordListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
 
     }
 
@@ -76,13 +71,13 @@ class RecordListHelperTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
-        AboutToStartOrSubmitResponse<CaseData, State> response = recordListHelper.midEvent(updatedCaseDetails, beforeDetails);
+        recordListHelper.populatedVenuesData(caseData);
 
         //Then
-        assertThat(response.getData().getRecordListing().getHearingVenues()
+        assertThat(caseData.getRecordListing().getHearingVenues()
             .getValue().getLabel()).isEqualTo("courtname-courtAddress");
-        assertThat(response.getData().getRecordListing().getHearingVenues().getListItems()).hasSize(1);
-        assertThat(response.getData().getRecordListing().getHearingVenues()
+        assertThat(caseData.getRecordListing().getHearingVenues().getListItems()).hasSize(1);
+        assertThat(caseData.getRecordListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
 
 
