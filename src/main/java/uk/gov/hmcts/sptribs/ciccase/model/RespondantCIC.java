@@ -11,7 +11,4 @@ public enum RespondantCIC implements HasLabel {
     @JsonProperty("RespondantCIC")
     RESPONDANT("Respondant");
     private final String label;
-    public boolean isRespondantCIC() {
-        return RESPONDANT.name().equalsIgnoreCase(this.name());
-    }
 }
