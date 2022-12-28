@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
@@ -65,7 +66,7 @@ class CaseworkerContactPartiesTest {
             caseWorkerContactParties.abutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
 
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails,beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
         assertThat(contactPartiesResponse).isNotNull();
 
 
@@ -75,6 +76,7 @@ class CaseworkerContactPartiesTest {
     void shouldSuccessfullyMoveToNextPage() {
         final CaseData caseData = caseData();
         CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT)).build();
+        caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -95,6 +97,7 @@ class CaseworkerContactPartiesTest {
 
         CicCase cicCase1 = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT)).build();
         caseData.setCicCase(cicCase1);
+        caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -110,12 +113,13 @@ class CaseworkerContactPartiesTest {
 
 
     @Test
-    void shouldSuccessfullyMoveToNextPageWithError() {
+    void shouldNotSuccessfullyMoveToNextPageWithError() {
         final CaseData caseData = caseData();
 
         CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of()).build();
+        cicCase.setRepresentativeFullName("www");
         caseData.setCicCase(cicCase);
-        caseData.setCicCase(cicCase);
+        caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -124,7 +128,7 @@ class CaseworkerContactPartiesTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
-        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).hasSize(0);
 
 
     }
