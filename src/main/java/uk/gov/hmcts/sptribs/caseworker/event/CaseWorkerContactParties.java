@@ -78,7 +78,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             messageLine1.append(" , Representative  ");
         }
         if (details.getData().getContactParties().getRespondant().size() != 0) {
-            messageLine1.append(" , Respondant.");
+            messageLine1.append(" , Respondent.");
         }
 
         return SubmittedCallbackResponse.builder()

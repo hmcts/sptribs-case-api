@@ -133,6 +133,13 @@ class CaseworkerContactPartiesTest {
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).hasSize(1);
 
+        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        assertThat(contactPartiesResponse).isNotNull();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Subject")).isFalse();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Representative")).isFalse();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Respondent")).isFalse();
+
+
 
     }
 
