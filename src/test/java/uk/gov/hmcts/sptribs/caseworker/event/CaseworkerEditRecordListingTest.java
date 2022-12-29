@@ -148,7 +148,7 @@ class CaseworkerEditRecordListingTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getErrors()).hasSize(0);
+        assertThat(response.getErrors()).isEmpty();
 
     }
 
