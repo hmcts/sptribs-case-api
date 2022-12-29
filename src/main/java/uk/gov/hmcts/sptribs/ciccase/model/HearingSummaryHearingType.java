@@ -7,8 +7,16 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @Getter
 @AllArgsConstructor
-public enum RepresentativeCIC implements HasLabel {
-    @JsonProperty("RepresentativeCIC")
-    REPRESENTATIVE("Representative");
+public enum HearingSummaryHearingType implements HasLabel {
+
+    @JsonProperty("CaseManagement")
+    CASE_MANAGEMENT("Case management"),
+
+    @JsonProperty("Final")
+    FINAL("Final"),
+
+    @JsonProperty("Interlocutory")
+    INTERLOCUTORY("Interlocutory");
+
     private final String label;
 }

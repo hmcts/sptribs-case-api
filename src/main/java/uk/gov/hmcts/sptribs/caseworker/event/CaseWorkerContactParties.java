@@ -67,17 +67,26 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     }
 
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
+                                                      CaseDetails<CaseData, State> beforeDetails) {
 
+        final StringBuilder messageLine1 = new StringBuilder(100);
 
-        final StringBuilder message = new StringBuilder(100);
-       // message.append(" A notification will be sent  to: ");
-        if(details.getData()){
-
+        if (details.getData().getContactParties().getSubjectContactParties().size() != 0) {
+            messageLine1.append("Subject");
         }
+        if (details.getData().getContactParties().getRepresentativeContactParties().size() != 0) {
+            messageLine1.append(" , Representative  ");
+        }
+        if (details.getData().getContactParties().getRespondant().size() != 0) {
+            messageLine1.append(" , Respondant.");
+        }
+
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via email to:Subject , Respondent."))
+            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via email to:"
+                + messageLine1
+            ))
             .build();
+
     }
 
 }
