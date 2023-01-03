@@ -42,8 +42,8 @@ public class CaseStayedNotification implements PartiesNotification {
         addCaseStayTemplateVars(caseStay, templateVars);
 
         if (cicCase.getContactPreferenceType().isEmail()) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
-            cicCase.setSubjectNotifyList(notificationResponse);
+            NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars);
+            cicCase.setSubjectNotifyList(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             sendLetterNotification(templateVars);
@@ -60,8 +60,8 @@ public class CaseStayedNotification implements PartiesNotification {
         templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
 
         if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
-            cicCase.setAppNotificationResponse(notificationResponse);
+            NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            cicCase.setAppNotificationResponse(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             sendLetterNotification(templateVars);
@@ -78,8 +78,8 @@ public class CaseStayedNotification implements PartiesNotification {
         addCaseStayTemplateVars(caseStay, templateVars);
 
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
-            cicCase.setRepNotificationResponse(notificationResponse);
+            NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            cicCase.setRepNotificationResponse(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             sendLetterNotification(templateVars);

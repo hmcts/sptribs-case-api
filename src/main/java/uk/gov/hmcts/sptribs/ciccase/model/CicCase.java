@@ -44,6 +44,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 public class CicCase {
 
+
     @CCD(
         label = "Choose a hearing to cancel",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -75,7 +76,6 @@ public class CicCase {
     )
     private List<ListValue<DateModel>> orderDueDates;
 
-
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -101,6 +101,10 @@ public class CicCase {
     )
     private DynamicList orderDynamicList;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<NotificationParties> hearingNotificationParties;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -513,6 +517,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse repNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse resNotificationResponse;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
