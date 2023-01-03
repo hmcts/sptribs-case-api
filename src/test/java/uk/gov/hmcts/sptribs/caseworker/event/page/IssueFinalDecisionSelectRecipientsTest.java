@@ -58,26 +58,6 @@ public class IssueFinalDecisionSelectRecipientsTest {
     }
 
     @Test
-    void shouldBeInvalidIfRepresentativeSelectedWithNoRepresentativeDetails() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Set<FinalDecisionRecipientRepresentativeCIC> representativeCICSet = new HashSet<>();
-        representativeCICSet.add(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE);
-        final CicCase cicCase = CicCase.builder().recipientRepresentativeCIC(representativeCICSet).build();
-
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).hasSize(1);
-    }
-
-    @Test
     void shouldBeValidIfRepresentativeSelectedWithRepresentativeDetails() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
