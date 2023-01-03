@@ -110,7 +110,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
-        caseData.getRecordListing().setNotificationParties(partiesSet);
+        caseData.getCicCase().setHearingNotificationParties(partiesSet);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
