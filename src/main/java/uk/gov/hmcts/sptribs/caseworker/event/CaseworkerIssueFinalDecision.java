@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -56,12 +57,14 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .description("Issue final decision")
             .showEventNotes()
             .showSummary()
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         issueFinalDecisionNotice.addTo(pageBuilder);
         issueFinalDecisionSelectTemplate.addTo(pageBuilder);
         uploadDocuments(pageBuilder);
         issueFinalDecisionPreviewTemplate.addTo(pageBuilder);
+        issueFinalDecisionSelectRecipients.addTo(pageBuilder);
     }
 
     private void uploadDocuments(PageBuilder pageBuilder) {
@@ -86,11 +89,11 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        CicCase cicCase = details.getData().getCicCase();
+        CaseIssueFinalDecision finalDecision = details.getData().getCaseIssueFinalDecision();
         List<String> recipients = new ArrayList<>();
-        if (cicCase.getRecipientSubjectCIC().contains(SUBJECT)) recipients.add(SUBJECT.getLabel());
-        if (cicCase.getRecipientRepresentativeCIC().contains(REPRESENTATIVE)) recipients.add(REPRESENTATIVE.getLabel());
-        if (cicCase.getRecipientRespondentCIC().contains(RESPONDENT)) recipients.add(RESPONDENT.getLabel());
+        if (finalDecision.getRecipientSubjectCIC().contains(SUBJECT)) recipients.add(SUBJECT.getLabel());
+        if (finalDecision.getRecipientRepresentativeCIC().contains(REPRESENTATIVE)) recipients.add(REPRESENTATIVE.getLabel());
+        if (finalDecision.getRecipientRespondentCIC().contains(RESPONDENT)) recipients.add(RESPONDENT.getLabel());
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## A copy of this decision notice has been sent via email to: %s", String.join(", ", recipients)))
             .build();
