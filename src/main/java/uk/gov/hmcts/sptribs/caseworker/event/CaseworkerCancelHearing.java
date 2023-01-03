@@ -94,6 +94,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         }
         if (caseData.getRecordListing().getAdditionalHearingDate().isEmpty()) {
             state = CaseManagement;
+            caseData.setRecordListing(null);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -106,19 +107,19 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                                                       CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase,data.getRecordListing().getNotificationParties());
+        final StringBuilder emailMessage = getEmailMessage(cicCase, data.getCicCase().getHearingNotificationParties());
 
-        final StringBuilder postMessage = getPostMessage(cicCase,data.getRecordListing().getNotificationParties());
+        final StringBuilder postMessage = getPostMessage(cicCase, data.getCicCase().getHearingNotificationParties());
 
         String message = "";
         if (null != postMessage && null != emailMessage) {
             message = format("#  Hearing cancelled   %n" + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2),
                 postMessage.substring(0, postMessage.length() - 2));
         } else if (null != emailMessage) {
-            message = format("# Hearing cancelled %n ## " + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
 
         } else if (null != postMessage) {
-            message = format("#  Hearing cancelled  %n ## " + " %s ", postMessage.substring(0, postMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", postMessage.substring(0, postMessage.length() - 2));
         }
 
         return SubmittedCallbackResponse.builder()
