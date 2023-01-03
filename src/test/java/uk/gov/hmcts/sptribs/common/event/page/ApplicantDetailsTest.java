@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.testutil.TestConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,6 +57,32 @@ public class ApplicantDetailsTest {
         final CicCase cicCase = CicCase.builder()
             .applicantAddress(addressGlobalUK)
             .applicantContactDetailsPreference(ContactPreferenceType.POST)
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = applicantDetails.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldBeSuccessForEmail() {
+        //Given
+        final AddressGlobalUK addressGlobalUK = AddressGlobalUK.builder()
+            .addressLine1("Street1")
+            .country("UK")
+            .postCode("postcode")
+            .build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .applicantAddress(addressGlobalUK)
+            .applicantContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .applicantEmailAddress(TestConstants.TEST_SOLICITOR_EMAIL)
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)

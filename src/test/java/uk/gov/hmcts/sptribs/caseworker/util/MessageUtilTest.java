@@ -75,6 +75,44 @@ public class MessageUtilTest {
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
     }
 
+
+    @Test
+    void shouldBeNullWithoutContactPreferenceType() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.SUBJECT);
+
+        //When
+        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
+
+        //Then
+        assertThat(resultEmail).isNull();
+    }
+
+
+    @Test
+    void shouldBeNullWithoutContactPreferenceTypeRepresentative() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .representativeFullName(TEST_FIRST_NAME)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+        Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.REPRESENTATIVE);
+
+        //When
+        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
+
+        //Then
+        assertThat(resultEmail).isNull();
+    }
+
     @Test
     void shouldBeNull() {
         //Given
