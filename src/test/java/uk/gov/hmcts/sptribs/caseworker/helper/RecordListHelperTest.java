@@ -9,17 +9,28 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -50,10 +61,12 @@ class RecordListHelperTest {
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
         recordListHelper.regionData(caseData);
 
+
         //Then
         assertThat(caseData.getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
         assertThat(caseData.getRecordListing().getRegionList().getListItems()).hasSize(1);
         assertThat(caseData.getRecordListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+
 
     }
 
@@ -83,6 +96,43 @@ class RecordListHelperTest {
 
     }
 
+    @Test
+    void shouldCheckNullConditionNotReturnEmpty() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final RecordListing recordListing = new RecordListing();
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setRegionList(getMockedRegionData());
+        caseData.setRecordListing(recordListing);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+
+        recordListHelper.checkNullCondition(cicCase);
+        recordListHelper.getErrorMsg(cicCase);
+
+
+        //Then
+        assertThat(cicCase.getRecordNotifyPartySubject()).isNull();
+
+
+    }
+
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
@@ -102,6 +152,19 @@ class RecordListHelperTest {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("courtname-courtAddress")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
+
+    private DynamicList getMockedNull() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("subject")
             .code(UUID.randomUUID())
             .build();
         return DynamicList
