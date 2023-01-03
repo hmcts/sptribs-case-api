@@ -16,11 +16,19 @@ import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -40,7 +48,19 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_CONTACT_PARTIES)
-                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
+                .forStates(Draft,
+                    AwaitingApplicant1Response,
+                    AwaitingApplicant2Response,
+                    AwaitingConditionalOrder,
+                    Withdrawn,
+                    Rejected,
+                    Submitted,
+                    NewCaseReceived,
+                    CaseManagement,
+                    AwaitingHearing,
+                    AwaitingOutcome,
+                    CaseClosed,
+                    CaseStayed)
                 .name("Contact parties")
                 .showSummary()
                 .aboutToSubmitCallback(this::abutToSubmit)
