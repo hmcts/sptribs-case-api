@@ -9,28 +9,24 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
-import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -42,6 +38,7 @@ class RecordListHelperTest {
 
     @Mock
     private LocationService locationService;
+
 
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
@@ -98,38 +95,48 @@ class RecordListHelperTest {
 
     @Test
     void shouldCheckNullConditionNotReturnEmpty() {
-        //Given
         final CaseData caseData = caseData();
-        final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .address(SUBJECT_ADDRESS)
-            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        caseData.setNote("This is a test note");
+        final CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Collections.emptySet());
+        cicCase.setApplicantCIC(Collections.emptySet());
+        cicCase.setRepresentativeCIC(Collections.emptySet());
         caseData.setCicCase(cicCase);
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setRegionList(getMockedRegionData());
-        caseData.setRecordListing(recordListing);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
 
         recordListHelper.checkNullCondition(cicCase);
         recordListHelper.getErrorMsg(cicCase);
 
+        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).isNull();
+        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).isNull();
+        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).isNull();
+    }
 
-        //Then
-        assertThat(cicCase.getRecordNotifyPartySubject()).isNull();
 
+    @Test
+    void successfullyAddNotificationParties() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        caseData.getCicCase().setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+
+        RecordListing recordListing = RecordListing.builder().notificationParties(Set.of(NotificationParties.SUBJECT))
+            .notificationParties(Set.of(NotificationParties.REPRESENTATIVE))
+            .notificationParties(Set.of(NotificationParties.RESPONDENT)).build();
+        caseData.setRecordListing(recordListing);
+
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        recordListHelper.getNotificationParties(caseData);
+
+        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).hasSize(1);
+        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).hasSize(1);
+        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).hasSize(1);
+        assertThat(recordListing).isNotNull();
 
     }
 
