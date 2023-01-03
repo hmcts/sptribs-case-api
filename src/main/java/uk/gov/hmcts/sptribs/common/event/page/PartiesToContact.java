@@ -6,7 +6,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -23,11 +22,11 @@ public class PartiesToContact implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("partiesToContact", this::midEvent)
-            .complex(CaseData::getCicCase)
-            .label("contactPartiesLabel","Which parties do you want to contact?")
-            .optional(CicCase::getContactPartiesCIC)
-            .done()
+            .label("contactPartiesLabel", "Which parties do you want to contact?")
             .complex(CaseData::getContactParties)
+            .optional(ContactParties::getSubjectContactParties)
+            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ")
+            .optional(ContactParties::getRespondant)
             .mandatory(ContactParties::getMessage)
             .done();
     }
@@ -38,10 +37,14 @@ public class PartiesToContact implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
 
-        if (null != data.getCicCase() && null != data.getCicCase().getContactPartiesCIC()
-            && data.getCicCase().getContactPartiesCIC().size() == 0) {
+        if (null != data.getContactParties() && data.getContactParties().getRepresentativeContactParties().size() == 0
+            && data.getContactParties().getSubjectContactParties().size() == 0
+            && data.getContactParties().getRespondant().size() == 0) {
+
             errors.add("Which parties do you want to contact?. is required.");
+
         }
+
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
