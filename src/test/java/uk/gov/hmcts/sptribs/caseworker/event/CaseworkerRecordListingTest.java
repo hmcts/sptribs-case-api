@@ -139,6 +139,7 @@ class CaseworkerRecordListingTest {
 
     @Test
     void shouldReturnErrorsIfCaseDataIsNull() {
+        //Given
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -147,13 +148,16 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        //Then
         assertThat(response.getErrors()).hasSize(1);
     }
 
     @Test
     void shouldReturnErrorsIfNoNotificationPartySelected() {
+        //Given
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -163,13 +167,16 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        //Then
         assertThat(response.getErrors()).hasSize(1);
     }
 
     @Test
     void shouldReturnErrorsIfAllNotificationPartiesSelected() {
+        //Given
         final CicCase cicCase = CicCase.builder()
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
@@ -185,11 +192,13 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getData().getRecordListing().getNotificationParties()).hasSize(3);
-        assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
-        assertThat(response.getData().getRecordListing().getNotificationParties()).contains(NotificationParties.SUBJECT);
+        //Then
+        assertThat(response.getData().getCicCase().getHearingNotificationParties()).hasSize(3);
+        assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
+        assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
     }
 
     private CicCase getMockCicCase() {
