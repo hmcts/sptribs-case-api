@@ -27,7 +27,8 @@ public final class MessageUtil {
             post = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress().getPostCode())) {
             postMessage.append(REPRESENTATIVE);
             post = true;
         }
@@ -48,7 +49,8 @@ public final class MessageUtil {
             post = true;
         }
         if (parties.contains(NotificationParties.REPRESENTATIVE)
-            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress().getPostCode())) {
             postMessage.append(REPRESENTATIVE);
             post = true;
         }
