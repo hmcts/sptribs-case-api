@@ -76,6 +76,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
             .state(details.getState())
             .build();
 
