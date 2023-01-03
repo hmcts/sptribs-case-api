@@ -55,8 +55,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .grantHistoryOnly(SOLICITOR));
 
 
-        addRegionInfo(pageBuilder);
+
         recordListHelper.addHearingTypeAndFormat(pageBuilder);
+        addRegionInfo(pageBuilder);
         recordListHelper.addRemoteHearingInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);

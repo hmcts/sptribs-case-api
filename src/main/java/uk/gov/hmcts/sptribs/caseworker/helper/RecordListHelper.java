@@ -85,7 +85,7 @@ public class RecordListHelper {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
 
-        caseData.getRecordListing().setNotificationParties(partiesSet);
+        caseData.getCicCase().setHearingNotificationParties(partiesSet);
     }
 
     public List<String> getErrorMsg(CicCase cicCase) {

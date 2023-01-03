@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.DATE;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
@@ -122,22 +123,17 @@ class RecordListHelperTest {
         caseData.getCicCase().setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.getCicCase().setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
 
-        RecordListing recordListing = RecordListing.builder().notificationParties(Set.of(NotificationParties.SUBJECT))
-            .notificationParties(Set.of(NotificationParties.REPRESENTATIVE))
-            .notificationParties(Set.of(NotificationParties.RESPONDENT)).build();
-        caseData.setRecordListing(recordListing);
-
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         recordListHelper.getNotificationParties(caseData);
 
-        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).hasSize(1);
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).hasSize(1);
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).hasSize(1);
-        assertThat(recordListing).isNotNull();
-
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).hasSize(3);
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.REPRESENTATIVE);
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.RESPONDENT);
+        assertThat(caseData.getCicCase()).isNotNull();
     }
 
     private DynamicList getMockedRegionData() {

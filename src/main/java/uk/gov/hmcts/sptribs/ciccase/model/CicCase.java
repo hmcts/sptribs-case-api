@@ -101,6 +101,10 @@ public class CicCase {
     )
     private DynamicList orderDynamicList;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<NotificationParties> hearingNotificationParties;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
