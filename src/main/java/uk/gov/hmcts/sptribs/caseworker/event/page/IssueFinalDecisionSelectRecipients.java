@@ -23,8 +23,11 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
             .pageLabel("Select recipients")
             .label("LabelRecipients","Who should receive this decision notice?")
             .complex(CaseData::getCicCase)
+            // Need to reference getRepresentativeCIC otherwise getRecipientRepresentativeCIC show condition results in
+            // unknown field.  Ensure readonly field is never shown since show condition is always false.
+            .readonly(CicCase::getRepresentativeCIC, "caseIssueFinalDecisionFinalDecisionNotice = \"\"")
             .optional(CicCase::getRecipientSubjectCIC, "")
-            .optional(CicCase::getRecipientRepresentativeCIC,"")
+            .optional(CicCase::getRecipientRepresentativeCIC,"cicCaseRepresentativeCICCONTAINS \"RepresentativeCIC\"")
             .optional(CicCase::getRecipientRespondentCIC,"")
             .done();
     }
@@ -43,7 +46,8 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
         if (null != data.getCicCase()
             && null != data.getCicCase().getRecipientRepresentativeCIC()
             && data.getCicCase().getRecipientRepresentativeCIC().contains(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE)
-            && (null == data.getCicCase().getRepresentativeCIC() || !data.getCicCase().getRepresentativeCIC().contains(RepresentativeCIC.REPRESENTATIVE))
+            && (null == data.getCicCase().getRepresentativeCIC() ||
+                !data.getCicCase().getRepresentativeCIC().contains(RepresentativeCIC.REPRESENTATIVE))
         ) {
             errors.add("A representative has not been set to receive information about the case.");
         }
