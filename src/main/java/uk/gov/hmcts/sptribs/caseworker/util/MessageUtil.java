@@ -4,6 +4,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
 import java.util.Set;
@@ -21,13 +22,13 @@ public final class MessageUtil {
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && cicCase.getContactPreferenceType().isPost()
+            && cicCase.getContactPreferenceType().equals(ContactPreferenceType.POST)
             && !ObjectUtils.isEmpty(cicCase.getAddress())) {
             postMessage.append(SUBJECT);
             post = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && cicCase.getRepresentativeContactDetailsPreference().isPost()
+            && cicCase.getRepresentativeContactDetailsPreference().equals(ContactPreferenceType.POST)
             && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
             postMessage.append(REPRESENTATIVE);
             post = true;
@@ -43,13 +44,13 @@ public final class MessageUtil {
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
         if (parties.contains(NotificationParties.SUBJECT)
-            && cicCase.getContactPreferenceType().isPost()
+            && cicCase.getContactPreferenceType().equals(ContactPreferenceType.POST)
             && !ObjectUtils.isEmpty(cicCase.getAddress())) {
             postMessage.append(SUBJECT);
             post = true;
         }
         if (parties.contains(NotificationParties.REPRESENTATIVE)
-            && cicCase.getRepresentativeContactDetailsPreference().isPost()
+            && cicCase.getRepresentativeContactDetailsPreference().equals(ContactPreferenceType.POST)
             && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
             postMessage.append(REPRESENTATIVE);
             post = true;

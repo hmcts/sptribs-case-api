@@ -9,11 +9,11 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum ContactPreferenceType implements HasLabel {
 
-
     @JsonProperty("Email")
     EMAIL("Email", "Email"),
     @JsonProperty("Post")
     POST("Post", "Post");
+
     private String type;
     private final String label;
 
@@ -21,7 +21,4 @@ public enum ContactPreferenceType implements HasLabel {
         return EMAIL.name().equalsIgnoreCase(this.name());
     }
 
-    public boolean isPost() {
-        return POST.name().equalsIgnoreCase(this.name());
-    }
 }
