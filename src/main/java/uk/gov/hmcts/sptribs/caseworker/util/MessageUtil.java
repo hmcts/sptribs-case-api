@@ -21,14 +21,14 @@ public final class MessageUtil {
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && !ObjectUtils.isEmpty(cicCase.getAddress())
-            && !ObjectUtils.isEmpty(cicCase.getAddress().getPostCode())) {
+            && cicCase.getContactPreferenceType().isPost()
+            && !ObjectUtils.isEmpty(cicCase.getAddress())) {
             postMessage.append(SUBJECT);
             post = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())
-            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress().getPostCode())) {
+            && cicCase.getRepresentativeContactDetailsPreference().isPost()
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
             postMessage.append(REPRESENTATIVE);
             post = true;
         }
@@ -43,14 +43,14 @@ public final class MessageUtil {
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
         if (parties.contains(NotificationParties.SUBJECT)
-            && !ObjectUtils.isEmpty(cicCase.getAddress())
-            && !ObjectUtils.isEmpty(cicCase.getAddress().getPostCode())) {
+            && cicCase.getContactPreferenceType().isPost()
+            && !ObjectUtils.isEmpty(cicCase.getAddress())) {
             postMessage.append(SUBJECT);
             post = true;
         }
         if (parties.contains(NotificationParties.REPRESENTATIVE)
-            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())
-            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress().getPostCode())) {
+            && cicCase.getRepresentativeContactDetailsPreference().isPost()
+            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
             postMessage.append(REPRESENTATIVE);
             post = true;
         }

@@ -18,8 +18,8 @@ public class RepresentativeDetails implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
-        map.put("applicantDetailsObjects","cicCasePartiesCICCONTAINS \"ApplicantCIC\"");
-        map.put("representativeDetailsObjects","cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
+        map.put("applicantDetailsObjects", "cicCasePartiesCICCONTAINS \"ApplicantCIC\"");
+        map.put("representativeDetailsObjects", "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
         pageBuilder.page("representativeDetailsObjects", this::midEvent)
             .pageLabel("Who is the Representative for this case?")
             .label("LabelRepresentative", "")
@@ -42,7 +42,9 @@ public class RepresentativeDetails implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (null != data.getCicCase() && null != data.getCicCase().getRepresentativeAddress()) {
+        if (null != data.getCicCase()
+            && data.getCicCase().getRepresentativeContactDetailsPreference().isPost()
+            && null != data.getCicCase().getRepresentativeAddress()) {
             if (StringUtils.isEmpty(data.getCicCase().getRepresentativeAddress().getCountry())) {
                 errors.add("Country is mandatory");
             }

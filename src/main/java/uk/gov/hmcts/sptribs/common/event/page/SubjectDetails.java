@@ -24,7 +24,7 @@ public class SubjectDetails implements CcdPageConfiguration {
             .optional(CicCase::getPhoneNumber)
             .mandatoryWithLabel(CicCase::getDateOfBirth, "")
             .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
-            .mandatory(CicCase::getAddress,"cicCaseContactPreferenceType = \"Post\"")
+            .mandatory(CicCase::getAddress, "cicCaseContactPreferenceType = \"Post\"")
             .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
             .done();
     }
@@ -35,7 +35,7 @@ public class SubjectDetails implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (null != data.getCicCase() && null != data.getCicCase().getAddress()) {
+        if (null != data.getCicCase() && data.getCicCase().getContactPreferenceType().isPost() && null != data.getCicCase().getAddress()) {
             if (StringUtils.isEmpty(data.getCicCase().getAddress().getCountry())) {
                 errors.add("Country is mandatory");
             }
