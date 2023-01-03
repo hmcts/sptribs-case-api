@@ -27,11 +27,11 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SUBMISSION_RESPONSE_DATE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.YES;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_AOS_SUBMITTED_APPLICANT_1_SOLICITOR;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_AOS_SUBMITTED_RESPONDENT_SOLICITOR;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_APPLICANT_DISPUTED_AOS_SUBMITTED;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_RESPONDENT_DISPUTED_AOS_SUBMITTED;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_AOS_SUBMITTED_APPLICANT_1_SOLICITOR;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_AOS_SUBMITTED_RESPONDENT_SOLICITOR;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_APPLICANT_DISPUTED_AOS_SUBMITTED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_RESPONDENT_DISPUTED_AOS_SUBMITTED;
 
 @Component
 @Slf4j

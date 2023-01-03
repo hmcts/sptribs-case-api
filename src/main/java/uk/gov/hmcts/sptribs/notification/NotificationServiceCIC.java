@@ -33,7 +33,7 @@ public class NotificationServiceCIC {
     public NotificationResponse sendEmail() {
         SendEmailResponse sendEmailResponse = null;
         String destinationAddress = notificationRequest.getDestinationAddress();
-        EmailTemplateName template = notificationRequest.getTemplate();
+        TemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
         String referenceId = UUID.randomUUID().toString();
@@ -68,7 +68,7 @@ public class NotificationServiceCIC {
     }
 
     public NotificationResponse sendLetter() {
-        EmailTemplateName template = notificationRequest.getTemplate();
+        TemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
         String referenceId = UUID.randomUUID().toString();

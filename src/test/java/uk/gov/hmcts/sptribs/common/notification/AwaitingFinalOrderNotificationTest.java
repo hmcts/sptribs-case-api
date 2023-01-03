@@ -26,7 +26,7 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_DISSOLUTION;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_DIVORCE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_REMINDER;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.JOINT_CONDITIONAL_ORDER;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.APPLICANT_APPLY_FOR_FINAL_ORDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICANT_APPLY_FOR_FINAL_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_2_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApplicant2;

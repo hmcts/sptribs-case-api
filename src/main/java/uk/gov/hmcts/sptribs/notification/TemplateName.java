@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
-public enum EmailTemplateName {
+public enum TemplateName {
     SAVE_SIGN_OUT,
     OUTSTANDING_ACTIONS,
     APPLICATION_SUBMITTED,

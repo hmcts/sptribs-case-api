@@ -98,15 +98,15 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     private void sendCaseReinstatedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
+        if (!cicCase.getNotifyPartySubject().isEmpty()) {
             caseReinstatedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+        if (!cicCase.getNotifyPartyRepresentative().isEmpty()) {
             caseReinstatedNotification.sendToRepresentative(data, caseNumber);
         }
 
-        if (!cicCase.getRespondantName().isEmpty()) {
+        if (!cicCase.getNotifyPartyRespondent().isEmpty()) {
             caseReinstatedNotification.sendToRespondent(data, caseNumber);
         }
     }

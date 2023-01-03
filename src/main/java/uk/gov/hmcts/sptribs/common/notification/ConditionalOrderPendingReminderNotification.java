@@ -14,7 +14,7 @@ import java.util.Map;
 import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_REMINDER;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.YES;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.CITIZEN_APPLY_FOR_CONDITIONAL_ORDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CITIZEN_APPLY_FOR_CONDITIONAL_ORDER;
 
 @Component
 @Slf4j

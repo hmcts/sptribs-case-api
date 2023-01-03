@@ -33,15 +33,15 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SUBMISSION_RESPONSE_DATE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.YES;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.APPLICANT_SOLICITOR_SERVICE;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.JOINT_APPLICATION_ACCEPTED;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.JOINT_SOLICITOR_NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.RESPONDENT_SOLICITOR_NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_APPLICANT_APPLICATION_ACCEPTED;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_APPLICANT_SOLICITOR_NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_APPLICANT_SOLICITOR_NOTICE_OF_PROCEEDINGS_REISSUE;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_RESPONDENT_APPLICATION_ACCEPTED;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICANT_SOLICITOR_SERVICE;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.JOINT_APPLICATION_ACCEPTED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.JOINT_SOLICITOR_NOTICE_OF_PROCEEDINGS;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.RESPONDENT_SOLICITOR_NOTICE_OF_PROCEEDINGS;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_APPLICANT_APPLICATION_ACCEPTED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_APPLICANT_SOLICITOR_NOTICE_OF_PROCEEDINGS;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_APPLICANT_SOLICITOR_NOTICE_OF_PROCEEDINGS_REISSUE;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_RESPONDENT_APPLICATION_ACCEPTED;
 
 @Component
 @Slf4j
