@@ -532,28 +532,4 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse appLetterNotificationResponse;
-
-    @CCD(
-        label = "Decision notice recipient",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "FinalDecisionRecipientSubjectCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<FinalDecisionRecipientSubjectCIC> recipientSubjectCIC;
-
-    @CCD(
-        label = "Decision notice recipient",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "FinalDecisionRecipientRepresentativeCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<FinalDecisionRecipientRepresentativeCIC> recipientRepresentativeCIC;
-
-    @CCD(
-        label = "Decision notice recipient",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "FinalDecisionRecipientRespondentCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<FinalDecisionRecipientRespondentCIC> recipientRespondentCIC;
 }

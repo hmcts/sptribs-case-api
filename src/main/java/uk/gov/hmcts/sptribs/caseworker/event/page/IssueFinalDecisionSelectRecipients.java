@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -14,6 +15,8 @@ import java.util.List;
 
 public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "caseIssueFinalDecisionFinalDecisionNotice = \"ALWAYS_HIDE\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
@@ -21,12 +24,12 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
             .pageLabel("Select recipients")
             .label("LabelRecipients","Who should receive this decision notice?")
             .complex(CaseData::getCicCase)
-            // Need to reference getRepresentativeCIC otherwise getRecipientRepresentativeCIC show condition results in
-            // unknown field.  Ensure readonly field is never shown since show condition is always false.
-            .readonly(CicCase::getRepresentativeCIC, "caseIssueFinalDecisionFinalDecisionNotice = \"\"")
-            .optional(CicCase::getRecipientSubjectCIC, "")
-            .optional(CicCase::getRecipientRepresentativeCIC,"cicCaseRepresentativeCICCONTAINS \"RepresentativeCIC\"")
-            .optional(CicCase::getRecipientRespondentCIC,"")
+            .readonly(CicCase::getRepresentativeCIC, ALWAYS_HIDE)
+            .done()
+            .complex(CaseData::getCaseIssueFinalDecision)
+            .optional(CaseIssueFinalDecision::getRecipientSubjectCIC, "")
+            .optional(CaseIssueFinalDecision::getRecipientRepresentativeCIC,"cicCaseRepresentativeCICCONTAINS \"RepresentativeCIC\"")
+            .optional(CaseIssueFinalDecision::getRecipientRespondentCIC,"")
             .done();
     }
 
@@ -35,10 +38,10 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (null != data.getCicCase()
-            && CollectionUtils.isEmpty(data.getCicCase().getRecipientSubjectCIC())
-            && CollectionUtils.isEmpty(data.getCicCase().getRecipientRepresentativeCIC())
-            && CollectionUtils.isEmpty(data.getCicCase().getRecipientRespondentCIC())) {
+        if (null != data.getCaseIssueFinalDecision()
+            && CollectionUtils.isEmpty(data.getCaseIssueFinalDecision().getRecipientSubjectCIC())
+            && CollectionUtils.isEmpty(data.getCaseIssueFinalDecision().getRecipientRepresentativeCIC())
+            && CollectionUtils.isEmpty(data.getCaseIssueFinalDecision().getRecipientRespondentCIC())) {
             errors.add("One field must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -46,5 +49,4 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
             .errors(errors)
             .build();
     }
-
 }

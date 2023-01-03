@@ -6,7 +6,13 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.*;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,10 +31,10 @@ public class IssueFinalDecisionSelectRecipientsTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final Set<FinalDecisionRecipientSubjectCIC> subjectCICSet = new HashSet<>();
         subjectCICSet.add(FinalDecisionRecipientSubjectCIC.SUBJECT);
-        final CicCase cicCase = CicCase.builder().recipientSubjectCIC(subjectCICSet).build();
+        final CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().recipientSubjectCIC(subjectCICSet).build();
 
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
+            .caseIssueFinalDecision(finalDecision)
             .build();
         caseDetails.setData(caseData);
 
@@ -43,10 +49,10 @@ public class IssueFinalDecisionSelectRecipientsTest {
     void shouldBeInvalidIfNoRecipientsSelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder().recipientSubjectCIC(new HashSet<>()).build();
+        final CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().recipientSubjectCIC(new HashSet<>()).build();
 
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
+            .caseIssueFinalDecision(finalDecision)
             .build();
         caseDetails.setData(caseData);
 
@@ -65,9 +71,12 @@ public class IssueFinalDecisionSelectRecipientsTest {
         decisionRepresentativeCICSet.add(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE);
         final Set<RepresentativeCIC> representativeCICSet = new HashSet<>();
         representativeCICSet.add(RepresentativeCIC.REPRESENTATIVE);
-        final CicCase cicCase = CicCase.builder().recipientRepresentativeCIC(decisionRepresentativeCICSet).representativeCIC(representativeCICSet).build();
+        final CaseIssueFinalDecision finalDecision =
+            CaseIssueFinalDecision.builder().recipientRepresentativeCIC(decisionRepresentativeCICSet).build();
+        final CicCase cicCase = CicCase.builder().representativeCIC(representativeCICSet).build();
 
         final CaseData caseData = CaseData.builder()
+            .caseIssueFinalDecision(finalDecision)
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
