@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
+import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CaseStayedNotificationTest {
+class CaseReinstatedNotificationTest {
     @Mock
     private NotificationServiceCIC notificationService;
 
@@ -34,21 +35,22 @@ class CaseStayedNotificationTest {
     private NotificationHelper notificationHelper;
 
     @InjectMocks
-    private CaseStayedNotification caseStayedNotification;
+    private CaseReinstatedNotification reinstatedNotification;
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+    void shouldNotifySubjectWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        caseStayedNotification.sendToSubject(data, "CN1");
+        reinstatedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -57,19 +59,20 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithPost() {
+    void shouldNotifySubjectWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        caseStayedNotification.sendToSubject(data, "CN1");
+        reinstatedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -78,19 +81,19 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
+    void shouldNotifyRespondentWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
-        data.getCicCase().setApplicantFullName("appFullName");
-        data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
-        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setRespondantName("respondentName");
+        data.getCicCase().setRespondantEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        caseStayedNotification.sendToApplicant(data, "CN1");
+        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        reinstatedNotification.sendToRespondent(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -99,41 +102,20 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithPost() {
-        //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
-        data.getCicCase().setApplicantFullName("appFullName");
-        data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
-        data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
-
-        //When
-        when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        caseStayedNotification.sendToApplicant(data, "CN1");
-
-        //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
-    }
-
-    @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
+    void shouldNotifyRepresentativeWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        caseStayedNotification.sendToRepresentative(data, "CN1");
+        reinstatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -142,20 +124,21 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithPost() {
+    void shouldNotifyRepresentativeWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        caseStayedNotification.sendToRepresentative(data, "CN1");
+        reinstatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));

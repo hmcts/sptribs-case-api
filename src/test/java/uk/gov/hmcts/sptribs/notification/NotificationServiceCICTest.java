@@ -25,8 +25,8 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.APPLICATION_RECEIVED;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.CASE_ISSUED_CITIZEN_POST;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_POST;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceCICTest {
@@ -54,7 +54,7 @@ public class NotificationServiceCICTest {
         Map<String, String> templateVars = Map.of(APPLICATION_RECEIVED.name(), templateId);
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
-            .template(EmailTemplateName.APPLICATION_RECEIVED)
+            .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(Map.of(APPLICATION_RECEIVED.name(), templateId))
             .build();
         notificationService.setNotificationRequest(request);
@@ -127,7 +127,7 @@ public class NotificationServiceCICTest {
         Map<String, String> templateVars = Map.of(APPLICATION_RECEIVED.name(), templateId);
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
-            .template(EmailTemplateName.APPLICATION_RECEIVED)
+            .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(Map.of(APPLICATION_RECEIVED.name(), templateId))
             .build();
         notificationService.setNotificationRequest(request);

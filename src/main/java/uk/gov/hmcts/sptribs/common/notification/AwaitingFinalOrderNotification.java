@@ -14,8 +14,8 @@ import java.util.Map;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.DATE_FINAL_ORDER_ELIGIBLE_FROM_PLUS_3_MONTHS;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_REMINDER;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.NO;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.APPLICANT_APPLY_FOR_FINAL_ORDER;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICANT_APPLY_FOR_FINAL_ORDER;
 
 @Component
 @Slf4j

@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationService;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.RESPONDENT_APPLY_FOR_FINAL_ORDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.RESPONDENT_APPLY_FOR_FINAL_ORDER;
 
 @Component
 @Slf4j
