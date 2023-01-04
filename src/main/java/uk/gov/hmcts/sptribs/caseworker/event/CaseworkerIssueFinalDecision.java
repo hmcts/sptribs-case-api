@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectRecipi
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -93,12 +92,18 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                                                CaseDetails<CaseData, State> beforeDetails) {
         CaseIssueFinalDecision finalDecision = details.getData().getCaseIssueFinalDecision();
         List<String> recipients = new ArrayList<>();
-        if (finalDecision.getRecipientSubjectCIC().contains(SUBJECT)) recipients.add(SUBJECT.getLabel());
-        if (finalDecision.getRecipientRepresentativeCIC().contains(REPRESENTATIVE)) recipients.add(REPRESENTATIVE.getLabel());
-        if (finalDecision.getRecipientRespondentCIC().contains(RESPONDENT)) recipients.add(RESPONDENT.getLabel());
+        if (finalDecision.getRecipientSubjectCIC().contains(SUBJECT)) {
+            recipients.add(SUBJECT.getLabel());
+        }
+        if (finalDecision.getRecipientRepresentativeCIC().contains(REPRESENTATIVE)) {
+            recipients.add(REPRESENTATIVE.getLabel());
+        }
+        if (finalDecision.getRecipientRespondentCIC().contains(RESPONDENT)) {
+            recipients.add(RESPONDENT.getLabel());
+        }
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Final decision notice issued %n## A copy of this decision notice has been sent via email to: %s", String.join(", ", recipients)))
+            .confirmationHeader(format("# Final decision notice issued %n## A copy of this decision notice has been sent via email to: %s",
+                String.join(", ", recipients)))
             .build();
     }
-
 }

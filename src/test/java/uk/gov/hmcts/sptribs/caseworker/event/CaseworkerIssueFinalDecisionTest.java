@@ -113,7 +113,7 @@ class CaseworkerIssueFinalDecisionTest {
 
         //Then
         assertThat(response.getConfirmationHeader())
-            .isEqualTo("# Final decision notice issued \n" +
-                "## A copy of this decision notice has been sent via email to: Subject, Representative, Respondent");
+            .isEqualTo("# Final decision notice issued \n"
+                + "## A copy of this decision notice has been sent via email to: Subject, Representative, Respondent");
     }
 }
