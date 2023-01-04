@@ -6,7 +6,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
@@ -86,5 +88,32 @@ class CaseworkerIssueFinalDecisionTest {
         assertThat(caseData.getCaseIssueFinalDecision().getRecipientSubjectCIC().contains(SUBJECT));
         assertThat(caseData.getCaseIssueFinalDecision().getRecipientRepresentativeCIC().contains(REPRESENTATIVE));
         assertThat(caseData.getCaseIssueFinalDecision().getRecipientRespondentCIC().contains(RESPONDENT));
+    }
+
+    @Test
+    void shouldShowCorrectMessageWhenSubmitted() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueFinalDecision finalDecision = caseData.getCaseIssueFinalDecision();
+        Set<FinalDecisionRecipientSubjectCIC> subjectCICSet = new HashSet<>();
+        subjectCICSet.add(FinalDecisionRecipientSubjectCIC.SUBJECT);
+        finalDecision.setRecipientSubjectCIC(subjectCICSet);
+        Set<FinalDecisionRecipientRepresentativeCIC> representativeCICSet = new HashSet<>();
+        representativeCICSet.add(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE);
+        finalDecision.setRecipientRepresentativeCIC(representativeCICSet);
+        Set<FinalDecisionRecipientRespondentCIC> respondentCICSet = new HashSet<>();
+        respondentCICSet.add(FinalDecisionRecipientRespondentCIC.RESPONDENT);
+        finalDecision.setRecipientRespondentCIC(respondentCICSet);
+        details.setData(caseData);
+
+        //When
+        SubmittedCallbackResponse response = issueFinalDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# Final decision notice issued \n" +
+                "## A copy of this decision notice has been sent via email to: Subject, Representative, Respondent");
     }
 }
