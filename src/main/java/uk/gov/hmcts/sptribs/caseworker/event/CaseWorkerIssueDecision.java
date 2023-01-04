@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -25,6 +26,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     private static final CcdPageConfiguration issueDecisionNotice = new IssueDecisionNotice();
     private static final CcdPageConfiguration issueDecisionSelectTemplate = new IssueDecisionSelectTemplate();
+    private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -38,6 +40,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
         issueDecisionNotice.addTo(pageBuilder);
         issueDecisionSelectTemplate.addTo(pageBuilder);
+        issueDecisionUploadNotice.addTo(pageBuilder);
     }
 
 }
