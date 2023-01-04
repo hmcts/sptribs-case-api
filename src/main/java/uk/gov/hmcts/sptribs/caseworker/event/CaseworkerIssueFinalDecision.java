@@ -69,10 +69,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private void uploadDocuments(PageBuilder pageBuilder) {
         String pageNameSelectTemplate = "issueFinalDecisionSelectTemplate";
+        String pageNamePreviewTemplate = "issueFinalDecisionPreviewTemplate";
         String pageNameUpload = "issueFinalDecisionUpload";
         Map<String, String> map = new HashMap<>();
-        map.put(pageNameSelectTemplate, "caseIssueFinalDecisionDecisionNotice = \"Create from a template\"");
-        map.put(pageNameUpload, "caseIssueFinalDecisionDecisionNotice = \"Upload from your computer\"");
+        map.put(pageNameSelectTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
+        map.put(pageNamePreviewTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
+        map.put(pageNameUpload, "caseIssueFinalDecisionFinalDecisionNotice = \"Upload from your computer\"");
         pageBuilder.page(pageNameUpload)
             .pageLabel("Upload decision notice")
             .pageShowConditions(map)
@@ -82,8 +84,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                     + "\n<h3>The decision notice should be:</h3>\n"
                     + "\n- a maximum of 100MB in size (larger files must be split)\n"
                     + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")
-            .complex(CaseData::getCicCase)
-            .optionalWithLabel(CicCase::getDecisionDocumentsUploaded, "File Attachments")
+            .complex(CaseData::getCaseIssueFinalDecision)
+            .optionalWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
             .done();
     }
 
