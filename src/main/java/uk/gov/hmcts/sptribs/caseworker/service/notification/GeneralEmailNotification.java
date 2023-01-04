@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.notification.CommonContent;
-import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
 import uk.gov.hmcts.sptribs.notification.NotificationService;
+import uk.gov.hmcts.sptribs.notification.TemplateName;
 
 import java.util.Map;
 
@@ -14,11 +14,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_NAME;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.GENERAL_EMAIL_OTHER_PARTY;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.GENERAL_EMAIL_PETITIONER;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.GENERAL_EMAIL_PETITIONER_SOLICITOR;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.GENERAL_EMAIL_RESPONDENT;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.GENERAL_EMAIL_RESPONDENT_SOLICITOR;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.GENERAL_EMAIL_OTHER_PARTY;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.GENERAL_EMAIL_PETITIONER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.GENERAL_EMAIL_PETITIONER_SOLICITOR;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.GENERAL_EMAIL_RESPONDENT;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.GENERAL_EMAIL_RESPONDENT_SOLICITOR;
 
 @Component
 @Slf4j
@@ -37,7 +37,7 @@ public class GeneralEmailNotification {
         log.info("Sending General Email Notification for case id: {}", caseId);
 
         String emailTo = null;
-        EmailTemplateName templateId;
+        TemplateName templateId;
 
         Map<String, String> templateVars = templateVars(caseData, caseId);
 
