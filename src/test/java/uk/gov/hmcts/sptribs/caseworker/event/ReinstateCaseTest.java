@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.util.List;
@@ -46,6 +49,8 @@ class ReinstateCaseTest {
     @InjectMocks
     private ReinstateCase reinstateCase;
 
+    @Mock
+    private CaseReinstatedNotification caseReinstatedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -83,6 +88,9 @@ class ReinstateCaseTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .subjectCIC(Set.of())
+            .applicantCIC(Set.of())
+            .representativeCIC(Set.of())
             .reinstateDocuments(caseDocumentsCIC)
             .build();
         caseData.setCicCase(cicCase);
@@ -132,6 +140,9 @@ class ReinstateCaseTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .reinstateDocuments(caseDocumentsCIC)
             .build();
         caseData.setCicCase(cicCase);

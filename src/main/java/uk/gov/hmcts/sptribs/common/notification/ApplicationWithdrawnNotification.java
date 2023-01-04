@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.notification.CommonContent.NO;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.YES;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.CITIZEN_APPLICATION_WITHDRAWN;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CITIZEN_APPLICATION_WITHDRAWN;
 
 @Component
 @Slf4j

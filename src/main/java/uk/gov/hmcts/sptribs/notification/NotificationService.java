@@ -26,7 +26,7 @@ public class NotificationService {
 
     public void sendEmail(
         String destinationAddress,
-        EmailTemplateName template,
+        TemplateName template,
         Map<String, String> templateVars,
         LanguagePreference languagePreference
     ) {

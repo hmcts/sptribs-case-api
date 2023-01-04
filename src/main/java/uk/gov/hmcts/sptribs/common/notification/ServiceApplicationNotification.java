@@ -8,8 +8,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.AlternativeServiceType;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.notification.ApplicantNotification;
 import uk.gov.hmcts.sptribs.notification.CommonContent;
-import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
 import uk.gov.hmcts.sptribs.notification.NotificationService;
+import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationTemplateException;
 
 import java.util.Map;
@@ -21,8 +21,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.AlternativeServiceType.DEEMED;
 import static uk.gov.hmcts.sptribs.ciccase.model.AlternativeServiceType.DISPENSED;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.NO;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.YES;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SERVICE_APPLICATION_GRANTED;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SERVICE_APPLICATION_REJECTED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SERVICE_APPLICATION_GRANTED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SERVICE_APPLICATION_REJECTED;
 
 @Component
 @Slf4j
@@ -59,7 +59,7 @@ public class ServiceApplicationNotification implements ApplicantNotification {
         return templateVars;
     }
 
-    private EmailTemplateName getEmailTemplate(final AlternativeService alternativeService, final Long caseId) {
+    private TemplateName getEmailTemplate(final AlternativeService alternativeService, final Long caseId) {
         if (isNull(alternativeService.getServiceApplicationGranted())) {
             throw new NotificationTemplateException(format("MISSING_FIELD_MESSAGE", "serviceApplicationGranted", caseId));
         }

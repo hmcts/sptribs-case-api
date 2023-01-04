@@ -24,8 +24,8 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.APPLICATION_REFERE
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_DISSOLUTION;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.IS_DIVORCE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.JOINT_CONDITIONAL_ORDER;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.RESPONDENT_APPLY_FOR_FINAL_ORDER;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.formatId;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.RESPONDENT_APPLY_FOR_FINAL_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_2_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApplicant2;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getConditionalOrderTemplateVars;

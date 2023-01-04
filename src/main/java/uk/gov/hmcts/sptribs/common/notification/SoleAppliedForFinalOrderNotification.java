@@ -15,8 +15,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLE_APPLIED_FOR_FINAL_ORDER;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLE_APPLIED_FOR_FINAL_ORDER;
 
 @Component
 @Slf4j

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
-public enum EmailTemplateName {
+public enum TemplateName {
     SAVE_SIGN_OUT,
     OUTSTANDING_ACTIONS,
     APPLICATION_SUBMITTED,
@@ -84,6 +84,8 @@ public enum EmailTemplateName {
     RESPONDENT_SOLICITOR_HAS_NOT_RESPONDED,
     APPLICATION_RECEIVED,
     APPLICATION_NEW_ORDER_ISSUED,
+    CASE_REINSTATED_EMAIL,
+    CASE_REINSTATED_POST,
     CASE_STAYED_EMAIL,
     CASE_STAYED_POST,
     CASE_UNSTAYED_EMAIL,

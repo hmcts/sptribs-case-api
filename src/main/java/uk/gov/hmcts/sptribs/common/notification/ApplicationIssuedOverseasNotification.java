@@ -12,9 +12,9 @@ import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.notification.CommonContent.REVIEW_DEADLINE_DATE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SUBMISSION_RESPONSE_DATE;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.OVERSEAS_RESPONDENT_HAS_EMAIL_APPLICATION_ISSUED;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.OVERSEAS_RESPONDENT_NO_EMAIL_APPLICATION_ISSUED;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.OVERSEAS_RESPONDENT_HAS_EMAIL_APPLICATION_ISSUED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.OVERSEAS_RESPONDENT_NO_EMAIL_APPLICATION_ISSUED;
 
 @Component
 @Slf4j

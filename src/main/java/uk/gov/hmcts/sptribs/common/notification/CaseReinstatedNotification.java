@@ -14,9 +14,11 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.REINSTATE_REASON;
+
 @Component
 @Slf4j
-public class CaseUnstayedNotification implements PartiesNotification {
+public class CaseReinstatedNotification implements PartiesNotification {
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -27,7 +29,9 @@ public class CaseUnstayedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
+
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        addCaseReInstateTemplateVars(cicCase, templateVars);
 
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
@@ -41,25 +45,11 @@ public class CaseUnstayedNotification implements PartiesNotification {
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
-
-        NotificationResponse notificationResponse;
-        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
-            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
-        } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
-        }
-
-        cicCase.setAppNotificationResponse(notificationResponse);
-    }
-
-    @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
+
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        addCaseReInstateTemplateVars(cicCase, templateVars);
 
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
@@ -72,20 +62,36 @@ public class CaseUnstayedNotification implements PartiesNotification {
         cicCase.setRepNotificationResponse(notificationResponse);
     }
 
+    @Override
+    public void sendToRespondent(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+
+        Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        addCaseReInstateTemplateVars(cicCase, templateVars);
+
+        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), templateVars);
+        cicCase.setAppNotificationResponse(notificationResponse);
+    }
+
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
-            TemplateName.CASE_UNSTAYED_EMAIL);
+            TemplateName.CASE_REINSTATED_EMAIL);
         notificationService.setNotificationRequest(request);
         return notificationService.sendEmail();
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
-        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
-            TemplateName.CASE_UNSTAYED_POST);
+        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
+            templateVarsLetter,
+            TemplateName.CASE_REINSTATED_POST);
         notificationService.setNotificationRequest(letterRequest);
         return notificationService.sendLetter();
+    }
+
+    private void addCaseReInstateTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
+        templateVars.put(REINSTATE_REASON, cicCase.getReinstateReason().getLabel());
     }
 
 }
