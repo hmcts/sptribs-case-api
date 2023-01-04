@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -33,6 +34,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
     private static final CcdPageConfiguration createHearingSummary = new CreateHearingSummary();
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
+    private static final CcdPageConfiguration hearingVenues = new HearingVenues();
 
     @Autowired
     private HearingService hearingService;
@@ -46,21 +48,38 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 .name("Create hearing summary")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createHearingSummary.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
+        hearingVenues.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
         caseData.getHearingSummary().setHearingSummaryList(hearingDateDynamicList);
+        caseData.setCurrentEvent(CASEWORKER_CREATE_HEARING_SUMMARY);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
+        var caseData = details.getData();
+        caseData.setCurrentEvent("");
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .state(details.getState())
+            .build();
+
     }
 
 }
