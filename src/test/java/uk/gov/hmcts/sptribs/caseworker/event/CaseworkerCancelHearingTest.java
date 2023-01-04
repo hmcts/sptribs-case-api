@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -37,7 +38,9 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigB
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDates;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
@@ -95,6 +98,9 @@ class CaseworkerCancelHearingTest {
         parties.add(NotificationParties.REPRESENTATIVE);
         final CicCase cicCase = CicCase.builder()
             .email(TEST_SUBJECT_EMAIL)
+            .contactPreferenceType(ContactPreferenceType.EMAIL)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
             .hearingList(getDynamicList())
             .hearingNotificationParties(parties)
             .build();
@@ -129,6 +135,9 @@ class CaseworkerCancelHearingTest {
         parties.add(NotificationParties.REPRESENTATIVE);
         final CicCase cicCase = CicCase.builder()
             .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
+            .representativeAddress(SOLICITOR_ADDRESS)
             .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .hearingList(getDynamicList())
             .hearingNotificationParties(parties)
@@ -164,6 +173,9 @@ class CaseworkerCancelHearingTest {
         parties.add(NotificationParties.REPRESENTATIVE);
         final CicCase cicCase = CicCase.builder()
             .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
+            .representativeAddress(SOLICITOR_ADDRESS)
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
