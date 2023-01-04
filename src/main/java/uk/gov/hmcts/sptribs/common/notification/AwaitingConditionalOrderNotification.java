@@ -18,10 +18,10 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.SIGN_IN_URL;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.sptribs.notification.CommonContent.UNION_TYPE;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.APPLICANT_SOLICITOR_CAN_APPLY_CONDITIONAL_ORDER;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.CITIZEN_APPLY_FOR_CONDITIONAL_ORDER;
-import static uk.gov.hmcts.sptribs.notification.EmailTemplateName.SOLICITOR_AWAITING_CONDITIONAL_ORDER;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICANT_SOLICITOR_CAN_APPLY_CONDITIONAL_ORDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CITIZEN_APPLY_FOR_CONDITIONAL_ORDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.SOLICITOR_AWAITING_CONDITIONAL_ORDER;
 
 @Component
 @Slf4j
