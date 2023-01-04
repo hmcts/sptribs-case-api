@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
@@ -87,16 +88,12 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
         var state = details.getState();
 
-        String selectHearing = caseData.getCicCase().getHearingList().getValue().getLabel();
-        ListValue<HearingDate> hearingDate = getSelectedHearing(selectHearing, caseData.getRecordListing());
-        if (null != hearingDate) {
-            caseData.getRecordListing().getAdditionalHearingDate().remove(hearingDate);
-        }
-        if (caseData.getRecordListing().getAdditionalHearingDate().isEmpty()) {
+        DynamicListElement selectedHearing = caseData.getCicCase().getHearingList().getValue();
+
+        if (null != selectedHearing) {
             state = CaseManagement;
             caseData.setRecordListing(null);
         }
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(state)
