@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTemplate;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresent
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -56,6 +58,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .description("Issue final decision")
             .showEventNotes()
             .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
@@ -86,6 +89,15 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .complex(CaseData::getCaseIssueFinalDecision)
             .optionalWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
             .done();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        var caseData = details.getData();
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .state(CaseClosed)
+            .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

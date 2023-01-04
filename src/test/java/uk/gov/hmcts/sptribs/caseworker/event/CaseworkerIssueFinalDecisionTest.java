@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerIssueFinalDecision
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -115,5 +117,21 @@ class CaseworkerIssueFinalDecisionTest {
         assertThat(response.getConfirmationHeader())
             .isEqualTo("# Final decision notice issued \n"
                 + "## A copy of this decision notice has been sent via email to: Subject, Representative, Respondent");
+    }
+
+    @Test
+    void shouldCloseCase() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        details.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+
+        //Then
+        assertThat(response.getState())
+            .isEqualTo(CaseClosed);
     }
 }
