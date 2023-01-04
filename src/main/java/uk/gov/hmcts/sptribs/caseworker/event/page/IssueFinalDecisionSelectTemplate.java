@@ -38,9 +38,11 @@ public class IssueFinalDecisionSelectTemplate implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         String pageNameSelectTemplate = "issueFinalDecisionSelectTemplate";
+        String pageNamePreviewTemplate = "issueFinalDecisionPreviewTemplate";
         String pageNameUpload = "issueFinalDecisionUpload";
         Map<String, String> map = new HashMap<>();
         map.put(pageNameSelectTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
+        map.put(pageNamePreviewTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
         map.put(pageNameUpload, "caseIssueFinalDecisionFinalDecisionNotice = \"Upload from your computer\"");
         pageBuilder.page(pageNameSelectTemplate, this::midEvent)
             .pageLabel("Select a template")
