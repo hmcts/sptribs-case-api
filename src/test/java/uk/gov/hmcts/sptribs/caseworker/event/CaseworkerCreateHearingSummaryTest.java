@@ -12,8 +12,13 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,6 +66,31 @@ class CaseworkerCreateHearingSummaryTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_CREATE_HEARING_SUMMARY);
+    }
+
+    @Test
+    void shouldRunAboutToSubmit() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        updatedCaseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerCreateHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCurrentEvent()).isBlank();
     }
 
 }

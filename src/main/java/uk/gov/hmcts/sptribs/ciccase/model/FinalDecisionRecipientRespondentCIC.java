@@ -7,8 +7,15 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @Getter
 @AllArgsConstructor
-public enum RepresentativeCIC implements HasLabel {
-    @JsonProperty("RepresentativeCIC")
-    REPRESENTATIVE("Representative");
+public enum FinalDecisionRecipientRespondentCIC implements HasLabel {
+
+    @JsonProperty("RespondentCIC")
+    RESPONDENT("Respondent");
+
     private final String label;
+
+    public boolean isSubject() {
+        return RESPONDENT.name().equalsIgnoreCase(this.name());
+    }
+
 }
