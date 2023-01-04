@@ -22,13 +22,13 @@ public final class MessageUtil {
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && cicCase.getContactPreferenceType().equals(ContactPreferenceType.POST)
+            && ContactPreferenceType.POST == cicCase.getContactPreferenceType()
             && !ObjectUtils.isEmpty(cicCase.getAddress())) {
             postMessage.append(SUBJECT);
             post = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && cicCase.getRepresentativeContactDetailsPreference().equals(ContactPreferenceType.POST)
+            && ContactPreferenceType.POST == cicCase.getRepresentativeContactDetailsPreference()
             && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
             postMessage.append(REPRESENTATIVE);
             post = true;
@@ -44,13 +44,13 @@ public final class MessageUtil {
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
         if (parties.contains(NotificationParties.SUBJECT)
-            && cicCase.getContactPreferenceType().equals(ContactPreferenceType.POST)
+            && ContactPreferenceType.POST == cicCase.getContactPreferenceType()
             && !ObjectUtils.isEmpty(cicCase.getAddress())) {
             postMessage.append(SUBJECT);
             post = true;
         }
         if (parties.contains(NotificationParties.REPRESENTATIVE)
-            && cicCase.getRepresentativeContactDetailsPreference().equals(ContactPreferenceType.POST)
+            && ContactPreferenceType.POST == cicCase.getRepresentativeContactDetailsPreference()
             && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
             postMessage.append(REPRESENTATIVE);
             post = true;

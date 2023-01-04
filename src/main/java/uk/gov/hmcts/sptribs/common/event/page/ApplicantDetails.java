@@ -43,7 +43,7 @@ public class ApplicantDetails implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         if (null != data.getCicCase()
-            && data.getCicCase().getApplicantContactDetailsPreference().equals(ContactPreferenceType.POST)
+            && ContactPreferenceType.POST == data.getCicCase().getApplicantContactDetailsPreference()
             && null != data.getCicCase().getApplicantAddress()) {
             if (StringUtils.isEmpty(data.getCicCase().getApplicantAddress().getCountry())) {
                 errors.add("Country is mandatory");

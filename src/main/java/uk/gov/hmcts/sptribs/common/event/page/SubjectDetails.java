@@ -37,7 +37,7 @@ public class SubjectDetails implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         if (null != data.getCicCase()
-            && data.getCicCase().getContactPreferenceType().equals(ContactPreferenceType.POST)
+            && ContactPreferenceType.POST == data.getCicCase().getContactPreferenceType()
             && null != data.getCicCase().getAddress()) {
             if (StringUtils.isEmpty(data.getCicCase().getAddress().getCountry())) {
                 errors.add("Country is mandatory");

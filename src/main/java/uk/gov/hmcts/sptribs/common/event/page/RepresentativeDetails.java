@@ -44,7 +44,7 @@ public class RepresentativeDetails implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         if (null != data.getCicCase()
-            && data.getCicCase().getRepresentativeContactDetailsPreference().equals(ContactPreferenceType.POST)
+            && ContactPreferenceType.POST == data.getCicCase().getRepresentativeContactDetailsPreference()
             && null != data.getCicCase().getRepresentativeAddress()) {
             if (StringUtils.isEmpty(data.getCicCase().getRepresentativeAddress().getCountry())) {
                 errors.add("Country is mandatory");
