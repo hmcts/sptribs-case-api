@@ -460,6 +460,7 @@ tasks.withType(Test).configureEach {
   maxParallelForks = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
 }
 
+
 // exclude the logback binding is coming in via cftlib
 configurations.cftlibTestImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
