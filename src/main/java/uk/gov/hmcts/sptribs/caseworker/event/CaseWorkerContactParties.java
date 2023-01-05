@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -89,7 +88,6 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-        ContactPreferenceType contactPreferenceType = details.getData().getCicCase().getContactPreferenceType();
 
         final StringBuilder messageLine1 = new StringBuilder(100);
 
@@ -103,10 +101,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             messageLine1.append(" , Respondent.");
         }
 
-
-
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via "+ contactPreferenceType + " to:"
+            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via email to:"
                 + messageLine1
             ))
             .build();
