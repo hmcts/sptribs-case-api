@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -92,11 +91,10 @@ class RecordListHelperTest {
     }
 
     @Test
-    void shouldCheckNullConditionNotReturnEmpty() {
+    void shouldSuccessfullyCheckNullRecordNotifyParties() {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
-
 
         cicCase.setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         cicCase.setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
@@ -113,7 +111,7 @@ class RecordListHelperTest {
 
 
     @Test
-    void successfullyAddNotificationParties() {
+    void shouldSuccessfullyAddNotificationParties() {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
 
@@ -134,6 +132,7 @@ class RecordListHelperTest {
         assertThat(caseData.getCicCase()).isNotNull();
     }
 
+
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
@@ -153,19 +152,6 @@ class RecordListHelperTest {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("courtname-courtAddress")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
-
-    private DynamicList getMockedNull() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("subject")
             .code(UUID.randomUUID())
             .build();
         return DynamicList
