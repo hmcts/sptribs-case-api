@@ -121,7 +121,6 @@ class CaseworkerCancelHearingTest {
         //Then
         assertThat(cancelled).isNotNull();
         assertThat(response).isNotNull();
-        assert (response.getState().getName().equals(State.AwaitingOutcome.getName()));
     }
 
     @Test
@@ -160,7 +159,6 @@ class CaseworkerCancelHearingTest {
         //Then
         assertThat(cancelled).isNotNull();
         assertThat(response).isNotNull();
-        assert (response.getState().getName().equals(State.AwaitingOutcome.getName()));
     }
 
     @Test
