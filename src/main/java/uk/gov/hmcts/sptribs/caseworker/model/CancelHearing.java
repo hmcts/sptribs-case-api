@@ -11,7 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 
@@ -33,7 +33,7 @@ public class CancelHearing {
     @CCD(
         label = "Why was the hearing cancelled?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = MultiSelectList,
+        typeOverride = FixedRadioList,
         typeParameterOverride = "HearingCancellationReason"
     )
     private HearingCancellationReason hearingCancellationReason;

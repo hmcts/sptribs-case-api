@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -109,10 +110,12 @@ class CaseworkerSendOrderTest {
             .draftOrderCICList(List.of(draftOrderCICListValue))
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
+            .contactPreferenceType(ContactPreferenceType.EMAIL)
             .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
@@ -158,9 +161,11 @@ class CaseworkerSendOrderTest {
             .draftOrderCICList(List.of(draftOrderCICListValue))
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
             .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
@@ -209,8 +214,10 @@ class CaseworkerSendOrderTest {
             .draftList(getDraftOrderList())
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
@@ -256,9 +263,11 @@ class CaseworkerSendOrderTest {
             .draftOrderCICList(List.of(draftOrderCICListValue))
             .draftList(getDraftOrderList())
             .fullName(TEST_FIRST_NAME)
+            .contactPreferenceType(ContactPreferenceType.POST)
             .address(SUBJECT_ADDRESS)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)

@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
@@ -87,15 +88,12 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
         var state = details.getState();
 
-        String selectHearing = caseData.getCicCase().getHearingList().getValue().getLabel();
-        ListValue<HearingDate> hearingDate = getSelectedHearing(selectHearing, caseData.getRecordListing());
-        if (null != hearingDate) {
-            caseData.getRecordListing().getAdditionalHearingDate().remove(hearingDate);
-        }
-        if (caseData.getRecordListing().getAdditionalHearingDate().isEmpty()) {
-            state = CaseManagement;
-        }
+        DynamicListElement selectedHearing = caseData.getCicCase().getHearingList().getValue();
 
+        if (null != selectedHearing) {
+            state = CaseManagement;
+            caseData.setRecordListing(null);
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(state)
@@ -106,19 +104,19 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                                                       CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase,data.getRecordListing().getNotificationParties());
+        final StringBuilder emailMessage = getEmailMessage(cicCase, data.getCicCase().getHearingNotificationParties());
 
-        final StringBuilder postMessage = getPostMessage(cicCase,data.getRecordListing().getNotificationParties());
+        final StringBuilder postMessage = getPostMessage(cicCase, data.getCicCase().getHearingNotificationParties());
 
         String message = "";
         if (null != postMessage && null != emailMessage) {
             message = format("#  Hearing cancelled   %n" + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2),
                 postMessage.substring(0, postMessage.length() - 2));
         } else if (null != emailMessage) {
-            message = format("# Hearing cancelled %n ## " + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
 
         } else if (null != postMessage) {
-            message = format("#  Hearing cancelled  %n ## " + " %s ", postMessage.substring(0, postMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", postMessage.substring(0, postMessage.length() - 2));
         }
 
         return SubmittedCallbackResponse.builder()

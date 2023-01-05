@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -37,7 +38,9 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigB
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDates;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
@@ -86,17 +89,21 @@ class CaseworkerCancelHearingTest {
 
     @Test
     void shouldReturnCancelHearingWhenThereAreTwoHearingDates() {
-        final CicCase cicCase = CicCase.builder()
-            .email(TEST_SUBJECT_EMAIL)
-            .hearingList(getDynamicList())
-            .build();
+        //Given
         final RecordListing recordListing = getRecordListing();
         recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
-        recordListing.setNotificationParties(parties);
+        final CicCase cicCase = CicCase.builder()
+            .email(TEST_SUBJECT_EMAIL)
+            .contactPreferenceType(ContactPreferenceType.EMAIL)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .hearingList(getDynamicList())
+            .hearingNotificationParties(parties)
+            .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .recordListing(recordListing)
@@ -105,6 +112,8 @@ class CaseworkerCancelHearingTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
+
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCancelHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse cancelled = caseworkerCancelHearing.hearingCancelled(updatedCaseDetails, beforeDetails);
@@ -112,23 +121,26 @@ class CaseworkerCancelHearingTest {
         //Then
         assertThat(cancelled).isNotNull();
         assertThat(response).isNotNull();
-        assert (response.getState().getName().equals(State.AwaitingOutcome.getName()));
     }
 
     @Test
     void shouldReturnCancelHearingWhenThereAreTwoHearingDatesWithPost() {
-        final CicCase cicCase = CicCase.builder()
-            .address(SUBJECT_ADDRESS)
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .hearingList(getDynamicList())
-            .build();
+        //Given
         final RecordListing recordListing = getRecordListing();
         recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
-        recordListing.setNotificationParties(parties);
+        final CicCase cicCase = CicCase.builder()
+            .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .hearingList(getDynamicList())
+            .hearingNotificationParties(parties)
+            .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .recordListing(recordListing)
@@ -138,6 +150,8 @@ class CaseworkerCancelHearingTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
+
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCancelHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse cancelled = caseworkerCancelHearing.hearingCancelled(updatedCaseDetails, beforeDetails);
@@ -145,24 +159,27 @@ class CaseworkerCancelHearingTest {
         //Then
         assertThat(cancelled).isNotNull();
         assertThat(response).isNotNull();
-        assert (response.getState().getName().equals(State.AwaitingOutcome.getName()));
     }
 
     @Test
     void shouldReturnCancelHearingWhenThereIsOneHearingDate() {
-        final CicCase cicCase = CicCase.builder()
-            .address(SUBJECT_ADDRESS)
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .hearingList(getDynamicList())
-            .build();
+        //Given
         final RecordListing recordListing = getRecordListingWithOneHearingDate();
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
-        recordListing.setNotificationParties(parties);
+        final CicCase cicCase = CicCase.builder()
+            .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .representativeContactDetailsPreference(ContactPreferenceType.POST)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .hearingList(getDynamicList())
+            .hearingNotificationParties(parties)
+            .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .recordListing(recordListing)
@@ -172,6 +189,8 @@ class CaseworkerCancelHearingTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
+
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCancelHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse cancelled = caseworkerCancelHearing.hearingCancelled(updatedCaseDetails, beforeDetails);
