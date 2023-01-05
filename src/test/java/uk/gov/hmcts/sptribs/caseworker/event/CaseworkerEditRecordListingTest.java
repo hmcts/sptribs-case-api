@@ -212,17 +212,4 @@ class CaseworkerEditRecordListingTest {
             .build();
     }
 
-    private DynamicList getMockedHearingVenueData() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("courtname-courtAddress")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
-
 }
