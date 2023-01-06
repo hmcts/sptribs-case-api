@@ -16,10 +16,12 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_CICA_REFERENCE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
+
 
 @Component
 public class NotificationHelper {
@@ -57,6 +59,7 @@ public class NotificationHelper {
     public Map<String, Object> getRespondentCommonVars(String caseNumber, CicCase cicCase) {
         Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getRespondantName());
+        templateVars.put(CIC_CASE_CICA_REFERENCE, cicCase.getCicaReferenceNumber());
         return templateVars;
     }
 
