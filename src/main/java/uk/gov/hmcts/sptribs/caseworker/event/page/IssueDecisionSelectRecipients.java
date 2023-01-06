@@ -24,7 +24,6 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .optional(CaseIssueDecision::getRecipientSubject,"")
             .optional(CaseIssueDecision::getRecipientRepresentative,"")
             .optional(CaseIssueDecision::getRecipientRespondent,"")
-            .optional(CaseIssueDecision::getRecipientOther,"")
             .done();
     }
 
@@ -36,8 +35,7 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
 
         if (CollectionUtils.isEmpty(data.getCaseIssueDecision().getRecipientSubject())
             && CollectionUtils.isEmpty(data.getCaseIssueDecision().getRecipientRepresentative())
-            && CollectionUtils.isEmpty(data.getCaseIssueDecision().getRecipientRespondent())
-            && CollectionUtils.isEmpty(data.getCaseIssueDecision().getRecipientOther())) {
+            && CollectionUtils.isEmpty(data.getCaseIssueDecision().getRecipientRespondent())) {
             errors.add("One field must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

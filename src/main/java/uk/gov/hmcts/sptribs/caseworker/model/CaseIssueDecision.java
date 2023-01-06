@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
-import uk.gov.hmcts.sptribs.ciccase.model.OtherCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -64,13 +63,6 @@ public class CaseIssueDecision {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<RespondentCIC> recipientRespondent;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "OtherCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<OtherCIC> recipientOther;
 
     @CCD(
         label = "Case Documents",
