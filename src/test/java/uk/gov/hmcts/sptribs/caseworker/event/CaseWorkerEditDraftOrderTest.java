@@ -21,6 +21,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
+
 @ExtendWith(MockitoExtension.class)
 class CaseWorkerEditDraftOrderTest {
     @InjectMocks
@@ -41,23 +42,26 @@ class CaseWorkerEditDraftOrderTest {
     }
 
     @Test
-    void shouldSuccessfullyEditDraftOrder() {
+    void shouldSuccessfullySaveDraftOrder() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails,beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseWorkerEditDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
-
-        //Then
+            caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
-        assertThat(stayedResponse).isNotNull();
+
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditDraftOrder.draftUpdated(updatedCaseDetails, beforeDetails);
+        //  Then
+        assertThat(draftCreatedResponse).isNotNull();
+
     }
+
 }
 

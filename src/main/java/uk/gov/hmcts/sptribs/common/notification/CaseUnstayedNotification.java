@@ -1,0 +1,91 @@
+package uk.gov.hmcts.sptribs.common.notification;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
+import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.PartiesNotification;
+import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+
+import java.util.Map;
+
+@Component
+@Slf4j
+public class CaseUnstayedNotification implements PartiesNotification {
+
+    @Autowired
+    private NotificationServiceCIC notificationService;
+
+    @Autowired
+    private NotificationHelper notificationHelper;
+
+    @Override
+    public void sendToSubject(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+
+        NotificationResponse notificationResponse;
+        if (cicCase.getContactPreferenceType().isEmail()) {
+            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
+        }
+
+        cicCase.setSubjectNotifyList(notificationResponse);
+    }
+
+    @Override
+    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+
+        NotificationResponse notificationResponse;
+        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
+            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
+        }
+
+        cicCase.setAppNotificationResponse(notificationResponse);
+    }
+
+    @Override
+    public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+
+        NotificationResponse notificationResponse;
+        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
+        }
+
+        cicCase.setRepNotificationResponse(notificationResponse);
+    }
+
+    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
+            destinationAddress,
+            templateVars,
+            TemplateName.CASE_UNSTAYED_EMAIL);
+        notificationService.setNotificationRequest(request);
+        return notificationService.sendEmail();
+    }
+
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
+            TemplateName.CASE_UNSTAYED_POST);
+        notificationService.setNotificationRequest(letterRequest);
+        return notificationService.sendLetter();
+    }
+
+}

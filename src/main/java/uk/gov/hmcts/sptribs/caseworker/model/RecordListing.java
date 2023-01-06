@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingSession;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
-import uk.gov.hmcts.sptribs.ciccase.model.RecordListingTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -167,28 +165,15 @@ public class RecordListing {
     )
     private String importantInfoDetails;
 
-    @CCD(
-        label = "How would you like to create the hearing notice?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private HearingNoticeOption hearingNotice;
-
-    @CCD(
-        label = "Templates",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedList,
-        typeParameterOverride = "RecordListingTemplate"
-    )
-    private RecordListingTemplate template;
 
     @JsonIgnore
     public String getSelectedRegionVal() {
-        return this.getRegionList().getValue().getLabel();
+        return this.getRegionList() != null ? this.getRegionList().getValue().getLabel() : null;
     }
 
     @JsonIgnore
     public String getSelectedVenue() {
-        return this.getHearingVenues().getValue().getLabel();
+        return this.getHearingVenues() != null ? this.getHearingVenues().getValue().getLabel() : null;
     }
 
 }

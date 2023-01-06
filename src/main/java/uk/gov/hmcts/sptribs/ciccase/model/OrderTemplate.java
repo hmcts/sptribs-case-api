@@ -8,25 +8,39 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 @AllArgsConstructor
 public enum OrderTemplate implements HasLabel {
-    @JsonProperty("GeneralDirections")
-    GENERALDIRECTIONS("General Directions"),
 
-    @JsonProperty("Medical Evidence - DMI Reports")
-    DMIREPORTS("Medical Evidence - DMI Reports"),
+    @JsonProperty("CIC1_Eligibility")
+    CIC1_ELIGIBILITY("CIC1_Eligibility"),
 
-    @JsonProperty("Medical Evidence - joint instruction")
-    JOINTINSTRUCTION("Medical Evidence - joint instruction"),
+    @JsonProperty("CIC2_Quantum")
+    CIC2_QUANTUM("CIC2_Quantum"),
 
-    @JsonProperty("Police Evidence")
-    POLICEEVIDENCE("Police Evidence"),
+    @JsonProperty("CIC3_Rule_27")
+    CIC3_RULE_27("CIC3_Rule_27"),
 
-    @JsonProperty("Strike out warning Directions Notice")
-    STRIKEOUTWARNINGDIRECTIONSNOTICE("Strike out warning Directions Notice"),
+    @JsonProperty("CIC4_Blank_Decision_Notice_1")
+    CIC4_BLANK_DECISION_NOTICE_1("CIC4_Blank_Decision_Notice_1"),
 
-    @JsonProperty("Pro forma summons")
-    PROFORMASUMMONS("Pro forma summons");
+    @JsonProperty("CIC6_General_Directions")
+    CIC6_GENERAL_DIRECTIONS("CIC6_General_Directions"),
 
+    @JsonProperty("CIC7_ME_Dmi_Reports")
+    CIC7_ME_DMI_REPORTS("CIC7_ME_Dmi_Reports"),
 
+    @JsonProperty("CIC8_ME_Joint_Instruction")
+    CIC8_ME_JOINT_INSTRUCTION("CIC8_ME_Joint_Instruction"),
+
+    @JsonProperty("CIC10_Strike_Out_Warning")
+    CIC10_STRIKE_OUT_WARNING("CIC10_Strike_Out_Warning"),
+
+    @JsonProperty("CIC11_Strike_Out_Decision_Notice")
+    CIC11_STRIKE_OUT_DECISION_NOTICE("CIC11_Strike_Out_Decision_Notice"),
+
+    @JsonProperty("CIC12_Decision_Annex")
+    CIC12_DECISION_ANNEX("CIC12_Decision_Annex"),
+
+    @JsonProperty("CIC13_Pro_Forma_Summons")
+    CIC13_PRO_FORMA_SUMMONS("CIC13_Pro_Forma_Summons");
 
     private final String label;
 

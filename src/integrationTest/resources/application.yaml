@@ -12,7 +12,7 @@ uk:
   gov:
     notify:
       api:
-        key: dummy
+        sptribskey: dummy
         baseUrl: https://api.notifications.service.gov.uk
       email:
         templateVars:

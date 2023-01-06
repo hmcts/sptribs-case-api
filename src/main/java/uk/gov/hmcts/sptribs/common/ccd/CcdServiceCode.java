@@ -8,13 +8,14 @@ import lombok.Getter;
 @Getter
 public enum CcdServiceCode {
 
-    CIC("BBA2","CRIMINAL_INJURIES_COMPENSATION", CcdCaseType.CIC, "Special Tribunals: Criminal Injuries Compensation"),
-    CS("BCA1","CARE_STANDARDS",CcdCaseType.CS, "Special Tribunals: Care Standards"),
-    MH("BCA2","MENTAL_HEALTH", CcdCaseType.MH, "Special Tribunals: Mental Health"),
-    PHL("BCA3", "PRIMARY_HEALTH_LISTS", CcdCaseType.PHL, "Special Tribunals: Primary Health Lists"),
-    SEN("BCA4", "SPECIAL_EDUCATIONAL_NEEDS_AND_DISABILITIES", CcdCaseType.SEN, "Special Tribunals: Special Educational Needs"),
-    DD("BCA4", "SPECIAL_EDUCATIONAL_NEEDS_AND_DISABILITIES", CcdCaseType.DD, "Special Tribunals: Disability Discrimination");
+    ST_CIC("ST_CIC","BBA2","CRIMINAL_INJURIES_COMPENSATION", CcdCaseType.CIC, "Special Tribunals: Criminal Injuries Compensation"),
+    ST_CS("ST_CS", "BCA1","CARE_STANDARDS",CcdCaseType.CS, "Special Tribunals: Care Standards"),
+    ST_MH("ST_MH","BCA2","MENTAL_HEALTH", CcdCaseType.MH, "Special Tribunals: Mental Health"),
+    ST_PHL("ST_PHL", "BCA3", "PRIMARY_HEALTH_LISTS", CcdCaseType.PHL, "Special Tribunals: Primary Health Lists"),
+    ST_SEN("ST_SEN", "BCA4", "SPECIAL_EDUCATIONAL_NEEDS_AND_DISABILITIES", CcdCaseType.SEN, "Special Tribunals: Special Educational Needs"),
+    ST_DD("ST_DD", "BCA4", "SPECIAL_EDUCATIONAL_NEEDS_AND_DISABILITIES", CcdCaseType.DD, "Special Tribunals: Disability Discrimination");
 
+    private final String ccdServiceAcronym;
     @JsonValue
     private final String ccdServiceId;
     private final String ccdServiceName;

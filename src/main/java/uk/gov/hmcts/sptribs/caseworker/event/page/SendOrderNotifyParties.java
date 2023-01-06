@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -12,21 +11,23 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+
 public class SendOrderNotifyParties implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("notifyPartiesSendOrder", this::midEvent)
-            .label("notifyPartiesSendOrder", "<h1>Contact parties</h1>")
+        pageBuilder.page("caseWorkerSendOrderNotifyParties", this::midEvent)
+            .pageLabel("Contact parties")
             .complex(CaseData::getCicCase)
-            .label("message", "Who should receive this Order?")
+            .label("caseWorkerSendOrderMessage", "Who should receive this Order?")
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("app", "")
+            .label("caseWorkerSendOrderRepresentative", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("rep", "")
+            .label("caseWorkerSendOrderRespondent", "")
             .readonlyWithLabel(CicCase::getRespondantName, " ")
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
@@ -37,7 +38,7 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNull(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One field must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -46,12 +47,5 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
             .build();
     }
 
-    private boolean checkNull(CaseData data) {
-        return null != data.getCicCase()
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent());
-
-    }
 }
 

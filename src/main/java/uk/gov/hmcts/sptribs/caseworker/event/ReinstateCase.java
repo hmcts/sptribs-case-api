@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -13,12 +13,15 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -36,6 +39,8 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration reinstateDocuments = new ReinstateUploadDocuments();
     private static final CcdPageConfiguration notifyParties = new ReinstateNotifyParties();
 
+    @Autowired
+    private CaseReinstatedNotification caseReinstatedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -56,7 +61,6 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::reinstated)
             .showEventNotes()
-            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
@@ -77,24 +81,34 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
                                                 CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
         final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append("%n##  A notification will be sent via email to: ");
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            messageLine2.append("Subject, ");
-            cicCase.setNotifyPartySubject(null);
+        messageLine2.append(" A notification will be sent  to: ");
+        var recipients = getRecipients(cicCase);
+        if (null != recipients) {
+            messageLine2.append(recipients);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine2.append("Respondent, ");
-            cicCase.setNotifyPartyRespondent(null);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            messageLine2.append("Representative, ");
-            cicCase.setNotifyPartyRepresentative(null);
-        }
+
+        sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
-                + ". %n## %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+                + ". %n## %s ", messageLine2))
             .build();
+    }
+
+    private void sendCaseReinstatedNotification(String caseNumber, CaseData data) {
+        CicCase cicCase = data.getCicCase();
+
+        if (!cicCase.getNotifyPartySubject().isEmpty()) {
+            caseReinstatedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (!cicCase.getNotifyPartyRepresentative().isEmpty()) {
+            caseReinstatedNotification.sendToRepresentative(data, caseNumber);
+        }
+
+        if (!cicCase.getNotifyPartyRespondent().isEmpty()) {
+            caseReinstatedNotification.sendToRespondent(data, caseNumber);
+        }
     }
 
 }

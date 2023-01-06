@@ -28,7 +28,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -57,7 +60,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public PageBuilder caseFlag(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
-            .forStates(POST_SUBMISSION_STATES)
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Create a case flag")
             .showSummary()
             .description("Create a case flag")
@@ -153,6 +156,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCaseFlag().setOtherDescription(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
     }
 

@@ -38,8 +38,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCaseDetailsTab(configBuilder);
         buildCasePartiesTab(configBuilder);
         buildOrderTab(configBuilder);
+        buildCaseDocumentTab(configBuilder);
     }
-
 
 
     private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -226,11 +226,19 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildOrderTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("orders", "Orders")
-               .label("Orders",null,"### Orders")
-            .field("draftOrderTemplate")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("Orders", null, "### Orders")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
-            .field("draftMainContentToBeEdited");
+            .field("cicCaseDraftOrderCICList");
 
+
+    }
+
+    private void buildCaseDocumentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseDocuments", "Case Documents")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("Case Documents", null, "#### Case Documents")
+            .field("cicCaseApplicantDocumentsUploaded");
 
 
     }
