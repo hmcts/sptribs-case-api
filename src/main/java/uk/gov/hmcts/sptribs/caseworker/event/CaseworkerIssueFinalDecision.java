@@ -81,8 +81,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .pageLabel("Upload decision notice")
             .pageShowConditions(map)
             .label("LabelDoc",
-                "\nUpload a copy of the decision notice that you want to add to this"
-                    + " case. It must be signed by the appropriate parties.\n"
+                "\nUpload a copy of the decision notice that you want to add to this case.\n"
                     + "\n<h3>The decision notice should be:</h3>\n"
                     + "\n- a maximum of 100MB in size (larger files must be split)\n"
                     + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")

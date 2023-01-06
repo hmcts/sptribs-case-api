@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -45,7 +44,6 @@ class RecordListHelperTest {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final RecordListing recordListing = new RecordListing();
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
@@ -71,7 +69,6 @@ class RecordListHelperTest {
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final RecordListing recordListing = new RecordListing();
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
@@ -94,29 +91,29 @@ class RecordListHelperTest {
     }
 
     @Test
-    void shouldCheckNullConditionNotReturnEmpty() {
+    void shouldSuccessfullyCheckNullRecordNotifyParties() {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
-        cicCase.setSubjectCIC(Collections.emptySet());
-        cicCase.setApplicantCIC(Collections.emptySet());
-        cicCase.setRepresentativeCIC(Collections.emptySet());
+
+        cicCase.setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
         caseData.setCicCase(cicCase);
 
         recordListHelper.checkNullCondition(cicCase);
         recordListHelper.getErrorMsg(cicCase);
 
-        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).isNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).isNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).isNull();
+        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).isNotNull();
+        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).isNotNull();
+        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).isNotNull();
     }
 
 
     @Test
-    void successfullyAddNotificationParties() {
+    void shouldSuccessfullyAddNotificationParties() {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
         caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         caseData.getCicCase().setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
@@ -134,6 +131,7 @@ class RecordListHelperTest {
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.RESPONDENT);
         assertThat(caseData.getCicCase()).isNotNull();
     }
+
 
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
@@ -154,19 +152,6 @@ class RecordListHelperTest {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("courtname-courtAddress")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
-
-    private DynamicList getMockedNull() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("subject")
             .code(UUID.randomUUID())
             .build();
         return DynamicList

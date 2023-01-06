@@ -1,5 +1,6 @@
 #!groovy
 import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.GithubAPI
 @Library("Infrastructure")
 
 import uk.gov.hmcts.contino.GradleBuilder
@@ -190,6 +191,11 @@ withPipeline(type, product, component) {
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
       setCommonEnvVariables()
+
+      def githubApi = new GithubAPI(this)
+      if (!githubApi.getLabelsbyPattern(env.BRANCH_NAME, "keep-helm")) {
+        enableCleanupOfHelmReleaseOnSuccess()
+      }
     }
 
     onMaster {
