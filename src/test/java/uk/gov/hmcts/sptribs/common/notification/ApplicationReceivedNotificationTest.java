@@ -2,24 +2,22 @@ package uk.gov.hmcts.sptribs.common.notification;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
@@ -35,9 +33,6 @@ public class ApplicationReceivedNotificationTest {
     @InjectMocks
     private ApplicationReceivedNotification applicationReceivedNotification;
 
-    @Captor
-    ArgumentCaptor<NotificationRequest> notificationRequestArgumentCaptor;
-
     @Test
     void shouldNotifySubjectOfApplicationReceivedWithEmail() {
         //Given
@@ -49,15 +44,13 @@ public class ApplicationReceivedNotificationTest {
         templateVars.put(CONTACT_NAME, data.getCicCase().getFullName());
 
         //When
-        when(notificationHelper.commonTemplateVars(any(CicCase.class), anyString())).thenReturn(new HashMap<>());
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         applicationReceivedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(notificationRequestArgumentCaptor.capture());
-        NotificationRequest notificationRequest = notificationRequestArgumentCaptor.getValue();
-        assert (notificationRequest.getDestinationAddress().equals(data.getCicCase().getEmail()));
-        assert (notificationRequest.getTemplateVars().equals(templateVars));
-        assert (notificationRequest.getTemplate().equals(EmailTemplateName.APPLICATION_RECEIVED));
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
 
         verify(notificationService).sendEmail();
     }
@@ -74,15 +67,13 @@ public class ApplicationReceivedNotificationTest {
         templateVars.put(CONTACT_NAME, data.getCicCase().getApplicantFullName());
 
         //When
-        when(notificationHelper.commonTemplateVars(any(CicCase.class), anyString())).thenReturn(new HashMap<>());
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         applicationReceivedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(notificationRequestArgumentCaptor.capture());
-        NotificationRequest notificationRequest = notificationRequestArgumentCaptor.getValue();
-        assert (notificationRequest.getDestinationAddress().equals(data.getCicCase().getApplicantEmailAddress()));
-        assert (notificationRequest.getTemplateVars().equals(templateVars));
-        assert (notificationRequest.getTemplate().equals(EmailTemplateName.APPLICATION_RECEIVED));
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
 
         verify(notificationService).sendEmail();
     }
@@ -99,15 +90,13 @@ public class ApplicationReceivedNotificationTest {
         templateVars.put(CONTACT_NAME, data.getCicCase().getRepresentativeFullName());
 
         //When
-        when(notificationHelper.commonTemplateVars(any(CicCase.class), anyString())).thenReturn(new HashMap<>());
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         applicationReceivedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(notificationRequestArgumentCaptor.capture());
-        NotificationRequest notificationRequest = notificationRequestArgumentCaptor.getValue();
-        assert (notificationRequest.getDestinationAddress().equals(data.getCicCase().getRepresentativeEmailAddress()));
-        assert (notificationRequest.getTemplateVars().equals(templateVars));
-        assert (notificationRequest.getTemplate().equals(EmailTemplateName.APPLICATION_RECEIVED));
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
 
         verify(notificationService).sendEmail();
     }

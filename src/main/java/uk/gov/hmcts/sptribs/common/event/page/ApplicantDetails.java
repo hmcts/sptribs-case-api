@@ -5,6 +5,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -41,7 +42,9 @@ public class ApplicantDetails implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (null != data.getCicCase() && null != data.getCicCase().getApplicantAddress()) {
+        if (null != data.getCicCase()
+            && ContactPreferenceType.POST == data.getCicCase().getApplicantContactDetailsPreference()
+            && null != data.getCicCase().getApplicantAddress()) {
             if (StringUtils.isEmpty(data.getCicCase().getApplicantAddress().getCountry())) {
                 errors.add("Country is mandatory");
             }
