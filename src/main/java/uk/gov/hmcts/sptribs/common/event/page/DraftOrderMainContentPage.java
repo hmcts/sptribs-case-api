@@ -20,8 +20,8 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
             .pageLabel("Edit order")
             .label("createDraftOrder", "Edit order")
 
-            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\nThe header will be automatically generated ," +
-                "you can preview this in pdf on the next screen.\n\n"
+            .label("edit", "<hr>" + "\n<h3>Header</h3>" + "\nThe header will be automatically generated ,"
+                +"you can preview this in pdf on the next screen.\n\n"
                 +"<hr>")
             .label("edit",
                 "<h3>Main content</h3>\n\n "
