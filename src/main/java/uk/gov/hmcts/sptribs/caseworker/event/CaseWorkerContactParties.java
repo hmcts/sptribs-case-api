@@ -91,18 +91,34 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         final StringBuilder messageLine1 = new StringBuilder(100);
 
-        if (details.getData().getContactParties().getSubjectContactParties().size() != 0) {
+        if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
             messageLine1.append("Subject");
+
         }
-        if (details.getData().getContactParties().getRepresentativeContactParties().size() != 0) {
-            messageLine1.append(" , Representative  ");
+        if (details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
+
+            if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
+                messageLine1.append(',');
+
+            }
+
+
+            messageLine1.append("Representative");
+
         }
-        if (details.getData().getContactParties().getRespondant().size() != 0) {
-            messageLine1.append(" , Respondent.");
+        if (details.getData().getContactParties().getRespondant().size() > 0) {
+
+            if (details.getData().getContactParties().getSubjectContactParties().size() > 0
+                ||  details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
+                messageLine1.append(',');
+
+            }
+
+            messageLine1.append("Respondent");
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via email to:"
+            .confirmationHeader(format("# <h1>Message sent</h1>. %n##  A notification has been sent to:"
                 + messageLine1
             ))
             .build();
