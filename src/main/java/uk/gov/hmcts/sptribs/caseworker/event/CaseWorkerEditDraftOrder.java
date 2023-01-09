@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -33,7 +34,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
     private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
-    public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
 
 
     @Override

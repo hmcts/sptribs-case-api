@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -32,7 +33,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
 
     private static final CcdPageConfiguration reinstateWarning = new ReinstateWarning();
     private static final CcdPageConfiguration reinstateReason = new ReinstateReasonSelect();

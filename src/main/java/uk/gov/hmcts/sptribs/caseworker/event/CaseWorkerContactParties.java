@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
@@ -43,7 +44,6 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
 
-    public static final String CASEWORKER_CONTACT_PARTIES = "contact-parties";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
