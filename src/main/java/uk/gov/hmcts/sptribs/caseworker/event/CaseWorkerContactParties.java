@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
@@ -91,27 +89,38 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
 
+        final StringBuilder messageLine1 = new StringBuilder(100);
 
-        var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase);
+        if (details.getData().getContactParties().getSubjectContactParties().size() != 0) {
+            messageLine1.append("Subject");
 
-        StringBuilder postMessage = getPostMessage(cicCase);
-        String message = "";
-        if (null != postMessage && null != emailMessage) {
-            message = format("# Message sent  %n"
-                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
-        } else if (null != emailMessage) {
-            message = format("# Message sent %n ## "
-                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
-
-        } else if (null != postMessage) {
-            message = format("# Message sent %n ## "
-                + " %s ", postMessage.substring(0, postMessage.length() - 2));
         }
+        if (details.getData().getContactParties().getRepresentativeContactParties().size() != 0) {
+
+            if (details.getData().getContactParties().getSubjectContactParties().size() != 0) {
+                messageLine1.append(',');
+
+            }
+
+
+            messageLine1.append("Representative");
+
+        }
+        if (details.getData().getContactParties().getRespondant().size() != 0) {
+
+            if (details.getData().getContactParties().getSubjectContactParties().size() != 0
+                ||  details.getData().getContactParties().getRepresentativeContactParties().size() != 0) {
+                messageLine1.append(',');
+
+            }
+
+            messageLine1.append("Respondent");
+        }
+
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(
-                message
-            )
+            .confirmationHeader(format("# <h1>Message sent</h1>. %n##  A notification has been sent to:"
+                + messageLine1
+            ))
             .build();
 
     }
