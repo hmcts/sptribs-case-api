@@ -16,12 +16,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.event.TestStateChange.TEST_CHANGE_STATE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.TEST_CHANGE_STATE;
 
 @ExtendWith(MockitoExtension.class)
 class TestStateChangeTest {

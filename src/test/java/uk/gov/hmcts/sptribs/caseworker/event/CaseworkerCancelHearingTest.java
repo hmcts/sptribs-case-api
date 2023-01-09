@@ -14,7 +14,6 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +33,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerCancelHearing.CASEWORKER_CANCEL_HEARING;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
@@ -45,6 +44,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDates;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListingWithOneHearingDate;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CANCEL_HEARING;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerCancelHearingTest {
@@ -205,7 +205,7 @@ class CaseworkerCancelHearingTest {
     private DynamicList getDynamicList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
-            .label(HEARING_DATE_1 + EventConstants.SPACE + HEARING_TIME)
+            .label(HEARING_DATE_1 + TestEventConstants.SPACE + HEARING_TIME)
             .code(UUID.randomUUID())
             .build();
         return DynamicList

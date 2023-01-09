@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MANAGE_CASE_FLAG;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -19,24 +20,22 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_MANAGE_CASE_FLAG = "caseworker-manage-case-flag";
-
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
-                .event(CASEWORKER_MANAGE_CASE_FLAG)
-                .forStates(POST_SUBMISSION_STATES)
-                .name("Manage case flags")
-                .description("Manage case flags")
-                .showEventNotes()
-                .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-                .grantHistoryOnly(SOLICITOR))
-                .page("manageFlags")
-                .label("manageFlags", "Manage case Flags")
-                .complex(CaseData::getCaseFlag)
-                .label("error", "<h2>There are no flags on case to manage</h2>", "caseFlagCaseFlags =\"\"")
-                .optional(CaseFlag::getCaseFlags, "caseFlagError = \"\" ");
+            .event(CASEWORKER_MANAGE_CASE_FLAG)
+            .forStates(POST_SUBMISSION_STATES)
+            .name("Manage case flags")
+            .description("Manage case flags")
+            .showEventNotes()
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grantHistoryOnly(SOLICITOR))
+            .page("manageCaseFlags")
+            .label("manageCaseFlags", "Manage case Flags")
+            .complex(CaseData::getCaseFlag)
+            .label("error", "<h2>There are no flags on case to manage</h2>", "caseFlagCaseFlags =\"\"")
+            .optional(CaseFlag::getCaseFlags, "caseFlagError = \"\" ");
     }
 
 

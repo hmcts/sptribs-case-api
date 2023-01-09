@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.time.LocalDate;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.TEST_CHANGE_STATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -25,7 +26,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
-    public static final String TEST_CHANGE_STATE = "change-state";
 
 
     @Override
