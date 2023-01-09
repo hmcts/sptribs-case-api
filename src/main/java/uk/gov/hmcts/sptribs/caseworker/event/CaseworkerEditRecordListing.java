@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -31,7 +32,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_EDIT_RECORD_LISTING = "caseworker-edit-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
@@ -53,7 +53,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
-
 
 
         recordListHelper.addHearingTypeAndFormat(pageBuilder);

@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerIssueFinalDecision.CASEWORKER_ISSUE_FINAL_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC.SUBJECT;
@@ -33,6 +32,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerIssueFinalDecisionTest {
@@ -116,7 +116,7 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(response.getConfirmationHeader())
             .isEqualTo("# Final decision notice issued \n"
-                + "## A copy of this decision notice has been sent via email to: Subject, Representative, Respondent");
+                + "## A copy of this decision notice has been sent to: Subject, Representative, Respondent");
     }
 
     @Test
