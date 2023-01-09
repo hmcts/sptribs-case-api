@@ -113,7 +113,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             recipients.add(RESPONDENT.getLabel());
         }
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Final decision notice issued %n## A copy of this decision notice has been sent via email to: %s",
+            .confirmationHeader(format("# Final decision notice issued %n## A copy of this decision notice has been sent to: %s",
                 String.join(", ", recipients)))
             .build();
     }
