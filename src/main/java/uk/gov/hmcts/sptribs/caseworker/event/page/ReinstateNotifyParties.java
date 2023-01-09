@@ -18,16 +18,16 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("notifyParties", this::midEvent)
-            .label("notifyParties", "<h1>Contact parties</h1>")
+        pageBuilder.page("reinstateCaseNotifyParties", this::midEvent)
+            .label("reinstateCaseNotifyParties", "<h1>Contact parties</h1>")
             .complex(CaseData::getCicCase)
-            .label("message", "Who should be notified about this reinstatement?")
+            .label("reinstateCaseNotifyPartiesMessage", "Who should be notified about this reinstatement?")
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("app", "")
+            .label("reinstateCaseNotifyPartiesRepresentative", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("rep", "")
+            .label("reinstateCaseNotifyPartiesRespondent", "")
             .readonlyWithLabel(CicCase::getRespondantName, " ")
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
