@@ -99,7 +99,7 @@ public class RecordListHelper {
 
     public void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")
-            .pageLabel("Hearing type and format")
+            .label("hearingTypeAndFormat", "<h1>Hearing type and format</h1>")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
