@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC.SUBJECT;
@@ -38,7 +39,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
 
     private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
 
