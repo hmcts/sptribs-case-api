@@ -91,13 +91,13 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         final StringBuilder messageLine1 = new StringBuilder(100);
 
-        if (details.getData().getContactParties().getSubjectContactParties().size() != 0) {
+        if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
             messageLine1.append("Subject");
 
         }
-        if (details.getData().getContactParties().getRepresentativeContactParties().size() != 0) {
+        if (details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
 
-            if (details.getData().getContactParties().getSubjectContactParties().size() != 0) {
+            if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
                 messageLine1.append(',');
 
             }
@@ -106,10 +106,10 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             messageLine1.append("Representative");
 
         }
-        if (details.getData().getContactParties().getRespondant().size() != 0) {
+        if (details.getData().getContactParties().getRespondant().size() > 0) {
 
-            if (details.getData().getContactParties().getSubjectContactParties().size() != 0
-                ||  details.getData().getContactParties().getRepresentativeContactParties().size() != 0) {
+            if (details.getData().getContactParties().getSubjectContactParties().size() > 0
+                ||  details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
                 messageLine1.append(',');
 
             }
