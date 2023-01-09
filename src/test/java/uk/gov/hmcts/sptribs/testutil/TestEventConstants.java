@@ -1,6 +1,6 @@
-package uk.gov.hmcts.sptribs.caseworker.util;
+package uk.gov.hmcts.sptribs.testutil;
 
-public final class EventConstants {
+public final class TestEventConstants {
 
     public static final String HYPHEN = "-";
     public static final String SPACE = " ";
@@ -31,7 +31,7 @@ public final class EventConstants {
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
     public static final String TEST_CHANGE_STATE = "change-state";
 
-    private EventConstants() {
+    private TestEventConstants() {
     }
 
 }

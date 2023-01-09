@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.Arrays;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
@@ -39,7 +40,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
 
     private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
     private static final CcdPageConfiguration reasonSelect = new CancelHearingReasonSelect();

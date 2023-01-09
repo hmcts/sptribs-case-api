@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_AMEND_DUE_DATE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -35,7 +36,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String CASEWORKER_AMEND_DUE_DATE = "caseworker-amend-due-date";
     @Autowired
     private OrderService orderService;
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
