@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IssueDecisionSelectRecipientsTest {
 
     @InjectMocks
-    private IssueFinalDecisionSelectRecipients selectRecipients;
+    private IssueDecisionSelectRecipients selectRecipients;
 
     @Test
     void shouldBeSuccessfulForValidRecipients() {

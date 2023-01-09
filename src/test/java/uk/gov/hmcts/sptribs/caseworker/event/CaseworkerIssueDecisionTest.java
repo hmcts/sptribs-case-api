@@ -5,7 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -22,6 +24,7 @@ import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerIssueDecision.CASE
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -67,5 +70,21 @@ class CaseworkerIssueDecisionTest {
         assertThat(caseData.getCaseIssueDecision().getRecipientSubject().contains(SUBJECT));
         assertThat(caseData.getCaseIssueDecision().getRecipientRepresentative().contains(REPRESENTATIVE));
         assertThat(caseData.getCaseIssueDecision().getRecipientRespondent().contains(RESPONDENT));
+    }
+
+    @Test
+    void shouldSetState() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        details.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+
+        //Then
+        assertThat(response.getState())
+            .isEqualTo(CaseManagement);
     }
 }
