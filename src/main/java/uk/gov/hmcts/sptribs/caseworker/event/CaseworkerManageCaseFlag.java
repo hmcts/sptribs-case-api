@@ -21,22 +21,21 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
-                .event(CASEWORKER_MANAGE_CASE_FLAG)
-                .forStates(POST_SUBMISSION_STATES)
-                .name("Manage case flags")
-                .description("Manage case flags")
-                .showEventNotes()
-                .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-                .grantHistoryOnly(SOLICITOR))
-                .page("manageFlags")
-                .label("manageFlags", "Manage case Flags")
-                .complex(CaseData::getCaseFlag)
-                .label("error", "<h2>There are no flags on case to manage</h2>", "caseFlagCaseFlags =\"\"")
-                .optional(CaseFlag::getCaseFlags, "caseFlagError = \"\" ");
+            .event(CASEWORKER_MANAGE_CASE_FLAG)
+            .forStates(POST_SUBMISSION_STATES)
+            .name("Manage case flags")
+            .description("Manage case flags")
+            .showEventNotes()
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grantHistoryOnly(SOLICITOR))
+            .page("manageCaseFlags")
+            .label("manageCaseFlags", "Manage case Flags")
+            .complex(CaseData::getCaseFlag)
+            .label("error", "<h2>There are no flags on case to manage</h2>", "caseFlagCaseFlags =\"\"")
+            .optional(CaseFlag::getCaseFlags, "caseFlagError = \"\" ");
     }
 
 
