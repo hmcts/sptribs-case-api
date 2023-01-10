@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -40,7 +41,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_CASE_FLAG = "caseworker-case-flag";
 
 
     private static final CcdPageConfiguration flagLevel = new FlagLevel();

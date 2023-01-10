@@ -9,20 +9,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
+import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+
 
 @Data
 @AllArgsConstructor
@@ -30,6 +43,78 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 public class CicCase {
+
+
+    @CCD(
+        label = "Choose a hearing to cancel",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList hearingList;
+
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ContactPartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ContactPartiesCIC> contactPartiesCIC;
+
+
+    @CCD(
+        label = "How would you like to issue an order?"
+    )
+    private OrderIssuingType orderIssuingType;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DraftOrderCIC>> draftOrderCICList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Due Date"
+    )
+    private List<ListValue<DateModel>> orderDueDates;
+
+    @CCD(
+        label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesNo orderReminderYesOrNo;
+
+    @CCD(
+        label = "How many days before the earliest due date should a reminder be sent?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ReminderDays orderReminderDays;
+
+    @CCD(
+        label = "OrderList",
+        typeOverride = Collection,
+        typeParameterOverride = "Order",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<Order>> orderList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList orderDynamicList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<NotificationParties> hearingNotificationParties;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList draftList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseDocumentsCIC orderFile;
 
     @CCD(
         label = "Case category",
@@ -386,7 +471,16 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isRepresentativePresent;
-    private CaseDocumentsCIC caseDocumentsCIC;
+
+    //new
+    @CCD(
+        label = "Case Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<CICDocument>> applicantDocumentsUploaded;
+
     @CCD(
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -408,4 +502,34 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String days;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse subjectNotifyList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse appNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse repNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse resNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse subjectLetterNotifyList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse appLetterNotificationResponse;
 }

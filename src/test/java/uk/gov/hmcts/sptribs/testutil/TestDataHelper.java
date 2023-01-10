@@ -25,6 +25,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
+import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantPrayer;
 import uk.gov.hmcts.sptribs.ciccase.model.Application;
@@ -44,12 +47,17 @@ import uk.gov.hmcts.sptribs.ciccase.model.GeneralOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.GeneralOrderDivorceParties;
 import uk.gov.hmcts.sptribs.ciccase.model.GeneralOrderJudgeOrLegalAdvisorType;
 import uk.gov.hmcts.sptribs.ciccase.model.GeneralParties;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.HelpWithFees;
 import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.Solicitor;
 import uk.gov.hmcts.sptribs.ciccase.model.SolicitorService;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
 import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
@@ -82,7 +90,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.ccd.sdk.type.ScannedDocumentType.FORM;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantPrayer.DissolveDivorce.DISSOLVE_DIVORCE;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicationType.JOINT_APPLICATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicationType.SOLE_APPLICATION;
@@ -114,6 +121,9 @@ import static uk.gov.hmcts.sptribs.notification.CommonContent.WIFE_JOINT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_2_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_2_LAST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.FEE_CODE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FEE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SIGN_IN_DISSOLUTION_TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SIGN_IN_DIVORCE_TEST_URL;
@@ -244,10 +254,27 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CaseData invalidCaseData() {
+    public static CaseData closedCaseData() {
         return CaseData.builder()
-            .applicant1(getInvalidApplicant())
+            .caseStatus(State.CaseManagement)
+            .applicant1(getApplicant())
             .divorceOrDissolution(DIVORCE)
+            .caseInvite(new CaseInvite(null, null, null))
+            .build();
+    }
+
+    public static CaseData awaitingOutcomeData() {
+
+        CloseCase closeCase = new CloseCase();
+        closeCase.setCloseCaseReason(CloseReason.Rejected);
+        closeCase.setAdditionalDetail("case rejected");
+
+        return CaseData.builder()
+            .caseStatus(State.AwaitingOutcome)
+            .applicant1(getApplicant())
+            .divorceOrDissolution(DIVORCE)
+            .closeCase(closeCase)
+            .caseInvite(new CaseInvite(null, null, null))
             .build();
     }
 
@@ -517,7 +544,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .id(TEST_CASE_ID)
                     .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(CASE_TYPE)
+                    .caseTypeId(CcdCaseType.CIC.getCaseTypeName())
                     .build()
             )
             .build();
@@ -536,7 +563,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .state(state)
                     .id(TEST_CASE_ID)
-                    .caseTypeId(CASE_TYPE)
+                    .caseTypeId(CcdCaseType.CIC.getCaseTypeName())
                     .build()
             )
             .build();
@@ -556,7 +583,7 @@ public class TestDataHelper {
                     .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
                     .id(TEST_CASE_ID)
                     .createdDate(LOCAL_DATE_TIME)
-                    .caseTypeId(CASE_TYPE)
+                    .caseTypeId(CcdCaseType.CIC.getCaseTypeName())
                     .build()
             )
             .build();
@@ -800,7 +827,7 @@ public class TestDataHelper {
             .builder()
             .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
             .id(TEST_CASE_ID)
-            .caseTypeId(CASE_TYPE)
+            .caseTypeId(CcdCaseType.CIC.getCaseTypeName())
             .build();
     }
 
@@ -992,5 +1019,48 @@ public class TestDataHelper {
             .build();
 
         return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+    }
+
+    public static RecordListing getRecordListing() {
+        final RecordListing recordListing = new RecordListing();
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setConferenceCallNumber("");
+        recordListing.setHearingType(HearingType.FINAL);
+        recordListing.setImportantInfoDetails("some details");
+        recordListing.setVideoCallLink("");
+        recordListing.setHearingDate(LocalDate.now());
+        recordListing.setHearingTime("10:00");
+        return recordListing;
+    }
+
+    public static RecordListing getRecordListingWithOneHearingDate() {
+        final RecordListing recordListing = new RecordListing();
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setConferenceCallNumber("");
+        recordListing.setHearingType(HearingType.FINAL);
+        recordListing.setImportantInfoDetails("some details");
+        recordListing.setVideoCallLink("");
+        recordListing.setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        return recordListing;
+    }
+
+
+    public static List<ListValue<HearingDate>> getAdditionalHearingDatesOneDate() {
+        HearingDate date1 = HearingDate.builder().hearingVenueDate(HEARING_DATE_1).hearingVenueTime(HEARING_TIME).build();
+        List<ListValue<HearingDate>> list = new ArrayList<>();
+        ListValue<HearingDate> listValue1 = ListValue.<HearingDate>builder().value(date1).id("0").build();
+        list.add(listValue1);
+        return list;
+    }
+
+    public static List<ListValue<HearingDate>> getAdditionalHearingDates() {
+        HearingDate date1 = HearingDate.builder().hearingVenueDate(HEARING_DATE_1).hearingVenueTime(HEARING_TIME).build();
+        HearingDate date2 = HearingDate.builder().hearingVenueDate(HEARING_DATE_2).hearingVenueTime(HEARING_TIME).build();
+        List<ListValue<HearingDate>> list = new ArrayList<>();
+        ListValue<HearingDate> listValue1 = ListValue.<HearingDate>builder().value(date1).id("0").build();
+        ListValue<HearingDate> listValue2 = ListValue.<HearingDate>builder().value(date2).id("1").build();
+        list.add(listValue1);
+        list.add(listValue2);
+        return list;
     }
 }

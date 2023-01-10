@@ -16,14 +16,17 @@ import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.SendOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
@@ -57,6 +60,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.WIFE;
 @Builder(toBuilder = true)
 public class CaseData {
 
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ContactParties contactParties = new ContactParties();
+
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -75,11 +82,12 @@ public class CaseData {
     )
     private ApplicationType applicationType;
 
+    @Builder.Default
     @CCD(
         label = "Cancel Hearing",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CancelHearing cancelHearing;
+    private CancelHearing cancelHearing = new CancelHearing();
 
 
     @CCD(
@@ -234,21 +242,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private List<ListValue<DraftOrderCIC>> draftOrderCICList;
-
-
-    @JsonUnwrapped(prefix = "draft")
-    @Builder.Default
-    @CCD(
-        label = "Select order template ",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DraftOrderCIC draftOrderCIC = new DraftOrderCIC();
-
-
     @JsonUnwrapped(prefix = "link")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -267,6 +260,11 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private RemoveCaseStay removeCaseStay = new RemoveCaseStay();
+
+    @JsonUnwrapped(prefix = "hearingSummary")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private HearingSummary hearingSummary = new HearingSummary();
 
     @CCD(
         label = "Add a case note",
@@ -333,16 +331,34 @@ public class CaseData {
     )
     private String closedDayCount;
 
+    @CCD(
+        label = "Event",
+        access = {DefaultAccess.class}
+    )
+    private String currentEvent;
+
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseIssue caseIssue = new CaseIssue();
 
-
-    @JsonUnwrapped(prefix = "sendOrder")
+    @JsonUnwrapped(prefix = "caseIssueDecision")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private SendOrder sendOrder = new SendOrder();
+    private CaseIssueDecision caseIssueDecision = new CaseIssueDecision();
+
+    @JsonUnwrapped(prefix = "caseIssueFinalDecision")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
+
+
+    @JsonUnwrapped(prefix = "close")
+    @Builder.Default
+    @CCD(
+        label = "Close Case",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private CloseCase closeCase = new CloseCase();
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +25,6 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
-import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
 
 @Service
 @Slf4j
@@ -96,7 +96,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString());
     }
 
@@ -120,7 +120,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
     }
@@ -143,7 +143,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
     }

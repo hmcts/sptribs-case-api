@@ -9,16 +9,16 @@ public class RecordNotifyParties implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("notifyPage")
-            .label("notifyLabel", "<h1>Notify page</h1>")
+        pageBuilder.page("recordListingNotifyPage")
+            .label("recordListingNotifyPageLabel", "<h1>Notify page</h1>")
             .complex(CaseData::getCicCase)
-            .label("notifyLabelRecListing", "Which parties would be notified of this listing?")
+            .label("recordListingNotifyPageMessage", "Which parties would be notified of this listing?")
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optional(CicCase::getRecordNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("notifyLabelRecordApplicant", "")
+            .label("recordListingNotifyPageRepresentative", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optional(CicCase::getRecordNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("notifyLabelRecordRep", "")
+            .label("recordListingNotifyPageRespondent", "")
             .readonlyWithLabel(CicCase::getRespondantName, " ")
             .optional(CicCase::getRecordNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();

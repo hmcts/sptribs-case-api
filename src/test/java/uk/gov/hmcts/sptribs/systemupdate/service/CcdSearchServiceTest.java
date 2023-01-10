@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
 import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsListConverter;
 
@@ -34,7 +35,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.DUE_DATE;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.STATE;
@@ -78,13 +78,13 @@ class CcdSearchServiceTest {
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             getSourceBuilder(0, PAGE_SIZE).toString()))
             .thenReturn(expected1);
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             getSourceBuilder(PAGE_SIZE, PAGE_SIZE).toString()))
             .thenReturn(expected2);
 
@@ -119,7 +119,7 @@ class CcdSearchServiceTest {
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()))
             .thenReturn(expected1);
 
@@ -142,7 +142,7 @@ class CcdSearchServiceTest {
             .searchCases(
                 SYSTEM_UPDATE_AUTH_TOKEN,
                 SERVICE_AUTHORIZATION,
-                CASE_TYPE,
+                CcdCaseType.CIC.getCaseTypeName(),
                 getSourceBuilder(0, PAGE_SIZE).toString());
 
         //When&Then
@@ -180,7 +180,7 @@ class CcdSearchServiceTest {
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()))
             .thenReturn(expected);
 

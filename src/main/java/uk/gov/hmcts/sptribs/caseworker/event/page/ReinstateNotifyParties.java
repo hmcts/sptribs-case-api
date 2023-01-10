@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -12,21 +11,23 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+
 public class ReinstateNotifyParties implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("notifyParties", this::midEvent)
-            .label("notifyParties", "<h1>Contact parties</h1>")
+        pageBuilder.page("reinstateCaseNotifyParties", this::midEvent)
+            .label("reinstateCaseNotifyParties", "<h1>Contact parties</h1>")
             .complex(CaseData::getCicCase)
-            .label("message", "Who should be notified about this reinstatement?")
+            .label("reinstateCaseNotifyPartiesMessage", "Who should be notified about this reinstatement?")
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("app", "")
+            .label("reinstateCaseNotifyPartiesRepresentative", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("rep", "")
+            .label("reinstateCaseNotifyPartiesRespondent", "")
             .readonlyWithLabel(CicCase::getRespondantName, " ")
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
@@ -37,7 +38,7 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNull(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One field must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -46,12 +47,6 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
             .build();
     }
 
-    private boolean checkNull(CaseData data) {
-        return null != data.getCicCase()
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent());
 
-    }
 }
 

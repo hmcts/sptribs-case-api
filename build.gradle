@@ -26,9 +26,10 @@ plugins {
   id 'io.spring.dependency-management' version '1.0.13.RELEASE'
   id 'org.springframework.boot' version '2.7.5'
   id 'com.github.ben-manes.versions' version '0.41.0'
-  //id 'hmcts.ccd.sdk' version '5.2.0'
+
+  id 'hmcts.ccd.sdk' version '5.2.4'
   id 'hmcts.ccd.sdk'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.324'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.444'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -256,7 +257,6 @@ repositories {
   mavenLocal()
   mavenCentral()
   maven { url 'https://jitpack.io' }
-  jcenter()
 }
 
 def versions = [
@@ -286,12 +286,15 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.2-Categories') {
+  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.9') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
     exclude group: 'com.google.guava', module: 'guava'
     exclude group: 'org.apache.poi', module: 'poi-ooxml'
     exclude group: 'org.apache.poi', module: 'poi'
   }
+
+  implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+  implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.14'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: 'v4.9.1'
   implementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.1.1'
@@ -443,6 +446,7 @@ ccd {
 }
 
 bootWithCCD {
+    environment 'XUI_JURISDICTIONS', 'ST_CIC,ST_SEND,ST_PHL,ST_CS,ST_MH'
     group = 'ccd tasks'
     dependsOn(loadEnvSecrets)
 
