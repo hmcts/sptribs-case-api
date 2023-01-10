@@ -337,8 +337,7 @@ public class CicCase {
         label = "CICA reference number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @Builder.Default
-    private String cicaReferenceNumber = " ";
+    private String cicaReferenceNumber;
 
     @CCD(
         label = "Applicant's full name",
