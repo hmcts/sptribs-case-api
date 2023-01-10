@@ -8,8 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
-import uk.gov.hmcts.sptribs.ciccase.model.RecipientsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -44,10 +44,10 @@ public class CaseIssueDecision {
     @CCD(
         label = "Who should receive this decision notice?",
         typeOverride = MultiSelectList,
-        typeParameterOverride = "RecipientsCIC",
+        typeParameterOverride = "ContactPartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<RecipientsCIC> recipients;
+    private Set<ContactPartiesCIC> recipients;
 
     @CCD(
         label = "Case Documents",

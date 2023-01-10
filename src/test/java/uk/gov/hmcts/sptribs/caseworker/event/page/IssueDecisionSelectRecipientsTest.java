@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.RecipientsCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.util.HashSet;
@@ -26,8 +26,8 @@ public class IssueDecisionSelectRecipientsTest {
     void shouldBeSuccessfulForValidRecipients() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Set<RecipientsCIC> subjectSet = new HashSet<>();
-        subjectSet.add(RecipientsCIC.SUBJECT);
+        final Set<ContactPartiesCIC> subjectSet = new HashSet<>();
+        subjectSet.add(ContactPartiesCIC.SUBJECTTOCONTACT);
         final CaseIssueDecision decision = CaseIssueDecision.builder().recipients(subjectSet).build();
 
         final CaseData caseData = CaseData.builder()
@@ -39,7 +39,7 @@ public class IssueDecisionSelectRecipientsTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getData().getCaseIssueDecision().getRecipients().equals(RecipientsCIC.SUBJECT));
+        assertThat(response.getData().getCaseIssueDecision().getRecipients().equals(ContactPartiesCIC.SUBJECTTOCONTACT));
     }
 
     @Test

@@ -9,10 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.RecipientsCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,31 +42,22 @@ class CaseworkerIssueDecisionTest {
     }
 
     @Test
-    void shouldSuccessfullyAddDecisionRecipients() {
-        //Given
-        final CaseData caseData = caseData();
-        final CaseIssueDecision decision = caseData.getCaseIssueDecision();
-        Set<RecipientsCIC> subjectSet = new HashSet<>();
-        subjectSet.add(RecipientsCIC.SUBJECT);
-        decision.setRecipients(subjectSet);
-
-        //Then
-        assertThat(caseData.getCaseIssueDecision().getRecipients().equals(RecipientsCIC.SUBJECT));
-    }
-
-    @Test
     void shouldSetState() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CaseData caseData = caseData();
+        final CaseIssueDecision decision = caseData.getCaseIssueDecision();
+        Set<ContactPartiesCIC> subjectSet = new HashSet<>();
+        subjectSet.add(ContactPartiesCIC.SUBJECTTOCONTACT);
+        decision.setRecipients(subjectSet);
         details.setData(caseData);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
-        assertThat(response.getState())
-            .isEqualTo(CaseManagement);
+        assertThat(response.getState()).isEqualTo(CaseManagement);
+        assertThat(response.getData().getCaseIssueDecision().getRecipients().equals(ContactPartiesCIC.SUBJECTTOCONTACT));
     }
 }
