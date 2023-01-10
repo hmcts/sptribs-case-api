@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.DocumentManagementClient;
 import uk.gov.hmcts.sptribs.payment.FeesAndPaymentsClient;
 import uk.gov.hmcts.sptribs.payment.PaymentPbaClient;
+import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
 import uk.gov.hmcts.sptribs.recordlisting.LocationClient;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
 
@@ -35,6 +36,7 @@ import javax.annotation.PostConstruct;
         CaseUserApi.class,
         FeesAndPaymentsClient.class,
         LocationClient.class,
+        JudicialClient.class,
         DocAssemblyClient.class,
         CoreCaseDataApi.class,
         CaseAssignmentApi.class,

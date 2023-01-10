@@ -8,11 +8,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
+import java.util.List;
+
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 
 @Data
@@ -43,4 +49,23 @@ public class HearingSummary {
     )
     private HearingFormat hearingFormat;
 
+    @CCD(
+        label = "Which judge heard the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList judge;
+
+    @CCD(
+        label = "Was it a full panel hearing?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FullPanelHearing fullPanelHearing;
+
+    @CCD(
+        label = "Panel member",
+        typeOverride = Collection,
+        typeParameterOverride = "PanelMember",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<PanelMember>> panelMember;
 }

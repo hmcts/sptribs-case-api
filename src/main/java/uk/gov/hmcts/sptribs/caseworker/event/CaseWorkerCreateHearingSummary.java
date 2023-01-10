@@ -16,7 +16,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.HearingAttendees;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
+import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -31,13 +33,18 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State, UserRole> {
     public static final String CASEWORKER_CREATE_HEARING_SUMMARY = "create-hearing-summary";
+    public static final String SERVICE_NAME = "DIVORCE";
 
     private static final CcdPageConfiguration createHearingSummary = new CreateHearingSummary();
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+    private static final CcdPageConfiguration hearingAttendees = new HearingAttendees();
 
     @Autowired
     private HearingService hearingService;
+
+    @Autowired
+    private JudicialService judicialService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -55,13 +62,18 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         createHearingSummary.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
+        hearingAttendees.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
+        caseData.setCurrentEvent(CASEWORKER_CREATE_HEARING_SUMMARY);
+
         DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
         caseData.getHearingSummary().setHearingSummaryList(hearingDateDynamicList);
-        caseData.setCurrentEvent(CASEWORKER_CREATE_HEARING_SUMMARY);
+
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(SERVICE_NAME);
+        caseData.getHearingSummary().setJudge(judicialUsersDynamicList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
