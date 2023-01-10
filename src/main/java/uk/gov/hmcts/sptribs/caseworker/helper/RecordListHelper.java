@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
 @Service
@@ -36,6 +37,7 @@ public class RecordListHelper {
             ? "Unable to retrieve Region data"
             : null;
         caseData.getRecordListing().setRegionsMessage(regionMessage);
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
     }
 
 
@@ -99,7 +101,7 @@ public class RecordListHelper {
 
     public void addHearingTypeAndFormat(PageBuilder pageBuilder) {
         pageBuilder.page("hearingTypeAndFormat")
-            .pageLabel("Hearing type and format")
+            .label("hearingTypeAndFormat", "<h1>Hearing type and format</h1>")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)

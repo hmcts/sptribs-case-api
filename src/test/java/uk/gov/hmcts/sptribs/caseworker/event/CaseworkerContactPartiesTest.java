@@ -24,12 +24,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerContactParties.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CONTACT_PARTIES;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerContactPartiesTest {
@@ -139,6 +139,79 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader().contains("Representative")).isFalse();
         assertThat(contactPartiesResponse.getConfirmationHeader().contains("Respondent")).isFalse();
 
+
+    }
+
+
+    @Test
+    void shouldDisplayTheCorrectMessageWithCommaSeperatoin() {
+        final CaseData caseData = caseData();
+
+        Set<SubjectCIC> sub = new HashSet<>();
+        sub.add(SubjectCIC.SUBJECT);
+        Set<RepresentativeCIC> rep = new HashSet<>();
+        rep.add(RepresentativeCIC.REPRESENTATIVE);
+        Set<RespondantCIC> res = new HashSet<>();
+        res.add(RespondantCIC.RESPONDANT);
+
+        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
+            .representativeContactParties(rep).respondant(res).build();
+        caseData.setContactParties(contactParties);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        SubmittedCallbackResponse response =
+            caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+
+
+        assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
+        assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
+        assertThat(caseData.getContactParties().getRespondant()).hasSize(1);
+        assertThat(response).isNotNull();
+        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        assertThat(contactPartiesResponse).isNotNull();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Subject")).isTrue();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Representative")).isTrue();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Respondent")).isTrue();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains(",")).isTrue();
+    }
+
+    @Test
+    void shouldDisplayTheCorrectMessageWithCommaSeperatoinIfSubjectIsNull() {
+        final CaseData caseData = caseData();
+
+        Set<SubjectCIC> sub = new HashSet<>();
+        Set<RepresentativeCIC> rep = new HashSet<>();
+        rep.add(RepresentativeCIC.REPRESENTATIVE);
+        Set<RespondantCIC> res = new HashSet<>();
+        res.add(RespondantCIC.RESPONDANT);
+
+        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
+            .representativeContactParties(rep).respondant(res).build();
+        caseData.setContactParties(contactParties);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        SubmittedCallbackResponse response =
+            caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(0);
+        assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
+        assertThat(caseData.getContactParties().getRespondant()).hasSize(1);
+        assertThat(response).isNotNull();
+        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        assertThat(contactPartiesResponse).isNotNull();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Subject")).isFalse();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Representative")).isTrue();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains("Respondent")).isTrue();
+        assertThat(contactPartiesResponse.getConfirmationHeader().contains(",")).isTrue();
 
 
     }

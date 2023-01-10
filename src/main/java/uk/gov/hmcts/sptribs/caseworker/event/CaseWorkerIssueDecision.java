@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -32,13 +32,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
 
     private static final CcdPageConfiguration issueDecisionNotice = new IssueDecisionNotice();
     private static final CcdPageConfiguration issueDecisionSelectTemplate = new IssueDecisionSelectTemplate();
     private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
     private static final CcdPageConfiguration issueDecisionSelectRecipients = new IssueDecisionSelectRecipients();
-
 
     @Autowired
     private DecisionIssuedNotification decisionIssuedNotification;
@@ -71,7 +69,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                 CaseDetails<CaseData, State> beforeDetails) {
+                                               CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
 
         sendIssueDecisionNotification(caseData.getHyphenatedCaseRef(), caseData);

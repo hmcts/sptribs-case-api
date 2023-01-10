@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -31,10 +33,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_EDIT_RECORD_LISTING = "caseworker-edit-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
+
+    private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
 
     @Autowired
     private RecordListHelper recordListHelper;
@@ -55,10 +58,11 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .grantHistoryOnly(SOLICITOR));
 
 
-        recordListHelper.addHearingTypeAndFormat(pageBuilder);
+        //        recordListHelper.addHearingTypeAndFormat(pageBuilder);
+        hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
-        recordListHelper.addRemoteHearingInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
+        recordListHelper.addRemoteHearingInfo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
