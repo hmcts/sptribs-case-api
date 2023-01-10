@@ -64,6 +64,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private void addWarning(PageBuilder pageBuilder) {
+
         pageBuilder.page("beforeYouStart")
             .pageLabel("Before you start")
             .label("beforeYouStartLabel",
