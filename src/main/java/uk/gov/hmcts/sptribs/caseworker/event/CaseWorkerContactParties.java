@@ -118,7 +118,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# <h1>Message sent</h1>. %n##  A notification has been sent to:"
+            .confirmationHeader(format("# <h1>Message sent</h1> %n##  A notification has been sent to:"
                 + messageLine1
             ))
             .build();
