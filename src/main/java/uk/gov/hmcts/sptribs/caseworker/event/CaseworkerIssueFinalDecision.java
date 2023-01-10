@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTempl
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -22,10 +23,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -99,22 +97,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase);
-
-        StringBuilder postMessage = getPostMessage(cicCase);
-        String message = "";
-        if (null != postMessage && null != emailMessage) {
-            message = format("# OFinal decision notice issued   %n"
-                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
-        } else if (null != emailMessage) {
-            message = format("# Final decision notice issued %n ## "
-                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
-
-        } else if (null != postMessage) {
-            message = format("# Final decision notice issued  %n ## "
-                + " %s ", postMessage.substring(0, postMessage.length() - 2));
-        }
-
+        var message = MessageUtil.generateWholeMessage(cicCase);
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
