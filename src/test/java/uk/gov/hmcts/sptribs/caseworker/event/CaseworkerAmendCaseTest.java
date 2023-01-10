@@ -11,9 +11,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerAmendCase.CASEWORKER_AMEND_CASE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_AMEND_CASE;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerAmendCaseTest {

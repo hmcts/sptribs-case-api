@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerAddNote.CASEWORKER_ADD_NOTE;
+import static uk.gov.hmcts.sptribs.testutil.ITEventConstants.CASEWORKER_ADD_NOTE;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamFailure;
