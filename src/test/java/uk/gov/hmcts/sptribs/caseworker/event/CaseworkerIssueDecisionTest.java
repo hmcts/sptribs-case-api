@@ -18,9 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.ciccase.model.RecipientsCIC.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.RecipientsCIC.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.RecipientsCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -54,14 +51,10 @@ class CaseworkerIssueDecisionTest {
         final CaseIssueDecision decision = caseData.getCaseIssueDecision();
         Set<RecipientsCIC> subjectSet = new HashSet<>();
         subjectSet.add(RecipientsCIC.SUBJECT);
-        subjectSet.add(RecipientsCIC.REPRESENTATIVE);
-        subjectSet.add(RecipientsCIC.RESPONDENT);
         decision.setRecipients(subjectSet);
 
         //Then
-        assertThat(caseData.getCaseIssueDecision().getRecipients().contains(SUBJECT));
-        assertThat(caseData.getCaseIssueDecision().getRecipients().contains(REPRESENTATIVE));
-        assertThat(caseData.getCaseIssueDecision().getRecipients().contains(RESPONDENT));
+        assertThat(caseData.getCaseIssueDecision().getRecipients().equals(RecipientsCIC.SUBJECT));
     }
 
     @Test
