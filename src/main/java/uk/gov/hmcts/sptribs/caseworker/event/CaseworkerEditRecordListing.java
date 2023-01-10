@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
@@ -36,6 +37,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
+    private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
+
     @Autowired
     private RecordListHelper recordListHelper;
 
@@ -55,7 +58,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .grantHistoryOnly(SOLICITOR));
 
 
-        recordListHelper.addHearingTypeAndFormat(pageBuilder);
+        //        recordListHelper.addHearingTypeAndFormat(pageBuilder);
+        hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         recordListHelper.addRemoteHearingInfo(pageBuilder);
