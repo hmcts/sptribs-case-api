@@ -56,6 +56,12 @@ public class HearingSummary {
     private DynamicList judge;
 
     @CCD(
+        label = "panel member Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList panelMemberName;
+
+    @CCD(
         label = "Was it a full panel hearing?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -67,5 +73,5 @@ public class HearingSummary {
         typeParameterOverride = "PanelMember",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<PanelMember>> panelMember;
+    private List<ListValue<PanelMember>> panelMemberList;
 }

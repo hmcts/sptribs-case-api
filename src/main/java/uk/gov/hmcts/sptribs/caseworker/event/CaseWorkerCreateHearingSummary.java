@@ -8,10 +8,12 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateHearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -19,6 +21,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingAttendees;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -74,10 +79,27 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers(SERVICE_NAME);
         caseData.getHearingSummary().setJudge(judicialUsersDynamicList);
+        caseData.getHearingSummary().setPanelMemberList(getListValues(judicialUsersDynamicList));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+    }
+
+    private List<ListValue<PanelMember>> getListValues(DynamicList judicialUsersDynamicList) {
+        PanelMember panelMember = PanelMember.builder()
+            .name(judicialUsersDynamicList)
+            .build();
+        List<ListValue<PanelMember>> listValues = new ArrayList<>();
+
+        var listValue = ListValue
+            .<PanelMember>builder()
+            .id("1")
+            .value(panelMember)
+            .build();
+
+        listValues.add(listValue);
+        return listValues;
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
