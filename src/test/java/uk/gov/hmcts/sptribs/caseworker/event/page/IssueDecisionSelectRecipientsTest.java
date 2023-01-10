@@ -8,8 +8,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.RecipientsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,9 +26,9 @@ public class IssueDecisionSelectRecipientsTest {
     void shouldBeSuccessfulForValidRecipients() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Set<SubjectCIC> subjectSet = new HashSet<>();
-        subjectSet.add(SubjectCIC.SUBJECT);
-        final CaseIssueDecision decision = CaseIssueDecision.builder().recipientSubject(subjectSet).build();
+        final Set<RecipientsCIC> subjectSet = new HashSet<>();
+        subjectSet.add(RecipientsCIC.SUBJECT);
+        final CaseIssueDecision decision = CaseIssueDecision.builder().recipients(subjectSet).build();
 
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(decision)
@@ -39,14 +39,14 @@ public class IssueDecisionSelectRecipientsTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getData().getCaseIssueDecision().getRecipientSubject().equals(SubjectCIC.SUBJECT));
+        assertThat(response.getData().getCaseIssueDecision().getRecipients().equals(RecipientsCIC.SUBJECT));
     }
 
     @Test
     void shouldBeInvalidIfNoRecipientsSelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseIssueDecision decision = CaseIssueDecision.builder().recipientSubject(new HashSet<>()).build();
+        final CaseIssueDecision decision = CaseIssueDecision.builder().recipients(new HashSet<>()).build();
 
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(decision)
