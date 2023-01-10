@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
@@ -43,7 +44,6 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
 
-    public static final String CASEWORKER_CONTACT_PARTIES = "contact-parties";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -91,18 +91,34 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         final StringBuilder messageLine1 = new StringBuilder(100);
 
-        if (details.getData().getContactParties().getSubjectContactParties().size() != 0) {
+        if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
             messageLine1.append("Subject");
+
         }
-        if (details.getData().getContactParties().getRepresentativeContactParties().size() != 0) {
-            messageLine1.append(" , Representative  ");
+        if (details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
+
+            if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
+                messageLine1.append(',');
+
+            }
+
+
+            messageLine1.append("Representative");
+
         }
-        if (details.getData().getContactParties().getRespondant().size() != 0) {
-            messageLine1.append(" , Respondent.");
+        if (details.getData().getContactParties().getRespondant().size() > 0) {
+
+            if (details.getData().getContactParties().getSubjectContactParties().size() > 0
+                ||  details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
+                messageLine1.append(',');
+
+            }
+
+            messageLine1.append("Respondent");
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent. %n##  A notification has been sent via email to:"
+            .confirmationHeader(format("# <h1>Message sent</h1> %n##  A notification has been sent to:"
                 + messageLine1
             ))
             .build();
