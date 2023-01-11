@@ -30,7 +30,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
-    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
+   // private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
 
 
     @Override
@@ -47,7 +47,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createDraftOrder.addTo(pageBuilder);
-        previewDraftOrder.addTo(pageBuilder);
+       // previewDraftOrder.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
