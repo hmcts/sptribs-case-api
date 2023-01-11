@@ -58,6 +58,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .grantHistoryOnly(SOLICITOR));
 
 
+<<<<<<<<< Temporary merge branch 1
+        //        recordListHelper.addHearingTypeAndFormat(pageBuilder);
+=========
+>>>>>>>>> Temporary merge branch 2
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
