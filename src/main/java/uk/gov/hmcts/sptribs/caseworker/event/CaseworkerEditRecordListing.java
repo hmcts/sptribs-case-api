@@ -47,8 +47,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_RECORD_LISTING)
             .forStates(AwaitingHearing)
-            .name("Edit listing Record")
-            .description(" Edit listing Record")
+            .name("Edit listing record")
+            .description(" Edit listing record")
             .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
