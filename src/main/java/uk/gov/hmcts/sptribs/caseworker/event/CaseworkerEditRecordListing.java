@@ -47,8 +47,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_RECORD_LISTING)
             .forStates(AwaitingHearing)
-            .name("Edit Record listing")
-            .description(" Edit Record listing")
+            .name("Edit listing record")
+            .description(" Edit listing record")
             .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
@@ -58,7 +58,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .grantHistoryOnly(SOLICITOR));
 
 
-        //        recordListHelper.addHearingTypeAndFormat(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);

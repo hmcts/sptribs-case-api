@@ -77,6 +77,10 @@
       <cve>CVE-2021-37533</cve>
       <cve>CVE-2021-4277</cve>
     </suppress>
+  <suppress>
+    <notes>apache_tomcat:apache:9.0.68</notes>
+    <cve>CVE-2022-45143</cve>
+  </suppress>
     <suppress base="true">
       <notes><![CDATA[
      FP per issue #5233
