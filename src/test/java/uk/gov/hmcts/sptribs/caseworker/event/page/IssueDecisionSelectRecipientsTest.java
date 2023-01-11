@@ -39,7 +39,7 @@ public class IssueDecisionSelectRecipientsTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getData().getCaseIssueDecision().getRecipients().equals(ContactPartiesCIC.SUBJECTTOCONTACT));
+        assertThat(response.getData().getCaseIssueDecision().getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT));
     }
 
     @Test

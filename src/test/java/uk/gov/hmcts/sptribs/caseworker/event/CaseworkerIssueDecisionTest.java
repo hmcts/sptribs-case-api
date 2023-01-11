@@ -61,6 +61,6 @@ class CaseworkerIssueDecisionTest {
 
         //Then
         assertThat(response.getState()).isEqualTo(CaseManagement);
-        assertThat(response.getData().getCaseIssueDecision().getRecipients().equals(ContactPartiesCIC.SUBJECTTOCONTACT));
+        assertThat(response.getData().getCaseIssueDecision().getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT));
     }
 }
