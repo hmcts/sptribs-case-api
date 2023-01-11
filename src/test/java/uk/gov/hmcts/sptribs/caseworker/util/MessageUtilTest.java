@@ -178,4 +178,58 @@ public class MessageUtilTest {
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
     }
 
+    @Test
+    void shouldSuccessfullyGenerateWholeMessageWithPostAndEmail() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        //When
+        String result = MessageUtil.generateWholeMessage(cicCase);
+
+        //Then
+        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateWholeMessageWithPost() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        //When
+        String result = MessageUtil.generateWholeMessage(cicCase);
+
+        //Then
+        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateWholeMessageWithEmail() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+
+        //When
+        String result = MessageUtil.generateWholeMessage(cicCase);
+
+        //Then
+        assertThat(result).contains(RespondentCIC.RESPONDENT.getLabel());
+    }
 }
