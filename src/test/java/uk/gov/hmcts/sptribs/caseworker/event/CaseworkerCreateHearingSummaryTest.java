@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.Set;
 
@@ -34,6 +35,9 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Mock
     private HearingService hearingService;
+
+    @Mock
+    private JudicialService judicialService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -59,6 +63,7 @@ class CaseworkerCreateHearingSummaryTest {
             .build();
         updatedCaseDetails.setData(caseData);
         when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
+        when(judicialService.getAllUsers(any())).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
