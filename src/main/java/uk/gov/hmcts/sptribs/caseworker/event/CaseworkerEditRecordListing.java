@@ -69,7 +69,12 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
 
-        recordListHelper.regionData(caseData);
+        if((caseData.getRecordListing().getRegionList().getValue().equals(null))){
+            recordListHelper.regionData(caseData);
+
+        }
+
+//        recordListHelper.regionData(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
