@@ -4,6 +4,7 @@ public final class EventConstants {
 
     public static final String HYPHEN = "-";
     public static final String SPACE = " ";
+    public static final String CURRENT_EVENT = "currentEvent = \"";
 
     public static final String CASEWORKER_AMEND_CASE = "caseworker-amend-case";
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
