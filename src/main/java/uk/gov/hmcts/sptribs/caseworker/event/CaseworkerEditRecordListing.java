@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
@@ -35,9 +36,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
+
+    private static final CcdPageConfiguration listingChangeReason = new ListingChangeReason();
 
     @Autowired
     private RecordListHelper recordListHelper;
@@ -63,6 +67,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         hearingVenues.addTo(pageBuilder);
         recordListHelper.addRemoteHearingInfo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);
+        listingChangeReason.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
 
@@ -104,7 +109,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
-            .label("regionInfoObj", "<h1>Region Data</h1>")
+            .pageLabel("Region Data")
+            .label("labelEditRecordingRegionData", "")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getRegionsMessage)
             .optional(RecordListing::getRegionList)
