@@ -110,7 +110,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
-            .label("labelRegionData", "")
+            .label("labelEditRecordingRegionData", "")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getRegionsMessage)
             .optional(RecordListing::getRegionList)
