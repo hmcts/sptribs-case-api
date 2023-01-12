@@ -49,7 +49,6 @@ public class CicCase {
     private DraftOrderCIC draftOrderCIC;
 
     @CCD(
-        label = "Choose a hearing to cancel",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList hearingList;
