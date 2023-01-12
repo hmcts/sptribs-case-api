@@ -42,6 +42,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .name("Issue a decision")
             .description("Issue a decision")
             .showEventNotes()
+            .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
