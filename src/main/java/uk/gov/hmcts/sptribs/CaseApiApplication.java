@@ -13,7 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.DocumentManagementClient;
 import uk.gov.hmcts.sptribs.payment.FeesAndPaymentsClient;
@@ -39,7 +41,9 @@ import javax.annotation.PostConstruct;
         CoreCaseDataApi.class,
         CaseAssignmentApi.class,
         DocumentManagementClient.class,
-        PaymentPbaClient.class
+        PaymentPbaClient.class,
+        CaseDocumentClient.class,
+        CaseDocumentClientApi.class
     }
 )
 @EnableScheduling

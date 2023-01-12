@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -15,6 +16,7 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -98,6 +100,18 @@ public class NotificationServiceCIC {
             );
             throw new NotificationException(notificationClientException);
         }
+    }
+
+    public JSONObject getJsonFileAttachment(byte[] fileContents) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = Objects.nonNull(fileContents)
+                ? notificationClient.prepareUpload(fileContents)
+                : null;
+        } catch (NotificationClientException e) {
+            log.info("unable to upload", e.getMessage());
+        }
+        return jsonObject;
     }
 
     public void setNotificationRequest(NotificationRequest notificationRequest) {

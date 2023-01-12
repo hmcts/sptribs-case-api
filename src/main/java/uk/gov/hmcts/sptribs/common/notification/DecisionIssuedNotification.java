@@ -1,25 +1,45 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 
 @Component
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
+
+    @Autowired
+    IdamService idamService;
+
+    @Autowired
+    private AuthTokenGenerator authTokenGenerator;
+
+    @Autowired
+    private CaseDocumentClient caseDocumentClient;
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -36,6 +56,12 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
+            try {
+                addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -94,4 +120,55 @@ public class DecisionIssuedNotification implements PartiesNotification {
     private void addDecisionsIssuedTemplateVars(CaseIssueDecision caseIssueDecision, Map<String, Object> templateVars) {
         //templateVars.put(DECISION_NOTICE, caseIssueDecision.getDecisionNotice());
     }
+
+    private void addDecisionsIssuedFileContents(CaseIssueDecision caseIssueDecision, Map<String, Object> templateVars) throws IOException {
+        int count = 0;
+
+        final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
+        String serviceAuthorization = authTokenGenerator.generate();
+
+        if (caseIssueDecision.getDecisionDocument() != null) {
+            List<String> uploadedDocumentsUrls = caseIssueDecision.getDecisionDocument().stream().map(item -> item.getValue())
+                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
+                .collect(Collectors.toList());
+
+            count = 1;
+            for (String item : uploadedDocumentsUrls) {
+
+                Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
+                    serviceAuthorization,
+                    UUID.fromString(item)).getBody();
+
+                if (uploadedDocument != null) {
+                    log.info("Document found with uuid : {}", UUID.fromString(item));
+                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
+                    templateVars.put("Document1", true);
+                    templateVars.put(DECISION_NOTICE + count, notificationService.getJsonFileAttachment(uploadedDocumentContents));
+                } else {
+                    log.info("Document not found with uuid : {}", UUID.fromString(item));
+                }
+            }
+
+        /*byte [] fileContents = null;
+        try {
+            fileContents = FileUtils.readFileToByteArray(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject fileJson = notificationService.getJsonFileAttachment(fileContents);
+        if(Objects.nonNull(fileJson)) {
+            templateVars.put(DECISION_NOTICE, fileJson);
+        }*/
+
+        /*templateVars.put("2nddoc", false);
+        //templateVars.put("DecisionNotice2", fileJson);
+        templateVars.put("3rddoc", false);
+        templateVars.put("4thdoc", false);
+        templateVars.put("5thdoc", false);*/
+        }
+    }
+
+
+
 }

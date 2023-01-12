@@ -12,16 +12,14 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -32,6 +30,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserRole> {
+
+    public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
 
     private static final CcdPageConfiguration issueDecisionNotice = new IssueDecisionNotice();
     private static final CcdPageConfiguration issueDecisionSelectTemplate = new IssueDecisionSelectTemplate();
@@ -80,17 +80,17 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
-        CicCase cicCase = data.getCicCase();
+        CaseIssueDecision caseIssueDecision = data.getCaseIssueDecision();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
+        if (!caseIssueDecision.getRecipientSubject().isEmpty()) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
-            decisionIssuedNotification.sendToApplicant(data, caseNumber);
+        if (!caseIssueDecision.getRecipientRespondent().isEmpty()) {
+            decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+        if (!caseIssueDecision.getRecipientRepresentative().isEmpty()) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
     }
