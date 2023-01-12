@@ -29,6 +29,7 @@ public class DraftOrderCIC {
     )
     private OrderTemplate anOrderTemplate;
 
+
     @CCD(
         label = "Main Content CIC1_Eligibility",
         hint = "Amend content as required",
