@@ -71,7 +71,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<DraftOrderCIC>> draftOrderCICList;
+    private List<ListValue<DraftOrderCIC>>  draftOrderCICList;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
