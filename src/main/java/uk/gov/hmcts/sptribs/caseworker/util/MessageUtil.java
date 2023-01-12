@@ -12,9 +12,9 @@ import java.util.Set;
 import static java.lang.String.format;
 
 public final class MessageUtil {
-    private static final String REPRESENTATIVE = "Representative, ";
-    private static final String RESPONDENT = "Respondent, ";
-    private static final String SUBJECT = "Subject, ";
+    private static final String REPRESENTATIVE = ", Representative";
+    private static final String RESPONDENT = ", Respondent";
+    private static final String SUBJECT = "Subject";
 
     private MessageUtil() {
     }
@@ -129,5 +129,24 @@ public final class MessageUtil {
                 + " %s ", postMessage.substring(0, postMessage.length() - 2));
         }
         return message;
+    }
+
+    public static String generateIssueDecisionMessage(final CicCase cicCase) {
+        final StringBuilder messageLine = new StringBuilder(100);
+        messageLine.append(format("# Decision notice issued %n ## "));
+        messageLine.append("A notification has been sent to: ");
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            messageLine.append(SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            messageLine.append(RESPONDENT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
+            messageLine.append(REPRESENTATIVE);
+        }
+
+        return messageLine.toString();
     }
 }
