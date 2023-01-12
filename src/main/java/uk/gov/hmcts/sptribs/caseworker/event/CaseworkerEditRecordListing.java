@@ -69,12 +69,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
 
-        if((caseData.getRecordListing().getRegionList().getValue().equals(null))){
+        if (caseData.getRecordListing().getSelectedRegionVal() == null) {
             recordListHelper.regionData(caseData);
-
         }
-
-//        recordListHelper.regionData(caseData);
+        //        recordListHelper.regionData(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -119,9 +117,12 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
+        //final CaseData caseDataBefore = detailsBefore.getData();
 
-        recordListHelper.populatedVenuesData(caseData);
-
+        // if(!(caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal()))) {
+        //      caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
+        //  }
+        //           recordListHelper.populatedVenuesData(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

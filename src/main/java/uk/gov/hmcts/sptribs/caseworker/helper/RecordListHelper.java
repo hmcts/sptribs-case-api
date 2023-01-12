@@ -99,14 +99,6 @@ public class RecordListHelper {
         return errors;
     }
 
-    public void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat")
-            .label("hearingTypeAndFormat", "<h1>Hearing type and format</h1>")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .done();
-    }
 
     public void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")
