@@ -63,6 +63,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .state(CaseManagement)//or AwaitingHearing
             .build();
     }
+
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
