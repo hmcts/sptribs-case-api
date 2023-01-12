@@ -27,11 +27,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 public class HearingSummary {
-    @CCD(
-        label = "Choose a hearing to summarise",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicList hearingSummaryList;
 
     @CCD(
         label = "Hearing type",
