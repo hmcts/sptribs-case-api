@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
 @Slf4j
@@ -32,13 +34,16 @@ public class HearingVenues implements CcdPageConfiguration {
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getHearingVenuesMessage)
-            .optional(RecordListing::getHearingVenues)
+            .optional(RecordListing::getHearingVenues,
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"")
+            .readonly(RecordListing::getHearingVenues,
+                CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"")
             .optional(RecordListing::getVenueNotListedOption)
             .mandatory(RecordListing::getHearingVenueName, "recordVenueNotListedOption= \"VenueNotListed\"")
             .mandatory(RecordListing::getHearingVenueAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
             .optional(RecordListing::getRoomAtVenue)
             .optional(RecordListing::getAddlInstr,
-                "currentEvent = \"" + CASEWORKER_RECORD_LISTING + "\"")
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"")
             .label("hearingDateObj", "<h4>Hearing date</h4>")
             .mandatory(RecordListing::getHearingDate)
             .mandatory(RecordListing::getSession)
