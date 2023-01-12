@@ -12,32 +12,23 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_POSTPONE_HEARING;
 
 @ExtendWith(MockitoExtension.class)
-class CaseworkerCreateHearingSummaryTest {
+class CaseworkerPostponeHearingTest {
     @InjectMocks
-    private CaseWorkerCreateHearingSummary caseWorkerCreateHearingSummary;
+    private CaseWorkerPostponeHearing caseWorkerPostponeHearing;
 
     @Mock
     private HearingService hearingService;
-
-    @Mock
-    private JudicialService judicialService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -45,12 +36,12 @@ class CaseworkerCreateHearingSummaryTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseWorkerCreateHearingSummary.configure(configBuilder);
+        caseWorkerPostponeHearing.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_CREATE_HEARING_SUMMARY);
+            .contains(CASEWORKER_POSTPONE_HEARING);
     }
 
     @Test
@@ -63,39 +54,14 @@ class CaseworkerCreateHearingSummaryTest {
             .build();
         updatedCaseDetails.setData(caseData);
         when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
-        when(judicialService.getAllUsers(any())).thenReturn(null);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerPostponeHearing.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
-        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_CREATE_HEARING_SUMMARY);
-    }
-
-    @Test
-    void shouldRunAboutToSubmit() {
-        //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder()
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        updatedCaseDetails.setData(caseData);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerCreateHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response).isNotNull();
-        assertThat(response.getData().getCurrentEvent()).isBlank();
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_POSTPONE_HEARING);
     }
 
 }

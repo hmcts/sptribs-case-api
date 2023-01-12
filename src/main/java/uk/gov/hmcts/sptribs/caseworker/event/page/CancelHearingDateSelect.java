@@ -13,7 +13,7 @@ public class CancelHearingDateSelect implements CcdPageConfiguration {
         pageBuilder.page("caseworkerCancelHearingSelectHearingDate")
             .pageLabel("Select hearing")
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getHearingList)
+            .mandatoryWithLabel(CicCase::getHearingList,"Choose a hearing to cancel")
             .done();
     }
 }

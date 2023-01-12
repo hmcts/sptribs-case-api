@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -26,8 +26,8 @@ public class IssueDecisionUploadNotice implements CcdPageConfiguration {
                     + "\nThe decision notice should be:\n"
                     + "\n- a maximum of 100MB in size (larger files must be split)\n"
                     + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n")
-            .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getApplicantDocumentsUploaded, "Add a file")
+            .complex(CaseData::getCaseIssueDecision)
+            .mandatoryWithLabel(CaseIssueDecision::getDecisionDocument, "Add a file")
             .done();
     }
 }

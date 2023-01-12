@@ -9,6 +9,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
 import java.util.Set;
 
+import static java.lang.String.format;
+
 public final class MessageUtil {
     private static final String REPRESENTATIVE = "Representative, ";
     private static final String RESPONDENT = "Respondent, ";
@@ -107,5 +109,25 @@ public final class MessageUtil {
             return messageLine;
         }
         return null;
+    }
+
+
+    public static String generateWholeMessage(final CicCase cicCase) {
+        final StringBuilder emailMessage = getEmailMessage(cicCase);
+
+        StringBuilder postMessage = getPostMessage(cicCase);
+        String message = "";
+        if (null != postMessage && null != emailMessage) {
+            message = format("# Final decision notice issued   %n"
+                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+        } else if (null != emailMessage) {
+            message = format("# Final decision notice issued %n ## "
+                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+
+        } else if (null != postMessage) {
+            message = format("# Final decision notice issued  %n ## "
+                + " %s ", postMessage.substring(0, postMessage.length() - 2));
+        }
+        return message;
     }
 }
