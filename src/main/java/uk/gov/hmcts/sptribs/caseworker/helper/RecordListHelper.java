@@ -102,7 +102,8 @@ public class RecordListHelper {
 
     public void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")
-            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
+            .pageLabel("Remote hearing information")
+            .label("labelRemoteHearingInfo", "")
             .complex(CaseData::getRecordListing)
             .optional(RecordListing::getVideoCallLink)
             .optional(RecordListing::getConferenceCallNumber)
@@ -111,9 +112,10 @@ public class RecordListHelper {
 
     public void addOtherInformation(PageBuilder pageBuilder) {
         pageBuilder.page("otherInformation")
-            .label("otherInformationObj", "<h1>Other information</h1>")
+            .pageLabel("Other information")
+            .label("labelOtherInfo", "")
             .complex(CaseData::getRecordListing)
-            .label("otherInfoLabel",
+            .label("labelOtherInfoDetails",
                 "\nEnter any other important information about this hearing."
                     + " This may include any reasonable adjustments that need to be made, or details"
                     + "\n of anyone who should be excluded from attending this hearing.\n")
