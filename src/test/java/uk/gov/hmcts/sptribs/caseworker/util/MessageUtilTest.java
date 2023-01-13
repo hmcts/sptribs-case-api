@@ -232,4 +232,20 @@ public class MessageUtilTest {
         //Then
         assertThat(result).contains(RespondentCIC.RESPONDENT.getLabel());
     }
+
+    @Test
+    void shouldSuccessfullyGenerateIssueDecisionMessage() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+
+        //When
+        String result = MessageUtil.generateIssueDecisionMessage(cicCase);
+
+        //Then
+        assertThat(result).contains("# Decision notice issued");
+    }
 }
