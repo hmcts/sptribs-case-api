@@ -116,9 +116,9 @@ public class RecordListHelper {
             .label("labelOtherInfo", "")
             .complex(CaseData::getRecordListing)
             .label("labelOtherInfoDetails",
-                "\nEnter any other important information about this hearing."
-                    + " This may include any reasonable adjustments that need to be made, or details"
-                    + "\n of anyone who should be excluded from attending this hearing.\n")
+                "\nEnter any other important information about this hearing.\n"
+                    + "\nThis may include any reasonable adjustments that need to be made, or details"
+                    + " of anyone who should be excluded from attending this hearing.\n")
             .optional(RecordListing::getImportantInfoDetails)
             .done();
     }
