@@ -130,4 +130,22 @@ public final class MessageUtil {
         }
         return message;
     }
+
+    public static String generateIssueDecisionMessage(final CicCase cicCase) {
+        final StringBuilder message = new StringBuilder(100);
+        message.append(format("# Decision notice issued %n ## ")).append("A notification has been sent to: ");
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            message.append(SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            message.append(RESPONDENT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
+            message.append(REPRESENTATIVE);
+        }
+
+        return message.toString();
+    }
 }

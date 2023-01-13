@@ -6,10 +6,12 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -44,6 +46,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .showEventNotes()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         issueDecisionNotice.addTo(pageBuilder);
@@ -61,4 +64,13 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        var cicCase = details.getData().getCicCase();
+        var message = MessageUtil.generateIssueDecisionMessage(cicCase);
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(message)
+            .build();
+    }
 }
