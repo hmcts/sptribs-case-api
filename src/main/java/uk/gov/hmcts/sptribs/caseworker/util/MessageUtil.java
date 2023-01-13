@@ -65,7 +65,7 @@ public final class MessageUtil {
 
     public static StringBuilder getEmailMessage(final CicCase cicCase) {
         final StringBuilder messageLine = new StringBuilder(100);
-        messageLine.append(" A notification will be sent via email to: ");
+        messageLine.append(" A notification will be sent to: ");
         boolean email = false;
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
             && StringUtils.hasText(cicCase.getEmail())) {
@@ -89,7 +89,7 @@ public final class MessageUtil {
 
     public static StringBuilder getEmailMessage(final CicCase cicCase, final Set<NotificationParties> parties) {
         final StringBuilder messageLine = new StringBuilder(100);
-        messageLine.append(" A notification will be sent via email to: ");
+        messageLine.append(" A notification will be sent to: ");
         boolean email = false;
         if (parties.contains(NotificationParties.SUBJECT)
             && StringUtils.hasText(cicCase.getEmail())) {
