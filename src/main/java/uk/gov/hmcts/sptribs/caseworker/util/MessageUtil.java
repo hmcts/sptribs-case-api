@@ -115,7 +115,9 @@ public final class MessageUtil {
             message = format("# %s %n ## %s ", header, postMessage);
         }
         if (StringUtils.hasText(footer)) {
-            message += format(" %n## %s", footer);
+            StringBuilder sb = new StringBuilder(message);
+            sb.append(format(" %n## %s", footer));
+            message = sb.toString();
         }
         return message;
     }
