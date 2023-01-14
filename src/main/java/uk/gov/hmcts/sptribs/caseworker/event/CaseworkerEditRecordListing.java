@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -104,16 +103,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var cicCase = details.getData().getCicCase();
-        var message = MessageUtil.generateWholeMessage(
-            cicCase,
-            "Listing record updated",
-            "If any changes are made to this hearing, remember to make those changes in this listing record.",
-            cicCase.getRecordNotifyPartySubject(),
-            cicCase.getRecordNotifyPartyRepresentative(),
-            cicCase.getRecordNotifyPartyRespondent());
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader("# Listing record updated")
             .build();
     }
 

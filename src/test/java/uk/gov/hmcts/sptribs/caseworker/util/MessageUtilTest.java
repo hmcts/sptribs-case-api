@@ -42,7 +42,7 @@ public class MessageUtilTest {
             .build();
 
         //When
-        String result = MessageUtil.getEmailMessage(cicCase);
+        StringBuilder result = MessageUtil.getEmailMessage(cicCase);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -69,7 +69,7 @@ public class MessageUtilTest {
         parties.add(NotificationParties.SUBJECT);
 
         //When
-        String result = MessageUtil.getEmailMessage(cicCase, parties);
+        StringBuilder result = MessageUtil.getEmailMessage(cicCase, parties);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -88,7 +88,7 @@ public class MessageUtilTest {
         parties.add(NotificationParties.SUBJECT);
 
         //When
-        String resultEmail = MessageUtil.getEmailMessage(cicCase);
+        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
 
         //Then
         assertThat(resultEmail).isNull();
@@ -107,7 +107,7 @@ public class MessageUtilTest {
         parties.add(NotificationParties.REPRESENTATIVE);
 
         //When
-        String resultEmail = MessageUtil.getEmailMessage(cicCase);
+        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
 
         //Then
         assertThat(resultEmail).isNull();
@@ -121,8 +121,8 @@ public class MessageUtilTest {
             .build();
 
         //When
-        String resultEmail = MessageUtil.getEmailMessage(cicCase);
-        String resultPost = MessageUtil.getPostMessage(cicCase);
+        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
+        StringBuilder resultPost = MessageUtil.getPostMessage(cicCase);
 
         //Then
         assertThat(resultEmail).isNull();
@@ -146,7 +146,7 @@ public class MessageUtilTest {
             .build();
 
         //When
-        String result = MessageUtil.getPostMessage(cicCase);
+        StringBuilder result = MessageUtil.getPostMessage(cicCase);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -172,7 +172,7 @@ public class MessageUtilTest {
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
         //When
-        String result = MessageUtil.getPostMessage(cicCase, parties);
+        StringBuilder result = MessageUtil.getPostMessage(cicCase, parties);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -193,11 +193,9 @@ public class MessageUtilTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         //When
-        String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
+        String result = MessageUtil.generateWholeMessage(cicCase);
 
         //Then
-        assertThat(result).contains("header");
-        assertThat(result).contains("footer");
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
     }
 
@@ -211,11 +209,9 @@ public class MessageUtilTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         //When
-        String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
+        String result = MessageUtil.generateWholeMessage(cicCase);
 
         //Then
-        assertThat(result).contains("header");
-        assertThat(result).contains("footer");
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
     }
 
@@ -231,11 +227,9 @@ public class MessageUtilTest {
             .build();
 
         //When
-        String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
+        String result = MessageUtil.generateWholeMessage(cicCase);
 
         //Then
-        assertThat(result).contains("header");
-        assertThat(result).contains("footer");
         assertThat(result).contains(RespondentCIC.RESPONDENT.getLabel());
     }
 
