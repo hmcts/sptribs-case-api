@@ -97,7 +97,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        var message = MessageUtil.generateWholeMessage(cicCase);
+        var message = MessageUtil.generateWholeMessage(cicCase, "Final decision notice issued", "");
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
