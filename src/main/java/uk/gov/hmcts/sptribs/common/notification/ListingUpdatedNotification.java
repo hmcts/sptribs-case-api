@@ -95,33 +95,33 @@ public class ListingUpdatedNotification implements PartiesNotification {
         return notificationService.sendLetter();
     }
 
-    private void setRecordingTemplateVars(Map<String, Object> templateVars, RecordListing recordListing){
+    private void setRecordingTemplateVars(Map<String, Object> templateVars, RecordListing recordListing) {
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TYPE, recordListing.getHearingType());
         templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, recordListing.getHearingDate());
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, recordListing.getHearingTime());
 
-        if(null != recordListing.getHearingVenues() && !recordListing.getHearingVenues().getListItems().isEmpty()) {
+        if (null != recordListing.getHearingVenues() && !recordListing.getHearingVenues().getListItems().isEmpty()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenues().getListItems());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
         }
         templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, recordListing.getImportantInfoDetails());
 
-        if(null != recordListing.getVideoCallLink()) {
+        if (null != recordListing.getVideoCallLink()) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, recordListing.getVideoCallLink());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
         }
-        if(null != recordListing.getConferenceCallNumber()) {
+        if (null != recordListing.getConferenceCallNumber()) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, true);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, recordListing.getConferenceCallNumber());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
         }
-        if(null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE)){
+        if (null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false);
