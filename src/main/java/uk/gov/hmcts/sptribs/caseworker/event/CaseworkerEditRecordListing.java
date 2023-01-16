@@ -78,10 +78,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         if (caseData.getRecordListing().getRegionList() == null) {
             recordListHelper.regionData(caseData);
-
         }
-
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
@@ -120,7 +117,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .build();
     }
 
-
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
@@ -138,13 +134,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         recordListHelper.populatedVenuesData(caseData);
 
-
         if (caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())) {
             caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
 
         }
-
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

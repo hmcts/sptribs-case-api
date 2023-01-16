@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -80,6 +79,7 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setCurrentEvent("");
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -97,6 +97,7 @@ class CaseworkerEditRecordListingTest {
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
         //Given
         final CaseData caseData = caseData();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -111,13 +112,14 @@ class CaseworkerEditRecordListingTest {
 
     }
 
-    @Disabled
+    @Test
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final RecordListing recordListing = new RecordListing();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
         caseData.setRecordListing(recordListing);
@@ -125,12 +127,20 @@ class CaseworkerEditRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        recordListHelper.regionData(caseData);
+
+        if (beforeDetails.getData() == null) {
+            beforeDetails.setData(updatedCaseDetails.getData());
+        }
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(caseData.getRecordListing().getSelectedRegionVal()).isNotNull();
+
 
     }
 
@@ -150,6 +160,63 @@ class CaseworkerEditRecordListingTest {
             caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).isEmpty();
+
+    }
+
+    @Test
+    void shouldHearingVenueEqualIfRegionValIsEqual() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final RecordListing recordListing = new RecordListing();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setRegionList(getMockedRegionData());
+        caseData.setRecordListing(recordListing);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        beforeDetails.setData(updatedCaseDetails.getData());
+
+        recordListHelper.regionData(caseData);
+        recordListHelper.populatedVenuesData(caseData);
+
+
+        if (caseData.getRecordListing().getSelectedRegionVal().equals(beforeDetails.getData().getRecordListing().getSelectedRegionVal())) {
+            caseData.getRecordListing().setHearingVenues(beforeDetails.getData().getRecordListing().getHearingVenues());
+
+        }
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getData().equals(beforeDetails.getData()));
+        assertThat(beforeDetails.getData().getRecordListing().getRegionList()).isNotNull();
+    }
+
+    @Test
+    void shouldNotReturnErrorsIfEditCaseDataIsValid() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final RecordListing recordListing = new RecordListing();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setRegionList(getMockedRegionData());
+        caseData.setRecordListing(recordListing);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        if (beforeDetails.getData() == null) {
+            beforeDetails.setData(updatedCaseDetails.getData());
+        }
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).isNull();
 
     }
 
