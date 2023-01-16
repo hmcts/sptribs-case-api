@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
@@ -35,8 +36,8 @@ public class HearingVenues implements CcdPageConfiguration {
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getHearingVenuesMessage)
             .optional(RecordListing::getHearingVenues,
-                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"")
-            .readonly(RecordListing::getHearingVenues,
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING  + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
+            .readonly(RecordListing::getHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"")
             .optional(RecordListing::getVenueNotListedOption)
             .mandatory(RecordListing::getHearingVenueName, "recordVenueNotListedOption= \"VenueNotListed\"")

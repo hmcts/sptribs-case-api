@@ -9,16 +9,16 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 @Slf4j
 @Component
-public class CreateHearingSummary implements CcdPageConfiguration {
+public class PostponeHearingSelectHearing implements CcdPageConfiguration {
 
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("createHearingSummary")
-            .pageLabel("Select hearing")
+            .page("caseworkerPostponeHearingSelectHearing")
+            .label("caseworkerPostponeHearingSelectHearing","<h1>Select hearing</h1>")
             .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getHearingList,"Choose a hearing to summarise")
+            .mandatoryWithLabel(CicCase::getHearingList,"Choose a hearing to postpone")
             .done();
     }
 
