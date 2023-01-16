@@ -202,19 +202,19 @@ ccd:
     livenessProbe:
       initialDelaySeconds: 90
 
-ccd-case-document-am-api:
-  enabled: true
-  java:
-    releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
-    imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
-    ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
-    environment:
-      CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,dg_docassembly_api,bulk_scan_orchestrator,sptribs_case_api
-      DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
-      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-      IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+#ccd-case-document-am-api:
+#  enabled: true
+#  java:
+#    releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
+#    imagePullPolicy: Always
+#    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
+#    ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
+#    environment:
+#      CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,dg_docassembly_api,bulk_scan_orchestrator,sptribs_case_api
+#      DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
+#      CCD_DATA_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+#      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+#      IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
 xui-webapp:
   enabled: true
