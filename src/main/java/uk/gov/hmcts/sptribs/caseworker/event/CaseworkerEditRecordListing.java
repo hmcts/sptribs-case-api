@@ -10,9 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -35,9 +37,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
+
+    private static final CcdPageConfiguration listingChangeReason = new ListingChangeReason();
 
     @Autowired
     private RecordListHelper recordListHelper;
@@ -63,13 +68,16 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         hearingVenues.addTo(pageBuilder);
         recordListHelper.addRemoteHearingInfo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);
+        listingChangeReason.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
 
-        recordListHelper.regionData(caseData);
+        if (caseData.getRecordListing().getSelectedRegionVal() == null) {
+            recordListHelper.regionData(caseData);
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -96,15 +104,24 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+        var cicCase = details.getData().getCicCase();
+        var message = MessageUtil.generateWholeMessage(
+            cicCase,
+            "Listing record updated",
+            "If any changes are made to this hearing, remember to make those changes in this listing record.",
+            cicCase.getRecordNotifyPartySubject(),
+            cicCase.getRecordNotifyPartyRepresentative(),
+            cicCase.getRecordNotifyPartyRespondent());
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Listing record updated")
+            .confirmationHeader(message)
             .build();
     }
 
 
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
-            .label("regionInfoObj", "<h1>Region Data</h1>")
+            .pageLabel("Region Data")
+            .label("labelEditRecordingRegionData", "")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getRegionsMessage)
             .optional(RecordListing::getRegionList)
@@ -114,9 +131,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-
-        recordListHelper.populatedVenuesData(caseData);
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

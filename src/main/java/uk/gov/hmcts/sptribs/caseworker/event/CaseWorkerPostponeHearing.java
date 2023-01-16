@@ -8,7 +8,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingSelectHearing;
+import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingSelectReason;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -28,6 +30,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration createHearingSummary = new PostponeHearingSelectHearing();
+    private static final CcdPageConfiguration selectReason = new PostponeHearingSelectReason();
+    private static final CcdPageConfiguration notifyParties = new PostponeHaringNotifyParties();
 
     @Autowired
     private HearingService hearingService;
@@ -45,6 +49,8 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createHearingSummary.addTo(pageBuilder);
+        selectReason.addTo(pageBuilder);
+        notifyParties.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

@@ -72,12 +72,14 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
+
+        var cicCase = details.getData().getCicCase();
+        var message = MessageUtil.generateIssueDecisionMessage(cicCase);
 
         sendIssueDecisionNotification(caseData.getHyphenatedCaseRef(), caseData);
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Issue Decision")
+            .confirmationHeader(message)
             .build();
     }
 
@@ -96,5 +98,4 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
     }
-
 }

@@ -11,27 +11,25 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullRecordSubjectRepresentativeRespondent;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 
-public class RecordNotifyParties implements CcdPageConfiguration {
+public class PostponeHaringNotifyParties implements CcdPageConfiguration {
 
-    private static final String NEVER_SHOW = "recordHearingType=\"NEVER_SHOW\"";
+    private static final String NEVER_SHOW = "cicCasePostponeReason=\"NEVER_SHOW\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("recordListingNotifyPage", this::midEvent)
+
+        pageBuilder.page("caseworkerPostponeHearingNotifyParties", this::midEvent)
             .pageLabel("Notify parties")
-            .label("labelNotifyParties", "")
             .complex(CaseData::getCicCase)
-            .label("recordListingNotifyPageMessage", "Which parties should be notified about this listing?")
+            .label("caseworkerPostponeHearingNotifyPartiesMessage", "Which parties should be notified about the change to this listing?")
             .readonly(CicCase::getFullName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("recordListingNotifyPageRepresentative", "")
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
             .readonly(CicCase::getRepresentativeFullName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("recordListingNotifyPageRespondent", "")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
             .readonly(CicCase::getRespondantName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
     }
 
@@ -40,12 +38,15 @@ public class RecordNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullRecordSubjectRepresentativeRespondent(data)) {
-            errors.add("One recipient must be selected.");
+        if (checkNullSubjectRepresentativeRespondent(data)) {
+            errors.add("One field must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
             .build();
     }
+
+
 }
+
