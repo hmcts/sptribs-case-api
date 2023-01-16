@@ -183,7 +183,6 @@ withPipeline(type, product, component) {
       env.ENVIRONMENT="preview"
       env.CASE_API_URL = "http://sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.CCD_DEF_NAME = "preview"
-      env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
       env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.CASE_DATA_STORE_BASEURL = "http://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
