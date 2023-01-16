@@ -74,11 +74,11 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
 
-        if (caseData.getRecordListing().getSelectedRegionVal() == null) {
+        if (caseData.getRecordListing().getRegionList() == null) {
             recordListHelper.regionData(caseData);
         }
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
@@ -94,7 +94,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
 
         recordListHelper.getNotificationParties(caseData);
-
+        caseData.setCurrentEvent("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -117,7 +117,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .build();
     }
 
-
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
@@ -131,6 +130,14 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
+        final CaseData caseDataBefore = detailsBefore.getData();
+
+        recordListHelper.populatedVenuesData(caseData);
+
+        if (caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())) {
+            caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
+
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
