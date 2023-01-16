@@ -48,7 +48,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
@@ -56,7 +55,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
             try {
                 addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
             } catch (IOException e) {
-                log.info("Unable to download Decision Notice document: {}", e.getMessage());
+                log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
             }
 
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
@@ -71,11 +70,16 @@ public class DecisionIssuedNotification implements PartiesNotification {
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+            try {
+                addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
+            } catch (IOException e) {
+                log.info("Unable to download Decision Notice document for Representative: {}", e.getMessage());
+            }
+
             notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
@@ -88,8 +92,13 @@ public class DecisionIssuedNotification implements PartiesNotification {
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-
         Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+
+        try {
+            addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
+        } catch (IOException e) {
+            log.info("Unable to download Decision Notice document for Respondent: {}", e.getMessage());
+        }
 
         NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);

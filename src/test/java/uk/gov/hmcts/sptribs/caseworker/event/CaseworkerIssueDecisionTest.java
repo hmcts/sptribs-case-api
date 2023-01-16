@@ -76,7 +76,6 @@ class CaseworkerIssueDecisionTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CaseData caseData = caseData();
-        //final CaseIssueDecision decision = caseData.getCaseIssueDecision();
         final CaseIssueDecision decision = new CaseIssueDecision();
         Set<ContactPartiesCIC> contactPartiesSet = new HashSet<>();
         contactPartiesSet.add(ContactPartiesCIC.SUBJECTTOCONTACT);
@@ -93,4 +92,22 @@ class CaseworkerIssueDecisionTest {
         assertThat(response.getConfirmationHeader()).contains("# Decision notice issued");
     }
 
+    @Test
+    void shouldShowCorrectMessageWhenSubmittedWithoutContactParties() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        Set<ContactPartiesCIC> contactPartiesSet = new HashSet<>();
+        decision.setRecipients(contactPartiesSet);
+        caseData.setCaseIssueDecision(decision);
+        details.setData(caseData);
+
+        //When
+        SubmittedCallbackResponse response = issueDecision.submitted(details, beforeDetails);
+
+        //Then
+        assertThat(response.getConfirmationHeader()).contains("# Decision notice issued");
+    }
 }

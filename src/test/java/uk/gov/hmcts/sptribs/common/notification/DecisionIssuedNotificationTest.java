@@ -170,15 +170,32 @@ public class DecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentWithEmail() throws IOException {
         //Given
         LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondantName("respondentName");
         data.getCicCase().setRespondantEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        data.setCaseIssueDecision(caseIssueDecision);
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
+        when(systemUser.getAuthToken()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
@@ -191,16 +208,34 @@ public class DecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeWithEmail() throws IOException {
         //Given
         LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        data.setCaseIssueDecision(caseIssueDecision);
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+
         //When
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
+        when(systemUser.getAuthToken()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
