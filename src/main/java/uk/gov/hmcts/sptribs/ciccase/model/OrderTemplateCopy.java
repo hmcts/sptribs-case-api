@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @Getter
 @AllArgsConstructor
-public enum OrderTemplate implements HasLabel {
+public enum OrderTemplateCopy implements HasLabel {
 
 
     @JsonProperty("CIC1_Eligibility")
