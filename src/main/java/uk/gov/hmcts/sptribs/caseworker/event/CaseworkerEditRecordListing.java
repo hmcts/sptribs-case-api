@@ -14,14 +14,18 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
+import uk.gov.hmcts.sptribs.common.notification.ListingUpdatedNotification;
 
 import java.util.List;
+import java.util.Set;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -41,6 +45,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     @Autowired
     private RecordListHelper recordListHelper;
+
+    @Autowired
+    private ListingUpdatedNotification liistingUpdatedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -96,8 +103,28 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+
+        var data = details.getData();
+        var cicCase = data.getCicCase();
+        Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
+        String caseNumber = data.getHyphenatedCaseRef();
+        final StringBuilder messageLine2 = new StringBuilder(100);
+        messageLine2.append(" A notification will be sent  to: ");
+        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+            messageLine2.append("Subject, ");
+            liistingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+            messageLine2.append("Representative, ");
+            liistingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+            messageLine2.append("Respondent, ");
+            liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
+        }
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Listing record updated")
+            .confirmationHeader(format("# Listing record updated %n##  This listing has now been updated. %n##"
+                + "  %s ", messageLine2.substring(0, messageLine2.length() - 2)))
             .build();
     }
 
