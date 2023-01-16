@@ -12,8 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
-import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -29,9 +28,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
-    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
-
+    private static final CcdPageConfiguration mainContents = new DraftOrderMainContentPage();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -40,15 +37,17 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .event(CASEWORKER_CREATE_DRAFT_ORDER)
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Create draft order")
+                .description("Create draft order")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
-        createDraftOrder.addTo(pageBuilder);
-        previewDraftOrder.addTo(pageBuilder);
+        mainContents.addTo(pageBuilder);
+
     }
+
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
@@ -63,7 +62,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     }
 
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
-                                                       CaseDetails<CaseData, State> beforeDetails) {
+                                                  CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Draft order created. ")
             .build();

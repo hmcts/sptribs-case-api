@@ -8,10 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -44,25 +42,12 @@ public class CaseIssueDecision {
     private DecisionTemplate issueDecisionTemplate;
 
     @CCD(
+        label = "Who should receive this decision notice?",
         typeOverride = MultiSelectList,
-        typeParameterOverride = "SubjectCIC",
+        typeParameterOverride = "ContactPartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<SubjectCIC> recipientSubject;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RepresentativeCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RepresentativeCIC> recipientRepresentative;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RespondentCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RespondentCIC> recipientRespondent;
+    private Set<ContactPartiesCIC> recipients;
 
     @CCD(
         label = "Case Documents",

@@ -55,6 +55,10 @@ location:
   api:
     baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
 
+judicial:
+  api:
+    baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-ref-api-aat.service.core-compute-aat.internal}
+
 s2s:
   stub: true
 

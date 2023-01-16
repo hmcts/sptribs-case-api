@@ -6,58 +6,54 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class IssueDecisionSelectRecipientsTest {
+public class RecordNotifyPartiesTest {
 
     @InjectMocks
-    private IssueDecisionSelectRecipients selectRecipients;
+    private RecordNotifyParties notifyParties;
 
     @Test
     void shouldBeSuccessfulForValidRecipients() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Set<ContactPartiesCIC> subjectSet = new HashSet<>();
-        subjectSet.add(ContactPartiesCIC.SUBJECTTOCONTACT);
-        final CaseIssueDecision decision = CaseIssueDecision.builder().recipients(subjectSet).build();
+        final CicCase cicCase = CicCase.builder().recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
 
         final CaseData caseData = CaseData.builder()
-            .caseIssueDecision(decision)
+            .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getData().getCaseIssueDecision().getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT));
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
     void shouldBeInvalidIfNoRecipientsSelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseIssueDecision decision = CaseIssueDecision.builder().recipients(new HashSet<>()).build();
+        final CicCase cicCase = CicCase.builder().build();
 
         final CaseData caseData = CaseData.builder()
-            .caseIssueDecision(decision)
+            .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
 
         //Then
         assertThat(response.getErrors()).hasSize(1);
     }
-
 }
