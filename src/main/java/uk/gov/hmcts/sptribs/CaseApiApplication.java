@@ -44,8 +44,7 @@ import javax.annotation.PostConstruct;
         CaseAssignmentApi.class,
         DocumentManagementClient.class,
         PaymentPbaClient.class,
-        CaseDocumentClient.class,
-        CaseDocumentClientApi.class
+        CaseDocumentClient.class
     }
 )
 @EnableScheduling
