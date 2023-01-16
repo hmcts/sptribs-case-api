@@ -81,7 +81,7 @@ public class DecisionIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/"+uuid).url("http://url/"+uuid).build())
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
@@ -121,7 +121,7 @@ public class DecisionIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/"+uuid).url("http://url/"+uuid).build())
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();

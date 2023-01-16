@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.common.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
@@ -16,8 +17,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
-
-import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.util.List;
@@ -143,7 +142,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         }
     }
-
 
 
 }

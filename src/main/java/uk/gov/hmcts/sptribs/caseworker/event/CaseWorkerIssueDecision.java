@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -76,7 +77,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         var cicCase = details.getData().getCicCase();
         var message = MessageUtil.generateIssueDecisionMessage(cicCase);
 
-        sendIssueDecisionNotification(caseData.getHyphenatedCaseRef(), caseData);
+        sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
