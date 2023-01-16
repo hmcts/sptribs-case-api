@@ -104,19 +104,17 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                                                       CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase, data.getCicCase().getHearingNotificationParties());
-
-        final StringBuilder postMessage = getPostMessage(cicCase, data.getCicCase().getHearingNotificationParties());
+        final String emailMessage = getEmailMessage(cicCase, data.getCicCase().getHearingNotificationParties());
+        final String postMessage = getPostMessage(cicCase, data.getCicCase().getHearingNotificationParties());
 
         String message = "";
         if (null != postMessage && null != emailMessage) {
-            message = format("#  Hearing cancelled   %n" + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2),
-                postMessage.substring(0, postMessage.length() - 2));
+            message = format("#  Hearing cancelled   %n" + " %s  %n  %s", emailMessage, postMessage);
         } else if (null != emailMessage) {
-            message = format("#  Hearing cancelled  %n" + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", emailMessage);
 
         } else if (null != postMessage) {
-            message = format("#  Hearing cancelled  %n" + " %s ", postMessage.substring(0, postMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", postMessage);
         }
 
         return SubmittedCallbackResponse.builder()
