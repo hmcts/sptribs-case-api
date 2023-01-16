@@ -33,7 +33,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 public class DecisionIssuedNotification implements PartiesNotification {
 
     @Autowired
-    IdamService idamService;
+    private IdamService idamService;
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
@@ -52,14 +52,13 @@ public class DecisionIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
-        addDecisionsIssuedTemplateVars(caseData.getCaseIssueDecision(), templateVars);
 
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
             try {
                 addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.info("Unable to download Decision Notice document: {}", e.getMessage());
             }
 
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
@@ -76,7 +75,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
-        addDecisionsIssuedTemplateVars(caseData.getCaseIssueDecision(), templateVars);
 
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
@@ -94,7 +92,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        addDecisionsIssuedTemplateVars(caseData.getCaseIssueDecision(), templateVars);
 
         NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);
@@ -115,10 +112,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
             TemplateName.DECISION_ISSUED_POST);
         notificationService.setNotificationRequest(letterRequest);
         return notificationService.sendLetter();
-    }
-
-    private void addDecisionsIssuedTemplateVars(CaseIssueDecision caseIssueDecision, Map<String, Object> templateVars) {
-        //templateVars.put(DECISION_NOTICE, caseIssueDecision.getDecisionNotice());
     }
 
     private void addDecisionsIssuedFileContents(CaseIssueDecision caseIssueDecision, Map<String, Object> templateVars) throws IOException {
@@ -149,23 +142,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 }
             }
 
-        /*byte [] fileContents = null;
-        try {
-            fileContents = FileUtils.readFileToByteArray(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject fileJson = notificationService.getJsonFileAttachment(fileContents);
-        if(Objects.nonNull(fileJson)) {
-            templateVars.put(DECISION_NOTICE, fileJson);
-        }*/
-
-        /*templateVars.put("2nddoc", false);
-        //templateVars.put("DecisionNotice2", fileJson);
-        templateVars.put("3rddoc", false);
-        templateVars.put("4thdoc", false);
-        templateVars.put("5thdoc", false);*/
         }
     }
 

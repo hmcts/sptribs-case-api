@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -83,15 +84,15 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
         CaseIssueDecision caseIssueDecision = data.getCaseIssueDecision();
 
-        if (!caseIssueDecision.getRecipientSubject().isEmpty()) {
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!caseIssueDecision.getRecipientRespondent().isEmpty()) {
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (!caseIssueDecision.getRecipientRepresentative().isEmpty()) {
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
     }
