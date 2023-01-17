@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.List;
@@ -46,6 +48,9 @@ class CaseworkerRecordListingTest {
 
     @InjectMocks
     private CaseworkerRecordListing caseworkerRecordListing;
+
+    @Mock
+    private ListingCreatedNotification listingCreatedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -78,6 +83,10 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        Mockito.doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =

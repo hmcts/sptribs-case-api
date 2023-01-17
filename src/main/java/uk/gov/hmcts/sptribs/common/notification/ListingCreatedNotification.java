@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class ListingUpdatedNotification implements PartiesNotification {
+public class ListingCreatedNotification implements PartiesNotification {
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -37,12 +37,14 @@ public class ListingUpdatedNotification implements PartiesNotification {
             // Send Email
             NotificationResponse notificationResponse =  sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
-                TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
-            cicCase.setSubjectLetterNotifyList(notificationResponse);
+                TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            cicCase.setSubHearingNotificationResponse(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            sendLetterNotification(templateVarsSubject, TemplateName.LISTING_UPDATED_CITIZEN_POST);
+            NotificationResponse notificationResponse = sendLetterNotification(templateVarsSubject,
+                TemplateName.LISTING_CREATED_CITIZEN_POST);
+            cicCase.setSubHearingNotificationResponse(notificationResponse);
         }
     }
 
@@ -57,13 +59,13 @@ public class ListingUpdatedNotification implements PartiesNotification {
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsRepresentative,
-                cicCase.getRepresentativeEmailAddress(), TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
-            cicCase.setRepNotificationResponse(notificationResponse);
+                cicCase.getRepresentativeEmailAddress(), TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            cicCase.setRepHearingNotificationResponse(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             NotificationResponse notificationResponse = sendLetterNotification(templateVarsRepresentative,
-                TemplateName.LISTING_UPDATED_CITIZEN_POST);
-            cicCase.setRepNotificationResponse(notificationResponse);
+                TemplateName.LISTING_CREATED_CITIZEN_POST);
+            cicCase.setRepHearingNotificationResponse(notificationResponse);
         }
     }
 
@@ -76,8 +78,8 @@ public class ListingUpdatedNotification implements PartiesNotification {
         setRecordingTemplateVars(templateVarsRespondent, recordListing);
         // Send Email
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondantEmail(), TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
-        cicCase.setResNotificationResponse(notificationResponse);
+            cicCase.getRespondantEmail(), TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+        cicCase.setResHearingNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,

@@ -551,4 +551,19 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse appLetterNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse subHearingNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse repHearingNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse resHearingNotificationResponse;
 }
