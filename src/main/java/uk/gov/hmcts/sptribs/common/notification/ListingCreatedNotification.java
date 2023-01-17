@@ -123,7 +123,7 @@ public class ListingCreatedNotification implements PartiesNotification {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
         }
-        if (null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE)) {
+        if (recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false);

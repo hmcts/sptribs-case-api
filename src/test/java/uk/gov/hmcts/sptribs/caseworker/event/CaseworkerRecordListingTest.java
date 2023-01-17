@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -70,15 +71,10 @@ class CaseworkerRecordListingTest {
     @Test
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
-        Set<NotificationParties> notificationPartiesSet = new HashSet<NotificationParties>();
-        notificationPartiesSet.add(NotificationParties.SUBJECT);
-        notificationPartiesSet.add(NotificationParties.REPRESENTATIVE);
-        notificationPartiesSet.add(NotificationParties.RESPONDENT);
         final CicCase cicCase = CicCase.builder()
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .hearingNotificationParties(notificationPartiesSet)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -106,6 +102,29 @@ class CaseworkerRecordListingTest {
         assertThat(response.getErrors()).isEmpty();
     }
 
+    @Test
+    void shouldNotSendNotificationOnRecordListingData() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        caseData.setRecordListing(getRecordListing());
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        verifyNoInteractions(listingCreatedNotification);
+    }
 
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
