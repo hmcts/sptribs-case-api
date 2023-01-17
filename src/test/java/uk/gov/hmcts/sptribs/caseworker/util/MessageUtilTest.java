@@ -245,6 +245,7 @@ public class MessageUtilTest {
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .build();
 
@@ -253,5 +254,20 @@ public class MessageUtilTest {
 
         //Then
         assertThat(result).contains("# Decision notice issued");
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateSimpleHearingMessage() {
+        //Given
+        Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.SUBJECT);
+        parties.add(NotificationParties.RESPONDENT);
+        parties.add(NotificationParties.REPRESENTATIVE);
+
+        //When
+        String result = MessageUtil.generateSimpleMessage(parties);
+
+        //Then
+        assertThat(result).contains("Subject");
     }
 }
