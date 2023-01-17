@@ -21,6 +21,7 @@ public final class CommonConstants {
     public static final String CIC_CASE_RECORD_HEARING_1FACE_TO_FACE = "recordHearingFormatFaceToFace";
 
     public static final String REINSTATE_REASON = "ReinstatementReason";
+    public static final String DECISION_NOTICE = "DecisionNotice";
     public static final String STAY_EXPIRATION_DATE = "StayExpirationDate";
     public static final String STAY_REASON = "stayStayReason";
     public static final String STAY_ADDITIONAL_DETAIL = "stayAdditionalDetail";
