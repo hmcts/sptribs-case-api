@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -139,4 +140,20 @@ public final class MessageUtil {
 
         return message.toString();
     }
+
+    public static String generateSimpleMessage(Set<NotificationParties> hearingNotificationParties) {
+        final StringBuilder message = new StringBuilder(100);
+        message.append("A notification has been sent to: ");
+        if (hearingNotificationParties.contains(NotificationParties.SUBJECT)) {
+            message.append(SUBJECT + COMMA_SPACE);
+        }
+        if (hearingNotificationParties.contains(NotificationParties.RESPONDENT)) {
+            message.append(RESPONDENT + COMMA_SPACE);
+        }
+        if (hearingNotificationParties.contains(NotificationParties.REPRESENTATIVE)) {
+            message.append(REPRESENTATIVE + COMMA_SPACE);
+        }
+        return message.substring(0, message.length() - 2);
+    }
+
 }
