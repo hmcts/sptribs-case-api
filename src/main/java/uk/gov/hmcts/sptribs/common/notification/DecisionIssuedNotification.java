@@ -105,11 +105,11 @@ public class DecisionIssuedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
+        NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.DECISION_ISSUED_EMAIL);
-        notificationService.setNotificationRequest(request);
+        notificationService.setNotificationRequest(emailRequest);
         return notificationService.sendEmail();
     }
 
@@ -132,7 +132,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .collect(Collectors.toList());
 
-            count = 1;
+            count++;
             for (String item : uploadedDocumentsUrls) {
 
                 Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
@@ -142,7 +142,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 if (uploadedDocument != null) {
                     log.info("Document found with uuid : {}", UUID.fromString(item));
                     byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put("Document1", true);
                     templateVars.put(DECISION_NOTICE + count, notificationService.getJsonFileAttachment(uploadedDocumentContents));
                 } else {
                     log.info("Document not found with uuid : {}", UUID.fromString(item));
