@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -11,14 +12,16 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -30,11 +33,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserRole> {
 
+    public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
+
     private static final CcdPageConfiguration issueDecisionNotice = new IssueDecisionNotice();
     private static final CcdPageConfiguration issueDecisionSelectTemplate = new IssueDecisionSelectTemplate();
     private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
     private static final CcdPageConfiguration issueDecisionSelectRecipients = new IssueDecisionSelectRecipients();
 
+    @Autowired
+    private DecisionIssuedNotification decisionIssuedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -69,8 +76,27 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         var cicCase = details.getData().getCicCase();
         var message = MessageUtil.generateIssueDecisionMessage(cicCase);
+
+        sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
+    }
+
+    private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
+        CaseIssueDecision caseIssueDecision = data.getCaseIssueDecision();
+
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
+            decisionIssuedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
+            decisionIssuedNotification.sendToRespondent(data, caseNumber);
+        }
+
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
+            decisionIssuedNotification.sendToRepresentative(data, caseNumber);
+        }
     }
 }
