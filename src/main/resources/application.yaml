@@ -50,6 +50,8 @@ uk:
           CASE_STAYED_POST: '23e1153e-c95c-4630-83eb-b0a272908e94'
           CASE_UNSTAYED_EMAIL: '46f69c0d-5114-4319-a8e0-dd2cad1ecac4'
           CASE_UNSTAYED_POST: 'a3c51a6e-b686-4ade-af32-fd62cc0d7451'
+          DECISION_ISSUED_EMAIL: 'e8edb80a-6924-4247-aa33-178c28251120'
+          DECISION_ISSUED_POST: 'ae833f41-30da-48bb-8384-e832a244abb9'
           TEST_TEMPLATE: '8d20e578-21cd-42b8-b27f-d13095e499d6'
           CASE_ISSUED_CITIZEN_EMAIL: '3f25663d-9f3f-4330-afdb-3302399d29cf'
           CASE_ISSUED_CITIZEN_POST: 'eedc916f-088f-4653-99ed-b954e1dbd58d'
@@ -121,6 +123,9 @@ doc_assembly:
 
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL:http://dm-store-aat.service.core-compute-aat.internal}
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
 
 prd:
   api:
