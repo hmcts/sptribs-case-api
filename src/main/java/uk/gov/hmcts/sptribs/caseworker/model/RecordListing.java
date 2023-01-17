@@ -86,6 +86,12 @@ public class RecordListing {
     private String hearingVenueName;
 
     @CCD(
+        label = "Venue Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String readOnlyHearingVenueName;
+
+    @CCD(
         label = "Venue Address",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
