@@ -6,9 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -37,6 +39,31 @@ public class ListingCreatedNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        listingCreatedNotification.sendToSubject(data, "CN1");
+
+        //Then
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
+
+        verify(notificationService).sendEmail();
+    }
+
+    @Test
+    void shouldNotifySubjectOfCaseIssuedWithEmail_withFullRecordListing() throws IOException {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        RecordListing recordListing = RecordListing.builder().hearingVenueName("London Centre")
+            .conferenceCallNumber("cmi459t5iut5")
+            .videoCallLink("http://abc.com")
+            .conferenceCallNumber("+56677778")
+            .hearingFormat(HearingFormat.FACE_TO_FACE)
+            .build();
+        data.setRecordListing(recordListing);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))

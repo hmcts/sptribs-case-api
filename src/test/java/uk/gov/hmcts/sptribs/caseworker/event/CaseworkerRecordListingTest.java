@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -69,10 +70,15 @@ class CaseworkerRecordListingTest {
     @Test
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
+        Set<NotificationParties> notificationPartiesSet = new HashSet<NotificationParties>();
+        notificationPartiesSet.add(NotificationParties.SUBJECT);
+        notificationPartiesSet.add(NotificationParties.REPRESENTATIVE);
+        notificationPartiesSet.add(NotificationParties.RESPONDENT);
         final CicCase cicCase = CicCase.builder()
             .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .hearingNotificationParties(notificationPartiesSet)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
