@@ -185,6 +185,7 @@ withPipeline(type, product, component) {
       env.CCD_DEF_NAME = "preview"
       env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.CASE_DATA_STORE_BASEURL = "http://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+      env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
