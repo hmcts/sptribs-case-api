@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FullPanelHearing {
 
-    @JsonProperty("No. It was a 'sit alone' hearing")
-    NO("No. It was a 'sit alone' hearing"),
+    @JsonProperty("No. It was a 'sit alon' hearing")
+    NO("No. It was a 'sit alon' hearing"),
 
     @JsonProperty("Yes")
     YES("Yes");

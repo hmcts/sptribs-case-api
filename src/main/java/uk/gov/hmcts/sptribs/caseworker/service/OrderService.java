@@ -10,10 +10,15 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -70,4 +75,32 @@ public class OrderService {
         }
         return null;
     }
+
+
+    public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
+        var caseData = caseDetails.getData();
+        Set<OrderTemplate> orderTemplates = caseData.getCicCase().getAnOrderTemplates();
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
+        String draftOrderCreateDate = simpleformat.format(cal.getTime());
+
+        List<DynamicListElement> dynamicListElements = orderTemplates
+            .stream()
+            .sorted()
+            .map(draft -> {
+                return DynamicListElement.builder().label(draft.getLabel() + " "
+                    + draftOrderCreateDate + "_draft.pdf").code(UUID.randomUUID()).build();
+            })
+            .collect(Collectors.toList());
+
+        return DynamicList
+            .builder()
+            .value(DynamicListElement.builder().label("template")
+                .code(UUID.randomUUID()).build())
+            .listItems(dynamicListElements)
+            .build();
+    }
+
+
 }
