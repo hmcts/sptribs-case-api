@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -15,14 +14,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -84,26 +80,27 @@ public class OrderService {
     public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         var caseData = caseDetails.getData();
         OrderTemplate orderTemplates = caseData.getCicCase().getAnOrderTemplates();
-       List <OrderTemplate> orderTemplate = Arrays.asList(orderTemplates);
+        List<OrderTemplate> orderTemplate = Arrays.asList(orderTemplates);
 
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+        SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
         String draftOrderCreateDate = simpleformat.format(cal.getTime());
 
+        List<DynamicListElement> dynamicListElements = orderTemplate
+            .stream()
+            .sorted()
+            .map(draft -> {
+                return DynamicListElement.builder().label(draft.getLabel() + " "
+                    + draftOrderCreateDate + "_draft.pdf").code(UUID.randomUUID()).build();
+            })
+            .collect(Collectors.toList());
 
-       List<DynamicListElement> dynamicListElements = orderTemplate
-                .stream()
-                .sorted()
-                .map(draft -> {
-                    return DynamicListElement.builder().label(draft.getLabel() +" "+ draftOrderCreateDate).code(UUID.randomUUID()).build();
-                })
-                .collect(Collectors.toList());
-
-            return DynamicList
-                .builder()
-                .value(DynamicListElement.builder().label("template").code(UUID.randomUUID()).build())
-                .listItems(dynamicListElements)
-                .build();
+        return DynamicList
+            .builder()
+            .value(DynamicListElement.builder().label("template")
+                .code(UUID.randomUUID()).build())
+            .listItems(dynamicListElements)
+            .build();
     }
 
 
