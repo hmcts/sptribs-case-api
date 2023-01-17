@@ -44,8 +44,4 @@ public enum OrderTemplate implements HasLabel {
     CIC13_PRO_FORMA_SUMMONS("CIC13_Pro_Forma_Summons");
 
     private final String label;
-    public boolean isCic1Eligibility() {
-        return CIC1ELIGIBILITY.name().equalsIgnoreCase(this.name());
-    }
-
 }

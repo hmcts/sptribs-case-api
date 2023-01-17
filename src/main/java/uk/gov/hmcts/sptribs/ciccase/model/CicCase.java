@@ -49,7 +49,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private  DynamicList orderTemplateList;
+    private DynamicList orderTemplateList;
 
     @CCD(
         label = "Template",
@@ -57,7 +57,7 @@ public class CicCase {
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
-    private OrderTemplate anOrderTemplates;
+    private Set<OrderTemplate> anOrderTemplates;
 
     @CCD(
         label = "Postpone Reason",
