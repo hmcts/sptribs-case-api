@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
@@ -60,8 +60,22 @@ public class CicCase {
     private OrderTemplate anOrderTemplates;
 
     @CCD(
+        label = "Postpone Reason",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "PostponeReason",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private PostponeReason postponeReason;
 
+    @CCD(
+        label = "Enter any other important information about this postponement",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String postponeAdditionalInformation;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DraftOrderCIC draftOrderCIC;
 
@@ -85,10 +99,9 @@ public class CicCase {
     private OrderIssuingType orderIssuingType;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeParameterOverride = "DraftOrderCIC"
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<DraftOrderCIC>>  draftOrderCICList;
+    private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},

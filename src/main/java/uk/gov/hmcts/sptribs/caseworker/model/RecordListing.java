@@ -43,6 +43,7 @@ public class RecordListing {
     )
     private String selectedRegionId;
 
+
     @CCD(
         label = "Hearing type",
         typeOverride = FixedRadioList,
@@ -164,6 +165,13 @@ public class RecordListing {
         typeOverride = TextArea
     )
     private String importantInfoDetails;
+
+    @CCD(
+        label = "Why is this listing record being changed?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String recordListingChangeReason;
 
 
     @JsonIgnore
