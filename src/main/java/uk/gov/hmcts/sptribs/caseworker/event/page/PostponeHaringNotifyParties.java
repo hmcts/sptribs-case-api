@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullRecordSubjectRepresentativeRespondent;
 
 public class PostponeHaringNotifyParties implements CcdPageConfiguration {
 
@@ -21,15 +21,15 @@ public class PostponeHaringNotifyParties implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("caseworkerPostponeHearingNotifyParties", this::midEvent)
-            .pageLabel("Notify parties")
+            .label("caseworkerPostponeHearingNotifyParties","<h1>Notify parties</h1>")
             .complex(CaseData::getCicCase)
             .label("caseworkerPostponeHearingNotifyPartiesMessage", "Which parties should be notified about the change to this listing?")
             .readonly(CicCase::getFullName, NEVER_SHOW)
-            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
+            .optional(CicCase::getRecordNotifyPartySubject, "cicCaseFullName!=\"\" ")
             .readonly(CicCase::getRepresentativeFullName, NEVER_SHOW)
-            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .optional(CicCase::getRecordNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
             .readonly(CicCase::getRespondantName, NEVER_SHOW)
-            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .optional(CicCase::getRecordNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
     }
 
@@ -38,8 +38,8 @@ public class PostponeHaringNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullSubjectRepresentativeRespondent(data)) {
-            errors.add("One field must be selected.");
+        if (checkNullRecordSubjectRepresentativeRespondent(data)) {
+            errors.add("At least one party must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
