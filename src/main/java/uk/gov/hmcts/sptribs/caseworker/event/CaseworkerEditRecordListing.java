@@ -16,13 +16,16 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
+import uk.gov.hmcts.sptribs.common.notification.ListingUpdatedNotification;
 
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -46,6 +49,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     @Autowired
     private RecordListHelper recordListHelper;
+
+    @Autowired
+    private ListingUpdatedNotification liistingUpdatedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -104,7 +110,22 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var cicCase = details.getData().getCicCase();
+
+        var data = details.getData();
+        var cicCase = data.getCicCase();
+        Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
+        String caseNumber = data.getHyphenatedCaseRef();
+
+        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+            liistingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+            liistingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+            liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
+        }
+
         var message = MessageUtil.generateWholeMessage(
             cicCase,
             "Listing record updated",

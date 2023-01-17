@@ -9,6 +9,16 @@ public final class CommonConstants {
     public static final String CIC_CASE_APPLICANT_NAME = "CicCaseApplicantFullName";
     public static final String CIC_CASE_REPRESENTATIVE_NAME = "CicCaseRepresentativeFullName";
     public static final String CIC_CASE_RESPONDENT_NAME = "CicCaseRespondentFullName";
+    public static final String CIC_CASE_HEARING_TYPE = "HearingType";
+    public static final String CIC_CASE_HEARING_VENUE = "HearingVenue";
+    public static final String CIC_CASE_HEARING_DATE = "HearingDate";
+    public static final String CIC_CASE_HEARING_TIME = "HearingTime";
+    public static final String CIC_CASE_HEARING_INFO = "HearingInfo";
+    public static final String CIC_CASE_RECORD_HEARING_FORMAT_VIDEO = "recordHearingFormatVideo";
+    public static final String CIC_CASE_RECORD_VIDEO_CALL_LINK = "recordVideoCallLink";
+    public static final String CIC_CASE_RECORD_FORMAT_TEL = "recordHearingFormatTelephone";
+    public static final String CIC_CASE_RECORD_CONF_CALL_NUM = "recordConferenceCallNumber";
+    public static final String CIC_CASE_RECORD_HEARING_1FACE_TO_FACE = "recordHearingFormatFaceToFace";
 
     public static final String REINSTATE_REASON = "ReinstatementReason";
     public static final String DECISION_NOTICE = "DecisionNotice";
