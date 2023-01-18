@@ -35,11 +35,12 @@ public class CaseIssuedNotification implements PartiesNotification {
             NotificationResponse notificationResponse =  sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
                 TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
-            cicCase.setAppNotificationResponse(notificationResponse);
+            cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            sendLetterNotification(templateVarsSubject, TemplateName.CASE_ISSUED_CITIZEN_POST);
+            NotificationResponse notificationResponse =  sendLetterNotification(templateVarsSubject, TemplateName.CASE_ISSUED_CITIZEN_POST);
+            cicCase.setSubjectLetterNotifyList(notificationResponse);
         }
     }
 

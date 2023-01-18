@@ -66,6 +66,13 @@ public class CaseData {
     private DraftOrderMainContentCIC draftOrderMainContentCIC;
 
     @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DraftOrderMainContentCIC draftOrderMainContentCIC = new DraftOrderMainContentCIC();
+
+
+    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ContactParties contactParties = new ContactParties();
 

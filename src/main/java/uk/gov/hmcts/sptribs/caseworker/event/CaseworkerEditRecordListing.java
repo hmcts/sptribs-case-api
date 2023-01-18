@@ -9,18 +9,25 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
+import uk.gov.hmcts.sptribs.common.notification.ListingUpdatedNotification;
 
 import java.util.List;
+import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -31,21 +38,28 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_EDIT_RECORD_LISTING = "caseworker-edit-record-listing";
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
+
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
+
+    private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
+
+    private static final CcdPageConfiguration listingChangeReason = new ListingChangeReason();
 
     @Autowired
     private RecordListHelper recordListHelper;
+
+    @Autowired
+    private ListingUpdatedNotification liistingUpdatedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_RECORD_LISTING)
             .forStates(AwaitingHearing)
-            .name("Edit Record listing")
-            .description(" Edit Record listing")
+            .name("Edit listing record")
+            .description(" Edit listing record")
             .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
@@ -55,19 +69,22 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .grantHistoryOnly(SOLICITOR));
 
 
-        recordListHelper.addHearingTypeAndFormat(pageBuilder);
+        hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
-        recordListHelper.addRemoteHearingInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
+        recordListHelper.addRemoteHearingInfo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);
+        listingChangeReason.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
 
-        recordListHelper.regionData(caseData);
-
+        if (caseData.getRecordListing().getRegionList() == null) {
+            recordListHelper.regionData(caseData);
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
@@ -83,7 +100,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
 
         recordListHelper.getNotificationParties(caseData);
-
+        caseData.setCurrentEvent("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -93,15 +110,37 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+
+        var data = details.getData();
+        var cicCase = data.getCicCase();
+        Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
+        String caseNumber = data.getHyphenatedCaseRef();
+
+        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+            liistingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+            liistingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+            liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
+        }
+
+        var message = MessageUtil.generateWholeMessage(cicCase,
+            "Listing record updated",
+            "If any changes are made to this hearing, remember to make those changes in this listing record.",
+            cicCase.getRecordNotifyPartySubject(),
+            cicCase.getRecordNotifyPartyRepresentative(),
+            cicCase.getRecordNotifyPartyRespondent());
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Listing record updated")
+            .confirmationHeader(message)
             .build();
     }
 
-
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
-            .label("regionInfoObj", "<h1>Region Data</h1>")
+            .pageLabel("Region Data")
+            .label("labelEditRecordingRegionData", "")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getRegionsMessage)
             .optional(RecordListing::getRegionList)

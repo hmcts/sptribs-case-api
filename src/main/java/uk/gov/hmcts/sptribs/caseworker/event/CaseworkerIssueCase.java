@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -28,7 +29,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_ISSUE_CASE = "caseworker-issue-case";
 
     private static final CcdPageConfiguration issueCaseAdditionalDocument = new IssueCaseAdditionalDocument();
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
@@ -83,10 +83,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             messageLine2.append("Representative, ");
             caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine2.append("Respondent, ");
-            caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-        }
+        messageLine2.append("Respondent, ");
+        caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n##"

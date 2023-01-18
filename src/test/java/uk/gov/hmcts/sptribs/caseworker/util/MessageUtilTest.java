@@ -42,7 +42,7 @@ public class MessageUtilTest {
             .build();
 
         //When
-        StringBuilder result = MessageUtil.getEmailMessage(cicCase);
+        String result = MessageUtil.getEmailMessage(cicCase);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -69,7 +69,7 @@ public class MessageUtilTest {
         parties.add(NotificationParties.SUBJECT);
 
         //When
-        StringBuilder result = MessageUtil.getEmailMessage(cicCase, parties);
+        String result = MessageUtil.getEmailMessage(cicCase, parties);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -88,7 +88,7 @@ public class MessageUtilTest {
         parties.add(NotificationParties.SUBJECT);
 
         //When
-        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
+        String resultEmail = MessageUtil.getEmailMessage(cicCase);
 
         //Then
         assertThat(resultEmail).isNull();
@@ -107,7 +107,7 @@ public class MessageUtilTest {
         parties.add(NotificationParties.REPRESENTATIVE);
 
         //When
-        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
+        String resultEmail = MessageUtil.getEmailMessage(cicCase);
 
         //Then
         assertThat(resultEmail).isNull();
@@ -121,8 +121,8 @@ public class MessageUtilTest {
             .build();
 
         //When
-        StringBuilder resultEmail = MessageUtil.getEmailMessage(cicCase);
-        StringBuilder resultPost = MessageUtil.getPostMessage(cicCase);
+        String resultEmail = MessageUtil.getEmailMessage(cicCase);
+        String resultPost = MessageUtil.getPostMessage(cicCase);
 
         //Then
         assertThat(resultEmail).isNull();
@@ -146,7 +146,7 @@ public class MessageUtilTest {
             .build();
 
         //When
-        StringBuilder result = MessageUtil.getPostMessage(cicCase);
+        String result = MessageUtil.getPostMessage(cicCase);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
@@ -172,10 +172,102 @@ public class MessageUtilTest {
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
         //When
-        StringBuilder result = MessageUtil.getPostMessage(cicCase, parties);
+        String result = MessageUtil.getPostMessage(cicCase, parties);
 
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
     }
 
+    @Test
+    void shouldSuccessfullyGenerateWholeMessageWithPostAndEmail() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        //When
+        String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
+
+        //Then
+        assertThat(result).contains("header");
+        assertThat(result).contains("footer");
+        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateWholeMessageWithPost() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .contactPreferenceType(ContactPreferenceType.POST)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        //When
+        String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
+
+        //Then
+        assertThat(result).contains("header");
+        assertThat(result).contains("footer");
+        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateWholeMessageWithEmail() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+
+        //When
+        String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
+
+        //Then
+        assertThat(result).contains("header");
+        assertThat(result).contains("footer");
+        assertThat(result).contains(RespondentCIC.RESPONDENT.getLabel());
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateIssueDecisionMessage() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+
+        //When
+        String result = MessageUtil.generateIssueDecisionMessage(cicCase);
+
+        //Then
+        assertThat(result).contains("# Decision notice issued");
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateSimpleHearingMessage() {
+        //Given
+        Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.SUBJECT);
+        parties.add(NotificationParties.RESPONDENT);
+        parties.add(NotificationParties.REPRESENTATIVE);
+
+        //When
+        String result = MessageUtil.generateSimpleMessage(parties);
+
+        //Then
+        assertThat(result).contains("Subject");
+    }
 }

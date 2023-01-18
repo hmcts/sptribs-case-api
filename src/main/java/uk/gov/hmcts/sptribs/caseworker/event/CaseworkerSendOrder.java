@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
@@ -47,7 +48,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
     private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
@@ -157,20 +157,19 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase);
-
-        StringBuilder postMessage = getPostMessage(cicCase);
+        final String emailMessage = getEmailMessage(cicCase);
+        final String postMessage = getPostMessage(cicCase);
         String message = "";
         if (null != postMessage && null != emailMessage) {
             message = format("# Order sent  %n"
-                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+                + " %s  %n  %s", emailMessage, postMessage);
         } else if (null != emailMessage) {
             message = format("# Order sent %n ## "
-                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+                + " %s ", emailMessage);
 
         } else if (null != postMessage) {
             message = format("# Order sent %n ## "
-                + " %s ", postMessage.substring(0, postMessage.length() - 2));
+                + " %s ", postMessage);
         }
 
         return SubmittedCallbackResponse.builder()

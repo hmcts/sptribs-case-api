@@ -17,15 +17,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseWorkerCreateHearingSummary.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerCreateHearingSummaryTest {
@@ -34,6 +35,9 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Mock
     private HearingService hearingService;
+
+    @Mock
+    private JudicialService judicialService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -59,6 +63,7 @@ class CaseworkerCreateHearingSummaryTest {
             .build();
         updatedCaseDetails.setData(caseData);
         when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
+        when(judicialService.getAllUsers(any())).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);

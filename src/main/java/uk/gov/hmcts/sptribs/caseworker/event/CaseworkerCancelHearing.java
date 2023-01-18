@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.Arrays;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
@@ -39,7 +40,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
 
     private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
     private static final CcdPageConfiguration reasonSelect = new CancelHearingReasonSelect();
@@ -104,19 +104,17 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                                                       CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase, data.getCicCase().getHearingNotificationParties());
-
-        final StringBuilder postMessage = getPostMessage(cicCase, data.getCicCase().getHearingNotificationParties());
+        final String emailMessage = getEmailMessage(cicCase, data.getCicCase().getHearingNotificationParties());
+        final String postMessage = getPostMessage(cicCase, data.getCicCase().getHearingNotificationParties());
 
         String message = "";
         if (null != postMessage && null != emailMessage) {
-            message = format("#  Hearing cancelled   %n" + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2),
-                postMessage.substring(0, postMessage.length() - 2));
+            message = format("#  Hearing cancelled   %n" + " %s  %n  %s", emailMessage, postMessage);
         } else if (null != emailMessage) {
-            message = format("#  Hearing cancelled  %n" + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", emailMessage);
 
         } else if (null != postMessage) {
-            message = format("#  Hearing cancelled  %n" + " %s ", postMessage.substring(0, postMessage.length() - 2));
+            message = format("#  Hearing cancelled  %n" + " %s ", postMessage);
         }
 
         return SubmittedCallbackResponse.builder()

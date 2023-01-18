@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CHOOSE_THE_OUTCOME;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -24,7 +25,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerChooseOutcome implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_CLOSE_THE_CASE = "caseworker-choose-the-outcome";
 
     private static final CcdPageConfiguration closeCaseWarning = new CloseCaseWarning();
     private static final CcdPageConfiguration closeCaseReasonSelect = new CloseCaseReasonSelect();
@@ -39,7 +39,7 @@ public class CaseworkerChooseOutcome implements CCDConfig<CaseData, State, UserR
 
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
-            .event(CASEWORKER_CLOSE_THE_CASE)
+            .event(CASEWORKER_CHOOSE_THE_OUTCOME)
             .forStates(AwaitingOutcome)
             .name("Close the Case")
             .showSummary()

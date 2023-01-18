@@ -2,8 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -17,8 +17,8 @@ public class CreateHearingSummary implements CcdPageConfiguration {
         pageBuilder
             .page("createHearingSummary")
             .pageLabel("Select hearing")
-            .complex(CaseData::getHearingSummary)
-            .mandatory(HearingSummary::getHearingSummaryList)
+            .complex(CaseData::getCicCase)
+            .mandatoryWithLabel(CicCase::getHearingList,"Choose a hearing to summarise")
             .done();
     }
 

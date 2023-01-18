@@ -13,21 +13,17 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTempl
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRespondentCIC.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -38,7 +34,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
 
     private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
 
@@ -91,7 +86,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                        CaseDetails<CaseData, State> beforeDetails) {
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -101,20 +96,10 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        CaseIssueFinalDecision finalDecision = details.getData().getCaseIssueFinalDecision();
-        List<String> recipients = new ArrayList<>();
-        if (finalDecision.getRecipientSubjectCIC().contains(SUBJECT)) {
-            recipients.add(SUBJECT.getLabel());
-        }
-        if (finalDecision.getRecipientRepresentativeCIC().contains(REPRESENTATIVE)) {
-            recipients.add(REPRESENTATIVE.getLabel());
-        }
-        if (finalDecision.getRecipientRespondentCIC().contains(RESPONDENT)) {
-            recipients.add(RESPONDENT.getLabel());
-        }
+        var cicCase = details.getData().getCicCase();
+        var message = MessageUtil.generateWholeMessage(cicCase, "Final decision notice issued", "");
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Final decision notice issued %n## A copy of this decision notice has been sent via email to: %s",
-                String.join(", ", recipients)))
+            .confirmationHeader(message)
             .build();
     }
 }

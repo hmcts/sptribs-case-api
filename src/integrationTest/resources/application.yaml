@@ -55,6 +55,10 @@ location:
   api:
     baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
 
+judicial:
+  api:
+    baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-ref-api-aat.service.core-compute-aat.internal}
+
 s2s:
   stub: true
 
@@ -140,6 +144,9 @@ docmosis:
 
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL:http://dm-store-aat.service.core-compute-aat.internal}
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
 
 prd:
   api:

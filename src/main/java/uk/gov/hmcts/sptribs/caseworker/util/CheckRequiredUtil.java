@@ -44,4 +44,12 @@ public final class CheckRequiredUtil {
             && (!CollectionUtils.isEmpty(data.getCicCase().getFlagPartySubject())
             || !CollectionUtils.isEmpty(data.getCicCase().getFlagPartyApplicant()));
     }
+
+    public static boolean checkNullRecordSubjectRepresentativeRespondent(CaseData data) {
+        return null != data.getRecordListing()
+            && CollectionUtils.isEmpty(data.getCicCase().getRecordNotifyPartySubject())
+            && CollectionUtils.isEmpty(data.getCicCase().getRecordNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(data.getCicCase().getRecordNotifyPartyRespondent());
+
+    }
 }

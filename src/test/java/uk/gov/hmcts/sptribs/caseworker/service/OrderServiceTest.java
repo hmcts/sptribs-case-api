@@ -78,4 +78,23 @@ class OrderServiceTest {
         assertThat(regionList).isNull();
     }
 
+    @Test
+    void shouldCreateTemplateWithCurrentDateAndTime() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicase = CicCase.builder().build();
+
+        caseData.setCicCase(cicase);
+        details.setData(caseData);
+
+        cicase.setAnOrderTemplates(OrderTemplate.CIC2_QUANTUM);
+        //When
+
+        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(details);
+
+        //Then
+        assertThat(orderTemplateList).isNotNull();
+    }
+
+
 }

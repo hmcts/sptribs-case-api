@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
 @Service
@@ -36,6 +37,7 @@ public class RecordListHelper {
             ? "Unable to retrieve Region data"
             : null;
         caseData.getRecordListing().setRegionsMessage(regionMessage);
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
     }
 
 
@@ -97,18 +99,11 @@ public class RecordListHelper {
         return errors;
     }
 
-    public void addHearingTypeAndFormat(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingTypeAndFormat")
-            .pageLabel("Hearing type and format")
-            .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .done();
-    }
 
     public void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")
-            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
+            .pageLabel("Remote hearing information")
+            .label("labelRemoteHearingInfo", "")
             .complex(CaseData::getRecordListing)
             .optional(RecordListing::getVideoCallLink)
             .optional(RecordListing::getConferenceCallNumber)
@@ -117,12 +112,13 @@ public class RecordListHelper {
 
     public void addOtherInformation(PageBuilder pageBuilder) {
         pageBuilder.page("otherInformation")
-            .label("otherInformationObj", "<h1>Other information</h1>")
+            .pageLabel("Other information")
+            .label("labelOtherInfo", "")
             .complex(CaseData::getRecordListing)
-            .label("otherInfoLabel",
-                "\nEnter any other important information about this hearing."
-                    + " This may include any reasonable adjustments that need to be made, or details"
-                    + "\n of anyone who should be excluded from attending this hearing.\n")
+            .label("labelOtherInfoDetails",
+                "\nEnter any other important information about this hearing.\n"
+                    + "\nThis may include any reasonable adjustments that need to be made, or details"
+                    + " of anyone who should be excluded from attending this hearing. (Optional)\n")
             .optional(RecordListing::getImportantInfoDetails)
             .done();
     }
