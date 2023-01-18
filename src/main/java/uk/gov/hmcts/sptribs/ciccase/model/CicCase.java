@@ -57,7 +57,7 @@ public class CicCase {
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
-    private Set<OrderTemplate> anOrderTemplates;
+    private OrderTemplate anOrderTemplates;
 
     @CCD(
         label = "Postpone Reason",
