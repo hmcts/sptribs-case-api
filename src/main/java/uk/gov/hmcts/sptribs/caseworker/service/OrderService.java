@@ -15,10 +15,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -79,13 +79,15 @@ public class OrderService {
 
     public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         var caseData = caseDetails.getData();
-        Set<OrderTemplate> orderTemplates = caseData.getCicCase().getAnOrderTemplates();
+        //Set<OrderTemplate> orderTemplates = caseData.getCicCase().getAnOrderTemplates();
 
+        OrderTemplate orderTemplates = caseData.getCicCase().getAnOrderTemplates();
+        List<OrderTemplate> ordertemplates = Arrays.asList(orderTemplates);
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
         String draftOrderCreateDate = simpleformat.format(cal.getTime());
 
-        List<DynamicListElement> dynamicListElements = orderTemplates
+        List<DynamicListElement> dynamicListElements = ordertemplates
             .stream()
             .sorted()
             .map(draft -> {
