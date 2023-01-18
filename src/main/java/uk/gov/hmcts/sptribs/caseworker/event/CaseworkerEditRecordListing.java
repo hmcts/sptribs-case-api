@@ -126,8 +126,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
-        var message = MessageUtil.generateWholeMessage(
-            cicCase,
+        var message = MessageUtil.generateWholeMessage(cicCase,
             "Listing record updated",
             "If any changes are made to this hearing, remember to make those changes in this listing record.",
             cicCase.getRecordNotifyPartySubject(),

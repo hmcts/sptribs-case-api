@@ -16,7 +16,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,5 +79,26 @@ class OrderServiceTest {
         //Then
         assertThat(regionList).isNull();
     }
+
+    @Test
+    void shouldCreateTemplateWithCurrentDateAndTime() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicase = CicCase.builder().build();
+
+        caseData.setCicCase(cicase);
+        details.setData(caseData);
+
+        Set<OrderTemplate> orderTemplates = new HashSet<>();
+        orderTemplates.add(OrderTemplate.CIC2_QUANTUM);
+        cicase.setAnOrderTemplates(orderTemplates);
+        //When
+
+        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(details);
+
+        //Then
+        assertThat(orderTemplateList).isNotNull();
+    }
+
 
 }
