@@ -11,29 +11,40 @@ public enum UserRole implements HasRole {
 
     // Common User roles
     //TODO: update : SUPER_USER, SOLICITOR before prod deploy
-    SUPER_USER("caseworker-sptribs-superuser", "CRU"),
-    SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
-    CREATOR("caseworker-sptribs", "CRU"),
-    SOLICITOR("caseworker", "CRU"),
+    SUPER_USER("IDAM:caseworker-divorce-superuser", "CRU"),
+    SYSTEMUPDATE("IDAM:caseworker-divorce-systemupdate", "CRU"),
+    SOLICITOR("IDAM:caseworker-divorce-solicitor", "CRU"),
+    CREATOR("[CREATOR]", "CRU"),
 
     // CIC User roles
-    COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
-    CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
-    DISTRICT_REGISTRAR_CIC("caseworker-sptribs-cic-districtregistrar", "CRU"),
-    DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU"),
+    SUPER_USER_CIC("IDAM:caseworker-sptribs-superuser", "CRU"),
+    COURT_ADMIN_CIC("IDAM:caseworker-sptribs-cic-courtadmin", "CRU"),
+    CASE_OFFICER_CIC("IDAM:caseworker-sptribs-cic-caseofficer", "CRU"),
+    DISTRICT_REGISTRAR_CIC("IDAM:caseworker-sptribs-cic-districtregistrar", "CRU"),
+    DISTRICT_JUDGE_CIC("IDAM:caseworker-sptribs-cic-districtjudge", "CRU"),
+    RESPONDENT_CIC("IDAM:caseworker-sptribs-cic-respondent", "CRU"),
+
+    HMCTS_STAFF("hmcts-staff", "CRU"),
+    HMCTS_JUDICIARY("hmcts-judiciary", "CRU"),
     CITIZEN_CIC("citizen-sptribs-cic-dss", "C");
 
     @JsonValue
     private final String role;
     private final String caseTypePermissions;
 
-    public static UserRole fromString(String value) {
-        for (UserRole role : UserRole.values()) {
-            if (role.getRole().equals(value)) {
-                return role;
-            }
-        }
-        return null;
-    }
+//    public static String getAccessProfileName(UserRole userRole) {
+//        for (UserRole role : UserRole.values()) {
+//            if (role.equals(userRole)) {
+//                if (role.getRole().startsWith("IDAM:")) {
+//                    String tempString = role.getRole();
+//                    return tempString.substring("IDAM:".length());
+//                }
+//                else {
+//                    return role.getRole();
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
 }
