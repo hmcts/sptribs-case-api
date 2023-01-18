@@ -168,5 +168,4 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         }
     }
 
-
 }
