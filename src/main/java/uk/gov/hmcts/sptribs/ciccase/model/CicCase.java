@@ -45,6 +45,20 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 public class CicCase {
 
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList orderTemplateList;
+
+    @CCD(
+        label = "Template",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedList,
+        typeParameterOverride = "OrderTemplate"
+    )
+    private OrderTemplate anOrderTemplates;
+
     @CCD(
         label = "Postpone Reason",
         typeOverride = FixedRadioList,

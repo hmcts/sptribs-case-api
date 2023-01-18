@@ -60,6 +60,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         issueFinalDecisionNotice.addTo(pageBuilder);
         issueFinalDecisionSelectTemplate.addTo(pageBuilder);
         uploadDocuments(pageBuilder);
+        issueFinalDecisionAddDocumentFooter(pageBuilder);
         issueFinalDecisionPreviewTemplate.addTo(pageBuilder);
         issueFinalDecisionSelectRecipients.addTo(pageBuilder);
     }
@@ -84,6 +85,18 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .optionalWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
             .done();
     }
+
+    private void issueFinalDecisionAddDocumentFooter(PageBuilder pageBuilder) {
+        pageBuilder.page("addDocumentFooter")
+            .pageLabel("Document footer")
+            .label("LabelDocFooter",
+                "\nDecision Notice Signature\n"
+                    + "\nConfirm the Role and Surname of the person who made this decision - this will be added"
+                    + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'")
+            .mandatory(CaseData::getFinalDecisionSignature)
+            .done();
+    }
+
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {

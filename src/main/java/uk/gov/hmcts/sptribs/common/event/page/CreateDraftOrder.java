@@ -14,7 +14,8 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .pageLabel("Create order")
             .label("createDraftOrder", "Draft to be created")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getDraftOrderCIC)
+            .mandatory(CicCase::getAnOrderTemplates)
+
             .done();
     }
 
