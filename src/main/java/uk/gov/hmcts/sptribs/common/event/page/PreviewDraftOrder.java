@@ -25,63 +25,22 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FIL
 @Slf4j
 @Component
 public class PreviewDraftOrder implements CcdPageConfiguration {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    @Autowired
-    private CaseDataDocumentService caseDataDocumentService;
 
-    @Autowired
-    private DocAssemblyService docAssembleyService;
-    @Autowired
-    private FinalDecisionTemplateContent finalDecisionTemplateContent;
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("previewOrder",this::midEvent)
+            .page("previewOrder")
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"
                 + "If you are happy , continue to the next screen.")
-//            .complex(CaseData::getCicCase)
-//            .mandatory(CicCase::getAnOrderTemplates)
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getAnOrderTemplates)
             .done();
 
     }
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
 
-        CaseData caseData = details.getData();
-        var finalDecision = caseData.getCaseIssueFinalDecision();
-
-        final Long caseId = details.getId();
-
-        final String filename = "Order" + LocalDateTime.now().format(formatter);
-
-        Document generalOrderDocument = caseDataDocumentService.renderDocument(
-            finalDecisionTemplateContent.apply(caseData, caseId),
-            caseId,
-            finalDecision.getFinalDecisionTemplate().getId(),
-            LanguagePreference.ENGLISH,
-            filename
-        );
-
-
-//        final Map<String, Object> templateContent,
-//        final Long caseId,
-//        final String authorisation,
-//        final String templateId,
-//        final LanguagePreference languagePreference,
-//        final String filename
-
-        finalDecision.setFinalDecisionDraft(generalOrderDocument);
-        caseData.setCaseIssueFinalDecision(finalDecision);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
 
 }
 
