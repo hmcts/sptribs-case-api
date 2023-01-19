@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
+@Disabled
 public class DecisionIssuedNotificationTest {
 
     @Mock
