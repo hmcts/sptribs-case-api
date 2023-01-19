@@ -3,131 +3,157 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
 
 public final class MessageUtil {
-    private static final String REPRESENTATIVE = "Representative, ";
-    private static final String RESPONDENT = "Respondent, ";
-    private static final String SUBJECT = "Subject, ";
+    private static final String REPRESENTATIVE = "Representative";
+    private static final String RESPONDENT = "Respondent";
+    private static final String SUBJECT = "Subject";
+
+    private static final String COMMA_SPACE = ", ";
 
     private MessageUtil() {
     }
 
-    public static StringBuilder getPostMessage(final CicCase cicCase) {
+    public static String getPostMessage(final CicCase cicCase) {
+        Set<HasLabel> allParties = new HashSet<>();
+        if (null != cicCase.getNotifyPartySubject()) {
+            allParties.addAll(cicCase.getNotifyPartySubject());
+        }
+        if (null != cicCase.getNotifyPartyRepresentative()) {
+            allParties.addAll(cicCase.getNotifyPartyRepresentative());
+        }
+        return getPostMessage(cicCase, allParties);
+    }
+
+    public static String getPostMessage(final CicCase cicCase, final Set<? extends HasLabel> parties) {
         boolean post = false;
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+        if (parties.stream().anyMatch(party -> SUBJECT.equals(party.getLabel()))
             && ContactPreferenceType.POST == cicCase.getContactPreferenceType()
             && !ObjectUtils.isEmpty(cicCase.getAddress())) {
-            postMessage.append(SUBJECT);
+            postMessage.append(SUBJECT + COMMA_SPACE);
             post = true;
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+        if (parties.stream().anyMatch(party -> REPRESENTATIVE.equals(party.getLabel()))
             && ContactPreferenceType.POST == cicCase.getRepresentativeContactDetailsPreference()
             && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
-            postMessage.append(REPRESENTATIVE);
+            postMessage.append(REPRESENTATIVE + COMMA_SPACE);
             post = true;
         }
-        if (post) {
-            return postMessage;
-        }
-        return null;
+        return post ? postMessage.substring(0, postMessage.length() - 2) : null;
     }
 
-    public static StringBuilder getPostMessage(final CicCase cicCase, final Set<NotificationParties> parties) {
-        boolean post = false;
-        StringBuilder postMessage = new StringBuilder(100);
-        postMessage.append("It will be sent via post to: ");
-        if (parties.contains(NotificationParties.SUBJECT)
-            && ContactPreferenceType.POST == cicCase.getContactPreferenceType()
-            && !ObjectUtils.isEmpty(cicCase.getAddress())) {
-            postMessage.append(SUBJECT);
-            post = true;
+    public static String getEmailMessage(final CicCase cicCase) {
+        Set<HasLabel> allParties = new HashSet<>();
+        if (null != cicCase.getNotifyPartySubject()) {
+            allParties.addAll(cicCase.getNotifyPartySubject());
         }
-        if (parties.contains(NotificationParties.REPRESENTATIVE)
-            && ContactPreferenceType.POST == cicCase.getRepresentativeContactDetailsPreference()
-            && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
-            postMessage.append(REPRESENTATIVE);
-            post = true;
+        if (null != cicCase.getNotifyPartyRespondent()) {
+            allParties.addAll(cicCase.getNotifyPartyRespondent());
         }
-        if (post) {
-            return postMessage;
+        if (null != cicCase.getNotifyPartyRepresentative()) {
+            allParties.addAll(cicCase.getNotifyPartyRepresentative());
         }
-        return null;
+        return getEmailMessage(cicCase, allParties);
     }
 
-    public static StringBuilder getEmailMessage(final CicCase cicCase) {
+    public static String getEmailMessage(final CicCase cicCase, final Set<? extends HasLabel> parties) {
         final StringBuilder messageLine = new StringBuilder(100);
         messageLine.append(" A notification will be sent to: ");
         boolean email = false;
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+        if (parties.stream().anyMatch(party -> SUBJECT.equals(party.getLabel()))
             && StringUtils.hasText(cicCase.getEmail())) {
-            messageLine.append(SUBJECT);
+            messageLine.append(SUBJECT + COMMA_SPACE);
             email = true;
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine.append(RESPONDENT);
+        if (parties.stream().anyMatch(party -> RESPONDENT.equals(party.getLabel()))) {
+            messageLine.append(RESPONDENT + COMMA_SPACE);
             email = true;
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+        if (parties.stream().anyMatch(party -> REPRESENTATIVE.equals(party.getLabel()))
             && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
-            messageLine.append(REPRESENTATIVE);
+            messageLine.append(REPRESENTATIVE + COMMA_SPACE);
             email = true;
         }
-        if (email) {
-            return messageLine;
-        }
-        return null;
+        return email ? messageLine.substring(0, messageLine.length() - 2) : null;
     }
 
-    public static StringBuilder getEmailMessage(final CicCase cicCase, final Set<NotificationParties> parties) {
-        final StringBuilder messageLine = new StringBuilder(100);
-        messageLine.append(" A notification will be sent to: ");
-        boolean email = false;
-        if (parties.contains(NotificationParties.SUBJECT)
-            && StringUtils.hasText(cicCase.getEmail())) {
-            messageLine.append(SUBJECT);
-            email = true;
-        }
-        if (parties.contains(NotificationParties.RESPONDENT)) {
-            messageLine.append(RESPONDENT);
-            email = true;
-        }
-        if (parties.contains(NotificationParties.REPRESENTATIVE)
-            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
-            messageLine.append(REPRESENTATIVE);
-            email = true;
-        }
-        if (email) {
-            return messageLine;
-        }
-        return null;
+    public static String generateWholeMessage(final CicCase cicCase, final String header, String footer) {
+        final String emailMessage = getEmailMessage(cicCase);
+        final String postMessage = getPostMessage(cicCase);
+        return formatWholeMessage(header, footer, emailMessage, postMessage);
     }
 
+    @SafeVarargs
+    public static String generateWholeMessage(final CicCase cicCase, final String header, String footer,
+                                              Set<? extends HasLabel>... parties) {
+        Set<HasLabel> allParties = new HashSet<>();
+        Arrays.asList(parties).stream().filter(party -> null != party).forEach(party -> allParties.addAll(party));
+        final String emailMessage = getEmailMessage(cicCase, allParties);
+        final String postMessage = getPostMessage(cicCase, allParties);
+        return formatWholeMessage(header, footer, emailMessage, postMessage);
+    }
 
-    public static String generateWholeMessage(final CicCase cicCase) {
-        final StringBuilder emailMessage = getEmailMessage(cicCase);
-
-        StringBuilder postMessage = getPostMessage(cicCase);
+    private static String formatWholeMessage(String header, String footer, String emailMessage, String postMessage) {
         String message = "";
         if (null != postMessage && null != emailMessage) {
-            message = format("# Final decision notice issued   %n"
-                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+            message = format("# %s %n## %s %n## %s", header, emailMessage, postMessage);
         } else if (null != emailMessage) {
-            message = format("# Final decision notice issued %n ## "
-                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+            message = format("# %s %n## %s", header, emailMessage);
 
         } else if (null != postMessage) {
-            message = format("# Final decision notice issued  %n ## "
-                + " %s ", postMessage.substring(0, postMessage.length() - 2));
+            message = format("# %s %n ## %s ", header, postMessage);
+        }
+        if (StringUtils.hasText(footer)) {
+            StringBuilder sb = new StringBuilder(message);
+            sb.append(format(" %n## %s", footer));
+            message = sb.toString();
         }
         return message;
     }
+
+    public static String generateIssueDecisionMessage(final CicCase cicCase) {
+        final StringBuilder message = new StringBuilder(100);
+        message.append(format("# Decision notice issued %n ## ")).append("A notification has been sent to: ");
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            message.append(SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            message.append(RESPONDENT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
+            message.append(REPRESENTATIVE);
+        }
+
+        return message.toString();
+    }
+
+    public static String generateSimpleMessage(Set<NotificationParties> hearingNotificationParties) {
+        final StringBuilder message = new StringBuilder(100);
+        message.append("A notification has been sent to: ");
+        if (hearingNotificationParties.contains(NotificationParties.SUBJECT)) {
+            message.append(SUBJECT + COMMA_SPACE);
+        }
+        if (hearingNotificationParties.contains(NotificationParties.RESPONDENT)) {
+            message.append(RESPONDENT + COMMA_SPACE);
+        }
+        if (hearingNotificationParties.contains(NotificationParties.REPRESENTATIVE)) {
+            message.append(REPRESENTATIVE + COMMA_SPACE);
+        }
+        return message.substring(0, message.length() - 2);
+    }
+
 }

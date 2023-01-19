@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -15,6 +16,7 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,24 +46,24 @@ public class NotificationServiceCIC {
             log.info("Sending email for reference id : {} using template : {}", referenceId, templateId);
 
             sendEmailResponse =
-                notificationClient.sendEmail(
-                    templateId,
-                    destinationAddress,
-                    templateVars,
-                    referenceId
-                );
+                    notificationClient.sendEmail(
+                            templateId,
+                            destinationAddress,
+                            templateVars,
+                            referenceId
+                    );
 
             log.info("Successfully sent email with notification id {} and reference {}",
-                sendEmailResponse.getNotificationId(),
-                sendEmailResponse.getReference().orElse(referenceId)
+                    sendEmailResponse.getNotificationId(),
+                    sendEmailResponse.getReference().orElse(referenceId)
             );
 
             return getNotificationResponse(sendEmailResponse);
         } catch (NotificationClientException notificationClientException) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
-                referenceId,
-                notificationClientException.getMessage(),
-                notificationClientException
+                    referenceId,
+                    notificationClientException.getMessage(),
+                    notificationClientException
             );
             throw new NotificationException(notificationClientException);
         }
@@ -79,25 +81,37 @@ public class NotificationServiceCIC {
             log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
 
             SendLetterResponse sendLetterResponse =
-                notificationClient.sendLetter(
-                    templateId,
-                    templateVars,
-                    referenceId
-                );
+                    notificationClient.sendLetter(
+                            templateId,
+                            templateVars,
+                            referenceId
+                    );
 
             log.info("Successfully sent letter with notification id {} and reference {}",
-                sendLetterResponse.getNotificationId(),
-                sendLetterResponse.getReference().orElse(referenceId)
+                    sendLetterResponse.getNotificationId(),
+                    sendLetterResponse.getReference().orElse(referenceId)
             );
             return getLetterNotificationResponse(sendLetterResponse);
         } catch (NotificationClientException notificationClientException) {
             log.error("Failed to send letter. Reference ID: {}. Reason: {}",
-                referenceId,
-                notificationClientException.getMessage(),
-                notificationClientException
+                    referenceId,
+                    notificationClientException.getMessage(),
+                    notificationClientException
             );
             throw new NotificationException(notificationClientException);
         }
+    }
+
+    public JSONObject getJsonFileAttachment(byte[] fileContents) {
+        JSONObject jsonObject = null;
+        try {
+            if (Objects.nonNull(fileContents)) {
+                jsonObject = notificationClient.prepareUpload(fileContents);
+            }
+        } catch (NotificationClientException e) {
+            log.info("unable to upload", e.getMessage());
+        }
+        return jsonObject;
     }
 
     public void setNotificationRequest(NotificationRequest notificationRequest) {
@@ -112,13 +126,13 @@ public class NotificationServiceCIC {
         }
 
         return NotificationResponse.builder()
-            .id(sendEmailResponse.getNotificationId().toString())
-            .clientReference(clientReference)
-            .notificationType(NotificationType.EMAIL)
-            .updatedAtTime(LocalDateTime.now())
-            .createdAtTime(LocalDateTime.now())
-            .status("Received")
-            .build();
+                .id(sendEmailResponse.getNotificationId().toString())
+                .clientReference(clientReference)
+                .notificationType(NotificationType.EMAIL)
+                .updatedAtTime(LocalDateTime.now())
+                .createdAtTime(LocalDateTime.now())
+                .status("Received")
+                .build();
     }
 
     private NotificationResponse getLetterNotificationResponse(final SendLetterResponse sendLetterResponse) {
@@ -129,12 +143,12 @@ public class NotificationServiceCIC {
         }
 
         return NotificationResponse.builder()
-            .id(sendLetterResponse.getNotificationId().toString())
-            .clientReference(clientReference)
-            .notificationType(NotificationType.POST)
-            .updatedAtTime(LocalDateTime.now())
-            .createdAtTime(LocalDateTime.now())
-            .status("Received")
-            .build();
+                .id(sendLetterResponse.getNotificationId().toString())
+                .clientReference(clientReference)
+                .notificationType(NotificationType.POST)
+                .updatedAtTime(LocalDateTime.now())
+                .createdAtTime(LocalDateTime.now())
+                .status("Received")
+                .build();
     }
 }

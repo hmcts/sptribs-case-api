@@ -43,6 +43,7 @@ public class RecordListing {
     )
     private String selectedRegionId;
 
+
     @CCD(
         label = "Hearing type",
         typeOverride = FixedRadioList,
@@ -83,6 +84,12 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String hearingVenueName;
+
+    @CCD(
+        label = "Venue Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String readOnlyHearingVenueName;
 
     @CCD(
         label = "Venue Address",
@@ -159,7 +166,6 @@ public class RecordListing {
     private String conferenceCallNumber;
 
     @CCD(
-        label = "Important hearing information",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )

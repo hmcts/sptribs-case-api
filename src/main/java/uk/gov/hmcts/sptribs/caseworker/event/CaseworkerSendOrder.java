@@ -157,20 +157,19 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase);
-
-        StringBuilder postMessage = getPostMessage(cicCase);
+        final String emailMessage = getEmailMessage(cicCase);
+        final String postMessage = getPostMessage(cicCase);
         String message = "";
         if (null != postMessage && null != emailMessage) {
             message = format("# Order sent  %n"
-                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
+                + " %s  %n  %s", emailMessage, postMessage);
         } else if (null != emailMessage) {
             message = format("# Order sent %n ## "
-                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
+                + " %s ", emailMessage);
 
         } else if (null != postMessage) {
             message = format("# Order sent %n ## "
-                + " %s ", postMessage.substring(0, postMessage.length() - 2));
+                + " %s ", postMessage);
         }
 
         return SubmittedCallbackResponse.builder()
