@@ -100,10 +100,10 @@ public class ListingUpdatedNotification implements PartiesNotification {
         templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, recordListing.getHearingDate());
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, recordListing.getHearingTime());
 
-        if (null != recordListing.getHearingVenues() && !recordListing.getHearingVenues().getListItems().isEmpty()) {
-            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenues().getListItems());
+        if (null != recordListing.getHearingVenueName()) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueName());
         } else {
-            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, "Remote Hearing");
         }
         templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, recordListing.getImportantInfoDetails());
 
