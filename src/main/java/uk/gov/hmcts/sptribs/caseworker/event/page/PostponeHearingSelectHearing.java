@@ -16,7 +16,7 @@ public class PostponeHearingSelectHearing implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("caseworkerPostponeHearingSelectHearing")
-            .label("caseworkerPostponeHearingSelectHearing","<h1>Select hearing</h1>")
+            .pageLabel("Select hearing")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getHearingList,"Choose a hearing to postpone")
             .done();

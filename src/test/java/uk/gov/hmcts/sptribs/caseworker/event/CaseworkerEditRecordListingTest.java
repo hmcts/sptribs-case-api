@@ -135,6 +135,7 @@ class CaseworkerEditRecordListingTest {
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
         caseData.setRecordListing(recordListing);
+        caseData.getRecordListing().setHearingVenues(getMockedHearingVenueData());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -185,6 +186,7 @@ class CaseworkerEditRecordListingTest {
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
         caseData.setRecordListing(recordListing);
+        caseData.getRecordListing().setHearingVenues(getMockedHearingVenueData());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -216,6 +218,7 @@ class CaseworkerEditRecordListingTest {
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
         caseData.setRecordListing(recordListing);
+        caseData.getRecordListing().setHearingVenues(getMockedHearingVenueData());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -283,6 +286,19 @@ class CaseworkerEditRecordListingTest {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("1-region")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
+
+    private DynamicList getMockedHearingVenueData() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("courtname-courtAddress")
             .code(UUID.randomUUID())
             .build();
         return DynamicList

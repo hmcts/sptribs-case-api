@@ -1,17 +1,21 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -29,6 +33,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration mainContents = new DraftOrderMainContentPage();
+    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -44,8 +51,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
+        createDraftOrder.addTo(pageBuilder);
         mainContents.addTo(pageBuilder);
-
     }
 
 
@@ -54,9 +61,13 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
+        var caseData = details.getData();
+        DynamicList draftList = orderService.getDraftOrderTemplatesDynamicList(details);
 
+        caseData.getCicCase().setOrderTemplateList(draftList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
+            .data(caseData)
             .build();
 
     }

@@ -44,7 +44,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(RecordListing::getHearingVenueAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
             .optional(RecordListing::getRoomAtVenue)
             .optional(RecordListing::getAddlInstr,
-                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"")
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING  + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
             .label("hearingDateObj", "<h4>Hearing date</h4>")
             .mandatory(RecordListing::getHearingDate)
             .mandatory(RecordListing::getSession)

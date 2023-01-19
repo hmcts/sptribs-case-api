@@ -9,8 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum OrderTemplate implements HasLabel {
 
+
     @JsonProperty("CIC1_Eligibility")
-    CIC1_ELIGIBILITY("CIC1_Eligibility"),
+    CIC1ELIGIBILITY("CIC1_Eligibility"),
 
     @JsonProperty("CIC2_Quantum")
     CIC2_QUANTUM("CIC2_Quantum"),
@@ -43,5 +44,4 @@ public enum OrderTemplate implements HasLabel {
     CIC13_PRO_FORMA_SUMMONS("CIC13_Pro_Forma_Summons");
 
     private final String label;
-
 }
