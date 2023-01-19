@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
-import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
