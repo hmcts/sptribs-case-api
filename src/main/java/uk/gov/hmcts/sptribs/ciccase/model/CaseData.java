@@ -350,6 +350,12 @@ public class CaseData {
     )
     private String finalDecisionSignature;
 
+    @CCD(
+        label = "Order signature",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String orderSignature;
+
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
