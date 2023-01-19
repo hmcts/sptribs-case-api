@@ -53,7 +53,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
             try {
-                addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
+                addDecisionsIssuedFileContents(caseData, templateVars);
             } catch (IOException e) {
                 log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
             }
@@ -75,7 +75,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
             try {
-                addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
+                addDecisionsIssuedFileContents(caseData, templateVars);
             } catch (IOException e) {
                 log.info("Unable to download Decision Notice document for Representative: {}", e.getMessage());
             }
@@ -95,7 +95,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
 
         try {
-            addDecisionsIssuedFileContents(caseData.getCaseIssueDecision(), templateVars);
+            addDecisionsIssuedFileContents(caseData, templateVars);
         } catch (IOException e) {
             log.info("Unable to download Decision Notice document for Respondent: {}", e.getMessage());
         }
@@ -121,14 +121,21 @@ public class DecisionIssuedNotification implements PartiesNotification {
         return notificationService.sendLetter();
     }
 
-    private void addDecisionsIssuedFileContents(CaseIssueDecision caseIssueDecision, Map<String, Object> templateVars) throws IOException {
+    private void addDecisionsIssuedFileContents(CaseData caseData, Map<String, Object> templateVars) throws IOException {
         int count = 0;
 
         final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         String serviceAuthorization = authTokenGenerator.generate();
 
-        if (caseIssueDecision.getDecisionDocument() != null) {
+        CicCase cicCase = caseData.getCicCase();
+        /*if (caseIssueDecision.getDecisionDocument() != null) {
             List<String> uploadedDocumentsUrls = caseIssueDecision.getDecisionDocument().stream().map(item -> item.getValue())
+                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
+                .collect(Collectors.toList());*/
+
+        //TODO: Remove the below code once tested. Added this for testing if the issue is with the DecisionNotice document
+        if (cicCase.getApplicantDocumentsUploaded() != null) {
+            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(item -> item.getValue())
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .collect(Collectors.toList());
 
