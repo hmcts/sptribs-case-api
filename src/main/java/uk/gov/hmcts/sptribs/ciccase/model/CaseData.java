@@ -60,10 +60,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.WIFE;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DraftOrderMainContentCIC draftOrderMainContentCIC;
+//    @CCD(
+//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+//    )
+//    private DraftOrderMainContentCIC draftOrderMainContentCIC;
 
     @Builder.Default
     @CCD(
