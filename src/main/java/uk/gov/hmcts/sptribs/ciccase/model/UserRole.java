@@ -38,8 +38,7 @@ public enum UserRole implements HasRole {
                 if (role.getRole().startsWith("IDAM:")) {
                     String tempString = role.getRole();
                     return tempString.substring("IDAM:".length());
-                }
-                else {
+                } else {
                     return role.getRole();
                 }
             }
