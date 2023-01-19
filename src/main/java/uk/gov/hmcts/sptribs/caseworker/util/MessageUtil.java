@@ -70,7 +70,7 @@ public final class MessageUtil {
 
     public static String getEmailMessage(final CicCase cicCase, final Set<? extends HasLabel> parties) {
         final StringBuilder messageLine = new StringBuilder(100);
-        messageLine.append(" A notification will be sent to: ");
+        messageLine.append(" A notification has been sent to: ");
         boolean email = false;
         if (parties.stream().anyMatch(party -> SUBJECT.equals(party.getLabel()))
             && StringUtils.hasText(cicCase.getEmail())) {
