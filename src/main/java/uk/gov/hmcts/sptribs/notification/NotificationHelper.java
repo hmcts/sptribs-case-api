@@ -123,6 +123,6 @@ public class NotificationHelper {
 
     private boolean isFaceToFaceFormat(RecordListing recordListing) {
 
-        return (null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE));
+        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
     }
 }
