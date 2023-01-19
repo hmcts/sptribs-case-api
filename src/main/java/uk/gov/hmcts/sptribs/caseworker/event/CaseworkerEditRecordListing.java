@@ -150,9 +150,15 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
+        final CaseData caseDataBefore = detailsBefore.getData();
 
         recordListHelper.populatedVenuesData(caseData);
 
+        if (caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())) {
+            caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
+            caseData.getRecordListing().getHearingVenues().setValue(caseDataBefore.getRecordListing().getHearingVenues().getValue());
+
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
