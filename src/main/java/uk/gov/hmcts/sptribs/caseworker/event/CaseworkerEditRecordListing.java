@@ -126,8 +126,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
-        var message = MessageUtil.generateWholeMessage(
-            cicCase,
+        var message = MessageUtil.generateWholeMessage(cicCase,
             "Listing record updated",
             "If any changes are made to this hearing, remember to make those changes in this listing record.",
             cicCase.getRecordNotifyPartySubject(),
@@ -151,14 +150,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        final CaseData caseDataBefore = detailsBefore.getData();
 
         recordListHelper.populatedVenuesData(caseData);
 
-        if (caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())) {
-            caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
-
-        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

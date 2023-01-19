@@ -12,8 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
-import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
@@ -33,7 +33,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
-    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
+    private static final CcdPageConfiguration editMainContent = new DraftOrderMainContentPage();
 
 
     @Override
@@ -51,7 +51,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         editDraftOrder.addTo(pageBuilder);
-        previewDraftOrder.addTo(pageBuilder);
+        editMainContent.addTo(pageBuilder);
 
 
     }
@@ -71,7 +71,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse draftUpdated(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-           .confirmationHeader(format("# Draft order updated %n## Use 'Send order' to send the case documentation to parties in the case."))
+            .confirmationHeader(format("# Draft order updated %n## Use "
+                + "'Send order' to send the case documentation to parties in the case."))
             .build();
     }
 
