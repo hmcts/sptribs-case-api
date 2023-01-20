@@ -19,6 +19,7 @@ public final class CommonConstants {
     public static final String CIC_CASE_RECORD_FORMAT_TEL = "recordHearingFormatTelephone";
     public static final String CIC_CASE_RECORD_CONF_CALL_NUM = "recordConferenceCallNumber";
     public static final String CIC_CASE_RECORD_HEARING_1FACE_TO_FACE = "recordHearingFormatFaceToFace";
+    public static final String CIC_CASE_RECORD_REMOTE_HEARING = "Remote Hearing";
 
     public static final String REINSTATE_REASON = "ReinstatementReason";
     public static final String DECISION_NOTICE = "DecisionNotice";

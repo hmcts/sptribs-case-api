@@ -1,10 +1,11 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.HasLabel;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
@@ -70,7 +71,7 @@ public final class MessageUtil {
 
     public static String getEmailMessage(final CicCase cicCase, final Set<? extends HasLabel> parties) {
         final StringBuilder messageLine = new StringBuilder(100);
-        messageLine.append(" A notification will be sent to: ");
+        messageLine.append(" A notification has been sent to: ");
         boolean email = false;
         if (parties.stream().anyMatch(party -> SUBJECT.equals(party.getLabel()))
             && StringUtils.hasText(cicCase.getEmail())) {
@@ -123,19 +124,18 @@ public final class MessageUtil {
         return message;
     }
 
-    public static String generateIssueDecisionMessage(final CicCase cicCase) {
+    public static String generateIssueDecisionMessage(final CaseIssueDecision decision) {
         final StringBuilder message = new StringBuilder(100);
         message.append(format("# Decision notice issued %n ## ")).append("A notification has been sent to: ");
 
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+        if (decision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
             message.append(SUBJECT);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            message.append(RESPONDENT);
+        if (decision.getRecipients().contains(ContactPartiesCIC.RESPONDANTTOCONTACT)) {
+            message.append(", " + RESPONDENT);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
-            message.append(REPRESENTATIVE);
+        if (decision.getRecipients().contains(ContactPartiesCIC.REPRESENTATIVETOCONTACT)) {
+            message.append(", " + REPRESENTATIVE);
         }
 
         return message.toString();
