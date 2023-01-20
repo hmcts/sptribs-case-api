@@ -60,11 +60,24 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         issueDecisionSelectTemplate.addTo(pageBuilder);
         issueDecisionUploadNotice.addTo(pageBuilder);
         issueDecisionSelectRecipients.addTo(pageBuilder);
+        issueDecisionAddDocumentFooter(pageBuilder);
+    }
+
+    private void issueDecisionAddDocumentFooter(PageBuilder pageBuilder) {
+        pageBuilder.page("addDocumentFooter")
+            .pageLabel("Document footer")
+            .label("LabelDocFooter",
+                "\nDecision Notice Signature\n"
+                    + "\nConfirm the Role and Surname of the person who made this decision - this will be added"
+                    + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'")
+            .mandatory(CaseData::getDecisionSignature)
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)//or AwaitingHearing
@@ -74,8 +87,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        var cicCase = details.getData().getCicCase();
-        var message = MessageUtil.generateIssueDecisionMessage(cicCase);
+        CaseIssueDecision caseIssueDecision = details.getData().getCaseIssueDecision();
+        var message = MessageUtil.generateIssueDecisionMessage(caseIssueDecision);
 
         sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
@@ -91,11 +104,11 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.RESPONDANTTOCONTACT)) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
+        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.REPRESENTATIVETOCONTACT)) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
     }
