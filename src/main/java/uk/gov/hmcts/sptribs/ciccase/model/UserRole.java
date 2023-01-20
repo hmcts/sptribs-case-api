@@ -17,34 +17,15 @@ public enum UserRole implements HasRole {
     CREATOR("[CREATOR]", "CRU"),
 
     // CIC User roles
-    //    SUPER_USER_CIC("caseworker-sptribs-superuser", "CRU"),
     COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
     CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
     DISTRICT_REGISTRAR_CIC("caseworker-sptribs-cic-districtregistrar", "CRU"),
     DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU"),
     RESPONDENT_CIC("caseworker-sptribs-cic-respondent", "CRU"),
-    //    ST_CIC("caseworker-st_cic", "CRU"),
-
-    //    HMCTS_STAFF("hmcts-staff", "CRU"),
-    //    HMCTS_JUDICIARY("hmcts-judiciary", "CRU"),
     CITIZEN_CIC("citizen-sptribs-cic-dss", "C");
 
     @JsonValue
     private final String role;
     private final String caseTypePermissions;
-
-    public static String getAccessProfileName(UserRole userRole) {
-        for (UserRole role : UserRole.values()) {
-            if (role.equals(userRole)) {
-                if (role.getRole().startsWith("IDAM:")) {
-                    String tempString = role.getRole();
-                    return tempString.substring("IDAM:".length());
-                } else {
-                    return role.getRole();
-                }
-            }
-        }
-        return null;
-    }
 
 }
