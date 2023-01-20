@@ -8,31 +8,15 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderMainContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
-import uk.gov.hmcts.sptribs.document.DocAssemblyService;
-import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
-import uk.gov.hmcts.sptribs.document.model.DocAssemblyResponse;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FILE;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CASE_NUMBER;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CIC_CASE_SCHEME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DATED;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.REPRESENTATIVE_FULL_NAME;
-import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
 
 @Slf4j
 @Component
@@ -43,23 +27,11 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
 
     @Autowired
     private FinalDecisionTemplateContent finalDecisionTemplateContent;
-//    @Autowired
-//    private DocmosisTemplateProvider docmosisTemplateProvider;
-//    @Autowired
-//    private DocAssemblyService docAssembleyService;
-//
-////    @Autowired
-////    DocAssemblyResponse docAssemblyResponse;
-//    @Autowired
-//    private IdamService idamService;
-//
-//    @Autowired
-//    DocAssemblyClient docAssemblyClient;
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("previewOrder",this::midEvent)
+            .page("previewOrder")
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"
