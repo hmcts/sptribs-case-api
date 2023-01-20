@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class PreviewDraftOrder implements CcdPageConfiguration {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Autowired
     private CaseDataDocumentService caseDataDocumentService;
 
@@ -31,7 +32,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("previewOrder")
+            .page("previewOrder",this::midEvent)
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"

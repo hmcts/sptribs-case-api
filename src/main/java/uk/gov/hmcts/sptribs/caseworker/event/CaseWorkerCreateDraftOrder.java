@@ -35,7 +35,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration mainContents = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
-    private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
+  //  private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
+
+    @Autowired
+    private PreviewDraftOrder previewDraftOrder;
     @Autowired
     private OrderService orderService;
 
