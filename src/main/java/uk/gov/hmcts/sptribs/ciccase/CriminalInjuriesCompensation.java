@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import java.util.List;
 
 
-
 @Component
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
@@ -34,8 +33,6 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
 
         configBuilder.jurisdiction(CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
             CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionName(), CcdServiceCode.ST_CIC.getCcdServiceDescription());
-
-
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 
