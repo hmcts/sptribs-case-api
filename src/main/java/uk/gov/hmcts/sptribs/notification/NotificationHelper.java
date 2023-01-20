@@ -2,7 +2,10 @@ package uk.gov.hmcts.sptribs.notification;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
@@ -85,4 +88,54 @@ public class NotificationHelper {
             .build();
     }
 
+    public void setRecordingTemplateVars(Map<String, Object> templateVars, RecordListing recordListing) {
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_TYPE, recordListing.getHearingType());
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, recordListing.getHearingDate());
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, recordListing.getHearingTime());
+
+        if (null != recordListing.getHearingVenueName()) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueName());
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
+        }
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, recordListing.getImportantInfoDetails());
+
+        if (null != recordListing.getVideoCallLink()) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, recordListing.getVideoCallLink());
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
+        }
+        if (null != recordListing.getConferenceCallNumber()) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, recordListing.getConferenceCallNumber());
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
+        }
+        if (isVideoFormat(recordListing)) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
+        }
+        if (isTelephoneFormat(recordListing)) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, true);
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
+        }
+        if (isFaceToFaceFormat(recordListing)) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false);
+        }
+    }
+
+    private boolean isFaceToFaceFormat(RecordListing recordListing) {
+        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
+    }
+
+    private boolean isVideoFormat(RecordListing recordListing) {
+        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.VIDEO);
+    }
+
+    private boolean isTelephoneFormat(RecordListing recordListing) {
+        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+    }
 }
