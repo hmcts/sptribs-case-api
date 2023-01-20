@@ -27,23 +27,23 @@ public class ListingCreatedNotification implements PartiesNotification {
     private NotificationHelper notificationHelper;
 
     @Override
-    public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
-        RecordListing recordListing = caseData.getRecordListing();
-        notificationHelper.setRecordingTemplateVars(templateVarsSubject, recordListing);
-        if (cicCase.getContactPreferenceType().isEmail()) {
+    public void sendToSubject(final CaseData caseDataSubject, final String caseNumber) {
+        CicCase cicCaseListing = caseDataSubject.getCicCase();
+        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCaseListing);
+        RecordListing recordListingSubject = caseDataSubject.getRecordListing();
+        notificationHelper.setRecordingTemplateVars(templateVarsSubject, recordListingSubject);
+        if (cicCaseListing.getContactPreferenceType().isEmail()) {
             // Send Email
             NotificationResponse notificationResponse =  sendEmailNotification(templateVarsSubject,
-                cicCase.getEmail(),
+                cicCaseListing.getEmail(),
                 TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
-            cicCase.setSubHearingNotificationResponse(notificationResponse);
+            cicCaseListing.setSubHearingNotificationResponse(notificationResponse);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
+            notificationHelper.addAddressTemplateVars(cicCaseListing.getAddress(), templateVarsSubject);
             //SEND POST
             NotificationResponse notificationResponse = sendLetterNotification(templateVarsSubject,
                 TemplateName.LISTING_CREATED_CITIZEN_POST);
-            cicCase.setSubHearingNotificationResponse(notificationResponse);
+            cicCaseListing.setSubHearingNotificationResponse(notificationResponse);
         }
     }
 

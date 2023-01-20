@@ -101,18 +101,24 @@ public class NotificationHelper {
         templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, recordListing.getImportantInfoDetails());
 
         if (null != recordListing.getVideoCallLink()) {
-            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, recordListing.getVideoCallLink());
         } else {
-            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
         }
         if (null != recordListing.getConferenceCallNumber()) {
-            templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, true);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, recordListing.getConferenceCallNumber());
         } else {
-            templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
+        }
+        if (isVideoFormat(recordListing)) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
+        }
+        if (isTelephoneFormat(recordListing)) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, true);
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
         }
         if (isFaceToFaceFormat(recordListing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
@@ -122,7 +128,14 @@ public class NotificationHelper {
     }
 
     private boolean isFaceToFaceFormat(RecordListing recordListing) {
-
         return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
+    }
+
+    private boolean isVideoFormat(RecordListing recordListing) {
+        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.VIDEO);
+    }
+
+    private boolean isTelephoneFormat(RecordListing recordListing) {
+        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.TELEPHONE);
     }
 }
