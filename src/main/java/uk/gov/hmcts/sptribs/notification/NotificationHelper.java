@@ -93,13 +93,16 @@ public class NotificationHelper {
         templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, recordListing.getHearingDate());
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, recordListing.getHearingTime());
 
-        if (null != recordListing.getHearingVenueName()) {
-            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueName());
+        if (null != recordListing.getSelectedVenue()) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getSelectedVenue());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
         }
-        templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, recordListing.getImportantInfoDetails());
-
+        if (null != recordListing.getImportantInfoDetails()) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, recordListing.getImportantInfoDetails());
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, " ");
+        }
         if (null != recordListing.getVideoCallLink()) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, recordListing.getVideoCallLink());
         } else {
