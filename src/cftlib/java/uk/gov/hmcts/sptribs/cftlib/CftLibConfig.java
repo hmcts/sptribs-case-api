@@ -48,7 +48,6 @@ public class CftLibConfig implements CFTLibConfigurer {
                 CcdServiceCode.ST_DD.getCaseType().getCaseTypeName(), state);
         }
 
-        // last 3 roles for divorce below needs to be changed and updated to match to the sptribs roles we have
         lib.createRoles(
             "caseworker-sptribs-superuser",
             "caseworker-sptribs-systemupdate",
