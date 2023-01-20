@@ -62,12 +62,12 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         configBuilder.caseRoleToAccessProfile(UserRole.RESPONDENT_CIC)
             .accessProfiles(UserRole.getAccessProfileName(UserRole.RESPONDENT_CIC))
             .caseAccessCategories(UserRole.RESPONDENT_CIC.getCaseTypePermissions()).legacyIdamRole();
-        configBuilder.caseRoleToAccessProfile(UserRole.HMCTS_STAFF)
-            .accessProfiles(UserRole.getAccessProfileName(UserRole.HMCTS_STAFF))
-            .caseAccessCategories(UserRole.HMCTS_STAFF.getCaseTypePermissions());
-        configBuilder.caseRoleToAccessProfile(UserRole.HMCTS_JUDICIARY)
-            .accessProfiles(UserRole.getAccessProfileName(UserRole.HMCTS_JUDICIARY))
-            .caseAccessCategories(UserRole.HMCTS_JUDICIARY.getCaseTypePermissions());
+        //        configBuilder.caseRoleToAccessProfile(UserRole.HMCTS_STAFF)
+        //            .accessProfiles(UserRole.getAccessProfileName(UserRole.HMCTS_STAFF))
+        //            .caseAccessCategories(UserRole.HMCTS_STAFF.getCaseTypePermissions());
+        //        configBuilder.caseRoleToAccessProfile(UserRole.HMCTS_JUDICIARY)
+        //            .accessProfiles(UserRole.getAccessProfileName(UserRole.HMCTS_JUDICIARY))
+        //            .caseAccessCategories(UserRole.HMCTS_JUDICIARY.getCaseTypePermissions());
         configBuilder.caseRoleToAccessProfile(UserRole.CITIZEN_CIC)
             .accessProfiles(UserRole.getAccessProfileName(UserRole.CITIZEN_CIC))
             .caseAccessCategories(UserRole.CITIZEN_CIC.getCaseTypePermissions());

@@ -48,6 +48,7 @@ public class CftLibConfig implements CFTLibConfigurer {
                 CcdServiceCode.ST_DD.getCaseType().getCaseTypeName(), state);
         }
 
+        // last 3 roles for divorce below needs to be changed and updated to match to the sptribs roles we have
         lib.createRoles(
             "caseworker-sptribs-superuser",
             "caseworker-sptribs-systemupdate",
@@ -61,7 +62,10 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-cic-respondent",
             "caseworker",
             "payments",
-            "solicitor"
+            "solicitor",
+            "caseworker-divorce-superuser",
+            "caseworker-divorce-systemupdate",
+            "caseworker-divorce-solicitor"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
