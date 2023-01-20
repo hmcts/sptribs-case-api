@@ -46,7 +46,7 @@ public class IssueDecisionSelectRecipientsTest {
     void shouldBeInvalidIfNoRecipientsSelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseIssueDecision decision = CaseIssueDecision.builder().recipients(new HashSet<>()).build();
+        final CaseIssueDecision decision = CaseIssueDecision.builder().build();
 
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(decision)
