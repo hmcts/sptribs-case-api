@@ -83,7 +83,7 @@ class CaseWorkerCreateDraftOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(orderService.getDraftOrderTemplatesDynamicList(any())).thenReturn(null);
+       // when(orderService.getDraftOrderTemplatesDynamicList(any())).thenReturn(null);
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);

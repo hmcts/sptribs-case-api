@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class OrderService {
+    List<OrderTemplate> orderTemplatesList = new ArrayList<>();
 
     public DynamicList getOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
@@ -80,13 +81,19 @@ public class OrderService {
     public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         var caseData = caseDetails.getData();
 
+
         OrderTemplate orderTemplates = caseData.getCicCase().getAnOrderTemplates();
         List<OrderTemplate> ordertemplates = Arrays.asList(orderTemplates);
+      //  for(int i=0 ; i < ordertemplates.size(); i++){
+        //  orderTemplatesList.add(ordertemplates.get(i));
+
+       // }
+        orderTemplatesList.add(orderTemplates);
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
         String draftOrderCreateDate = simpleformat.format(cal.getTime());
 
-        List<DynamicListElement> dynamicListElements = ordertemplates
+        List<DynamicListElement> dynamicListElements = orderTemplatesList
             .stream()
             .sorted()
             .map(draft -> {
