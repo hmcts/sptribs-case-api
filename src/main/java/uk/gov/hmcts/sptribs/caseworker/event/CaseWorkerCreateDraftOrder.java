@@ -35,12 +35,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration mainContents = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
-  //  private static final CcdPageConfiguration previewDraftOrder = new PreviewDraftOrder();
-
-    @Autowired
-    private PreviewDraftOrder previewDraftOrder;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private PreviewDraftOrder previewOrder;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -58,7 +56,19 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .grantHistoryOnly(SOLICITOR));
         createDraftOrder.addTo(pageBuilder);
         mainContents.addTo(pageBuilder);
-        previewDraftOrder.addTo(pageBuilder);
+        previewOrder.addTo(pageBuilder);
+        createDraftOrderAddDocumentFooter(pageBuilder);
+    }
+
+    private void createDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
+        pageBuilder.page("createDraftOrderAddDocumentFooter")
+            .pageLabel("Document footer")
+            .label("draftOrderDocFooter",
+                "\nOrder Signature\n"
+                    + "\nConfirm the Role and Surname of the person who made this decision - this will be added"
+                    + " to the bottom of the generated order document. E.g. 'Tribunal Judge Farrelly'")
+            .mandatory(CaseData::getOrderSignature)
+            .done();
     }
 
 

@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
+import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.ArrayList;
@@ -49,6 +50,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private ListingCreatedNotification listingCreatedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -121,6 +125,21 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+        var data = details.getData();
+        var cicCase = data.getCicCase();
+        Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
+        String caseNumber = data.getHyphenatedCaseRef();
+
+        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+            listingCreatedNotification.sendToSubject(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+            listingCreatedNotification.sendToRepresentative(details.getData(), caseNumber);
+        }
+        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+            listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
+        }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Listing record created")
             .build();
