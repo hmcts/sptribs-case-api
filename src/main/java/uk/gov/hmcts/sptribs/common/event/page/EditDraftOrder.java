@@ -20,7 +20,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .pageLabel("Edit order")
             .label("createDraftOrder", "Draft to be edited")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getOrderTemplateList)
+            .optional(CicCase::getOrderTemplateDynamisList)
             .done();
     }
 
