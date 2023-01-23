@@ -17,6 +17,11 @@ public class CICAccessProfile extends CriminalInjuriesCompensation {
     public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
+        /*
+        // This block works as intended and to our understanding of setting up AM/IDAM for legacy operation
+        // However if we uncomment this although be case create cases as expected we cannot see them on the case list
+        // Commented out until we start to tackle Access Profiles as we're going to need support
+        //
         configBuilder.caseRoleToAccessProfile(UserRole.SUPER_USER)
             .accessProfiles(UserRole.getAccessProfileName(UserRole.SUPER_USER))
             .caseAccessCategories(UserRole.SUPER_USER.getCaseTypePermissions()).legacyIdamRole();
@@ -43,6 +48,10 @@ public class CICAccessProfile extends CriminalInjuriesCompensation {
             .caseAccessCategories(UserRole.RESPONDENT_CIC.getCaseTypePermissions()).legacyIdamRole();
         configBuilder.caseRoleToAccessProfile(UserRole.CITIZEN_CIC)
             .accessProfiles(UserRole.getAccessProfileName(UserRole.CITIZEN_CIC))
-            .caseAccessCategories(UserRole.CITIZEN_CIC.getCaseTypePermissions());
+            .caseAccessCategories(UserRole.CITIZEN_CIC.getCaseTypePermissions()).legacyIdamRole();
+        configBuilder.caseRoleToAccessProfile(UserRole.CREATOR)
+            .accessProfiles(UserRole.getAccessProfileName(UserRole.CREATOR))
+            .caseAccessCategories(UserRole.CREATOR.getCaseTypePermissions());
+         */
     }
 }
