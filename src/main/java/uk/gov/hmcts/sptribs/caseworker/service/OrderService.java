@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -80,14 +79,7 @@ public class OrderService {
 
     public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         var caseData = caseDetails.getData();
-
-
         OrderTemplate orderTemplates = caseData.getCicCase().getAnOrderTemplates();
-        List<OrderTemplate> ordertemplates = Arrays.asList(orderTemplates);
-      //  for(int i=0 ; i < ordertemplates.size(); i++){
-        //  orderTemplatesList.add(ordertemplates.get(i));
-
-       // }
         orderTemplatesList.add(orderTemplates);
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);

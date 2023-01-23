@@ -9,18 +9,14 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
-
-import java.util.Arrays;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -40,6 +36,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     @Autowired
     private OrderService orderService;
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -77,16 +74,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        // DynamicList orderTemplateList = caseData.getCicCase().getOrderTemplateList();
-        OrderTemplate orderTemplates = caseData.getCicCase().getAnOrderTemplates();
         DynamicList draftList = orderService.getDraftOrderTemplatesDynamicList(details);
-
-//        for (int i = 0; i < draftList.getListItems().size(); i++) {
-//            orderTemplateList.getListItems().add(draftList.getListItems().get(i));
-//
-//        }
-
-
         caseData.getCicCase().setOrderTemplateList(draftList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
