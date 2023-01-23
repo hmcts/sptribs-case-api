@@ -96,11 +96,11 @@ public class CancelHearingNotification implements PartiesNotification {
 
     private void addCancelHearingTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
         String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
-        String[] hearingDateTimeArr = null != selectedHearingDateTime ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
-        String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+        String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
+        String hearingDate = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
             ? hearingDateTimeArr[1].substring(0, hearingDateTimeArr[1].lastIndexOf(SPACE))
             : null;
-        String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+        String hearingTime = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
             ? hearingDateTimeArr[1].substring(hearingDateTimeArr[1].lastIndexOf(SPACE) + 1)
             : null;
 
