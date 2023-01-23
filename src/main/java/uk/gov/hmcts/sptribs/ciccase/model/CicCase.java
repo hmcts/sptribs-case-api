@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -45,11 +46,10 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 public class CicCase {
 
-
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DynamicList orderTemplateList;
+    private DynamicList orderTemplateDynamisList;
 
     @CCD(
         label = "Template",
@@ -580,4 +580,9 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse resHearingNotificationResponse;
+
+    @JsonIgnore
+    public String getSelectedHearingToCancel() {
+        return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
+    }
 }

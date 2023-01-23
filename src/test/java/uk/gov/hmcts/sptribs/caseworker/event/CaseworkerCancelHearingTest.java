@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.CancelHearingNotification;
 import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.util.HashSet;
@@ -53,6 +54,9 @@ class CaseworkerCancelHearingTest {
 
     @Mock
     private HearingService hearingService;
+
+    @Mock
+    private CancelHearingNotification cancelHearingNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

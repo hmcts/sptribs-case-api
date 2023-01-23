@@ -40,6 +40,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     @Autowired
     private PreviewDraftOrder previewOrder;
 
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
@@ -76,11 +77,9 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-
         var caseData = details.getData();
         DynamicList draftList = orderService.getDraftOrderTemplatesDynamicList(details);
-
-        caseData.getCicCase().setOrderTemplateList(draftList);
+        caseData.getCicCase().setOrderTemplateDynamisList(draftList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
