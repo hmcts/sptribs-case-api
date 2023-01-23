@@ -61,6 +61,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.WIFE;
 @Builder(toBuilder = true)
 public class CaseData {
 
+
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

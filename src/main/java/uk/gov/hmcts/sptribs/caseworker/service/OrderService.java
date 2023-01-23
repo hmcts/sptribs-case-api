@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class OrderService {
-    List<OrderTemplate> orderTemplatesList = new ArrayList<>();
+
+    List<DynamicListElement> dynamicListElements = new ArrayList<>();
 
     public DynamicList getOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
@@ -78,21 +79,21 @@ public class OrderService {
 
 
     public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
-        var caseData = caseDetails.getData();
-        OrderTemplate orderTemplates = caseData.getCicCase().getAnOrderTemplates();
-        orderTemplatesList.add(orderTemplates);
+        OrderTemplate orderTemplate = caseDetails.getData().getCicCase().getAnOrderTemplates();
+
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
         String draftOrderCreateDate = simpleformat.format(cal.getTime());
 
-        List<DynamicListElement> dynamicListElements = orderTemplatesList
-            .stream()
-            .sorted()
-            .map(draft -> {
-                return DynamicListElement.builder().label(draft.getLabel() + " "
-                    + draftOrderCreateDate + "_draft.pdf").code(UUID.randomUUID()).build();
-            })
-            .collect(Collectors.toList());
+        String templateNamePlusCurrentDate = orderTemplate.getLabel() + " "
+            + draftOrderCreateDate + "_draft.pdf";
+
+        if (null != caseDetails.getData().getCicCase().getOrderTemplateDynamisList()) {
+            dynamicListElements.add(DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build());
+        } else {
+            dynamicListElements = new ArrayList<>();
+            dynamicListElements.add(DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build());
+        }
 
         return DynamicList
             .builder()
