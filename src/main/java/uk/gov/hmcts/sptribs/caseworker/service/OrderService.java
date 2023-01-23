@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +24,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class OrderService {
+
+    List<DynamicListElement> dynamicListElements = new ArrayList<>();
 
     public DynamicList getOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
@@ -78,22 +79,21 @@ public class OrderService {
 
 
     public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
-        var caseData = caseDetails.getData();
+        OrderTemplate orderTemplate = caseDetails.getData().getCicCase().getAnOrderTemplates();
 
-        OrderTemplate orderTemplates = caseData.getCicCase().getAnOrderTemplates();
-        List<OrderTemplate> ordertemplates = Arrays.asList(orderTemplates);
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
         String draftOrderCreateDate = simpleformat.format(cal.getTime());
 
-        List<DynamicListElement> dynamicListElements = ordertemplates
-            .stream()
-            .sorted()
-            .map(draft -> {
-                return DynamicListElement.builder().label(draft.getLabel() + " "
-                    + draftOrderCreateDate + "_draft.pdf").code(UUID.randomUUID()).build();
-            })
-            .collect(Collectors.toList());
+        String templateNamePlusCurrentDate = orderTemplate.getLabel() + " "
+            + draftOrderCreateDate + "_draft.pdf";
+
+        if (null != caseDetails.getData().getCicCase().getOrderTemplateDynamisList()) {
+            dynamicListElements.add(DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build());
+        } else {
+            dynamicListElements = new ArrayList<>();
+            dynamicListElements.add(DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build());
+        }
 
         return DynamicList
             .builder()

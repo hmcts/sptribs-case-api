@@ -73,6 +73,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         if (env.contains(ENVIRONMENT_AAT)) {
             roles.add(SOLICITOR);
+            roles.add(SUPER_USER);
+            roles.add(COURT_ADMIN_CIC);
         }
 
 

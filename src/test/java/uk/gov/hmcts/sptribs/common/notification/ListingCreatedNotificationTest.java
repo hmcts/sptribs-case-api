@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ListingUpdatedNotificationTest {
+public class ListingCreatedNotificationTest {
     @Mock
     private NotificationServiceCIC notificationService;
 
@@ -32,7 +32,7 @@ public class ListingUpdatedNotificationTest {
     private NotificationHelper notificationHelper;
 
     @InjectMocks
-    private ListingUpdatedNotification listingUpdatedNotification;
+    private ListingCreatedNotification listingCreatedNotification;
 
     @Test
     void shouldNotifySubjectOfCaseIssuedWithEmail() throws IOException {
@@ -43,7 +43,7 @@ public class ListingUpdatedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingUpdatedNotification.sendToSubject(data, "CN1");
+        listingCreatedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -56,17 +56,19 @@ public class ListingUpdatedNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         RecordListing recordListing = RecordListing.builder().hearingVenueName("London Centre")
-                .conferenceCallNumber("cmi459t5iut5")
-                    .videoCallLink("http://abc.com")
-                        .conferenceCallNumber("+56677778")
-                            .hearingFormat(HearingFormat.FACE_TO_FACE)
-                                .build();
+            .conferenceCallNumber("cmi459t5iut5")
+            .videoCallLink("http://abc.com")
+            .conferenceCallNumber("+56677778")
+            .hearingFormat(HearingFormat.FACE_TO_FACE)
+            .build();
         data.setRecordListing(recordListing);
+
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingUpdatedNotification.sendToSubject(data, "CN1");
+        listingCreatedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -84,7 +86,7 @@ public class ListingUpdatedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingUpdatedNotification.sendToSubject(data, "CN1");
+        listingCreatedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -103,7 +105,7 @@ public class ListingUpdatedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingUpdatedNotification.sendToRepresentative(data, "CN1");
+        listingCreatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -122,7 +124,7 @@ public class ListingUpdatedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingUpdatedNotification.sendToRepresentative(data, "CN1");
+        listingCreatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -139,7 +141,7 @@ public class ListingUpdatedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingUpdatedNotification.sendToRespondent(data, "CN1");
+        listingCreatedNotification.sendToRespondent(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
