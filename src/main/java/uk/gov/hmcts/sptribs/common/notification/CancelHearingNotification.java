@@ -34,47 +34,47 @@ public class CancelHearingNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
-        addCancelHearingTemplateVars(cicCase, templateVars);
+        Map<String, Object> subjectTemplateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        addCancelHearingTemplateVars(cicCase, subjectTemplateVars);
 
-        NotificationResponse notificationResponse;
+        NotificationResponse subjectNotificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
-            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+            subjectNotificationResponse = sendEmailNotification(cicCase.getEmail(), subjectTemplateVars);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), subjectTemplateVars);
+            subjectNotificationResponse = sendLetterNotification(subjectTemplateVars);
         }
 
-        cicCase.setSubjectNotifyList(notificationResponse);
+        cicCase.setSubjectNotifyList(subjectNotificationResponse);
     }
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
-        addCancelHearingTemplateVars(cicCase, templateVars);
+        Map<String, Object> reprTemplateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        addCancelHearingTemplateVars(cicCase, reprTemplateVars);
 
-        NotificationResponse notificationResponse;
+        NotificationResponse representativeNotificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            representativeNotificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), reprTemplateVars);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), reprTemplateVars);
+            representativeNotificationResponse = sendLetterNotification(reprTemplateVars);
         }
 
-        cicCase.setRepNotificationResponse(notificationResponse);
+        cicCase.setRepNotificationResponse(representativeNotificationResponse);
     }
 
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        addCancelHearingTemplateVars(cicCase, templateVars);
+        Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        addCancelHearingTemplateVars(cicCase, respondentTemplateVars);
 
-        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), templateVars);
-        cicCase.setAppNotificationResponse(notificationResponse);
+        NotificationResponse respondentNotificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), respondentTemplateVars);
+        cicCase.setAppNotificationResponse(respondentNotificationResponse);
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
