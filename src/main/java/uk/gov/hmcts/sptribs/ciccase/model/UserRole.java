@@ -28,4 +28,17 @@ public enum UserRole implements HasRole {
     private final String role;
     private final String caseTypePermissions;
 
+    public static String getAccessProfileName(UserRole userRole) {
+        for (UserRole role : UserRole.values()) {
+            if (role.equals(userRole)) {
+                if (role.getRole().startsWith("IDAM:")) {
+                    String tempString = role.getRole();
+                    return tempString.substring("IDAM:".length());
+                } else {
+                    return role.getRole();
+                }
+            }
+        }
+        return null;
+    }
 }
