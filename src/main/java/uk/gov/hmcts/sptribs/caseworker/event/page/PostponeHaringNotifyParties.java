@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullRecordSubjectRepresentativeRespondent;
 
 public class PostponeHaringNotifyParties implements CcdPageConfiguration {
 
@@ -23,7 +23,7 @@ public class PostponeHaringNotifyParties implements CcdPageConfiguration {
         pageBuilder.page("caseworkerPostponeHearingNotifyParties", this::midEvent)
             .label("caseworkerPostponeHearingNotifyParties","<h1>Notify parties</h1>")
             .complex(CaseData::getCicCase)
-            .label("caseworkerPostponeHearingNotifyPartiesMessage", "Which parties should be notified about the change to this listing?")
+            .label("caseworkerPostponeHearingNotifyPartiesMessage", "Which parties should be notified this Postponement?")
             .readonly(CicCase::getFullName, NEVER_SHOW)
             .optional(CicCase::getRecordNotifyPartySubject, "cicCaseFullName!=\"\" ")
             .readonly(CicCase::getRepresentativeFullName, NEVER_SHOW)
@@ -38,7 +38,7 @@ public class PostponeHaringNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullSubjectRepresentativeRespondent(data)) {
+        if (checkNullRecordSubjectRepresentativeRespondent(data)) {
             errors.add("At least one party must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
