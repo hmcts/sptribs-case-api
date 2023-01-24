@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConcessionDetails;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConsentOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRejectionDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
@@ -35,6 +36,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private static final CcdPageConfiguration closeCaseWithdrawalDetails = new CloseCaseWithdrawalDetails();
     private static final CcdPageConfiguration closeCaseRejectionDetails = new CloseCaseRejectionDetails();
     private static final CcdPageConfiguration closeCaseConcessionDetails = new CloseCaseConcessionDetails();
+    private static final CcdPageConfiguration closeCaseConsentOrder = new CloseCaseConsentOrder();
 
 
     @Override
@@ -46,6 +48,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         closeCaseWithdrawalDetails.addTo(pageBuilder);
         closeCaseRejectionDetails.addTo(pageBuilder);
         closeCaseConcessionDetails.addTo(pageBuilder);
+        closeCaseConsentOrder.addTo(pageBuilder);
     }
 
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

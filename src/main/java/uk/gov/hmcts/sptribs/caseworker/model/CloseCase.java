@@ -73,4 +73,11 @@ public class CloseCase {
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate concessionDate;
+
+    @CCD(
+        label = "When was the consent order approved?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate consentOrderDate;
 }
