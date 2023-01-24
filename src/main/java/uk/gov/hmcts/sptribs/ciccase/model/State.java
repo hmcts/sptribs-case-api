@@ -135,11 +135,11 @@ public enum State {
     Concession("Concession"),
 
     @CCD(
-        label = "Case Discharge",
+        label = "Consent Order",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
-    Discharge("Discharge");
+    ConsentOrder("ConsentOrder");
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
