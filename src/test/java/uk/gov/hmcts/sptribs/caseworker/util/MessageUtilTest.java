@@ -242,22 +242,6 @@ public class MessageUtilTest {
     }
 
     @Test
-    void shouldSuccessfullyGenerateIssueDecisionMessage() {
-        //Given
-        final CaseIssueDecision decision = CaseIssueDecision.builder()
-            .recipients(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT))
-            .recipients(Set.of(ContactPartiesCIC.RESPONDANTTOCONTACT))
-            .recipients(Set.of(ContactPartiesCIC.REPRESENTATIVETOCONTACT))
-            .build();
-
-        //When
-        String result = MessageUtil.generateIssueDecisionMessage(decision);
-
-        //Then
-        assertThat(result).contains("# Decision notice issued");
-    }
-
-    @Test
     void shouldSuccessfullyGenerateSimpleHearingMessage() {
         //Given
         Set<NotificationParties> parties = new HashSet<>();

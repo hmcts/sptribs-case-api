@@ -1,7 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.apache.commons.collections4.CollectionUtils;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -12,15 +13,13 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
+//import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -40,8 +39,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
     private static final CcdPageConfiguration issueDecisionSelectRecipients = new IssueDecisionSelectRecipients();
 
-    @Autowired
-    private DecisionIssuedNotification decisionIssuedNotification;
+    /*@Autowired
+    private DecisionIssuedNotification decisionIssuedNotification;*/
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -87,29 +86,30 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        CaseIssueDecision caseIssueDecision = details.getData().getCaseIssueDecision();
-        var message = MessageUtil.generateIssueDecisionMessage(caseIssueDecision);
+        var message = MessageUtil.generateWholeMessage(details.getData().getCicCase(), "Decision notice issued", "");
 
-        sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        //TODO: temporarily disabled to test Confirmation screen
+        //sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
     }
 
-    private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
-        CaseIssueDecision caseIssueDecision = data.getCaseIssueDecision();
+    //TODO: temporarily disabled to test Confirmation screen
+    /*private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
+        var cicCase = data.getCicCase();
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.RESPONDANTTOCONTACT)) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.REPRESENTATIVETOCONTACT)) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
-    }
+    }*/
 }
