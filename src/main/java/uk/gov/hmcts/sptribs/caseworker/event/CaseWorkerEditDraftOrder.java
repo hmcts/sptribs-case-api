@@ -52,9 +52,21 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .grantHistoryOnly(SOLICITOR));
         editDraftOrder.addTo(pageBuilder);
         editMainContent.addTo(pageBuilder);
-
+        editDraftOrderAddDocumentFooter(pageBuilder);
 
     }
+
+    private void editDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
+        pageBuilder.page("editDraftOrderAddDocumentFooter")
+            .pageLabel("Document footer")
+            .label("draftOrderDocFooter",
+                "\nOrder Signature\n"
+                    + "\nConfirm the Role and Surname of the person who made this order - this will be added"
+                    + " to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'")
+            .mandatory(CaseData::getOrderSignature)
+            .done();
+    }
+
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,

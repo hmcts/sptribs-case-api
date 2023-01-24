@@ -37,6 +37,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     @Autowired
     private OrderService orderService;
 
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
@@ -61,8 +62,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .pageLabel("Document footer")
             .label("draftOrderDocFooter",
                 "\nOrder Signature\n"
-                    + "\nConfirm the Role and Surname of the person who made this decision - this will be added"
-                    + " to the bottom of the generated order document. E.g. 'Tribunal Judge Farrelly'")
+                    + "\nConfirm the Role and Surname of the person who made this order - this will be added"
+                    + " to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'")
             .mandatory(CaseData::getOrderSignature)
             .done();
     }
@@ -72,11 +73,9 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-
         var caseData = details.getData();
         DynamicList draftList = orderService.getDraftOrderTemplatesDynamicList(details);
-
-        caseData.getCicCase().setOrderTemplateList(draftList);
+        caseData.getCicCase().setOrderTemplateDynamisList(draftList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
