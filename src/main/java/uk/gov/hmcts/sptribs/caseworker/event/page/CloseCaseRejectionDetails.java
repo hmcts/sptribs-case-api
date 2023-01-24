@@ -16,8 +16,10 @@ public class CloseCaseRejectionDetails implements CcdPageConfiguration {
         map.put("closeCaseWithdrawalDetails", "closeCloseCaseReason = \"caseWithdrawn\"");
         map.put("closeCaseRejectionDetails", "closeCloseCaseReason = \"caseRejected\"");
         map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConceded\"");
+        map.put("closeCaseConsentOrder", "closeCloseCaseReason = \"consentOrder\"");
         pageBuilder.page("closeCaseRejectionDetails")
             .pageLabel("Rejection details")
+            .label("LabelRejectionDetails", "")
             .pageShowConditions(map)
             .complex(CaseData::getCloseCase)
             .mandatory(CloseCase::getRejectionFullName)
