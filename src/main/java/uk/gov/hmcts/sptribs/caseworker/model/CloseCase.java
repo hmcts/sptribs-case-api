@@ -66,4 +66,11 @@ public class CloseCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String rejectionDetails;
+
+    @CCD(
+        label = "When was the case conceded?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate concessionDate;
 }
