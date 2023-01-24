@@ -1,8 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-//import org.apache.commons.collections4.CollectionUtils;
-//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -19,7 +17,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-//import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -88,28 +85,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         var message = MessageUtil.generateWholeMessage(details.getData().getCicCase(), "Decision notice issued", "");
 
-        //TODO: temporarily disabled to test Confirmation screen
-        //sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
     }
-
-    //TODO: temporarily disabled to test Confirmation screen
-    /*private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
-        var cicCase = data.getCicCase();
-
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            decisionIssuedNotification.sendToSubject(data, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            decisionIssuedNotification.sendToRespondent(data, caseNumber);
-        }
-
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            decisionIssuedNotification.sendToRepresentative(data, caseNumber);
-        }
-    }*/
 }
