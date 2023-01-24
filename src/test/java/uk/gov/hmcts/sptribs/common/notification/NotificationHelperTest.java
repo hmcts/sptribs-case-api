@@ -60,6 +60,19 @@ public class NotificationHelperTest {
     }
 
     @Test
+    void setRecordingTemplateVarsTest_HearingFormat_null() throws IOException {
+        //Given
+        RecordListing recordListing = RecordListing.builder()
+            .hearingDate(LocalDate.of(2022, 12, 23))
+            .build();
+        Map<String, Object> templateVars = new HashMap<>();
+
+        notificationHelper.setRecordingTemplateVars(templateVars, recordListing);
+        //Then
+        Assertions.assertThat(templateVars.size()).isEqualTo(10);
+    }
+
+    @Test
     void setRecordingTemplateVarsTest_SelectedVenueSet() throws IOException {
         //Given
         RecordListing recordListing = Mockito.mock(RecordListing.class);
@@ -96,6 +109,7 @@ public class NotificationHelperTest {
         RecordListing recordListing = RecordListing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
             .conferenceCallNumber("cmi459t5iut5")
+            .addlInstr("Test Instructions")
             .videoCallLink("http://abc.com")
             .conferenceCallNumber("+56677778")
             .hearingFormat(HearingFormat.TELEPHONE)
