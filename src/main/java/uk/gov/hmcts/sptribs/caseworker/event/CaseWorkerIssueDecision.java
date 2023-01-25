@@ -14,14 +14,16 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
+
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -99,15 +101,15 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
 
-        if (data.getCicCase().getNotifyPartySubject().contains(SubjectCIC.SUBJECT)) {
+        if (data.getCicCase().getNotifyPartySubject().contains(Set.of(SubjectCIC.SUBJECT))) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (data.getCicCase().getNotifyPartyRespondent().contains(RespondentCIC.RESPONDENT)) {
+        if (data.getCicCase().getNotifyPartyRespondent().contains(Set.of(RespondentCIC.RESPONDENT))) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (data.getCicCase().getNotifyPartyRepresentative().contains(RepresentativeCIC.REPRESENTATIVE)) {
+        if (data.getCicCase().getNotifyPartyRepresentative().contains(Set.of(RepresentativeCIC.REPRESENTATIVE))) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
     }
