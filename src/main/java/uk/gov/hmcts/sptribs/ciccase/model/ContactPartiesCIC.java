@@ -13,7 +13,7 @@ public enum ContactPartiesCIC implements HasLabel {
     SUBJECTTOCONTACT("Subject"),
 
     @JsonProperty("RespondantToContact")
-    RESPONDANTTOCONTACT("Respondant"),
+    RESPONDANTTOCONTACT("Respondent"),
 
     @JsonProperty("RepresentativeToContact")
     REPRESENTATIVETOCONTACT("Representative");
