@@ -163,10 +163,6 @@ public class Applicant {
     @JsonProperty("Offline") // required because isOffline() confuses Jackson
     private YesOrNo offline;
 
-    @JsonUnwrapped()
-    @Builder.Default
-    private ApplicantPrayer applicantPrayer = new ApplicantPrayer();
-
     @JsonIgnore
     public LanguagePreference getLanguagePreference() {
         return languagePreferenceWelsh == null || languagePreferenceWelsh.equals(NO)

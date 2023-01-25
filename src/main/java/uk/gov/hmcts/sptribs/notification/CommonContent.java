@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfig;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.String.join;
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.sptribs.ciccase.model.Gender.FEMALE;
 import static uk.gov.hmcts.sptribs.ciccase.model.Gender.MALE;
@@ -100,21 +99,6 @@ public class CommonContent {
         templateVars.put(COURT_EMAIL,
             config.getTemplateVars().get(caseData.isDivorce() ? DIVORCE_COURT_EMAIL : DISSOLUTION_COURT_EMAIL));
         templateVars.put(SIGN_IN_URL, getSignInUrl(caseData));
-        return templateVars;
-    }
-
-    public Map<String, String> basicTemplateVars(final CaseData caseData, final Long caseId) {
-
-        final Map<String, String> templateVars = new HashMap<>();
-        final Applicant applicant = caseData.getApplicant1();
-        final Applicant respondent = caseData.getApplicant2();
-
-        templateVars.put(APPLICANT_NAME, join(" ", applicant.getFirstName(), applicant.getLastName()));
-        templateVars.put(RESPONDENT_NAME, join(" ", respondent.getFirstName(), respondent.getLastName()));
-        templateVars.put(APPLICATION_REFERENCE, formatId(caseId));
-        templateVars.put(COURT_EMAIL,
-            config.getTemplateVars().get(caseData.isDivorce() ? DIVORCE_COURT_EMAIL : DISSOLUTION_COURT_EMAIL));
-
         return templateVars;
     }
 

@@ -13,7 +13,6 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public final class ValidationUtil {
 
@@ -28,57 +27,7 @@ public final class ValidationUtil {
     private ValidationUtil() {
     }
 
-    public static List<String> validateBasicCase(CaseData caseData) {
-        return flattenLists(
-            notNull(caseData.getApplicationType(), "ApplicationType"),
-            notNull(caseData.getApplicant1().getFirstName(), "Applicant1FirstName"),
-            notNull(caseData.getApplicant1().getLastName(), "Applicant1LastName"),
-            notNull(caseData.getApplicant2().getFirstName(), "Applicant2FirstName"),
-            notNull(caseData.getApplicant2().getLastName(), "Applicant2LastName"),
-            notNull(caseData.getApplicant1().getFinancialOrder(), "Applicant1FinancialOrder"),
-            !caseData.getApplicant1().isOffline() ? notNull(caseData.getApplicant1().getGender(), "Applicant1Gender") : emptyList(),
-            !isBlank(caseData.getApplicant2().getEmail()) && !caseData.getApplication().isPaperCase()
-                ? notNull(caseData.getApplicant2().getGender(), "Applicant2Gender")
-                : emptyList(),
-            notNull(caseData.getApplication().getMarriageDetails().getApplicant1Name(), "MarriageApplicant1Name"),
-            notNull(caseData.getApplicant1().getContactDetailsType(), "Applicant1ContactDetailsType"),
-            hasStatementOfTruth(caseData.getApplication()),
-            !caseData.getApplicant1().isOffline()
-                ? caseData.getApplicant1().getApplicantPrayer().validatePrayerApplicant1(caseData)
-                : emptyList(),
-            validateMarriageDate(caseData.getApplication().getMarriageDetails().getDate(), "MarriageDate"),
-            validateJurisdictionConnections(caseData)
-        );
-    }
 
-    private static List<String> hasStatementOfTruth(Application application) {
-        return application.hasStatementOfTruth() ? emptyList() : List.of(SOT_REQUIRED);
-    }
-
-    public static List<String> validateApplicant1BasicCase(CaseData caseData) {
-        return flattenLists(
-            notNull(caseData.getApplicant1().getFirstName(), "Applicant1FirstName"),
-            notNull(caseData.getApplicant1().getLastName(), "Applicant1LastName"),
-            notNull(caseData.getApplicant1().getFinancialOrder(), "Applicant1FinancialOrder"),
-            !caseData.getApplicant1().isOffline() ? notNull(caseData.getApplicant1().getGender(), "Applicant1Gender") : emptyList(),
-            !isBlank(caseData.getApplicant2().getEmail()) ? notNull(caseData.getApplicant2().getGender(), "Applicant2Gender") : emptyList(),
-            notNull(caseData.getApplication().getMarriageDetails().getApplicant1Name(), "MarriageApplicant1Name"),
-            validateMarriageDate(caseData.getApplication().getMarriageDetails().getDate(), "MarriageDate"),
-            validateJurisdictionConnections(caseData)
-        );
-    }
-
-    public static List<String> validateApplicant2BasicCase(CaseData caseData) {
-        return flattenLists(
-            notNull(caseData.getApplicant2().getFirstName(), "Applicant2FirstName"),
-            notNull(caseData.getApplicant2().getLastName(), "Applicant2LastName"),
-            notNull(caseData.getApplication().getApplicant2StatementOfTruth(), "Applicant2StatementOfTruth"),
-            !isBlank(caseData.getApplicant2().getEmail())
-                ? caseData.getApplicant2().getApplicantPrayer().validatePrayerApplicant2(caseData)
-                : emptyList(),
-            notNull(caseData.getApplication().getMarriageDetails().getApplicant2Name(), "MarriageApplicant2Name")
-        );
-    }
 
     public static List<String> validateApplicant2RequestChanges(Application application) {
         return flattenLists(
@@ -105,7 +54,7 @@ public final class ValidationUtil {
     }
 
     public static List<String> validateJurisdictionConnections(CaseData caseData) {
-        if (caseData.getApplication().isPaperCase() || caseData.getApplicant1().isRepresented()) {
+        if (caseData.getApplication().isPaperCase()) {
             if (isEmpty(caseData.getApplication().getJurisdiction().getConnections())) {
                 return List.of("JurisdictionConnections" + EMPTY);
             }
