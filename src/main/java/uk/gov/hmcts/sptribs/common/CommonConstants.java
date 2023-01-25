@@ -20,6 +20,7 @@ public final class CommonConstants {
     public static final String CIC_CASE_RECORD_CONF_CALL_NUM = "recordConferenceCallNumber";
     public static final String CIC_CASE_RECORD_HEARING_1FACE_TO_FACE = "recordHearingFormatFaceToFace";
     public static final String CIC_CASE_RECORD_REMOTE_HEARING = "Remote Hearing";
+    public static final String CIC_CASE_UK_DATE_FORMAT = "dd-MM-yyyy";
 
     public static final String HEARING_DATE = "HearingDate";
     public static final String HEARING_TIME = "HearingTime";
