@@ -2,21 +2,13 @@ package uk.gov.hmcts.sptribs.document;
 
 import com.google.common.collect.Lists;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.document.model.ConfidentialDivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
-import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.print.model.Letter;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.ofNullable;
 import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.GENERAL_LETTER;
@@ -33,62 +25,6 @@ public final class DocumentUtil {
             documentInfo.getUrl(),
             documentInfo.getFilename(),
             documentInfo.getBinaryUrl());
-    }
-
-    public static DivorceDocument divorceDocumentFrom(final DocumentInfo documentInfo, final DocumentType documentType) {
-        return DivorceDocument
-            .builder()
-            .documentLink(documentFrom(documentInfo))
-            .documentFileName(documentInfo.getFilename())
-            .documentType(documentType)
-            .build();
-    }
-
-    public static ConfidentialDivorceDocument divorceDocumentFrom(final DocumentInfo documentInfo,
-                                                                  final ConfidentialDocumentsReceived documentType) {
-        return ConfidentialDivorceDocument
-            .builder()
-            .documentLink(documentFrom(documentInfo))
-            .documentFileName(documentInfo.getFilename())
-            .confidentialDocumentsReceived(documentType)
-            .build();
-    }
-
-    public static boolean documentsWithDocumentType(final List<ListValue<DivorceDocument>> documents,
-                                                    final DocumentType documentType) {
-
-        return ofNullable(documents)
-            .flatMap(Collection::stream)
-            .map(ListValue::getValue)
-            .anyMatch(document -> documentType.equals(document.getDocumentType()));
-    }
-
-    public static List<Letter> lettersWithDocumentType(final List<ListValue<DivorceDocument>> documents,
-                                                       final DocumentType documentType) {
-
-        final AtomicInteger letterIndex = new AtomicInteger();
-
-        return ofNullable(documents)
-            .flatMap(Collection::stream)
-            .map(ListValue::getValue)
-            .filter(document -> documentType.equals(document.getDocumentType()))
-            .map(divorceDocument -> new Letter(divorceDocument, letterIndex.incrementAndGet()))
-            .collect(toList());
-    }
-
-    public static List<Letter> mapToLetters(final List<ListValue<Document>> documents, final DocumentType documentType) {
-
-        final AtomicInteger letterIndex = new AtomicInteger();
-
-        return ofNullable(documents)
-            .flatMap(Collection::stream)
-            .map(ListValue::getValue)
-            .map(document -> new Letter(DivorceDocument.builder()
-                .documentType(documentType)
-                .documentFileName(document.getFilename())
-                .documentLink(document)
-                .build(), letterIndex.incrementAndGet()))
-            .collect(toList());
     }
 
     public static boolean isApplicableForConfidentiality(final DocumentType documentType, final Boolean isApplicant1) {

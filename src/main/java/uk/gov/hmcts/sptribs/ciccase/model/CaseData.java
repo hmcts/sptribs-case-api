@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.groovy.parser.antlr4.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -38,19 +36,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 import static uk.gov.hmcts.sptribs.ciccase.model.Gender.FEMALE;
 import static uk.gov.hmcts.sptribs.ciccase.model.Gender.MALE;
-import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
 import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.HUSBAND;
 import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.WIFE;
 
@@ -196,19 +190,6 @@ public class CaseData {
     )
     private List<ListValue<GeneralReferral>> generalReferrals;
 
-    @CCD(
-        label = "Previous Service Applications",
-        typeOverride = Collection,
-        typeParameterOverride = "AlternativeServiceOutcome",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<AlternativeServiceOutcome>> alternativeServiceOutcomes;
-
-    @JsonUnwrapped
-    @Builder.Default
-    @CCD(access = {CaseworkerAccessOnlyAccess.class})
-    private AlternativeService alternativeService = new AlternativeService();
-
     @JsonUnwrapped
     @Builder.Default
     private CaseDocuments documents = new CaseDocuments();
@@ -219,12 +200,6 @@ public class CaseData {
         access = {DefaultAccess.class}
     )
     private Court divorceUnit;
-
-    @CCD(
-        label = "General Orders",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<DivorceGeneralOrder>> generalOrders;
 
     @CCD(
         label = "Due Date",
@@ -282,11 +257,6 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String note;
-
-    @CCD(access = {DefaultAccess.class})
-    @JsonUnwrapped
-    private RetiredFields retiredFields;
-
 
     @CCD(
         label = "Case number",
@@ -396,72 +366,6 @@ public class CaseData {
             temp.substring(8, 12),
             temp.substring(12, 16)
         );
-    }
-
-    @JsonIgnore
-    public boolean isSoleApplicationOrApplicant2HasAgreedHwf() {
-        return nonNull(applicationType)
-            && applicationType.isSole()
-            || nonNull(application.getApplicant2HelpWithFees())
-            && nonNull(application.getApplicant2HelpWithFees().getNeedHelp())
-            && application.getApplicant2HelpWithFees().getNeedHelp().toBoolean()
-            || FEES_HELP_WITH.equals(application.getSolPaymentHowToPay());
-    }
-
-    @JsonIgnore
-    public String getApplicant2EmailAddress() {
-        final String applicant2Email = applicant2.getEmail();
-
-        if (StringUtils.isEmpty(applicant2Email)) {
-            if (nonNull(caseInvite)) {
-                return caseInvite.applicant2InviteEmailAddress();
-            } else {
-                return null;
-            }
-        }
-
-        return applicant2Email;
-    }
-
-    public void archiveAlternativeServiceApplicationOnCompletion() {
-
-        AlternativeService alternativeSrv = this.getAlternativeService();
-
-        if (null != alternativeSrv) {
-
-            alternativeSrv.setReceivedServiceAddedDate(LocalDate.now());
-
-            AlternativeServiceOutcome alternativeServiceOutcome = alternativeSrv.getOutcome();
-
-            if (isEmpty(this.getAlternativeServiceOutcomes())) {
-
-                List<ListValue<AlternativeServiceOutcome>> listValues = new ArrayList<>();
-
-                var listValue = ListValue
-                    .<AlternativeServiceOutcome>builder()
-                    .id("1")
-                    .value(alternativeServiceOutcome)
-                    .build();
-
-                listValues.add(listValue);
-                this.setAlternativeServiceOutcomes(listValues);
-
-            } else {
-
-                var listValue = ListValue
-                    .<AlternativeServiceOutcome>builder()
-                    .value(alternativeServiceOutcome)
-                    .build();
-
-                int listValueIndex = 0;
-                this.getAlternativeServiceOutcomes().add(0, listValue);
-                for (ListValue<AlternativeServiceOutcome> asListValue : this.getAlternativeServiceOutcomes()) {
-                    asListValue.setId(String.valueOf(listValueIndex++));
-                }
-            }
-            // Null the current AlternativeService object instance in the CaseData so that a new one can be created
-            this.setAlternativeService(null);
-        }
     }
 
     @JsonIgnore
