@@ -98,7 +98,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("divorceWho")
             .field("applicant1ScreenHasMarriageBroken")
             .field("applicant1PcqId")
-            .field("applicant1Offline")
             .label("LabelApplicant1DetailsAreConfidential-Heading",
                 "applicant1ContactDetailsType=\"private\"",
                 "#### ${labelContentTheApplicantOrApplicant1UC}'s contact details are confidential")
@@ -136,29 +135,9 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
     private void addApplicant2(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
         tabBuilder
             .label("LabelApplicant2-Heading", null, "### ${labelContentTheApplicant2UC}")
-            .field("applicant2FirstName")
-            .field("applicant2MiddleName")
-            .field("applicant2LastName")
-            .field("applicant2Gender")
-            .field("applicant2LastNameChangedWhenMarried")
-            .field("applicant2NameDifferentToMarriageCertificate")
-            .field("applicant2NameChangedHow")
-            .field("applicant2NameChangedHowOtherDetails")
-            .field("applicant2ContactDetailsType", NEVER_SHOW)
-            .field("applicant2ScreenHasMarriageBroken")
-            .field("applicant2PcqId")
-            .field("applicant2Offline")
             .label("LabelApplicant2DetailsAreConfidential-Heading",
                 "applicant2ContactDetailsType=\"private\"",
                 "#### ${labelContentTheApplicant2UC}'s contact details are confidential")
-            .field("applicant2PhoneNumber", APPLICANT_2_CONTACT_DETAILS_PUBLIC)
-            .field("applicant2Email", APPLICANT_2_CONTACT_DETAILS_PUBLIC)
-            .field("applicant2Address", APPLICANT_2_CONTACT_DETAILS_PUBLIC)
-            .field("applicant2AgreedToReceiveEmails")
-            .field("applicant2CannotUpload")
-            .field("applicant2CannotUploadSupportingDocument")
-            .field("applicant1IsApplicant2Represented", "applicant2SolicitorRepresented!=\"*\"")
-            .field("applicant2SolicitorRepresented")
 
             //Applicant 2 Solicitor
             .label("LabelApplicant2sSolicitorNewCases-Heading",
@@ -167,14 +146,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .label("LabelApplicant2sSolicitorOldCases-Heading",
                 "applicant1IsApplicant2Represented=\"Yes\" AND applicant2SolicitorRepresented!=\"*\"",
                 "#### ${labelContentApplicant2UC}'s solicitor details")
-            .field("applicant2SolicitorReference", "applicant2SolicitorRepresented!=\"No\"")
-            .field("applicant2SolicitorName", "applicant2SolicitorRepresented!=\"No\"")
-            .field("applicant2SolicitorAddress", "applicant2SolicitorRepresented!=\"No\"")
-            .field("applicant2SolicitorPhone", "applicant2SolicitorRepresented!=\"No\"")
-            .field("applicant2SolicitorEmail", "applicant2SolicitorRepresented!=\"No\"")
-            .field("applicant2SolicitorFirmName", "applicant2SolicitorRepresented!=\"No\"")
-            .field("applicant2SolicitorOrganisationPolicy", "applicant2SolicitorRepresented!=\"No\"")
-            .field("applicant2SolicitorAgreeToReceiveEmailsCheckbox", "applicant2SolicitorRepresented!=\"No\"")
 
             //Applicant 2 Other proceedings
             .label("LabelApplicant2OtherProceedings-Heading",
