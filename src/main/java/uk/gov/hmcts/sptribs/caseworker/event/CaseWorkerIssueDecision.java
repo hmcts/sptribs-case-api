@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -13,10 +14,14 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -36,8 +41,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
     private static final CcdPageConfiguration issueDecisionSelectRecipients = new IssueDecisionSelectRecipients();
 
-    /*@Autowired
-    private DecisionIssuedNotification decisionIssuedNotification;*/
+    @Autowired
+    private DecisionIssuedNotification decisionIssuedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -85,8 +90,25 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         var message = MessageUtil.generateWholeMessage(details.getData().getCicCase(), "Decision notice issued", "");
 
+        sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
+    }
+
+    private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
+
+        if (data.getCicCase().getNotifyPartySubject().contains(SubjectCIC.SUBJECT)) {
+            decisionIssuedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (data.getCicCase().getNotifyPartyRespondent().contains(RespondentCIC.RESPONDENT)) {
+            decisionIssuedNotification.sendToRespondent(data, caseNumber);
+        }
+
+        if (data.getCicCase().getNotifyPartyRepresentative().contains(RepresentativeCIC.REPRESENTATIVE)) {
+            decisionIssuedNotification.sendToRepresentative(data, caseNumber);
+        }
     }
 }
