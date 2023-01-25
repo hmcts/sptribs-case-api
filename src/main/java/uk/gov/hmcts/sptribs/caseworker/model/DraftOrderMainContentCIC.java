@@ -25,9 +25,9 @@ public class DraftOrderMainContentCIC {
     )
     private String mainContent;
 
-    @CCD(
-       // label = "Final decision notice preview",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Document orderTemplateIssued;
+//    @CCD(
+//       // label = "Final decision notice preview",
+//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+//    )
+//    private Document orderTemplateIssued;
 }

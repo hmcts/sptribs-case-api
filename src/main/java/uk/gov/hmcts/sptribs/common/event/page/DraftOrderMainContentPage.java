@@ -38,18 +38,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
     private CaseDataDocumentService caseDataDocumentService;
     @Autowired
     private FinalDecisionTemplateContent finalDecisionTemplateContent;
-//    @Autowired
-//    private DocmosisTemplateProvider docmosisTemplateProvider;
-//    @Autowired
-//    private DocAssemblyService docAssembleyService;
 
-    //    @Autowired
-//    DocAssemblyResponse docAssemblyResponse;
-//    @Autowired
-//    private IdamService idamService;
-
-//    @Autowired
-//    DocAssemblyClient docAssemblyClient;
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -77,14 +66,14 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
 
         //  final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         CaseData caseData = details.getData();
-        var finalDecision = caseData.getCaseIssueFinalDecision();
+        //  var finalDecision = caseData.getCaseIssueFinalDecision();
         var finalOrderIssu = caseData.getDraftOrderMainContentCIC();
 
         var template = caseData.getCicCase().getAnOrderTemplates();
-        final String templateId = caseData.getCicCase().getAnOrderTemplates().getId();
+        //  final String templateId = caseData.getCicCase().getAnOrderTemplates().getId();
         final Long caseId = details.getId();
         //final Long ccdCaseReference= null;
-        // final String templateName = docmosisTemplateProvider.templateNameFor(templateId, languagePreference);
+        // final String templateName = docmosisTemplateProvider.templateNameFor(templateId,   LanguagePreference.ENGLISH);
 
         final String filename= "Order" + LocalDateTime.now().format(formatter);
 //        Map<String, Object> templateContent = new HashMap<>();
@@ -116,10 +105,10 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
 //        );
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
-              finalDecisionTemplateContent.apply(caseData, caseId),
+            finalDecisionTemplateContent.apply(caseData, caseId),
             caseId,
             caseData.getCicCase().getAnOrderTemplates().getId(),
-           // finalDecision.getFinalDecisionTemplate().getId(),
+            // finalDecision.getFinalDecisionTemplate().getId(),
             LanguagePreference.ENGLISH,
             filename
         );
@@ -131,9 +120,9 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
 //        final String templateId,
 //        final LanguagePreference languagePreference,
 //        final String filename
-        finalOrderIssu.setOrderTemplateIssued(generalOrderDocument);
-        caseData.getCicCase().setAnOrderTemplates(template);
 
+        caseData.getCicCase().setAnOrderTemplates(template);
+          finalOrderIssu.setOrderTemplateIssued(generalOrderDocument);
         // finalDecision.setFinalDecisionDraft(generateTemplate);
         //caseData.getCicCase().setAnOrderTemplates(template);
         //finalDecision.setFinalDecisionDraft(generateTemplate);
@@ -143,5 +132,6 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
             .data(caseData)
             .build();
     }
+
 
 }
