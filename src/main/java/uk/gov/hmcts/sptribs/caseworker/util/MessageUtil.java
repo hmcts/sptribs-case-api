@@ -3,9 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.HasLabel;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
@@ -122,23 +120,6 @@ public final class MessageUtil {
             message = sb.toString();
         }
         return message;
-    }
-
-    public static String generateIssueDecisionMessage(final CaseIssueDecision decision) {
-        final StringBuilder message = new StringBuilder(100);
-        message.append(format("# Decision notice issued %n ## ")).append("A notification has been sent to: ");
-
-        if (decision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
-            message.append(SUBJECT);
-        }
-        if (decision.getRecipients().contains(ContactPartiesCIC.RESPONDANTTOCONTACT)) {
-            message.append(", " + RESPONDENT);
-        }
-        if (decision.getRecipients().contains(ContactPartiesCIC.REPRESENTATIVETOCONTACT)) {
-            message.append(", " + REPRESENTATIVE);
-        }
-
-        return message.toString();
     }
 
     public static String generateSimpleMessage(Set<NotificationParties> hearingNotificationParties) {

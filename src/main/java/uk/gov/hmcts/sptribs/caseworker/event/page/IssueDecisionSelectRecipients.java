@@ -1,16 +1,17 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
 
@@ -19,8 +20,15 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
         pageBuilder
             .page("issueDecisionSelectRecipients", this::midEvent)
             .pageLabel("Select recipients")
-            .complex(CaseData::getCaseIssueDecision)
-            .optional(CaseIssueDecision::getRecipients, "")
+            .complex(CaseData::getCicCase)
+            .readonlyWithLabel(CicCase::getFullName, " ")
+            .optional(CicCase::getNotifyPartySubject, "")
+            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRepresentative", "")
+            .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRespondent", "")
+            .readonlyWithLabel(CicCase::getRespondantName, " ")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
     }
 
@@ -29,8 +37,8 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (CollectionUtils.isEmpty(data.getCaseIssueDecision().getRecipients())) {
-            errors.add("One field must be selected.");
+        if (checkNullSubjectRepresentativeRespondent(data)) {
+            errors.add("One recipient must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
