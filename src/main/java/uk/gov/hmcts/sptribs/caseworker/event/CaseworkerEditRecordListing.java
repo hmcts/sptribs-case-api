@@ -154,9 +154,12 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         recordListHelper.populatedVenuesData(caseData);
 
-        if (caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())) {
+        if (null != caseDataBefore.getRecordListing().getReadOnlyHearingVenueName()
+            && null != caseData.getRecordListing().getSelectedRegionVal()
+            && caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())) {
             caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
             caseData.getRecordListing().getHearingVenues().setValue(caseDataBefore.getRecordListing().getHearingVenues().getValue());
+
 
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

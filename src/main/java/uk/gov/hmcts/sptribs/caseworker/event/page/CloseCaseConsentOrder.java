@@ -8,23 +8,19 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloseCaseWithdrawalDetails implements CcdPageConfiguration {
-
+public class CloseCaseConsentOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
         map.put("closeCaseWithdrawalDetails", "closeCloseCaseReason = \"caseWithdrawn\"");
         map.put("closeCaseRejectionDetails", "closeCloseCaseReason = \"caseRejected\"");
-        map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConceded\"");
+        map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConcession\"");
         map.put("closeCaseConsentOrder", "closeCloseCaseReason = \"consentOrder\"");
-        pageBuilder.page("closeCaseWithdrawalDetails")
-            .pageLabel("Withdrawal details")
+        pageBuilder.page("closeCaseConsentOrder")
+            .pageLabel("Consent order details")
             .pageShowConditions(map)
             .complex(CaseData::getCloseCase)
-            .mandatory(CloseCase::getWithdrawalFullName)
-            .mandatory(CloseCase::getWithdrawalRequestDate)
+            .mandatory(CloseCase::getConsentOrderDate)
             .done();
-
     }
-
 }
