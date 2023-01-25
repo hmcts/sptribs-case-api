@@ -12,15 +12,18 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
+
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -87,8 +90,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        CaseIssueDecision caseIssueDecision = details.getData().getCaseIssueDecision();
-        var message = MessageUtil.generateIssueDecisionMessage(caseIssueDecision);
+        var message = MessageUtil.generateWholeMessage(details.getData().getCicCase(), "Decision notice issued", "");
 
         sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
@@ -98,17 +100,16 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
-        CaseIssueDecision caseIssueDecision = data.getCaseIssueDecision();
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.SUBJECTTOCONTACT)) {
+        if (data.getCicCase().getNotifyPartySubject().contains(Set.of(SubjectCIC.SUBJECT))) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.RESPONDANTTOCONTACT)) {
+        if (data.getCicCase().getNotifyPartyRespondent().contains(Set.of(RespondentCIC.RESPONDENT))) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (caseIssueDecision.getRecipients().contains(ContactPartiesCIC.REPRESENTATIVETOCONTACT)) {
+        if (data.getCicCase().getNotifyPartyRepresentative().contains(Set.of(RepresentativeCIC.REPRESENTATIVE))) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
     }
