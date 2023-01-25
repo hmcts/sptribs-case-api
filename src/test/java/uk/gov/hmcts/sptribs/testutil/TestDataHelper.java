@@ -6,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
-import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.Fee;
@@ -22,10 +21,8 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
-import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
-import uk.gov.hmcts.sptribs.ciccase.model.Gender;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
@@ -52,14 +49,9 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.ciccase.model.ContactDetailsType.PUBLIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.DivorceOrDissolution.DIVORCE;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.FEMALE;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.MALE;
 import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_1_APP_2_RESIDENT;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_2_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.FEE_CODE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
@@ -67,12 +59,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FEE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_LAST_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_MIDDLE_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_ORG_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_ORG_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER_EMAIL;
 
 public class TestDataHelper {
 
@@ -90,69 +78,6 @@ public class TestDataHelper {
     private TestDataHelper() {
 
     }
-
-    public static Applicant getApplicant() {
-        return getApplicant(FEMALE);
-    }
-
-    public static Applicant getApplicant(Gender gender) {
-        return Applicant.builder()
-            .firstName(TEST_FIRST_NAME)
-            .middleName(TEST_MIDDLE_NAME)
-            .lastName(TEST_LAST_NAME)
-            .email(TEST_USER_EMAIL)
-            .gender(gender)
-            .languagePreferenceWelsh(NO)
-            .contactDetailsType(PUBLIC)
-            .financialOrder(NO)
-            .build();
-    }
-
-    public static Applicant getApplicantWithAddress() {
-        return Applicant.builder()
-            .firstName(TEST_FIRST_NAME)
-            .middleName(TEST_MIDDLE_NAME)
-            .lastName(TEST_LAST_NAME)
-            .email(TEST_USER_EMAIL)
-            .gender(MALE)
-            .languagePreferenceWelsh(NO)
-            .address(AddressGlobalUK.builder()
-                .addressLine1("line 1")
-                .postTown("town")
-                .postCode("postcode")
-                .country("UK")
-                .build())
-            .build();
-    }
-
-    public static Applicant getApplicant2(Gender gender) {
-        return Applicant.builder()
-            .firstName(TEST_FIRST_NAME)
-            .middleName(TEST_MIDDLE_NAME)
-            .lastName(TEST_LAST_NAME)
-            .gender(gender)
-            .build();
-    }
-
-    public static Applicant getJointApplicant2(Gender gender) {
-        return Applicant.builder()
-            .gender(gender)
-            .firstName(TEST_FIRST_NAME)
-            .middleName(TEST_MIDDLE_NAME)
-            .lastName(TEST_LAST_NAME)
-            .build();
-    }
-
-
-
-    public static Applicant respondent() {
-        return Applicant.builder()
-            .firstName(APPLICANT_2_FIRST_NAME)
-            .lastName(TEST_LAST_NAME)
-            .gender(MALE)
-            .build();
-    }
-
 
     public static CaseData caseData() {
         return CaseData.builder()

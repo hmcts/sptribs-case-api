@@ -11,8 +11,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 @Component
 public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final String APPLICANT_1_CONTACT_DETAILS_PUBLIC = "applicant1ContactDetailsType!=\"private\"";
-    private static final String APPLICANT_2_CONTACT_DETAILS_PUBLIC = "applicant2ContactDetailsType!=\"private\"";
     private static final String NEVER_SHOW = "applicationType=\"NEVER_SHOW\"";
     private static final String JOINT_APPLICATION = "applicationType=\"jointApplication\"";
     private static final String SOLE_APPLICATION = "applicationType=\"soleApplication\"";
@@ -30,8 +28,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
 
         addDynamicContentHiddenFields(tabBuilderForSoleApplication);
         addHeaderFields(tabBuilderForSoleApplication);
-        addApplicant1(tabBuilderForSoleApplication);
-        addApplicant2(tabBuilderForSoleApplication);
         addMarriageAndCertificate(tabBuilderForSoleApplication);
         addLegalConnections(tabBuilderForSoleApplication);
         addOtherProceedings(tabBuilderForSoleApplication);
@@ -46,12 +42,10 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
 
         addDynamicContentHiddenFields(tabBuilderForJointApplication);
         addHeaderFields(tabBuilderForJointApplication);
-        addApplicant1(tabBuilderForJointApplication);
         addOtherCourtCases(tabBuilderForJointApplication);
         addApplicant1StatementOfTruth(tabBuilderForJointApplication);
         addMarriageAndCertificate(tabBuilderForJointApplication);
         addLegalConnections(tabBuilderForJointApplication);
-        addApplicant2(tabBuilderForJointApplication);
         addOtherProceedings(tabBuilderForJointApplication);
         addService(tabBuilderForJointApplication);
     }
@@ -81,46 +75,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getHyphenatedCaseRef, NEVER_SHOW);
     }
 
-    private void addApplicant1(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
-        tabBuilder
-            .label("LabelApplicant1-Heading", null, "### ${labelContentTheApplicantOrApplicant1UC}")
-            .field("applicant1FirstName")
-            .field("applicant1MiddleName")
-            .field("applicant1LastName")
-            .field("applicant1Gender")
-            .field("newPaperCase", NEVER_SHOW)
-            .field("marriageFormationType", NOT_NEW_PAPER_CASE)
-            .field("applicant1LastNameChangedWhenMarried")
-            .field("applicant1NameDifferentToMarriageCertificate")
-            .field("applicant1NameChangedHow")
-            .field("applicant1NameChangedHowOtherDetails")
-            .field("applicant1ContactDetailsType", NEVER_SHOW)
-            .field("divorceWho")
-            .field("applicant1ScreenHasMarriageBroken")
-            .field("applicant1PcqId")
-            .label("LabelApplicant1DetailsAreConfidential-Heading",
-                "applicant1ContactDetailsType=\"private\"",
-                "#### ${labelContentTheApplicantOrApplicant1UC}'s contact details are confidential")
-            .field("applicant1PhoneNumber", APPLICANT_1_CONTACT_DETAILS_PUBLIC)
-            .field("applicant1Email", APPLICANT_1_CONTACT_DETAILS_PUBLIC)
-            .field("applicant1Address", APPLICANT_1_CONTACT_DETAILS_PUBLIC)
-            .field("applicant1CannotUpload")
-            .field("applicant1CannotUploadSupportingDocument")
-
-            //Applicant 1 Solicitor
-            .field("applicant1SolicitorRepresented", NEVER_SHOW)
-            .label("LabelApplicant1sSolicitor-Heading",
-                "applicant1SolicitorRepresented=\"Yes\"",
-                "#### ${labelContentTheApplicantOrApplicant1UC}'s solicitor")
-            .field("applicant1SolicitorReference", "applicant1SolicitorRepresented=\"Yes\"")
-            .field("applicant1SolicitorName", "applicant1SolicitorRepresented=\"Yes\"")
-            .field("applicant1SolicitorAddress", "applicant1SolicitorRepresented=\"Yes\"")
-            .field("applicant1SolicitorPhone", "applicant1SolicitorRepresented=\"Yes\"")
-            .field("applicant1SolicitorEmail", "applicant1SolicitorRepresented=\"Yes\"")
-            .field("applicant1SolicitorOrganisationPolicy", "applicant1SolicitorRepresented=\"Yes\"")
-            .field("applicant1SolicitorAgreeToReceiveEmailsCheckbox", "applicant1SolicitorRepresented=\"Yes\"");
-    }
-
     private void addOtherCourtCases(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
         tabBuilder
             .label("LabelApplicant1OtherProceedings-Heading", null, "#### ${labelContentTheApplicantOrApplicant1UC}'s other proceedings:")
@@ -130,35 +84,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field("applicant1FinancialOrder")
             .field("applicant1FinancialOrdersFor",
                 "applicant1FinancialOrder=\"Yes\"");
-    }
-
-    private void addApplicant2(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
-        tabBuilder
-            .label("LabelApplicant2-Heading", null, "### ${labelContentTheApplicant2UC}")
-            .label("LabelApplicant2DetailsAreConfidential-Heading",
-                "applicant2ContactDetailsType=\"private\"",
-                "#### ${labelContentTheApplicant2UC}'s contact details are confidential")
-
-            //Applicant 2 Solicitor
-            .label("LabelApplicant2sSolicitorNewCases-Heading",
-                "applicant2SolicitorRepresented=\"Yes\"",
-                "#### ${labelContentApplicant2UC}'s solicitor details")
-            .label("LabelApplicant2sSolicitorOldCases-Heading",
-                "applicant1IsApplicant2Represented=\"Yes\" AND applicant2SolicitorRepresented!=\"*\"",
-                "#### ${labelContentApplicant2UC}'s solicitor details")
-
-            //Applicant 2 Other proceedings
-            .label("LabelApplicant2OtherProceedings-Heading",
-                JOINT_APPLICATION,
-                "#### Applicant 2's other proceedings:")
-            .field("applicant2LegalProceedings", JOINT_APPLICATION)
-            .field("applicant2LegalProceedingsDetails",
-                "applicant2LegalProceedings=\"Yes\" AND applicationType=\"jointApplication\"")
-            .field("applicant2FinancialOrder", JOINT_APPLICATION)
-            .field("applicant2FinancialOrdersFor",
-                "applicant2FinancialOrder=\"Yes\" AND applicationType=\"jointApplication\"")
-
-            .field("applicant2StatementOfTruth", JOINT_APPLICATION);
     }
 
     private void addMarriageAndCertificate(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {

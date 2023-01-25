@@ -30,9 +30,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildSummaryTab(configBuilder);
         buildFlagsTab(configBuilder);
         buildStateTab(configBuilder);
-        buildAosTab(configBuilder);
         buildPaymentTab(configBuilder);
-        buildLanguageTab(configBuilder);
         buildDocumentsTab(configBuilder);
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
@@ -67,30 +65,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("LabelState", null, "#### Case State:  ${[STATE]}");
     }
 
-    //TODO: Need to revisit this tab once the field stated in the ticket sptribs-595 are available
-    private void buildAosTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("aosDetails", "AoS")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
-            .showCondition("applicationType=\"soleApplication\"")
-            .field("applicant2Offline", "applicationType=\"NEVER_SHOW\"")
-            .label("LabelAosTabOnlineResponse-Heading", "applicant2Offline=\"No\"", "## This is an online AoS response")
-            .label("LabelAosTabOfflineResponse-Heading", "applicant2Offline=\"Yes\"", "## This is an offline AoS response")
-            .field("confirmReadPetition")
-            .field("reasonCourtsOfEnglandAndWalesHaveNoJurisdiction", "jurisdictionAgree=\"No\"")
-            .field("applicant2LegalProceedings")
-            .field("applicant2LegalProceedingsDetails")
-            .field("dueDate")
-            .field("howToRespondApplication")
-            .field("applicant2LanguagePreferenceWelsh")
-            .field("applicant2SolicitorRepresented")
-            .field("noticeOfProceedingsEmail")
-            .field("noticeOfProceedingsSolicitorFirm")
-            .field("applicant2SolicitorRepresented", NEVER_SHOW)
-            .field("statementOfTruth")
-            .field("applicant2StatementOfTruth", "statementOfTruth!=\"*\"")
-            .field("dateAosSubmitted");
-    }
-
     private void buildPaymentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("paymentDetailsCourtAdmin", "Payment")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
@@ -116,14 +90,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getPaymentHistoryField);
     }
 
-    private void buildLanguageTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("languageDetails", "Language")
-            .label("LabelLanguageDetails-Applicant", null, "### The applicant")
-            .field("applicant1LanguagePreferenceWelsh")
-            .label("LabelLanguageDetails-Respondent", null, "### The respondent")
-            .field("applicant2LanguagePreferenceWelsh");
-    }
-
     private void buildDocumentsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("documents", "Documents")
             .field("documentsGenerated")
@@ -133,7 +99,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getGeneralOrders)
             .field("documentsUploaded")
             .field(CaseData::getGeneralEmails)
-            .field("certificateOfServiceDocument")
             .field("coCertificateOfEntitlementDocument");
     }
 
