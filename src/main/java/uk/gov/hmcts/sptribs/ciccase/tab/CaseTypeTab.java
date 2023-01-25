@@ -16,7 +16,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private static final String IS_JOINT = "applicationType=\"jointApplication\"";
     private static final String IS_JOINT_AND_HWF_ENTERED = "applicationType=\"jointApplication\" AND applicant2HWFReferenceNumber=\"*\"";
     private static final String IS_NEW_PAPER_CASE = "newPaperCase=\"Yes\"";
-    private static final String APPLICANT_1_CONTACT_DETAILS_PUBLIC = "applicant1ContactDetailsType!=\"private\"";
     private static final String PAPER_FORM_APPLICANT_1_PAYMENT_OTHER_DETAILS =
         "paperFormApplicant1NoPaymentIncluded=\"Yes\" AND paperFormSoleOrApplicant1PaymentOther=\"Yes\"";
     private static final String PAPER_FORM_APPLICANT_2_PAYMENT_OTHER_DETAILS =
@@ -94,7 +93,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("documentsGenerated")
             .field("applicant1DocumentsUploaded")
             .field("applicant2DocumentsUploaded")
-            .field("scannedDocuments", APPLICANT_1_CONTACT_DETAILS_PUBLIC)
             .field(CaseData::getGeneralOrders)
             .field("documentsUploaded")
             .field(CaseData::getGeneralEmails)

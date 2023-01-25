@@ -30,7 +30,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
         addLegalConnections(tabBuilderForSoleApplication);
         addOtherProceedings(tabBuilderForSoleApplication);
         addService(tabBuilderForSoleApplication);
-        addOtherCourtCases(tabBuilderForSoleApplication);
         addApplicant1StatementOfTruth(tabBuilderForSoleApplication);
     }
 
@@ -40,7 +39,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
 
         addDynamicContentHiddenFields(tabBuilderForJointApplication);
         addHeaderFields(tabBuilderForJointApplication);
-        addOtherCourtCases(tabBuilderForJointApplication);
         addApplicant1StatementOfTruth(tabBuilderForJointApplication);
         addMarriageAndCertificate(tabBuilderForJointApplication);
         addLegalConnections(tabBuilderForJointApplication);
@@ -71,17 +69,6 @@ public class ApplicationTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getDivorceOrDissolution)
             .field(CaseData::getDivorceUnit)
             .field(CaseData::getHyphenatedCaseRef, NEVER_SHOW);
-    }
-
-    private void addOtherCourtCases(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
-        tabBuilder
-            .label("LabelApplicant1OtherProceedings-Heading", null, "#### ${labelContentTheApplicantOrApplicant1UC}'s other proceedings:")
-            .field("applicant1LegalProceedings")
-            .field("applicant1LegalProceedingsDetails",
-                "applicant1LegalProceedings=\"Yes\"")
-            .field("applicant1FinancialOrder")
-            .field("applicant1FinancialOrdersFor",
-                "applicant1FinancialOrder=\"Yes\"");
     }
 
     private void addMarriageAndCertificate(final Tab.TabBuilder<CaseData, UserRole> tabBuilder) {
