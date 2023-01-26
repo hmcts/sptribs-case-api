@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 
 @Component
 @Slf4j
+@SuppressWarnings({"squid:S6204"})
 public class DecisionIssuedNotification implements PartiesNotification {
 
     @Autowired
@@ -135,7 +137,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         //TODO: Remove the below code once tested. Added this for testing if the issue is with the DecisionNotice document
         if (cicCase.getApplicantDocumentsUploaded() != null) {
-            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(item -> item.getValue())
+            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .collect(Collectors.toList());
 
