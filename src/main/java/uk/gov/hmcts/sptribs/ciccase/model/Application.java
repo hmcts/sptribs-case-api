@@ -10,27 +10,21 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.payment.model.Payment;
-import uk.gov.hmcts.sptribs.payment.model.PaymentStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.lang.Integer.parseInt;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -40,7 +34,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ServiceMethod.PERSONAL_SERVICE;
 import static uk.gov.hmcts.sptribs.ciccase.model.ServiceMethod.SOLICITOR_SERVICE;
 import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
 import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEE_PAY_BY_ACCOUNT;
-import static uk.gov.hmcts.sptribs.payment.model.PaymentStatus.SUCCESS;
 
 @Data
 @AllArgsConstructor
@@ -358,14 +351,6 @@ public class Application {
     private State previousState;
 
     @CCD(
-        label = "Payments",
-        typeOverride = Collection,
-        typeParameterOverride = "Payment",
-        access = {DefaultAccess.class}
-    )
-    private List<ListValue<Payment>> applicationPayments;
-
-    @CCD(
         label = "Notification of overdue application sent?",
         access = {DefaultAccess.class}
     )
@@ -447,29 +432,8 @@ public class Application {
     )
     private YesOrNo newPaperCase;
 
-    @JsonIgnore
-    public boolean hasBeenPaidFor() {
-        return null != applicationFeeOrderSummary
-            && parseInt(applicationFeeOrderSummary.getPaymentTotal()) == getPaymentTotal();
-    }
 
-    @JsonIgnore
-    public Integer getPaymentTotal() {
-        return applicationPayments == null
-            ? 0
-            : applicationPayments
-            .stream()
-            .filter(p -> p.getValue().getStatus().equals(SUCCESS))
-            .map(p -> p.getValue().getAmount())
-            .reduce(0, Integer::sum);
-    }
 
-    @JsonIgnore
-    public PaymentStatus getLastPaymentStatus() {
-        return applicationPayments == null || applicationPayments.isEmpty()
-            ? null
-            : applicationPayments.get(applicationPayments.size() - 1).getValue().getStatus();
-    }
 
     @JsonIgnore
     public boolean applicant1HasStatementOfTruth() {

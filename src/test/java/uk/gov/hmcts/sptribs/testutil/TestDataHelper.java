@@ -38,8 +38,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.endpoint.data.OcrDataValidationRequest;
 import uk.gov.hmcts.sptribs.payment.model.FeeResponse;
-import uk.gov.hmcts.sptribs.payment.model.Payment;
-import uk.gov.hmcts.sptribs.payment.model.PaymentStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -245,20 +243,6 @@ public class TestDataHelper {
         caseData.getApplication().setApplicant1StatementOfTruth(YES);
         caseData.getApplicant1().getApplicantPrayer().setPrayerDissolveDivorce(Set.of(DISSOLVE_DIVORCE));
         return caseData;
-    }
-
-
-    public static Payment payment(final int amount, final PaymentStatus paymentStatus) {
-        return Payment.builder()
-            .created(LocalDateTime.now())
-            .updated(LocalDateTime.now())
-            .amount(amount)
-            .channel("online")
-            .feeCode("FEE0001")
-            .status(paymentStatus)
-            .reference("paymentRef")
-            .transactionId("ge7po9h5bhbtbd466424src9tk")
-            .build();
     }
 
 
