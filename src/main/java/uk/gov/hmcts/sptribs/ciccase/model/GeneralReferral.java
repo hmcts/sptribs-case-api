@@ -55,13 +55,6 @@ public class GeneralReferral {
     private GeneralReferralType generalReferralType;
 
     @CCD(
-        label = "Medium requested for alternative service",
-        typeOverride = FixedList,
-        typeParameterOverride = "AlternativeServiceMediumType"
-    )
-    private AlternativeServiceMediumType alternativeServiceMedium;
-
-    @CCD(
         label = "Further details for Judge or Legal Advisor",
         typeOverride = TextArea
     )

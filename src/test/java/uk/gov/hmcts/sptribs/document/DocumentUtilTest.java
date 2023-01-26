@@ -6,8 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.GeneralParties;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
 import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
@@ -22,14 +20,10 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.gov.hmcts.sptribs.ciccase.model.ContactDetailsType.PRIVATE;
-import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.divorceDocumentFrom;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentsWithDocumentType;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.isApplicableForConfidentiality;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.isConfidential;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.lettersWithDocumentType;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.mapToLetters;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION;
@@ -292,38 +286,6 @@ class DocumentUtilTest {
 
     ) {
         assertTrue(isApplicableForConfidentiality(ConfidentialDocumentsReceived.NOTICE_OF_PROCEEDINGS_APP_2, false));
-    }
-
-    @Test
-    public void isConfidentialShouldReturnTrueWhenDocumentTypeIsGeneralLetterAndGeneralLetterPartyIsApplicant() {
-        //When
-        var caseData = CaseData.builder().build();
-        caseData.getGeneralLetter().setGeneralLetterParties(APPLICANT);
-        caseData.getApplicant1().setContactDetailsType(PRIVATE);
-
-        //Then
-        assertTrue(isConfidential(caseData, GENERAL_LETTER));
-    }
-
-    @Test
-    public void isConfidentialShouldReturnTrueWhenDocumentTypeIsGeneralLetterAndGeneralLetterPartyIsRespondent() {
-        //When
-        var caseData = CaseData.builder().build();
-        caseData.getGeneralLetter().setGeneralLetterParties(RESPONDENT);
-        caseData.getApplicant2().setContactDetailsType(PRIVATE);
-
-        //Then
-        assertTrue(isConfidential(caseData, GENERAL_LETTER));
-    }
-
-
-    @Test
-    public void isConfidentialShouldReturnFalseWhenDocumentTypeIsGeneralLetterAndGeneralLetterPartyIsOther() {
-        var caseData = CaseData.builder().build();
-        caseData.getGeneralLetter().setGeneralLetterParties(GeneralParties.OTHER);
-        caseData.getApplicant2().setContactDetailsType(PRIVATE);
-
-        assertFalse(isConfidential(caseData, GENERAL_LETTER));
     }
 
     private DocumentInfo documentInfo() {

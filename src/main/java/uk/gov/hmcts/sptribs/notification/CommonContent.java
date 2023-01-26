@@ -2,20 +2,11 @@ package uk.gov.hmcts.sptribs.notification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.ciccase.model.Applicant;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfig;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.lang.String.join;
-import static java.util.Objects.isNull;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.FEMALE;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.MALE;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
-import static uk.gov.hmcts.sptribs.notification.FormatUtil.formatId;
 
 @Component
 public class CommonContent {
@@ -86,38 +77,6 @@ public class CommonContent {
     @Autowired
     private EmailTemplatesConfig config;
 
-    public Map<String, String> mainTemplateVars(final CaseData caseData,
-                                                final Long id,
-                                                final Applicant applicant,
-                                                final Applicant partner) {
-        Map<String, String> templateVars = new HashMap<>();
-        templateVars.put(APPLICATION_REFERENCE, id != null ? formatId(id) : null);
-        templateVars.put(IS_DIVORCE, caseData.isDivorce() ? YES : NO);
-        templateVars.put(IS_DISSOLUTION, !caseData.isDivorce() ? YES : NO);
-        templateVars.put(FIRST_NAME, applicant.getFirstName());
-        templateVars.put(LAST_NAME, applicant.getLastName());
-        templateVars.put(PARTNER, getPartner(caseData, partner, applicant.getLanguagePreference()));
-        templateVars.put(COURT_EMAIL,
-            config.getTemplateVars().get(caseData.isDivorce() ? DIVORCE_COURT_EMAIL : DISSOLUTION_COURT_EMAIL));
-        templateVars.put(SIGN_IN_URL, getSignInUrl(caseData));
-        return templateVars;
-    }
-
-    public Map<String, String> basicTemplateVars(final CaseData caseData, final Long caseId) {
-
-        final Map<String, String> templateVars = new HashMap<>();
-        final Applicant applicant = caseData.getApplicant1();
-        final Applicant respondent = caseData.getApplicant2();
-
-        templateVars.put(APPLICANT_NAME, join(" ", applicant.getFirstName(), applicant.getLastName()));
-        templateVars.put(RESPONDENT_NAME, join(" ", respondent.getFirstName(), respondent.getLastName()));
-        templateVars.put(APPLICATION_REFERENCE, formatId(caseId));
-        templateVars.put(COURT_EMAIL,
-            config.getTemplateVars().get(caseData.isDivorce() ? DIVORCE_COURT_EMAIL : DISSOLUTION_COURT_EMAIL));
-
-        return templateVars;
-    }
-
     public String getUnionType(CaseData caseData, LanguagePreference applicantLanguagePreference) {
         if (WELSH.equals(applicantLanguagePreference)) {
             return caseData.isDivorce() ? DIVORCE_WELSH : DISSOLUTION_WELSH;
@@ -128,61 +87,6 @@ public class CommonContent {
 
     public String getUnionType(CaseData caseData) {
         return caseData.isDivorce() ? DIVORCE : DISSOLUTION;
-    }
-
-    public String getPartner(CaseData caseData, Applicant partner, LanguagePreference applicantLanguagePreference) {
-        if (WELSH.equals(applicantLanguagePreference)) {
-            return getPartnerWelshContent(caseData, partner);
-        }
-
-        return getPartner(caseData, partner);
-    }
-
-    public String getPartner(CaseData caseData, Applicant partner) {
-        if (caseData.isDivorce()) {
-            if (isNull(partner.getGender())) {
-                return "spouse";
-            } else {
-                return partner.getGender() == MALE ? "husband" : "wife";
-            }
-        } else {
-            return "civil partner";
-        }
-    }
-
-    public String getPartnerWelshContent(CaseData caseData, Applicant partner) {
-        if (caseData.isDivorce()) {
-            if (isNull(partner.getGender())) {
-                return "priod";
-            } else {
-                return partner.getGender() == MALE ? "gŵr" : "gwraig";
-            }
-        } else {
-            return "partner sifil";
-        }
-    }
-
-    public Map<String, String> conditionalOrderTemplateVars(final CaseData caseData,
-                                                            final Long id,
-                                                            final Applicant applicant,
-                                                            final Applicant partner) {
-        final Map<String, String> templateVars = mainTemplateVars(caseData, id, applicant, partner);
-        final boolean jointApplication = !caseData.getApplicationType().isSole();
-
-        templateVars.put(JOINT_CONDITIONAL_ORDER, jointApplication ? YES : NO);
-        templateVars.put(HUSBAND_JOINT, jointApplication
-            && caseData.isDivorce()
-            && partner.getGender().equals(MALE)
-            ? YES : NO);
-        templateVars.put(WIFE_JOINT, jointApplication
-            && caseData.isDivorce()
-            && partner.getGender().equals(FEMALE)
-            ? YES : NO);
-        templateVars.put(CIVIL_PARTNER_JOINT, jointApplication
-            && !caseData.isDivorce()
-            ? YES : NO);
-
-        return templateVars;
     }
 
     public String getSignInUrl(CaseData caseData) {
