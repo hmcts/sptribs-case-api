@@ -71,7 +71,7 @@ public class XuiTest extends CftlibTest {
     }
 
     void signInWithCaseworker() {
-        signInWith("DivCaseWorkerUser@AAT.com");
+        signInWith("TEST_CASE_WORKER_USER@mailinator.com");
     }
 
     void signInWithSolicitor() {
