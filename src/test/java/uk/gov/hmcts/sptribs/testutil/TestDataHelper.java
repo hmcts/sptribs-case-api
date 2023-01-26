@@ -99,44 +99,9 @@ public class TestDataHelper {
     }
 
     public static CaseData caseDataWithOrderSummary() {
-        var caseData = validApplicant1CaseData();
+        var caseData = CaseData.builder().build();
         caseData.getApplication().setApplicationFeeOrderSummary(orderSummaryWithFee());
 
-        return caseData;
-    }
-
-
-
-    public static CaseData validJointApplicant1CaseData() {
-        var marriageDetails = new MarriageDetails();
-        marriageDetails.setDate(LocalDate.of(1990, 6, 10));
-        marriageDetails.setApplicant1Name(TEST_FIRST_NAME + " " + TEST_LAST_NAME);
-        marriageDetails.setApplicant2Name(TEST_FIRST_NAME + " " + TEST_LAST_NAME);
-        marriageDetails.setMarriedInUk(YES);
-
-        var application = Application.builder()
-            .marriageDetails(marriageDetails)
-            .jurisdiction(getJurisdiction())
-            .applicant1HelpWithFees(
-                HelpWithFees.builder()
-                    .needHelp(NO)
-                    .build()
-            )
-            .build();
-
-        return CaseData
-            .builder()
-            .caseInvite(CaseInvite.builder().applicant2InviteEmailAddress(TEST_APPLICANT_2_USER_EMAIL).build())
-            .divorceOrDissolution(DIVORCE)
-            .application(application)
-            .applicationType(JOINT_APPLICATION)
-            .build();
-    }
-
-    public static CaseData validApplicant1CaseData() {
-        CaseData caseData = validJointApplicant1CaseData();
-        caseData.setApplicationType(SOLE_APPLICATION);
-        caseData.getApplication().setApplicant1StatementOfTruth(YES);
         return caseData;
     }
 
