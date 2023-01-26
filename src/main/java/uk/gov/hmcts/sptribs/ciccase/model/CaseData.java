@@ -28,7 +28,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -39,12 +38,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -74,14 +71,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
     private Notifications notifications = new Notifications();
-
-    @CCD(
-        label = "Application type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "ApplicationType"
-    )
-    private ApplicationType applicationType;
 
     @Builder.Default
     @CCD(
@@ -128,10 +117,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
     private LabelContent labelContent = new LabelContent();
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private Application application = new Application();
 
     @JsonUnwrapped()
     @CCD(access = {DefaultAccess.class})
@@ -184,12 +169,6 @@ public class CaseData {
         access = {DefaultAccess.class}
     )
     private Court divorceUnit;
-
-    @CCD(
-        label = "General Orders",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<DivorceGeneralOrder>> generalOrders;
 
     @CCD(
         label = "Due Date",
@@ -247,11 +226,6 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String note;
-
-    @CCD(access = {DefaultAccess.class})
-    @JsonUnwrapped
-    private RetiredFields retiredFields;
-
 
     @CCD(
         label = "Case number",
@@ -361,16 +335,6 @@ public class CaseData {
             temp.substring(8, 12),
             temp.substring(12, 16)
         );
-    }
-
-    @JsonIgnore
-    public boolean isSoleApplicationOrApplicant2HasAgreedHwf() {
-        return nonNull(applicationType)
-            && applicationType.isSole()
-            || nonNull(application.getApplicant2HelpWithFees())
-            && nonNull(application.getApplicant2HelpWithFees().getNeedHelp())
-            && application.getApplicant2HelpWithFees().getNeedHelp().toBoolean()
-            || FEES_HELP_WITH.equals(application.getSolPaymentHowToPay());
     }
 
     @JsonIgnore

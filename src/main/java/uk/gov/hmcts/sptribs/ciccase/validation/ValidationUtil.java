@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.ciccase.validation;
 
-import uk.gov.hmcts.sptribs.ciccase.model.Application;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 
 import java.time.LocalDate;
@@ -12,7 +10,6 @@ import java.util.List;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 public final class ValidationUtil {
 
@@ -25,15 +22,6 @@ public final class ValidationUtil {
     public static final String SOT_REQUIRED = "Statement of truth must be accepted by the person making the application";
 
     private ValidationUtil() {
-    }
-
-
-
-    public static List<String> validateApplicant2RequestChanges(Application application) {
-        return flattenLists(
-            notNull(application.getApplicant2ConfirmApplicant1Information(), "Applicant2ConfirmApplicant1Information"),
-            notNull(application.getApplicant2ExplainsApplicant1IncorrectInformation(), "Applicant2ExplainsApplicant1IncorrectInformation")
-        );
     }
 
     public static List<String> notNull(Object value, String field) {
@@ -53,16 +41,6 @@ public final class ValidationUtil {
         return emptyList();
     }
 
-    public static List<String> validateJurisdictionConnections(CaseData caseData) {
-        if (caseData.getApplication().isPaperCase()) {
-            if (isEmpty(caseData.getApplication().getJurisdiction().getConnections())) {
-                return List.of("JurisdictionConnections" + EMPTY);
-            }
-            return emptyList();
-        }
-
-        return caseData.getApplication().getJurisdiction().validateJurisdiction(caseData);
-    }
 
     private static boolean isLessThanOneYearAgo(LocalDate date) {
         return !date.isAfter(LocalDate.now())
