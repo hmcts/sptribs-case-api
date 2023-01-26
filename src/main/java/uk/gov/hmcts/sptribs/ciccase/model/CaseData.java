@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.groovy.parser.antlr4.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -28,7 +27,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
@@ -38,21 +36,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.FEMALE;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.MALE;
 import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
-import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.HUSBAND;
-import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.WIFE;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -137,16 +129,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     private LabelContent labelContent = new LabelContent();
 
-    @JsonUnwrapped(prefix = "applicant1")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private Applicant applicant1 = new Applicant();
-
-    @JsonUnwrapped(prefix = "applicant2")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, Applicant2Access.class})
-    private Applicant applicant2 = new Applicant();
-
     @JsonUnwrapped()
     @Builder.Default
     private Application application = new Application();
@@ -154,10 +136,6 @@ public class CaseData {
     @JsonUnwrapped()
     @CCD(access = {DefaultAccess.class})
     private CaseInvite caseInvite;
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private AcknowledgementOfService acknowledgementOfService = new AcknowledgementOfService();
 
     @JsonUnwrapped(prefix = "co")
     @Builder.Default
@@ -195,19 +173,6 @@ public class CaseData {
         typeParameterOverride = "GeneralReferral"
     )
     private List<ListValue<GeneralReferral>> generalReferrals;
-
-    @CCD(
-        label = "Previous Service Applications",
-        typeOverride = Collection,
-        typeParameterOverride = "AlternativeServiceOutcome",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<AlternativeServiceOutcome>> alternativeServiceOutcomes;
-
-    @JsonUnwrapped
-    @Builder.Default
-    @CCD(access = {CaseworkerAccessOnlyAccess.class})
-    private AlternativeService alternativeService = new AlternativeService();
 
     @JsonUnwrapped
     @Builder.Default
@@ -409,88 +374,8 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public String getApplicant2EmailAddress() {
-        final String applicant2Email = applicant2.getEmail();
-
-        if (StringUtils.isEmpty(applicant2Email)) {
-            if (nonNull(caseInvite)) {
-                return caseInvite.applicant2InviteEmailAddress();
-            } else {
-                return null;
-            }
-        }
-
-        return applicant2Email;
-    }
-
-    public void archiveAlternativeServiceApplicationOnCompletion() {
-
-        AlternativeService alternativeSrv = this.getAlternativeService();
-
-        if (null != alternativeSrv) {
-
-            alternativeSrv.setReceivedServiceAddedDate(LocalDate.now());
-
-            AlternativeServiceOutcome alternativeServiceOutcome = alternativeSrv.getOutcome();
-
-            if (isEmpty(this.getAlternativeServiceOutcomes())) {
-
-                List<ListValue<AlternativeServiceOutcome>> listValues = new ArrayList<>();
-
-                var listValue = ListValue
-                    .<AlternativeServiceOutcome>builder()
-                    .id("1")
-                    .value(alternativeServiceOutcome)
-                    .build();
-
-                listValues.add(listValue);
-                this.setAlternativeServiceOutcomes(listValues);
-
-            } else {
-
-                var listValue = ListValue
-                    .<AlternativeServiceOutcome>builder()
-                    .value(alternativeServiceOutcome)
-                    .build();
-
-                int listValueIndex = 0;
-                this.getAlternativeServiceOutcomes().add(0, listValue);
-                for (ListValue<AlternativeServiceOutcome> asListValue : this.getAlternativeServiceOutcomes()) {
-                    asListValue.setId(String.valueOf(listValueIndex++));
-                }
-            }
-            // Null the current AlternativeService object instance in the CaseData so that a new one can be created
-            this.setAlternativeService(null);
-        }
-    }
-
-    @JsonIgnore
     public boolean isDivorce() {
         return divorceOrDissolution.isDivorce();
-    }
-
-    @JsonIgnore
-    public void deriveAndPopulateApplicantGenderDetails() {
-        Gender app1Gender;
-        Gender app2Gender;
-        WhoDivorcing whoDivorcing;
-        if (this.getDivorceOrDissolution().isDivorce()) {
-            // for a divorce we ask who is applicant1 divorcing to infer applicant2's gender, then use the marriage
-            // formation to infer applicant 1's gender
-            whoDivorcing = this.getApplication().getDivorceWho();
-            app2Gender = whoDivorcing == HUSBAND ? MALE : FEMALE;
-            app1Gender = this.getApplication().getMarriageDetails().getFormationType().getPartnerGender(app2Gender);
-        } else {
-            // for a dissolution we ask for applicant1's gender and use the marriage formation to infer applicant 2's
-            // gender and who they are divorcing
-            app1Gender = this.getApplicant1().getGender();
-            app2Gender = this.getApplication().getMarriageDetails().getFormationType().getPartnerGender(app1Gender);
-            whoDivorcing = app2Gender == MALE ? HUSBAND : WIFE;
-        }
-
-        this.getApplicant1().setGender(app1Gender);
-        this.getApplicant2().setGender(app2Gender);
-        this.getApplication().setDivorceWho(whoDivorcing);
     }
 
     public RemoveCaseStay getRemoveCaseStay() {
