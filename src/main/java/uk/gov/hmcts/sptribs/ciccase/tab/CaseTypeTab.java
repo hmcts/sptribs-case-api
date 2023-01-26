@@ -13,16 +13,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 @Component
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final String IS_JOINT = "applicationType=\"jointApplication\"";
-    private static final String IS_JOINT_AND_HWF_ENTERED = "applicationType=\"jointApplication\" AND applicant2HWFReferenceNumber=\"*\"";
-    private static final String IS_NEW_PAPER_CASE = "newPaperCase=\"Yes\"";
-    private static final String PAPER_FORM_APPLICANT_1_PAYMENT_OTHER_DETAILS =
-        "paperFormApplicant1NoPaymentIncluded=\"Yes\" AND paperFormSoleOrApplicant1PaymentOther=\"Yes\"";
-    private static final String PAPER_FORM_APPLICANT_2_PAYMENT_OTHER_DETAILS =
-        "paperFormApplicant2NoPaymentIncluded=\"Yes\" AND paperFormApplicant2PaymentOther=\"Yes\"";
-    private static final String PAPER_FORM_PAYMENT_OTHER_DETAILS =
-        String.format("(%s) OR (%s)", PAPER_FORM_APPLICANT_1_PAYMENT_OTHER_DETAILS, PAPER_FORM_APPLICANT_2_PAYMENT_OTHER_DETAILS);
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);

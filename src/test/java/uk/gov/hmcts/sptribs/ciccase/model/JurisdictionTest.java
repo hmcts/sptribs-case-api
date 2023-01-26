@@ -34,28 +34,6 @@ public class JurisdictionTest {
     }
 
     @Test
-    public void shouldNotReturnErrorsWhenJurisdictionConnectionIsC2AndI2AndJForValidCase() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setDivorceOrDissolution(DivorceOrDissolution.DIVORCE);
-        caseData.getApplication().getMarriageDetails().setFormationType(MarriageFormation.SAME_SEX_COUPLE);
-        caseData.setApplicationType(ApplicationType.JOINT_APPLICATION);
-        Jurisdiction jurisdiction = new Jurisdiction();
-
-        jurisdiction.setConnections(Set.of(
-            JurisdictionConnections.APP_2_RESIDENT_JOINT,
-            JurisdictionConnections.RESIDUAL_JURISDICTION_D,
-            JurisdictionConnections.APP_1_RESIDENT_JOINT
-        ));
-
-        //When
-        List<String> errors = jurisdiction.validateJurisdiction(caseData);
-
-        //Then
-        Assertions.assertThat(errors).isEmpty();
-    }
-
-    @Test
     public void shouldReturnErrorWhenJurisdictionConnectionIsCForJointCase() {
         //Given
         final CaseData caseData = caseData();
@@ -117,23 +95,6 @@ public class JurisdictionTest {
 
         //Then
         assertThat(errors, contains(CONNECTION + JurisdictionConnections.RESIDUAL_JURISDICTION_CP + CANNOT_EXIST));
-    }
-
-    @Test
-    public void shouldReturnErrorWhenJurisdictionConnectionIsI2ForMixedSexDivorce() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setDivorceOrDissolution(DivorceOrDissolution.DIVORCE);
-        caseData.getApplication().getMarriageDetails().setFormationType(MarriageFormation.OPPOSITE_SEX_COUPLE);
-        Jurisdiction jurisdiction = new Jurisdiction();
-
-        jurisdiction.setConnections(Set.of(JurisdictionConnections.RESIDUAL_JURISDICTION_D));
-
-        //When
-        List<String> errors = jurisdiction.validateJurisdiction(caseData);
-
-        //Then
-        assertThat(errors, contains(CONNECTION + JurisdictionConnections.RESIDUAL_JURISDICTION_D + CANNOT_EXIST));
     }
 
     @Test
