@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -33,8 +34,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -157,23 +156,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final String emailMessage = getEmailMessage(cicCase);
-        final String postMessage = getPostMessage(cicCase);
-        String message = "";
-        if (null != postMessage && null != emailMessage) {
-            message = format("# Order sent  %n"
-                + " %s  %n  %s", emailMessage, postMessage);
-        } else if (null != emailMessage) {
-            message = format("# Order sent %n ## "
-                + " %s ", emailMessage);
-
-        } else if (null != postMessage) {
-            message = format("# Order sent %n ## "
-                + " %s ", postMessage);
-        }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader(format("# Order sent %n## %s",
+                MessageUtil.generateSimpleMessage(cicCase)))
             .build();
     }
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -84,8 +85,6 @@ public class MessageUtilTest {
             .contactPreferenceType(ContactPreferenceType.POST)
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
-        Set<NotificationParties> parties = new HashSet<>();
-        parties.add(NotificationParties.SUBJECT);
 
         //When
         String resultEmail = MessageUtil.getEmailMessage(cicCase);
@@ -103,8 +102,6 @@ public class MessageUtilTest {
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .build();
-        Set<NotificationParties> parties = new HashSet<>();
-        parties.add(NotificationParties.REPRESENTATIVE);
 
         //When
         String resultEmail = MessageUtil.getEmailMessage(cicCase);
@@ -196,9 +193,7 @@ public class MessageUtilTest {
         String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
 
         //Then
-        assertThat(result).contains("header");
-        assertThat(result).contains("footer");
-        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+        assertThat(result).contains("header").contains("footer").contains(SubjectCIC.SUBJECT.getLabel());
     }
 
     @Test
@@ -214,9 +209,7 @@ public class MessageUtilTest {
         String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
 
         //Then
-        assertThat(result).contains("header");
-        assertThat(result).contains("footer");
-        assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+        assertThat(result).contains("header").contains("footer").contains(SubjectCIC.SUBJECT.getLabel());
     }
 
     @Test
@@ -234,9 +227,23 @@ public class MessageUtilTest {
         String result = MessageUtil.generateWholeMessage(cicCase, "header", "footer");
 
         //Then
-        assertThat(result).contains("header");
-        assertThat(result).contains("footer");
-        assertThat(result).contains(RespondentCIC.RESPONDENT.getLabel());
+        assertThat(result).contains("header").contains("footer").contains("Respondent");
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateIssueDecisionMessageWithCicCase() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+
+        //When
+        String result = MessageUtil.generateSimpleMessage(cicCase);
+
+        //Then
+        assertThat(result).contains("Subject");
     }
 
     @Test
@@ -249,6 +256,21 @@ public class MessageUtilTest {
 
         //When
         String result = MessageUtil.generateSimpleMessage(parties);
+
+        //Then
+        assertThat(result).contains("Subject");
+    }
+
+    @Test
+    void shouldSuccessfullyGenerateIssueDecisionMessageWithContactParties() {
+        //Given
+        final ContactParties contactParties = ContactParties.builder()
+            .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .subjectContactParties(Set.of(SubjectCIC.SUBJECT))
+            .respondant(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        //When
+        String result = MessageUtil.generateSimpleMessage(contactParties);
 
         //Then
         assertThat(result).contains("Subject");
