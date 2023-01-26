@@ -118,11 +118,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     private LabelContent labelContent = new LabelContent();
 
-    @JsonUnwrapped(prefix = "co")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private ConditionalOrder conditionalOrder = new ConditionalOrder();
-
     @JsonUnwrapped()
     @Builder.Default
     private FinalOrder finalOrder = new FinalOrder();
