@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -89,37 +90,9 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
 
-        final StringBuilder messageLine1 = new StringBuilder(100);
-
-        if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
-            messageLine1.append("Subject");
-
-        }
-        if (details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
-
-            if (details.getData().getContactParties().getSubjectContactParties().size() > 0) {
-                messageLine1.append(',');
-
-            }
-
-
-            messageLine1.append("Representative");
-
-        }
-        if (details.getData().getContactParties().getRespondant().size() > 0) {
-
-            if (details.getData().getContactParties().getSubjectContactParties().size() > 0
-                ||  details.getData().getContactParties().getRepresentativeContactParties().size() > 0) {
-                messageLine1.append(',');
-
-            }
-
-            messageLine1.append("Respondent");
-        }
-
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# <h1>Message sent</h1> %n##  A notification has been sent to:"
-                + messageLine1
+            .confirmationHeader(format("# Message sent %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getContactParties())
             ))
             .build();
 

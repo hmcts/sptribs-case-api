@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -110,9 +111,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        var message = MessageUtil.generateWholeMessage(cicCase, "Final decision notice issued", "");
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader(format("# Final decision notice issued %n## %s",
+                MessageUtil.generateSimpleMessage(cicCase)))
             .build();
     }
 }
