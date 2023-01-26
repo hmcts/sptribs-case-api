@@ -1,8 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.HasLabel;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -16,6 +18,7 @@ import static java.lang.String.format;
 public final class MessageUtil {
     private static final String REPRESENTATIVE = "Representative";
     private static final String RESPONDENT = "Respondent";
+    private static final String LABEL_RESPONDENT = "Respondant";
     private static final String SUBJECT = "Subject";
 
     private static final String COMMA_SPACE = ", ";
@@ -76,7 +79,7 @@ public final class MessageUtil {
             messageLine.append(SUBJECT + COMMA_SPACE);
             email = true;
         }
-        if (parties.stream().anyMatch(party -> RESPONDENT.equals(party.getLabel()))) {
+        if (parties.stream().anyMatch(party -> LABEL_RESPONDENT.equals(party.getLabel()))) {
             messageLine.append(RESPONDENT + COMMA_SPACE);
             email = true;
         }
@@ -122,19 +125,52 @@ public final class MessageUtil {
         return message;
     }
 
-    public static String generateSimpleMessage(Set<NotificationParties> hearingNotificationParties) {
+    public static String generateSimpleMessage(final CicCase cicCase) {
         final StringBuilder message = new StringBuilder(100);
         message.append("A notification has been sent to: ");
-        if (hearingNotificationParties.contains(NotificationParties.SUBJECT)) {
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             message.append(SUBJECT + COMMA_SPACE);
         }
-        if (hearingNotificationParties.contains(NotificationParties.RESPONDENT)) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             message.append(RESPONDENT + COMMA_SPACE);
         }
-        if (hearingNotificationParties.contains(NotificationParties.REPRESENTATIVE)) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            message.append(REPRESENTATIVE + COMMA_SPACE);
+        }
+
+        return message.substring(0, message.length() - 2);
+    }
+
+    public static String generateSimpleMessage(Set<NotificationParties> notificationParties) {
+        final StringBuilder message = new StringBuilder(100);
+        message.append("A notification has been sent to: ");
+        if (notificationParties.contains(NotificationParties.SUBJECT)) {
+            message.append(SUBJECT + COMMA_SPACE);
+        }
+        if (notificationParties.contains(NotificationParties.RESPONDENT)) {
+            message.append(RESPONDENT + COMMA_SPACE);
+        }
+        if (notificationParties.contains(NotificationParties.REPRESENTATIVE)) {
             message.append(REPRESENTATIVE + COMMA_SPACE);
         }
         return message.substring(0, message.length() - 2);
     }
 
+    public static String generateSimpleMessage(final ContactParties contactParties) {
+        final StringBuilder message = new StringBuilder(100);
+        message.append("A notification has been sent to: ");
+
+        if (!CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
+            message.append(SUBJECT + COMMA_SPACE);
+        }
+        if (!CollectionUtils.isEmpty(contactParties.getRespondant())) {
+            message.append(RESPONDENT + COMMA_SPACE);
+        }
+        if (!CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())) {
+            message.append(REPRESENTATIVE + COMMA_SPACE);
+        }
+
+        return message.substring(0, message.length() - 2);
+    }
 }

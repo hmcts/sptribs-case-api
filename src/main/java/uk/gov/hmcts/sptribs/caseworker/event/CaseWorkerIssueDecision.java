@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -14,17 +15,13 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 
-import java.util.Set;
-
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -70,9 +67,12 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         pageBuilder.page("addDocumentFooter")
             .pageLabel("Document footer")
             .label("LabelDocFooter",
-                "\nDecision Notice Signature\n"
-                    + "\nConfirm the Role and Surname of the person who made this decision - this will be added"
-                    + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'")
+                """
+
+                    Decision Notice Signature
+                    Confirm the Role and Surname of the person who made this decision - this will be added"
+                                        + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
+                    """)
             .mandatory(CaseData::getDecisionSignature)
             .done();
     }
@@ -90,26 +90,25 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        var message = MessageUtil.generateWholeMessage(details.getData().getCicCase(), "Decision notice issued", "");
-
         sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader(format("# Decision notice issued %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
 
-        if (data.getCicCase().getNotifyPartySubject().contains(Set.of(SubjectCIC.SUBJECT))) {
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (data.getCicCase().getNotifyPartyRespondent().contains(Set.of(RespondentCIC.RESPONDENT))) {
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (data.getCicCase().getNotifyPartyRepresentative().contains(Set.of(RepresentativeCIC.REPRESENTATIVE))) {
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
     }
