@@ -28,13 +28,13 @@ public class FlagParties implements CcdPageConfiguration {
             .pageShowConditions(map)
             .complex(CaseData::getCicCase)
             .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getFlagPartySubject, "cicCaseFullName!=\"\" ")
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
             .label("caseworkerCaseFlagSelectFlagPartiesApplicantFlag", "")
             .readonlyWithLabel(CicCase::getApplicantFullName, " ")
-            .optional(CicCase::getFlagPartyApplicant, "cicCaseApplicantFullName!=\"\" ")
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ")
             .label("caseworkerCaseFlagSelectFlagPartiesRepresentativeFlag", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getFlagPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
             .done();
     }
 

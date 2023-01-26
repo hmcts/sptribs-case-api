@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagTypePage;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -87,14 +88,16 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         flagDetail.setOtherDescription(caseFlag.getOtherDescription());
         flagDetail.setStatus(Status.ACTIVE.getLabel());
         if (caseFlag.getFlagLevel().isPartyLevel()) {
-            if (null != caseData.getCicCase().getFlagPartyApplicant() && caseData.getCicCase().getFlagPartyApplicant().size() > 0) {
+            if (null != caseData.getCicCase().getNotifyPartyApplicant()
+                && !isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
                 flag.setPartyName(caseData.getCicCase().getApplicantFullName());
                 flag.setRoleOnCase(PartiesCIC.APPLICANT.getLabel());
-            } else if (null != caseData.getCicCase().getFlagPartySubject() && caseData.getCicCase().getFlagPartySubject().size() > 0) {
+            } else if (null != caseData.getCicCase().getNotifyPartySubject()
+                && !isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
                 flag.setPartyName(caseData.getCicCase().getFullName());
                 flag.setRoleOnCase(PartiesCIC.SUBJECT.getLabel());
-            } else if (null != caseData.getCicCase().getFlagPartyRepresentative()
-                && caseData.getCicCase().getFlagPartyRepresentative().size() > 0) {
+            } else if (null != caseData.getCicCase().getNotifyPartyRepresentative()
+                && !isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
                 flag.setPartyName(caseData.getCicCase().getRepresentativeFullName());
                 flag.setRoleOnCase(PartiesCIC.REPRESENTATIVE.getLabel());
             }
@@ -147,9 +150,6 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
 
-        caseData.getCicCase().setFlagPartyApplicant(null);
-        caseData.getCicCase().setFlagPartyRepresentative(null);
-        caseData.getCicCase().setFlagPartySubject(null);
         caseData.getCaseFlag().setFlagLevel(null);
         caseData.getCaseFlag().setFlagType(null);
         caseData.getCaseFlag().setAdditionalDetail(null);
@@ -163,7 +163,8 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse flagCreated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Flag created %n## This Flag has been added to case"))
+            .confirmationHeader(format("# Case Flag created %n## This Flag has been added to case %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 }
