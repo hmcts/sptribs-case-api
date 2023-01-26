@@ -5,12 +5,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -22,15 +22,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 
 @Component
 @Slf4j
+@SuppressWarnings({"squid:S6204"})
 public class DecisionIssuedNotification implements PartiesNotification {
 
     @Autowired
-    private IdamService idamService;
+    private HttpServletRequest httpServletRequest;
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
@@ -123,7 +126,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
     private void addDecisionsIssuedFileContents(CaseData caseData, Map<String, Object> templateVars) throws IOException {
         int count = 0;
 
-        final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
+        final String authorisation = httpServletRequest.getHeader(AUTHORIZATION);
         String serviceAuthorization = authTokenGenerator.generate();
 
         CicCase cicCase = caseData.getCicCase();
@@ -134,7 +137,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         //TODO: Remove the below code once tested. Added this for testing if the issue is with the DecisionNotice document
         if (cicCase.getApplicantDocumentsUploaded() != null) {
-            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(item -> item.getValue())
+            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .collect(Collectors.toList());
 
