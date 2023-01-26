@@ -78,3 +78,4 @@ public class XuiTest extends CftlibTest {
         signInWith("TEST_SOLICITOR@mailinator.com");
     }
 }
+

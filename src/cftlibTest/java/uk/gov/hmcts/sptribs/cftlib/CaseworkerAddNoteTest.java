@@ -10,6 +10,7 @@ public class CaseworkerAddNoteTest extends XuiTest {
     @RetryingTest(maxAttempts = PlaywrightHelpers.RETRIES)
     public void addNote() {
         signInWithCaseworker();
+        page.pause();
         page.locator("text=Create case").click();
         assertThat(page).hasURL("http://localhost:3000/cases/case-filter");
         page.locator("select[name=\"case-type\"]").selectOption("CIC");
