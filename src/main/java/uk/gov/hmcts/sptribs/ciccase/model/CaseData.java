@@ -72,14 +72,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     private Notifications notifications = new Notifications();
 
-    @CCD(
-        label = "Application type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "ApplicationType"
-    )
-    private ApplicationType applicationType;
-
     @Builder.Default
     @CCD(
         label = "Cancel Hearing",

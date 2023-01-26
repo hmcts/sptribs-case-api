@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,70 +15,6 @@ public class JurisdictionTest {
     public static final String CONNECTION = "Connection ";
     public static final String CANNOT_EXIST = " cannot exist";
 
-    @Test
-    public void shouldNotReturnErrorsWhenJurisdictionConnectionIsCAndIForValidCase() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setDivorceOrDissolution(DivorceOrDissolution.DISSOLUTION);
-        caseData.setApplicationType(ApplicationType.SOLE_APPLICATION);
-        Jurisdiction jurisdiction = new Jurisdiction();
-
-        jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_2_RESIDENT_SOLE, JurisdictionConnections.RESIDUAL_JURISDICTION_CP));
-
-        //When
-        List<String> errors = jurisdiction.validateJurisdiction(caseData);
-
-        //Then
-        Assertions.assertThat(errors).isEmpty();
-    }
-
-    @Test
-    public void shouldReturnErrorWhenJurisdictionConnectionIsCForJointCase() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setApplicationType(ApplicationType.JOINT_APPLICATION);
-        Jurisdiction jurisdiction = new Jurisdiction();
-
-        jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_2_RESIDENT_SOLE));
-
-        //When
-        List<String> errors = jurisdiction.validateJurisdiction(caseData);
-
-        //Then
-        assertThat(errors, contains(CONNECTION + JurisdictionConnections.APP_2_RESIDENT_SOLE + CANNOT_EXIST));
-    }
-
-    @Test
-    public void shouldReturnErrorWhenJurisdictionConnectionIsC2ForSoleCase() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setApplicationType(ApplicationType.SOLE_APPLICATION);
-        Jurisdiction jurisdiction = new Jurisdiction();
-
-        jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_2_RESIDENT_JOINT));
-
-        //When
-        List<String> errors = jurisdiction.validateJurisdiction(caseData);
-
-        //Then
-        assertThat(errors, contains(CONNECTION + JurisdictionConnections.APP_2_RESIDENT_JOINT + CANNOT_EXIST));
-    }
-
-    @Test
-    public void shouldReturnErrorWhenJurisdictionConnectionIsJForSoleCase() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setApplicationType(ApplicationType.SOLE_APPLICATION);
-        Jurisdiction jurisdiction = new Jurisdiction();
-
-        jurisdiction.setConnections(Set.of(JurisdictionConnections.APP_1_RESIDENT_JOINT));
-
-        //When
-        List<String> errors = jurisdiction.validateJurisdiction(caseData);
-
-        //Then
-        assertThat(errors, contains(CONNECTION + JurisdictionConnections.APP_1_RESIDENT_JOINT + CANNOT_EXIST));
-    }
 
     @Test
     public void shouldReturnErrorWhenJurisdictionConnectionIsIForDivorceCase() {
