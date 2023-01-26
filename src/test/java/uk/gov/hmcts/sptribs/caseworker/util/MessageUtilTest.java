@@ -3,9 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -239,22 +237,6 @@ public class MessageUtilTest {
         assertThat(result).contains("header");
         assertThat(result).contains("footer");
         assertThat(result).contains(RespondentCIC.RESPONDENT.getLabel());
-    }
-
-    @Test
-    void shouldSuccessfullyGenerateIssueDecisionMessage() {
-        //Given
-        final CaseIssueDecision decision = CaseIssueDecision.builder()
-            .recipients(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT))
-            .recipients(Set.of(ContactPartiesCIC.RESPONDANTTOCONTACT))
-            .recipients(Set.of(ContactPartiesCIC.REPRESENTATIVETOCONTACT))
-            .build();
-
-        //When
-        String result = MessageUtil.generateIssueDecisionMessage(decision);
-
-        //Then
-        assertThat(result).contains("# Decision notice issued");
     }
 
     @Test
