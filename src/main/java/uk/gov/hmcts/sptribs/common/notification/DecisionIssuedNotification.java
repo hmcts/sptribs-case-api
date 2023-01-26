@@ -29,7 +29,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 
 @Component
 @Slf4j
-//@SuppressWarnings({"squid:S6204"})
+@SuppressWarnings({"squid:S6204"})
 public class DecisionIssuedNotification implements PartiesNotification {
 
     @Autowired
