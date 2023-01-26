@@ -2,15 +2,12 @@ package uk.gov.hmcts.sptribs.document;
 
 import com.google.common.collect.Lists;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.GeneralParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.GENERAL_LETTER;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.NOTICE_OF_PROCEEDINGS_APP_1;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.NOTICE_OF_PROCEEDINGS_APP_2;
@@ -52,18 +49,6 @@ public final class DocumentUtil {
         );
 
         return isApplicant1 ? documentsForApplicant1.contains(documentType) : documentsForApplicant2.contains(documentType);
-    }
-
-    public static boolean isConfidential(final CaseData caseData, final DocumentType documentType) {
-        if (NOTICE_OF_PROCEEDINGS_APP_1.equals(documentType)
-            || GENERAL_LETTER.equals(documentType) && APPLICANT.equals(caseData.getGeneralLetter().getGeneralLetterParties())) {
-            return caseData.getApplicant1().isConfidentialContactDetails();
-        } else if (NOTICE_OF_PROCEEDINGS_APP_2.equals(documentType)
-            || GENERAL_LETTER.equals(documentType) && RESPONDENT.equals(caseData.getGeneralLetter().getGeneralLetterParties())) {
-            return caseData.getApplicant2().isConfidentialContactDetails();
-        } else {
-            return false;
-        }
     }
 
     public static ConfidentialDocumentsReceived getConfidentialDocumentType(final DocumentType documentType) {

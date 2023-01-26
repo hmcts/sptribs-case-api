@@ -16,23 +16,19 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private static final String IS_JOINT = "applicationType=\"jointApplication\"";
     private static final String IS_JOINT_AND_HWF_ENTERED = "applicationType=\"jointApplication\" AND applicant2HWFReferenceNumber=\"*\"";
     private static final String IS_NEW_PAPER_CASE = "newPaperCase=\"Yes\"";
-    private static final String APPLICANT_1_CONTACT_DETAILS_PUBLIC = "applicant1ContactDetailsType!=\"private\"";
     private static final String PAPER_FORM_APPLICANT_1_PAYMENT_OTHER_DETAILS =
         "paperFormApplicant1NoPaymentIncluded=\"Yes\" AND paperFormSoleOrApplicant1PaymentOther=\"Yes\"";
     private static final String PAPER_FORM_APPLICANT_2_PAYMENT_OTHER_DETAILS =
         "paperFormApplicant2NoPaymentIncluded=\"Yes\" AND paperFormApplicant2PaymentOther=\"Yes\"";
     private static final String PAPER_FORM_PAYMENT_OTHER_DETAILS =
         String.format("(%s) OR (%s)", PAPER_FORM_APPLICANT_1_PAYMENT_OTHER_DETAILS, PAPER_FORM_APPLICANT_2_PAYMENT_OTHER_DETAILS);
-    private static final String NEVER_SHOW = "applicationType=\"NEVER_SHOW\"";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
         buildFlagsTab(configBuilder);
         buildStateTab(configBuilder);
-        buildAosTab(configBuilder);
         buildPaymentTab(configBuilder);
-        buildLanguageTab(configBuilder);
         buildDocumentsTab(configBuilder);
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
@@ -67,32 +63,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("LabelState", null, "#### Case State:  ${[STATE]}");
     }
 
-    //TODO: Need to revisit this tab once the field stated in the ticket sptribs-595 are available
-    private void buildAosTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("aosDetails", "AoS")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
-            .showCondition("applicationType=\"soleApplication\"")
-            .field("applicant2Offline", "applicationType=\"NEVER_SHOW\"")
-            .label("LabelAosTabOnlineResponse-Heading", "applicant2Offline=\"No\"", "## This is an online AoS response")
-            .label("LabelAosTabOfflineResponse-Heading", "applicant2Offline=\"Yes\"", "## This is an offline AoS response")
-            .field("confirmReadPetition")
-            .field("jurisdictionAgree")
-            .field("reasonCourtsOfEnglandAndWalesHaveNoJurisdiction", "jurisdictionAgree=\"No\"")
-            .field("inWhichCountryIsYourLifeMainlyBased", "jurisdictionAgree=\"No\"")
-            .field("applicant2LegalProceedings")
-            .field("applicant2LegalProceedingsDetails")
-            .field("dueDate")
-            .field("howToRespondApplication")
-            .field("applicant2LanguagePreferenceWelsh")
-            .field("applicant2SolicitorRepresented")
-            .field("noticeOfProceedingsEmail")
-            .field("noticeOfProceedingsSolicitorFirm")
-            .field("applicant2SolicitorRepresented", NEVER_SHOW)
-            .field("statementOfTruth")
-            .field("applicant2StatementOfTruth", "statementOfTruth!=\"*\"")
-            .field("dateAosSubmitted");
-    }
-
     private void buildPaymentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("paymentDetailsCourtAdmin", "Payment")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
@@ -118,19 +88,11 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getPaymentHistoryField);
     }
 
-    private void buildLanguageTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("languageDetails", "Language")
-            .label("LabelLanguageDetails-Applicant", null, "### The applicant")
-            .field("applicant1LanguagePreferenceWelsh")
-            .label("LabelLanguageDetails-Respondent", null, "### The respondent")
-            .field("applicant2LanguagePreferenceWelsh");
-    }
-
     private void buildDocumentsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("documents", "Documents")
-            .field("scannedDocuments", APPLICANT_1_CONTACT_DETAILS_PUBLIC)
             .field(CaseData::getGeneralEmails);
     }
+
 
     private void buildNotesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("notes", "Notes")
