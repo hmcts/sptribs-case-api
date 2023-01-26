@@ -118,10 +118,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     private LabelContent labelContent = new LabelContent();
 
-    @JsonUnwrapped()
-    @CCD(access = {DefaultAccess.class})
-    private CaseInvite caseInvite;
-
     @JsonUnwrapped(prefix = "co")
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
@@ -158,10 +154,6 @@ public class CaseData {
         typeParameterOverride = "GeneralReferral"
     )
     private List<ListValue<GeneralReferral>> generalReferrals;
-
-    @JsonUnwrapped
-    @Builder.Default
-    private CaseDocuments documents = new CaseDocuments();
 
     @CCD(
         label = "RDC",
