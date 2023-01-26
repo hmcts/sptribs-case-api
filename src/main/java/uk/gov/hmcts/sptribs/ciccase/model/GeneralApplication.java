@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
@@ -37,11 +36,6 @@ public class GeneralApplication {
         typeParameterOverride = "GeneralApplicationFee"
     )
     private GeneralApplicationFee generalApplicationFeeType;
-
-    @CCD(
-        label = "General Application Document"
-    )
-    private DivorceDocument generalApplicationDocument;
 
     @CCD(
         label = "Additional comments about the supporting document",

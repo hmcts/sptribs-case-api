@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,13 +32,6 @@ public class ClarificationResponse {
         typeParameterOverride = "TextArea"
     )
     private List<ListValue<String>> clarificationResponses;
-
-    @CCD(
-        label = "Documents uploaded for the Conditional Order Clarification",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument"
-    )
-    private List<ListValue<DivorceDocument>> clarificationUploadDocuments;
 
     @CCD(
         label = "Applicant cannot upload all or some Conditional Order Clarification documents"
