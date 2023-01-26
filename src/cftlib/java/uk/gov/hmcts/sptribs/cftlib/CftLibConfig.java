@@ -38,11 +38,10 @@ public class CftLibConfig implements CFTLibConfigurer {
             "citizen-sptribs-cic-dss",
             "caseworker-st_cic",
             "caseworker-sptribs-cic-caseofficer",
-//            "caseworker-sptribs-cic-districtregistrar",
-//            "caseworker-sptribs-cic-districtjudge",
-//            "caseworker-sptribs-cic-respondent",
+            "caseworker-sptribs-cic-districtregistrar",
+            "caseworker-sptribs-cic-respondent",
             "caseworker",
-//            "payments",
+            "payments",
             "solicitor");
 
         var users = Map.of(

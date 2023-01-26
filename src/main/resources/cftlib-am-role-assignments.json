@@ -1,6 +1,6 @@
 [
   {
-    "email": "TEST_SYSTEM_USER@mailinator.com",
+    "email": "TEST_CASE_WORKER_USER@mailinator.com",
     "id": "93b108b7-4b26-41bf-ae8f-6e356efb11b3",
     "roleAssignments": [
       {
