@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseAdditionalDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -69,26 +70,22 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         var data = details.getData();
         var cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
-        final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append(" A notification will be sent  to: ");
+
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            messageLine2.append("Subject, ");
             caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            messageLine2.append("Applicant, ");
             caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            messageLine2.append("Representative, ");
             caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
         }
-        messageLine2.append("Respondent, ");
+
         caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n##"
-                + "  %s ", messageLine2.substring(0, messageLine2.length() - 2)))
+            .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 }

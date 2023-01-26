@@ -19,7 +19,7 @@ public enum NotificationParties implements HasLabel {
     APPLICANT("Applicant"),
 
     @JsonProperty("Respondent")
-    RESPONDENT("Respondent");
+    RESPONDENT("Respondant");
 
     private final String label;
 
