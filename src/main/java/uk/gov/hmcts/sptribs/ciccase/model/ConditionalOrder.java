@@ -14,9 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -138,13 +136,6 @@ public class ConditionalOrder {
     private List<ListValue<String>> clarificationResponses;
 
     @CCD(
-        label = "Documents uploaded for the Conditional Order Clarification",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument"
-    )
-    private List<ListValue<DivorceDocument>> clarificationUploadDocuments;
-
-    @CCD(
         label = "Applicant cannot upload all or some Conditional Order Clarification documents",
         access = {DefaultAccess.class}
     )
@@ -185,22 +176,6 @@ public class ConditionalOrder {
     private String judgeCostsOrderAdditionalInfo;
 
     @CCD(
-        label = "Link to certificate of entitlement",
-        access = {CaseworkerAccess.class}
-    )
-    private DivorceDocument certificateOfEntitlementDocument;
-
-    @CCD(
-        label = "Refusal Rejection reasons"
-    )
-    private Document refusalOrderDocument;
-
-    @CCD(
-        label = "Conditional Order Granted"
-    )
-    private DivorceDocument conditionalOrderGrantedDocument;
-
-    @CCD(
         label = "Legal Advisor Decisions Submitted",
         typeOverride = Collection,
         typeParameterOverride = "LegalAdvisorDecision"
@@ -234,13 +209,6 @@ public class ConditionalOrder {
         this.setRefusalAdminErrorInfo(null);
         this.setRefusalRejectionReason(null);
         this.setRefusalRejectionAdditionalInfo(null);
-    }
-
-    @JsonIgnore
-    public void resetClarificationFields() {
-        this.setClarificationResponses(new ArrayList<>());
-        this.setCannotUploadClarificationDocuments(null);
-        this.setClarificationUploadDocuments(new ArrayList<>());
     }
 
     @JsonIgnore

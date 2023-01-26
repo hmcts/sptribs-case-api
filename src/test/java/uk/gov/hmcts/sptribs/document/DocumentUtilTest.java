@@ -5,35 +5,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
-import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
-import uk.gov.hmcts.sptribs.document.print.model.Letter;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.divorceDocumentFrom;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentsWithDocumentType;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.isApplicableForConfidentiality;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.lettersWithDocumentType;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.mapToLetters;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.D10;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.GENERAL_LETTER;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.MARRIAGE_CERTIFICATE;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.NAME_CHANGE_EVIDENCE;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.NOTICE_OF_PROCEEDINGS_APP_1;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.NOTICE_OF_PROCEEDINGS_APP_2;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.OTHER;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentUtilTest {
@@ -57,196 +40,6 @@ class DocumentUtilTest {
                 DOC_URL,
                 PDF_FILENAME,
                 DOC_BINARY_URL);
-    }
-
-    @Test
-    void shouldCreateDivorceDocumentFromDocumentInfoAndDocumentType() {
-        //When
-        final DivorceDocument divorceDocument = divorceDocumentFrom(documentInfo(), OTHER);
-
-        //Then
-        assertThat(divorceDocument.getDocumentType()).isEqualTo(OTHER);
-        assertThat(divorceDocument.getDocumentFileName()).isEqualTo(PDF_FILENAME);
-        assertThat(divorceDocument
-            .getDocumentLink())
-            .extracting(URL, FILENAME, BINARY_URL)
-            .contains(
-                DOC_URL,
-                PDF_FILENAME,
-                DOC_BINARY_URL);
-    }
-
-    @Test
-    void shouldReturnListOfLetterOfGivenDocumentTypeIfPresent() {
-        //Given
-        final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(APPLICATION)
-                .build())
-            .build();
-
-        final ListValue<DivorceDocument> doc2 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(MARRIAGE_CERTIFICATE)
-                .build())
-            .build();
-
-        //When
-        final List<Letter> letters = lettersWithDocumentType(
-            asList(doc1, doc2),
-            MARRIAGE_CERTIFICATE);
-
-        //Then
-        assertThat(letters.size()).isEqualTo(1);
-        assertThat(letters.get(0).getDivorceDocument()).isSameAs(doc2.getValue());
-        assertThat(letters.get(0).getCount()).isGreaterThan(0);
-    }
-
-    @Test
-    void shouldNotFindDocumentOfGivenDocumentTypeIfNotPresent() {
-        //Given
-        final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(APPLICATION)
-                .build())
-            .build();
-
-        final ListValue<DivorceDocument> doc2 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(MARRIAGE_CERTIFICATE)
-                .build())
-            .build();
-
-        //When
-        final List<Letter> letters = lettersWithDocumentType(
-            asList(doc1, doc2),
-            NAME_CHANGE_EVIDENCE);
-
-        //Then
-        assertThat(letters.size()).isZero();
-    }
-
-    @Test
-    void shouldReturnEmptyListIfNullDocumentList() {
-        //When
-        final List<Letter> letters = lettersWithDocumentType(null, NAME_CHANGE_EVIDENCE);
-        //Then
-        assertThat(letters.size()).isZero();
-    }
-
-    @Test
-    void shouldReturnEmptyListIfEmptyDocumentList() {
-        //When
-        final List<Letter> letters = lettersWithDocumentType(emptyList(), NAME_CHANGE_EVIDENCE);
-        //Then
-        assertThat(letters.size()).isZero();
-    }
-
-    @Test
-    void shouldReturnListOfLettersOfGivenDocumentTypesIfPresent() {
-        //Given
-        final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(APPLICATION)
-                .build())
-            .build();
-
-        final ListValue<DivorceDocument> doc2 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(MARRIAGE_CERTIFICATE)
-                .build())
-            .build();
-
-        final ListValue<DivorceDocument> doc3 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(NAME_CHANGE_EVIDENCE)
-                .build())
-            .build();
-
-        //When
-        final List<Letter> letters = lettersWithDocumentType(
-            asList(doc1, doc2, doc3),
-            NAME_CHANGE_EVIDENCE);
-
-        //Then
-        assertThat(letters.size()).isEqualTo(1);
-        assertThat(letters.get(0).getDivorceDocument()).isSameAs(doc3.getValue());
-    }
-
-    @Test
-    void shouldReturnTrueIfDocumentWithTypeD10IsPresent() {
-        //Given
-        final ListValue<DivorceDocument> d10Document = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(D10)
-                .build())
-            .build();
-
-        //When
-        final boolean d10IsPresent = documentsWithDocumentType(
-            singletonList(d10Document),
-            D10);
-
-        //Then
-        assertThat(d10IsPresent).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseIfDocumentWithTypeD10IsNotPresent() {
-        //Given
-        final ListValue<DivorceDocument> doc1 = ListValue.<DivorceDocument>builder()
-            .value(DivorceDocument.builder()
-                .documentType(APPLICATION)
-                .build())
-            .build();
-
-        //When
-        final boolean d10IsPresent = documentsWithDocumentType(
-            singletonList(doc1),
-            D10);
-
-        //Then
-        assertThat(d10IsPresent).isFalse();
-    }
-
-    @Test
-    void shouldReturnFalseIfNullDocumentList() {
-        //When
-        final boolean d10IsPresent = documentsWithDocumentType(null, D10);
-        //Then
-        assertThat(d10IsPresent).isFalse();
-    }
-
-    @Test
-    void shouldReturnFalseIfEmptyDocumentList() {
-        //When
-        final boolean d10IsPresent = documentsWithDocumentType(emptyList(), D10);
-        //Then
-        assertThat(d10IsPresent).isFalse();
-    }
-
-    @Test
-    void mapToLettersShouldReturnListOfLettersOfGivenDocumentType() {
-        //Given
-        final ListValue<Document> doc1 = ListValue.<Document>builder()
-            .value(Document.builder().filename("doc1.pdf").build())
-            .build();
-
-        final ListValue<Document> doc2 = ListValue.<Document>builder()
-            .value(Document.builder().filename("doc2.pdf").build())
-            .build();
-
-        //When
-        final List<Letter> letters = mapToLetters(asList(doc1, doc2), NOTICE_OF_PROCEEDINGS_APP_1);
-
-        //Then
-        assertThat(letters.size()).isEqualTo(2);
-        assertThat(
-            letters.stream().map(letter -> letter.getDivorceDocument().getDocumentFileName()).collect(Collectors.toList()))
-            .containsExactlyInAnyOrder("doc1.pdf", "doc2.pdf");
-        assertThat(
-            letters.stream().map(letter -> letter.getDivorceDocument().getDocumentType()).collect(Collectors.toList()))
-            .containsExactlyInAnyOrder(NOTICE_OF_PROCEEDINGS_APP_1, NOTICE_OF_PROCEEDINGS_APP_1);
     }
 
     @Test
