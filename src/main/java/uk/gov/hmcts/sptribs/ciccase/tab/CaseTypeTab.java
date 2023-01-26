@@ -90,13 +90,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildDocumentsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("documents", "Documents")
-            .field("documentsGenerated")
-            .field("applicant1DocumentsUploaded")
-            .field("applicant2DocumentsUploaded")
-            .field(CaseData::getGeneralOrders)
-            .field("documentsUploaded")
-            .field(CaseData::getGeneralEmails)
-            .field("coCertificateOfEntitlementDocument");
+            .field(CaseData::getGeneralEmails);
     }
 
 

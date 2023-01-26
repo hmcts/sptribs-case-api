@@ -8,12 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.ScannedDocument;
-import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerCourtAdminWithSolicitorAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.model.ConfidentialDivorceDocument;
-import uk.gov.hmcts.sptribs.document.model.DivorceDocument;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,54 +31,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 public class CaseDocuments {
 
     @CCD(
-        label = "Applicant 1 uploaded documents",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument",
-        access = {DefaultAccess.class}
-    )
-    private List<ListValue<DivorceDocument>> applicant1DocumentsUploaded;
-
-    @CCD(
-        label = "Applicant 2 Documents uploaded",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument",
-        access = {Applicant2Access.class}
-    )
-    private List<ListValue<DivorceDocument>> applicant2DocumentsUploaded;
-
-    @CCD(
-        label = "Documents uploaded",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument",
-        access = {DefaultAccess.class}
-    )
-    private List<ListValue<DivorceDocument>> documentsUploaded;
-
-    @CCD(
-        label = "Confidential documents uploaded",
-        typeOverride = Collection,
-        typeParameterOverride = "ConfidentialDivorceDocument",
-        access = {CaseworkerCourtAdminWithSolicitorAccess.class}
-    )
-    private List<ListValue<ConfidentialDivorceDocument>> confidentialDocumentsUploaded;
-
-    @CCD(
-        label = "Confidential documents generated",
-        typeOverride = Collection,
-        typeParameterOverride = "ConfidentialDivorceDocument",
-        access = {CaseworkerCourtAdminWithSolicitorAccess.class}
-    )
-    private List<ListValue<ConfidentialDivorceDocument>> confidentialDocumentsGenerated;
-
-    @CCD(
-        label = "Documents generated",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument",
-        access = {DefaultAccess.class}
-    )
-    private List<ListValue<DivorceDocument>> documentsGenerated;
-
-    @CCD(
         label = "Scanned documents",
         typeOverride = Collection,
         typeParameterOverride = "ScannedDocument"
@@ -91,26 +38,10 @@ public class CaseDocuments {
     private List<ListValue<ScannedDocument>> scannedDocuments;
 
     @CCD(
-        label = "Upload Answer Received supporting documents",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<DivorceDocument>> answerReceivedSupportingDocuments;
-
-    @CCD(
         label = "Select respondent answers document",
         access = {CaseworkerAccessOnlyAccess.class}
     )
     private DynamicList scannedDocumentNames;
-
-    @CCD(
-        label = "Amended applications",
-        typeOverride = Collection,
-        typeParameterOverride = "DivorceDocument",
-        access = {DefaultAccess.class}
-    )
-    private List<ListValue<DivorceDocument>> amendedApplications;
 
 
     public static <T> List<ListValue<T>> addDocumentToTop(final List<ListValue<T>> documents, final T value) {
