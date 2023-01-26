@@ -28,7 +28,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -186,12 +185,6 @@ public class CaseData {
     private Court divorceUnit;
 
     @CCD(
-        label = "General Orders",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<DivorceGeneralOrder>> generalOrders;
-
-    @CCD(
         label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -247,11 +240,6 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String note;
-
-    @CCD(access = {DefaultAccess.class})
-    @JsonUnwrapped
-    private RetiredFields retiredFields;
-
 
     @CCD(
         label = "Case number",
