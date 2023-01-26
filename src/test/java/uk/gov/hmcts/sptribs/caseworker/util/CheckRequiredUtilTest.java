@@ -123,7 +123,7 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.setCicCase(cicCase);
 
         //When
@@ -138,7 +138,7 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagPartySubject(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         caseData.setCicCase(cicCase);
 
         //When
@@ -153,7 +153,7 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
+        cicCase.setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
         caseData.setCicCase(cicCase);
 
         //When
@@ -169,7 +169,7 @@ public class CheckRequiredUtilTest {
         final CaseData caseData = new CaseData();
         final CicCase cicCase = CicCase.builder()
             .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .flagPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -185,7 +185,7 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = CicCase.builder()
-            .flagPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -201,8 +201,8 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = CicCase.builder()
-            .flagPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .flagPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -218,9 +218,9 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = CicCase.builder()
-            .flagPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .flagPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .flagPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -236,8 +236,8 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = CicCase.builder()
-            .flagPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .flagPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -254,7 +254,7 @@ public class CheckRequiredUtilTest {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = CicCase.builder()
-            .flagPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -263,5 +263,19 @@ public class CheckRequiredUtilTest {
 
         //Then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckNullRecordSubjectRepresentativeApplicant() {
+        //Given
+        final CaseData caseData = new CaseData();
+        final CicCase cicCase = new CicCase();
+        caseData.setCicCase(cicCase);
+
+        //When
+        boolean result = CheckRequiredUtil.checkNullRecordSubjectRepresentativeRespondent(caseData);
+
+        //Then
+        assertThat(result).isTrue();
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -52,6 +53,21 @@ public class EventUtilTest {
         String result = EventUtil.getRecipients(cicCase);
         //Then
         assertThat(result).contains(SubjectCIC.SUBJECT.getLabel());
+    }
+
+    @Test
+    void shouldGetNotificationParties() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
+            .build();
+
+        //When
+        Set<NotificationParties> result = EventUtil.getNotificationParties(cicCase);
+
+        //Then
+        assertThat(result).hasSize(2);
     }
 
     @Test
