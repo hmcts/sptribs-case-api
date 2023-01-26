@@ -16,7 +16,6 @@ public class CaseAccessAdministratorSearchTab implements CCDConfig<CaseData, Sta
         configBuilder
             .searchCasesFields()
             .field("[CASE_REFERENCE]", "Case number", null, null, "1:ASC")
-            .field("applicationType", "Application type")
             .field("dueDate","Due Date")
             .createdDateField()
             .lastModifiedDate()

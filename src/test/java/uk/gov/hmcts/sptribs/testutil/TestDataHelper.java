@@ -88,15 +88,6 @@ public class TestDataHelper {
             .build();
     }
 
-    public static CaseData caseDataWithOrderSummary() {
-        var caseData = CaseData.builder().build();
-        caseData.getApplication().setApplicationFeeOrderSummary(orderSummaryWithFee());
-
-        return caseData;
-    }
-
-
-
     public static Jurisdiction getJurisdiction() {
         final Jurisdiction jurisdiction = new Jurisdiction();
         jurisdiction.setConnections(Set.of(APP_1_APP_2_RESIDENT));
@@ -104,17 +95,6 @@ public class TestDataHelper {
         jurisdiction.setApplicant2Residence(YES);
 
         return jurisdiction;
-    }
-
-
-
-
-
-
-
-
-    public static CallbackRequest callbackRequest() {
-        return callbackRequest(caseDataWithOrderSummary());
     }
 
     public static CallbackRequest callbackRequest(CaseData caseData) {
