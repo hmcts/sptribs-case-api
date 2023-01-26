@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.sptribs.ciccase.model.Application;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
@@ -45,9 +44,6 @@ public class FinalDecisionTemplateContentTest {
 
         return CaseData.builder()
             .cicCase(cicCase)
-            .application(
-                Application.builder().issueDate(ISSUE_DATE).build()
-            )
             .build();
     }
 }

@@ -100,30 +100,4 @@ public class LabelContent {
             gotMarriedOrFormedCivilPartnership = "formed their civil partnership";
         }
     }
-
-    public void setApplicationType(ApplicationType applicationType) {
-        if (applicationType != null && applicationType.isSole()) {
-            applicant2 = "respondent";
-            theApplicant2 = "the respondent";
-            applicant2UC = "Respondent";
-            theApplicant2UC = "The respondent";
-            applicantOrApplicant1 = "the applicant’s";
-            applicantsOrApplicant1s = "Applicant’s";
-            theApplicantOrApplicant1 = "the applicant";
-            theApplicantOrApplicant1UC = "The applicant";
-            respondentsOrApplicant2s = "Respondent's";
-            applicantOrApplicant1UC = "Applicant";
-        } else {
-            applicant2 = "applicant 2";
-            theApplicant2 = "applicant 2";
-            applicant2UC = "Applicant 2";
-            theApplicant2UC = "Applicant 2";
-            applicantOrApplicant1 = "applicant 1’s";
-            applicantsOrApplicant1s = "Applicant 1’s";
-            theApplicantOrApplicant1 = "applicant 1";
-            theApplicantOrApplicant1UC = "Applicant 1";
-            respondentsOrApplicant2s = "Applicant 2's";
-            applicantOrApplicant1UC = "Applicant 1";
-        }
-    }
 }
