@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -63,9 +61,6 @@ class CreateTestCaseTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().partiesCIC(Set.of(PartiesCIC.APPLICANT)).build();
         final CaseData caseData = CaseData.builder()
-            .caseInvite(CaseInvite.builder()
-                .applicant2UserId(UUID.randomUUID().toString())
-                .build())
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -84,9 +79,6 @@ class CreateTestCaseTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().partiesCIC(Set.of(PartiesCIC.APPLICANT)).build();
         final CaseData caseData = CaseData.builder()
-            .caseInvite(CaseInvite.builder()
-                .applicant2UserId(UUID.randomUUID().toString())
-                .build())
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
