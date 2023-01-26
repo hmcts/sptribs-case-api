@@ -20,7 +20,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_1_R
 import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_2_RESIDENT_JOINT;
 import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_2_RESIDENT_SOLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.RESIDUAL_JURISDICTION_CP;
-import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.RESIDUAL_JURISDICTION_D;
 import static uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil.CANNOT_EXIST;
 import static uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil.CONNECTION;
 import static uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil.EMPTY;
@@ -94,7 +93,6 @@ public class Jurisdiction {
                 validateJurisdictionConnectionC(data),
                 validateJurisdictionConnectionC2(data),
                 validateJurisdictionConnectionI(data),
-                validateJurisdictionConnectionI2(data),
                 validateJurisdictionConnectionJ(data)
 
             ).filter(Objects::nonNull).collect(Collectors.toList());
@@ -118,14 +116,6 @@ public class Jurisdiction {
     private String validateJurisdictionConnectionI(CaseData data) {
         if (connections.contains(RESIDUAL_JURISDICTION_CP) && data.isDivorce()) {
             return CONNECTION + RESIDUAL_JURISDICTION_CP + CANNOT_EXIST;
-        }
-        return null;
-    }
-
-    private String validateJurisdictionConnectionI2(CaseData data) {
-        if (connections.contains(RESIDUAL_JURISDICTION_D)
-            && (!data.isDivorce() || data.getApplication().getMarriageDetails().getFormationType() != MarriageFormation.SAME_SEX_COUPLE)) {
-            return CONNECTION + RESIDUAL_JURISDICTION_D + CANNOT_EXIST;
         }
         return null;
     }

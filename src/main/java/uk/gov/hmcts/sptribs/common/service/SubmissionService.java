@@ -7,7 +7,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTaskRunner;
 import uk.gov.hmcts.sptribs.common.service.task.SendSubmissionNotifications;
-import uk.gov.hmcts.sptribs.common.service.task.SetDateSubmitted;
 import uk.gov.hmcts.sptribs.common.service.task.SetHyphenatedCaseRef;
 import uk.gov.hmcts.sptribs.common.service.task.SetStateAfterSubmission;
 
@@ -21,9 +20,6 @@ public class SubmissionService {
     private SetStateAfterSubmission setStateAfterSubmission;
 
     @Autowired
-    private SetDateSubmitted setDateSubmitted;
-
-    @Autowired
     private SendSubmissionNotifications sendSubmissionNotifications;
 
     public CaseDetails<CaseData, State> submitApplication(final CaseDetails<CaseData, State> caseDetails) {
@@ -31,7 +27,6 @@ public class SubmissionService {
         return CaseTaskRunner.caseTasks(
             setHyphenatedCaseRef,
             setStateAfterSubmission,
-            setDateSubmitted,
             sendSubmissionNotifications
         ).run(caseDetails);
     }

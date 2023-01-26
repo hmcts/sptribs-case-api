@@ -38,12 +38,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -127,10 +125,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
     private LabelContent labelContent = new LabelContent();
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private Application application = new Application();
 
     @JsonUnwrapped()
     @CCD(access = {DefaultAccess.class})
@@ -349,16 +343,6 @@ public class CaseData {
             temp.substring(8, 12),
             temp.substring(12, 16)
         );
-    }
-
-    @JsonIgnore
-    public boolean isSoleApplicationOrApplicant2HasAgreedHwf() {
-        return nonNull(applicationType)
-            && applicationType.isSole()
-            || nonNull(application.getApplicant2HelpWithFees())
-            && nonNull(application.getApplicant2HelpWithFees().getNeedHelp())
-            && application.getApplicant2HelpWithFees().getNeedHelp().toBoolean()
-            || FEES_HELP_WITH.equals(application.getSolPaymentHowToPay());
     }
 
     @JsonIgnore
