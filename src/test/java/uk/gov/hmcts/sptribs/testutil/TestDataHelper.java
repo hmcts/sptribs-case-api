@@ -17,15 +17,12 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
-import uk.gov.hmcts.sptribs.ciccase.model.Application;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
-import uk.gov.hmcts.sptribs.ciccase.model.HelpWithFees;
 import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
-import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.endpoint.data.OcrDataValidationRequest;
@@ -43,20 +40,14 @@ import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.ciccase.model.ApplicationType.JOINT_APPLICATION;
-import static uk.gov.hmcts.sptribs.ciccase.model.ApplicationType.SOLE_APPLICATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.DivorceOrDissolution.DIVORCE;
 import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_1_APP_2_RESIDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_2_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_LAST_NAME;
 
 public class TestDataHelper {
 
@@ -92,7 +83,6 @@ public class TestDataHelper {
 
         return CaseData.builder()
             .caseStatus(State.AwaitingOutcome)
-            .divorceOrDissolution(DIVORCE)
             .closeCase(closeCase)
             .caseInvite(new CaseInvite(null, null, null))
             .build();
