@@ -56,8 +56,8 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_REINSTATE_CASE)
             .forStates(CaseClosed)
-            .name("Reinstate case")
-            .description("Reinstate case")
+            .name("Case: Reinstate case")
+            .description("Case: Reinstate case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::reinstated)
             .showEventNotes()
