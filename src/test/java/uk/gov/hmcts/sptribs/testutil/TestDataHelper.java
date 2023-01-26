@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
@@ -63,7 +62,6 @@ public class TestDataHelper {
     public static CaseData caseData() {
         return CaseData.builder()
             .divorceOrDissolution(DIVORCE)
-            .caseInvite(new CaseInvite(null, null, null))
             .build();
     }
 
@@ -71,7 +69,6 @@ public class TestDataHelper {
         return CaseData.builder()
             .caseStatus(State.CaseManagement)
             .divorceOrDissolution(DIVORCE)
-            .caseInvite(new CaseInvite(null, null, null))
             .build();
     }
 
@@ -84,7 +81,6 @@ public class TestDataHelper {
         return CaseData.builder()
             .caseStatus(State.AwaitingOutcome)
             .closeCase(closeCase)
-            .caseInvite(new CaseInvite(null, null, null))
             .build();
     }
 
