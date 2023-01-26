@@ -3,18 +3,11 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
-import uk.gov.hmcts.sptribs.payment.model.Payment;
-import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.NO;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
@@ -23,100 +16,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ServiceMethod.PERSONAL_SERVICE;
 import static uk.gov.hmcts.sptribs.ciccase.model.ServiceMethod.SOLICITOR_SERVICE;
 import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION;
-import static uk.gov.hmcts.sptribs.payment.model.PaymentStatus.DECLINED;
-import static uk.gov.hmcts.sptribs.payment.model.PaymentStatus.SUCCESS;
 
 class ApplicationTest {
-
-    @Test
-    void shouldReturnTrueIfApplicationHasBeenPaidFor() {
-        //Given
-        final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(TestDataHelper.payment(55000, SUCCESS)));
-
-        //When
-        final var application = Application.builder()
-            .applicationFeeOrderSummary(OrderSummary.builder().paymentTotal("55000").build())
-            .applicationPayments(payments)
-            .build();
-
-        //Then
-        assertThat(application.hasBeenPaidFor()).isTrue();
-        assertThat(application.getApplicationPayments().get(0).getValue().getFeeCode()).isNotNull();
-        assertThat(application.getApplicationPayments().get(0).getValue().getChannel()).isNotNull();
-        assertThat(application.getApplicationPayments().get(0).getValue().getReference()).isNotNull();
-        assertThat(application.getApplicationPayments().get(0).getValue().getTransactionId()).isNotNull();
-        assertThat(application.getApplicationPayments().get(0).getValue().getCreated()).isNotNull();
-        assertThat(application.getApplicationPayments().get(0).getValue().getUpdated()).isNotNull();
-
-    }
-
-    @Test
-    void shouldReturnFalseIfApplicationHasNotBeenPaidFor() {
-        //Given
-        final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(TestDataHelper.payment(55000, SUCCESS)));
-
-        final var applicationNullOrderSummary = Application.builder()
-            .applicationPayments(payments)
-            .build();
-
-        //When
-        final var applicationOrderSummary = Application.builder()
-            .applicationFeeOrderSummary(OrderSummary.builder().paymentTotal("200").build())
-            .applicationPayments(payments)
-            .build();
-
-        //Then
-        assertThat(applicationNullOrderSummary.hasBeenPaidFor()).isFalse();
-        assertThat(applicationOrderSummary.hasBeenPaidFor()).isFalse();
-    }
-
-    @Test
-    void shouldReturnZeroPaymentTotalForNullApplicationPayments() {
-        assertThat(Application.builder().build().getPaymentTotal()).isZero();
-    }
-
-    @Test
-    void shouldReturnSuccessfulPaymentTotalForApplicationPayments() {
-        //Given
-        final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(TestDataHelper.payment(500, SUCCESS)));
-        payments.add(paymentValue(TestDataHelper.payment(50, SUCCESS)));
-        payments.add(paymentValue(TestDataHelper.payment(50, DECLINED)));
-
-        //When
-        final var application = Application.builder()
-            .applicationPayments(payments)
-            .build();
-
-        //Then
-        assertThat(application.getPaymentTotal()).isEqualTo(550);
-    }
-
-    @Test
-    void shouldReturnLastPaymentStatusAndNullIfEmptyOrNull() {
-        //Given
-        final List<ListValue<Payment>> payments = new ArrayList<>();
-        payments.add(paymentValue(TestDataHelper.payment(500, SUCCESS)));
-        payments.add(paymentValue(TestDataHelper.payment(50, SUCCESS)));
-        payments.add(paymentValue(TestDataHelper.payment(50, DECLINED)));
-
-        //When
-        final var applicationMultiple = Application.builder()
-            .applicationPayments(payments)
-            .build();
-        final var applicationEmpty = Application.builder()
-            .applicationPayments(emptyList())
-            .build();
-        final var applicationNull = Application.builder()
-            .build();
-
-        //Then
-        assertThat(applicationMultiple.getLastPaymentStatus()).isEqualTo(DECLINED);
-        assertThat(applicationEmpty.getLastPaymentStatus()).isNull();
-        assertThat(applicationNull.getLastPaymentStatus()).isNull();
-    }
 
     @Test
     void shouldReturnTrueIfStatementOfTruthIsYesForApplicant1() {
@@ -476,11 +377,6 @@ class ApplicationTest {
         assertThat(application.getPbaNumber()).isEqualTo(Optional.empty());
     }
 
-    private ListValue<Payment> paymentValue(final Payment payment) {
-        return ListValue.<Payment>builder()
-            .value(payment)
-            .build();
-    }
 
 
 }
