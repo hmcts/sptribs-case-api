@@ -151,13 +151,6 @@ public class CaseData {
     private List<ListValue<GeneralReferral>> generalReferrals;
 
     @CCD(
-        label = "RDC",
-        hint = "Regional divorce unit",
-        access = {DefaultAccess.class}
-    )
-    private Court divorceUnit;
-
-    @CCD(
         label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
