@@ -39,8 +39,8 @@ class FlagPartiesTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         final CicCase cicCase = CicCase.builder()
-            .flagPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .flagPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);

@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.notification.ListingUpdatedNotification;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -126,14 +127,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
-        var message = MessageUtil.generateWholeMessage(cicCase,
-            "Listing record updated",
-            "If any changes are made to this hearing, remember to make those changes in this listing record.",
-            cicCase.getRecordNotifyPartySubject(),
-            cicCase.getRecordNotifyPartyRepresentative(),
-            cicCase.getRecordNotifyPartyRespondent());
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader(format("# Listing record updated %n##  If any changes are made to this hearing, "
+                    + " remember to make those changes in this listing record. %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
     }
 
