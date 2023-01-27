@@ -55,7 +55,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CLOSE_THE_CASE)
             .forStates(CaseManagement)
-            .name("Close the Case")
+            .name("Case: Close case")
             .showSummary()
             .description("Close the case")
             .aboutToSubmitCallback(this::aboutToSubmit)

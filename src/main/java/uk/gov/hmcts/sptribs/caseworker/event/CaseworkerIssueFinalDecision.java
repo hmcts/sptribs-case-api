@@ -50,8 +50,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_ISSUE_FINAL_DECISION)
             .forStates(AwaitingOutcome)
-            .name("Issue final decision")
-            .description("Issue final decision")
+            .name("Decision: Issue final decision")
+            .description("Decision: Issue final decision")
             .showEventNotes()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
