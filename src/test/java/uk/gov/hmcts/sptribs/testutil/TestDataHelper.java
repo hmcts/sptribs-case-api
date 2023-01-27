@@ -40,7 +40,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.ciccase.model.DivorceOrDissolution.DIVORCE;
 import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_1_APP_2_RESIDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
@@ -61,14 +60,12 @@ public class TestDataHelper {
 
     public static CaseData caseData() {
         return CaseData.builder()
-            .divorceOrDissolution(DIVORCE)
             .build();
     }
 
     public static CaseData closedCaseData() {
         return CaseData.builder()
             .caseStatus(State.CaseManagement)
-            .divorceOrDissolution(DIVORCE)
             .build();
     }
 
