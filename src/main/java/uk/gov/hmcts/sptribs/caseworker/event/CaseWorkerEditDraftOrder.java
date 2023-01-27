@@ -43,7 +43,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             configBuilder
                 .event(CASEWORKER_EDIT_DRAFT_ORDER)
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
-                .name("Edit draft order")
+                .name("Orders: Edit draft")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftUpdated)

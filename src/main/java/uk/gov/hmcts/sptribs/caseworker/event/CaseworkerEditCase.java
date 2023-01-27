@@ -64,7 +64,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-            .name("Edit Case")
+            .name("Case: Edit case")
             .description("")
             .showSummary()
             .showEventNotes()

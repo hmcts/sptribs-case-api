@@ -47,8 +47,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
             configBuilder
                 .event(CASEWORKER_AMEND_DUE_DATE)
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
-                .name("Manage order due date")
-                .description("Manage order due date")
+                .name("Orders: Manage due date")
+                .description("Orders: Manage due date")
                 .showEventNotes()
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)

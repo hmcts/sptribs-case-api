@@ -48,8 +48,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_ISSUE_DECISION)
             .forStates(AwaitingOutcome)
-            .name("Issue a decision")
-            .description("Issue a decision")
+            .name("Decision: Issue a decision")
+            .description("Decision: Issue a decision")
             .showEventNotes()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
