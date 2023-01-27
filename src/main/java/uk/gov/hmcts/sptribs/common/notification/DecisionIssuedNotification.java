@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -29,7 +28,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 
 @Component
 @Slf4j
-@SuppressWarnings({"squid:S6204"})
 public class DecisionIssuedNotification implements PartiesNotification {
 
     @Autowired
@@ -139,7 +137,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         if (cicCase.getApplicantDocumentsUploaded() != null) {
             List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
-                .collect(Collectors.toList());
+                .toList();
 
             count++;
             for (String item : uploadedDocumentsUrls) {
