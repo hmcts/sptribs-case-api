@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
-import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.endpoint.data.OcrDataValidationRequest;
@@ -33,14 +32,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_1_APP_2_RESIDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
@@ -79,15 +75,6 @@ public class TestDataHelper {
             .caseStatus(State.AwaitingOutcome)
             .closeCase(closeCase)
             .build();
-    }
-
-    public static Jurisdiction getJurisdiction() {
-        final Jurisdiction jurisdiction = new Jurisdiction();
-        jurisdiction.setConnections(Set.of(APP_1_APP_2_RESIDENT));
-        jurisdiction.setApplicant1Residence(YES);
-        jurisdiction.setApplicant2Residence(YES);
-
-        return jurisdiction;
     }
 
     public static CallbackRequest callbackRequest(CaseData caseData) {
