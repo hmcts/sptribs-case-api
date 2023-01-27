@@ -109,10 +109,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     private LabelContent labelContent = new LabelContent();
 
-    @JsonUnwrapped()
-    @Builder.Default
-    private FinalOrder finalOrder = new FinalOrder();
-
     @JsonUnwrapped
     @Builder.Default
     private GeneralOrder generalOrder = new GeneralOrder();
