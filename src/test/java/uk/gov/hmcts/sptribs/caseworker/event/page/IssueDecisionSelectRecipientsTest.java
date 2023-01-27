@@ -41,11 +41,11 @@ public class IssueDecisionSelectRecipientsTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getData().getCicCase().getNotifyPartySubject().contains(Set.of(SubjectCIC.SUBJECT)));
+        assertThat(response.getData().getCicCase().getNotifyPartySubject().contains(Set.of(SubjectCIC.SUBJECT))).isFalse();
     }
 
     @Test
-    @Disabled
+    @Disabled("Temporarily ignored the test")
     void shouldBeInvalidIfNoRecipientsSelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
