@@ -42,7 +42,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
            // .complex(CaseData::getCicCase)
             //.mandatory(CicCase::getAnOrderTemplates)
              .complex(CaseData::getDraftOrderMainContentCIC)
-            //.optional(DraftOrderMainContentCIC::getOrderTemplateIssued)
+            .optional(DraftOrderMainContentCIC::getOrderTemplateIssued)
             .done();
 
     }
@@ -73,7 +73,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
 
 
         caseData.getCicCase().setAnOrderTemplates(template);
-
+        finalOrderIssu.setOrderTemplateIssued(generalOrderDocument);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
