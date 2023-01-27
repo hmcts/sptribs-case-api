@@ -11,8 +11,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
-
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
 
     @Override
