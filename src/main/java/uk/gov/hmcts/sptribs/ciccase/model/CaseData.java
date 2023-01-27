@@ -31,7 +31,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -115,20 +114,7 @@ public class CaseData {
 
     @JsonUnwrapped
     @Builder.Default
-    private GeneralEmail generalEmail = new GeneralEmail();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralLetter generalLetter = new GeneralLetter();
-
-    @JsonUnwrapped
-    @Builder.Default
     private GeneralReferral generalReferral = new GeneralReferral();
-
-    @JsonUnwrapped
-    @Builder.Default
-    @CCD(access = {SolicitorAndSystemUpdateAccess.class})
-    private GeneralApplication generalApplication = new GeneralApplication();
 
     @CCD(
         label = "General Referrals",
@@ -216,13 +202,6 @@ public class CaseData {
         access = {DefaultAccess.class}
     )
     private YesOrNo isJudicialSeparation;
-
-    @CCD(
-        label = "General emails",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralEmailDetails"
-    )
-    private List<ListValue<GeneralEmailDetails>> generalEmails;
 
     @CCD(typeOverride = CasePaymentHistoryViewer)
     private String paymentHistoryField;
