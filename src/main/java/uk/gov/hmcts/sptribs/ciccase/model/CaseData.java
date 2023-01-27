@@ -166,11 +166,6 @@ public class CaseData {
     )
     private String hyphenatedCaseRef;
 
-    @JsonUnwrapped(prefix = "paperForm")
-    @Builder.Default
-    @CCD(access = {CaseworkerAccess.class})
-    private PaperFormDetails paperFormDetails = new PaperFormDetails();
-
     @CCD(
         label = "Is case judicial separation?",
         access = {DefaultAccess.class}

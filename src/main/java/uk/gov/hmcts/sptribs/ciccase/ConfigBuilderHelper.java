@@ -39,7 +39,7 @@ public final class ConfigBuilderHelper {
 
     public static void configureWithTestEvent(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder) {
         configBuilder.event("test")
-            .forState(State.AwaitingApplicant1Response)
+            .forState(State.Draft)
             .name("Test event")
             .fields()
             .mandatory(CaseData::getHearingDate);

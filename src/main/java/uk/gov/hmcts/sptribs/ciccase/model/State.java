@@ -41,27 +41,6 @@ public enum State {
     Withdrawn("Withdrawn"),
 
     @CCD(
-        label = "Awaiting applicant 1 response",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class, SolicitorAccess.class}
-    )
-    AwaitingApplicant1Response("AwaitingApplicant1Response"),
-
-    @CCD(
-        label = "Awaiting applicant 2 response",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class, SolicitorAccess.class}
-    )
-    AwaitingApplicant2Response("AwaitingApplicant2Response"),
-
-    @CCD(
-        label = "Awaiting conditional order",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    AwaitingConditionalOrder("AwaitingConditionalOrder"),
-
-    @CCD(
         label = "Draft",
         hint = "### Case record for: ${hyphenatedCaseRef}\n",
         access = {DefaultStateAccessExcludingCAA.class, SolicitorAccess.class}
@@ -143,22 +122,16 @@ public enum State {
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
-        AwaitingApplicant1Response,
-        AwaitingApplicant2Response,
         Withdrawn,
         Rejected
     ));
 
     public static final EnumSet<State> POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED = EnumSet.complementOf(EnumSet.of(
-        Draft,
-        AwaitingApplicant1Response,
-        AwaitingApplicant2Response
+        Draft
     ));
 
     public static final EnumSet<State> PRE_RETURN_TO_PREVIOUS_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
-        AwaitingApplicant1Response,
-        AwaitingApplicant2Response,
         Withdrawn,
         Rejected
     ));
@@ -166,9 +139,6 @@ public enum State {
 
     protected static final EnumSet<State> ALL_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
-        AwaitingApplicant1Response,
-        AwaitingApplicant2Response,
-        AwaitingConditionalOrder,
         Withdrawn,
         Rejected,
         Submitted,
