@@ -13,8 +13,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Date;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
@@ -47,14 +45,6 @@ public class SolicitorService {
     private String onWhomServed;
 
     @CCD(
-        label = "How did you serve the documents?",
-        typeOverride = FixedList,
-        typeParameterOverride = "DocumentsServedHow",
-        access = {DefaultAccess.class}
-    )
-    private DocumentsServedHow howServed;
-
-    @CCD(
         label = "Details of Service",
         access = {DefaultAccess.class}
     )
@@ -67,22 +57,6 @@ public class SolicitorService {
         access = {DefaultAccess.class}
     )
     private String addressServed;
-
-    @CCD(
-        label = "Being the",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "DocumentsServedBeingThe",
-        access = {DefaultAccess.class}
-    )
-    private DocumentsServedBeingThe beingThe;
-
-    @CCD(
-        label = "Location",
-        typeOverride = FixedList,
-        typeParameterOverride = "DocumentsServedWhere",
-        access = {DefaultAccess.class}
-    )
-    private DocumentsServedWhere locationServed;
 
     @CCD(
         label = "Specify Location",

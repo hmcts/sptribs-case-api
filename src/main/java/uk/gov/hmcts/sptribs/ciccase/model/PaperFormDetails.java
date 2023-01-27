@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,10 +26,6 @@ public class PaperFormDetails {
     private YesOrNo applicantWillServeApplication;
 
     private YesOrNo respondentDifferentServiceAddress;
-
-    private Set<FinancialOrderFor> summaryApplicant1FinancialOrdersFor;
-
-    private Set<FinancialOrderFor> summaryApplicant2FinancialOrdersFor;
 
     private YesOrNo applicant1SigningSOT;
 

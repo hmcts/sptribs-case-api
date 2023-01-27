@@ -40,7 +40,6 @@ import java.util.List;
 import static java.lang.String.format;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -105,22 +104,10 @@ public class CaseData {
     )
     private String hearingLocation;
 
-    @CCD(
-        label = "Divorce or dissolution?",
-        access = {DefaultAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "DivorceOrDissolution"
-    )
-    private DivorceOrDissolution divorceOrDissolution;
-
     @JsonUnwrapped(prefix = "labelContent")
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
     private LabelContent labelContent = new LabelContent();
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private FinalOrder finalOrder = new FinalOrder();
 
     @JsonUnwrapped
     @Builder.Default
@@ -149,13 +136,6 @@ public class CaseData {
         typeParameterOverride = "GeneralReferral"
     )
     private List<ListValue<GeneralReferral>> generalReferrals;
-
-    @CCD(
-        label = "RDC",
-        hint = "Regional divorce unit",
-        access = {DefaultAccess.class}
-    )
-    private Court divorceUnit;
 
     @CCD(
         label = "Due Date",
@@ -322,11 +302,6 @@ public class CaseData {
             temp.substring(8, 12),
             temp.substring(12, 16)
         );
-    }
-
-    @JsonIgnore
-    public boolean isDivorce() {
-        return divorceOrDissolution.isDivorce();
     }
 
     public RemoveCaseStay getRemoveCaseStay() {
