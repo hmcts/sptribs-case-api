@@ -31,7 +31,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -104,39 +103,6 @@ public class CaseData {
     )
     private String hearingLocation;
 
-    @JsonUnwrapped(prefix = "labelContent")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private LabelContent labelContent = new LabelContent();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralOrder generalOrder = new GeneralOrder();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralEmail generalEmail = new GeneralEmail();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralLetter generalLetter = new GeneralLetter();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralReferral generalReferral = new GeneralReferral();
-
-    @JsonUnwrapped
-    @Builder.Default
-    @CCD(access = {SolicitorAndSystemUpdateAccess.class})
-    private GeneralApplication generalApplication = new GeneralApplication();
-
-    @CCD(
-        label = "General Referrals",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralReferral"
-    )
-    private List<ListValue<GeneralReferral>> generalReferrals;
-
     @CCD(
         label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -201,38 +167,14 @@ public class CaseData {
     private String hyphenatedCaseRef;
 
     @CCD(
-        access = {CaseworkerAccess.class}
-    )
-    @JsonUnwrapped(prefix = "noc")
-    private NoticeOfChange noticeOfChange;
-
-    @JsonUnwrapped(prefix = "paperForm")
-    @Builder.Default
-    @CCD(access = {CaseworkerAccess.class})
-    private PaperFormDetails paperFormDetails = new PaperFormDetails();
-
-    @CCD(
         label = "Is case judicial separation?",
         access = {DefaultAccess.class}
     )
     private YesOrNo isJudicialSeparation;
 
-    @CCD(
-        label = "General emails",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralEmailDetails"
-    )
-    private List<ListValue<GeneralEmailDetails>> generalEmails;
-
     @CCD(typeOverride = CasePaymentHistoryViewer)
     private String paymentHistoryField;
 
-    @CCD(
-        label = "General letters",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralLetterDetails"
-    )
-    private List<ListValue<GeneralLetterDetails>> generalLetters;
     @CCD(
         label = "Closure Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

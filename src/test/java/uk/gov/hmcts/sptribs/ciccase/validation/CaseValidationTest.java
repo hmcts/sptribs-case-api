@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.ciccase.validation;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,7 +9,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil.notNull;
-import static uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil.validateCaseFieldsForIssueApplication;
 import static uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil.validateMarriageDate;
 
 public class CaseValidationTest {
@@ -58,34 +56,4 @@ public class CaseValidationTest {
         //Then
         assertThat(response).isEqualTo(List.of("field" + LESS_THAN_ONE_YEAR_AGO));
     }
-
-    @Test
-    public void shouldReturnErrorWhenApp2MarriageCertNameIsMissing() {
-        //Given
-        MarriageDetails marriageDetails = new MarriageDetails();
-        marriageDetails.setPlaceOfMarriage("London");
-
-        //When
-        List<String> errors = validateCaseFieldsForIssueApplication(marriageDetails);
-
-        //Then
-        assertThat(errors).containsExactlyInAnyOrder(
-            "MarriageApplicant2Name cannot be empty or null"
-        );
-    }
-
-    @Test
-    public void shouldNotReturnErrorWhenBothWhenApp2MarriageCertNameAndPlaceOfMarriageArePresent() {
-        //Given
-        MarriageDetails marriageDetails = new MarriageDetails();
-        marriageDetails.setPlaceOfMarriage("London");
-        marriageDetails.setApplicant2Name("TestFname TestMname  TestLname");
-
-        //When
-        List<String> errors = validateCaseFieldsForIssueApplication(marriageDetails);
-
-        //Then
-        assertThat(errors).isEmpty();
-    }
-
 }
