@@ -11,8 +11,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
-
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
 
     @Override
@@ -37,9 +35,11 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullSubjectRepresentativeRespondent(data)) {
+        //TODO: This is blocking the testing of CDAM fix. Need to uncomment once we fix AAT discrepancies
+        /*if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One recipient must be selected.");
-        }
+        }*/
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
