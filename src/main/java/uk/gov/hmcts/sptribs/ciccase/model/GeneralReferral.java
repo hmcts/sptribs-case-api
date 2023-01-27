@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -64,10 +63,6 @@ public class GeneralReferral {
         label = "Is fee payment required?"
     )
     private YesOrNo generalReferralFeeRequired;
-
-    @JsonUnwrapped(prefix = "generalReferralFee")
-    @Builder.Default
-    private FeeDetails generalReferralFee = new FeeDetails();
 
     @CCD(
         label = "Approve general consideration?",

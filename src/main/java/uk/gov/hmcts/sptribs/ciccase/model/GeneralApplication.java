@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,8 +41,4 @@ public class GeneralApplication {
         typeOverride = TextArea
     )
     private String generalApplicationDocumentComments;
-
-    @JsonUnwrapped(prefix = "generalApplicationFee")
-    @Builder.Default
-    private FeeDetails generalApplicationFee = new FeeDetails();
 }
