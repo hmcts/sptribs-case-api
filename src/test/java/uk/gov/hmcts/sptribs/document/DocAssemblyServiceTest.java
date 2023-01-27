@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.ciccase.model.DivorceOrDissolution;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
 import uk.gov.hmcts.sptribs.document.model.DocAssemblyRequest;
 import uk.gov.hmcts.sptribs.document.model.DocAssemblyResponse;
@@ -175,7 +174,6 @@ public class DocAssemblyServiceTest {
         caseDataMap.put("petitionerFirstName", TEST_FIRST_NAME);
         caseDataMap.put("petitionerMiddleName", TEST_MIDDLE_NAME);
         caseDataMap.put("petitionerLastName", TEST_LAST_NAME);
-        caseDataMap.put("divorceOrDissolution", DivorceOrDissolution.DIVORCE);
         caseDataMap.put("petitionerEmail", TEST_USER_EMAIL);
         return caseDataMap;
     }
