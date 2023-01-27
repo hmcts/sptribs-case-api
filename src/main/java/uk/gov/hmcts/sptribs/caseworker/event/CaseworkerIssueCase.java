@@ -42,8 +42,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_ISSUE_CASE)
             .forStates(CaseManagement)
-            .name("Issue case to respondent")
-            .description("Issue case to respondent")
+            .name("Case: Issue to respondent")
+            .description("Case: Issue to respondent")
             .showEventNotes()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)

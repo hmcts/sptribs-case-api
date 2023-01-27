@@ -39,9 +39,9 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
         new PageBuilder(configBuilder
             .event(CASEWORKER_STAY_THE_CASE)
             .forStates(CaseManagement, CaseStayed)
-            .name("Stay the Case")
+            .name("Stays: Create/edit stay")
             .showSummary()
-            .description("Add a Stay to this case")
+            .description("Stays: Create/edit stay")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayed)
             .showEventNotes()

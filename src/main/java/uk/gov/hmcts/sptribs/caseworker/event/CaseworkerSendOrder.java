@@ -76,8 +76,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 AwaitingOutcome,
                 CaseClosed,
                 CaseStayed)
-            .name("Send order")
-            .description("Send order")
+            .name("Orders: Send order")
+            .description("Orders: Send order")
             .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)

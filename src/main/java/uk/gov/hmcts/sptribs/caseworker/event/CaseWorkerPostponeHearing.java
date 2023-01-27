@@ -51,7 +51,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
             configBuilder
                 .event(CASEWORKER_POSTPONE_HEARING)
                 .forStates(AwaitingHearing)
-                .name("Postpone hearing")
+                .name("Hearings: Postpone hearing")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
