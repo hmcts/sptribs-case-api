@@ -134,14 +134,8 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
 
-            //TODO: Remove the below code once tested. Added this for testing if the issue is with the DecisionNotice document
-            /*if (cicCase.getApplicantDocumentsUploaded() != null) {
-            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(ListValue::getValue)
-                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
-                .toList();*/
-
-            count++;
             for (String item : uploadedDocumentsUrls) {
+                count++;
 
                 Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
                     serviceAuthorization,
