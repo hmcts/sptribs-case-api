@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -20,13 +21,13 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .pageLabel("Select recipients")
             .complex(CaseData::getCicCase)
             .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getNotifyPartySubject, "")
+            .optional(CicCase::getIssueDecNotifyPartySubject, "")
             .label("issueFinalDecisionSelectRecipientsNotifyPartiesRepresentative", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .optional(CicCase::getIssueDecNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
             .label("issueFinalDecisionSelectRecipientsNotifyPartiesRespondent", "")
             .readonlyWithLabel(CicCase::getRespondantName, " ")
-            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .optional(CicCase::getIssueDecNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
     }
 
@@ -35,14 +36,21 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        //TODO: This is blocking the testing of CDAM fix. Need to uncomment once we fix AAT discrepancies
-        /*if (checkNullSubjectRepresentativeRespondent(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One recipient must be selected.");
-        }*/
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
             .build();
+    }
+
+    private static boolean checkNullSubjectRepresentativeRespondent(CaseData data) {
+        return null != data.getCicCase()
+            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartySubject())
+            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRespondent());
+
     }
 }
