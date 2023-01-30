@@ -56,6 +56,14 @@ sourceSets {
       srcDir file('src/integrationTest/java')
     }
   }
+
+  e2eTests {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/e2eTests/java')
+    }
+  }
 }
 
 ext{
@@ -84,6 +92,8 @@ configurations {
   integrationTestRuntime.extendsFrom testRuntime
   cftlibTestImplementation.extendsFrom testImplementation
   cftlibTestRuntime.extendsFrom testRuntime
+  e2eTestsImplementation.extendsFrom testImplementation
+  e2eTestsRuntime.extendsFrom testRuntime
 }
 
 tasks.withType(JavaCompile) {
@@ -120,6 +130,14 @@ task integration(type: Test) {
   group = "Verification"
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
+  failFast = true
+}
+
+task e2eTests(type: Test) {
+  description = "Runs e2e tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
   failFast = true
 }
 
@@ -319,7 +337,6 @@ dependencies {
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.6.1'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
 
-
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   testImplementation libraries.junit5
@@ -344,6 +361,9 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.2.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.28.1'
+  testRuntimeOnly 'org.junit.support:testng-engine:1.0.4'
+  testImplementation group: 'org.testng', name: 'testng', version: '7.7.1'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -352,11 +372,16 @@ dependencies {
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
+  e2eTestsImplementation sourceSets.main.runtimeClasspath
+  e2eTestsImplementation sourceSets.test.runtimeClasspath
+
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.28.1'
+  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:1.9.1'
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
