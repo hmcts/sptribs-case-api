@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -127,17 +128,17 @@ public class DecisionIssuedNotification implements PartiesNotification {
         final String authorisation = httpServletRequest.getHeader(AUTHORIZATION);
         String serviceAuthorization = authTokenGenerator.generate();
 
-        CicCase cicCase = caseData.getCicCase();
-        /*if (caseIssueDecision.getDecisionDocument() != null) {
-            List<String> uploadedDocumentsUrls = caseIssueDecision.getDecisionDocument().stream().map(item -> item.getValue())
-                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
-                .collect(Collectors.toList());*/
-
-        //TODO: Remove the below code once tested. Added this for testing if the issue is with the DecisionNotice document
-        if (cicCase.getApplicantDocumentsUploaded() != null) {
-            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(ListValue::getValue)
+        CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
+        if (caseIssueDecision.getDecisionDocument() != null) {
+            List<String> uploadedDocumentsUrls = caseIssueDecision.getDecisionDocument().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
+
+            //TODO: Remove the below code once tested. Added this for testing if the issue is with the DecisionNotice document
+            /*if (cicCase.getApplicantDocumentsUploaded() != null) {
+            List<String> uploadedDocumentsUrls = cicCase.getApplicantDocumentsUploaded().stream().map(ListValue::getValue)
+                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
+                .toList();*/
 
             count++;
             for (String item : uploadedDocumentsUrls) {

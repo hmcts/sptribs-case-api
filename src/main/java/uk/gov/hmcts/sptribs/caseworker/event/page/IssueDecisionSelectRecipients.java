@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -12,7 +11,11 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
+
+    private static final String ALWAYS_HIDE = "caseIssueDecisionDecisionNotice = \"ALWAYS_HIDE\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -20,14 +23,18 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .page("issueDecisionSelectRecipients", this::midEvent)
             .pageLabel("Select recipients")
             .complex(CaseData::getCicCase)
-            .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getIssueDecNotifyPartySubject, "")
-            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRepresentative", "")
-            .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getIssueDecNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRespondent", "")
-            .readonlyWithLabel(CicCase::getRespondantName, " ")
-            .optional(CicCase::getIssueDecNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+                "cicCaseFullName!=\"\" ",
+                "Decision information recipient - Subject")
+            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ",
+                "Decision information recipient - Representative")
+            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+                "cicCaseRespondantName!=\"\" ",
+                "Decision information recipient - Respondent")
             .done();
     }
 
@@ -44,13 +51,5 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .data(data)
             .errors(errors)
             .build();
-    }
-
-    private static boolean checkNullSubjectRepresentativeRespondent(CaseData data) {
-        return null != data.getCicCase()
-            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartySubject())
-            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRespondent());
-
     }
 }
