@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CicBundleFolderDTO {
 
     private String name;
-    private ArrayList<CicValue<CicBundleDocumentDTO>> documents = new ArrayList<>();
-    private ArrayList<CicValue<CicBundleFolderDTO>> folders = new ArrayList<>();
+    private List<CicValue<CicBundleDocumentDTO>> documents = new ArrayList<>();
+    private List<CicValue<CicBundleFolderDTO>> folders = new ArrayList<>();
     private int sortIndex;
 
     public String getName() {
@@ -21,20 +22,20 @@ public class CicBundleFolderDTO {
         this.name = name;
     }
 
-    public ArrayList<CicValue<CicBundleDocumentDTO>> getDocuments() {
+    public List<CicValue<CicBundleDocumentDTO>> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(ArrayList<CicValue<CicBundleDocumentDTO>> documents) {
+    public void setDocuments(List<CicValue<CicBundleDocumentDTO>> documents) {
         this.documents = documents;
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public ArrayList<CicValue<CicBundleFolderDTO>> getFolders() {
+    public List<CicValue<CicBundleFolderDTO>> getFolders() {
         return folders;
     }
 
-    public void setFolders(ArrayList<CicValue<CicBundleFolderDTO>> folders) {
+    public void setFolders(List<CicValue<CicBundleFolderDTO>> folders) {
         this.folders = folders;
     }
 

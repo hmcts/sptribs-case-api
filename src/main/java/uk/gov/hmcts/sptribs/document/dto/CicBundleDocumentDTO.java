@@ -2,10 +2,12 @@ package uk.gov.hmcts.sptribs.document.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Slf4j
 public class CicBundleDocumentDTO {
 
     private String name;
@@ -14,7 +16,7 @@ public class CicBundleDocumentDTO {
     private CICDocument sourceDocument;
 
     public CicBundleDocumentDTO() {
-
+        log.info("CicBundleDocumentDTO no args constructor");
     }
 
     public CicBundleDocumentDTO(String name, String description, int sortIndex, CICDocument sourceDocument) {
