@@ -37,7 +37,7 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-       if (checkNullSubjectRepresentativeRespondent(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One recipient must be selected.");
         }
 
