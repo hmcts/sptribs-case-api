@@ -74,9 +74,9 @@ class CaseworkerIssueDecisionTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CaseData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
-        final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+        final CicCase cicCase = CicCase.builder().issueDecNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .issueDecNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .issueDecNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .build();
         caseData.setCicCase(cicCase);
         caseData.setCaseIssueDecision(decision);
