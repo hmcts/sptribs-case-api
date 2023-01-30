@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -12,6 +11,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
 
     @Override
@@ -21,13 +22,13 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .pageLabel("Select recipients")
             .complex(CaseData::getCicCase)
             .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getIssueDecNotifyPartySubject, "")
+            .optional(CicCase::getNotifyPartySubject, "")
             .label("issueFinalDecisionSelectRecipientsNotifyPartiesRepresentative", "")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getIssueDecNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
             .label("issueFinalDecisionSelectRecipientsNotifyPartiesRespondent", "")
             .readonlyWithLabel(CicCase::getRespondantName, " ")
-            .optional(CicCase::getIssueDecNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
             .done();
     }
 
@@ -44,13 +45,5 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .data(data)
             .errors(errors)
             .build();
-    }
-
-    private static boolean checkNullSubjectRepresentativeRespondent(CaseData data) {
-        return null != data.getCicCase()
-            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartySubject())
-            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRespondent());
-
     }
 }
