@@ -249,6 +249,27 @@ public class CicCase {
         typeParameterOverride = "SubjectCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    private Set<SubjectCIC> issueDecNotifyPartySubject;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "RepresentativeCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<RepresentativeCIC> issueDecNotifyPartyRepresentative;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "RespondentCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<RespondentCIC> issueDecNotifyPartyRespondent;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "SubjectCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private Set<SubjectCIC> recordNotifyPartySubject;
 
     @CCD(
