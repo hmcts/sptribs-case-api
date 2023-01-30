@@ -18,7 +18,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildSummaryTab(configBuilder);
         buildFlagsTab(configBuilder);
         buildStateTab(configBuilder);
-        buildDocumentsTab(configBuilder);
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
         buildCasePartiesTab(configBuilder);
@@ -51,12 +50,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             //.forRoles(APPLICANT_2_SOLICITOR)
             .label("LabelState", null, "#### Case State:  ${[STATE]}");
     }
-
-    private void buildDocumentsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("documents", "Documents")
-            .field(CaseData::getGeneralEmails);
-    }
-
 
     private void buildNotesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("notes", "Notes")

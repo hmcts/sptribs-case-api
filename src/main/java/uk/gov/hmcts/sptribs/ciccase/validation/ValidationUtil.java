@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.ciccase.validation;
 
-import uk.gov.hmcts.sptribs.ciccase.model.MarriageDetails;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,14 +51,6 @@ public final class ValidationUtil {
 
     private static boolean isInTheFuture(LocalDate date) {
         return date.isAfter(LocalDate.now());
-    }
-
-    public static List<String> validateCaseFieldsForIssueApplication(MarriageDetails marriageDetails) {
-        //MarriageApplicant1Name and MarriageDate are validated in validateBasicCase
-        return flattenLists(
-            notNull(marriageDetails.getApplicant2Name(), "MarriageApplicant2Name"),
-            notNull(marriageDetails.getPlaceOfMarriage(), "PlaceOfMarriage")
-        );
     }
 
     @SafeVarargs

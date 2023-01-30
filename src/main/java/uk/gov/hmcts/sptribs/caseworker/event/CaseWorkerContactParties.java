@@ -20,9 +20,6 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant1Response;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingApplicant2Response;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingConditionalOrder;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -52,9 +49,6 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             configBuilder
                 .event(CASEWORKER_CONTACT_PARTIES)
                 .forStates(Draft,
-                    AwaitingApplicant1Response,
-                    AwaitingApplicant2Response,
-                    AwaitingConditionalOrder,
                     Withdrawn,
                     Rejected,
                     Submitted,
