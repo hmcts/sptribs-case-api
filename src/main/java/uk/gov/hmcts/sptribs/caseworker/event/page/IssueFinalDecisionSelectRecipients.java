@@ -24,17 +24,18 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
             .pageLabel("Select recipients")
             .label("labelIssueFinalDecisionSelectRecipients", "Who should receive this decision notice?")
             .complex(CaseData::getCicCase)
-            .readonly(CicCase::getRepresentativeCIC, ALWAYS_HIDE)
-            .done()
-            .complex(CaseData::getCicCase)
-            .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getNotifyPartySubject, "")
-            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRepresentative", "")
-            .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRespondent", "")
-            .readonlyWithLabel(CicCase::getRespondantName, " ")
-            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+                "cicCaseFullName!=\"\" ",
+                "Final Decision information recipient - Subject")
+            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ",
+                "Final Decision information recipient - Representative")
+            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+                "cicCaseRespondantName!=\"\" ",
+                "Final Decision information recipient - Respondent")
             .done();
     }
 
