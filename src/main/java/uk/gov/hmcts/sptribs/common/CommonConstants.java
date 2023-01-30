@@ -40,6 +40,11 @@ public final class CommonConstants {
 
     public static final String CIC = "Criminal Injuries Compensation Tribunal";
 
+    public static final String STITCHED_FILE_NAME_FIELD_LENGTH_ERROR_MSG = "File Name should contain at least 2 and "
+        + "not more than 50 Chars";
+    public static final String BUNDLE_DESCRIPTION_FIELD_LENGTH_ERROR_MSG = "Bundle Description should not contain "
+        + "more than 255 Chars";
+
     private CommonConstants() {
     }
 }
