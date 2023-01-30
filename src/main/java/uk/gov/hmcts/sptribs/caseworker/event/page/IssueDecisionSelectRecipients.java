@@ -11,7 +11,11 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
+
+    private static final String ALWAYS_HIDE = "caseIssueDecisionDecisionNotice = \"ALWAYS_HIDE\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -19,14 +23,18 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .page("issueDecisionSelectRecipients", this::midEvent)
             .pageLabel("Select recipients")
             .complex(CaseData::getCicCase)
-            .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getNotifyPartySubject, "")
-            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRepresentative", "")
-            .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("issueFinalDecisionSelectRecipientsNotifyPartiesRespondent", "")
-            .readonlyWithLabel(CicCase::getRespondantName, " ")
-            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+                "cicCaseFullName!=\"\" ",
+                "Decision information recipient - Subject")
+            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ",
+                "Decision information recipient - Representative")
+            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+                "cicCaseRespondantName!=\"\" ",
+                "Decision information recipient - Respondent")
             .done();
     }
 
@@ -35,10 +43,9 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        //TODO: This is blocking the testing of CDAM fix. Need to uncomment once we fix AAT discrepancies
-        /*if (checkNullSubjectRepresentativeRespondent(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One recipient must be selected.");
-        }*/
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
