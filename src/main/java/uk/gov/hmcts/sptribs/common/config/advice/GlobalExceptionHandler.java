@@ -10,14 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceException;
-import uk.gov.hmcts.sptribs.common.exception.InvalidDataException;
-import uk.gov.hmcts.sptribs.common.exception.UnsupportedFormTypeException;
-import uk.gov.hmcts.sptribs.endpoint.model.output.BspErrorResponse;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
-import static java.util.Collections.singletonList;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.ResponseEntity.status;
 
 @Slf4j
@@ -58,30 +53,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return status(exception.status()).body(
             String.format("%s - %s", exception.getMessage(), exception.contentUTF8())
         );
-    }
-
-
-    @ExceptionHandler(InvalidDataException.class)
-    public ResponseEntity<Object> handleInvalidDataException(InvalidDataException exception) {
-        log.warn(exception.getMessage(), exception);
-
-        return status(UNPROCESSABLE_ENTITY)
-            .body(
-                BspErrorResponse.builder()
-                    .errors(exception.getErrors())
-                    .build()
-            );
-    }
-
-    @ExceptionHandler(UnsupportedFormTypeException.class)
-    public ResponseEntity<Object> handleUnsupportedFormTypeException(UnsupportedFormTypeException exception) {
-        log.warn(exception.getMessage(), exception);
-
-        return status(UNPROCESSABLE_ENTITY)
-            .body(
-                BspErrorResponse.builder()
-                    .errors(singletonList(exception.getMessage()))
-                    .build()
-            );
     }
 }

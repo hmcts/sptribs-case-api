@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceException;
-import uk.gov.hmcts.sptribs.common.exception.InvalidDataException;
-import uk.gov.hmcts.sptribs.common.exception.UnsupportedFormTypeException;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -77,37 +75,5 @@ class GlobalExceptionHandlerTest {
 
         //Then
         assertThat(actualResponse.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-    }
-
-    @Test
-    void shouldHandleUnsupportedFormTypeException() {
-        //Given
-        final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
-        final UnsupportedFormTypeException unsupportedFormTypeException = mock(UnsupportedFormTypeException.class);
-
-        //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleUnsupportedFormTypeException(unsupportedFormTypeException);
-
-        //Then
-        Assertions.assertThat(actualResponse.getBody()).isNotNull();
-        assertThat(actualResponse.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
-
-    }
-
-    @Test
-    void shouldHandleInvalidDataException() {
-        //Given
-        final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
-        final InvalidDataException invalidDataException = mock(InvalidDataException.class);
-
-        //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleInvalidDataException(invalidDataException);
-
-        //Then
-        Assertions.assertThat(actualResponse.getBody()).isNotNull();
-        assertThat(actualResponse.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY));
-
     }
 }
