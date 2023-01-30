@@ -39,11 +39,6 @@ public final class CommonConstants {
     public static final String ADDRESS_LINE_7 = "address_line_7";
 
     public static final String CIC = "Criminal Injuries Compensation Tribunal";
-    public static final String REPRESENTATIVE = "Representative";
-    public static final String RESPONDENT = "Respondent";
-    public static final String LABEL_RESPONDENT = "Respondant";
-    public static final String SUBJECT = "Subject";
-    public static final String COMMA_SPACE = ", ";
 
     private CommonConstants() {
     }

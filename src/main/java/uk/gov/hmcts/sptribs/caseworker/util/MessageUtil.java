@@ -8,7 +8,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
-import uk.gov.hmcts.sptribs.common.CommonConstants;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,6 +16,12 @@ import java.util.Set;
 import static java.lang.String.format;
 
 public final class MessageUtil {
+    private static final String REPRESENTATIVE = "Representative";
+    private static final String RESPONDENT = "Respondent";
+    private static final String LABEL_RESPONDENT = "Respondant";
+    private static final String SUBJECT = "Subject";
+
+    private static final String COMMA_SPACE = ", ";
 
     private MessageUtil() {
     }
@@ -36,16 +41,16 @@ public final class MessageUtil {
         boolean post = false;
         StringBuilder postMessage = new StringBuilder(100);
         postMessage.append("It will be sent via post to: ");
-        if (parties.stream().anyMatch(party -> CommonConstants.SUBJECT.equals(party.getLabel()))
+        if (parties.stream().anyMatch(party -> SUBJECT.equals(party.getLabel()))
             && ContactPreferenceType.POST == cicCase.getContactPreferenceType()
             && !ObjectUtils.isEmpty(cicCase.getAddress())) {
-            postMessage.append(CommonConstants.SUBJECT + CommonConstants.COMMA_SPACE);
+            postMessage.append(SUBJECT + COMMA_SPACE);
             post = true;
         }
-        if (parties.stream().anyMatch(party -> CommonConstants.REPRESENTATIVE.equals(party.getLabel()))
+        if (parties.stream().anyMatch(party -> REPRESENTATIVE.equals(party.getLabel()))
             && ContactPreferenceType.POST == cicCase.getRepresentativeContactDetailsPreference()
             && !ObjectUtils.isEmpty(cicCase.getRepresentativeAddress())) {
-            postMessage.append(CommonConstants.REPRESENTATIVE + CommonConstants.COMMA_SPACE);
+            postMessage.append(REPRESENTATIVE + COMMA_SPACE);
             post = true;
         }
         return post ? postMessage.substring(0, postMessage.length() - 2) : null;
@@ -69,18 +74,18 @@ public final class MessageUtil {
         final StringBuilder messageLine = new StringBuilder(100);
         messageLine.append(" A notification has been sent to: ");
         boolean email = false;
-        if (parties.stream().anyMatch(party -> CommonConstants.SUBJECT.equals(party.getLabel()))
+        if (parties.stream().anyMatch(party -> SUBJECT.equals(party.getLabel()))
             && StringUtils.hasText(cicCase.getEmail())) {
-            messageLine.append(CommonConstants.SUBJECT + CommonConstants.COMMA_SPACE);
+            messageLine.append(SUBJECT + COMMA_SPACE);
             email = true;
         }
-        if (parties.stream().anyMatch(party -> CommonConstants.LABEL_RESPONDENT.equals(party.getLabel()))) {
-            messageLine.append(CommonConstants.RESPONDENT + CommonConstants.COMMA_SPACE);
+        if (parties.stream().anyMatch(party -> LABEL_RESPONDENT.equals(party.getLabel()))) {
+            messageLine.append(RESPONDENT + COMMA_SPACE);
             email = true;
         }
-        if (parties.stream().anyMatch(party -> CommonConstants.REPRESENTATIVE.equals(party.getLabel()))
+        if (parties.stream().anyMatch(party -> REPRESENTATIVE.equals(party.getLabel()))
             && StringUtils.hasText(cicCase.getRepresentativeEmailAddress())) {
-            messageLine.append(CommonConstants.REPRESENTATIVE + CommonConstants.COMMA_SPACE);
+            messageLine.append(REPRESENTATIVE + COMMA_SPACE);
             email = true;
         }
         return email ? messageLine.substring(0, messageLine.length() - 2) : null;
@@ -125,13 +130,13 @@ public final class MessageUtil {
         message.append("A notification has been sent to: ");
 
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            message.append(CommonConstants.SUBJECT + CommonConstants.COMMA_SPACE);
+            message.append(SUBJECT + COMMA_SPACE);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            message.append(CommonConstants.RESPONDENT + CommonConstants.COMMA_SPACE);
+            message.append(RESPONDENT + COMMA_SPACE);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            message.append(CommonConstants.REPRESENTATIVE + CommonConstants.COMMA_SPACE);
+            message.append(REPRESENTATIVE + COMMA_SPACE);
         }
 
         return message.substring(0, message.length() - 2);
@@ -141,13 +146,13 @@ public final class MessageUtil {
         final StringBuilder message = new StringBuilder(100);
         message.append("A notification has been sent to: ");
         if (notificationParties.contains(NotificationParties.SUBJECT)) {
-            message.append(CommonConstants.SUBJECT + CommonConstants.COMMA_SPACE);
+            message.append(SUBJECT + COMMA_SPACE);
         }
         if (notificationParties.contains(NotificationParties.RESPONDENT)) {
-            message.append(CommonConstants.RESPONDENT + CommonConstants.COMMA_SPACE);
+            message.append(RESPONDENT + COMMA_SPACE);
         }
         if (notificationParties.contains(NotificationParties.REPRESENTATIVE)) {
-            message.append(CommonConstants.REPRESENTATIVE + CommonConstants.COMMA_SPACE);
+            message.append(REPRESENTATIVE + COMMA_SPACE);
         }
         return message.substring(0, message.length() - 2);
     }
@@ -157,13 +162,13 @@ public final class MessageUtil {
         message.append("A notification has been sent to: ");
 
         if (!CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
-            message.append(CommonConstants.SUBJECT + CommonConstants.COMMA_SPACE);
+            message.append(SUBJECT + COMMA_SPACE);
         }
         if (!CollectionUtils.isEmpty(contactParties.getRespondant())) {
-            message.append(CommonConstants.RESPONDENT + CommonConstants.COMMA_SPACE);
+            message.append(RESPONDENT + COMMA_SPACE);
         }
         if (!CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())) {
-            message.append(CommonConstants.REPRESENTATIVE + CommonConstants.COMMA_SPACE);
+            message.append(REPRESENTATIVE + COMMA_SPACE);
         }
 
         return message.substring(0, message.length() - 2);

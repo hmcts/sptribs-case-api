@@ -13,8 +13,8 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -28,10 +28,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.COMMA_SPACE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.RESPONDENT;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.SUBJECT;
 
 @Component
 @Slf4j
@@ -98,39 +94,22 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Decision notice issued %n## %s",
-                generateSimpleMessage(details.getData().getCicCase())))
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 
     private void sendIssueDecisionNotification(String caseNumber, CaseData data) {
 
-        if (!CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartySubject())) {
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRespondent())) {
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
 
-        if (!CollectionUtils.isEmpty(data.getCicCase().getIssueDecNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }
-    }
-
-    private static String generateSimpleMessage(final CicCase cicCase) {
-        final StringBuilder message = new StringBuilder(100);
-        message.append("A notification has been sent to: ");
-
-        if (!CollectionUtils.isEmpty(cicCase.getIssueDecNotifyPartySubject())) {
-            message.append(SUBJECT + COMMA_SPACE);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getIssueDecNotifyPartyRespondent())) {
-            message.append(RESPONDENT + COMMA_SPACE);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getIssueDecNotifyPartyRepresentative())) {
-            message.append(REPRESENTATIVE + COMMA_SPACE);
-        }
-
-        return message.substring(0, message.length() - 2);
     }
 }
