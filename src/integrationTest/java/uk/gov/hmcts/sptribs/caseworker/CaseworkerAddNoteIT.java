@@ -16,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.Clock;
@@ -59,9 +58,6 @@ public class CaseworkerAddNoteIT {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockBean
-    private WebMvcConfig webMvcConfig;
 
     @MockBean
     private Clock clock;
