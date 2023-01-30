@@ -60,6 +60,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .description("Case: Reinstate case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::reinstated)
+            .showSummary()
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));

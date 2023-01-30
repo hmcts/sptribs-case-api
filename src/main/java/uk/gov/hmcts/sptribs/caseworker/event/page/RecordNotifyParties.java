@@ -15,7 +15,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullRe
 
 public class RecordNotifyParties implements CcdPageConfiguration {
 
-    private static final String NEVER_SHOW = "recordHearingType=\"NEVER_SHOW\"";
+    private static final String ALWAYS_HIDE = "recordHearingType=\"NEVER_SHOW\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -23,15 +23,18 @@ public class RecordNotifyParties implements CcdPageConfiguration {
             .pageLabel("Notify parties")
             .label("labelNotifyParties", "")
             .complex(CaseData::getCicCase)
-            .label("recordListingNotifyPageMessage", "Which parties should be notified about this listing?")
-            .readonly(CicCase::getFullName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("recordListingNotifyPageRepresentative", "")
-            .readonly(CicCase::getRepresentativeFullName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("recordListingNotifyPageRespondent", "")
-            .readonly(CicCase::getRespondantName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartySubject,
+                "cicCaseFullName!=\"\" ",
+                "Listing information recipient - Subject")
+            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ",
+                "Listing information recipient - Representative")
+            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRespondent,
+                "cicCaseRespondantName!=\"\" ",
+                "Listing information recipient - Respondent")
             .done();
     }
 
