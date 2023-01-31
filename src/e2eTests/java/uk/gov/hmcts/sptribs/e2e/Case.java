@@ -8,11 +8,8 @@ import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Case extends Base {
-
-    private List<String> options;
 
     /*
     createCase() method accepts String arguments. By default, this method creates
@@ -26,7 +23,6 @@ public class Case extends Base {
     createCase("post") --> to change the contact preference type to Post for all the parties involved
      */
     public String createCase(String... args) {
-        options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
         // Select case filters
         PageHelpers.clickLink("Create case");
         page.waitForFunction("selector => document.querySelector(selector).innerText === 'Create Case'",
@@ -59,6 +55,8 @@ public class Case extends Base {
         page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who are the parties in this case?'",
             "h1", PageHelpers.functionOptionsWithTimeout(20000));
         PageHelpers.getCheckBoxByLabel("Subject").first().check();
+
+        List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
         if (options.contains("representative")) {
             PageHelpers.getCheckBoxByLabel("Representative").check();
         }
@@ -70,18 +68,18 @@ public class Case extends Base {
         // Fill subject details form
         page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the subject of this case?'",
             "h1", PageHelpers.functionOptionsWithTimeout(20000));
-        PageHelpers.getTextBoxByLabel("Subject\'s full name").fill("Subject " + StringHelpers.getRandomString(9));
-        PageHelpers.getTextBoxByLabel("Subject\'s phone number (Optional)").fill("07465730467");
+        PageHelpers.getTextBoxByLabel("Subject's full name").fill("Subject " + StringHelpers.getRandomString(9));
+        PageHelpers.getTextBoxByLabel("Subject's phone number (Optional)").fill("07465730467");
         PageHelpers.getTextBoxByLabel("Day").fill("1");
         PageHelpers.getTextBoxByLabel("Month").fill("1");
         PageHelpers.getTextBoxByLabel("Year").fill("1990");
-        page.locator("text = What is subject\'s contact preference type?").click();
+        page.locator("text = What is subject's contact preference type?").click();
         if (options.contains("post")) {
             PageHelpers.getRadioButtonByLabel("Post").click();
             fillAddressDetails("Subject");
         } else {
             PageHelpers.getRadioButtonByLabel("Email").click();
-            PageHelpers.getTextBoxByLabel("Subject\'s email address")
+            PageHelpers.getTextBoxByLabel("Subject's email address")
                         .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
         }
         PageHelpers.clickButton("Continue");
@@ -90,18 +88,18 @@ public class Case extends Base {
         if (options.contains("applicant")) {
             page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the applicant in this case?'",
                 "h1", PageHelpers.functionOptionsWithTimeout(20000));
-            PageHelpers.getTextBoxByLabel("Applicant\'s full name").fill("Subject " + StringHelpers.getRandomString(9));
-            PageHelpers.getTextBoxByLabel("Applicant\'s phone number").fill("07465730467");
+            PageHelpers.getTextBoxByLabel("Applicant's full name").fill("Subject " + StringHelpers.getRandomString(9));
+            PageHelpers.getTextBoxByLabel("Applicant's phone number").fill("07465730467");
             PageHelpers.getTextBoxByLabel("Day").fill("3");
             PageHelpers.getTextBoxByLabel("Month").fill("10");
             PageHelpers.getTextBoxByLabel("Year").fill("1992");
-            page.locator("text = What is applicant\'s contact preference?").click();
+            page.locator("text = What is applicant's contact preference?").click();
             if (options.contains("post")) {
                 PageHelpers.getRadioButtonByLabel("Post").click();
                 fillAddressDetails("Applicant");
             } else {
                 PageHelpers.getRadioButtonByLabel("Email").click();
-                PageHelpers.getTextBoxByLabel("Applicant\'s email address")
+                PageHelpers.getTextBoxByLabel("Applicant's email address")
                     .fill(StringHelpers.getRandomString(9).toLowerCase() + "@applicant.com");
             }
             PageHelpers.clickButton("Continue");
@@ -111,18 +109,18 @@ public class Case extends Base {
         if (options.contains("representative")) {
             page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the Representative for this case?'",
                 "h1", PageHelpers.functionOptionsWithTimeout(20000));
-            PageHelpers.getTextBoxByLabel("Representative\'s full name").fill("Subject " + StringHelpers.getRandomString(9));
+            PageHelpers.getTextBoxByLabel("Representative's full name").fill("Subject " + StringHelpers.getRandomString(9));
             PageHelpers.getTextBoxByLabel("Organisation or business name (Optional)").fill(StringHelpers.getRandomString(10) + " Limited");
-            PageHelpers.getTextBoxByLabel("Representative\'s contact number").fill("07456831774");
-            PageHelpers.getTextBoxByLabel("Representative\'s reference (Optional)").fill(StringHelpers.getRandomString(10));
+            PageHelpers.getTextBoxByLabel("Representative's contact number").fill("07456831774");
+            PageHelpers.getTextBoxByLabel("Representative's reference (Optional)").fill(StringHelpers.getRandomString(10));
             PageHelpers.getRadioButtonByLabel("Yes").click();
-            page.locator("text = What is representative\'s contact preference?").click();
+            page.locator("text = What is representative's contact preference?").click();
             if (options.contains("post")) {
                 PageHelpers.getRadioButtonByLabel("Post").click();
                 fillAddressDetails("Representative");
             } else {
                 PageHelpers.getRadioButtonByLabel("Email").click();
-                PageHelpers.getTextBoxByLabel("Representative\'s email address")
+                PageHelpers.getTextBoxByLabel("Representative's email address")
                     .fill(StringHelpers.getRandomString(9).toLowerCase() + "@representative.com");
             }
             PageHelpers.clickButton("Continue");
@@ -172,8 +170,7 @@ public class Case extends Base {
         page.waitForFunction("selector => document.querySelector(selector).innerText === 'History'",
             "h2.heading-h2", PageHelpers.functionOptionsWithTimeout(20000));
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
-        String caseNumber = page.locator("ccd-markdown markdown h3").textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
-        return caseNumber;
+        return page.locator("ccd-markdown markdown h3").textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
     }
 
     public void buildCase() {
@@ -193,7 +190,7 @@ public class Case extends Base {
 
     private void fillAddressDetails(String partyType) {
         PageHelpers.getTextBoxByLabel("Enter a UK postcode").fill("SW11 1PD");
-        PageHelpers.clickLink("I can\'t enter a UK postcode");
+        PageHelpers.clickLink("I can't enter a UK postcode");
         PageHelpers.getTextBoxByLabel("Building and Street").fill("1 " + partyType + " Rse Way");
         PageHelpers.getTextBoxByLabel("Address Line 2").fill("Test Address Line 2");
         PageHelpers.getTextBoxByLabel("Address Line 3").fill("Test Address Line 3");
