@@ -21,10 +21,6 @@ public class CicValue<T> implements Serializable {
         this.value = value;
     }
 
-    public CicValue(T value) {
-        this.value = value;
-    }
-
     public CicValue() {
         log.info("CicValue no args constructor");
     }

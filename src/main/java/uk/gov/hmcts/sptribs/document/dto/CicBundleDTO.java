@@ -73,24 +73,12 @@ public class CicBundleDTO {
         return folders;
     }
 
-    public void setFolders(List<CicValue<CicBundleFolderDTO>> folders) {
-        this.folders = folders;
-    }
-
     public CicBundlePaginationStyle getPaginationStyle() {
         return paginationStyle;
     }
 
-    public void setPaginationStyle(CicBundlePaginationStyle paginationStyle) {
-        this.paginationStyle = paginationStyle;
-    }
-
     public PageNumberFormat getPageNumberFormat() {
         return pageNumberFormat;
-    }
-
-    public void setPageNumberFormat(PageNumberFormat pageNumberFormat) {
-        this.pageNumberFormat = pageNumberFormat;
     }
 
     public String getStitchingFailureMessage() {

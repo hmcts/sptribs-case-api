@@ -18,16 +18,42 @@
             "title": "Bundle Title",
             "description":null,
             "eligibleForStitching":"",
-            "bundleDocuments":[
+            "documents": [
+              {
+              "value":{
+                "name": "firstBundle",
+                "description": "First description",
+                "sortIndex": "1",
+                "sourceDocument": null
+              }
+              }
             ],
-            "bundleStitchStatus":""
+            "folders": [
+              {
+                "value":{
+                  "name": "firstFolder",
+                  "documents": null,
+                  "folders": null,
+                  "sortIndex": "1"
+                }
+              }
+            ],
+            "bundleStitchStatus":"",
+            "stitchingFailureMessage": "Stitching Failed",
+            "documentImage": {
+                  "docmosisAssetId": "12345",
+                  "imageRenderingLocation": null,
+                  "coordinateX": "10",
+                  "coordinateY": "20",
+                  "imageRendering": null
+                }
           },
           "id":"04f25707-1a78-4df2-aa3e-9e5b658227f6"
         }
       ],
       "caseDescription":null,
       "caseComments":null,
-      "caseDocument1Name":"a document na,me"
+      "caseDocument1Name":"a document name"
     },
     "data_classification":{
       "caseOwner":"PUBLIC",
