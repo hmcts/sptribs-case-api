@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.INDEX;
 
 @Component
 @Slf4j
@@ -144,6 +145,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 if (uploadedDocument != null) {
                     log.info("Document found with uuid : {}", UUID.fromString(item));
                     byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
+                    templateVars.put(INDEX, count);
                     templateVars.put(DECISION_NOTICE + count, notificationService.getJsonFileAttachment(uploadedDocumentContents));
                 } else {
                     log.info("Document not found with uuid : {}", UUID.fromString(item));
