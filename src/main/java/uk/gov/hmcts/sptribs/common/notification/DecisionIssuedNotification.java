@@ -145,7 +145,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 if (uploadedDocument != null) {
                     log.info("Document found with uuid : {}", UUID.fromString(item));
                     byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(INDEX, count);
+                    templateVars.put(INDEX + count, count);
                     templateVars.put(DECISION_NOTICE + count, notificationService.getJsonFileAttachment(uploadedDocumentContents));
                 } else {
                     log.info("Document not found with uuid : {}", UUID.fromString(item));
