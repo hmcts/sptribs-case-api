@@ -1,66 +1,45 @@
 [
   {
-    "email": "TEST_SYSTEM_USER@mailinator.com",
-    "id": "93b108b7-4b26-41bf-ae8f-6e356efb11b3",
+    "email": "TEST_CASE_WORKER_USER@mailinator.com",
+    "id": "74779774-2fc4-32c9-a842-f8d0aa6e770a",
     "roleAssignments": [
       {
         "roleType": "CASE",
-        "roleName": "idam:caseworker-divorce-solicitor",
+        "roleName": "idam:caseworker-sptribs",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
         "roleType": "CASE",
-        "roleName": "idam:caseworker-divorce-solicitor",
+        "roleName": "idam:caseworker-sptribs-cic-courtadmin",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "SpecialEducationalNeeds", "jurisdiction": "ST_SEND" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
         "roleType": "CASE",
-        "roleName": "idam:caseworker-divorce-solicitor",
+        "roleName": "idam:citizen-sptribs-cic-dss",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "DisabilityDiscrimination", "jurisdiction": "ST_SEND" },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
-        "roleName": "idam:caseworker-divorce-solicitor",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": { "caseType": "CareStandards", "jurisdiction": "ST_CS" },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
-        "roleName": "idam:caseworker-divorce-solicitor",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": { "caseType": "MentalHealth", "jurisdiction": "ST_MH" },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
-        "roleName": "idam:caseworker-divorce-solicitor",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": { "caseType": "PrimaryHealthLists", "jurisdiction": "ST_PHL" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
@@ -70,67 +49,88 @@
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
         "roleType": "CASE",
-        "roleName": "[APPONESOLICITOR]",
+        "roleName": "idam:caseworker-sptribs-cic-caseofficer",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
         "roleType": "CASE",
-        "roleName": "[APPONESOLICITOR]",
-        "grantType": "CHALLENGED",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
-        "roleName": "[APPTWOSOLICITOR]",
+        "roleName": "idam:caseworker-sptribs-cic-districtregistrar",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
         "roleType": "CASE",
-        "roleName": "[APPTWOSOLICITOR]",
-        "grantType": "CHALLENGED",
+        "roleName": "idam:caseworker-sptribs-cic-districtregistrar",
+        "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
         "roleType": "CASE",
-        "roleName": "[APPLICANTTWO]",
+        "roleName": "idam:caseworker-sptribs-cic-respondent",
         "grantType": "SPECIFIC",
-        "roleCategory": "CITIZEN",
+        "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       },
       {
         "roleType": "CASE",
-        "roleName": "[APPLICANTTWO]",
-        "grantType": "CHALLENGED",
-        "roleCategory": "CITIZEN",
+        "roleName": "idam:caseworker",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",
         "readOnly": false,
-        "attributes": { "caseType": "CriminalInjuriesCompensation", "jurisdiction": "ST_CIC" },
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "CASE",
+        "roleName": "idam:solicitor",
+        "grantType": "SPECIFIC",
+        "roleCategory": "PROFESSIONAL",
+        "classification": "RESTRICTED",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
         "authorisations": []
       }
     ],
