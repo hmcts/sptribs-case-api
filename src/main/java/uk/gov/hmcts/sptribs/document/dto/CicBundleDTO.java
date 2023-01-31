@@ -26,8 +26,6 @@ public class CicBundleDTO {
     private String stitchingFailureMessage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private CicBoolean enableEmailNotification;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private DocumentImage documentImage;
 
     public String getId() {
