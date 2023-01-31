@@ -5,18 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.document.model.ConfidentialDocumentsReceived;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.isApplicableForConfidentiality;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.GENERAL_LETTER;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.NOTICE_OF_PROCEEDINGS_APP_1;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.NOTICE_OF_PROCEEDINGS_APP_2;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentUtilTest {
@@ -40,45 +32,6 @@ class DocumentUtilTest {
                 DOC_URL,
                 PDF_FILENAME,
                 DOC_BINARY_URL);
-    }
-
-    @Test
-    public void isApplicableForConfidentialityShouldReturnTrueForApplicant1WhenGivenDocumentTypeIsApplicableForConfidentiality() {
-        assertTrue(isApplicableForConfidentiality(NOTICE_OF_PROCEEDINGS_APP_1, true));
-    }
-
-    @Test
-    public void isApplicableForConfidentialityShouldReturnTrueForApplicant2WhenGivenDocumentTypeIsApplicableForConfidentiality() {
-        assertTrue(isApplicableForConfidentiality(NOTICE_OF_PROCEEDINGS_APP_2, false));
-    }
-
-    @Test
-    public void isApplicableForConfidentialityShouldReturnTrueWhenGivenDocumentTypeIsApplicableForConfidentiality() {
-        assertTrue(isApplicableForConfidentiality(NOTICE_OF_PROCEEDINGS_APP_1, null));
-    }
-
-    @Test
-    public void isApplicableForConfidentialityShouldReturnTrueForGeneralLetterWhenGivenDocumentTypeIsApplicableForConfidentiality() {
-        assertTrue(isApplicableForConfidentiality(GENERAL_LETTER, null));
-    }
-
-    @Test
-    public void isApplicableForConfidentialityShouldReturnFalseWhenGivenDocumentTypeIsNotApplicableForConfidentiality() {
-        assertFalse(isApplicableForConfidentiality(APPLICATION, null));
-    }
-
-    @Test
-    public void isApplicableForConfidentialityShouldReturnTrueForApplicant1WhenConfidentialDocumentReceivedIsApplicableForConfidentiality(
-
-    ) {
-        assertTrue(isApplicableForConfidentiality(ConfidentialDocumentsReceived.NOTICE_OF_PROCEEDINGS_APP_1, true));
-    }
-
-    @Test
-    public void isApplicableForConfidentialityShouldReturnTrueForApplicant2WhenConfidentialDocumentReceivedIsApplicableForConfidentiality(
-
-    ) {
-        assertTrue(isApplicableForConfidentiality(ConfidentialDocumentsReceived.NOTICE_OF_PROCEEDINGS_APP_2, false));
     }
 
     private DocumentInfo documentInfo() {
