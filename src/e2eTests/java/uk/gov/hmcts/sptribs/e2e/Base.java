@@ -49,7 +49,7 @@ public class Base {
         page = context.newPage();
         page.setDefaultTimeout(30000);
         BASE_URL = getenv("BASE_URL") == null ? AAT_URL : getenv("BASE_URL");
-        page.navigate(BASE_URL);
+        page.navigate(BASE_URL, new Page.NavigateOptions().setTimeout(60000));
     }
 
     @AfterEach

@@ -362,8 +362,6 @@ dependencies {
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.2.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.28.1'
-  testRuntimeOnly 'org.junit.support:testng-engine:1.0.4'
-  testImplementation group: 'org.testng', name: 'testng', version: '7.7.1'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath

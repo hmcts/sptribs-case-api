@@ -7,7 +7,8 @@ public class StayCase extends Base {
     public void caseworkerShouldBeAbleToAddAStayToCase() {
         Login login = new Login();
         login.loginAsStTest1User();
-        CreateCase createcase = new CreateCase();
-        createcase.createACase();
+        Case newCase = new Case();
+        newCase.createCase();
+        newCase.buildCase();
     }
 }
