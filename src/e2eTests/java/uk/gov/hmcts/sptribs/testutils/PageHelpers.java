@@ -11,21 +11,15 @@ public class PageHelpers extends Base {
     }
 
     public static Page.WaitForSelectorOptions selectorOptionsWithTimeout(int timeout) {
-        Page.WaitForSelectorOptions options = new Page.WaitForSelectorOptions();
-        options.setTimeout(timeout);
-        return options;
+        return new Page.WaitForSelectorOptions().setTimeout(timeout);
     }
 
     public static Page.WaitForURLOptions urlOptionsWithTimeout(int timeout) {
-        Page.WaitForURLOptions options = new Page.WaitForURLOptions();
-        options.setTimeout(timeout);
-        return options;
+        return new Page.WaitForURLOptions().setTimeout(timeout);
     }
 
     public static Page.WaitForFunctionOptions functionOptionsWithTimeout(int timeout) {
-        Page.WaitForFunctionOptions options = new Page.WaitForFunctionOptions();
-        options.setTimeout(timeout);
-        return options;
+        return new Page.WaitForFunctionOptions().setTimeout(timeout);
     }
 
     public static void clickButton(String buttonName) {
