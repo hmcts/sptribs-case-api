@@ -1,9 +1,13 @@
 package uk.gov.hmcts.sptribs.document.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 import uk.gov.hmcts.sptribs.document.model.ImageRendering;
 import uk.gov.hmcts.sptribs.document.model.ImageRenderingLocation;
 
+@Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentImage {
     private String docmosisAssetId;
@@ -11,44 +15,4 @@ public class DocumentImage {
     private Integer coordinateX;
     private Integer coordinateY;
     private ImageRendering imageRendering;
-
-    public String getDocmosisAssetId() {
-        return docmosisAssetId;
-    }
-
-    public void setDocmosisAssetId(String docmosisAssetId) {
-        this.docmosisAssetId = docmosisAssetId;
-    }
-
-    public ImageRenderingLocation getImageRenderingLocation() {
-        return imageRenderingLocation;
-    }
-
-    public void setImageRenderingLocation(ImageRenderingLocation imageRenderingLocation) {
-        this.imageRenderingLocation = imageRenderingLocation;
-    }
-
-    public Integer getCoordinateX() {
-        return coordinateX;
-    }
-
-    public void setCoordinateX(Integer coordinateX) {
-        this.coordinateX = coordinateX;
-    }
-
-    public Integer getCoordinateY() {
-        return coordinateY;
-    }
-
-    public void setCoordinateY(Integer coordinateY) {
-        this.coordinateY = coordinateY;
-    }
-
-    public ImageRendering getImageRendering() {
-        return imageRendering;
-    }
-
-    public void setImageRendering(ImageRendering imageRendering) {
-        this.imageRendering = imageRendering;
-    }
 }
