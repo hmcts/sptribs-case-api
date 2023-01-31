@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -59,8 +61,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
             .forStates(CaseManagement, AwaitingHearing)
-            .name("Record listing")
-            .description("Record listing")
+            .name("Hearings: Create listing")
+            .description("Hearings: Create listing")
             .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
@@ -141,7 +143,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Listing record created")
+            .confirmationHeader(format("# Listing record created\"%n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
     }
 

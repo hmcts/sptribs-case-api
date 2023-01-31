@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -35,6 +33,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -43,15 +42,15 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled
 public class DecisionIssuedNotificationTest {
 
     @Mock
-    private IdamService idamService;
+    private HttpServletRequest httpServletRequest;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -91,11 +90,13 @@ public class DecisionIssuedNotificationTest {
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
+        // TODO: To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
-        when(systemUser.getAuthToken()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
         when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
@@ -131,11 +132,13 @@ public class DecisionIssuedNotificationTest {
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
+        // TODO: To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
-        when(systemUser.getAuthToken()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(null));
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -146,6 +149,48 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
+        verify(notificationService).sendEmail();
+    }
+
+    @Test
+    void shouldNotifySubjectWithEmailThrowsException() throws IOException {
+        //Given
+        LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
+        final CaseData data = getMockCaseData(expDate);
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        data.setCaseIssueDecision(caseIssueDecision);
+
+        // TODO: To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+
+        //When
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(resource.getInputStream()).thenThrow(IOException.class);
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
+        decisionIssuedNotification.sendToSubject(data, "CN1");
+
+        //Then
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
+        //verify(notificationService).getJsonFileAttachment(any());
         verify(notificationService).sendEmail();
     }
 
@@ -190,11 +235,13 @@ public class DecisionIssuedNotificationTest {
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
-        when(systemUser.getAuthToken()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
         when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
@@ -206,6 +253,45 @@ public class DecisionIssuedNotificationTest {
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
 
+        verify(notificationService).sendEmail();
+    }
+
+    @Test
+    void shouldNotifyRespondentWithEmailWithException() throws IOException {
+        //Given
+        LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
+        final CaseData data = getMockCaseData(expDate);
+        data.getCicCase().setRespondantName("respondentName");
+        data.getCicCase().setRespondantEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        data.setCaseIssueDecision(caseIssueDecision);
+
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+
+        //When
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(resource.getInputStream()).thenThrow(IOException.class);
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        decisionIssuedNotification.sendToRespondent(data, "CN1");
+
+        //Then
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
         verify(notificationService).sendEmail();
     }
 
@@ -230,22 +316,67 @@ public class DecisionIssuedNotificationTest {
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
-        when(systemUser.getAuthToken()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
         when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
 
+        verify(notificationService).sendEmail();
+    }
+
+    @Test
+    void shouldNotifyRepresentativeWithEmailWithException() throws IOException {
+        //Given
+        LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
+        final CaseData data = getMockCaseData(expDate);
+        data.getCicCase().setRepresentativeFullName("repFullName");
+        data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
+        data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        data.setCaseIssueDecision(caseIssueDecision);
+
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+
+        //When
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(resource.getInputStream()).thenThrow(IOException.class);
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
+        decisionIssuedNotification.sendToRepresentative(data, "CN1");
+
+        //Then
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
         verify(notificationService).sendEmail();
     }
 

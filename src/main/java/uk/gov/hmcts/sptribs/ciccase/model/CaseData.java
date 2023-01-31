@@ -28,23 +28,18 @@ import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -74,14 +69,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
     private Notifications notifications = new Notifications();
-
-    @CCD(
-        label = "Application type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "ApplicationType"
-    )
-    private ApplicationType applicationType;
 
     @Builder.Default
     @CCD(
@@ -115,81 +102,6 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String hearingLocation;
-
-    @CCD(
-        label = "Divorce or dissolution?",
-        access = {DefaultAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "DivorceOrDissolution"
-    )
-    private DivorceOrDissolution divorceOrDissolution;
-
-    @JsonUnwrapped(prefix = "labelContent")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private LabelContent labelContent = new LabelContent();
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private Application application = new Application();
-
-    @JsonUnwrapped()
-    @CCD(access = {DefaultAccess.class})
-    private CaseInvite caseInvite;
-
-    @JsonUnwrapped(prefix = "co")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private ConditionalOrder conditionalOrder = new ConditionalOrder();
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private FinalOrder finalOrder = new FinalOrder();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralOrder generalOrder = new GeneralOrder();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralEmail generalEmail = new GeneralEmail();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralLetter generalLetter = new GeneralLetter();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralReferral generalReferral = new GeneralReferral();
-
-    @JsonUnwrapped
-    @Builder.Default
-    @CCD(access = {SolicitorAndSystemUpdateAccess.class})
-    private GeneralApplication generalApplication = new GeneralApplication();
-
-    @CCD(
-        label = "General Referrals",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralReferral"
-    )
-    private List<ListValue<GeneralReferral>> generalReferrals;
-
-    @JsonUnwrapped
-    @Builder.Default
-    private CaseDocuments documents = new CaseDocuments();
-
-    @CCD(
-        label = "RDC",
-        hint = "Regional divorce unit",
-        access = {DefaultAccess.class}
-    )
-    private Court divorceUnit;
-
-    @CCD(
-        label = "General Orders",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<DivorceGeneralOrder>> generalOrders;
 
     @CCD(
         label = "Due Date",
@@ -248,11 +160,6 @@ public class CaseData {
     )
     private String note;
 
-    @CCD(access = {DefaultAccess.class})
-    @JsonUnwrapped
-    private RetiredFields retiredFields;
-
-
     @CCD(
         label = "Case number",
         access = {CaseworkerAccess.class}
@@ -260,38 +167,14 @@ public class CaseData {
     private String hyphenatedCaseRef;
 
     @CCD(
-        access = {CaseworkerAccess.class}
-    )
-    @JsonUnwrapped(prefix = "noc")
-    private NoticeOfChange noticeOfChange;
-
-    @JsonUnwrapped(prefix = "paperForm")
-    @Builder.Default
-    @CCD(access = {CaseworkerAccess.class})
-    private PaperFormDetails paperFormDetails = new PaperFormDetails();
-
-    @CCD(
         label = "Is case judicial separation?",
         access = {DefaultAccess.class}
     )
     private YesOrNo isJudicialSeparation;
 
-    @CCD(
-        label = "General emails",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralEmailDetails"
-    )
-    private List<ListValue<GeneralEmailDetails>> generalEmails;
-
     @CCD(typeOverride = CasePaymentHistoryViewer)
     private String paymentHistoryField;
 
-    @CCD(
-        label = "General letters",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralLetterDetails"
-    )
-    private List<ListValue<GeneralLetterDetails>> generalLetters;
     @CCD(
         label = "Closure Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -361,21 +244,6 @@ public class CaseData {
             temp.substring(8, 12),
             temp.substring(12, 16)
         );
-    }
-
-    @JsonIgnore
-    public boolean isSoleApplicationOrApplicant2HasAgreedHwf() {
-        return nonNull(applicationType)
-            && applicationType.isSole()
-            || nonNull(application.getApplicant2HelpWithFees())
-            && nonNull(application.getApplicant2HelpWithFees().getNeedHelp())
-            && application.getApplicant2HelpWithFees().getNeedHelp().toBoolean()
-            || FEES_HELP_WITH.equals(application.getSolPaymentHowToPay());
-    }
-
-    @JsonIgnore
-    public boolean isDivorce() {
-        return divorceOrDissolution.isDivorce();
     }
 
     public RemoveCaseStay getRemoveCaseStay() {

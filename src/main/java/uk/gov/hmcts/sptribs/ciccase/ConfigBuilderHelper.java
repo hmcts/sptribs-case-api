@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.ciccase;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -24,7 +23,6 @@ public final class ConfigBuilderHelper {
         configBuilder.searchResultFields().fields(SEARCH_RESULT_FIELD_LIST);
         configBuilder.workBasketResultFields().fields(SEARCH_RESULT_FIELD_LIST);
 
-        configBuilder.addPreEventHook(RetiredFields::migrate);
         configBuilder.setCallbackHost(System.getenv().getOrDefault("CASE_API_URL", "http://localhost:4013"));
     }
 
@@ -41,7 +39,7 @@ public final class ConfigBuilderHelper {
 
     public static void configureWithTestEvent(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder) {
         configBuilder.event("test")
-            .forState(State.AwaitingApplicant1Response)
+            .forState(State.Draft)
             .name("Test event")
             .fields()
             .mandatory(CaseData::getHearingDate);

@@ -28,13 +28,17 @@ public class FlagParties implements CcdPageConfiguration {
             .pageShowConditions(map)
             .complex(CaseData::getCicCase)
             .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getFlagPartySubject, "cicCaseFullName!=\"\" ")
-            .label("caseworkerCaseFlagSelectFlagPartiesApplicantFlag", "")
-            .readonlyWithLabel(CicCase::getApplicantFullName, " ")
-            .optional(CicCase::getFlagPartyApplicant, "cicCaseApplicantFullName!=\"\" ")
-            .label("caseworkerCaseFlagSelectFlagPartiesRepresentativeFlag", "")
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+                "cicCaseFullName!=\"\" ",
+                "Case Flag information recipient - Subject")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getFlagPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ",
+                "Case Flag information recipient - Representative")
+            .readonlyWithLabel(CicCase::getApplicantFullName, " ")
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
+                "cicCaseApplicantFullName!=\"\" ",
+                "Case Flag information recipient - Applicant")
             .done();
     }
 

@@ -6,14 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.Fee;
-import uk.gov.hmcts.ccd.sdk.type.KeyValue;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.OrderSummary;
-import uk.gov.hmcts.ccd.sdk.type.Organisation;
-import uk.gov.hmcts.ccd.sdk.type.OrganisationPolicy;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -22,18 +15,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseInvite;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
-import uk.gov.hmcts.sptribs.ciccase.model.Jurisdiction;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
-import uk.gov.hmcts.sptribs.endpoint.data.OcrDataValidationRequest;
-import uk.gov.hmcts.sptribs.payment.model.FeeResponse;
-import uk.gov.hmcts.sptribs.payment.model.Payment;
-import uk.gov.hmcts.sptribs.payment.model.PaymentStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,35 +28,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.ciccase.model.DivorceOrDissolution.DIVORCE;
-import static uk.gov.hmcts.sptribs.ciccase.model.JurisdictionConnections.APP_1_APP_2_RESIDENT;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.FEE_CODE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FEE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_ORG_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_ORG_NAME;
 
 public class TestDataHelper {
 
-    public static final LocalDate LOCAL_DATE = LocalDate.of(2021, 4, 28);
     public static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
-    private static final String DOC_CONTROL_NUMBER = "61347040100200003";
-    private static final LocalDateTime DOC_SCANNED_DATE_META_INFO = LocalDateTime.of(2022, 1, 1, 12, 12, 0);
-    private static final String DOCUMENT_URL = "http://localhost:8080/documents/640055da-9330-11ec-b909-0242ac120002";
-    private static final String DOCUMENT_BINARY_URL = "http://localhost:8080/documents/640055da-9330-11ec-b909-0242ac120002/binary";
-    private static final String FILE_NAME = "61347040100200003.pdf";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final TypeReference<HashMap<String, Object>> TYPE_REFERENCE = new TypeReference<>() {
     };
@@ -81,16 +51,12 @@ public class TestDataHelper {
 
     public static CaseData caseData() {
         return CaseData.builder()
-            .divorceOrDissolution(DIVORCE)
-            .caseInvite(new CaseInvite(null, null, null))
             .build();
     }
 
     public static CaseData closedCaseData() {
         return CaseData.builder()
             .caseStatus(State.CaseManagement)
-            .divorceOrDissolution(DIVORCE)
-            .caseInvite(new CaseInvite(null, null, null))
             .build();
     }
 
@@ -103,50 +69,7 @@ public class TestDataHelper {
         return CaseData.builder()
             .caseStatus(State.AwaitingOutcome)
             .closeCase(closeCase)
-            .caseInvite(new CaseInvite(null, null, null))
             .build();
-    }
-
-    public static CaseData caseDataWithOrderSummary() {
-        var caseData = CaseData.builder().build();
-        caseData.getApplication().setApplicationFeeOrderSummary(orderSummaryWithFee());
-
-        return caseData;
-    }
-
-    public static Payment payment(final int amount, final PaymentStatus paymentStatus) {
-        return Payment.builder()
-            .created(LocalDateTime.now())
-            .updated(LocalDateTime.now())
-            .amount(amount)
-            .channel("online")
-            .feeCode("FEE0001")
-            .status(paymentStatus)
-            .reference("paymentRef")
-            .transactionId("ge7po9h5bhbtbd466424src9tk")
-            .build();
-    }
-
-
-
-    public static Jurisdiction getJurisdiction() {
-        final Jurisdiction jurisdiction = new Jurisdiction();
-        jurisdiction.setConnections(Set.of(APP_1_APP_2_RESIDENT));
-        jurisdiction.setApplicant1Residence(YES);
-        jurisdiction.setApplicant2Residence(YES);
-
-        return jurisdiction;
-    }
-
-
-
-
-
-
-
-
-    public static CallbackRequest callbackRequest() {
-        return callbackRequest(caseDataWithOrderSummary());
     }
 
     public static CallbackRequest callbackRequest(CaseData caseData) {
@@ -203,16 +126,6 @@ public class TestDataHelper {
             .build();
     }
 
-    public static FeeResponse getFeeResponse() {
-        return FeeResponse
-            .builder()
-            .feeCode(FEE_CODE)
-            .amount(10.0)
-            .description(ISSUE_FEE)
-            .version(1)
-            .build();
-    }
-
     public static FeignException feignException(int status, String reason) {
         byte[] emptyBody = {};
         Request request = Request.create(GET, EMPTY, Map.of(), emptyBody, UTF_8, null);
@@ -228,52 +141,6 @@ public class TestDataHelper {
         );
     }
 
-
-
-
-
-
-
-
-
-    public static OrganisationPolicy<UserRole> organisationPolicy() {
-        return OrganisationPolicy.<UserRole>builder()
-            .organisation(Organisation
-                .builder()
-                .organisationName(TEST_ORG_NAME)
-                .organisationId(TEST_ORG_ID)
-                .build())
-            .build();
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static DynamicList getPbaNumbersForAccount(String accountNumber) {
-        return DynamicList
-            .builder()
-            .value(
-                DynamicListElement
-                    .builder()
-                    .code(UUID.randomUUID())
-                    .label(accountNumber)
-                    .build()
-            )
-            .build();
-    }
-
     private static CaseDetails caseDetailsBefore(CaseData caseData) {
         return CaseDetails
             .builder()
@@ -282,57 +149,6 @@ public class TestDataHelper {
             .caseTypeId(CcdCaseType.CIC.getCaseTypeName())
             .build();
     }
-
-    public static ListValue<Fee> getFeeListValue() {
-        return ListValue
-            .<Fee>builder()
-            .value(Fee
-                .builder()
-                .amount("550")
-                .description("fees for divorce")
-                .code("FEE002")
-                .build()
-            )
-            .build();
-    }
-
-    public static OrderSummary orderSummaryWithFee() {
-        return OrderSummary
-            .builder()
-            .paymentTotal("55000")
-            .fees(singletonList(getFeeListValue()))
-            .build();
-    }
-
-
-
-    public static OcrDataValidationRequest ocrDataValidationRequest() {
-        return OcrDataValidationRequest.builder()
-            .ocrDataFields(
-                List.of(
-                    KeyValue.builder()
-                        .key("applicant1Name")
-                        .value("bob")
-                        .build())
-            )
-            .build();
-    }
-
-
-
-
-
-    public static KeyValue populateKeyValue(String key, String value) {
-        return KeyValue.builder()
-            .key(key)
-            .value(value)
-            .build();
-    }
-
-
-
-
-
 
     public static User getUser() {
         UserDetails userDetails = UserDetails

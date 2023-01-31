@@ -9,14 +9,6 @@ public final class CaseFieldsConstants {
     public static final String SUBJECT_ADDRESS = "cicCaseAddress";
     public static final String HEARING_LOCATION = "hearingLocation";
     public static final String APPLICANT_NAME = "cicCaseApplicantFullName";
-    public static final String APPLICANT_TYPE = "applicationType";
-    public static final String SUBJECT_CICNAME = "subjectCICName";
-    public static final String FINANCIAL_ORDER = "applicant1FinancialOrder";
-    public static final String MARRIAGE_DATE = "marriageDate";
-    public static final String URGENT_CASE = "solUrgentCase";
-    public static final String GENERAL_REFERRAL_URGENT_CASE = "generalReferralUrgentCase";
-    public static final String EVIDENCE_HANDLED = "evidenceHandled";
-    public static final String ALTERNATIVE_SERVICE_TYPE = "alternativeServiceType";
     public static final String CCD_REFERENCE = "[CASE_REFERENCE]";
     public static final String CASE_STATE = "[STATE]";
     public static final String DUE_DATE = "dueDate";

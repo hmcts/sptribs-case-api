@@ -9,6 +9,8 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStay;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REMOVE_STAY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -43,9 +46,9 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
         return new PageBuilder(configBuilder
             .event(CASEWORKER_REMOVE_STAY)
             .forStates(CaseStayed)
-            .name("Remove Stay")
+            .name("Stays: Remove stay")
             .showSummary(true)
-            .description("Remove Stay")
+            .description("Stays: Remove stay")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayRemoved)
             .showEventNotes()
@@ -78,7 +81,8 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
         sendCaseUnStayedNotification(caseData.getHyphenatedCaseRef(), caseData);
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Stay Removed from Case")
+            .confirmationHeader(format("# Stay Removed from Case %n## %s",
+                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(caseData.getCicCase()))))
             .build();
     }
 

@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -37,7 +38,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_CREATE_HEARING_SUMMARY = "create-hearing-summary";
     public static final String SERVICE_NAME = "DIVORCE";
 
     private static final CcdPageConfiguration createHearingSummary = new CreateHearingSummary();
@@ -57,7 +57,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
             configBuilder
                 .event(CASEWORKER_CREATE_HEARING_SUMMARY)
                 .forStates(AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
-                .name("Create hearing summary")
+                .name("Hearings: Create summary")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
