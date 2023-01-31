@@ -22,6 +22,7 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
         pageBuilder
             .page("issueFinalDecisionSelectRecipients", this::midEvent)
             .pageLabel("Select recipients")
+            .label("LabelIssueFinalDecisionSelectRecipientsEmpty", "")
             .label("labelIssueFinalDecisionSelectRecipients", "Who should receive this decision notice?")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)

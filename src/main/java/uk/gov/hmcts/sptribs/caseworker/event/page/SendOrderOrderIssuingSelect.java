@@ -12,6 +12,7 @@ public class SendOrderOrderIssuingSelect implements CcdPageConfiguration {
 
         pageBuilder.page("caseworkerSendOrderSelectOrderIssuingType")
             .pageLabel("Select order")
+            .label("LabelCaseworkerSendOrderSelectOrderIssuingType","")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getOrderIssuingType)
             .done();

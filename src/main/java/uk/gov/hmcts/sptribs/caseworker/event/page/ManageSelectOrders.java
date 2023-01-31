@@ -20,7 +20,8 @@ public class ManageSelectOrders implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("caseworkerAmendDueDateSelectOrder", this::midEvent)
-            .label("dueDatesForOrder", "<h1>Select an order\n</h1>")
+            .pageLabel("Select an order")
+            .label("LabelCaseworkerAmendDueDateSelectOrder", "")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getOrderDynamicList)
             .readonly(CicCase::getOrderList)
@@ -36,9 +37,9 @@ public class ManageSelectOrders implements CcdPageConfiguration {
         String selectedOrder = data.getCicCase().getOrderDynamicList().getValue().getLabel();
 
         var orderList = data.getCicCase().getOrderList();
-        for (int i = 0; i < orderList.size(); i++) {
-            if (selectedOrder.equals(orderList.get(i).getId())) {
-                cicCase.setOrderDueDates(orderList.get(i).getValue().getDueDateList());
+        for (uk.gov.hmcts.ccd.sdk.type.ListValue<uk.gov.hmcts.sptribs.caseworker.model.Order> orderListValue : orderList) {
+            if (selectedOrder.equals(orderListValue.getId())) {
+                cicCase.setOrderDueDates(orderListValue.getValue().getDueDateList());
                 break;
             }
         }
