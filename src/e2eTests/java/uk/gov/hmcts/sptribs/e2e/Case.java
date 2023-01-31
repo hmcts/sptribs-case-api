@@ -12,8 +12,21 @@ import java.util.stream.Collectors;
 
 public class Case extends Base {
 
-    public String createCase(String... args) {
+    private List<String> options;
 
+    /*
+    createCase() method accepts String arguments. By default, this method creates
+    case with Subject and email as contact preference. To create case with
+    applicant and/or representative you specify the party and/or contact preference
+    as the arguments. Examples below:
+
+    createCase("applicant") --> to add applicant to the case
+    createCase("representative") --> to add representative to the case
+    createCase("applicant", "representative") --> to add applicant and representative to the case
+    createCase("post") --> to change the contact preference type to Post for all the parties involved
+     */
+    public String createCase(String... args) {
+        options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
         // Select case filters
         PageHelpers.clickLink("Create case");
         page.waitForFunction("selector => document.querySelector(selector).innerText === 'Create Case'",
@@ -46,7 +59,6 @@ public class Case extends Base {
         page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who are the parties in this case?'",
             "h1", PageHelpers.functionOptionsWithTimeout(20000));
         PageHelpers.getCheckBoxByLabel("Subject").first().check();
-        List<String> options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
         if (options.contains("representative")) {
             PageHelpers.getCheckBoxByLabel("Representative").check();
         }
@@ -66,13 +78,55 @@ public class Case extends Base {
         page.locator("text = What is subject\'s contact preference type?").click();
         if (options.contains("post")) {
             PageHelpers.getRadioButtonByLabel("Post").click();
-            fillAddressDetails("subject");
+            fillAddressDetails("Subject");
         } else {
             PageHelpers.getRadioButtonByLabel("Email").click();
             PageHelpers.getTextBoxByLabel("Subject\'s email address")
                         .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
         }
         PageHelpers.clickButton("Continue");
+
+        // Fill applicant details form
+        if (options.contains("applicant")) {
+            page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the applicant in this case?'",
+                "h1", PageHelpers.functionOptionsWithTimeout(20000));
+            PageHelpers.getTextBoxByLabel("Applicant\'s full name").fill("Subject " + StringHelpers.getRandomString(9));
+            PageHelpers.getTextBoxByLabel("Applicant\'s phone number").fill("07465730467");
+            PageHelpers.getTextBoxByLabel("Day").fill("3");
+            PageHelpers.getTextBoxByLabel("Month").fill("10");
+            PageHelpers.getTextBoxByLabel("Year").fill("1992");
+            page.locator("text = What is applicant\'s contact preference?").click();
+            if (options.contains("post")) {
+                PageHelpers.getRadioButtonByLabel("Post").click();
+                fillAddressDetails("Applicant");
+            } else {
+                PageHelpers.getRadioButtonByLabel("Email").click();
+                PageHelpers.getTextBoxByLabel("Applicant\'s email address")
+                    .fill(StringHelpers.getRandomString(9).toLowerCase() + "@applicant.com");
+            }
+            PageHelpers.clickButton("Continue");
+        }
+
+        // Fill representative details form
+        if (options.contains("representative")) {
+            page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the Representative for this case?'",
+                "h1", PageHelpers.functionOptionsWithTimeout(20000));
+            PageHelpers.getTextBoxByLabel("Representative\'s full name").fill("Subject " + StringHelpers.getRandomString(9));
+            PageHelpers.getTextBoxByLabel("Organisation or business name (Optional)").fill(StringHelpers.getRandomString(10) + " Limited");
+            PageHelpers.getTextBoxByLabel("Representative\'s contact number").fill("07456831774");
+            PageHelpers.getTextBoxByLabel("Representative\'s reference (Optional)").fill(StringHelpers.getRandomString(10));
+            PageHelpers.getRadioButtonByLabel("Yes").click();
+            page.locator("text = What is representative\'s contact preference?").click();
+            if (options.contains("post")) {
+                PageHelpers.getRadioButtonByLabel("Post").click();
+                fillAddressDetails("Representative");
+            } else {
+                PageHelpers.getRadioButtonByLabel("Email").click();
+                PageHelpers.getTextBoxByLabel("Representative\'s email address")
+                    .fill(StringHelpers.getRandomString(9).toLowerCase() + "@representative.com");
+            }
+            PageHelpers.clickButton("Continue");
+        }
 
         // Fill contact preferences form
         PageHelpers.getCheckBoxByLabel("Subject").first().check();
@@ -140,19 +194,7 @@ public class Case extends Base {
     private void fillAddressDetails(String partyType) {
         PageHelpers.getTextBoxByLabel("Enter a UK postcode").fill("SW11 1PD");
         PageHelpers.clickLink("I can\'t enter a UK postcode");
-        switch (partyType.toLowerCase()) {
-            case "subject":
-                PageHelpers.getTextBoxByLabel("Building and Street").fill("1 Subject Rse Way");
-                break;
-            case "applicant":
-                PageHelpers.getTextBoxByLabel("Building and Street").fill("1 Applicant Rse Way");
-                break;
-            case "representative":
-                PageHelpers.getTextBoxByLabel("Building and Street").fill("1 Representative Rse Way");
-                break;
-            default:
-                System.out.println("Invalid part type");
-        }
+        PageHelpers.getTextBoxByLabel("Building and Street").fill("1 " + partyType + " Rse Way");
         PageHelpers.getTextBoxByLabel("Address Line 2").fill("Test Address Line 2");
         PageHelpers.getTextBoxByLabel("Address Line 3").fill("Test Address Line 3");
         PageHelpers.getTextBoxByLabel("Town or City").fill("London");
