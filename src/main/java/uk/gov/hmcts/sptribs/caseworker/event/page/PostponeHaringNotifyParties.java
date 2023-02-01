@@ -22,7 +22,8 @@ public class PostponeHaringNotifyParties implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("caseworkerPostponeHearingNotifyParties", this::midEvent)
-            .label("caseworkerPostponeHearingNotifyParties", "<h1>Notify parties</h1>")
+            .pageLabel("Notify parties")
+            .label("LabelCaseworkerPostponeHearingNotifyParties", "")
             .complex(CaseData::getCicCase)
             .label("caseworkerPostponeHearingNotifyPartiesMessage", "Which parties should be notified this Postponement?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
