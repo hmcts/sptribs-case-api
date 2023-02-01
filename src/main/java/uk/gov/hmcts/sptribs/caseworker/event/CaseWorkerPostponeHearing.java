@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +45,9 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     @Autowired
     private HearingService hearingService;
+
+    @Autowired
+    private HearingPostponedNotification hearingPostponedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -101,10 +105,28 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+        sendHearingPostponedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Hearing Postponed %n## The hearing has been postponed, the case has been updated %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
+    }
+
+    private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
+        Set<NotificationParties> hearingNotifyParties = caseData.getCicCase().getHearingNotificationParties();
+
+        if (hearingNotifyParties.contains(NotificationParties.SUBJECT)) {
+            hearingPostponedNotification.sendToSubject(caseData, caseNumber);
+        }
+
+        if (hearingNotifyParties.contains(NotificationParties.RESPONDENT)) {
+            hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
+        }
+
+        if (hearingNotifyParties.contains(NotificationParties.REPRESENTATIVE)) {
+            hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
+        }
     }
 
 }
