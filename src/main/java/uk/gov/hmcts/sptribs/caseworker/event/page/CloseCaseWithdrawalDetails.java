@@ -14,6 +14,9 @@ public class CloseCaseWithdrawalDetails implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
         map.put("closeCaseWithdrawalDetails", "closeCloseCaseReason = \"caseWithdrawn\"");
+        map.put("closeCaseRejectionDetails", "closeCloseCaseReason = \"caseRejected\"");
+        map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConceded\"");
+        map.put("closeCaseConsentOrder", "closeCloseCaseReason = \"consentOrder\"");
         pageBuilder.page("closeCaseWithdrawalDetails")
             .pageLabel("Withdrawal details")
             .pageShowConditions(map)
@@ -23,4 +26,5 @@ public class CloseCaseWithdrawalDetails implements CcdPageConfiguration {
             .done();
 
     }
+
 }

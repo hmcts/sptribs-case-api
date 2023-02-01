@@ -9,6 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum RespondentCIC implements HasLabel {
     @JsonProperty("RespondentCIC")
-    RESPONDENT("Respondent");
+    RESPONDENT("Respondant");
     private final String label;
 }

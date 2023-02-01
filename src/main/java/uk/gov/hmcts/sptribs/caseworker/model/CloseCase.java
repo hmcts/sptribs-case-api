@@ -49,4 +49,35 @@ public class CloseCase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate withdrawalRequestDate;
 
+    @CCD(
+        label = "Who made the decision to reject the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String rejectionFullName;
+
+    @CCD(
+        label = "Why was the case rejected?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CloseCaseRejectionReason rejectionReason;
+
+    @CCD(
+        label = "Additional details",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String rejectionDetails;
+
+    @CCD(
+        label = "When was the case conceded?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate concessionDate;
+
+    @CCD(
+        label = "When was the consent order approved?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate consentOrderDate;
 }

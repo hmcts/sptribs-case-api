@@ -2,8 +2,11 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
@@ -38,5 +41,19 @@ public final class EventUtil {
             return recipients.substring(0, recipients.length() - 2);
         }
         return null;
+    }
+
+    public static Set<NotificationParties> getNotificationParties(final CicCase cicCase) {
+        Set<NotificationParties> parties = new HashSet<>();
+        if (!CollectionUtils.isEmpty(cicCase.getSubjectCIC())) {
+            parties.add(NotificationParties.SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getApplicantCIC())) {
+            parties.add(NotificationParties.APPLICANT);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())) {
+            parties.add(NotificationParties.REPRESENTATIVE);
+        }
+        return parties;
     }
 }

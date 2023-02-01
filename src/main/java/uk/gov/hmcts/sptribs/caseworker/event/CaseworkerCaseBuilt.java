@@ -31,11 +31,14 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_BUILT)
             .forStates(Submitted)
-            .name("Case built")
+            .name("Case: Build case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR));
+            .grantHistoryOnly(SOLICITOR))
+            .page("caseBuilt")
+            .pageLabel("Case Built")
+            .label("LabelCaseBuilt", "");
     }
 
     @SneakyThrows

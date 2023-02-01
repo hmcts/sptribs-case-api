@@ -9,6 +9,8 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_STAY_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
@@ -36,16 +39,17 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
         new PageBuilder(configBuilder
             .event(CASEWORKER_STAY_THE_CASE)
             .forStates(CaseManagement, CaseStayed)
-            .name("Stay the Case")
+            .name("Stays: Create/edit stay")
             .showSummary()
-            .description("Add a Stay to this case")
+            .description("Stays: Create/edit stay")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayed)
             .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("addStay")
-            .label("addStay", "<H2>Add a Stay to this case</H2>")
+            .pageLabel("Add a Stay to this case")
+            .label("LabelAddStay", "")
             .complex(CaseData::getCaseStay)
             .mandatoryWithLabel(CaseStay::getStayReason, "")
             .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"")
@@ -73,7 +77,8 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
         sendCaseStayedNotification(claimNumber, data);
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Stay Added to Case")
+            .confirmationHeader(format("# Stay Added to Case %n## %s",
+                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(data.getCicCase()))))
             .build();
     }
 
