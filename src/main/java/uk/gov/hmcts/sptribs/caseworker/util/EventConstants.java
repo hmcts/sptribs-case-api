@@ -6,12 +6,10 @@ public final class EventConstants {
     public static final String SPACE = " ";
     public static final String CURRENT_EVENT = "currentEvent = \"";
 
-    public static final String CASEWORKER_AMEND_CASE = "caseworker-amend-case";
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
     public static final String CASEWORKER_ADD_NOTE = "caseworker-add-note";
     public static final String CASEWORKER_CASE_BUILT = "caseworker-case-built";
     public static final String CASEWORKER_CASE_FLAG = "caseworker-case-flag";
-    public static final String CASEWORKER_CHOOSE_THE_OUTCOME = "caseworker-choose-the-outcome";
     public static final String CASEWORKER_CLOSE_THE_CASE = "caseworker-close-the-case";
     public static final String CASEWORKER_CONTACT_PARTIES = "contact-parties";
     public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
