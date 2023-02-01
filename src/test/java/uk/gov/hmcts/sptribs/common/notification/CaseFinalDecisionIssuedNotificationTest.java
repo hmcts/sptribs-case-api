@@ -13,6 +13,9 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
+import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
+import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +47,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
-public class DecisionIssuedNotificationTest {
+public class CaseFinalDecisionIssuedNotificationTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -64,12 +68,13 @@ public class DecisionIssuedNotificationTest {
     private Resource resource;
 
     @InjectMocks
-    private DecisionIssuedNotification decisionIssuedNotification;
+    private CaseFinalDecisionIssuedNotification finalDecisionIssuedNotification;
 
     @Test
     void shouldNotifySubjectWithEmail() throws IOException {
         //Given
-        final CaseData data = getMockCaseData();
+        LocalDate expDate = LocalDate.now();
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
 
@@ -83,6 +88,9 @@ public class DecisionIssuedNotificationTest {
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
+        // TODO: To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
@@ -94,7 +102,7 @@ public class DecisionIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
-        decisionIssuedNotification.sendToSubject(data, "CN1");
+        finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -105,9 +113,12 @@ public class DecisionIssuedNotificationTest {
     @Test
     void shouldNotifySubjectWithEmailWithNoUploadedDocument() {
         //Given
-        final CaseData data = getMockCaseData();
+        LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
@@ -118,6 +129,11 @@ public class DecisionIssuedNotificationTest {
         documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
+
+        // TODO: To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -127,7 +143,7 @@ public class DecisionIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
-        decisionIssuedNotification.sendToSubject(data, "CN1");
+        finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -137,10 +153,12 @@ public class DecisionIssuedNotificationTest {
     @Test
     void shouldNotifySubjectWithEmailThrowsException() throws IOException {
         //Given
+        LocalDate expDate = LocalDate.now();
         final User systemUser = mock(User.class);
-        final CaseData data = getMockCaseData();
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
@@ -151,6 +169,11 @@ public class DecisionIssuedNotificationTest {
         documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
+
+        // TODO: To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -161,26 +184,29 @@ public class DecisionIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
-        decisionIssuedNotification.sendToSubject(data, "CN1");
+        finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
+        //verify(notificationService).getJsonFileAttachment(any());
         verify(notificationService).sendEmail();
     }
 
     @Test
     void shouldNotifySubjectWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        LocalDate expDate = LocalDate.now();
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        decisionIssuedNotification.sendToSubject(data, "CN1");
+        finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -191,9 +217,12 @@ public class DecisionIssuedNotificationTest {
     @Test
     void shouldNotifyRespondentWithEmail() throws IOException {
         //Given
-        final CaseData data = getMockCaseData();
+        LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondantName("respondentName");
         data.getCicCase().setRespondantEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
@@ -203,6 +232,9 @@ public class DecisionIssuedNotificationTest {
         documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
+
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
 
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
@@ -214,19 +246,23 @@ public class DecisionIssuedNotificationTest {
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        decisionIssuedNotification.sendToRespondent(data, "CN1");
+        finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
+
         verify(notificationService).sendEmail();
     }
 
     @Test
     void shouldNotifyRespondentWithEmailWithException() throws IOException {
         //Given
-        final CaseData data = getMockCaseData();
+        LocalDate expDate = LocalDate.now();
+        final User systemUser = mock(User.class);
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondantName("respondentName");
         data.getCicCase().setRespondantEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
@@ -236,6 +272,11 @@ public class DecisionIssuedNotificationTest {
         documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
+
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -245,7 +286,7 @@ public class DecisionIssuedNotificationTest {
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        decisionIssuedNotification.sendToRespondent(data, "CN1");
+        finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -255,11 +296,13 @@ public class DecisionIssuedNotificationTest {
     @Test
     void shouldNotifyRepresentativeWithEmail() throws IOException {
         //Given
+        LocalDate expDate = LocalDate.now();
         final User systemUser = mock(User.class);
-        final CaseData data = getMockCaseData();
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
@@ -270,6 +313,9 @@ public class DecisionIssuedNotificationTest {
         documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
+
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
 
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
@@ -282,7 +328,7 @@ public class DecisionIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
-        decisionIssuedNotification.sendToRepresentative(data, "CN1");
+        finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -293,11 +339,13 @@ public class DecisionIssuedNotificationTest {
     @Test
     void shouldNotifyRepresentativeWithEmailWithException() throws IOException {
         //Given
+        LocalDate expDate = LocalDate.now();
         final User systemUser = mock(User.class);
-        final CaseData data = getMockCaseData();
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
@@ -309,6 +357,11 @@ public class DecisionIssuedNotificationTest {
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
+        // To be removed once CDAM integration tested
+        data.getCicCase().setApplicantDocumentsUploaded(List.of(documentListValue));
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+
         //When
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -318,7 +371,7 @@ public class DecisionIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
-        decisionIssuedNotification.sendToRepresentative(data, "CN1");
+        finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -328,17 +381,19 @@ public class DecisionIssuedNotificationTest {
     @Test
     void shouldNotifyRepresentativeWithPost() {
         //Given
-        final CaseData data = getMockCaseData();
+        LocalDate expDate = LocalDate.now();
+        final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        decisionIssuedNotification.sendToRepresentative(data, "CN1");
+        finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -346,12 +401,16 @@ public class DecisionIssuedNotificationTest {
         verify(notificationService).sendLetter();
     }
 
-    private CaseData getMockCaseData() {
+    private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
-
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        CaseStay caseStay = CaseStay.builder()
+            .expirationDate(stayCaseExpDate)
+            .stayReason(StayReason.OTHER)
+            .additionalDetail("addlDetail")
+            .build();
+        CaseData caseData = CaseData.builder().cicCase(cicCase).caseStay(caseStay).build();
 
         return caseData;
     }

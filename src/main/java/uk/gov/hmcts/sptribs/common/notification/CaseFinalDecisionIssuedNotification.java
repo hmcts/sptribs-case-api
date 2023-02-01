@@ -80,6 +80,12 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+            try {
+                addDecisionsIssuedFileContents(caseData, templateVarsRepresentative);
+            } catch (IOException e) {
+                log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
+            }
+
             notificationResponse = sendEmailNotification(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(), TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         } else {
@@ -95,6 +101,12 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData.getCicCase());
         CicCase cicCase = caseData.getCicCase();
+
+        try {
+            addDecisionsIssuedFileContents(caseData, templateVarsRespondent);
+        } catch (IOException e) {
+            log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
+        }
 
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
             caseData.getCicCase().getRespondantEmail(), TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
