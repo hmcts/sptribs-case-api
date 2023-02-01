@@ -13,7 +13,8 @@ public class IssueCaseNotifyParties implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("issueCaseNotifyParties")
-            .label("issueCaseNotifyParties", "<h1>Notify other parties</h1>")
+            .pageLabel("Notify other parties")
+            .label("LabelIssueCaseNotifyParties", "")
             .complex(CaseData::getCicCase)
             .label("issueCaseNotifyPartiesMessage", "Which other parties should be notified that the case has been issued to respondent?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)

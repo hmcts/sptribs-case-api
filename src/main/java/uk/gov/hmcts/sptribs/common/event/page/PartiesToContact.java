@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
@@ -22,7 +23,8 @@ public class PartiesToContact implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("partiesToContact", this::midEvent)
-            .label("contactPartiesLabel", "Which parties do you want to contact?")
+            .pageLabel("Which parties do you want to contact?")
+            .label("LabelPartiesToContact", "")
             .complex(CaseData::getContactParties)
             .optional(ContactParties::getSubjectContactParties)
             .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ")
@@ -37,14 +39,12 @@ public class PartiesToContact implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
 
-        if (null != data.getContactParties() && data.getContactParties().getRepresentativeContactParties().size() == 0
-            && data.getContactParties().getSubjectContactParties().size() == 0
-            && data.getContactParties().getRespondant().size() == 0) {
+        if (null != data.getContactParties() && CollectionUtils.isEmpty(data.getContactParties().getRepresentativeContactParties())
+            && CollectionUtils.isEmpty(data.getContactParties().getSubjectContactParties())
+            && CollectionUtils.isEmpty(data.getContactParties().getRespondant())) {
 
             errors.add("Which parties do you want to contact?. is required.");
-
         }
-
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
