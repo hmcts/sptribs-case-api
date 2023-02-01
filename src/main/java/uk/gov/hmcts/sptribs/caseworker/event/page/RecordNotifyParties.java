@@ -21,7 +21,7 @@ public class RecordNotifyParties implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("recordListingNotifyPage", this::midEvent)
             .pageLabel("Notify parties")
-            .label("labelNotifyParties", "")
+            .label("LabelNotifyParties", "")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartySubject,

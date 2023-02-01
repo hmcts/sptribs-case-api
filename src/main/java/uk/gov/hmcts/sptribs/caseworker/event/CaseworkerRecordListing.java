@@ -179,7 +179,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
-            .label("regionInfoObj", "<h1>Region Data</h1>")
+            .pageLabel("Region Data")
+            .label("LabelRegionInfoObj", "")
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getRegionsMessage)
             .optional(RecordListing::getRegionList)
@@ -195,7 +196,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")
-            .label("remoteHearingInfoObj", "<h1>Remote hearing information</h1>")
+            .pageLabel("Remote hearing information")
+            .label("LabelRemoteHearingInfoObj", "")
             .complex(CaseData::getRecordListing)
             .optional(RecordListing::getVideoCallLink)
             .optional(RecordListing::getConferenceCallNumber)
@@ -204,12 +206,15 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private void addOtherInformation(PageBuilder pageBuilder) {
         pageBuilder.page("otherInformation")
-            .label("otherInformationObj", "<h1>Other information</h1>")
+            .pageLabel("Other information")
+            .label("LabelOtherInformationObj", "")
             .complex(CaseData::getRecordListing)
             .label("otherInfoLabel",
-                "\nEnter any other important information about this hearing."
-                    + " This may include any reasonable adjustments that need to be made, or details"
-                    + "\n of anyone who should be excluded from attending this hearing.\n")
+                """
+                    Enter any other important information about this hearing.
+                    This may include any reasonable adjustments that need to be made, or details
+                    of anyone who should be excluded from attending this hearing.
+                    """)
             .optional(RecordListing::getImportantInfoDetails)
             .done();
     }
