@@ -11,7 +11,7 @@ public enum OrderTemplate implements HasLabel {
 
 
     @JsonProperty("CIC1_Eligibility")
-    CIC1ELIGIBILITY("Eligibility","CIC1_Eligibility"),
+    CIC1ELIGIBILITY("CIC1_Eligibility","CIC1_Eligibility"),
 
     @JsonProperty("CIC2_Quantum")
     CIC2_QUANTUM("Quantum","CIC2_Quantum"),

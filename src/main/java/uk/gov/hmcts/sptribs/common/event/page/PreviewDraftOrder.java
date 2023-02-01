@@ -34,7 +34,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("previewOrder",this::midEvent)
+            .page("previewOrder")
             .pageLabel("Preview order")
             .label("previewDraft", " Order preview")
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"

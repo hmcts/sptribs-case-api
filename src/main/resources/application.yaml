@@ -112,7 +112,8 @@ core_case_data:
 docmosis:
   templates:
     english:
-      CIC6_General_Directions: ST-CIC-STD-ENG-CIC6_General_Directions.docx
+      CIC6_General_Directions: SPT-CIC-STD-ENG-CIC6_General_Directions.docx
+     # CIC1_Eligibility: ST-CIC_DEC-ENG-CIC1_Eligibility.docx
     welsh:
       #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.
       DIVORCE_APPLICATION_SOLE: ${DIVORCE_APPLICATION_SOLE_WELSH_TEMPLATE_ID:NFD_CP_Application_Sole_V5.docx}

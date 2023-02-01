@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -31,11 +33,14 @@ import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DA
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.REPRESENTATIVE_FULL_NAME;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
 
+@Slf4j
+@Component
 public class DraftOrderMainContentPage implements CcdPageConfiguration {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     @Autowired
     private CaseDataDocumentService caseDataDocumentService;
+
     @Autowired
     private FinalDecisionTemplateContent finalDecisionTemplateContent;
 
@@ -43,7 +48,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("mainContent")
+            .page("mainContent",this::midEvent)
             .pageLabel("Edit order")
             .label("EditDraftOrderMainContent", "<hr>" + "\n<h3>Header</h3>" + "\nThe header will be automatically generated."
                 + "You can preview this in pdf document on the next screen.\n\n"
@@ -64,74 +69,33 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
         CaseDetails<CaseData, State> detailsBefore
     ) {
 
-        //  final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
+
         CaseData caseData = details.getData();
-        //  var finalDecision = caseData.getCaseIssueFinalDecision();
+
         var finalOrderIssu = caseData.getDraftOrderMainContentCIC();
 
         var template = caseData.getCicCase().getAnOrderTemplates();
-        //  final String templateId = caseData.getCicCase().getAnOrderTemplates().getId();
+
         final Long caseId = details.getId();
-        //final Long ccdCaseReference= null;
-        // final String templateName = docmosisTemplateProvider.templateNameFor(templateId,   LanguagePreference.ENGLISH);
 
         final String filename= "Order" + LocalDateTime.now().format(formatter);
-//        Map<String, Object> templateContent = new HashMap<>();
-//
-//        templateContent.put(DATED, LocalDate.now().format(DATE_TIME_FORMATTER));
-//        templateContent.put(CIC_CASE_SCHEME, caseData.getCicCase().getSchemeCic().getLabel());
-//        templateContent.put(CASE_NUMBER, ccdCaseReference);
-//        templateContent.put(REPRESENTATIVE_FULL_NAME, caseData.getCicCase().getRepresentativeFullName());
 
-//        DocumentInfo generateTemplate = docAssembleyService.renderDocument(templateContent,caseId,
-//            null,templateId,LanguagePreference.ENGLISH,filename);
-
-
-
-//        public DocumentInfo renderDocument(final Map<String, Object> templateContent,
-//        final Long caseId,
-//        final String authorisation,
-//        final String templateId,
-//        final LanguagePreference languagePreference,
-//        final String filename)
-
-//        Document generalOrderDocument = caseDataDocumentService.renderDocument(
-//            //  finalDecisionTemplateContent.apply(caseData, caseId)
-//            templateContent,
-//            caseId,templateId,
-//            //finalDecision.getFinalDecisionTemplate().getId(),
-//            LanguagePreference.ENGLISH,
-//            filename
-//        );
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             finalDecisionTemplateContent.apply(caseData, caseId),
             caseId,
             caseData.getCicCase().getAnOrderTemplates().getId(),
-            // finalDecision.getFinalDecisionTemplate().getId(),
             LanguagePreference.ENGLISH,
             filename
         );
 
 
-//        final Map<String, Object> templateContent,
-//        final Long caseId,
-//        final String authorisation,
-//        final String templateId,
-//        final LanguagePreference languagePreference,
-//        final String filename
-
         caseData.getCicCase().setAnOrderTemplates(template);
-          finalOrderIssu.setOrderTemplateIssued(generalOrderDocument);
-        // finalDecision.setFinalDecisionDraft(generateTemplate);
-        //caseData.getCicCase().setAnOrderTemplates(template);
-        //finalDecision.setFinalDecisionDraft(generateTemplate);
-        //caseData.setCaseIssueFinalDecision(finalDecision);
+        finalOrderIssu.setOrderTemplateIssued(generalOrderDocument);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
-
 
 }
