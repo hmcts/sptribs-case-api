@@ -37,9 +37,9 @@ public class ManageSelectOrders implements CcdPageConfiguration {
         String selectedOrder = data.getCicCase().getOrderDynamicList().getValue().getLabel();
 
         var orderList = data.getCicCase().getOrderList();
-        for (uk.gov.hmcts.ccd.sdk.type.ListValue<uk.gov.hmcts.sptribs.caseworker.model.Order> orderListValue : orderList) {
-            if (selectedOrder.equals(orderListValue.getId())) {
-                cicCase.setOrderDueDates(orderListValue.getValue().getDueDateList());
+        for (int i = 0; i < orderList.size(); i++) {
+            if (selectedOrder.equals(orderList.get(i).getId())) {
+                cicCase.setOrderDueDates(orderList.get(i).getValue().getDueDateList());
                 break;
             }
         }
