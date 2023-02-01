@@ -1,101 +1,109 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.common.CommonConstants;
-import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
+import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
+import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
-import uk.gov.service.notify.NotificationClientException;
 
-import java.io.File;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import static java.util.Objects.nonNull;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANCE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 
 @Component
 @Slf4j
 public class CaseFinalDecisionIssuedNotification implements PartiesNotification {
 
     @Autowired
+    private HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private AuthTokenGenerator authTokenGenerator;
+
+    @Autowired
+    private CaseDocumentClient caseDocumentClient;
+
+    @Autowired
     private NotificationServiceCIC notificationService;
 
-    private static final String tribunalName = "Criminal Injuries Compensation Tribunal";
+    @Autowired
+    private NotificationHelper notificationHelper;
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsSubject = getCommonTemplateVars(caseNumber);
-        templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        templateVarsSubject.put(CommonConstants.CONTACT_NAME, cicCase.getFullName());
+        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
+        NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
-            // Send Email
-            NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject,
+            try {
+                addDecisionsIssuedFileContents(caseData, templateVarsSubject);
+            } catch (IOException e) {
+                log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
+            }
+
+            notificationResponse = sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
-                EmailTemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
-            cicCase.setSubjectNotifyList(notificationResponse);
+                TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         } else {
-            templateVarsSubject.put("address_line_1", cicCase.getAddress().getAddressLine1());
-            templateVarsSubject.put("address_line_2", cicCase.getAddress().getAddressLine2());
-            templateVarsSubject.put("address_line_3", cicCase.getAddress().getAddressLine3());
-            templateVarsSubject.put("address_line_4", cicCase.getAddress().getPostCode());
-            //SEND POST
-            NotificationResponse notificationResponse = sendLetterNotification(templateVarsSubject,
-                EmailTemplateName.CASE_FINAL_DECISION_ISSUED_POST);
-            cicCase.setSubjectLetterNotifyList(notificationResponse);
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
+            notificationResponse = sendLetterNotification(templateVarsSubject,
+                TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
         }
+
+        cicCase.setSubjectNotifyList(notificationResponse);
     }
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRepresentative  = getCommonTemplateVars(caseNumber);
-        templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
-        templateVarsRepresentative.put(CommonConstants.CONTACT_NAME, cicCase.getRepresentativeFullName());
+        final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
+        NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            // Send Email
-            NotificationResponse notificationResponse = sendEmailNotification(templateVarsRepresentative,
-                cicCase.getRepresentativeEmailAddress(), EmailTemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
-            cicCase.setRepNotificationResponse(notificationResponse);
+            notificationResponse = sendEmailNotification(templateVarsRepresentative,
+                cicCase.getRepresentativeEmailAddress(), TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         } else {
-            templateVarsRepresentative.put("address_line_1", cicCase.getRepresentativeAddress().getAddressLine1());
-            templateVarsRepresentative.put("address_line_2", cicCase.getRepresentativeAddress().getAddressLine2());
-            templateVarsRepresentative.put("address_line_3", cicCase.getRepresentativeAddress().getAddressLine3());
-            templateVarsRepresentative.put("address_line_4", cicCase.getRepresentativeAddress().getPostCode());
-            NotificationResponse notificationResponse = sendLetterNotification(templateVarsRepresentative,
-                EmailTemplateName.CASE_FINAL_DECISION_ISSUED_POST);
-            cicCase.setRepLetterNotificationResponse(notificationResponse);
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsRepresentative);
+            notificationResponse = sendLetterNotification(templateVarsRepresentative,
+                TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
         }
+
+        cicCase.setRepNotificationResponse(notificationResponse);
     }
 
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
-        final Map<String, Object> templateVarsRespondent = getCommonTemplateVars(caseNumber);
+        final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData.getCicCase());
         CicCase cicCase = caseData.getCicCase();
-        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondantName());
-        templateVarsRespondent.put(CommonConstants.CONTACT_NAME, cicCase.getRespondantName());
 
-        // Send Email
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
-            caseData.getCicCase().getRespondantEmail(), EmailTemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            caseData.getCicCase().getRespondantEmail(), TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
-                                                       EmailTemplateName emailTemplateName) {
-
+                                                       TemplateName emailTemplateName) {
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(toEmail)
             .hasEmailAttachment(true)
@@ -103,25 +111,11 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             .templateVars(templateVars)
             .build();
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("sampleFile.txt").getFile());
-        File file1 = new File(classLoader.getResource("sampleFile1.txt").getFile());
-
-        byte [] finalDecisionNoticeFileContent = null;
-        byte [] finalDecisionGuidanceFileContent = null;
-        try {
-            finalDecisionNoticeFileContent = FileUtils.readFileToByteArray(file);
-            finalDecisionGuidanceFileContent = FileUtils.readFileToByteArray(file1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        addFileAttachments(templateVars, finalDecisionNoticeFileContent, finalDecisionGuidanceFileContent);
         notificationService.setNotificationRequest(request);
         return notificationService.sendEmail();
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, EmailTemplateName emailTemplateName) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName emailTemplateName) {
         NotificationRequest letterRequest = NotificationRequest.builder()
             .template(emailTemplateName)
             .templateVars(templateVarsLetter)
@@ -131,7 +125,47 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         return notificationService.sendLetter();
     }
 
-    private void addFileAttachments(Map<String, Object> templateVars, byte[] finalDecisionNoticeFileContent, byte[] finalDecisionGuidanceFileContent) {
+    private void addDecisionsIssuedFileContents(CaseData caseData, Map<String, Object> templateVars) throws IOException {
+        int count = 0;
+
+        final String authorisation = httpServletRequest.getHeader(AUTHORIZATION);
+        String serviceAuthorization = authTokenGenerator.generate();
+
+        CaseIssueFinalDecision caseIssueFinalDecision = caseData.getCaseIssueFinalDecision();
+
+        List<String> uploadedDocumentsUrls = new ArrayList<>();
+        if (!caseIssueFinalDecision.getDocuments().isEmpty()) {
+            uploadedDocumentsUrls = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
+                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
+                .toList();
+        } else {
+            uploadedDocumentsUrls.add(caseIssueFinalDecision.getFinalDecisionDraft().getUrl());
+        }
+
+        for (String item : uploadedDocumentsUrls) {
+            count++;
+
+            Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
+                serviceAuthorization,
+                UUID.fromString(item)).getBody();
+
+            if (uploadedDocument != null) {
+                log.info("Document found with uuid : {}", UUID.fromString(item));
+                byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
+                if(count == 1) {
+                    templateVars.put(FINAL_DECISION_NOTICE, notificationService.getJsonFileAttachment(uploadedDocumentContents));
+                } else {
+                    templateVars.put(FINAL_DECISION_GUIDANCE, notificationService.getJsonFileAttachment(uploadedDocumentContents));
+                }
+
+            } else {
+                log.info("Document not found with uuid : {}", UUID.fromString(item));
+            }
+        }
+
+    }
+
+    /*private void addFileAttachments(Map<String, Object> templateVars, byte[] finalDecisionNoticeFileContent, byte[] finalDecisionGuidanceFileContent) {
 
             JSONObject jsonObjectFinalDecisionNotice = notificationService.prepareUpload(finalDecisionNoticeFileContent);
 
@@ -142,12 +176,6 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             if(nonNull(jsonObjectFinalDecisionGuidance)) {
                 templateVars.put("FinalDecisionGuidance", jsonObjectFinalDecisionGuidance);
             }
-    }
+    }*/
 
-    private Map<String, Object> getCommonTemplateVars(final String caseNumber) {
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CommonConstants.TRIBUNAL_NAME, tribunalName);
-        templateVars.put(CommonConstants.CIC_CASE_NUMBER, caseNumber);
-        return templateVars;
-    }
 }

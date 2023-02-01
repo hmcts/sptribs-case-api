@@ -118,6 +118,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         var data = details.getData();
         var cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
+
         final StringBuilder messageLine2 = new StringBuilder(100);
         messageLine2.append(" A notification will be sent  to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
@@ -132,6 +133,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             messageLine2.append("Respondent, ");
             caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
         }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
