@@ -201,7 +201,7 @@ withPipeline(type, product, component) {
         setCommonEnvVariables()
     }
 
-    after('functionalTest:aat') {
+    afterSuccess('functionalTest:aat') {
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
         env.CCD_DEF_NAME="prod"

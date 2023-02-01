@@ -11,7 +11,8 @@ public class RemoveStay implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("removeStay")
-            .label("removeStay", "<h2>Remove stay from this case</h2>")
+            .pageLabel("Remove stay from this case")
+            .label("LabelRemoveStay", "")
             .complex(CaseData::getRemoveCaseStay)
             .mandatory(RemoveCaseStay::getStayRemoveReason)
             .mandatory(RemoveCaseStay::getStayRemoveOtherDescription, "removeStayStayRemoveReason = \"Other\"")

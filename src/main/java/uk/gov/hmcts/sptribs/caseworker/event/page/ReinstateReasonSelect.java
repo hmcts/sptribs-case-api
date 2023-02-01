@@ -12,7 +12,8 @@ public class ReinstateReasonSelect implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("reinstateReason")
-            .label("reinstateReason", "<h1>Reason for reinstatement</h1>")
+            .pageLabel("Reason for reinstatement")
+            .label("LabelReinstateCaseReason", "")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getReinstateReason)
             .optional(CicCase::getReinstateAdditionalDetail)

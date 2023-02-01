@@ -15,6 +15,7 @@ public class HearingAttendees implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("hearingAttendees")
             .pageLabel("Hearing attendees")
+            .label("LabelHearingAttendees","")
             .complex(CaseData::getHearingSummary)
             .mandatory(HearingSummary::getJudge)
             .mandatory(HearingSummary::getFullPanelHearing)

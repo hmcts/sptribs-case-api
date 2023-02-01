@@ -35,7 +35,10 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR));
+            .grantHistoryOnly(SOLICITOR))
+            .page("caseBuilt")
+            .pageLabel("Case Built")
+            .label("LabelCaseBuilt", "");
     }
 
     @SneakyThrows

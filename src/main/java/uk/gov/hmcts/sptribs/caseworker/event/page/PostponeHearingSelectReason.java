@@ -15,7 +15,8 @@ public class PostponeHearingSelectReason implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("caseworkerPostponeHearingSelectReason")
-            .label("caseworkerPostponeHearingSelectReason", "<h1>Reasons for postponement</h1>")
+            .pageLabel("Reasons for postponement")
+            .label("LabelCaseworkerPostponeHearingSelectReason", "")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getPostponeReason, "Why was the hearing postponed?")
             .optional(CicCase::getPostponeAdditionalInformation)

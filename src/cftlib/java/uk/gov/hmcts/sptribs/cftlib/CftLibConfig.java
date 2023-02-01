@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class CftLibConfig implements CFTLibConfigurer {
@@ -29,22 +30,37 @@ public class CftLibConfig implements CFTLibConfigurer {
 
     @Override
     public void configure(CFTLib lib) throws Exception {
-        for (String p : List.of(
-            "DivCaseWorkerUser@AAT.com",
-            "TEST_CASE_WORKER_USER@mailinator.com",
-            "TEST_SOLICITOR@mailinator.com",
-            "divorce_as_caseworker_admin@mailinator.com")) {
-            lib.createProfile(p, CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
+
+        var roleList = List.of("caseworker-sptribs-superuser",
+            "caseworker-sptribs-systemupdate",
+            "caseworker-sptribs",
+            "caseworker-sptribs-cic-courtadmin",
+            "citizen-sptribs-cic-dss",
+            "caseworker-st_cic",
+            "caseworker-sptribs-cic-caseofficer",
+            "caseworker-sptribs-cic-districtregistrar",
+            "caseworker-sptribs-cic-respondent",
+            "caseworker",
+            "payments",
+            "solicitor");
+
+        var users = Map.of(
+            "TEST_CASE_WORKER_USER@mailinator.com", roleList,
+            "TEST_SOLICITOR@mailinator.com", roleList);
+
+        for (var p : users.entrySet()) {
+            lib.createIdamUser(p.getKey(), p.getValue().toArray(new String[0]));
+            lib.createProfile(p.getKey(), CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
                 CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p, CcdJurisdiction.CARE_STANDARDS.getJurisdictionId(),
+            lib.createProfile(p.getKey(), CcdJurisdiction.CARE_STANDARDS.getJurisdictionId(),
                 CcdServiceCode.ST_CS.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p, CcdJurisdiction.MENTAL_HEALTH.getJurisdictionId(),
+            lib.createProfile(p.getKey(), CcdJurisdiction.MENTAL_HEALTH.getJurisdictionId(),
                 CcdServiceCode.ST_MH.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p, CcdJurisdiction.PRIMARY_HEALTH_LISTS.getJurisdictionId(),
+            lib.createProfile(p.getKey(), CcdJurisdiction.PRIMARY_HEALTH_LISTS.getJurisdictionId(),
                 CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p, CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
+            lib.createProfile(p.getKey(), CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
                 CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p, CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
+            lib.createProfile(p.getKey(), CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
                 CcdServiceCode.ST_DD.getCaseType().getCaseTypeName(), state);
         }
 
