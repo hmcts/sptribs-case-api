@@ -111,7 +111,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(details.getState())
+            .state(AwaitingOutcome)
             .build();
 
     }
