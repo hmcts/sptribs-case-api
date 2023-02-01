@@ -19,6 +19,7 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
         map.put(pageNameUploadOrder, "cicCaseOrderIssuingType = \"UploadOrder\"");
         pageBuilder.page(pageNameUploadOrder)
             .pageLabel("Upload an order")
+            .label("LabelPageNameUploadOrder","")
             .pageShowConditions(map)
             .label("uploadMessage", "Upload a copy of the order that you want to issue as part of this case")
             .label("uploadLimits", """
