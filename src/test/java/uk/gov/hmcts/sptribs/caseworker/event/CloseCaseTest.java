@@ -23,7 +23,6 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerCloseTheCase.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
@@ -33,7 +32,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.awaitingOutcomeData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.closedCaseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_THE_CASE;
 
 @ExtendWith(MockitoExtension.class)
 class CloseCaseTest {
@@ -98,6 +99,53 @@ class CloseCaseTest {
         assertThat(closedCase).isNotNull();
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
+
+    }
+
+    @Test
+    void shouldSuccessfullyChangeAwaitingOutcomeToRejectedState() {
+
+        final CaseworkerChooseOutcome caseworkerChooseOutcome = new CaseworkerChooseOutcome();
+
+        //Given
+        final CaseData caseData = awaitingOutcomeData();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().build())
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+
+        CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .email(TEST_SUBJECT_EMAIL)
+            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        assertThat(caseData.getCaseStatus()).isEqualTo(State.AwaitingOutcome);
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerChooseOutcome.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        SubmittedCallbackResponse rejectedCase =
+            caseworkerChooseOutcome.closed(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(rejectedCase).isNotNull();
+        assertThat(rejectedCase.getConfirmationHeader()).contains("Rejected");
+        assertThat(response.getState()).isEqualTo(State.Rejected);
 
     }
 }

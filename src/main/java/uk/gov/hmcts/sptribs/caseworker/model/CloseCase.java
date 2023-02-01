@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+
+import java.time.LocalDate;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -25,7 +28,7 @@ public class CloseCase {
         label = "Why is this case being closed?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String closeCaseReason;
+    private CloseReason closeCaseReason;
 
     @CCD(
         label = "Provide additional details",
@@ -33,4 +36,48 @@ public class CloseCase {
     )
     private String additionalDetail;
 
+    @CCD(
+        label = "Who withdrew from the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String withdrawalFullName;
+
+    @CCD(
+        label = "When was the request to withdraw this case received?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate withdrawalRequestDate;
+
+    @CCD(
+        label = "Who made the decision to reject the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String rejectionFullName;
+
+    @CCD(
+        label = "Why was the case rejected?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CloseCaseRejectionReason rejectionReason;
+
+    @CCD(
+        label = "Additional details",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String rejectionDetails;
+
+    @CCD(
+        label = "When was the case conceded?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate concessionDate;
+
+    @CCD(
+        label = "When was the consent order approved?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate consentOrderDate;
 }

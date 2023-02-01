@@ -9,18 +9,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
+import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.util.List;
 
 
-
 @Component
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
-
-    public static final String JURISDICTION_NAME = "CIC";
-    public static final String JURISDICTION = "ST_CIC";
 
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
@@ -30,11 +27,12 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
         configBuilder.caseType(
-            CcdServiceCode.ST_CIC.getCaseType().getCaseName(),
-            CcdServiceCode.ST_CIC.getCaseType().name(),
+            CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(),
+            CcdServiceCode.ST_CIC.getCaseType().getCaseTypeAcronym(),
             CcdServiceCode.ST_CIC.getCaseType().getDescription());
 
-        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_CIC.getCcdServiceDescription());
+        configBuilder.jurisdiction(CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
+            CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionName(), CcdServiceCode.ST_CIC.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 

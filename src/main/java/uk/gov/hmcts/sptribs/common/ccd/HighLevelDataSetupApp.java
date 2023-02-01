@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.befta.dse.ccd.CcdEnvironment;
 import uk.gov.hmcts.befta.dse.ccd.CcdRoleConfig;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
-import uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation;
 
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +19,16 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("caseworker-sptribs-superuser", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-solicitor", "PUBLIC"),
         new CcdRoleConfig("caseworker-divorce-systemupdate", "PUBLIC"),
-        new CcdRoleConfig("payments", "PUBLIC")
+        new CcdRoleConfig("payments", "PUBLIC"),
+        new CcdRoleConfig("caseworker", "PUBLIC"),
+        new CcdRoleConfig("citizen-sptribs-cic-dss", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs-systemupdate", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs-cic-districtregistrar", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs-cic-districtjudge", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs-cic-courtadmin", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs-cic-caseofficer", "PUBLIC"),
+        new CcdRoleConfig("caseworker-sptribs-cic-respondent", "PUBLIC")
     };
 
     private final CcdEnvironment environment;
@@ -59,7 +67,7 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     protected List<String> getAllDefinitionFilesToLoadAt(String definitionsPath) {
         String environmentName = environment.name().toLowerCase(Locale.UK);
         return List.of(
-            "build/ccd-config/ccd-" + CriminalInjuriesCompensation.JURISDICTION_NAME + "-" + environmentName + ".xlsx"
+            "build/ccd-config/ccd-" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName() + "-" + environmentName + ".xlsx"
         );
     }
 }

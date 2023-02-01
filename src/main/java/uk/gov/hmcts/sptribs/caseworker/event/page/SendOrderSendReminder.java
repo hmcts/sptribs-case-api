@@ -11,6 +11,7 @@ public class SendOrderSendReminder implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("caseworkerSendOrderSendReminder")
             .pageLabel("Select order")
+            .label("LabelCaseworkerSendOrderSendReminder", "")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getOrderReminderYesOrNo)
             .mandatory(CicCase::getOrderReminderDays, "cicCaseOrderReminderYesOrNo = \"Yes\"")

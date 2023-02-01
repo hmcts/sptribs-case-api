@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.document;
 
 public final class DocumentConstants {
-
+    public static final String FINAL_DECISION_FILE = "Final-decision-notice";
 
     public static final String CASE_APPLICATION_FORM = "CASE_APPLICATION_FORM";
     public static final String TRIBUNAL_DIRECTION = "TRIBUNAL_DIRECTION";
@@ -93,6 +93,8 @@ public final class DocumentConstants {
 
     public static final String CONDITIONAL_ORDER_PRONOUNCED_DOCUMENT_NAME = "conditionalOrderGranted";
     public static final String CONDITIONAL_ORDER_PRONOUNCED_TEMPLATE_ID = "CONDITIONAL_ORDER_PRONOUNCED";
+
+    public static final String DOCUMENT_ID = "documentId";
 
     private DocumentConstants() {
     }

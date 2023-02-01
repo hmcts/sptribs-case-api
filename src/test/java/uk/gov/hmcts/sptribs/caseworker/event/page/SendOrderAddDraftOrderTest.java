@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -16,8 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.util.List;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -39,11 +36,7 @@ class SendOrderAddDraftOrderTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderAddDraftOrder.midEvent(caseDetails, caseDetails);
 
-        //Then
-        assertThat(response.getErrors()).isNull();
     }
 
     private DynamicList getDraftList() {

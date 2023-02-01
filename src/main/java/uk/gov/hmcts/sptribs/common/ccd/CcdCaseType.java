@@ -9,15 +9,17 @@ import lombok.Getter;
 @Getter
 public enum CcdCaseType {
 
-    CIC("CriminalInjuriesCompensation", "Criminal Injuries Compensation"),
-    CS("CareStandards","Care Standards"),
-    MH("MentalHealth", "Mental Health"),
-    PHL("PrimaryHealthLists", "Primary Health Lists"),
-    SEN("SpecialEducationalNeeds", "Special Educational Needs"),
-    DD("DisabilityDiscrimination", "Disability Discrimination");
+    CIC("CIC", "CriminalInjuriesCompensation", "Criminal Injuries Compensation"),
+    CS("CS", "CareStandards","Care Standards"),
+    MH("MH", "MentalHealth", "Mental Health"),
+    PHL("PHL", "PrimaryHealthLists", "Primary Health Lists"),
+    SEN("SEN", "SpecialEducationalNeeds", "Special Educational Needs"),
+    DD("DD", "DisabilityDiscrimination", "Disability Discrimination");
 
+
+    private final String caseTypeAcronym;
     @JsonValue
-    private final String caseName;
+    private final String caseTypeName;
     private final String description;
 
     public static CcdCaseType fromString(String value) {

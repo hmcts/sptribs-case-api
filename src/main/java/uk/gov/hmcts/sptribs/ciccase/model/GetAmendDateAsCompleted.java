@@ -9,10 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum GetAmendDateAsCompleted implements HasLabel {
     @JsonProperty("Mark as completed")
-    MARKASCOMPLETED("Mark as completed");
+    MARKASCOMPLETED("Yes");
     private final String label;
-    public boolean isSubject() {
 
-        return MARKASCOMPLETED.name().equalsIgnoreCase(this.name());
-    }
 }

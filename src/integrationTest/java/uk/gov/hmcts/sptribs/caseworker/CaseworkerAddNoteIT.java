@@ -16,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.Clock;
@@ -31,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.sptribs.caseworker.event.CaseworkerAddNote.CASEWORKER_ADD_NOTE;
+import static uk.gov.hmcts.sptribs.testutil.ITEventConstants.CASEWORKER_ADD_NOTE;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamFailure;
@@ -59,9 +58,6 @@ public class CaseworkerAddNoteIT {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @MockBean
-    private WebMvcConfig webMvcConfig;
 
     @MockBean
     private Clock clock;

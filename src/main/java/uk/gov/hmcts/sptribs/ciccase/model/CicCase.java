@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,6 +45,54 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 public class CicCase {
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList orderTemplateDynamisList;
+
+    @CCD(
+        label = "Template",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedList,
+        typeParameterOverride = "OrderTemplate"
+    )
+    private OrderTemplate anOrderTemplates;
+
+    @CCD(
+        label = "Postpone Reason",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "PostponeReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private PostponeReason postponeReason;
+
+    @CCD(
+        label = "Enter any other important information about this postponement",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String postponeAdditionalInformation;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DraftOrderCIC draftOrderCIC;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList hearingList;
+
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ContactPartiesCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ContactPartiesCIC> contactPartiesCIC;
+
+
     @CCD(
         label = "How would you like to issue an order?"
     )
@@ -53,28 +104,10 @@ public class CicCase {
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String draftOrderCICListForDisplay;
-    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Due Date"
     )
     private List<ListValue<DateModel>> orderDueDates;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "GetAmendDateAsCompleted",
-
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private GetAmendDateAsCompleted orderMarkAsCompleted;
-
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DraftOrderCIC draftOrderCIC;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -96,6 +129,15 @@ public class CicCase {
     )
     private List<ListValue<Order>> orderList;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList orderDynamicList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<NotificationParties> hearingNotificationParties;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -235,28 +277,6 @@ public class CicCase {
     )
     private String reinstateAdditionalDetail;
 
-    @CCD(
-
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "SubjectCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<SubjectCIC> flagPartySubject;
-
-    @CCD(
-
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "ApplicantCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<ApplicantCIC> flagPartyApplicant;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RepresentativeCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RepresentativeCIC> flagPartyRepresentative;
 
     @CCD(
         label = "Respondant name ",
@@ -463,7 +483,15 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
 
-    private CaseDocumentsCIC caseDocumentsCIC;
+    //new
+    @CCD(
+        label = "Case Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<CICDocument>> applicantDocumentsUploaded;
+
     @CCD(
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -515,6 +543,26 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse appLetterNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse subHearingNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse repHearingNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse resHearingNotificationResponse;
+
+    @JsonIgnore
+    public String getSelectedHearingToCancel() {
+        return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
+    }
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

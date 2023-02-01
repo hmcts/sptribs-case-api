@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.notification.model;
 
 import lombok.Builder;
 import lombok.Getter;
-import uk.gov.hmcts.sptribs.notification.EmailTemplateName;
+import uk.gov.hmcts.sptribs.notification.TemplateName;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 @Getter
 public class NotificationRequest {
     private String destinationAddress;
-    private EmailTemplateName template;
+    private TemplateName template;
     private Map<String, Object> templateVars;
     private byte [] fileContents;
     private byte [] fileContents1;

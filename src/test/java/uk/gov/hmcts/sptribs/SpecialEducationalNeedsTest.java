@@ -42,7 +42,7 @@ class SpecialEducationalNeedsTest {
         specialEducationalNeeds.configure(configBuilder);
 
         //Then
-        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.SEN.getCaseName());
+        assertThat(configBuilder.build().getCaseType()).isEqualTo(CcdCaseType.SEN.getCaseTypeName());
 
     }
 

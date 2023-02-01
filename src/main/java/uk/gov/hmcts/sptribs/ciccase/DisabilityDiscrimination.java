@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.DisabilityDiscriminationData;
+import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.util.List;
@@ -20,9 +21,6 @@ import java.util.List;
 @Slf4j
 public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminationData, State, UserRole> {
 
-    public static final String JURISDICTION_NAME = "SEND";
-    public static final String JURISDICTION = "ST_SEND";
-
     @Autowired
     private List<CCDConfig<CaseData, State, UserRole>> cfgs;
 
@@ -31,11 +29,13 @@ public class DisabilityDiscrimination implements CCDConfig<DisabilityDiscriminat
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
         configBuilder.caseType(
-            CcdServiceCode.ST_DD.getCaseType().getCaseName(),
-            CcdServiceCode.ST_DD.getCaseType().name(),
+            CcdServiceCode.ST_DD.getCaseType().getCaseTypeName(),
+            CcdServiceCode.ST_DD.getCaseType().getCaseTypeAcronym(),
             CcdServiceCode.ST_DD.getCaseType().getDescription());
 
-        configBuilder.jurisdiction(JURISDICTION, JURISDICTION_NAME, CcdServiceCode.ST_DD.getCcdServiceDescription());
+        configBuilder.jurisdiction(CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
+            CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionName(),
+            CcdServiceCode.ST_DD.getCcdServiceDescription());
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 

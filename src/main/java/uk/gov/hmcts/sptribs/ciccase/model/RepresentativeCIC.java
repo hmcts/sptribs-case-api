@@ -11,7 +11,4 @@ public enum RepresentativeCIC implements HasLabel {
     @JsonProperty("RepresentativeCIC")
     REPRESENTATIVE("Representative");
     private final String label;
-    public boolean isRepresentativeCIC() {
-        return REPRESENTATIVE.name().equalsIgnoreCase(this.name());
-    }
 }

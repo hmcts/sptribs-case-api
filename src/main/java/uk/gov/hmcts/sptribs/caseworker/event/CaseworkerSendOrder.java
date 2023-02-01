@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -30,8 +31,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -45,7 +47,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
     private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
@@ -75,8 +76,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 AwaitingOutcome,
                 CaseClosed,
                 CaseStayed)
-            .name("Send order")
-            .description("Send order")
+            .name("Orders: Send order")
+            .description("Orders: Send order")
             .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
@@ -102,11 +103,20 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     ) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
-        var order = Order.builder().draftOrder(cicCase.getDraftOrderCIC())
+
+        var order = Order.builder()
             .uploadedFile(cicCase.getOrderFile())
             .dueDateList(cicCase.getOrderDueDates())
-            .draftOrder(cicCase.getDraftOrderCIC())
+            .parties(getRecipients(cicCase))
             .reminderDay(cicCase.getOrderReminderDays()).build();
+        String selectedDraft = caseData.getCicCase().getDraftList().getValue().getLabel();
+        String id = getId(selectedDraft);
+        var draftList = caseData.getCicCase().getDraftOrderCICList();
+        for (int i = 0; i < draftList.size(); i++) {
+            if (null != id && Integer.parseInt(id) == i) {
+                order.setDraftOrder(draftList.get(i).getValue());
+            }
+        }
         if (isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
@@ -136,7 +146,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
         caseData.getCicCase().setOrderReminderDays(null);
-        caseData.getCicCase().setDraftOrderCIC(null);
+        caseData.getCicCase().setOrderDueDates(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -146,24 +156,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final StringBuilder emailMessage = getEmailMessage(cicCase);
-
-        StringBuilder postMessage = getPostMessage(cicCase);
-        String message = "";
-        if (null != postMessage && null != emailMessage) {
-            message = format("# Order sent  %n"
-                + " %s  %n  %s", emailMessage.substring(0, emailMessage.length() - 2), postMessage.substring(0, postMessage.length() - 2));
-        } else if (null != emailMessage) {
-            message = format("# Order sent %n ## "
-                + " %s ", emailMessage.substring(0, emailMessage.length() - 2));
-
-        } else if (null != postMessage) {
-            message = format("# Order sent %n ## "
-                + " %s ", postMessage.substring(0, postMessage.length() - 2));
-        }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader(format("# Order sent %n## %s",
+                MessageUtil.generateSimpleMessage(cicCase)))
             .build();
     }
 
