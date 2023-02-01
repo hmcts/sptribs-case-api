@@ -38,8 +38,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State, UserRole> {
-    public static final String SERVICE_NAME = "DIVORCE";
-
     private static final CcdPageConfiguration createHearingSummary = new CreateHearingSummary();
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
@@ -77,7 +75,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(SERVICE_NAME);
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
         caseData.getHearingSummary().setJudge(judicialUsersDynamicList);
         caseData.getHearingSummary().setPanelMemberList(getListValues(judicialUsersDynamicList));
 

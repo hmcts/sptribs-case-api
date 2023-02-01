@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -34,12 +34,14 @@ public class JudicialService {
     @Autowired
     private JudicialClient judicialClient;
 
-    public DynamicList getAllUsers(String ccdServiceName) {
-        final var users = getUsers(ccdServiceName);
+    private static final String SERVICE_NAME = "DIVORCE";
+
+    public DynamicList getAllUsers() {
+        final var users = getUsers();
         return populateRegionDynamicList(users);
     }
 
-    private UserProfileRefreshResponse[] getUsers(String ccdServiceName) {
+    private UserProfileRefreshResponse[] getUsers() {
         ResponseEntity<UserProfileRefreshResponse[]> regionResponseEntity = null;
 
         try {
@@ -47,7 +49,7 @@ public class JudicialService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 JudicialUsersRequest.builder()
-                    .ccdServiceName(ccdServiceName)
+                    .ccdServiceName(SERVICE_NAME)
                     .build());
         } catch (FeignException exception) {
             log.error("Unable to get user profile data from reference data with exception {}",

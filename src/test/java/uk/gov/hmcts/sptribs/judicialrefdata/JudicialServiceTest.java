@@ -51,7 +51,7 @@ class JudicialServiceTest {
             new JudicialUsersRequest("DIVORCE")))
             .thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(new UserProfileRefreshResponse[]{userResponse});
-        DynamicList userList = judicialService.getAllUsers("DIVORCE");
+        DynamicList userList = judicialService.getAllUsers();
 
         //Then
         assertThat(userList).isNotNull();
@@ -65,7 +65,7 @@ class JudicialServiceTest {
         when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
             new JudicialUsersRequest("DIVORCE")))
             .thenReturn(null);
-        DynamicList regionList = judicialService.getAllUsers("DIVORCE");
+        DynamicList regionList = judicialService.getAllUsers();
 
         //Then
         assertThat(regionList.getListItems()).isEmpty();
