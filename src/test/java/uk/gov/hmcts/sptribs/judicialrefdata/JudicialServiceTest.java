@@ -48,7 +48,7 @@ class JudicialServiceTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
-            new JudicialUsersRequest("DIVORCE")))
+            new JudicialUsersRequest("ST_CIC")))
             .thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(new UserProfileRefreshResponse[]{userResponse});
         DynamicList userList = judicialService.getAllUsers();
@@ -63,7 +63,7 @@ class JudicialServiceTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
-            new JudicialUsersRequest("DIVORCE")))
+            new JudicialUsersRequest("ST_CIC")))
             .thenReturn(null);
         DynamicList regionList = judicialService.getAllUsers();
 

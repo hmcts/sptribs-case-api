@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRejectionDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseStrikeOutDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWithdrawalDetails;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -57,6 +58,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         closeCaseConcessionDetails.addTo(pageBuilder);
         closeCaseStrikeOutDetails.addTo(pageBuilder);
         closeCaseConsentOrder.addTo(pageBuilder);
+        uploadDocuments(pageBuilder);
     }
 
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -104,5 +106,20 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case closed")
             .build();
+    }
+
+    private void uploadDocuments(PageBuilder pageBuilder) {
+        String pageNameUpload = "closeCaseUploadDocuments";
+        pageBuilder.page(pageNameUpload)
+            .pageLabel("Upload case documents")
+            .label("LabelCloseCaseUploadDoc",
+                "\nPlease upload copies of any information or evidence that you want to add to this case.\n"
+                    + "\n<h3>Files should be:</h3>\n"
+                    + "\n- uploaded separately and not in one large file\n"
+                    + "\n- a maximum of 100MB in size (larger files must be split)\n"
+                    + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")
+            .complex(CaseData::getCloseCase)
+            .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
+            .done();
     }
 }
