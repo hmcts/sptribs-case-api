@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.enabledOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -185,7 +186,8 @@ public class Case extends Base {
 
     public void buildCase() {
         page.selectOption("#next-step", new SelectOption().setLabel("Case: Build case"));
-        assertThat(getButtonByText("Go")).isEnabled();
+        page.locator("ccd-markdown markdown h3").click();
+        assertThat(getButtonByText("Go")).isEnabled(enabledOptionsWithTimeout(3000));
         clickButton("Go");
         assertThat(page.locator("h1"))
             .hasText("Case Built", textOptionsWithTimeout(20000));

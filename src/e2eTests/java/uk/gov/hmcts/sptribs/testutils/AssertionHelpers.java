@@ -16,4 +16,8 @@ public class AssertionHelpers extends Base {
     public static LocatorAssertions.IsVisibleOptions visibleOptionsWithTimeout(int timeout) {
         return new LocatorAssertions.IsVisibleOptions().setTimeout(timeout);
     }
+
+    public static LocatorAssertions.IsEnabledOptions enabledOptionsWithTimeout(int timeout) {
+        return new LocatorAssertions.IsEnabledOptions().setTimeout(timeout);
+    }
 }
