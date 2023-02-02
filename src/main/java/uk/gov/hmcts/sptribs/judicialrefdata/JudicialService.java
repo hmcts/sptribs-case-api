@@ -34,7 +34,7 @@ public class JudicialService {
     @Autowired
     private JudicialClient judicialClient;
 
-    private static final String SERVICE_NAME = "DIVORCE";
+    private static final String SERVICE_NAME = "ST_CIC";
 
     public DynamicList getAllUsers() {
         final var users = getUsers();
