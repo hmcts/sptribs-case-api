@@ -10,5 +10,7 @@ public class StayCase extends Base {
         Case newCase = new Case();
         newCase.createCase();
         newCase.buildCase();
+        newCase.addStayToCase();
+
     }
 }

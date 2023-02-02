@@ -1,12 +1,16 @@
 package uk.gov.hmcts.sptribs.e2e;
 
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
+import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.enabledOptionsWithTimeout;
@@ -68,7 +72,7 @@ public class Case extends Base {
             .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
         getCheckBoxByLabel("Subject").first().check();
 
-        List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
+        List<String> options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
         if (options.contains("representative")) {
             getCheckBoxByLabel("Representative").check();
         }
@@ -198,6 +202,34 @@ public class Case extends Base {
         assertThat(page.locator("h1").last())
             .hasText("Case built successful", textOptionsWithTimeout(60000));
         clickButton("Close and Return to case details");
+    }
+
+    public void addStayToCase() {
+        page.selectOption("#next-step", new SelectOption().setLabel("Stays: Create/edit stay"));
+        page.waitForFunction("selector => document.querySelector(selector).disabled === false",
+            "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
+        PageHelpers.clickButton("Go");
+        page.getByLabel("Awaiting outcome of civil case").check();
+        page.getByLabel("Day").click();
+        page.getByLabel("Day").fill("22");
+        page.getByLabel("Month").click();
+        page.getByLabel("Month").fill("12");
+        page.getByLabel("Year").click();
+        page.getByLabel("Year").fill("2023");
+        page.locator("#stayAdditionalDetail").fill("Additional info for create stay");
+
+        page.locator("button:has-text('Continue')").click();
+        page.waitForSelector("h1", PageHelpers.selectorOptionsWithTimeout(60000));
+        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Stays: Create/edit stay'",
+            "h1", PageHelpers.functionOptionsWithTimeout(60000));
+
+
+        page.waitForSelector("button:has-text('Save and continue')", PageHelpers.selectorOptionsWithTimeout(60000));
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save and continue")).click();
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+        page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).click();
+        page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
+        assertThat(page.locator("h4")).containsText("Case stayed");
     }
 
     private void fillAddressDetails(String partyType) {
