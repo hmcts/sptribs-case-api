@@ -8,7 +8,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloseCaseConcessionDetails implements CcdPageConfiguration {
+public class CloseCaseStrikeOutDetails implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -16,13 +16,16 @@ public class CloseCaseConcessionDetails implements CcdPageConfiguration {
         map.put("closeCaseWithdrawalDetails", "closeCloseCaseReason = \"caseWithdrawn\"");
         map.put("closeCaseRejectionDetails", "closeCloseCaseReason = \"caseRejected\"");
         map.put("closeCaseStrikeOutDetails", "closeCloseCaseReason = \"caseStrikeOut\"");
-        map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConcession\"");
+        map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConceded\"");
         map.put("closeCaseConsentOrder", "closeCloseCaseReason = \"consentOrder\"");
-        pageBuilder.page("closeCaseConcessionDetails")
-            .pageLabel("Concession details")
+        pageBuilder.page("closeCaseStrikeOutDetails")
+            .pageLabel("Strike out details")
+            .label("LabelStrikeOutDetails", "")
             .pageShowConditions(map)
             .complex(CaseData::getCloseCase)
-            .mandatory(CloseCase::getConcessionDate)
+            .mandatory(CloseCase::getStrikeOutName)
+            .mandatory(CloseCase::getStrikeOutReason)
+            .mandatory(CloseCase::getStrikeOutDetails, "closeStrikeOutReason = \"other\"")
             .done();
     }
 }

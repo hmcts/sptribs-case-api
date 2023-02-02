@@ -34,12 +34,14 @@ public class JudicialService {
     @Autowired
     private JudicialClient judicialClient;
 
-    public DynamicList getAllUsers(String ccdServiceName) {
-        final var users = getUsers(ccdServiceName);
+    private static final String SERVICE_NAME = "DIVORCE";
+
+    public DynamicList getAllUsers() {
+        final var users = getUsers();
         return populateRegionDynamicList(users);
     }
 
-    private UserProfileRefreshResponse[] getUsers(String ccdServiceName) {
+    private UserProfileRefreshResponse[] getUsers() {
         ResponseEntity<UserProfileRefreshResponse[]> regionResponseEntity = null;
 
         try {
@@ -47,7 +49,7 @@ public class JudicialService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 JudicialUsersRequest.builder()
-                    .ccdServiceName(ccdServiceName)
+                    .ccdServiceName(SERVICE_NAME)
                     .build());
         } catch (FeignException exception) {
             log.error("Unable to get user profile data from reference data with exception {}",
