@@ -7,11 +7,12 @@ import uk.gov.hmcts.sptribs.e2e.Base;
 
 public class PageHelpers extends Base {
 
-    private PageHelpers() {
-    }
-
     public static Page.WaitForSelectorOptions selectorOptionsWithTimeout(int timeout) {
         return new Page.WaitForSelectorOptions().setTimeout(timeout);
+    }
+
+    public static Page.SelectOptionOptions selectOptionWithTimeout(int timeout) {
+        return new Page.SelectOptionOptions().setTimeout(timeout);
     }
 
     public static Page.WaitForURLOptions urlOptionsWithTimeout(int timeout) {
@@ -22,24 +23,28 @@ public class PageHelpers extends Base {
         return new Page.WaitForFunctionOptions().setTimeout(timeout);
     }
 
-    public static void clickButton(String buttonName) {
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(buttonName)).click();
+    public static void clickButton(String buttonText) {
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(buttonText)).click();
     }
 
-    public static Locator getRadioButtonByLabel(String radioButtonName) {
-        return page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName(radioButtonName));
+    public static Locator getButtonByText(String buttonText) {
+        return page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(buttonText));
     }
 
-    public static Locator getListBoxByName(String name) {
-        return page.getByRole(AriaRole.LISTBOX, new Page.GetByRoleOptions().setName(name));
+    public static Locator getRadioButtonByLabel(String label) {
+        return page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName(label));
     }
 
-    public static Locator getCheckBoxByLabel(String checkBox) {
-        return page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName(checkBox));
+    public static Locator getListBoxByLabel(String label) {
+        return page.getByRole(AriaRole.LISTBOX, new Page.GetByRoleOptions().setName(label));
     }
 
-    public static Locator getTextBoxByLabel(String textBoxName) {
-        return page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName(textBoxName));
+    public static Locator getCheckBoxByLabel(String label) {
+        return page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName(label));
+    }
+
+    public static Locator getTextBoxByLabel(String label) {
+        return page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName(label));
     }
 
     public static void clickLink(String linkText) {

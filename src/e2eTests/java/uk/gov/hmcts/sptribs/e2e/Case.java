@@ -8,9 +8,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.functionOptionsWithTimeout;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getButtonByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
@@ -30,10 +33,11 @@ public class Case extends Base {
     createCase("post") --> to change the contact preference type to Post for all the parties involved
      */
     public String createCase(String... args) {
+
         // Select case filters
         clickLink("Create case");
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Create Case'",
-            "h1", functionOptionsWithTimeout(60000));
+        assertThat(page.locator("h1"))
+            .hasText("Create Case", textOptionsWithTimeout(60000));
         page.waitForFunction("selector => document.querySelector(selector).options.length > 1",
             "#cc-jurisdiction", functionOptionsWithTimeout(60000));
         page.selectOption("#cc-jurisdiction", new SelectOption().setLabel("CIC"));
@@ -43,15 +47,15 @@ public class Case extends Base {
         clickButton("Start");
 
         // Select case categories
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Case categorisation'",
-            "h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1"))
+            .hasText("Case categorisation", textOptionsWithTimeout(30000));
         page.selectOption("#cicCaseCaseCategory", new SelectOption().setLabel("Assessment")); // Available options: Assessment, Eligibility
         page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Fatal")); // Available options: Fatal, Sexual Abuse, Other
         clickButton("Continue");
 
         // Fill date case received form
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'When was the case received?'",
-            "h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1"))
+            .hasText("When was the case received?", textOptionsWithTimeout(30000));
         Calendar date = DateHelpers.getYesterdaysDate();
         getTextBoxByLabel("Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
         getTextBoxByLabel("Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
@@ -59,8 +63,8 @@ public class Case extends Base {
         clickButton("Continue");
 
         // Fill identified parties form
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who are the parties in this case?'",
-            "h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1"))
+            .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
         getCheckBoxByLabel("Subject").first().check();
 
         List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
@@ -73,8 +77,8 @@ public class Case extends Base {
         clickButton("Continue");
 
         // Fill subject details form
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the subject of this case?'",
-            "h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1"))
+            .hasText("Who is the subject of this case?", textOptionsWithTimeout(30000));
         getTextBoxByLabel("Subject's full name").fill("Subject " + StringHelpers.getRandomString(9));
         getTextBoxByLabel("Subject's phone number (Optional)").fill("07465730467");
         getTextBoxByLabel("Day").fill("1");
@@ -93,8 +97,8 @@ public class Case extends Base {
 
         // Fill applicant details form
         if (options.contains("applicant")) {
-            page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the applicant in this case?'",
-                "h1", functionOptionsWithTimeout(20000));
+            assertThat(page.locator("h1"))
+                .hasText("Who is the applicant in this case?", textOptionsWithTimeout(30000));
             getTextBoxByLabel("Applicant's full name").fill("Subject " + StringHelpers.getRandomString(9));
             getTextBoxByLabel("Applicant's phone number").fill("07465730467");
             getTextBoxByLabel("Day").fill("3");
@@ -114,8 +118,8 @@ public class Case extends Base {
 
         // Fill representative details form
         if (options.contains("representative")) {
-            page.waitForFunction("selector => document.querySelector(selector).innerText === 'Who is the Representative for this case?'",
-                "h1", functionOptionsWithTimeout(20000));
+            assertThat(page.locator("h1"))
+                .hasText("Who is the Representative for this case?", textOptionsWithTimeout(30000));
             getTextBoxByLabel("Representative's full name").fill("Subject " + StringHelpers.getRandomString(9));
             getTextBoxByLabel("Organisation or business name (Optional)").fill(StringHelpers.getRandomString(10) + " Limited");
             getTextBoxByLabel("Representative's contact number").fill("07456831774");
@@ -144,13 +148,13 @@ public class Case extends Base {
         clickButton("Continue");
 
         // Upload tribunals form
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Upload tribunal forms'",
-            "h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1"))
+            .hasText("Upload tribunal forms", textOptionsWithTimeout(30000));
         clickButton("Continue");
 
         // Fill further details form
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Enter further details about this case'",
-            "h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1"))
+            .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
         page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
         getTextBoxByLabel("CICA reference number").fill("CICATestReference");
@@ -161,37 +165,36 @@ public class Case extends Base {
         clickButton("Continue");
 
         // Check your answers form
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
         page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(20000));
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Check your answers'",
-            "h2.heading-h2", functionOptionsWithTimeout(20000));
         clickButton("Save and continue");
 
         // Case created confirmation screen
-        page.waitForSelector("ccd-markdown markdown h1", selectorOptionsWithTimeout(60000));
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Case Created'",
-            "ccd-markdown markdown h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Case Created", textOptionsWithTimeout(60000));
         clickButton("Close and Return to case details");
 
         // Case details screen
-        page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(20000));
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'History'",
-            "h2.heading-h2", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
-        return page.locator("ccd-markdown markdown h3").textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
+        return page.locator("ccd-markdown markdown h3")
+            .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
     }
 
     public void buildCase() {
         page.selectOption("#next-step", new SelectOption().setLabel("Case: Build case"));
-        page.waitForFunction("selector => document.querySelector(selector).disabled === false",
-            "ccd-event-trigger button[type='submit']", functionOptionsWithTimeout(3000));
+        assertThat(getButtonByText("Go")).isEnabled();
         clickButton("Go");
-        page.waitForSelector("h1", selectorOptionsWithTimeout(60000));
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Case: Build case'",
-            "h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1"))
+            .hasText("Case Built", textOptionsWithTimeout(20000));
+        clickButton("Continue");
+        assertThat(page.locator("h1"))
+            .hasText("Case Built", textOptionsWithTimeout(20000));
         clickButton("Save and continue");
-        page.waitForSelector("ccd-markdown markdown h1", selectorOptionsWithTimeout(60000));
-        page.waitForFunction("selector => document.querySelector(selector).innerText === 'Case built successful'",
-            "ccd-markdown markdown h1", functionOptionsWithTimeout(20000));
+        assertThat(page.locator("h1").last())
+            .hasText("Case built successful", textOptionsWithTimeout(60000));
         clickButton("Close and Return to case details");
     }
 

@@ -57,13 +57,13 @@ sourceSets {
     }
   }
 
-  e2eTests {
+ e2eTests {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
       srcDir file('src/e2eTests/java')
     }
-  }
+ }
 }
 
 ext{
@@ -138,7 +138,16 @@ task e2eTests(type: Test) {
   group = "Verification"
   testClassesDirs = sourceSets.e2eTests.output.classesDirs
   classpath = sourceSets.e2eTests.runtimeClasspath
-  failFast = true
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.mode.classes.default': 'concurrent',
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
+  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'BROWSER', 'chromium'
 }
 
 // Invoked from CftLibConfig when booting with CCD.

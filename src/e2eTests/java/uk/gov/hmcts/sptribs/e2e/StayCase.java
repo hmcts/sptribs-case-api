@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 public class StayCase extends Base {
     @Test
-    public void caseworkerShouldBeAbleToAddAStayToCase() {
+    public void caseWorkerShouldBeAbleToAddStayToCase() {
         Login login = new Login();
         login.loginAsStTest1User();
         Case newCase = new Case();
