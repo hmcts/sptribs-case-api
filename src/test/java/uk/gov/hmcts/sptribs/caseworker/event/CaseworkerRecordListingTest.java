@@ -240,7 +240,7 @@ class CaseworkerRecordListingTest {
     private CicCase getMockCicCase() {
         return CicCase.builder().fullName("fullName").recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .representativeFullName("repFullName").recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .respondantName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .respondentName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
     }
 
 
