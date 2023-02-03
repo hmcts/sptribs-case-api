@@ -34,9 +34,9 @@ public class PostponeHaringNotifyParties implements CcdPageConfiguration {
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ",
                 "Postpone information recipient - Representative")
-            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondantName!=\"\" ",
+                "cicCaseRespondentName!=\"\" ",
                 "Postpone information recipient - Respondent")
             .done();
     }

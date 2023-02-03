@@ -31,9 +31,9 @@ public class RecordNotifyParties implements CcdPageConfiguration {
             .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ",
                 "Listing information recipient - Representative")
-            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRespondent,
-                "cicCaseRespondantName!=\"\" ",
+                "cicCaseRespondentName!=\"\" ",
                 "Listing information recipient - Respondent")
             .done();
     }

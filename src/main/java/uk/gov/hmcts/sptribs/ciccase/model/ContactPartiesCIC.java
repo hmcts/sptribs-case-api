@@ -12,8 +12,8 @@ public enum ContactPartiesCIC implements HasLabel {
     @JsonProperty("SubjectToContact")
     SUBJECTTOCONTACT("Subject"),
 
-    @JsonProperty("RespondantToContact")
-    RESPONDANTTOCONTACT("Respondent"),
+    @JsonProperty("RespondentToContact")
+    RESPONDENTTOCONTACT("Respondent"),
 
     @JsonProperty("RepresentativeToContact")
     REPRESENTATIVETOCONTACT("Representative");
@@ -31,7 +31,7 @@ public enum ContactPartiesCIC implements HasLabel {
     }
 
     public boolean isApplicantToContact() {
-        return RESPONDANTTOCONTACT.name().equalsIgnoreCase(this.name());
+        return RESPONDENTTOCONTACT.name().equalsIgnoreCase(this.name());
     }
 
 
