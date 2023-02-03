@@ -105,6 +105,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
+        caseData.getHearingSummary().setHearingFormat(caseData.getRecordListing().getHearingFormat());
+        caseData.getHearingSummary().setHearingType(caseData.getRecordListing().getHearingType());
         caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
