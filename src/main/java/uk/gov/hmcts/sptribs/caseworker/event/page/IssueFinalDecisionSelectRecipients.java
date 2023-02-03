@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -19,25 +18,14 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder
-            .page("issueFinalDecisionSelectRecipients", this::midEvent)
-            .pageLabel("Select recipients")
-            .label("LabelIssueFinalDecisionSelectRecipientsEmpty", "")
-            .label("labelIssueFinalDecisionSelectRecipients", "Who should receive this decision notice?")
-            .complex(CaseData::getCicCase)
-            .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                "Final Decision information recipient - Subject")
-            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                "Final Decision information recipient - Representative")
-            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ",
-                "Final Decision information recipient - Respondent")
-            .done();
+        SelectRecipientsHelper.addTo(pageBuilder,
+            "issueFinalDecisionSelectRecipients",
+            this::midEvent,
+            "IssueFinalDecision",
+            "Who should receive this decision notice?",
+            "Final Decision information",
+            ALWAYS_HIDE
+        );
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
