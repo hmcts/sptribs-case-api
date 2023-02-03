@@ -73,7 +73,7 @@ public class CancelHearingNotification implements PartiesNotification {
         Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         addCancelHearingTemplateVars(cicCase, respondentTemplateVars);
 
-        NotificationResponse respondentNotificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), respondentTemplateVars);
+        NotificationResponse respondentNotificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
         cicCase.setAppNotificationResponse(respondentNotificationResponse);
     }
 

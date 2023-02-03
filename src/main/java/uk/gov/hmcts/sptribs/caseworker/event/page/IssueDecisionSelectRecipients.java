@@ -31,9 +31,9 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ",
                 "Decision information recipient - Representative")
-            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondantName!=\"\" ",
+                "cicCaseRespondentName!=\"\" ",
                 "Decision information recipient - Respondent")
             .done();
     }

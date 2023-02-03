@@ -72,12 +72,12 @@ public class ListingCreatedNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondantName());
+        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
         RecordListing recordListing = caseData.getRecordListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRespondent, recordListing);
         // Send Email
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondantEmail(), TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            cicCase.getRespondentEmail(), TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
         cicCase.setResHearingNotificationResponse(notificationResponse);
     }
 
