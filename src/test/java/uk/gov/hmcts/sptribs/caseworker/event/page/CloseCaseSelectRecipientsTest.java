@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CloseCaseSelectRecipientsTest {
 
     @InjectMocks
-    private CloseCaseSelectRecipients selectRecipients;
+    private SelectRecipientsHelper selectRecipients;
 
     @Test
     void shouldBeSuccessfulForValidRecipients() {

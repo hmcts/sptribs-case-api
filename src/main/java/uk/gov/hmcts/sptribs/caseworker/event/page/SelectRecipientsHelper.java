@@ -1,25 +1,27 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import uk.gov.hmcts.ccd.sdk.api.callback.MidEvent;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+
 public final class SelectRecipientsHelper {
 
-    private SelectRecipientsHelper() {
-    }
-
-    public static void addTo(PageBuilder pageBuilder,
+    public void addTo(PageBuilder pageBuilder,
                              String pageId,
-                             final MidEvent<CaseData, State> callback,
                              String labelPrefix,
                              String label,
                              String fieldLabelPrefix,
                              String alwaysHide) {
         pageBuilder
-            .page(pageId, callback)
+            .page(pageId, this::midEvent)
             .pageLabel("Select recipients")
             .label("Label" + labelPrefix + "SelectRecipientsEmpty", "")
             .label("label" + labelPrefix + "SelectRecipients", label)
@@ -37,5 +39,19 @@ public final class SelectRecipientsHelper {
                 "cicCaseRespondentName!=\"\" ",
                 fieldLabelPrefix + " recipient - Respondent")
             .done();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        final List<String> errors = new ArrayList<>();
+
+        if (checkNullSubjectRepresentativeRespondent(data)) {
+            errors.add("One recipient must be selected.");
+        }
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
     }
 }
