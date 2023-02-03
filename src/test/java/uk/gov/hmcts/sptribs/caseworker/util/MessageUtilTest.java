@@ -33,7 +33,7 @@ public class MessageUtilTest {
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
             .contactPreferenceType(ContactPreferenceType.EMAIL)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
@@ -56,7 +56,7 @@ public class MessageUtilTest {
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
             .contactPreferenceType(ContactPreferenceType.EMAIL)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
@@ -133,7 +133,7 @@ public class MessageUtilTest {
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
             .contactPreferenceType(ContactPreferenceType.POST)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
@@ -156,7 +156,7 @@ public class MessageUtilTest {
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
             .contactPreferenceType(ContactPreferenceType.POST)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
@@ -182,7 +182,7 @@ public class MessageUtilTest {
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
             .contactPreferenceType(ContactPreferenceType.POST)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -216,7 +216,7 @@ public class MessageUtilTest {
     void shouldSuccessfullyGenerateWholeMessageWithEmail() {
         //Given
         final CicCase cicCase = CicCase.builder()
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -267,7 +267,7 @@ public class MessageUtilTest {
         final ContactParties contactParties = ContactParties.builder()
             .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .subjectContactParties(Set.of(SubjectCIC.SUBJECT))
-            .respondant(Set.of(RespondentCIC.RESPONDENT))
+            .respondent(Set.of(RespondentCIC.RESPONDENT))
             .build();
         //When
         String result = MessageUtil.generateSimpleMessage(contactParties);

@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -16,7 +17,9 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationHelperTest {
@@ -121,5 +124,19 @@ public class NotificationHelperTest {
         //Then
         Assertions.assertThat(templateVars.size()).isEqualTo(10);
         Assertions.assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL)).isEqualTo(true);
+    }
+
+    @Test
+    void shouldGetRespondentCommonVars() {
+        // Given
+        CicCase cicCase = CicCase.builder()
+                .respondentName("respondent name")
+                    .build();
+
+        // When
+        Map<String, Object> commonVars = notificationHelper.getRespondentCommonVars("case number", cicCase);
+
+        // Then
+        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("respondent name");
     }
 }
