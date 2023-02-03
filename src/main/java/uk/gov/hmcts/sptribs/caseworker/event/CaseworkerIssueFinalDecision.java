@@ -97,11 +97,13 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         pageBuilder.page(pageNameUpload)
             .pageLabel("Upload decision notice")
             .pageShowConditions(map)
-            .label("LabelDoc",
-                "\nUpload a copy of the decision notice that you want to add to this case.\n"
-                    + "\n<h3>The decision notice should be:</h3>\n"
-                    + "\n- a maximum of 100MB in size (larger files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")
+            .label("LabelDoc", """
+                Upload a copy of the decision notice that you want to add to this case.
+                  *  <h3>The decision notice should be:</h3>
+                  *  a maximum of 100MB in size (larger files must be split)
+                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf
+                """
+            )
             .complex(CaseData::getCaseIssueFinalDecision)
             .mandatoryWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
             .done();
@@ -110,10 +112,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private void issueFinalDecisionAddDocumentFooter(PageBuilder pageBuilder) {
         pageBuilder.page("addDocumentFooter")
             .pageLabel("Document footer")
-            .label("LabelDocFooter",
-                "\nDecision Notice Signature\n"
-                    + "\nConfirm the Role and Surname of the person who made this decision - this will be added"
-                    + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'")
+            .label("LabelDocFooter", """
+                Decision Notice Signature
+                  *  Confirm the Role and Surname of the person who made this decision - this will be added
+                  *  to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
+                """
+            )
             .mandatory(CaseData::getFinalDecisionSignature)
             .done();
     }
@@ -161,7 +165,6 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private Document getFinalDecisionGuidanceDocument(CaseData caseData, Long caseId) {
         final String filename = FINAL_DECISION_ANNEX_FILE + LocalDateTime.now().format(formatter);
 
-        // TODO: Replace the template Id and templateVars to Annex template once it works
         return caseDataDocumentService.renderDocument(
             finalDecisionTemplateContent.apply(caseData, caseId),
             caseId,

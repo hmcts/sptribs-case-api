@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -21,6 +22,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
 import java.util.Set;
 
@@ -39,6 +43,15 @@ class CaseworkerIssueFinalDecisionTest {
 
     @InjectMocks
     private CaseworkerIssueFinalDecision issueFinalDecision;
+
+    @Mock
+    private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+
+    @Mock
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Mock
+    private FinalDecisionTemplateContent finalDecisionTemplateContent;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

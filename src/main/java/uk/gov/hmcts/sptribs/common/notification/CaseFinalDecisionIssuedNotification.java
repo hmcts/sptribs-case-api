@@ -11,7 +11,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil;
 import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -58,7 +57,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             try {
                 addDecisionsIssuedFileContents(caseData, templateVarsSubject);
             } catch (IOException e) {
-                log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
+                log.info("Unable to download Final Decision documents for Subject: {}", e.getMessage());
             }
 
             notificationResponse = sendEmailNotification(templateVarsSubject,
@@ -83,7 +82,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             try {
                 addDecisionsIssuedFileContents(caseData, templateVarsRepresentative);
             } catch (IOException e) {
-                log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
+                log.info("Unable to download Final Decision documents for Representative: {}", e.getMessage());
             }
 
             notificationResponse = sendEmailNotification(templateVarsRepresentative,
@@ -105,7 +104,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         try {
             addDecisionsIssuedFileContents(caseData, templateVarsRespondent);
         } catch (IOException e) {
-            log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
+            log.info("Unable to download Final Decision documents for Respondent: {}", e.getMessage());
         }
 
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
@@ -116,23 +115,13 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
                                                        TemplateName emailTemplateName) {
-        NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(toEmail)
-            .hasEmailAttachment(true)
-            .template(emailTemplateName)
-            .templateVars(templateVars)
-            .build();
-
+        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail, templateVars, emailTemplateName);
         notificationService.setNotificationRequest(request);
         return notificationService.sendEmail();
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName emailTemplateName) {
-        NotificationRequest letterRequest = NotificationRequest.builder()
-            .template(emailTemplateName)
-            .templateVars(templateVarsLetter)
-            .build();
-
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName letterTemplateName) {
+        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter, letterTemplateName);
         notificationService.setNotificationRequest(letterRequest);
         return notificationService.sendLetter();
     }
@@ -145,7 +134,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
         List<String> uploadedDocumentsUrls = new ArrayList<>();
 
-        String finalDecisionNotice = getFinalDecisionNoticeDocument(caseIssueFinalDecision, uploadedDocumentsUrls);
+        String finalDecisionNotice = getFinalDecisionNoticeDocument(caseIssueFinalDecision);
         uploadedDocumentsUrls.add(finalDecisionNotice);
 
         String finalDecisionGuidance = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionGuidance().getUrl(), "/");
@@ -168,10 +157,10 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
     }
 
-    private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision, List<String> uploadedDocumentsUrls) {
+    private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision) {
         String finalDecisionNotice;
         if (null != caseIssueFinalDecision.getDocuments() && !caseIssueFinalDecision.getDocuments().isEmpty()) {
-            List<String> uploadedDecisionNoticeDocs = uploadedDocumentsUrls = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
+            List<String> uploadedDecisionNoticeDocs = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
             finalDecisionNotice = uploadedDecisionNoticeDocs.get(0);
