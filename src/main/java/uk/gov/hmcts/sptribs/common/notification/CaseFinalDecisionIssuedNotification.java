@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANCE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 
 @Component
@@ -138,24 +137,20 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     }
 
     private void addDecisionsIssuedFileContents(CaseData caseData, Map<String, Object> templateVars) throws IOException {
-        int count = 0;
-
         final String authorisation = httpServletRequest.getHeader(AUTHORIZATION);
         String serviceAuthorization = authTokenGenerator.generate();
 
         CaseIssueFinalDecision caseIssueFinalDecision = caseData.getCaseIssueFinalDecision();
 
         List<String> uploadedDocumentsUrls = new ArrayList<>();
-        if (!caseIssueFinalDecision.getDocuments().isEmpty()) {
-            uploadedDocumentsUrls = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
-                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
-                .toList();
-        } else {
-            uploadedDocumentsUrls.add(caseIssueFinalDecision.getFinalDecisionDraft().getUrl());
-        }
+
+        String finalDecisionNotice = getFinalDecisionNoticeDocument(caseIssueFinalDecision, uploadedDocumentsUrls);
+        uploadedDocumentsUrls.add(finalDecisionNotice);
+
+        String finalDecisionGuidance = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionGuidance().getUrl(), "/");
+        uploadedDocumentsUrls.add(finalDecisionGuidance);
 
         for (String item : uploadedDocumentsUrls) {
-            count++;
 
             Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
                 serviceAuthorization,
@@ -164,12 +159,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             if (uploadedDocument != null) {
                 log.info("Document found with uuid : {}", UUID.fromString(item));
                 byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                if(count == 1) {
                     templateVars.put(FINAL_DECISION_NOTICE, notificationService.getJsonFileAttachment(uploadedDocumentContents));
-                } else {
-                    templateVars.put(FINAL_DECISION_GUIDANCE, notificationService.getJsonFileAttachment(uploadedDocumentContents));
-                }
-
             } else {
                 log.info("Document not found with uuid : {}", UUID.fromString(item));
             }
@@ -177,17 +167,19 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
     }
 
-    /*private void addFileAttachments(Map<String, Object> templateVars, byte[] finalDecisionNoticeFileContent, byte[] finalDecisionGuidanceFileContent) {
+    private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision, List<String> uploadedDocumentsUrls) {
+        String finalDecisionNotice;
+        if (!caseIssueFinalDecision.getDocuments().isEmpty()) {
+            List<String> uploadedDecisionNoticeDocs = uploadedDocumentsUrls = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
+                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
+                .toList();
+            finalDecisionNotice = uploadedDecisionNoticeDocs.get(0);
 
-            JSONObject jsonObjectFinalDecisionNotice = notificationService.prepareUpload(finalDecisionNoticeFileContent);
+        } else {
+            finalDecisionNotice = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionDraft().getUrl(), "/");
+        }
 
-            JSONObject jsonObjectFinalDecisionGuidance = notificationService.prepareUpload(finalDecisionGuidanceFileContent);
-            if(nonNull(jsonObjectFinalDecisionNotice)) {
-                templateVars.put("FinalDecisionNotice", jsonObjectFinalDecisionNotice);
-            }
-            if(nonNull(jsonObjectFinalDecisionGuidance)) {
-                templateVars.put("FinalDecisionGuidance", jsonObjectFinalDecisionGuidance);
-            }
-    }*/
+        return finalDecisionNotice;
+    }
 
 }

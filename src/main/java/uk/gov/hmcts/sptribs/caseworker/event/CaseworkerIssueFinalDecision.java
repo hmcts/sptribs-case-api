@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTemplate;
@@ -16,12 +17,17 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTempla
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,11 +39,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_FILE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
 
 @Component
 @Slf4j
 public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
 
     @Autowired
@@ -49,6 +58,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     @Autowired
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+
+    @Autowired
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Autowired
+    private FinalDecisionTemplateContent finalDecisionTemplateContent;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -88,7 +103,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                     + "\n- a maximum of 100MB in size (larger files must be split)\n"
                     + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")
             .complex(CaseData::getCaseIssueFinalDecision)
-            .optionalWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
+            .mandatoryWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
             .done();
     }
 
@@ -119,6 +134,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         var cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
+        Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(data, details.getId());
+        data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
+
         final StringBuilder messageLine2 = new StringBuilder(100);
         messageLine2.append(" A notification will be sent  to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
@@ -138,5 +156,19 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
             .build();
+    }
+
+    private Document getFinalDecisionGuidanceDocument(CaseData caseData, Long caseId) {
+        final String filename = FINAL_DECISION_ANNEX_FILE + LocalDateTime.now().format(formatter);
+
+        // TODO: Replace the template Id and templateVars to Annex template once it works
+        return caseDataDocumentService.renderDocument(
+            finalDecisionTemplateContent.apply(caseData, caseId),
+            caseId,
+            FINAL_DECISION_ANNEX_TEMPLATE_ID,
+            LanguagePreference.ENGLISH,
+            filename
+        );
+
     }
 }
