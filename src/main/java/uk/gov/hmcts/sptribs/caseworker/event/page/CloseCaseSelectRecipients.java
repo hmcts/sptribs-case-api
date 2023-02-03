@@ -25,7 +25,7 @@ public class CloseCaseSelectRecipients implements CcdPageConfiguration {
             "Who should be notified of the decision to close this case?",
             "Close case",
             ALWAYS_HIDE
-            );
+        );
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,

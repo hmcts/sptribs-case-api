@@ -6,7 +6,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-public class SelectRecipientsHelper {
+public final class SelectRecipientsHelper {
+
+    private SelectRecipientsHelper() {
+    }
 
     public static void addTo(PageBuilder pageBuilder,
                              String pageId,
