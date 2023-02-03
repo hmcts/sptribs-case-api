@@ -107,7 +107,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case closed")
+            .confirmationHeader("# Case closed %n## Use reinstate case if this case needs to be reopened in the future.")
             .build();
     }
 
