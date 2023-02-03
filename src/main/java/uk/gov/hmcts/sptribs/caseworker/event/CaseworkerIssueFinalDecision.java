@@ -53,7 +53,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
 
-    private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate = new IssueFinalDecisionSelectTemplate();
+    private static final IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate = new IssueFinalDecisionSelectTemplate();
 
     private static final CcdPageConfiguration issueFinalDecisionPreviewTemplate = new IssueFinalDecisionPreviewTemplate();
 

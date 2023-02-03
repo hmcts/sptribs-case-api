@@ -300,7 +300,8 @@ public class CicCase {
     private String respondantEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
-        label = "Subject's full name"
+        label = "Subject's full name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fullName;
 

@@ -35,7 +35,7 @@ public class FinalDecisionTemplateContent {
         templateContent.put(DATED, LocalDate.now().format(FILE_NAME_DATE_FORMATTER));
         templateContent.put(CIC_CASE_SCHEME, caseData.getCicCase().getSchemeCic().getLabel());
         templateContent.put(CASE_NUMBER, ccdCaseReference);
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getFullName());
+        templateContent.put(SUBJECT_FULL_NAME, caseData.getHearingSummary().getSubjectName());
         templateContent.put(HEARING_TYPE, caseData.getHearingSummary().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getHearingSummary().getPanelMemberList()));
         templateContent.put(DECISION_SIGNATURE, caseData.getFinalDecisionSignature());
