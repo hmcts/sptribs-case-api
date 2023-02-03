@@ -40,7 +40,7 @@ public class EventUtilTest {
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
