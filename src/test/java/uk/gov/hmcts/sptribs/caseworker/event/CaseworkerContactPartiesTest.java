@@ -60,12 +60,12 @@ class CaseworkerContactPartiesTest {
         final CaseData caseData = caseData();
         caseData.getContactParties().setSubjectContactParties(Set.of(SubjectCIC.SUBJECT));
         caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        caseData.getContactParties().setRespondant(Set.of(RespondentCIC.RESPONDENT));
+        caseData.getContactParties().setRespondent(Set.of(RespondentCIC.RESPONDENT));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
         ContactParties contactParties = ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT))
-            .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE)).respondant(Set.of(RespondentCIC.RESPONDENT)).build();
+            .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE)).respondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setContactParties(contactParties);
 
         updatedCaseDetails.setData(caseData);
@@ -77,7 +77,7 @@ class CaseworkerContactPartiesTest {
             caseWorkerContactParties.abutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getRespondant()).hasSize(1);
+        assertThat(caseData.getContactParties().getRespondent()).hasSize(1);
         assertThat(response).isNotNull();
 
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
@@ -114,7 +114,7 @@ class CaseworkerContactPartiesTest {
         Set<RespondentCIC> res = new HashSet<>();
 
         ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
-            .representativeContactParties(rep).respondant(res).build();
+            .representativeContactParties(rep).respondent(res).build();
         caseData.setContactParties(contactParties);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -129,7 +129,7 @@ class CaseworkerContactPartiesTest {
 
         assertThat(caseData.getContactParties().getSubjectContactParties()).isEmpty();
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).isEmpty();
-        assertThat(caseData.getContactParties().getRespondant()).isEmpty();
+        assertThat(caseData.getContactParties().getRespondent()).isEmpty();
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).hasSize(1);
 
@@ -137,7 +137,7 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Respondant");
+        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Respondent");
 
 
     }
@@ -155,7 +155,7 @@ class CaseworkerContactPartiesTest {
         res.add(RespondentCIC.RESPONDENT);
 
         ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
-            .representativeContactParties(rep).respondant(res).build();
+            .representativeContactParties(rep).respondent(res).build();
         caseData.setContactParties(contactParties);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -170,7 +170,7 @@ class CaseworkerContactPartiesTest {
 
         assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getRespondant()).hasSize(1);
+        assertThat(caseData.getContactParties().getRespondent()).hasSize(1);
         assertThat(response).isNotNull();
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
         assertThat(contactPartiesResponse).isNotNull();
@@ -191,7 +191,7 @@ class CaseworkerContactPartiesTest {
         res.add(RespondentCIC.RESPONDENT);
 
         ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
-            .representativeContactParties(rep).respondant(res).build();
+            .representativeContactParties(rep).respondent(res).build();
         caseData.setContactParties(contactParties);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -204,7 +204,7 @@ class CaseworkerContactPartiesTest {
             caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
         assertThat(caseData.getContactParties().getSubjectContactParties()).isEmpty();
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getRespondant()).hasSize(1);
+        assertThat(caseData.getContactParties().getRespondent()).hasSize(1);
         assertThat(response).isNotNull();
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
         assertThat(contactPartiesResponse).isNotNull();

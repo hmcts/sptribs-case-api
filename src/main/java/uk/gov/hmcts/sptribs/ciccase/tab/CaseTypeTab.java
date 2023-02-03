@@ -124,10 +124,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseIsRepresentativeQualified")
             .field("cicCaseRepresentativeContactDetailsPreference")
             .field("cicCaseRepresentativeAddress")
-            .label("Respondant's details", null, "### Respondant's details")
-            .field("cicCaseRespondantName")
-            .field("cicCaseRespondantOrganisation")
-            .field("cicCaseRespondantEmail");
+            .label("Respondent's details", null, "### Respondent's details")
+            .field("cicCaseRespondentName")
+            .field("cicCaseRespondentOrganisation")
+            .field("cicCaseRespondentEmail");
 
 
     }
