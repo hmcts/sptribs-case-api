@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.validation.ValidationUtil;
 import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -169,7 +170,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
     private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision, List<String> uploadedDocumentsUrls) {
         String finalDecisionNotice;
-        if (!caseIssueFinalDecision.getDocuments().isEmpty()) {
+        if (null != caseIssueFinalDecision.getDocuments() && !caseIssueFinalDecision.getDocuments().isEmpty()) {
             List<String> uploadedDecisionNoticeDocs = uploadedDocumentsUrls = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
