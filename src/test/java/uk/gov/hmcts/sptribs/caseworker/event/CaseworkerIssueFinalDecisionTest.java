@@ -80,7 +80,6 @@ class CaseworkerIssueFinalDecisionTest {
         assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getLabel()).isEqualTo("Quantum");
     }
 
-
     @Test
     void shouldShowCorrectMessageWhenSubmitted() {
         //Given

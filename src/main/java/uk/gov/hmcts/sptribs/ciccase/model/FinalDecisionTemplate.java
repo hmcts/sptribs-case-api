@@ -18,8 +18,8 @@ public enum FinalDecisionTemplate implements HasLabel {
     @JsonProperty("Rule 27")
     RULE_27("Rule 27", "ST-CIC-DEC-ENG-CIC3_Rule_27"),
 
-    @JsonProperty("Blank Decision Notice 1 ")
-    BLANK_DECISION_NOTICE_1("Blank Decision Notice 1 ", "ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice"),
+    @JsonProperty("Blank Decision Notice")
+    BLANK_DECISION_NOTICE("Blank Decision Notice", "ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice"),
 
     @JsonProperty("Strike Out Decision Notice")
     STRIKE_OUT_DECISION_NOTICE("Strike Out Decision Notice", "ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice");
