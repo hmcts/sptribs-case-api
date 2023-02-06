@@ -14,9 +14,10 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("previewOrder")
+            .page("previewOrdersDocuments")
             .pageLabel("Preview order")
-            .label("previewDraft", " Order preview")
+            .label("showDraftOrderPreview",
+                "<h3>Order preview:</h3>")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getOrderTemplateIssued)
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"
@@ -25,6 +26,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
 
 
     }
+
 
 
 
