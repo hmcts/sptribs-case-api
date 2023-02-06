@@ -38,7 +38,7 @@ public enum OrderTemplate implements HasLabel {
     CIC11_STRIKE_OUT_DECISION_NOTICE("CIC11_Strike_Out_Decision_Notice"),
 
     @JsonProperty("CIC12_Decision_Annex")
-    CIC12_DECISION_ANNEX("CIC12_Decision_Annex"),
+    CIC12_DECISION_ANNEX("ST-CIC-DEC-ENG-CIC12_Decision_Annex"),
 
     @JsonProperty("CIC13_Pro_Forma_Summons")
     CIC13_PRO_FORMA_SUMMONS("CIC13_Pro_Forma_Summons");

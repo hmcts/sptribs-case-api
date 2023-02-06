@@ -559,6 +559,11 @@ public class CicCase {
     )
     private NotificationResponse resHearingNotificationResponse;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse repLetterNotificationResponse;
+
     @JsonIgnore
     public String getSelectedHearingToCancel() {
         return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;

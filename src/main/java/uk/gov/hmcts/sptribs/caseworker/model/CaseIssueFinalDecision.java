@@ -46,6 +46,12 @@ public class CaseIssueFinalDecision {
     private Document finalDecisionDraft;
 
     @CCD(
+        label = "Final decision notice preview",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document finalDecisionGuidance;
+
+    @CCD(
         label = "Decision notice documents",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
