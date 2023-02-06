@@ -8,23 +8,24 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 @AllArgsConstructor
 public enum FinalDecisionTemplate implements HasLabel {
+
     @JsonProperty("Eligibility")
-    ELIGIBILITY("Eligibility", "CIC6_General_Directions"),
+    ELIGIBILITY("Eligibility", "ST-CIC-DEC-ENG-CIC1_Eligibility"),
 
     @JsonProperty("Quantum")
-    QUANTUM("Quantum", "SPT_CIC2_Quantum.docx"),
+    QUANTUM("Quantum", "ST-CIC-DEC-ENG-CIC2_Quantum"),
 
     @JsonProperty("Rule 27")
-    RULE_27("Rule 27", "SPT_CIC3_Rule 27.docx"),
+    RULE_27("Rule 27", "ST-CIC-DEC-ENG-CIC3_Rule_27"),
 
     @JsonProperty("Blank Decision Notice 1 ")
-    BLANK_DECISION_NOTICE_1("Blank Decision Notice 1 ", "SPT_CIC4_Blank_Decision_Notice.docx"),
+    BLANK_DECISION_NOTICE_1("Blank Decision Notice 1 ", "ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice"),
 
     @JsonProperty("Strike Out Decision Notice")
-    STRIKE_OUT_DECISION_NOTICE("Strike Out Decision Notice", "SPT_CIC11_Strike_Out_Decision_Notice.docx"),
+    STRIKE_OUT_DECISION_NOTICE("Strike Out Decision Notice", "ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice"),
 
     @JsonProperty("Decision Annex")
-    DECISION_ANNEX("Decision Annex", "SPT_CIC12_Decision_Annex.docx");
+    DECISION_ANNEX("Decision Annex", "ST-CIC-DEC-ENG-CIC12_Decision_Annex");
 
     private final String label;
     private final String id;

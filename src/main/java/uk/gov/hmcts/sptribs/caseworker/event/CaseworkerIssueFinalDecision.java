@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTemplate;
@@ -15,11 +16,16 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTempla
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,15 +37,23 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FILE;
 
 @Component
 @Slf4j
 public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
-    private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Autowired
+    private FinalDecisionTemplateContent finalDecisionTemplateContent;
+
+    private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
+
+    private static final IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate = new IssueFinalDecisionSelectTemplate();
 
     private static final CcdPageConfiguration issueFinalDecisionPreviewTemplate = new IssueFinalDecisionPreviewTemplate();
 
@@ -88,16 +102,46 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     }
 
     private void issueFinalDecisionAddDocumentFooter(PageBuilder pageBuilder) {
-        pageBuilder.page("addDocumentFooter")
+        pageBuilder.page("addDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
             .label("LabelDocFooter",
-                "\nDecision Notice Signature\n"
-                    + "\nConfirm the Role and Surname of the person who made this decision - this will be added"
-                    + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'")
+                """
+                    Decision Notice Signature
+
+                    Confirm the Role and Surname of the person who made this decision - this will be added
+                     to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
+                    """)
             .mandatory(CaseData::getFinalDecisionSignature)
             .done();
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
+        CaseDetails<CaseData, State> details,
+        CaseDetails<CaseData, State> detailsBefore
+    ) {
+
+        CaseData caseData = details.getData();
+        var finalDecision = caseData.getCaseIssueFinalDecision();
+
+        final Long caseId = details.getId();
+
+        final String filename = FINAL_DECISION_FILE + LocalDateTime.now().format(formatter);
+
+        Document generalOrderDocument = caseDataDocumentService.renderDocument(
+            finalDecisionTemplateContent.apply(caseData, caseId),
+            caseId,
+            finalDecision.getFinalDecisionTemplate().getId(),
+            LanguagePreference.ENGLISH,
+            filename
+        );
+
+        finalDecision.setFinalDecisionDraft(generalOrderDocument);
+        caseData.setCaseIssueFinalDecision(finalDecision);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {

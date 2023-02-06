@@ -69,4 +69,9 @@ public class HearingSummary {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<PanelMember>> panelMemberList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String subjectName;
 }
