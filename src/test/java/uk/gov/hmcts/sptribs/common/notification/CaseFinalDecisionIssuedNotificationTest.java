@@ -12,11 +12,8 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
-import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -124,7 +121,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().finalDecisionDraft(document).finalDecisionGuidance(document).build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionDraft(document)
+            .finalDecisionGuidance(document)
+            .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
@@ -156,7 +156,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().finalDecisionDraft(document).finalDecisionGuidance(document).build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionDraft(document)
+            .finalDecisionGuidance(document)
+            .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         //When
@@ -208,7 +211,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().finalDecisionDraft(document).finalDecisionGuidance(document).build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionDraft(document)
+            .finalDecisionGuidance(document)
+            .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
@@ -241,7 +247,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().finalDecisionDraft(document).finalDecisionGuidance(document).build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionDraft(document)
+            .finalDecisionGuidance(document)
+            .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
@@ -274,7 +283,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().finalDecisionDraft(document).finalDecisionGuidance(document).build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionDraft(document)
+            .finalDecisionGuidance(document)
+            .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
@@ -309,7 +321,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().finalDecisionDraft(document).finalDecisionGuidance(document).build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionDraft(document)
+            .finalDecisionGuidance(document)
+            .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         //When

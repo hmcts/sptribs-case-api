@@ -18,12 +18,12 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
@@ -149,7 +149,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             if (uploadedDocument != null) {
                 log.info("Document found with uuid : {}", UUID.fromString(item));
                 byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(FINAL_DECISION_NOTICE, notificationService.getJsonFileAttachment(uploadedDocumentContents));
+                templateVars.put(FINAL_DECISION_NOTICE, notificationService.getJsonFileAttachment(uploadedDocumentContents));
             } else {
                 log.info("Document not found with uuid : {}", UUID.fromString(item));
             }
