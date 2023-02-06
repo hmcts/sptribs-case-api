@@ -33,6 +33,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.INDEX;
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
 
+    private static final int DOC_ATTACH_LIMIT = 5;
+
     @Autowired
     private HttpServletRequest httpServletRequest;
 
@@ -151,11 +153,15 @@ public class DecisionIssuedNotification implements PartiesNotification {
                     templateVars.put(DECISION_NOTICE + count, notificationService.getJsonFileAttachment(uploadedDocumentContents));
                 } else {
                     log.info("Document not found with uuid : {}", UUID.fromString(item));
+                    templateVars.put(DOC_AVAILABLE + count, "no");
                 }
             }
 
+            if (count < DOC_ATTACH_LIMIT) {
+                count++;
+                templateVars.put(DOC_AVAILABLE + count, "no");
+            }
         }
     }
-
 
 }
