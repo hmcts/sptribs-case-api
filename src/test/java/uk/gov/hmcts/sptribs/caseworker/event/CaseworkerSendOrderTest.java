@@ -101,7 +101,7 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
@@ -152,7 +152,7 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
@@ -204,7 +204,7 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
@@ -255,7 +255,7 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");

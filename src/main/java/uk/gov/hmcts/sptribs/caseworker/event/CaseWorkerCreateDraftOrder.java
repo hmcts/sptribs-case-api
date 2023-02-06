@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
-import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -34,16 +33,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-  //  private static final CcdPageConfiguration mainContents = new DraftOrderMainContentPage();
+
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     @Autowired
     private OrderService orderService;
     @Autowired
-    private PreviewDraftOrder previewOrder;
-
-    @Autowired
     private DraftOrderMainContentPage draftOrderMainContentPage;
-
+    @Autowired
+    private PreviewDraftOrder previewOrder;
 
 
     @Override

@@ -13,25 +13,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
-import uk.gov.hmcts.sptribs.document.DocAssemblyService;
-import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateProvider;
-import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
-import uk.gov.hmcts.sptribs.document.model.DocAssemblyResponse;
-import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CASE_NUMBER;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CIC_CASE_SCHEME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DATED;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.REPRESENTATIVE_FULL_NAME;
-import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
 
 @Slf4j
 @Component
@@ -42,7 +27,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
     private CaseDataDocumentService caseDataDocumentService;
 
     @Autowired
-    private FinalDecisionTemplateContent finalDecisionTemplateContent;
+    private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
 
     @Override
@@ -64,6 +49,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
                 + "<hr>\n")
             .done();
     }
+
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
         CaseDetails<CaseData, State> details,
         CaseDetails<CaseData, State> detailsBefore
@@ -71,27 +57,21 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
 
 
         CaseData caseData = details.getData();
-
-        var finalOrderIssu = caseData.getDraftOrderMainContentCIC();
-
         var template = caseData.getCicCase().getAnOrderTemplates();
-
+        String subjectName = caseData.getCicCase().getFullName();
         final Long caseId = details.getId();
-
-        final String filename= "Order" + LocalDateTime.now().format(formatter);
-
+        final String filename = "Order-[" +  subjectName + "]-" + LocalDateTime.now().format(formatter);
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
-            finalDecisionTemplateContent.apply(caseData, caseId),
+            previewDraftOrderTemplateContent.apply(caseData, caseId),
             caseId,
             caseData.getCicCase().getAnOrderTemplates().getId(),
             LanguagePreference.ENGLISH,
             filename
         );
 
-
         caseData.getCicCase().setAnOrderTemplates(template);
-        finalOrderIssu.setOrderTemplateIssued(generalOrderDocument);
+        caseData.getCicCase().setOrderTemplateIssued(generalOrderDocument);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
