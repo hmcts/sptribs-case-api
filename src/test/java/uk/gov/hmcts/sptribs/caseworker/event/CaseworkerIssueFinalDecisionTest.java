@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
