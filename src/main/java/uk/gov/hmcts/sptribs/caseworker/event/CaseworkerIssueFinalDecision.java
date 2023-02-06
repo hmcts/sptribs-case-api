@@ -170,7 +170,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(data, details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
 
-        final StringBuilder messageLine2 = new StringBuilder(100);
+        final StringBuilder messageLine2 = new StringBuilder();
         messageLine2.append(" A notification will be sent  to: ");
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             messageLine2.append("Subject, ");
