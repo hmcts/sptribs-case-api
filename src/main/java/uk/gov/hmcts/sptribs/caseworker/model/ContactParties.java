@@ -36,7 +36,7 @@ public class ContactParties {
         typeParameterOverride = "RespondentCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<RespondentCIC> respondant;
+    private Set<RespondentCIC> respondent;
 
     @CCD(
         typeOverride = MultiSelectList,

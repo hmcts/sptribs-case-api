@@ -192,8 +192,8 @@ public class DecisionIssuedNotificationTest {
     void shouldNotifyRespondentWithEmail() throws IOException {
         //Given
         final CaseData data = getMockCaseData();
-        data.getCicCase().setRespondantName("respondentName");
-        data.getCicCase().setRespondantEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentName("respondentName");
+        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
@@ -225,8 +225,8 @@ public class DecisionIssuedNotificationTest {
     void shouldNotifyRespondentWithEmailWithException() throws IOException {
         //Given
         final CaseData data = getMockCaseData();
-        data.getCicCase().setRespondantName("respondentName");
-        data.getCicCase().setRespondantEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentName("respondentName");
+        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())

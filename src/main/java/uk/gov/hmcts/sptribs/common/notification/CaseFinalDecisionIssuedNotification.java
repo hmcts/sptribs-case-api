@@ -108,7 +108,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         }
 
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
-            caseData.getCicCase().getRespondantEmail(), TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            caseData.getCicCase().getRespondentEmail(), TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 

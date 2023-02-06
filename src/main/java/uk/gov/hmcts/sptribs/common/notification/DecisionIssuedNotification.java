@@ -103,7 +103,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
             log.info("Unable to download Decision Notice document for Respondent: {}", e.getMessage());
         }
 
-        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), templateVars);
+        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
@@ -146,7 +146,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 if (uploadedDocument != null) {
                     log.info("Document found with uuid : {}", UUID.fromString(item));
                     byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(DOC_AVAILABLE + count, true);
+                    templateVars.put(DOC_AVAILABLE + count, "yes");
                     templateVars.put(INDEX + count, count);
                     templateVars.put(DECISION_NOTICE + count, notificationService.getJsonFileAttachment(uploadedDocumentContents));
                 } else {

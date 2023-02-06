@@ -143,7 +143,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Listing record created\"%n## %s",
+            .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
     }
