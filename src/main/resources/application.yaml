@@ -77,6 +77,10 @@ idam:
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
+  client:
+    id: 'divorce'
+    secret: ${OAUTH2_CLIENT_SECRET:dummy}
+    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
 
 location:
   api:
@@ -101,6 +105,12 @@ core_case_data:
 docmosis:
   templates:
     english:
+      ST-CIC-DEC-ENG-CIC1_Eligibility: ST-CIC-DEC-ENG-CIC1_Eligibility.docx
+      ST-CIC-DEC-ENG-CIC2_Quantum: ST-CIC-DEC-ENG-CIC2_Quantum.docx
+      ST-CIC-DEC-ENG-CIC3_Rule_27: ST-CIC-DEC-ENG-CIC3_Rule_27.docx
+      ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice: ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice.docx
+      ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice: ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice.docx
+      ST-CIC-DEC-ENG-CIC12_Decision_Annex: T-CIC-DEC-ENG-CIC12_Decision_Annex.docx
       CIC6_General_Directions: ST-CIC-STD-ENG-CIC6_General_Directions.docx
     welsh:
       #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.

@@ -103,7 +103,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
             log.info("Unable to download Decision Notice document for Respondent: {}", e.getMessage());
         }
 
-        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), templateVars);
+        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
