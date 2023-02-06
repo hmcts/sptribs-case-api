@@ -33,6 +33,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.INDEX;
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
 
+    private static final int DOC_ATTACH_LIMIT = 5;
+
     @Autowired
     private HttpServletRequest httpServletRequest;
 
@@ -155,8 +157,11 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 }
             }
 
+            if (count < DOC_ATTACH_LIMIT) {
+                count++;
+                templateVars.put(DOC_AVAILABLE + count, "no");
+            }
         }
     }
-
 
 }
