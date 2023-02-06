@@ -43,13 +43,14 @@ public class FinalDecisionTemplateContent {
     }
 
     private String getMembers(List<ListValue<PanelMember>> memberList) {
-        StringBuilder members = new StringBuilder(100);
-        if (CollectionUtils.isEmpty(memberList)) {
-            return "";
+
+        if (!CollectionUtils.isEmpty(memberList)) {
+            StringBuilder members = new StringBuilder(100);
+            for (ListValue<PanelMember> panelMember : memberList) {
+                members.append(panelMember.getValue().getName().getValue().getLabel()).append(COMMA_SPACE);
+            }
+            return members.substring(0, members.length() - 2);
         }
-        for (ListValue<PanelMember> panelMember : memberList) {
-            members.append(panelMember.getValue().getName().getValue().getLabel()).append(COMMA_SPACE);
-        }
-        return members.substring(0, members.length() - 2);
+        return "";
     }
 }
