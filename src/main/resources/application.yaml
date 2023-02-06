@@ -114,7 +114,6 @@ docmosis:
       ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice: ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice.docx
       ST-CIC-DEC-ENG-CIC12_Decision_Annex: ST-CIC-DEC-ENG-CIC12_Decision_Annex.docx
       CIC6_General_Directions: ST-CIC-STD-ENG-CIC6_General_Directions.docx
-      CIC12_Decision_Annex: ST-CIC-DEC-ENG-CIC12_Decision_Annex.docx
     welsh:
       #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.
       DIVORCE_APPLICATION_SOLE: ${DIVORCE_APPLICATION_SOLE_WELSH_TEMPLATE_ID:NFD_CP_Application_Sole_V5.docx}
