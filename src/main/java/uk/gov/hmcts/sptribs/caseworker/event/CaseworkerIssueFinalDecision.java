@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
@@ -37,6 +39,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_FILE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FILE;
 
 @Component
@@ -45,12 +49,6 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Autowired
-    private CaseDataDocumentService caseDataDocumentService;
-
-    @Autowired
-    private FinalDecisionTemplateContent finalDecisionTemplateContent;
-
     private static final CcdPageConfiguration issueFinalDecisionNotice = new IssueFinalDecisionNotice();
 
     private static final IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate = new IssueFinalDecisionSelectTemplate();
@@ -58,6 +56,15 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration issueFinalDecisionPreviewTemplate = new IssueFinalDecisionPreviewTemplate();
 
     private static final CcdPageConfiguration issueFinalDecisionSelectRecipients = new IssueFinalDecisionSelectRecipients();
+
+    @Autowired
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Autowired
+    private FinalDecisionTemplateContent finalDecisionTemplateContent;
+
+    @Autowired
+    private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -91,13 +98,15 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         pageBuilder.page(pageNameUpload)
             .pageLabel("Upload decision notice")
             .pageShowConditions(map)
-            .label("LabelDoc",
-                "\nUpload a copy of the decision notice that you want to add to this case.\n"
-                    + "\n<h3>The decision notice should be:</h3>\n"
-                    + "\n- a maximum of 100MB in size (larger files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")
+            .label("LabelDoc", """
+                Upload a copy of the decision notice that you want to add to this case.
+                  *  <h3>The decision notice should be:</h3>
+                  *  a maximum of 100MB in size (larger files must be split)
+                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf
+                """
+            )
             .complex(CaseData::getCaseIssueFinalDecision)
-            .optionalWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
+            .mandatoryWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
             .done();
     }
 
@@ -154,10 +163,44 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var cicCase = details.getData().getCicCase();
+        var data = details.getData();
+        var cicCase = data.getCicCase();
+        String caseNumber = data.getHyphenatedCaseRef();
+
+        Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(data, details.getId());
+        data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
+
+        final StringBuilder messageLine2 = new StringBuilder(100);
+        messageLine2.append(" A notification will be sent  to: ");
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            messageLine2.append("Subject, ");
+            caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            messageLine2.append("Representative, ");
+            caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            messageLine2.append("Respondent, ");
+            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+        }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
             .build();
+    }
+
+    private Document getFinalDecisionGuidanceDocument(CaseData caseData, Long caseId) {
+        final String filename = FINAL_DECISION_ANNEX_FILE + LocalDateTime.now().format(formatter);
+
+        return caseDataDocumentService.renderDocument(
+            finalDecisionTemplateContent.apply(caseData, caseId),
+            caseId,
+            FINAL_DECISION_ANNEX_TEMPLATE_ID,
+            LanguagePreference.ENGLISH,
+            filename
+        );
+
     }
 }
