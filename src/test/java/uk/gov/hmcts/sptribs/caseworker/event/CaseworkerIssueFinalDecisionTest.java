@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
@@ -35,20 +36,21 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerIssueFinalDecisionTest {
+
     @Mock
     private CaseDataDocumentService caseDataDocumentService;
 
     @Mock
     private FinalDecisionTemplateContent finalDecisionTemplateContent;
 
-    @InjectMocks
-    private IssueFinalDecisionSelectTemplate selectTemplate;
-
     @Mock
-    IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
+    private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
 
     @InjectMocks
     private CaseworkerIssueFinalDecision issueFinalDecision;
+
+    @Mock
+    private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
