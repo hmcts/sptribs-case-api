@@ -107,7 +107,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
-        String message = MessageUtil.generateWholeMessage(details.getData().getCicCase(), "Case closed",
+        String message = MessageUtil.generateSimpleMessage(details.getData().getCicCase(), "Case closed",
             "Use 'Reinstate case' if this case needs to be reopened in the future.");
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
