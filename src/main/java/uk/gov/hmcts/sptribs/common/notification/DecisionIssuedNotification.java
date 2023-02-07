@@ -157,7 +157,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 }
             }
 
-            if (count < DOC_ATTACH_LIMIT) {
+            while (count < DOC_ATTACH_LIMIT) {
                 count++;
                 templateVars.put(DOC_AVAILABLE + count, "no");
             }
