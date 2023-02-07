@@ -62,7 +62,6 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                 .showSummary()
                 .aboutToSubmitCallback(this::abutToSubmit)
                 .submittedCallback(this::partiesContacted)
-                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         partiesToContact.addTo(pageBuilder);
