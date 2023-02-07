@@ -13,7 +13,6 @@ import static java.lang.String.format;
 public final class MessageUtil {
     private static final String REPRESENTATIVE = "Representative";
     private static final String RESPONDENT = "Respondent";
-    private static final String LABEL_RESPONDENT = "Respondent";
     private static final String SUBJECT = "Subject";
 
     private static final String COMMA_SPACE = ", ";
