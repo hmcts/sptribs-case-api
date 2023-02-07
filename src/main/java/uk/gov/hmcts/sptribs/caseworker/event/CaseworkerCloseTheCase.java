@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseStrikeOutDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWithdrawalDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -25,7 +26,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -107,8 +107,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
+        String message = MessageUtil.generateWholeMessage(details.getData().getCicCase(), "Case closed",
+            "Use 'Reinstate case' if this case needs to be reopened in the future.");
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case closed %n## Use 'Reinstate case' if this case needs to be reopened in the future."))
+            .confirmationHeader(message)
             .build();
     }
 
