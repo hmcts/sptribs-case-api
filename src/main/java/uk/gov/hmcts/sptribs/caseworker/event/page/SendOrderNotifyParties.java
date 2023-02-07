@@ -16,6 +16,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSu
 public class SendOrderNotifyParties implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "cicCaseOrderIssuingType=\"NEVER_SHOW\"";
+    private static final String RECIPIENT_LABEL = "Order information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -26,16 +27,13 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
             .label("caseWorkerSendOrderMessage", "Who should receive this Order?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                "Order information recipient - Subject")
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                "Order information recipient - Representative")
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ",
-                "Order information recipient - Respondent")
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 
