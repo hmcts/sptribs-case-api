@@ -32,9 +32,9 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ",
                 "Order information recipient - Representative")
-            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondantName!=\"\" ",
+                "cicCaseRespondentName!=\"\" ",
                 "Order information recipient - Respondent")
             .done();
     }

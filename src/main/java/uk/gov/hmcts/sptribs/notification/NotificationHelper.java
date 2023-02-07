@@ -61,7 +61,7 @@ public class NotificationHelper {
 
     public Map<String, Object> getRespondentCommonVars(String caseNumber, CicCase cicCase) {
         Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
-        templateVars.put(CONTACT_NAME, cicCase.getRespondantName());
+        templateVars.put(CONTACT_NAME, cicCase.getRespondentName());
         return templateVars;
     }
 

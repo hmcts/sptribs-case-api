@@ -285,25 +285,25 @@ public class CicCase {
 
 
     @CCD(
-        label = "Respondant name ",
+        label = "Respondent name ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @Builder.Default
-    private String respondantName = "Appeals team";
+    private String respondentName = "Appeals team";
 
     @CCD(
-        label = "Respondant organisation ",
+        label = "Respondent organisation ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @Builder.Default
-    private String respondantOrganisation = "CICA";
+    private String respondentOrganisation = "CICA";
 
     @CCD(
-        label = "Respondant email  ",
+        label = "Respondent email  ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @Builder.Default
-    private String respondantEmail = "appeals.team@cica.gov.uk";
+    private String respondentEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
         label = "Subject's full name",
@@ -564,6 +564,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse resHearingNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse repLetterNotificationResponse;
 
     @JsonIgnore
     public String getSelectedHearingToCancel() {

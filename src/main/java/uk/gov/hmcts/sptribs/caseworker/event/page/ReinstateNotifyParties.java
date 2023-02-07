@@ -33,9 +33,9 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ",
                 "Reinstate information recipient - Representative")
-            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondantName!=\"\" ",
+                "cicCaseRespondentName!=\"\" ",
                 "Reinstate information recipient - Respondent")
             .done();
     }

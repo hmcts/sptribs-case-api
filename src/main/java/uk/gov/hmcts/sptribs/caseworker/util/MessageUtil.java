@@ -18,7 +18,7 @@ import static java.lang.String.format;
 public final class MessageUtil {
     private static final String REPRESENTATIVE = "Representative";
     private static final String RESPONDENT = "Respondent";
-    private static final String LABEL_RESPONDENT = "Respondant";
+    private static final String LABEL_RESPONDENT = "Respondent";
     private static final String SUBJECT = "Subject";
 
     private static final String COMMA_SPACE = ", ";
@@ -164,7 +164,7 @@ public final class MessageUtil {
         if (!CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
             message.append(SUBJECT + COMMA_SPACE);
         }
-        if (!CollectionUtils.isEmpty(contactParties.getRespondant())) {
+        if (!CollectionUtils.isEmpty(contactParties.getRespondent())) {
             message.append(RESPONDENT + COMMA_SPACE);
         }
         if (!CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())) {
