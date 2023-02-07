@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateHearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
@@ -60,7 +59,6 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createHearingSummary.addTo(pageBuilder);
@@ -110,11 +108,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.getHearingSummary().setHearingType(caseData.getRecordListing().getHearingType());
         caseData.getHearingSummary().setSubjectName(caseData.getCicCase().getFullName());
         caseData.setCurrentEvent("");
-        if (null != caseData.getRecordListing()
-            && null != caseData.getRecordListing().getNumberOfDays()
-            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getRecordListing().setAdditionalHearingDate(null);
-        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
