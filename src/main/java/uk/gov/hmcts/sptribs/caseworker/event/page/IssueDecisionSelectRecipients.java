@@ -16,6 +16,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSu
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "caseIssueDecisionDecisionNotice = \"ALWAYS_HIDE\"";
+    private static final String RECIPIENT_LABEL = "Decision information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -25,16 +26,13 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                "Decision information recipient - Subject")
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                "Decision information recipient - Representative")
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ",
-                "Decision information recipient - Respondent")
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 

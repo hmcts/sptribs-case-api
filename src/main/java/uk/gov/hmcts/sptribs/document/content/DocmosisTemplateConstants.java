@@ -9,6 +9,7 @@ public final class DocmosisTemplateConstants {
     public static final String HEARING_TYPE = "venueOrHearingType";
     public static final String TRIBUNAL_MEMBERS = "tribunalMembers";
     public static final String DECISION_SIGNATURE = "decisionSignature";
+    public static final String REPRESENTATIVE_FULL_NAME = "representativeFullName";
 
     private DocmosisTemplateConstants() {
     }

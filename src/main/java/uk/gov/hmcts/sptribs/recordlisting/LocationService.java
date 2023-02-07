@@ -121,7 +121,6 @@ public class LocationService {
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("venue").code(UUID.randomUUID()).build())
             .listItems(hearingVenueList)
             .build();
     }
