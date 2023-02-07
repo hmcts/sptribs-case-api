@@ -3,10 +3,13 @@ package uk.gov.hmcts.sptribs.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
+import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
@@ -14,15 +17,25 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.INDEX;
 
 @Service
 @Slf4j
 public class NotificationServiceCIC {
+
+    private static final int DOC_ATTACH_LIMIT = 5;
 
     private NotificationRequest notificationRequest;
 
@@ -32,8 +45,17 @@ public class NotificationServiceCIC {
     @Autowired
     private EmailTemplatesConfigCIC emailTemplatesConfig;
 
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private AuthTokenGenerator authTokenGenerator;
+
+    @Autowired
+    private CaseDocumentClient caseDocumentClient;
+
     public NotificationResponse sendEmail() {
-        SendEmailResponse sendEmailResponse = null;
+        SendEmailResponse sendEmailResponse;
         String destinationAddress = notificationRequest.getDestinationAddress();
         TemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
@@ -41,6 +63,10 @@ public class NotificationServiceCIC {
         String referenceId = UUID.randomUUID().toString();
 
         try {
+            if (notificationRequest.isHasFileAttachments()) {
+                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocumentIds());
+            }
+
             String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
 
             log.info("Sending email for reference id : {} using template : {}", referenceId, templateId);
@@ -66,6 +92,13 @@ public class NotificationServiceCIC {
                 notificationClientException
             );
             throw new NotificationException(notificationClientException);
+        } catch (IOException ioException) {
+            log.error("Issue with attach documents to Notification. Failed to send email. Reference ID: {}. Reason: {}",
+                referenceId,
+                ioException.getMessage(),
+                ioException
+            );
+            throw new NotificationException(ioException);
         }
     }
 
@@ -102,7 +135,38 @@ public class NotificationServiceCIC {
         }
     }
 
-    public JSONObject getJsonFileAttachment(byte[] fileContents) {
+    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, List<String> uploadedDocumentIds) throws IOException {
+        int count = 0;
+
+        final String authorisation = httpServletRequest.getHeader(AUTHORIZATION);
+        String serviceAuthorization = authTokenGenerator.generate();
+
+        for (String item : uploadedDocumentIds) {
+            count++;
+
+            Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
+                serviceAuthorization,
+                UUID.fromString(item)).getBody();
+
+            if (uploadedDocument != null) {
+                log.info("Document found with uuid : {}", UUID.fromString(item));
+                byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
+                templateVars.put(DOC_AVAILABLE + count, "yes");
+                templateVars.put(INDEX + count, count);
+                templateVars.put(DECISION_NOTICE + count, getJsonFileAttachment(uploadedDocumentContents));
+            } else {
+                log.info("Document not found with uuid : {}", UUID.fromString(item));
+                templateVars.put(DOC_AVAILABLE + count, "no");
+            }
+        }
+
+        while (count < DOC_ATTACH_LIMIT) {
+            count++;
+            templateVars.put(DOC_AVAILABLE + count, "no");
+        }
+    }
+
+    private JSONObject getJsonFileAttachment(byte[] fileContents) {
         JSONObject jsonObject = null;
         try {
             if (Objects.nonNull(fileContents)) {
