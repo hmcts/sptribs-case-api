@@ -48,6 +48,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CicCase {
 
     @CCD(
+        label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document orderTemplateIssued;

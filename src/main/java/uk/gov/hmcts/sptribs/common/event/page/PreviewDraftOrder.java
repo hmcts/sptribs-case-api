@@ -16,8 +16,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
         pageBuilder
             .page("previewOrdersDocuments")
             .pageLabel("Preview order")
-            .label("showDraftOrderPreview",
-                "<h3>Order preview:</h3>")
+            .label("LabelPreviewOrdersDocuments","")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getOrderTemplateIssued)
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"
