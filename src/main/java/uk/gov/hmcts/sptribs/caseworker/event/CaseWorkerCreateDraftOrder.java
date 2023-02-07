@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
+import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -32,10 +33,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
-    private static final CcdPageConfiguration mainContents = new DraftOrderMainContentPage();
+
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private DraftOrderMainContentPage draftOrderMainContentPage;
+    @Autowired
+    private PreviewDraftOrder previewOrder;
 
 
     @Override
@@ -53,8 +58,10 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createDraftOrder.addTo(pageBuilder);
-        mainContents.addTo(pageBuilder);
+        draftOrderMainContentPage.addTo(pageBuilder);
         createDraftOrderAddDocumentFooter(pageBuilder);
+        previewOrder.addTo(pageBuilder);
+
     }
 
     private void createDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
