@@ -170,7 +170,7 @@ public class NotificationServiceCIC {
         JSONObject jsonObject = null;
         try {
             if (Objects.nonNull(fileContents)) {
-                jsonObject = notificationClient.prepareUpload(fileContents);
+                jsonObject = NotificationClient.prepareUpload(fileContents);
             }
         } catch (NotificationClientException e) {
             log.info("unable to upload", e.getMessage());
