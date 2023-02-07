@@ -41,7 +41,6 @@ public class HearingService {
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("date").code(UUID.randomUUID()).build())
             .listItems(dynamicListElements)
             .build();
     }
