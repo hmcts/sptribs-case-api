@@ -136,7 +136,14 @@ public class DecisionIssuedNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
-        data.getCicCase().setAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setAddress(AddressGlobalUK.builder()
+                .addressLine1("test addr1")
+                .addressLine2("test addr2")
+                .addressLine3("test addr3")
+                .postCode("test postcode")
+                .country("test county")
+                .postTown("test postTown")
+            .build());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))

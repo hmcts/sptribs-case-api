@@ -20,6 +20,7 @@ import uk.gov.service.notify.SendLetterResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,8 +173,8 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocumentIds(List.of(uuid.toString()))
+            .hasFileAttachments(false)
+            .uploadedDocumentIds(new ArrayList<>())
             .build();
         notificationService.setNotificationRequest(request);
 
@@ -185,10 +186,6 @@ public class NotificationServiceCICTest {
                 any());
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
 
         //When&Then
         assertThatThrownBy(() -> notificationService.sendEmail())
@@ -200,6 +197,41 @@ public class NotificationServiceCICTest {
             eq(EMAIL_ADDRESS),
             any(),
             any());
+    }
+
+    @Test
+    void shouldThrowNotificationExceptionWhileFileUploadToSendEmail()
+        throws IOException {
+
+        //Given
+        String templateId = UUID.randomUUID().toString();
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
+        final UUID uuid = UUID.randomUUID();
+        Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+
+        NotificationRequest request = NotificationRequest.builder()
+            .destinationAddress(EMAIL_ADDRESS)
+            .template(TemplateName.APPLICATION_RECEIVED)
+            .templateVars(templateVars)
+            .hasFileAttachments(true)
+            .uploadedDocumentIds(List.of(uuid.toString()))
+            .build();
+        notificationService.setNotificationRequest(request);
+
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
+
+        doThrow(new IOException("some message"))
+            .when(resource).getInputStream();
+
+        //When&Then
+        assertThatThrownBy(() -> notificationService.sendEmail())
+            .isInstanceOf(NotificationException.class)
+            .hasMessageContaining("some message");
+
     }
 
     @Test
