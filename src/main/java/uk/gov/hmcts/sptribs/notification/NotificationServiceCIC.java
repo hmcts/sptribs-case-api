@@ -152,11 +152,11 @@ public class NotificationServiceCIC {
                 log.info("Document found with uuid : {}", UUID.fromString(item));
                 byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
                 templateVars.put(DOC_AVAILABLE + count, "yes");
-                templateVars.put(INDEX + count, count);
                 templateVars.put(DECISION_NOTICE + count, getJsonFileAttachment(uploadedDocumentContents));
             } else {
                 log.info("Document not found with uuid : {}", UUID.fromString(item));
                 templateVars.put(DOC_AVAILABLE + count, "no");
+                templateVars.put(DECISION_NOTICE + count, "");
             }
         }
 
