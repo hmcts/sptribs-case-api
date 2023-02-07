@@ -163,6 +163,7 @@ public class NotificationServiceCIC {
         while (count < DOC_ATTACH_LIMIT) {
             count++;
             templateVars.put(DOC_AVAILABLE + count, "no");
+            templateVars.put(DECISION_NOTICE + count, "");
         }
     }
 
