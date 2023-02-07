@@ -17,6 +17,8 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "cicCaseReinstateReason=\"NEVER_SHOW\"";
 
+    private static final String RECIPIENT_LABEL = "Reinstate information recipient";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
@@ -27,16 +29,13 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
             .label("reinstateCaseNotifyPartiesMessage", "Who should be notified about this reinstatement?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                "Reinstate information recipient - Subject")
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                "Reinstate information recipient - Representative")
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ",
-                "Reinstate information recipient - Respondent")
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 
