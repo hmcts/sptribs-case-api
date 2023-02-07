@@ -29,15 +29,15 @@ public final class SelectRecipientsHelper {
             .readonly(CicCase::getFullName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
                 "cicCaseFullName!=\"\" ",
-                fieldLabelPrefix + " recipient - Subject")
+                fieldLabelPrefix + " recipient")
             .readonly(CicCase::getRepresentativeFullName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ",
-                fieldLabelPrefix + " recipient - Representative")
+                fieldLabelPrefix + " recipient")
             .readonly(CicCase::getRespondentName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
                 "cicCaseRespondentName!=\"\" ",
-                fieldLabelPrefix + " recipient - Respondent")
+                fieldLabelPrefix + " recipient")
             .done();
     }
 
