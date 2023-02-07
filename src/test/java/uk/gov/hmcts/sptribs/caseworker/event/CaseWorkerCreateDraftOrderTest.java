@@ -42,7 +42,7 @@ class CaseWorkerCreateDraftOrderTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        PreviewDraftOrder previewOrder2 = new PreviewDraftOrder();
+
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
