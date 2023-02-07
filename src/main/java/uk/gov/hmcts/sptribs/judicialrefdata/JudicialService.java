@@ -38,7 +38,7 @@ public class JudicialService {
 
     public DynamicList getAllUsers() {
         final var users = getUsers();
-        return populateRegionDynamicList(users);
+        return populateUsersDynamicList(users);
     }
 
     private UserProfileRefreshResponse[] getUsers() {
@@ -65,21 +65,20 @@ public class JudicialService {
     }
 
 
-    private DynamicList populateRegionDynamicList(UserProfileRefreshResponse... userProfiles) {
-        List<String> regionList = Objects.nonNull(userProfiles)
+    private DynamicList populateUsersDynamicList(UserProfileRefreshResponse... userProfiles) {
+        List<String> usersList = Objects.nonNull(userProfiles)
             ? Arrays.asList(userProfiles).stream().map(v -> v.getFullName()).collect(Collectors.toList())
             : new ArrayList<>();
 
-        List<DynamicListElement> regionDynamicList = regionList
+        List<DynamicListElement> usersDynamicList = usersList
             .stream()
             .sorted()
-            .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
+            .map(user -> DynamicListElement.builder().label(user).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("judicialUser").code(UUID.randomUUID()).build())
-            .listItems(regionDynamicList)
+            .listItems(usersDynamicList)
             .build();
     }
 }
