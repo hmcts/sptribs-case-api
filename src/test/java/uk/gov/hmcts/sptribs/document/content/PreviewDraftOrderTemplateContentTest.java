@@ -28,9 +28,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 @ExtendWith(MockitoExtension.class)
 public class PreviewDraftOrderTemplateContentTest {
 
-
-    @InjectMocks
-    private FinalDecisionTemplateContent templateContent;
     @InjectMocks
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
