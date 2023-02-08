@@ -8,23 +8,23 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IssueDecisionSelectTemplate implements CcdPageConfiguration {
+public class IssueDecisionPreviewTemplate implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         String pageNameSelectTemplate = "issueDecisionSelectTemplate";
         String pageNamePreviewTemplate = "issueDecisionPreviewTemplate";
-        String pageNameUpload = "issueDecisionUploadNotice";
+        String pageNameUpload = "issueDecisionUpload";
         Map<String, String> map = new HashMap<>();
         map.put(pageNameSelectTemplate, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
         map.put(pageNamePreviewTemplate, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
         map.put(pageNameUpload, "caseIssueDecisionDecisionNotice = \"Upload from your computer\"");
-
-        pageBuilder.page(pageNameSelectTemplate)
-            .pageLabel("Select a template")
+        pageBuilder.page(pageNamePreviewTemplate)
+            .pageLabel("Decision notice preview")
             .pageShowConditions(map)
             .complex(CaseData::getCaseIssueDecision)
-            .mandatory(CaseIssueDecision::getIssueDecisionTemplate)
+            .readonly(CaseIssueDecision::getIssueDecisionDraft)
+            .label("issueDecisionPreviewTemplateInfo","If there are no changes to make, continue to the next screen.")
             .done();
     }
 }
