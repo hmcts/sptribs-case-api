@@ -5,54 +5,35 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
 public class DecisionIssuedNotificationTest {
-
-    @Mock
-    private HttpServletRequest httpServletRequest;
-
-    @Mock
-    private AuthTokenGenerator authTokenGenerator;
-
-    @Mock
-    private CaseDocumentClient caseDocumentClient;
 
     @Mock
     private NotificationServiceCIC notificationService;
@@ -60,14 +41,11 @@ public class DecisionIssuedNotificationTest {
     @Mock
     private NotificationHelper notificationHelper;
 
-    @Mock
-    private Resource resource;
-
     @InjectMocks
     private DecisionIssuedNotification decisionIssuedNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() throws IOException {
+    void shouldNotifySubjectWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -83,14 +61,8 @@ public class DecisionIssuedNotificationTest {
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-
         //When
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -98,7 +70,6 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).getJsonFileAttachment(any());
         verify(notificationService).sendEmail();
     }
 
@@ -120,10 +91,7 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(null));
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -135,9 +103,8 @@ public class DecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectWithEmailThrowsException() throws IOException {
+    void shouldNotifySubjectWithEmailThrowsException() {
         //Given
-        final User systemUser = mock(User.class);
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
@@ -153,11 +120,7 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(resource.getInputStream()).thenThrow(IOException.class);
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -173,7 +136,14 @@ public class DecisionIssuedNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
-        data.getCicCase().setAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setAddress(AddressGlobalUK.builder()
+                .addressLine1("test addr1")
+                .addressLine2("test addr2")
+                .addressLine3("test addr3")
+                .postCode("test postcode")
+                .country("test county")
+                .postTown("test postTown")
+            .build());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -207,11 +177,7 @@ public class DecisionIssuedNotificationTest {
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         decisionIssuedNotification.sendToRespondent(data, "CN1");
@@ -238,11 +204,7 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(resource.getInputStream()).thenThrow(IOException.class);
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         decisionIssuedNotification.sendToRespondent(data, "CN1");
@@ -255,7 +217,6 @@ public class DecisionIssuedNotificationTest {
     @Test
     void shouldNotifyRepresentativeWithEmail() throws IOException {
         //Given
-        final User systemUser = mock(User.class);
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -274,11 +235,7 @@ public class DecisionIssuedNotificationTest {
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(firstFile));
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -291,9 +248,8 @@ public class DecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmailWithException() throws IOException {
+    void shouldNotifyRepresentativeWithEmailWithException() {
         //Given
-        final User systemUser = mock(User.class);
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -310,11 +266,7 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(resource.getInputStream()).thenThrow(IOException.class);
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(resource));
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
