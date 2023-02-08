@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 public class IssueCaseNotifyParties implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "issueCaseAdditionalDocument = \"ALWAYS_HIDE\"";
+    private static final String RECIPIENT_LABEL = "Issue Case information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -19,16 +20,13 @@ public class IssueCaseNotifyParties implements CcdPageConfiguration {
             .label("issueCaseNotifyPartiesMessage", "Which other parties should be notified that the case has been issued to respondent?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                "Issue Case information recipient - Subject")
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                "Issue Case information recipient - Representative")
-            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondantName!=\"\" ",
-                "Issue Case information recipient - Respondent")
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 

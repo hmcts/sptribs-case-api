@@ -56,6 +56,14 @@ sourceSets {
       srcDir file('src/integrationTest/java')
     }
   }
+
+ e2eTests {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/e2eTests/java')
+    }
+ }
 }
 
 ext{
@@ -84,6 +92,8 @@ configurations {
   integrationTestRuntime.extendsFrom testRuntime
   cftlibTestImplementation.extendsFrom testImplementation
   cftlibTestRuntime.extendsFrom testRuntime
+  e2eTestsImplementation.extendsFrom testImplementation
+  e2eTestsRuntime.extendsFrom testRuntime
 }
 
 tasks.withType(JavaCompile) {
@@ -121,6 +131,23 @@ task integration(type: Test) {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
+}
+
+task e2eTests(type: Test) {
+  description = "Runs e2e tests"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.mode.classes.default': 'concurrent',
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
+  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'BROWSER', 'chromium'
 }
 
 // Invoked from CftLibConfig when booting with CCD.
@@ -319,7 +346,6 @@ dependencies {
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.6.1'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
 
-
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   testImplementation libraries.junit5
@@ -344,6 +370,7 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.2.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.28.1'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -351,6 +378,9 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
+
+  e2eTestsImplementation sourceSets.main.runtimeClasspath
+  e2eTestsImplementation sourceSets.test.runtimeClasspath
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
