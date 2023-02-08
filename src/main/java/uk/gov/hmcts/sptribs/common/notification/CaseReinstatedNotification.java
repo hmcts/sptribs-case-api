@@ -69,7 +69,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
-        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondantEmail(), templateVars);
+        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 

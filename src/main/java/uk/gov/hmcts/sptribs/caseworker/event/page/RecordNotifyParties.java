@@ -15,23 +15,24 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullRe
 
 public class RecordNotifyParties implements CcdPageConfiguration {
 
-    private static final String NEVER_SHOW = "recordHearingType=\"NEVER_SHOW\"";
+    private static final String ALWAYS_HIDE = "recordHearingType=\"NEVER_SHOW\"";
+    private static final String RECIPIENT_LABEL = "Listing information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("recordListingNotifyPage", this::midEvent)
             .pageLabel("Notify parties")
-            .label("labelNotifyParties", "")
+            .label("LabelNotifyParties", "")
             .complex(CaseData::getCicCase)
-            .label("recordListingNotifyPageMessage", "Which parties should be notified about this listing?")
-            .readonly(CicCase::getFullName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("recordListingNotifyPageRepresentative", "")
-            .readonly(CicCase::getRepresentativeFullName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("recordListingNotifyPageRespondent", "")
-            .readonly(CicCase::getRespondantName, NEVER_SHOW)
-            .optional(CicCase::getRecordNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartySubject,
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRespondent,
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 

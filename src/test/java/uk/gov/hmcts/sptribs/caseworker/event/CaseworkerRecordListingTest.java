@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -46,6 +49,9 @@ class CaseworkerRecordListingTest {
 
     @InjectMocks
     private CaseworkerRecordListing caseworkerRecordListing;
+
+    @Mock
+    private ListingCreatedNotification listingCreatedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -79,6 +85,10 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        Mockito.doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -91,6 +101,29 @@ class CaseworkerRecordListingTest {
         assertThat(response.getErrors()).isEmpty();
     }
 
+    @Test
+    void shouldNotSendNotificationOnRecordListingData() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        caseData.setRecordListing(getRecordListing());
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        verifyNoInteractions(listingCreatedNotification);
+    }
 
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
@@ -207,7 +240,7 @@ class CaseworkerRecordListingTest {
     private CicCase getMockCicCase() {
         return CicCase.builder().fullName("fullName").recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .representativeFullName("repFullName").recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .respondantName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .respondentName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
     }
 
 

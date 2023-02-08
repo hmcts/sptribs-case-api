@@ -10,20 +10,16 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.List;
-import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 
 @Data
 @NoArgsConstructor
@@ -93,4 +89,9 @@ public class HearingSummary {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingOutcome hearingOutcome;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String subjectName;
 }

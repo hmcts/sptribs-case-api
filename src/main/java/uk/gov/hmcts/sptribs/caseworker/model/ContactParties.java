@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.RespondantCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -33,10 +33,10 @@ public class ContactParties {
 
     @CCD(
         typeOverride = MultiSelectList,
-        typeParameterOverride = "RespondantCIC",
+        typeParameterOverride = "RespondentCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<RespondantCIC> respondant;
+    private Set<RespondentCIC> respondent;
 
     @CCD(
         typeOverride = MultiSelectList,

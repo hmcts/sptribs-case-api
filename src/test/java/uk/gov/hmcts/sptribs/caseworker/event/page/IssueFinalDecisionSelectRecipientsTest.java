@@ -9,8 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientRepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.FinalDecisionRecipientSubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -24,14 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IssueFinalDecisionSelectRecipientsTest {
 
     @InjectMocks
-    private IssueFinalDecisionSelectRecipients selectRecipients;
+    private SelectRecipientsHelper selectRecipients;
 
     @Test
     void shouldBeSuccessfulForValidRecipients() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Set<FinalDecisionRecipientSubjectCIC> subjectCICSet = new HashSet<>();
-        subjectCICSet.add(FinalDecisionRecipientSubjectCIC.SUBJECT);
+
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
         final CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
 
@@ -72,8 +69,6 @@ public class IssueFinalDecisionSelectRecipientsTest {
     void shouldBeValidIfRepresentativeSelectedWithRepresentativeDetails() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Set<FinalDecisionRecipientRepresentativeCIC> decisionRepresentativeCICSet = new HashSet<>();
-        decisionRepresentativeCICSet.add(FinalDecisionRecipientRepresentativeCIC.REPRESENTATIVE);
         final Set<RepresentativeCIC> representativeCICSet = new HashSet<>();
         representativeCICSet.add(RepresentativeCIC.REPRESENTATIVE);
         final CaseIssueFinalDecision finalDecision =

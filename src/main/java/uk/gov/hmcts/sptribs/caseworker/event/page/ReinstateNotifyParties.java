@@ -15,21 +15,27 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSu
 
 public class ReinstateNotifyParties implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "cicCaseReinstateReason=\"NEVER_SHOW\"";
+
+    private static final String RECIPIENT_LABEL = "Reinstate information recipient";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("reinstateCaseNotifyParties", this::midEvent)
-            .label("reinstateCaseNotifyParties", "<h1>Contact parties</h1>")
+            .pageLabel("Contact parties")
+            .label("LabelReinstateCaseNotifyParties", "")
             .complex(CaseData::getCicCase)
             .label("reinstateCaseNotifyPartiesMessage", "Who should be notified about this reinstatement?")
-            .readonlyWithLabel(CicCase::getFullName, " ")
-            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ")
-            .label("reinstateCaseNotifyPartiesRepresentative", "")
-            .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
-            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ")
-            .label("reinstateCaseNotifyPartiesRespondent", "")
-            .readonlyWithLabel(CicCase::getRespondantName, " ")
-            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondantName!=\"\" ")
+            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 

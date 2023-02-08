@@ -53,7 +53,7 @@ class CaseworkerEditRecordListingTest {
     private RecordListHelper recordListHelper;
 
     @Mock
-    private ListingUpdatedNotification liistingUpdatedNotification;
+    private ListingUpdatedNotification listingUpdatedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -93,9 +93,9 @@ class CaseworkerEditRecordListingTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        Mockito.doNothing().when(liistingUpdatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
-        Mockito.doNothing().when(liistingUpdatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-        Mockito.doNothing().when(liistingUpdatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingUpdatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingUpdatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingUpdatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
         SubmittedCallbackResponse stayedResponse = caseworkerEditRecordList.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -278,7 +278,7 @@ class CaseworkerEditRecordListingTest {
     private CicCase getMockCicCase() {
         return CicCase.builder().fullName("fullName").recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .representativeFullName("repFullName").recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .respondantName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .respondentName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
     }
 
 

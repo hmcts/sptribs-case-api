@@ -20,7 +20,7 @@ spring:
     allow-bean-definition-overriding: true
 
 springdoc:
-  packagesToScan: uk.gov.hmcts.divorce,uk.gov.hmcts.ccd.sdk.runtime
+  packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
 azure:
@@ -36,8 +36,6 @@ uk:
       email:
         templateVars:
           signInProfessionalUsersUrl: ${NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL:https://manage-case.aat.platform.hmcts.net/cases/case-details/}
-          divorceCourtEmail: divorcecase@justice.gov.uk
-          dissolutionCourtEmail: divorcecase@justice.gov.uk
           respondentName: 'Appeals Team'
           respondentOrganisation: 'CICA'
           respondentEmail: appeals.team@cica.gov.uk
@@ -56,8 +54,14 @@ uk:
           CASE_ISSUED_CITIZEN_EMAIL: '3f25663d-9f3f-4330-afdb-3302399d29cf'
           CASE_ISSUED_CITIZEN_POST: 'eedc916f-088f-4653-99ed-b954e1dbd58d'
           CASE_ISSUED_RESPONDENT_EMAIL: '65df6386-bf56-498b-a877-e8fd896515d4'
+          CASE_FINAL_DECISION_ISSUED_EMAIL: 'cd2236a1-048a-4561-8cab-288ca1be207e'
+          CASE_FINAL_DECISION_ISSUED_POST: 'e968c49e-7510-4997-8f6f-8d13421d4f98'
           LISTING_UPDATED_CITIZEN_EMAIL: 'cede09ba-0575-4fc6-97d3-af5814753cd8'
           LISTING_UPDATED_CITIZEN_POST: '4c713489-bab5-4336-8452-0feb79deec65'
+          LISTING_CREATED_CITIZEN_EMAIL: '7583d36c-a03d-4ff8-ae45-206d2083caa2'
+          LISTING_CREATED_CITIZEN_POST: '6b01b3fd-195e-4266-bfaf-ba028ccb4faa'
+          CASE_CANCEL_HEARING_EMAIL: '56ea62fa-99d0-4341-ac03-4c69732035cc'
+          CASE_CANCEL_HEARING_POST: '2663b564-c361-420b-a227-c470e6be0703'
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
@@ -72,18 +76,13 @@ idam:
     microservice: sptribs_case_api
   api:
     url: ${IDAM_API_BASEURL:http://localhost:5000}
-
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
   client:
     id: 'divorce'
-    secret: ${IDAM_CLIENT_SECRET:123456}
+    secret: ${OAUTH2_CLIENT_SECRET:dummy}
     redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
-
-fee:
-  api:
-    baseUrl: ${FEE_API_URL:http://fees-register-api-aat.service.core-compute-aat.internal}
 
 location:
   api:
@@ -108,7 +107,19 @@ core_case_data:
 docmosis:
   templates:
     english:
+      ST-CIC-DEC-ENG-CIC1_Eligibility: ST-CIC-DEC-ENG-CIC1_Eligibility.docx
+      ST-CIC-DEC-ENG-CIC2_Quantum: ST-CIC-DEC-ENG-CIC2_Quantum.docx
+      ST-CIC-DEC-ENG-CIC3_Rule_27: ST-CIC-DEC-ENG-CIC3_Rule_27.docx
+      ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice: ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice.docx
+      ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice: ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice.docx
+      ST-CIC-DEC-ENG-CIC12_Decision_Annex: ST-CIC-DEC-ENG-CIC12_Decision_Annex.docx
       CIC6_General_Directions: ST-CIC-STD-ENG-CIC6_General_Directions.docx
+      CIC7_ME_Dmi_Reports: ST-CIC-STD-ENG-CIC7_ME_Dmi_Reports.docx
+      CIC8_ME_Joint_Instruction: ST-CIC-STD-ENG-CIC8_ME_Joint_Instruction.docx
+      CIC10_Strike_Out_Warning: ST-CIC-STD-ENG-CIC10_Strike_Out_Warning.docx
+      CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
+
+
     welsh:
       #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.
       DIVORCE_APPLICATION_SOLE: ${DIVORCE_APPLICATION_SOLE_WELSH_TEMPLATE_ID:NFD_CP_Application_Sole_V5.docx}
@@ -132,67 +143,16 @@ prd:
 send-letter:
   url: ${SEND_LETTER_SERVICE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
 
-aos_pack:
-  due_date_offset_days: ${AOS_PACK_DUE_DATE_OFFSET_DAYS:16}
-
-case_progression:
-  holding_offset_days: ${HOLDING_DUE_DATE_OFFSET_DAYS:141}
-
-submit_aos:
-  dispute_offset_days: ${DISPUTE_DUE_DATE_OFFSET_DAYS:37}
-
-submit_co:
-  reminder_offset_days: ${SUBMIT_CO_REMINDER_OFFSET_DAYS:14}
-
-final_order:
-  eligible_from_offset_days: ${FINAL_ORDER_ELIGIBLE_FROM_OFFSET_DAYS:43}
-
-apply_for_final_order:
-  reminder_offset_days: ${APPLY_FOR_FINAL_ORDER_REMINDER_OFFSET_DAYS:14}
-
-aos_overdue:
-  arrange_service_offset_days: ${AOS_OVERDUE_ARRANGE_SERVICE_OFFSET_DAYS:28}
-
-applicant:
-  response_offset_days: ${APPLICANT_RESPOND_BY_OFFSET_DAYS:16}
-
-respondent_solicitor:
-  response_offset_days: ${RESPONDENT_SOLICITOR_RESPOND_BY_OFFSET_DAYS:10}
-
 court:
   locations:
     serviceCentre:
       serviceCentreName: 'Courts and Tribunals Service Centre'
-      centreName: 'HMCTS Digital Divorce and Dissolution'
+      centreName: 'HMCTS Special Tribunals'
       town: 'Harlow'
       poBox: 'PO Box 13226'
       postCode: 'CM20 9UG'
-      email: 'divorcecase@justice.gov.uk'
+      email: 'ciccase@justice.gov.uk'
       phoneNumber: '0300 303 0642'
-
-conditional-order-court:
-  locations:
-    birmingham:
-      name: "Birmingham Civil and Family Justice Centre"
-      address: "Priory Courts\n33 Bull Street\nBirmingham\nB4 6DS"
-      email: "divorcecase@justice.gov.uk"
-      phone: "0300 303 0642"
-    buryStEdmunds:
-      name: "Bury St. Edmunds Regional Divorce Centre"
-      address: "2nd Floor\nTriton House\nSt. Andrews Street North\nBury St. Edmunds\nIP33 1TR"
-      email: "divorcecase@justice.gov.uk"
-      phone: "0300 303 0642"
-
-pba:
-  ref:
-    data:
-      service:
-        url: ${PRD_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
-
-payment:
-  service:
-    api:
-      baseurl: ${PAYMENT_API_BASEURL:http://payment-api-aat.service.core-compute-aat.internal}
 
 SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 

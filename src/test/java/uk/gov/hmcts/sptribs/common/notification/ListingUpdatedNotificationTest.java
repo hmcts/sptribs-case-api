@@ -57,11 +57,11 @@ public class ListingUpdatedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         RecordListing recordListing = RecordListing.builder().hearingVenueName("London Centre")
-            .conferenceCallNumber("cmi459t5iut5")
-            .videoCallLink("http://abc.com")
-            .conferenceCallNumber("+56677778")
-            .hearingFormat(HearingFormat.FACE_TO_FACE)
-            .build();
+                .conferenceCallNumber("cmi459t5iut5")
+                    .videoCallLink("http://abc.com")
+                        .conferenceCallNumber("+56677778")
+                            .hearingFormat(HearingFormat.FACE_TO_FACE)
+                                .build();
         data.setRecordListing(recordListing);
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))

@@ -16,11 +16,11 @@ public class EditDraftOrder implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("createDraftOrder")
+            .page("editDraftOrder")
             .pageLabel("Edit order")
-            .label("createDraftOrder", "Draft to be edited")
+            .label("LabelEditDraftOrder", "Draft to be edited")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getOrderTemplateList)
+            .optional(CicCase::getOrderTemplateDynamisList)
             .done();
     }
 

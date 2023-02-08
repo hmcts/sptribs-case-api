@@ -52,7 +52,7 @@ class OrderServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         ListValue<DraftOrderCIC> draftOrderCIC = new ListValue<>();
-        DraftOrderCIC orderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        DraftOrderCIC orderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         draftOrderCIC.setValue(orderCIC);
         CicCase cicCase = CicCase.builder().draftOrderCICList(List.of(draftOrderCIC)).build();
         caseData.setCicCase(cicCase);
@@ -87,7 +87,7 @@ class OrderServiceTest {
         caseData.setCicCase(cicase);
         details.setData(caseData);
 
-        cicase.setAnOrderTemplates(OrderTemplate.CIC2_QUANTUM);
+        cicase.setAnOrderTemplates(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
         //When
 
         DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(details);
@@ -95,6 +95,8 @@ class OrderServiceTest {
         //Then
         assertThat(orderTemplateList).isNotNull();
     }
+
+
 
 
 }

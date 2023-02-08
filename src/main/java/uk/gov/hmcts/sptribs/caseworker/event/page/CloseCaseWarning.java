@@ -10,7 +10,7 @@ public class CloseCaseWarning implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("closeCaseWarning")
-            .label("closeCaseWarning", "<h1>Are you sure you want to close this case?</h1>")
+            .pageLabel("Are you sure you want to close this case?")
             .label("closeCaseWarningCheck", "Check that it meets all requirements before closing it")
             .done();
     }
