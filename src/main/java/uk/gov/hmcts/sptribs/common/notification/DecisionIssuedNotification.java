@@ -3,44 +3,25 @@ package uk.gov.hmcts.sptribs.common.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.INDEX;
 
 @Component
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
-
-    @Autowired
-    private HttpServletRequest httpServletRequest;
-
-    @Autowired
-    private AuthTokenGenerator authTokenGenerator;
-
-    @Autowired
-    private CaseDocumentClient caseDocumentClient;
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -53,15 +34,14 @@ public class DecisionIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
-        NotificationResponse notificationResponse;
-        if (cicCase.getContactPreferenceType().isEmail()) {
-            try {
-                addDecisionsIssuedFileContents(caseData, templateVars);
-            } catch (IOException e) {
-                log.info("Unable to download Decision Notice document for Subject: {}", e.getMessage());
-            }
 
-            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+        NotificationResponse notificationResponse = null;
+        if (cicCase.getContactPreferenceType().isEmail()) {
+            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+
+            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
+                uploadedDocumentIds, templateVars);
+
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars);
@@ -75,15 +55,11 @@ public class DecisionIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
-        NotificationResponse notificationResponse;
+        NotificationResponse notificationResponse = null;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            try {
-                addDecisionsIssuedFileContents(caseData, templateVars);
-            } catch (IOException e) {
-                log.info("Unable to download Decision Notice document for Representative: {}", e.getMessage());
-            }
-
-            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
+                uploadedDocumentIds, templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars);
@@ -96,20 +72,20 @@ public class DecisionIssuedNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
 
-        try {
-            addDecisionsIssuedFileContents(caseData, templateVars);
-        } catch (IOException e) {
-            log.info("Unable to download Decision Notice document for Respondent: {}", e.getMessage());
-        }
-
-        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
+        NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
+            uploadedDocumentIds, templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
+                                                                     List<String> uploadedDocumentIds,
+                                                                     final Map<String, Object> templateVars) {
         NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
+            true,
+            uploadedDocumentIds,
             templateVars,
             TemplateName.DECISION_ISSUED_EMAIL);
         notificationService.setNotificationRequest(emailRequest);
@@ -124,38 +100,15 @@ public class DecisionIssuedNotification implements PartiesNotification {
         return notificationService.sendLetter();
     }
 
-    private void addDecisionsIssuedFileContents(CaseData caseData, Map<String, Object> templateVars) throws IOException {
-        int count = 0;
-
-        final String authorisation = httpServletRequest.getHeader(AUTHORIZATION);
-        String serviceAuthorization = authTokenGenerator.generate();
-
+    private List<String> getUploadedDocumentIds(CaseData caseData) {
         CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
+        List<String> uploadedDocumentIds = new ArrayList<>();
         if (caseIssueDecision.getDecisionDocument() != null) {
-            List<String> uploadedDocumentsUrls = caseIssueDecision.getDecisionDocument().stream().map(ListValue::getValue)
+            uploadedDocumentIds = caseIssueDecision.getDecisionDocument().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
-
-            for (String item : uploadedDocumentsUrls) {
-                count++;
-
-                Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
-                    serviceAuthorization,
-                    UUID.fromString(item)).getBody();
-
-                if (uploadedDocument != null) {
-                    log.info("Document found with uuid : {}", UUID.fromString(item));
-                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(DOC_AVAILABLE + count, "yes");
-                    templateVars.put(INDEX + count, count);
-                    templateVars.put(DECISION_NOTICE + count, notificationService.getJsonFileAttachment(uploadedDocumentContents));
-                } else {
-                    log.info("Document not found with uuid : {}", UUID.fromString(item));
-                }
-            }
-
         }
+        return uploadedDocumentIds;
     }
-
 
 }
