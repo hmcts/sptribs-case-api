@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -76,6 +77,20 @@ public class NotificationHelper {
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
+            .template(emailTemplateName)
+            .templateVars(templateVars)
+            .build();
+    }
+
+    public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
+                                                             boolean hasFileAttachment,
+                                                             List<String> uploadedDocumentIds,
+                                                             Map<String, Object> templateVars,
+                                                             TemplateName emailTemplateName) {
+        return NotificationRequest.builder()
+            .destinationAddress(destinationAddress)
+            .hasFileAttachments(hasFileAttachment)
+            .uploadedDocumentIds(uploadedDocumentIds)
             .template(emailTemplateName)
             .templateVars(templateVars)
             .build();
