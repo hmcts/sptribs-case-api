@@ -44,7 +44,6 @@ public class OrderService {
 
             return DynamicList
                 .builder()
-                .value(DynamicListElement.builder().label("order").code(UUID.randomUUID()).build())
                 .listItems(dynamicListElements)
                 .build();
         }
@@ -70,7 +69,6 @@ public class OrderService {
 
             return DynamicList
                 .builder()
-                .value(DynamicListElement.builder().label("draft").code(UUID.randomUUID()).build())
                 .listItems(dynamicListElements)
                 .build();
         }
@@ -97,8 +95,6 @@ public class OrderService {
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("template")
-                .code(UUID.randomUUID()).build())
             .listItems(dynamicListElements)
             .build();
     }
