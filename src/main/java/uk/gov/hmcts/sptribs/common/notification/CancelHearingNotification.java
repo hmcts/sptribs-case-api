@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -14,11 +13,6 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
-
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 
 @Component
 @Slf4j
@@ -35,7 +29,7 @@ public class CancelHearingNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> subjectTemplateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
-        addCancelHearingTemplateVars(cicCase, subjectTemplateVars);
+        notificationHelper.addHearingPostponedTemplateVars(cicCase, subjectTemplateVars);
 
         NotificationResponse subjectNotificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
@@ -53,7 +47,7 @@ public class CancelHearingNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> reprTemplateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
-        addCancelHearingTemplateVars(cicCase, reprTemplateVars);
+        notificationHelper.addHearingPostponedTemplateVars(cicCase, reprTemplateVars);
 
         NotificationResponse representativeNotificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
@@ -71,10 +65,10 @@ public class CancelHearingNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        addCancelHearingTemplateVars(cicCase, respondentTemplateVars);
+        notificationHelper.addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
         NotificationResponse respondentNotificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
-        cicCase.setAppNotificationResponse(respondentNotificationResponse);
+        cicCase.setResNotificationResponse(respondentNotificationResponse);
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
@@ -94,17 +88,5 @@ public class CancelHearingNotification implements PartiesNotification {
         return notificationService.sendLetter();
     }
 
-    private void addCancelHearingTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
-        String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
-        String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
-        String hearingDate = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(0, hearingDateTimeArr[1].lastIndexOf(SPACE))
-            : null;
-        String hearingTime = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(hearingDateTimeArr[1].lastIndexOf(SPACE) + 1)
-            : null;
 
-        templateVars.put(HEARING_DATE, hearingDate);
-        templateVars.put(HEARING_TIME, hearingTime);
-    }
 }

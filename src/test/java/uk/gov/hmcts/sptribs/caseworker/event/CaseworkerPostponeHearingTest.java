@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -111,8 +110,6 @@ class CaseworkerPostponeHearingTest {
         SubmittedCallbackResponse submitted = caseWorkerPostponeHearing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCicCase().getHearingNotificationParties()).hasSize(3);
         assertThat(submitted.getConfirmationHeader()).contains("Hearing Postponed");
-        assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
     }
 }

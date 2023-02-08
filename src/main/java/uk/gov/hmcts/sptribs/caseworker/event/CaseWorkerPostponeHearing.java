@@ -86,13 +86,13 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         var caseData = details.getData();
 
         Set<NotificationParties> partiesSet = new HashSet<>();
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartySubject())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             partiesSet.add(NotificationParties.REPRESENTATIVE);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
@@ -114,17 +114,16 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
     }
 
     private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
-        Set<NotificationParties> hearingNotifyParties = caseData.getCicCase().getHearingNotificationParties();
 
-        if (hearingNotifyParties.contains(NotificationParties.SUBJECT)) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             hearingPostponedNotification.sendToSubject(caseData, caseNumber);
         }
 
-        if (hearingNotifyParties.contains(NotificationParties.RESPONDENT)) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
         }
 
-        if (hearingNotifyParties.contains(NotificationParties.REPRESENTATIVE)) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
         }
     }
