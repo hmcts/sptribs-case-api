@@ -58,8 +58,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .grantHistoryOnly(SOLICITOR));
         editDraftOrder.addTo(pageBuilder);
         draftOrderEditMainContentPage.addTo(pageBuilder);
-        previewOrder.addTo(pageBuilder);
         editDraftOrderAddDocumentFooter(pageBuilder);
+        previewOrder.addTo(pageBuilder);
 
     }
 
