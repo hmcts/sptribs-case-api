@@ -153,7 +153,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildHearing(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("caseHearings", "Case Hearings")
+        configBuilder.tab("Hearings", "Hearings")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Listing details", null, "#### Listing details")
             .field("recordHearingType")
@@ -165,15 +165,18 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("recordHearingTime")
             .field("recordVideoCallLink")
             .field("recordImportantInfoDetails")
-            .field("cicCaseRecordNotifyPartySubject", "cicCaseRecordNotifyPartySubject !=\"\"")
-            .field("cicCaseRecordNotifyPartyRepresentative", "cicCaseRecordNotifyPartyRepresentative !=\"\"")
-            .field("cicCaseRecordNotifyPartyRespondent", "cicCaseRecordNotifyPartyRespondent !=\"\"")
+
+            .field("cicCaseHearingNotificationParties")
+            //            .label("cicCaseRecordNotifyPartySubject", "cicCaseRecordNotifyPartySubject !=\"\"", "Listing information recipient")
+            //            .field("cicCaseRecordNotifyPartyRepresentative", "cicCaseRecordNotifyPartyRepresentative !=\"\"")
+            //            .field("cicCaseRecordNotifyPartyRespondent", "cicCaseRecordNotifyPartyRespondent !=\"\"")
 
             .label("Hearing summary", "hearingSummaryFullPanelHearing!=\"\"", "### Hearing summary")
             .field("hearingSummaryJudge")
             .field("hearingSummaryFullPanelHearing")
             .field("hearingSummaryPanelMemberList")
-            .label("Postponement summary", "cicCasePostponeReason!=\"\"", "### Postponement summary")
+
+            .label("Postponement summary", null, "### Postponement summary")
             .field("cicCasePostponeReason")
             .field("cicCasePostponeAdditionalInformation");
 
