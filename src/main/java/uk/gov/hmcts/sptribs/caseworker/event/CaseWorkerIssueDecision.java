@@ -28,6 +28,8 @@ import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -82,7 +84,16 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     private void issueDecisionAddDocumentFooter(PageBuilder pageBuilder) {
-        pageBuilder.page("issueDecisionAddDocumentFooter", this::midEvent)
+        String pageNameSelectTemplate = "issueDecisionSelectTemplate";
+        String pageNameAddDocumentFooter = "issueDecisionAddDocumentFooter";
+        String pageNamePreviewTemplate = "issueDecisionPreviewTemplate";
+        String pageNameUpload = "issueDecisionUploadNotice";
+        Map<String, String> map = new HashMap<>();
+        map.put(pageNameSelectTemplate, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
+        map.put(pageNameAddDocumentFooter, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
+        map.put(pageNamePreviewTemplate, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
+        map.put(pageNameUpload, "caseIssueDecisionDecisionNotice = \"Upload from your computer\"");
+        pageBuilder.page(pageNameAddDocumentFooter, this::midEvent)
             .pageLabel("Document footer")
             .label("LabelDocFooter",
                 """
@@ -91,6 +102,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
                     Confirm the Role and Surname of the person who made this decision - this will be added"
                                         + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
                     """)
+            .pageShowConditions(map)
             .mandatory(CaseData::getDecisionSignature)
             .done();
     }

@@ -13,10 +13,12 @@ public class IssueDecisionPreviewTemplate implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         String pageNameSelectTemplate = "issueDecisionSelectTemplate";
+        String pageNameAddDocumentFooter = "issueDecisionAddDocumentFooter";
         String pageNamePreviewTemplate = "issueDecisionPreviewTemplate";
-        String pageNameUpload = "issueDecisionUpload";
+        String pageNameUpload = "issueDecisionUploadNotice";
         Map<String, String> map = new HashMap<>();
         map.put(pageNameSelectTemplate, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
+        map.put(pageNameAddDocumentFooter, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
         map.put(pageNamePreviewTemplate, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
         map.put(pageNameUpload, "caseIssueDecisionDecisionNotice = \"Upload from your computer\"");
         pageBuilder.page(pageNamePreviewTemplate)
