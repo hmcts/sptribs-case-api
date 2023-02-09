@@ -132,7 +132,7 @@ ccd:
       users:
         - st_caseworker@mailinator.com|ST_CIC|CIC|Submitted
         - st_solicitor@mailinator.com|ST_CIC|CIC|Submitted
-        - st_superuser@mailinator.com|ST_CIC|CIC|Submitted
+        - st_super@mailinator.com|ST_CIC|CIC|Submitted
       userProfileDatabaseHost: ${SERVICE_NAME}-ccd-postgres
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: hmcts
