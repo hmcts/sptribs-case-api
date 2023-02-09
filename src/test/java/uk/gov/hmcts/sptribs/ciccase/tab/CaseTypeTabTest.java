@@ -48,6 +48,7 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("caseParties", "Case Parties")).thenReturn(casePartiesTabBuilder);
         when(configBuilder.tab("orders", "Orders")).thenReturn(ordersTabBuilder);
         when(configBuilder.tab("caseDocuments", "Case Documents")).thenReturn(caseDocsTabBuilder);
+        when(configBuilder.tab("hearings", "Hearings")).thenReturn(caseDocsTabBuilder);
 
         //When
         caseTypeTab.configure(configBuilder);
