@@ -17,7 +17,7 @@ public enum HearingOutcome {
     @JsonProperty("Refused")
     REFUSED("Refused"),
 
-    @JsonProperty("withdrawnAtHearing")
+    @JsonProperty("Withdrawn at Hearing")
     WITHDRAWN_AT_HEARING("Withdrawn at Hearing");
 
     private final String label;
