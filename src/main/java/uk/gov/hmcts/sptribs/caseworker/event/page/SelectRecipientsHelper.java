@@ -5,7 +5,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
@@ -13,27 +12,32 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 
-public class SendOrderNotifyParties implements CcdPageConfiguration {
+public final class SelectRecipientsHelper {
 
-    private static final String ALWAYS_HIDE = "cicCaseOrderIssuingType=\"NEVER_SHOW\"";
-    private static final String RECIPIENT_LABEL = "Order information recipient";
-
-    @Override
-    public void addTo(PageBuilder pageBuilder) {
-
-        pageBuilder.page("caseWorkerSendOrderNotifyParties", this::midEvent)
-            .pageLabel("Contact parties")
+    public void addTo(PageBuilder pageBuilder,
+                             String pageId,
+                             String labelPrefix,
+                             String label,
+                             String fieldLabelPrefix,
+                             String alwaysHide) {
+        pageBuilder
+            .page(pageId, this::midEvent)
+            .pageLabel("Select recipients")
+            .label("Label" + labelPrefix + "SelectRecipientsEmpty", "")
+            .label("label" + labelPrefix + "SelectRecipients", label)
             .complex(CaseData::getCicCase)
-            .label("caseWorkerSendOrderMessage", "Who should receive this Order?")
-            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .readonly(CicCase::getFullName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
-            .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
+                "cicCaseFullName!=\"\" ",
+                fieldLabelPrefix + " recipient")
+            .readonly(CicCase::getRepresentativeFullName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
-            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
+                "cicCaseRepresentativeFullName!=\"\" ",
+                fieldLabelPrefix + " recipient")
+            .readonly(CicCase::getRespondentName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseRespondentName!=\"\" ",
+                fieldLabelPrefix + " recipient")
             .done();
     }
 
@@ -43,13 +47,11 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         if (checkNullSubjectRepresentativeRespondent(data)) {
-            errors.add("One field must be selected.");
+            errors.add("One recipient must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
             .build();
     }
-
 }
-

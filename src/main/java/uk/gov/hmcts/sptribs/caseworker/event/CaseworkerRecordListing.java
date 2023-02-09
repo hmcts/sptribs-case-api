@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
@@ -102,7 +103,11 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         var caseData = details.getData();
         final List<String> errors = new ArrayList<>();
-
+        if (null != caseData.getRecordListing()
+            && null != caseData.getRecordListing().getNumberOfDays()
+            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
+            caseData.getRecordListing().setAdditionalHearingDate(null);
+        }
         if (checkNullCondition(details.getData().getCicCase())) {
             errors.add("One party must be selected.");
         }
@@ -143,7 +148,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         }
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Listing record created\"%n## %s",
+            .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
     }

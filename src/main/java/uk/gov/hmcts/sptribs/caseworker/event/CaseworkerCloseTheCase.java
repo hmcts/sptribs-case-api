@@ -13,10 +13,12 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConcessionDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConsentOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRejectionDetails;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseStrikeOutDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWithdrawalDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -43,6 +45,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private static final CcdPageConfiguration closeCaseConcessionDetails = new CloseCaseConcessionDetails();
     private static final CcdPageConfiguration closeCaseStrikeOutDetails = new CloseCaseStrikeOutDetails();
     private static final CcdPageConfiguration closeCaseConsentOrder = new CloseCaseConsentOrder();
+    private static final CcdPageConfiguration closeCaseSelectRecipients = new CloseCaseSelectRecipients();
 
     @Autowired
     private JudicialService judicialService;
@@ -59,6 +62,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         closeCaseStrikeOutDetails.addTo(pageBuilder);
         closeCaseConsentOrder.addTo(pageBuilder);
         uploadDocuments(pageBuilder);
+        closeCaseSelectRecipients.addTo(pageBuilder);
     }
 
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -103,8 +107,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
+        String message = MessageUtil.generateSimpleMessage(details.getData().getCicCase(), "Case closed",
+            "Use 'Reinstate case' if this case needs to be reopened in the future.");
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case closed")
+            .confirmationHeader(message)
             .build();
     }
 

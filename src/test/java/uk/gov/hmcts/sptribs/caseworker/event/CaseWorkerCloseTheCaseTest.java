@@ -100,7 +100,7 @@ class CaseWorkerCloseTheCaseTest {
         CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))

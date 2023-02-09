@@ -16,6 +16,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullRe
 public class PostponeHaringNotifyParties implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "cicCasePostponeReason=\"ALWAYS_HIDE\"";
+    private static final String RECIPIENT_LABEL = "Postpone information recipient";
 
     @Override
 
@@ -28,16 +29,13 @@ public class PostponeHaringNotifyParties implements CcdPageConfiguration {
             .label("caseworkerPostponeHearingNotifyPartiesMessage", "Which parties should be notified this Postponement?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                "Postpone information recipient - Subject")
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                "Postpone information recipient - Representative")
-            .readonly(CicCase::getRespondantName, ALWAYS_HIDE)
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondantName!=\"\" ",
-                "Postpone information recipient - Respondent")
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 

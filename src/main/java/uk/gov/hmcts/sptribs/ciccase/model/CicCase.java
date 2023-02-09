@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -42,9 +43,15 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
-@Builder
 public class CicCase {
+
+    @CCD(
+        label = "Preview order",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document orderTemplateIssued;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -279,25 +286,25 @@ public class CicCase {
 
 
     @CCD(
-        label = "Respondant name ",
+        label = "Respondent name ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @Builder.Default
-    private String respondantName = "Appeals team";
+    private String respondentName = "Appeals team";
 
     @CCD(
-        label = "Respondant organisation ",
+        label = "Respondent organisation ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @Builder.Default
-    private String respondantOrganisation = "CICA";
+    private String respondentOrganisation = "CICA";
 
     @CCD(
-        label = "Respondant email  ",
+        label = "Respondent email  ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @Builder.Default
-    private String respondantEmail = "appeals.team@cica.gov.uk";
+    private String respondentEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
         label = "Subject's full name",
@@ -558,6 +565,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse resHearingNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse repLetterNotificationResponse;
 
     @JsonIgnore
     public String getSelectedHearingToCancel() {

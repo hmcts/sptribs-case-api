@@ -86,11 +86,11 @@ public class CaseIssuedNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondantName());
+        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
 
         // Send Email
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondantEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+            cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
