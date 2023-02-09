@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Component
@@ -29,6 +30,8 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
     @Autowired
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -67,7 +70,8 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
             caseId,
             caseData.getCicCase().getAnOrderTemplates().getId(),
             LanguagePreference.ENGLISH,
-            filename
+            filename,
+            request
         );
 
         caseData.getCicCase().setAnOrderTemplates(template);
