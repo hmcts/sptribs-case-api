@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -60,6 +61,9 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     @Autowired
     private DecisionIssuedNotification decisionIssuedNotification;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -114,7 +118,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             caseId,
             decision.getIssueDecisionTemplate().getId(),
             LanguagePreference.ENGLISH,
-            filename
+            filename,
+            request
         );
 
         decision.setIssueDecisionDraft(generalOrderDocument);
