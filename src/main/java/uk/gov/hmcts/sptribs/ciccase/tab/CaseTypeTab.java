@@ -165,16 +165,14 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("recordHearingTime")
             .field("recordVideoCallLink")
             .field("recordImportantInfoDetails")
-
             .field("cicCaseHearingNotificationParties")
-            //            .label("cicCaseRecordNotifyPartySubject", "cicCaseRecordNotifyPartySubject !=\"\"", "Listing information recipient")
-            //            .field("cicCaseRecordNotifyPartyRepresentative", "cicCaseRecordNotifyPartyRepresentative !=\"\"")
-            //            .field("cicCaseRecordNotifyPartyRespondent", "cicCaseRecordNotifyPartyRespondent !=\"\"")
 
             .label("Hearing summary", "hearingSummaryFullPanelHearing!=\"\"", "#### Hearing summary")
             .field("hearingSummaryJudge")
             .field("hearingSummaryFullPanelHearing")
             .field("hearingSummaryPanelMemberList")
+            .field("hearingSummaryHearingAttendeesRole")
+            .field("hearingSummaryHearingOutcome")
 
             .label("Postponement summary", "cicCasePostponeAdditionalInformation!=\"\"", "#### Postponement summary")
             .field("cicCasePostponeReason")
