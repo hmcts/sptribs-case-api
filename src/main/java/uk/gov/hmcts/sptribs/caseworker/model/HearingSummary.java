@@ -67,7 +67,7 @@ public class HearingSummary {
     private FullPanelHearing fullPanelHearing;
 
     @CCD(
-        label = "Panel member & Role",
+        label = "Panel member and Role",
         typeOverride = Collection,
         typeParameterOverride = "PanelMember",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
