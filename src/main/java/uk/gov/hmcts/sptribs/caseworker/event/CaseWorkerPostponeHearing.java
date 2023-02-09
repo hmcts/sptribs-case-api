@@ -60,7 +60,6 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
-                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createHearingSummary.addTo(pageBuilder);

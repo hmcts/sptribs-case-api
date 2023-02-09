@@ -38,7 +38,6 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
             .description("Test change state")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::changed)
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("testChangeState")
