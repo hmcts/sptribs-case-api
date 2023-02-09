@@ -7,15 +7,16 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueDecisionShowConditions;
 
-public class IssueDecisionSelectTemplate implements CcdPageConfiguration {
+public class IssueDecisionPreviewTemplate implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("issueDecisionSelectTemplate")
-            .pageLabel("Select a template")
+        pageBuilder.page("issueDecisionPreviewTemplate")
+            .pageLabel("Decision notice preview")
             .pageShowConditions(issueDecisionShowConditions())
             .complex(CaseData::getCaseIssueDecision)
-            .mandatory(CaseIssueDecision::getIssueDecisionTemplate)
+            .readonly(CaseIssueDecision::getIssueDecisionDraft)
+            .label("issueDecisionPreviewTemplateInfo","If there are no changes to make, continue to the next screen.")
             .done();
     }
 }
