@@ -3,7 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PageShowConditionsUtil {
+public final class PageShowConditionsUtil {
 
     private PageShowConditionsUtil() {
     }
