@@ -62,6 +62,8 @@ uk:
           LISTING_CREATED_CITIZEN_POST: '6b01b3fd-195e-4266-bfaf-ba028ccb4faa'
           CASE_CANCEL_HEARING_EMAIL: '56ea62fa-99d0-4341-ac03-4c69732035cc'
           CASE_CANCEL_HEARING_POST: '2663b564-c361-420b-a227-c470e6be0703'
+          HEARING_POSTPONED_EMAIL: '6c1ac2dc-cb6a-4e30-ba2f-3e658a57de0a'
+          HEARING_POSTPONED_POST: 'b8a6e858-6e2a-4222-a071-33348bb7fed6'
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
