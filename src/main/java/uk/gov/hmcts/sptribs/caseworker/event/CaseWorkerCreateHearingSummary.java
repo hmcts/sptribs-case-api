@@ -60,7 +60,6 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createHearingSummary.addTo(pageBuilder);
