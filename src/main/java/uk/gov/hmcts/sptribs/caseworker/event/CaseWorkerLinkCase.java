@@ -36,7 +36,6 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             .name("Links: Link case")
             .showSummary()
             .description("Links: Link case")
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
