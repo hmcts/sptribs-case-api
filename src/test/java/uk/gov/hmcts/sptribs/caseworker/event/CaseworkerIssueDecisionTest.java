@@ -120,7 +120,7 @@ class CaseworkerIssueDecisionTest {
             anyMap(),
             any(),
             eq(DecisionTemplate.ELIGIBILITY.getId()),
-            eq(LanguagePreference.ENGLISH), any()))
+            eq(LanguagePreference.ENGLISH), any(),any()))
             .thenReturn(document);
 
         //When
