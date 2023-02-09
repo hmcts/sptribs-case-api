@@ -6,8 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
@@ -18,22 +16,15 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
-import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
 
 @ExtendWith(MockitoExtension.class)
 public class HearingPostponedNotificationTest {
@@ -53,7 +44,6 @@ public class HearingPostponedNotificationTest {
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
-        data.getCicCase().setHearingList(getDynamicList());
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -75,7 +65,6 @@ public class HearingPostponedNotificationTest {
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
-        data.getCicCase().setHearingList(getDynamicList());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -121,7 +110,6 @@ public class HearingPostponedNotificationTest {
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
-        data.getCicCase().setHearingList(getDynamicList());
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -144,7 +132,6 @@ public class HearingPostponedNotificationTest {
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
-        data.getCicCase().setHearingList(getDynamicList());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -174,16 +161,4 @@ public class HearingPostponedNotificationTest {
         return caseData;
     }
 
-    private DynamicList getDynamicList() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("HearingType" + SPACE + HYPHEN + SPACE + HEARING_DATE_1 + TestEventConstants.SPACE + HEARING_TIME)
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
 }
