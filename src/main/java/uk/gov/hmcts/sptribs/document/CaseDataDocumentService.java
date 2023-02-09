@@ -4,11 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 
 @Service
@@ -25,11 +28,13 @@ public class CaseDataDocumentService {
                                    final Long caseId,
                                    final String templateId,
                                    final LanguagePreference languagePreference,
-                                   final String filename) {
+                                   final String filename,
+                                   final HttpServletRequest request) {
 
         log.info("Rendering document request for templateId : {} ", templateId);
 
-        final String authorisation = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
+        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final String authorisation = caseworkerUser.getAuthToken();
 
         final var documentInfo = docAssemblyService.renderDocument(
             templateContent,
