@@ -16,6 +16,7 @@ import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CI
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DATED;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DECISION_SIGNATURE;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_TYPE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.REPRESENTATIVE_FULL_NAME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.FILE_NAME_DATE_FORMATTER;
@@ -34,6 +35,7 @@ public class DecisionTemplateContent {
         templateContent.put(CIC_CASE_SCHEME, caseData.getCicCase().getSchemeCic().getLabel());
         templateContent.put(CASE_NUMBER, ccdCaseReference);
         templateContent.put(SUBJECT_FULL_NAME, caseData.getHearingSummary().getSubjectName());
+        templateContent.put(REPRESENTATIVE_FULL_NAME, caseData.getCicCase().getRepresentativeFullName());
         templateContent.put(HEARING_TYPE, caseData.getHearingSummary().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getHearingSummary().getPanelMemberList()));
         templateContent.put(DECISION_SIGNATURE, caseData.getDecisionSignature());
