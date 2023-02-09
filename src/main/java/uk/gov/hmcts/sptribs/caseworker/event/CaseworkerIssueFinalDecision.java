@@ -73,7 +73,6 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .forStates(AwaitingOutcome)
             .name("Decision: Issue final decision")
             .description("Decision: Issue final decision")
-            .showEventNotes()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)

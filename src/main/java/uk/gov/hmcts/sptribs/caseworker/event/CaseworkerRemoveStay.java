@@ -51,7 +51,6 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .description("Stays: Remove stay")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayRemoved)
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
