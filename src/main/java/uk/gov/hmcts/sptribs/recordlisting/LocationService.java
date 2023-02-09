@@ -103,7 +103,6 @@ public class LocationService {
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("region").code(UUID.randomUUID()).build())
             .listItems(regionDynamicList)
             .build();
     }
