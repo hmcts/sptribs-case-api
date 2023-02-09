@@ -4,7 +4,7 @@ public final class DocumentConstants {
     public static final String FINAL_DECISION_FILE = "Final-decision-notice";
     public static final String FINAL_DECISION_ANNEX_FILE = "Final-decision-annex";
     public static final String FINAL_DECISION_ANNEX_TEMPLATE_ID = "ST-CIC-DEC-ENG-CIC12_Decision_Annex";
-
+    public static final String DECISION_FILE = "Decision-notice";
     public static final String CASE_APPLICATION_FORM = "CASE_APPLICATION_FORM";
     public static final String TRIBUNAL_DIRECTION = "TRIBUNAL_DIRECTION";
     public static final String POLICE_EVIDENCE = "POLICE_EVIDENCE";
