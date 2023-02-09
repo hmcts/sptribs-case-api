@@ -64,7 +64,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .forStates(CaseManagement, AwaitingHearing)
             .name("Hearings: Create listing")
             .description("Hearings: Create listing")
-            .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)

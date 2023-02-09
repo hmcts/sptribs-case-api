@@ -63,7 +63,6 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             .forStates(AwaitingHearing)
             .name("Hearings: Cancel hearing")
             .description("Hearings: Cancel hearing")
-            .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)

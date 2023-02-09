@@ -62,7 +62,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .forStates(AwaitingHearing)
             .name("Hearings: Edit listing")
             .description("Hearings: Edit listing")
-            .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
