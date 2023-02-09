@@ -26,13 +26,12 @@ public final class CommonConstants {
     public static final String HEARING_TIME = "HearingTime";
     public static final String REINSTATE_REASON = "ReinstatementReason";
     public static final String DECISION_NOTICE = "DecisionNotice";
-    public static final String FINAL_DECISION_NOTICE = "FinalDecisionNotice";
-    public static final String FINAL_DECISION_GUIDANCE = "FinalDecisionGuidance";
-    public static final String INDEX = "Index";
     public static final String DOC_AVAILABLE = "DocumentAvailable";
     public static final String STAY_EXPIRATION_DATE = "StayExpirationDate";
     public static final String STAY_REASON = "stayStayReason";
     public static final String STAY_ADDITIONAL_DETAIL = "stayAdditionalDetail";
+    public static final String CLOSURE_REASON = "ClosureReason";
+    public static final String CLOSURE_INFORMATION = "ClosureInformation";
     public static final String NONE_PROVIDED = "None provided";
     public static final String ADDRESS_LINE_1 = "address_line_1";
     public static final String ADDRESS_LINE_2 = "address_line_2";
