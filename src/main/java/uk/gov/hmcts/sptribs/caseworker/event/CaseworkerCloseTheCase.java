@@ -139,11 +139,13 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         pageBuilder.page(pageNameUpload)
             .pageLabel("Upload case documents")
             .label("LabelCloseCaseUploadDoc",
-                "\nPlease upload copies of any information or evidence that you want to add to this case.\n"
-                    + "\n<h3>Files should be:</h3>\n"
-                    + "\n- uploaded separately and not in one large file\n"
-                    + "\n- a maximum of 100MB in size (larger files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")
+                """
+                    Please upload copies of any information or evidence that you want to add to this case.
+                    <h3>Files should be:</h3>
+                    uploaded separately and not in one large file
+                    a maximum of 100MB in size (larger files must be split)
+                    labelled clearly, e.g. applicant-name-decision-notice.pdf
+                    """)
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();
