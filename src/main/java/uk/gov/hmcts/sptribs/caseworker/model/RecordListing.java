@@ -166,6 +166,7 @@ public class RecordListing {
     private String conferenceCallNumber;
 
     @CCD(
+        label = "Other important information ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )
