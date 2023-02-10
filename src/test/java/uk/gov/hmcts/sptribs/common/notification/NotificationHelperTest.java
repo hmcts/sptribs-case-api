@@ -54,7 +54,7 @@ public class NotificationHelperTest {
     private NotificationHelper notificationHelper;
 
     @Test
-    void setRecordingTemplateVarsTest() throws IOException {
+    void setRecordingTemplateVarsTest() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .conferenceCallNumber("cmi459t5iut5")
@@ -74,7 +74,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_VideoFormat() throws IOException {
+    void setRecordingTemplateVarsTest_VideoFormat() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
@@ -89,7 +89,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_HearingFormat_null() throws IOException {
+    void setRecordingTemplateVarsTest_HearingFormat_null() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
@@ -102,7 +102,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_SelectedVenueSet() throws IOException {
+    void setRecordingTemplateVarsTest_SelectedVenueSet() {
         //Given
         RecordListing recordListing = Mockito.mock(RecordListing.class);
 
@@ -133,7 +133,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_TelephoneFormat() throws IOException {
+    void setRecordingTemplateVarsTest_TelephoneFormat() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
@@ -271,7 +271,7 @@ public class NotificationHelperTest {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
         // Then
-        assertThat(templateVars.get(HEARING_DATE)).isEqualTo("2023-02-09");
+        assertThat(templateVars.get(HEARING_DATE)).isEqualTo(LocalDate.now().toString());
         assertThat(templateVars.get(HEARING_TIME)).isEqualTo("11:00");
     }
 
