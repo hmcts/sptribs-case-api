@@ -57,6 +57,7 @@ public class HearingVenues implements CcdPageConfiguration {
     private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
+        final CaseData caseDataBefore = detailsBefore.getData();
         final List<String> errors = new ArrayList<>();
         final RecordListing recordListing = data.getRecordListing();
 
@@ -70,6 +71,10 @@ public class HearingVenues implements CcdPageConfiguration {
         }
         if (StringUtils.isBlank(recordListing.getHearingVenueName()) || StringUtils.isBlank(recordListing.getHearingVenueAddress())) {
             errors.add("Please enter valid Hearing venue");
+        }
+
+        if (null != caseDataBefore.getHearingSummary() && null != caseDataBefore.getHearingSummary().getJudge()) {
+            data.getHearingSummary().setJudge(caseDataBefore.getHearingSummary().getJudge());
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

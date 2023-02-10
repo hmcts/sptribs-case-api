@@ -127,7 +127,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+    /*public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
         final CaseData caseDataBefore = detailsBefore.getData();
@@ -138,7 +138,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
-    }
+    }*/
 
 
 }
