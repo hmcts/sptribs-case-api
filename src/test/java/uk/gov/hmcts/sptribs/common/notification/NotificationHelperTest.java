@@ -271,8 +271,8 @@ public class NotificationHelperTest {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
         // Then
-        assertThat(templateVars.get(HEARING_DATE)).isNotNull();
-        assertThat(templateVars.get(HEARING_TIME)).isNotNull();
+        assertThat(templateVars.get(HEARING_DATE)).isEqualTo(LocalDate.now().toString());
+        assertThat(templateVars.get(HEARING_TIME)).isEqualTo("11:00");
     }
 
     private DynamicList getDynamicList() {
