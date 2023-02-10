@@ -58,7 +58,7 @@ public enum HearingAttendeesRole implements HasLabel {
     WITNESS_POLICE("Witness - Police"),
 
     @JsonProperty("other")
-    OTHER("Other");
+    OTHER("Other ");
 
     private final String label;
 
