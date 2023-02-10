@@ -80,22 +80,16 @@ public class RecordListing {
     private Set<VenueNotListed> venueNotListedOption;
 
     @CCD(
-        label = "Venue Name",
+        label = "Venue Name and Address",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String hearingVenueName;
+    private String hearingVenueNameAndAddress;
 
     @CCD(
         label = "Venue Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String readOnlyHearingVenueName;
-
-    @CCD(
-        label = "Venue Address",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String hearingVenueAddress;
 
     @CCD(
         label = "Room at venue",

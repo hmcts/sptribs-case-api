@@ -122,8 +122,8 @@ public class NotificationHelper {
             if (null != recordListing.getSelectedVenue()) {
                 templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getSelectedVenue());
             } else
-                if (null != recordListing.getHearingVenueName()) {
-                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueName());
+                if (null != recordListing.getHearingVenueNameAndAddress()) {
+                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueNameAndAddress());
                 } else {
                     templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
                 }
