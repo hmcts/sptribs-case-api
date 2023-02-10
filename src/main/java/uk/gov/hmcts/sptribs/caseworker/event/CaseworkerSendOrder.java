@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -24,6 +25,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
+import uk.gov.hmcts.sptribs.common.notification.NewOrderIssuedNotification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +59,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private NewOrderIssuedNotification newOrderIssuedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -155,11 +161,26 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
+        sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Order sent %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
             .build();
+    }
+
+    private void sendOrderNotification(String caseNumber, CaseData caseData) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
+        }
     }
 
 }
