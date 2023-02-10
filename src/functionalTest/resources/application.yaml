@@ -47,7 +47,7 @@ location:
 
 judicial:
   api:
-    baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-ref-api-aat.service.core-compute-aat.internal}
+    baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
 core_case_data:
   api:

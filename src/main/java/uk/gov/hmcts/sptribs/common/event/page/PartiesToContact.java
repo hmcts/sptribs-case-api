@@ -28,7 +28,7 @@ public class PartiesToContact implements CcdPageConfiguration {
             .complex(CaseData::getContactParties)
             .optional(ContactParties::getSubjectContactParties)
             .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ")
-            .optional(ContactParties::getRespondant)
+            .optional(ContactParties::getRespondent)
             .mandatory(ContactParties::getMessage)
             .done();
     }
@@ -41,7 +41,7 @@ public class PartiesToContact implements CcdPageConfiguration {
 
         if (null != data.getContactParties() && CollectionUtils.isEmpty(data.getContactParties().getRepresentativeContactParties())
             && CollectionUtils.isEmpty(data.getContactParties().getSubjectContactParties())
-            && CollectionUtils.isEmpty(data.getContactParties().getRespondant())) {
+            && CollectionUtils.isEmpty(data.getContactParties().getRespondent())) {
 
             errors.add("Which parties do you want to contact?. is required.");
         }

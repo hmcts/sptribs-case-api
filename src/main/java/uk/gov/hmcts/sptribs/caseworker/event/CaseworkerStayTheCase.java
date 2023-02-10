@@ -44,7 +44,6 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .description("Stays: Create/edit stay")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayed)
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("addStay")

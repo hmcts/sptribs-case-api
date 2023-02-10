@@ -17,6 +17,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkMultiS
 import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant;
 
 public class FlagParties implements CcdPageConfiguration {
+    private static final String RECIPIENT_LABEL = "Case Flag  information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -29,16 +30,13 @@ public class FlagParties implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                "Case Flag information recipient - Subject")
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                "Case Flag information recipient - Representative")
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .readonlyWithLabel(CicCase::getApplicantFullName, " ")
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\" ",
-                "Case Flag information recipient - Applicant")
+                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 
