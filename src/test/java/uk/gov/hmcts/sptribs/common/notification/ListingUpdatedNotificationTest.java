@@ -56,7 +56,7 @@ public class ListingUpdatedNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        RecordListing recordListing = RecordListing.builder().hearingVenueName("London Centre")
+        RecordListing recordListing = RecordListing.builder().hearingVenueNameAndAddress("London Centre - London")
                 .conferenceCallNumber("cmi459t5iut5")
                     .videoCallLink("http://abc.com")
                         .conferenceCallNumber("+56677778")
