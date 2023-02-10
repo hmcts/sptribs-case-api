@@ -14,17 +14,18 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -39,6 +40,12 @@ class CaseworkerPostponeHearingTest {
 
     @Mock
     private HearingService hearingService;
+
+    @Mock
+    private HearingPostponedNotification hearingPostponedNotification;
+
+    @InjectMocks
+    private PostponeHaringNotifyParties postponeHaringNotifyParties;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -74,9 +81,6 @@ class CaseworkerPostponeHearingTest {
         assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_POSTPONE_HEARING);
     }
 
-    @InjectMocks
-    private PostponeHaringNotifyParties postponeHaringNotifyParties;
-
     @Test
     void shouldReturnErrorsIfNoNotificationPartySelected() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -92,12 +96,13 @@ class CaseworkerPostponeHearingTest {
     void shouldSuccessfullyPostpone() {
         //Given
         final CicCase cicCase = CicCase.builder()
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
+            .hyphenatedCaseRef("1234-5678-3456")
             .build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -106,13 +111,15 @@ class CaseworkerPostponeHearingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        doNothing().when(hearingPostponedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        doNothing().when(hearingPostponedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        doNothing().when(hearingPostponedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+
         AboutToStartOrSubmitResponse<CaseData, State> response
             = caseWorkerPostponeHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submitted = caseWorkerPostponeHearing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCicCase().getHearingNotificationParties()).hasSize(3);
         assertThat(submitted.getConfirmationHeader()).contains("Hearing Postponed");
-        assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
     }
 }

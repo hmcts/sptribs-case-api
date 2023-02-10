@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingReasonSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -40,6 +41,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
     private static final CcdPageConfiguration reasonSelect = new CancelHearingReasonSelect();
 
+    private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
+
     @Autowired
     private HearingService hearingService;
 
@@ -51,6 +54,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         var pageBuilder = cancelStart(configBuilder);
         hearingDateSelect.addTo(pageBuilder);
         reasonSelect.addTo(pageBuilder);
+        recordNotifyParties.addTo(pageBuilder);
     }
 
     public PageBuilder cancelStart(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -59,7 +63,6 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             .forStates(AwaitingHearing)
             .name("Hearings: Cancel hearing")
             .description("Hearings: Cancel hearing")
-            .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)

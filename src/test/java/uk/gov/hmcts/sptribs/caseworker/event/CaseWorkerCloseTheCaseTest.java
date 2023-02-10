@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -47,6 +48,9 @@ class CaseWorkerCloseTheCaseTest {
 
     @Mock
     private JudicialService judicialService;
+
+    @Mock
+    private CaseWithdrawnNotification caseWithdrawnNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -100,7 +104,7 @@ class CaseWorkerCloseTheCaseTest {
         CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
-            .respondantEmail(TEST_CASEWORKER_USER_EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))

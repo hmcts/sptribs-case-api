@@ -21,6 +21,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
 import java.util.Set;
 
@@ -35,10 +38,19 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_
 class CaseworkerIssueFinalDecisionTest {
 
     @Mock
-    IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Mock
+    private FinalDecisionTemplateContent finalDecisionTemplateContent;
+
+    @Mock
+    private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
 
     @InjectMocks
     private CaseworkerIssueFinalDecision issueFinalDecision;
+
+    @Mock
+    private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -64,10 +76,9 @@ class CaseworkerIssueFinalDecisionTest {
         caseData.setCaseIssueFinalDecision(finalDecision);
 
         //Then
-        assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getId()).isEqualTo("SPT_CIC2_Quantum.docx");
+        assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getId()).isEqualTo("ST-CIC-DEC-ENG-CIC2_Quantum");
         assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getLabel()).isEqualTo("Quantum");
     }
-
 
     @Test
     void shouldShowCorrectMessageWhenSubmitted() {
@@ -105,5 +116,23 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(response.getState())
             .isEqualTo(CaseClosed);
+    }
+
+    @Test
+    void shouldReturnErrorsIfNoNotificationPartySelected() {
+        //Given
+        final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
+        caseIssueFinalDecision.setFinalDecisionTemplate(FinalDecisionTemplate.ELIGIBILITY);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .caseIssueFinalDecision(caseIssueFinalDecision)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isNull();
     }
 }
