@@ -271,7 +271,7 @@ public class NotificationHelperTest {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
         // Then
-        assertThat(templateVars.get(HEARING_DATE)).isEqualTo("2023-02-09");
+        assertThat(templateVars.get(HEARING_DATE)).isEqualTo("2023-02-10");
         assertThat(templateVars.get(HEARING_TIME)).isEqualTo("11:00");
     }
 

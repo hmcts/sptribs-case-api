@@ -39,6 +39,7 @@ public class CaseTypeTabTest {
         Tab.TabBuilder<CaseData, UserRole> casePartiesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> ordersTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> caseDocsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
 
         when(configBuilder.tab("summary", "Summary")).thenReturn(summaryTabBuilder);
         when(configBuilder.tab("flags", "Flags")).thenReturn(flagsTabBuilder);
@@ -48,7 +49,7 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("caseParties", "Case Parties")).thenReturn(casePartiesTabBuilder);
         when(configBuilder.tab("orders", "Orders")).thenReturn(ordersTabBuilder);
         when(configBuilder.tab("caseDocuments", "Case Documents")).thenReturn(caseDocsTabBuilder);
-        when(configBuilder.tab("hearings", "Hearings")).thenReturn(caseDocsTabBuilder);
+        when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
 
         //When
         caseTypeTab.configure(configBuilder);
@@ -58,6 +59,7 @@ public class CaseTypeTabTest {
         Tab<CaseData, UserRole> casePartiesTab = casePartiesTabBuilder.build();
         Tab<CaseData, UserRole> ordersTab = ordersTabBuilder.build();
         Tab<CaseData, UserRole> caseDocsTab = caseDocsTabBuilder.build();
+        Tab<CaseData, UserRole> hearingsTab = hearingsTabBuilder.build();
 
         //Then
         assertThat(summaryTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
@@ -66,5 +68,6 @@ public class CaseTypeTabTest {
         assertThat(casePartiesTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
         assertThat(ordersTab.getFields()).extracting(TabField::getId).contains("cicCaseDraftOrderCICList");
         assertThat(caseDocsTab.getFields()).extracting(TabField::getId).contains("cicCaseApplicantDocumentsUploaded");
+        assertThat(hearingsTab.getFields()).extracting(TabField::getId).contains("cicCaseHearingNotificationParties");
     }
 }
