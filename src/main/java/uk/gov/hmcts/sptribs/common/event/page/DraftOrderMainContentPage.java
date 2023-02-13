@@ -47,7 +47,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
             .complex(CaseData::getDraftOrderMainContentCIC)
             .optional(DraftOrderMainContentCIC::getMainContent)
             .done()
-            .label("footer", "<h2>Footer</h2>\n The footer will be automatically generated.\n "
+            .label("footer", "<h3>Footer</h3>\n The footer will be automatically generated.\n "
                 + "You can preview this in pdf document on the next screen.\n"
                 + "<hr>\n")
             .done();
