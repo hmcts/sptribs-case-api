@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document.dto;
+package uk.gov.hmcts.sptribs.document.bundling;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -10,10 +10,10 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CicBundleFolderDTO {
+public class BundleFolder {
 
     private String name;
-    private List<CicValue<CicBundleDocumentDTO>> documents = new ArrayList<>();
-    private List<CicValue<CicBundleFolderDTO>> folders = new ArrayList<>();
+    private List<CicValue<BundleDocument>> documents = new ArrayList<>();
+    private List<CicValue<BundleFolder>> folders = new ArrayList<>();
     private int sortIndex;
 }

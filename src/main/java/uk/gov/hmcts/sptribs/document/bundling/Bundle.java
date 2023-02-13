@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document.dto;
+package uk.gov.hmcts.sptribs.document.bundling;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,16 +15,16 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CicBundleDTO {
+public class Bundle {
 
     private String id;
     private String title;
     @Size(max = 255, message = CommonConstants.BUNDLE_DESCRIPTION_FIELD_LENGTH_ERROR_MSG)
     private String description;
     private CICDocument stitchedDocument;
-    private List<CicValue<CicBundleDocumentDTO>> documents = new LinkedList<>();
-    private List<CicValue<CicBundleFolderDTO>> folders = new LinkedList<>();
-    private CicBundlePaginationStyle paginationStyle = CicBundlePaginationStyle.off;
+    private List<CicValue<BundleDocument>> documents = new LinkedList<>();
+    private List<CicValue<BundleFolder>> folders = new LinkedList<>();
+    private BundlePaginationStyle paginationStyle = BundlePaginationStyle.off;
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private String stitchingFailureMessage;
 
