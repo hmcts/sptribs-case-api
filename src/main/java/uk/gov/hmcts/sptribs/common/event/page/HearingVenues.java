@@ -56,7 +56,6 @@ public class HearingVenues implements CcdPageConfiguration {
     private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        final CaseData caseDataBefore = detailsBefore.getData();
         final List<String> errors = new ArrayList<>();
         final RecordListing recordListing = data.getRecordListing();
 
