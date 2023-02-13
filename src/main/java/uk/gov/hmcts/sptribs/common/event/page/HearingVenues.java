@@ -73,10 +73,6 @@ public class HearingVenues implements CcdPageConfiguration {
             errors.add("Please enter valid Hearing venue");
         }
 
-        if (null != caseDataBefore.getHearingSummary() && null != caseDataBefore.getHearingSummary().getJudge()) {
-            data.getHearingSummary().setJudge(caseDataBefore.getHearingSummary().getJudge());
-        }
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
