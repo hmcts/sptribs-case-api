@@ -53,7 +53,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftUpdated)
-                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         editDraftOrder.addTo(pageBuilder);

@@ -10,9 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateHearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -64,7 +66,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .showEventNotes()
+                .submittedCallback(this::summaryCreated)
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createHearingSummary.addTo(pageBuilder);
@@ -126,6 +128,15 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
             .state(AwaitingOutcome)
             .build();
 
+    }
+
+    public SubmittedCallbackResponse summaryCreated(CaseDetails<CaseData, State> details,
+                                                    CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(MessageUtil.generateSimpleMessage(
+                "Hearing summary created",
+                "This hearing summary has been added to the case record."))
+            .build();
     }
 
 }

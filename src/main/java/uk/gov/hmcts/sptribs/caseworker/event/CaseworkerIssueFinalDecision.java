@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
@@ -58,6 +59,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration issueFinalDecisionSelectRecipients = new IssueFinalDecisionSelectRecipients();
 
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     private CaseDataDocumentService caseDataDocumentService;
 
     @Autowired
@@ -73,7 +77,6 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .forStates(AwaitingOutcome)
             .name("Decision: Issue final decision")
             .description("Decision: Issue final decision")
-            .showEventNotes()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
@@ -141,7 +144,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             caseId,
             finalDecision.getFinalDecisionTemplate().getId(),
             LanguagePreference.ENGLISH,
-            filename
+            filename,
+            request
         );
 
         finalDecision.setFinalDecisionDraft(generalOrderDocument);
@@ -199,7 +203,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             caseId,
             FINAL_DECISION_ANNEX_TEMPLATE_ID,
             LanguagePreference.ENGLISH,
-            filename
+            filename,
+            request
         );
 
     }

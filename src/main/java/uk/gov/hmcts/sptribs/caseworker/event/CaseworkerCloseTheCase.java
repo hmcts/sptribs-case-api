@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -20,10 +21,12 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWithdrawalDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
@@ -50,6 +53,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     @Autowired
     private JudicialService judicialService;
 
+    @Autowired
+    private CaseWithdrawnNotification caseWithdrawnNotification;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
@@ -75,7 +81,6 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::closed)
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
@@ -109,9 +114,24 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                                             CaseDetails<CaseData, State> beforeDetails) {
         String message = MessageUtil.generateSimpleMessage(details.getData().getCicCase(), "Case closed",
             "Use 'Reinstate case' if this case needs to be reopened in the future.");
+        sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
+    }
+
+    private void sendCaseWithdrawnNotification(String caseNumber, CaseData caseData) {
+        CicCase cicCase = caseData.getCicCase();
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            caseWithdrawnNotification.sendToSubject(caseData, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            caseWithdrawnNotification.sendToRespondent(caseData, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
+        }
     }
 
     private void uploadDocuments(PageBuilder pageBuilder) {
@@ -119,11 +139,13 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         pageBuilder.page(pageNameUpload)
             .pageLabel("Upload case documents")
             .label("LabelCloseCaseUploadDoc",
-                "\nPlease upload copies of any information or evidence that you want to add to this case.\n"
-                    + "\n<h3>Files should be:</h3>\n"
-                    + "\n- uploaded separately and not in one large file\n"
-                    + "\n- a maximum of 100MB in size (larger files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n")
+                """
+                    Please upload copies of any information or evidence that you want to add to this case.
+                    <h3>Files should be:</h3>
+                    uploaded separately and not in one large file
+                    a maximum of 100MB in size (larger files must be split)
+                    labelled clearly, e.g. applicant-name-decision-notice.pdf
+                    """)
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();

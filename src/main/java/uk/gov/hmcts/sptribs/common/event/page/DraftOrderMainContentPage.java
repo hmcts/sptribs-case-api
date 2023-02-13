@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Component
@@ -29,6 +30,8 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
     @Autowired
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -44,7 +47,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
             .complex(CaseData::getDraftOrderMainContentCIC)
             .optional(DraftOrderMainContentCIC::getMainContent)
             .done()
-            .label("footer", "<h2>Footer</h2>\n The footer will be automatically generated.\n "
+            .label("footer", "<h3>Footer</h3>\n The footer will be automatically generated.\n "
                 + "You can preview this in pdf document on the next screen.\n"
                 + "<hr>\n")
             .done();
@@ -67,7 +70,8 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
             caseId,
             caseData.getCicCase().getAnOrderTemplates().getId(),
             LanguagePreference.ENGLISH,
-            filename
+            filename,
+            request
         );
 
         caseData.getCicCase().setAnOrderTemplates(template);

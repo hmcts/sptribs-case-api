@@ -22,6 +22,15 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 public class MessageUtilTest {
 
     @Test
+    void shouldSuccessfullyGenerateSimpleHeaderAndFooterMessage() {
+        //When
+        String result = MessageUtil.generateSimpleMessage("header", "footer");
+
+        //Then
+        assertThat(result).contains("header").contains("footer");
+    }
+
+    @Test
     void shouldSuccessfullyGenerateSimpleMessageWithFooter() {
         //Given
         final CicCase cicCase = CicCase.builder()

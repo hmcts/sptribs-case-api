@@ -7,22 +7,34 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.testutil.TestConstants;
+import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_2;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_3;
@@ -31,6 +43,9 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationHelperTest {
@@ -39,7 +54,7 @@ public class NotificationHelperTest {
     private NotificationHelper notificationHelper;
 
     @Test
-    void setRecordingTemplateVarsTest() throws IOException {
+    void setRecordingTemplateVarsTest() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .conferenceCallNumber("cmi459t5iut5")
@@ -59,7 +74,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_VideoFormat() throws IOException {
+    void setRecordingTemplateVarsTest_VideoFormat() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
@@ -74,7 +89,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_HearingFormat_null() throws IOException {
+    void setRecordingTemplateVarsTest_HearingFormat_null() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
@@ -87,7 +102,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_SelectedVenueSet() throws IOException {
+    void setRecordingTemplateVarsTest_SelectedVenueSet() {
         //Given
         RecordListing recordListing = Mockito.mock(RecordListing.class);
 
@@ -107,7 +122,7 @@ public class NotificationHelperTest {
         //Given
         RecordListing recordListing = Mockito.mock(RecordListing.class);
 
-        when(recordListing.getHearingVenueName()).thenReturn("London Hearing Venue");
+        when(recordListing.getHearingVenueNameAndAddress()).thenReturn("London Hearing Venue - London");
         when(recordListing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
         when(recordListing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
         Map<String, Object> templateVars = new HashMap<>();
@@ -118,7 +133,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_TelephoneFormat() throws IOException {
+    void setRecordingTemplateVarsTest_TelephoneFormat() {
         //Given
         RecordListing recordListing = RecordListing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
@@ -241,5 +256,35 @@ public class NotificationHelperTest {
         assertThat(emailNotificationRequest).isNotNull();
         assertThat(emailNotificationRequestWithAttachment).isNotNull();
         assertThat(letterNotificationRequest).isNotNull();
+    }
+
+    @Test
+    void shouldAddHearingPostponedTemplateVars() {
+        Map<String, Object> templateVars = new HashMap<>();
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .hearingList(getDynamicList())
+            .build();
+
+        notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
+
+        // Then
+        assertThat(templateVars.get(HEARING_DATE)).isEqualTo(LocalDate.now().toString());
+        assertThat(templateVars.get(HEARING_TIME)).isEqualTo("11:00");
+    }
+
+    private DynamicList getDynamicList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("HearingType" + SPACE + HYPHEN + SPACE + HEARING_DATE_1 + TestEventConstants.SPACE + TestConstants.HEARING_TIME)
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
     }
 }

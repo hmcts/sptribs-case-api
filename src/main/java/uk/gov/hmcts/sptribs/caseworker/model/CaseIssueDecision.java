@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -37,6 +38,12 @@ public class CaseIssueDecision {
         typeParameterOverride = "DecisionTemplate"
     )
     private DecisionTemplate issueDecisionTemplate;
+
+    @CCD(
+        label = "Decision notice preview",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document issueDecisionDraft;
 
     @CCD(
         label = "Case Documents",

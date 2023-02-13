@@ -67,7 +67,6 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .name("Case: Edit case")
             .description("")
             .showSummary()
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));

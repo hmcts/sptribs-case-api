@@ -6,25 +6,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
+import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.IOException;
+import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ListingCreatedNotificationTest {
+public class CaseWithdrawnNotificationTest {
     @Mock
     private NotificationServiceCIC notificationService;
 
@@ -32,18 +34,20 @@ public class ListingCreatedNotificationTest {
     private NotificationHelper notificationHelper;
 
     @InjectMocks
-    private ListingCreatedNotification listingCreatedNotification;
+    private CaseWithdrawnNotification caseWithdrawnNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifySubjectWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setEmail("testrepr@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingCreatedNotification.sendToSubject(data, "CN1");
+        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        caseWithdrawnNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -52,41 +56,18 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail_withFullRecordListing() throws IOException {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        RecordListing recordListing = RecordListing.builder().hearingVenueNameAndAddress("London Centre - London")
-            .conferenceCallNumber("cmi459t5iut5")
-            .videoCallLink("http://abc.com")
-            .conferenceCallNumber("+56677778")
-            .hearingFormat(HearingFormat.FACE_TO_FACE)
-            .build();
-        data.setRecordListing(recordListing);
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        listingCreatedNotification.sendToSubject(data, "CN1");
-
-        //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
-    }
-
-    @Test
-    void shouldNotifySubjectOfCaseIssuedWithPost() throws IOException {
+    void shouldNotifySubjectWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
-        data.getCicCase().setAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
+        data.getCicCase().setAddress(AddressGlobalUK.builder().build());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingCreatedNotification.sendToSubject(data, "CN1");
+        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        caseWithdrawnNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -94,18 +75,39 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendLetter();
     }
 
+    @Test
+    void shouldNotifyRespondentWithEmail() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setRespondentName("respondentName");
+        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        caseWithdrawnNotification.sendToRespondent(data, "CN1");
+
+        //Then
+        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
+
+        verify(notificationService).sendEmail();
+    }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifyRepresentativeWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
+        data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingCreatedNotification.sendToRepresentative(data, "CN1");
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        caseWithdrawnNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -114,17 +116,19 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() throws IOException {
+    void shouldNotifyRepresentativeWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
-        data.getCicCase().setRepresentativeAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
+        data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        listingCreatedNotification.sendToRepresentative(data, "CN1");
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        caseWithdrawnNotification.sendToRepresentative(data, "CN1");
 
         //Then
         verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
@@ -132,26 +136,15 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendLetter();
     }
 
-    @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() throws IOException {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setRepresentativeFullName("respFullName");
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        listingCreatedNotification.sendToRespondent(data, "CN1");
-
-        //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
-    }
-
     private CaseData getMockCaseData() {
-        CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        CicCase cicCase = CicCase.builder()
+            .fullName("fullName").caseNumber("CN1")
+            .build();
+        CloseCase closeCase = CloseCase.builder()
+            .closeCaseReason(CloseReason.Withdrawn)
+            .additionalDetail("additionalDet")
+            .build();
+        CaseData caseData = CaseData.builder().cicCase(cicCase).closeCase(closeCase).build();
 
         return caseData;
     }
