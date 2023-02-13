@@ -106,8 +106,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                                                       CaseDetails<CaseData, State> beforeDetails) {
 
         sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-
-        return SubmittedCallbackResponse.builder().confirmationHeader(format("#  Hearing cancelled  %n## %s",
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Hearing cancelled %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
     }
