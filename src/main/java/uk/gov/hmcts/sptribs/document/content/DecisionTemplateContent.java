@@ -16,6 +16,7 @@ import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CI
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DATED;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DECISION_SIGNATURE;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_TYPE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.MAIN_BODY;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.REPRESENTATIVE_FULL_NAME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
@@ -39,6 +40,7 @@ public class DecisionTemplateContent {
         templateContent.put(HEARING_TYPE, caseData.getHearingSummary().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getHearingSummary().getPanelMemberList()));
         templateContent.put(DECISION_SIGNATURE, caseData.getDecisionSignature());
+        templateContent.put(MAIN_BODY, caseData.getDecisionMainContent());
         return templateContent;
     }
 

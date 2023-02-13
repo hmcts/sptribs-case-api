@@ -32,6 +32,8 @@ public class DecisionTemplateContentTest {
     public void shouldSuccessfullyApplyDecisionContent() {
         //Given
         CaseData caseData = buildCaseData();
+        caseData.setDecisionSignature("John Doe");
+        caseData.setDecisionMainContent("Case Closed");
         HearingSummary summary = HearingSummary.builder()
             .panelMemberList(getMembers())
             .build();

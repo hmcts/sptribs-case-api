@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionMainContent;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
@@ -52,7 +53,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration issueDecisionPreviewTemplate = new IssueDecisionPreviewTemplate();
     private static final CcdPageConfiguration issueDecisionUploadNotice = new IssueDecisionUploadNotice();
     private static final CcdPageConfiguration issueDecisionSelectRecipients = new IssueDecisionSelectRecipients();
-
+    private static final CcdPageConfiguration issueDecisionMainContent = new IssueDecisionMainContent();
     @Autowired
     private CaseDataDocumentService caseDataDocumentService;
 
@@ -79,6 +80,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .grantHistoryOnly(SOLICITOR));
         issueDecisionNotice.addTo(pageBuilder);
         issueDecisionSelectTemplate.addTo(pageBuilder);
+        issueDecisionMainContent.addTo(pageBuilder);
         issueDecisionUploadNotice.addTo(pageBuilder);
         issueDecisionAddDocumentFooter(pageBuilder);
         issueDecisionPreviewTemplate.addTo(pageBuilder);
