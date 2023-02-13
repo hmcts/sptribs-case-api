@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -63,8 +64,9 @@ public class CaseData {
 
 
     @JsonUnwrapped(prefix = "cicBundles")
+    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<Bundle>> cicBundles;
+    private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
