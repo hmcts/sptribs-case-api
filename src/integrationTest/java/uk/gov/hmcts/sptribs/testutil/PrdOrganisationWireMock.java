@@ -60,13 +60,4 @@ public final class PrdOrganisationWireMock {
             )
         );
     }
-
-    public static class PropertiesInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(ConfigurableApplicationContext applicationContext) {
-            TestPropertyValues
-                .of("prd.api.url=" + "http://localhost:" + PRD_ORGANISATION_SERVER.port())
-                .applyTo(applicationContext.getEnvironment());
-        }
-    }
 }
