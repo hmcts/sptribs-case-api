@@ -31,7 +31,7 @@ class SendOrderAddDraftOrderTest {
         ListValue<DraftOrderCIC> order = new ListValue<>();
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(order))
-            .draftList(getDraftList())
+            .draftOrderDynamicList(getDraftList())
             .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
