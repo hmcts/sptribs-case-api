@@ -44,11 +44,9 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
 
-    @Autowired
-    private PreviewDraftOrder previewOrder;
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
 
-    @Autowired
-    private DraftOrderMainContentPage draftOrderEditMainContentPage;
+    private static final CcdPageConfiguration draftOrderEditMainContentPage = new DraftOrderMainContentPage();
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

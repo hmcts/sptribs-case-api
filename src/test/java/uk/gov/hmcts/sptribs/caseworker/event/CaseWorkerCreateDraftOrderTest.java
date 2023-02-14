@@ -16,8 +16,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
-import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
@@ -34,17 +32,12 @@ class CaseWorkerCreateDraftOrderTest {
 
     @InjectMocks
     private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
+
     @Mock
     private CaseDataDocumentService caseDataDocumentService;
+
     @Mock
     PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
-    @InjectMocks
-    private DraftOrderMainContentPage draftOrderMainContentPage;
-    @Mock
-    private PreviewDraftOrder previewOrder;
-
-    @InjectMocks
-    private PreviewDraftOrder previewDraftOrder;
 
     @Mock
     private OrderService orderService;
