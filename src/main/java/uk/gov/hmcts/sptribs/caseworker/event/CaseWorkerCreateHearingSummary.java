@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingAttendees;
 import uk.gov.hmcts.sptribs.common.event.page.HearingAttendeesRolePage;
 import uk.gov.hmcts.sptribs.common.event.page.HearingOutcomePage;
+import uk.gov.hmcts.sptribs.common.event.page.HearingRecordingUploadPage;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -47,6 +48,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration hearingAttendees = new HearingAttendees();
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
+
+    private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
 
     @Autowired
     private HearingService hearingService;
@@ -73,6 +76,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         hearingAttendees.addTo(pageBuilder);
         hearingAttendeesRole.addTo(pageBuilder);
         HearingOutcome.addTo(pageBuilder);
+        hearingRecordingUploadPage.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
