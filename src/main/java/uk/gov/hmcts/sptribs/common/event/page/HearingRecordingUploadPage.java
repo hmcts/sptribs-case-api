@@ -23,7 +23,8 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                                 + "\n- Give the files a meaningful name. for example, bail-hearing-John-Smith.mp3\n")
             .complex(CaseData::getHearingSummary)
             .optionalWithLabel(HearingSummary::getRecordingUpload, "Upload file")
-            .label("HearingRecordDescription", "<h3>If you can't upload a recording of the hearing, please describe where it can be found. You can also enter a link to the recording</h3>")
+            .label("HearingRecordDescription", "<h3>If you can't upload a recording of the hearing, "
+                + "please describe where it can be found.You can also enter a link to the recording</h3>")
             .optional(HearingSummary::getHearingRecordingDescription)
             .done();
     }
