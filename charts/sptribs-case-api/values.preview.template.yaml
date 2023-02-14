@@ -6,7 +6,7 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
+    CASE_DATA_STORE_BASEURL: http://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal
     CASE_DOCUMENT_AM_BASEURL: http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
   keyVaults:
@@ -92,7 +92,7 @@ ccd:
     java:
       disableKeyVaults: true
       environment:
-        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+        CCD_DATA_STORE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
 
   ccd-definition-store-api:
