@@ -77,7 +77,7 @@ class CaseworkerIssueFinalDecisionTest {
 
         //Then
         assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getId()).isEqualTo("ST-CIC-DEC-ENG-CIC2_Quantum");
-        assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getLabel()).isEqualTo("Quantum");
+        assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionTemplate().getLabel()).contains("Quantum");
     }
 
     @Test

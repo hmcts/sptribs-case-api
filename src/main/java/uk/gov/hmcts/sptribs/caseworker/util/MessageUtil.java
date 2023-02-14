@@ -20,6 +20,16 @@ public final class MessageUtil {
     private MessageUtil() {
     }
 
+    public static String generateSimpleMessage(String header, String footer) {
+        String message = format("# %s", header);
+        if (StringUtils.hasText(footer)) {
+            StringBuilder sb = new StringBuilder(message);
+            sb.append(format(" %n## %s", footer));
+            message = sb.toString();
+        }
+        return message;
+    }
+
     public static String generateSimpleMessage(final CicCase cicCase, String header, String footer) {
         final String notificationMessage = generateSimpleMessage(cicCase);
         String message = format("# %s %n## %s", header, notificationMessage);

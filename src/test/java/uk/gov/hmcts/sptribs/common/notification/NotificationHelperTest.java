@@ -122,7 +122,7 @@ public class NotificationHelperTest {
         //Given
         RecordListing recordListing = Mockito.mock(RecordListing.class);
 
-        when(recordListing.getHearingVenueName()).thenReturn("London Hearing Venue");
+        when(recordListing.getHearingVenueNameAndAddress()).thenReturn("London Hearing Venue - London");
         when(recordListing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
         when(recordListing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
         Map<String, Object> templateVars = new HashMap<>();
