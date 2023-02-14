@@ -7,14 +7,12 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -23,15 +21,10 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
-import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -55,18 +48,6 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     @Autowired
     private OrderService orderService;
-
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    @Autowired
-    private CaseDataDocumentService caseDataDocumentService;
-
-    @Autowired
-    private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
-
-    @Autowired
-    private HttpServletRequest request;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -115,7 +96,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .template(orderTemplate)
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
-        if (isEmpty(caseData.getCicCase().getOrderList())) {
+        if (isEmpty(caseData.getCicCase().getDraftOrderCICList())) {
             List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
 
             var listValue = ListValue
@@ -160,24 +141,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         CaseDetails<CaseData, State> detailsBefore
     ) {
 
-
-        var caseData = details.getData();
-        var template = caseData.getCicCase().getOrderTemplate();
-        String subjectName = caseData.getCicCase().getFullName();
-        final Long caseId = details.getId();
-        final String filename = "Order-[" + subjectName + "]-" + LocalDateTime.now().format(formatter);
-
-        Document generalOrderDocument = caseDataDocumentService.renderDocument(
-            previewDraftOrderTemplateContent.apply(caseData, caseId),
-            caseId,
-            caseData.getCicCase().getOrderTemplate().getId(),
-            LanguagePreference.ENGLISH,
-            filename,
-            request
-        );
-
-        caseData.getCicCase().setOrderTemplate(template);
-        caseData.getCicCase().setOrderTemplateIssued(generalOrderDocument);
+        var caseData = orderService.generateOrderFile(details.getData(), details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
