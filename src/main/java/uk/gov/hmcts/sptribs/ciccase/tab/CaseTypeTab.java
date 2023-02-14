@@ -173,6 +173,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("hearingSummaryPanelMemberList")
             .field("hearingSummaryHearingAttendeesRole")
             .field("hearingSummaryHearingOutcome")
+            .field("hearingSummaryRecordingUpload")
 
             .label("Postponement summary", "cicCasePostponeReason!=\"\"", "#### Postponement summary")
             .field("cicCasePostponeReason")
