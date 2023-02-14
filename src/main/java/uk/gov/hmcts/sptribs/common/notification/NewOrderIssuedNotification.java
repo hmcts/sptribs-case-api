@@ -1,8 +1,11 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -12,6 +15,8 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -27,34 +32,40 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
-        notificationHelper.addNewOrderIssuedTemplateVars(cicCase, templateVars);
 
+        NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType().isEmail()) {
-            NotificationResponse hearingNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
-            cicCase.setSubjectNotifyList(hearingNotifyResponse);
+            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+
+            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
+                uploadedDocumentIds, templateVars);
+            cicCase.setSubjectNotifyList(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
         }
+
+        cicCase.setSubjectNotifyList(notificationResponse);
     }
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
-        notificationHelper.addNewOrderIssuedTemplateVars(cicCase, templateVars);
 
+        NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
-            NotificationResponse hearingNotifyResponse =
-                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
-            cicCase.setRepNotificationResponse(hearingNotifyResponse);
+            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
+                uploadedDocumentIds, templateVars);
+            cicCase.setRepNotificationResponse(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
         }
+
+        cicCase.setRepNotificationResponse(notificationResponse);
     }
 
     @Override
@@ -62,26 +73,42 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        notificationHelper.addNewOrderIssuedTemplateVars(cicCase, respondentTemplateVars);
+        List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
 
-        NotificationResponse hearingNotifyResponse = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
-        cicCase.setResNotificationResponse(hearingNotifyResponse);
+        NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
+            uploadedDocumentIds, respondentTemplateVars);
+        cicCase.setResNotificationResponse(notificationResponse);
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
+    private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
+                                                                     List<String> uploadedDocumentIds,
+                                                                     final Map<String, Object> templateVars) {
+        NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
+            true,
+            uploadedDocumentIds,
             templateVars,
-            TemplateName.HEARING_POSTPONED_EMAIL);
-        notificationService.setNotificationRequest(request);
+            TemplateName.NEW_ORDER_ISSUED_EMAIL);
+        notificationService.setNotificationRequest(emailRequest);
         return notificationService.sendEmail();
     }
 
-    private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.HEARING_POSTPONED_POST);
+            TemplateName.NEW_ORDER_ISSUED_POST);
         notificationService.setNotificationRequest(letterRequest);
-        notificationService.sendLetter();
+        return notificationService.sendLetter();
+    }
+
+    private List<String> getUploadedDocumentIds(CaseData caseData) {
+        CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
+        List<String> uploadedDocumentIds = new ArrayList<>();
+        if (caseIssueDecision.getDecisionDocument() != null) {
+            uploadedDocumentIds = caseIssueDecision.getDecisionDocument().stream().map(ListValue::getValue)
+                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
+                .toList();
+        }
+        return uploadedDocumentIds;
     }
 }
