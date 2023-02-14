@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -96,6 +97,21 @@ class CaseworkerCreateHearingSummaryTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCurrentEvent()).isBlank();
+    }
+
+    @Test
+    void shouldRunSubmitted() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        //When
+        SubmittedCallbackResponse response =
+            caseWorkerCreateHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader()).contains("Hearing summary created");
     }
 
 }

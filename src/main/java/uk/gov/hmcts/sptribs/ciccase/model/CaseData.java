@@ -215,6 +215,14 @@ public class CaseData {
     private String decisionSignature;
 
     @CCD(
+        label = "Enter text in the box below. This will be added into the centre of the generated decision document",
+        access = {CaseworkerAndSuperUserAccess.class},
+        typeOverride = TextArea
+    )
+    private String decisionMainContent;
+
+
+    @CCD(
         label = "Order signature",
         access = {CaseworkerAndSuperUserAccess.class}
     )
