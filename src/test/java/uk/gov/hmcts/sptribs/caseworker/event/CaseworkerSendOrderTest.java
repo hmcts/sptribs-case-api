@@ -37,8 +37,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -76,23 +74,6 @@ class CaseworkerSendOrderTest {
             .contains(CASEWORKER_SEND_ORDER);
     }
 
-    @Test
-    void shouldRunAboutToStart() {
-        //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        updatedCaseDetails.setData(caseData);
-        when(orderService.getDraftOrderDynamicList(any())).thenReturn(null);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToStart(updatedCaseDetails);
-
-        //Then
-        assertThat(response).isNotNull();
-    }
 
     @Test
     void shouldSuccessfullySendOrderWithEmail() {
@@ -101,12 +82,12 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().template(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
         final CicCase cicCase = CicCase.builder()
-            .draftList(getDraftOrderList())
+            .draftOrderDynamicList(getDraftOrderList())
             .draftOrderCICList(List.of(draftOrderCICListValue))
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
@@ -152,7 +133,7 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().template(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
@@ -173,7 +154,7 @@ class CaseworkerSendOrderTest {
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
-            .draftList(getDraftOrderList())
+            .draftOrderDynamicList(getDraftOrderList())
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -204,14 +185,14 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().template(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
-            .draftList(getDraftOrderList())
+            .draftOrderDynamicList(getDraftOrderList())
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
             .contactPreferenceType(ContactPreferenceType.POST)
@@ -255,13 +236,13 @@ class CaseworkerSendOrderTest {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().template(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
-            .draftList(getDraftOrderList())
+            .draftOrderDynamicList(getDraftOrderList())
             .fullName(TEST_FIRST_NAME)
             .contactPreferenceType(ContactPreferenceType.POST)
             .address(SUBJECT_ADDRESS)

@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
@@ -79,21 +78,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .name("Orders: Send order")
             .description("Orders: Send order")
             .showSummary()
-            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::sent)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
-        DynamicList draftList = orderService.getDraftOrderDynamicList(details);
-        caseData.getCicCase().setDraftList(draftList);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -108,7 +96,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .dueDateList(cicCase.getOrderDueDates())
             .parties(getRecipients(cicCase))
             .reminderDay(cicCase.getOrderReminderDays()).build();
-        String selectedDraft = caseData.getCicCase().getDraftList().getValue().getLabel();
+        String selectedDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
         String id = getId(selectedDraft);
         var draftList = caseData.getCicCase().getDraftOrderCICList();
         for (int i = 0; i < draftList.size(); i++) {

@@ -52,51 +52,34 @@ class OrderServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         ListValue<DraftOrderCIC> draftOrderCIC = new ListValue<>();
-        DraftOrderCIC orderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        DraftOrderCIC orderCIC = DraftOrderCIC.builder().template(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         draftOrderCIC.setValue(orderCIC);
         CicCase cicCase = CicCase.builder().draftOrderCICList(List.of(draftOrderCIC)).build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
 
-        DynamicList regionList = orderService.getDraftOrderDynamicList(details);
+        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(OrderTemplate.CIC6_GENERAL_DIRECTIONS,
+            caseData.getCicCase().getDraftOrderDynamicList());
 
         //Then
-        assertThat(regionList).isNotNull();
-    }
-
-    @Test
-    void shouldPopulateDraftOrderDynamicListNull() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        details.setData(caseData);
-        //When
-
-        DynamicList regionList = orderService.getDraftOrderDynamicList(details);
-
-        //Then
-        assertThat(regionList).isNull();
+        assertThat(orderTemplateList).isNotNull();
     }
 
     @Test
     void shouldCreateTemplateWithCurrentDateAndTime() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
-        final CicCase cicase = CicCase.builder().build();
-
-        caseData.setCicCase(cicase);
+        CicCase cicCase = CicCase.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        caseData.setCicCase(cicCase);
         details.setData(caseData);
 
-        cicase.setAnOrderTemplates(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
         //When
-
-        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(details);
+        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(OrderTemplate.CIC6_GENERAL_DIRECTIONS,
+            cicCase.getDraftOrderDynamicList());
 
         //Then
         assertThat(orderTemplateList).isNotNull();
     }
-
-
-
 
 }

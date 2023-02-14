@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OrderService {
 
-    List<DynamicListElement> dynamicListElements = new ArrayList<>();
 
     public DynamicList getOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
@@ -50,35 +48,9 @@ public class OrderService {
         return null;
     }
 
-    public DynamicList getDraftOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
-        CaseData data = caseDetails.getData();
-        List<ListValue<DraftOrderCIC>> draftList = data.getCicCase().getDraftOrderCICList();
-        List<String> draftOrderList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(draftList)) {
-            for (int i = 0; i < draftList.size(); i++) {
-                DraftOrderCIC draftOrderCIC = draftList.get(i).getValue();
-                String draft = i + "-" + draftOrderCIC.getAnOrderTemplate().getLabel();
-                draftOrderList.add(draft);
-            }
 
-            List<DynamicListElement> dynamicListElements = draftOrderList
-                .stream()
-                .sorted()
-                .map(draft -> DynamicListElement.builder().label(draft).code(UUID.randomUUID()).build())
-                .collect(Collectors.toList());
-
-            return DynamicList
-                .builder()
-                .listItems(dynamicListElements)
-                .build();
-        }
-        return null;
-    }
-
-
-    public DynamicList getDraftOrderTemplatesDynamicList(final CaseDetails<CaseData, State> caseDetails) {
-        OrderTemplate orderTemplate = caseDetails.getData().getCicCase().getAnOrderTemplates();
-
+    public DynamicList getDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, DynamicList orderTemplateDynamicList) {
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
         String draftOrderCreateDate = simpleformat.format(cal.getTime());
@@ -86,7 +58,8 @@ public class OrderService {
         String templateNamePlusCurrentDate = orderTemplate.getLabel() + " "
             + draftOrderCreateDate + "_draft.pdf";
 
-        if (null != caseDetails.getData().getCicCase().getOrderTemplateDynamisList()) {
+        if (null != orderTemplateDynamicList) {
+            dynamicListElements = orderTemplateDynamicList.getListItems();
             dynamicListElements.add(DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build());
         } else {
             dynamicListElements = new ArrayList<>();
