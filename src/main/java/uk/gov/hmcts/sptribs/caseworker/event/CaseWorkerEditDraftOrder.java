@@ -91,12 +91,11 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<uk.gov.hmcts.sptribs.ciccase.model.CaseData, uk.gov.hmcts.sptribs.ciccase.model.State> details,
-        CaseDetails<uk.gov.hmcts.sptribs.ciccase.model.CaseData, uk.gov.hmcts.sptribs.ciccase.model.State> detailsBefore
+        CaseDetails<CaseData, State> details,
+        CaseDetails<CaseData, State> detailsBefore
     ) {
 
-
-        uk.gov.hmcts.sptribs.ciccase.model.CaseData caseData = details.getData();
+        var caseData = details.getData();
         var template = caseData.getCicCase().getOrderTemplate();
         String subjectName = caseData.getCicCase().getFullName();
         final Long caseId = details.getId();
@@ -114,7 +113,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         caseData.getCicCase().setOrderTemplate(template);
         caseData.getCicCase().setOrderTemplateIssued(generalOrderDocument);
 
-        return AboutToStartOrSubmitResponse.<uk.gov.hmcts.sptribs.ciccase.model.CaseData, uk.gov.hmcts.sptribs.ciccase.model.State>builder()
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
