@@ -13,14 +13,12 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
 @Slf4j
 @Component
@@ -57,16 +55,14 @@ public class HearingVenues implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        final RecordListing recordListing = data.getRecordListing();
 
-        if (!recordListing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
+        if (!data.getRecordListing().getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
             String selectedVenue = data.getRecordListing().getSelectedVenue();
-            recordListing.setHearingVenueNameAndAddress(selectedVenue);
-            recordListing.setReadOnlyHearingVenueName(getCourtDetails(selectedVenue, 0));
+            data.getRecordListing().setHearingVenueNameAndAddress(selectedVenue);
         } else {
-            recordListing.setReadOnlyHearingVenueName(null);
+            data.getRecordListing().setReadOnlyHearingVenueName(null);
         }
-        if (StringUtils.isBlank(recordListing.getHearingVenueNameAndAddress())) {
+        if (StringUtils.isBlank(data.getRecordListing().getHearingVenueNameAndAddress())) {
             errors.add("Please enter valid Hearing venue");
         }
 
@@ -76,10 +72,4 @@ public class HearingVenues implements CcdPageConfiguration {
             .build();
     }
 
-    private String getCourtDetails(String selectedVenue, int index) {
-        String[] values = (selectedVenue != null) ? Arrays.stream(selectedVenue.split(HYPHEN))
-            .map(String::trim)
-            .toArray(String[]::new) : null;
-        return values != null && values.length > 0 ? values[index] : null;
-    }
 }

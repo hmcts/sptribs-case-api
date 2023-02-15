@@ -17,8 +17,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -130,6 +132,35 @@ class RecordListHelperTest {
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.REPRESENTATIVE);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.RESPONDENT);
         assertThat(caseData.getCicCase()).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckAndUpdateVenueInformationVenueNotListed() {
+
+        RecordListing listing = RecordListing.builder()
+            .hearingVenueNameAndAddress("name-address")
+            .readOnlyHearingVenueName("name-address")
+            .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
+            .build();
+
+        RecordListing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+
+        assertThat(result.getReadOnlyHearingVenueName()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckAndUpdateVenueInformation() {
+        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        RecordListing listing = RecordListing.builder()
+            .hearingVenueNameAndAddress("name-address")
+            .readOnlyHearingVenueName("name-address")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(venueNotListedOption)
+            .build();
+
+        RecordListing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+
+        assertThat(result.getReadOnlyHearingVenueName()).isNotNull();
     }
 
 

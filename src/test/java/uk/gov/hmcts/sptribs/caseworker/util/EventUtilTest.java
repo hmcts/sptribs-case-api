@@ -83,4 +83,17 @@ public class EventUtilTest {
         //Then
         assertThat(result).isNull();
     }
+
+
+    @Test
+    void shouldSuccessfullyParseHyhen() {
+        //Given
+        final String selected = "0-Draft";
+
+        //When
+        String result = EventUtil.parseHyphen(selected,0);
+
+        //Then
+        assertThat(result).isEqualTo("0");
+    }
 }
