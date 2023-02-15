@@ -72,6 +72,22 @@ class CreateTestCaseTest {
         assertThat(response.getErrors()).isNotNull();
     }
 
+    @Test
+    void shouldThrowErrorWhenContactPartiesAreNull() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isNotNull();
+    }
 
     @Test
     void shouldSelectContactPreference() {
