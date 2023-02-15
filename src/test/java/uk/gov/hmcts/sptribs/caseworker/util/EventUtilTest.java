@@ -86,7 +86,7 @@ public class EventUtilTest {
 
 
     @Test
-    void shouldSuccessfullyParseHyhen() {
+    void shouldSuccessfullyParseHyphen() {
         //Given
         final String selected = "0-Draft";
 

@@ -55,14 +55,15 @@ public class HearingVenues implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
+        final RecordListing recordListing = data.getRecordListing();
 
-        if (!data.getRecordListing().getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
+        if (!recordListing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
             String selectedVenue = data.getRecordListing().getSelectedVenue();
-            data.getRecordListing().setHearingVenueNameAndAddress(selectedVenue);
+            recordListing.setHearingVenueNameAndAddress(selectedVenue);
         } else {
-            data.getRecordListing().setReadOnlyHearingVenueName(null);
+            recordListing.setReadOnlyHearingVenueName(null);
         }
-        if (StringUtils.isBlank(data.getRecordListing().getHearingVenueNameAndAddress())) {
+        if (StringUtils.isBlank(recordListing.getHearingVenueNameAndAddress())) {
             errors.add("Please enter valid Hearing venue");
         }
 

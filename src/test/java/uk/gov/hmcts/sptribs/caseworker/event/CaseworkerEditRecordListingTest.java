@@ -112,6 +112,31 @@ class CaseworkerEditRecordListingTest {
         final CaseData caseData = caseData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        final RecordListing listing = RecordListing.builder()
+            .readOnlyHearingVenueName("asa")
+            .hearingVenueNameAndAddress("asa")
+            .build();
+        caseData.setRecordListing(listing);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response.getState().getName()).isEqualTo("CaseManagement");
+        assertThat(response.getData().getRecordListing().getHearingVenueNameAndAddress()).isNull();
+
+    }
+
+    @Test
+    void shouldAboutToStartMethodSuccessfullyPopulateRegionDataCheck() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
+        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
