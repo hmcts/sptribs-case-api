@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.HearingAttendees;
 import uk.gov.hmcts.sptribs.common.event.page.HearingAttendeesRolePage;
 import uk.gov.hmcts.sptribs.common.event.page.HearingOutcomePage;
+import uk.gov.hmcts.sptribs.common.event.page.HearingRecordingUploadPage;
 import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -33,8 +34,6 @@ import java.util.List;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -50,6 +49,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
 
+    private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
+
     @Autowired
     private HearingService hearingService;
 
@@ -61,7 +62,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_CREATE_HEARING_SUMMARY)
-                .forStates(AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
+                .forStates(AwaitingHearing)
                 .name("Hearings: Create summary")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
@@ -75,6 +76,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         hearingAttendees.addTo(pageBuilder);
         hearingAttendeesRole.addTo(pageBuilder);
         HearingOutcome.addTo(pageBuilder);
+        hearingRecordingUploadPage.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

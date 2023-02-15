@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -36,11 +37,12 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
 
-    @Autowired
-    private PreviewDraftOrder previewOrder;
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+
+    private static final CcdPageConfiguration draftOrderEditMainContentPage = new DraftOrderMainContentPage();
 
     @Autowired
-    private DraftOrderMainContentPage draftOrderEditMainContentPage;
+    private OrderService orderService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -63,7 +65,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     }
 
     private void editDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
-        pageBuilder.page("editDraftOrderAddDocumentFooter")
+        pageBuilder.page("editDraftOrderAddDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
             .label("draftOrderDocFooter",
                 "\nOrder Signature\n"
@@ -73,6 +75,17 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .done();
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
+        CaseDetails<CaseData, State> details,
+        CaseDetails<CaseData, State> detailsBefore
+    ) {
+
+        var caseData = orderService.generateOrderFile(details.getData(), details.getId());
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
