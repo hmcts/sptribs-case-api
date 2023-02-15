@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -30,16 +31,16 @@ public class CaseIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
-        if (cicCase.getContactPreferenceType().isEmail()) {
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
-            NotificationResponse notificationResponse =  sendEmailNotification(templateVarsSubject,
+            NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
                 TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            NotificationResponse notificationResponse =  sendLetterNotification(templateVarsSubject, TemplateName.CASE_ISSUED_CITIZEN_POST);
+            NotificationResponse notificationResponse = sendLetterNotification(templateVarsSubject, TemplateName.CASE_ISSUED_CITIZEN_POST);
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         }
     }
@@ -50,7 +51,7 @@ public class CaseIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsApplicant  = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_APPLICANT_NAME, cicCase.getApplicantFullName());
 
-        if (caseData.getCicCase().getApplicantContactDetailsPreference().isEmail()) {
+        if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsApplicant,
                 cicCase.getApplicantEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
@@ -69,7 +70,7 @@ public class CaseIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
 
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
