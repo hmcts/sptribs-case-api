@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -32,7 +33,7 @@ public class CancelHearingNotification implements PartiesNotification {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, subjectTemplateVars);
 
         NotificationResponse subjectNotificationResponse;
-        if (cicCase.getContactPreferenceType().isEmail()) {
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             subjectNotificationResponse = sendEmailNotification(cicCase.getEmail(), subjectTemplateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), subjectTemplateVars);
@@ -50,7 +51,7 @@ public class CancelHearingNotification implements PartiesNotification {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, reprTemplateVars);
 
         NotificationResponse representativeNotificationResponse;
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             representativeNotificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), reprTemplateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), reprTemplateVars);
