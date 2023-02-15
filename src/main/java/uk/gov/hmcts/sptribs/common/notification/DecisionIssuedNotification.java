@@ -57,7 +57,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse = null;
-        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
             List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
                 uploadedDocumentIds, templateVars);

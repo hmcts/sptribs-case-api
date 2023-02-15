@@ -31,7 +31,7 @@ public class CaseUnstayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType()==ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -47,7 +47,7 @@ public class CaseUnstayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+        if (cicCase.getApplicantContactDetailsPreference()==ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
@@ -63,7 +63,7 @@ public class CaseUnstayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
