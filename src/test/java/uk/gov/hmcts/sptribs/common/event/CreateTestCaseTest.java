@@ -66,7 +66,7 @@ class CreateTestCaseTest {
         caseDetails.setData(caseData);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
 
         //Then
         assertThat(response.getErrors()).isNotNull();
