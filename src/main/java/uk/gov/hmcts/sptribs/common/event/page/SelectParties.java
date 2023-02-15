@@ -21,14 +21,15 @@ public class SelectParties implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("objectSubjects")
+            .page("objectSubjects", this::midEvent)
             .pageLabel("Who are the parties in this case?")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getPartiesCIC, "")
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 

@@ -66,7 +66,7 @@ class CreateTestCaseTest {
         caseDetails.setData(caseData);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails, caseDetails);
 
         //Then
         assertThat(response.getErrors().size()).isNotZero();
@@ -82,7 +82,7 @@ class CreateTestCaseTest {
         caseDetails.setData(caseData);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails, caseDetails);
 
         //Then
         assertThat(response.getErrors().size()).isZero();
@@ -99,7 +99,7 @@ class CreateTestCaseTest {
         caseDetails.setData(caseData);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails, caseDetails);
 
         //Then
         assertThat(response.getErrors().size()).isNotZero();
@@ -117,7 +117,7 @@ class CreateTestCaseTest {
         caseDetails.setData(caseData);
 
         //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails, caseDetails);
 
         //Then
         //Then
