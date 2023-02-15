@@ -11,6 +11,7 @@ import java.util.Map;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CIC_CASE_SCHEME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DATED;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.MAIN_BODY;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.REPRESENTATIVE_FULL_NAME;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.DATE_TIME_FORMATTER;
 
@@ -27,6 +28,7 @@ public class PreviewDraftOrderTemplateContent {
         templateContent.put(CIC_CASE_SCHEME, caseData.getCicCase().getSchemeCic().getLabel());
         templateContent.put(CASE_NUMBER, ccdCaseReference);
         templateContent.put(REPRESENTATIVE_FULL_NAME, caseData.getCicCase().getRepresentativeFullName());
+        templateContent.put(MAIN_BODY, caseData.getDraftOrderMainContentCIC().getMainContent());
 
         return templateContent;
     }
