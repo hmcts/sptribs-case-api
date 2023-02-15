@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -39,7 +40,7 @@ public class CaseStayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
-        if (cicCase.getContactPreferenceType().isEmail()) {
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(response);
         } else {
@@ -56,7 +57,7 @@ public class CaseStayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
-        if (cicCase.getApplicantContactDetailsPreference().isEmail()) {
+        if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(response);
         } else {
@@ -73,7 +74,7 @@ public class CaseStayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(response);
         } else {
