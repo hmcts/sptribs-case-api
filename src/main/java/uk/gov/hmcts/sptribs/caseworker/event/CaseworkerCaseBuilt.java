@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_BUILT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -24,18 +25,20 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String CASEWORKER_CASE_BUILT = "caseworker-case-built";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_BUILT)
             .forStates(Submitted)
-            .name("Case built")
+            .name("Case: Build case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR));
+            .grantHistoryOnly(SOLICITOR))
+            .page("caseBuilt")
+            .pageLabel("Case Built")
+            .label("LabelCaseBuilt", "");
     }
 
     @SneakyThrows
@@ -44,7 +47,6 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
         log.info("Caseworker case built callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)

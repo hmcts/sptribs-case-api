@@ -7,13 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
+import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
@@ -21,7 +21,11 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CASE;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
@@ -29,7 +33,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String CASEWORKER_EDIT_CASE = "edit-case";
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
     private final CcdPageConfiguration editSelectedPartiesDetails = new SelectParties();
     private final CcdPageConfiguration editSubjectDetails = new SubjectDetails();
@@ -60,11 +63,10 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
-            .forStates(POST_SUBMISSION_STATES)
-            .name("Edit Case")
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .name("Case: Edit case")
             .description("")
             .showSummary()
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
@@ -77,7 +79,6 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
-        state = submittedDetails.getState();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

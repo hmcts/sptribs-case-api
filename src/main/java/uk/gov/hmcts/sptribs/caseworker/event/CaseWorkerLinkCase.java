@@ -14,8 +14,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -24,17 +27,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_LINK_CASE = "caseworker-link-case";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_LINK_CASE)
-            .forStates(POST_SUBMISSION_STATES)
-            .name("Link case")
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .name("Links: Link case")
             .showSummary()
-            .description("Link case")
-            .showEventNotes()
+            .description("Links: Link case")
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
@@ -49,7 +50,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
-            .state(NewCaseReceived)
+            .state(details.getState())
             .build();
     }
 

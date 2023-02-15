@@ -8,8 +8,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 public class FurtherDetails implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("objectFurtherDetails")
-            .label("objectAdditionalDetails", "<h2>Enter further details about this case</h2>")
+        pageBuilder.page("furtherDetailsObject")
+            .pageLabel("Enter further details about this case")
+            .label("LabelFurtherDetails", "")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getSchemeCic,"Scheme")
             .mandatory(CicCase::getClaimLinkedToCic)

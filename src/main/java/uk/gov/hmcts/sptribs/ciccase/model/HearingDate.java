@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class HearingDate {
 
     @CCD(
-        displayOrder = 1,
+        label = "Hearing date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -26,14 +26,12 @@ public class HearingDate {
 
     @CCD(
         label = "Session",
-        displayOrder = 2,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingSession hearingVenueSession;
 
     @CCD(
-        label = "Start time",
-        displayOrder = 3,
+        label = "Start time (24hr format)",
         regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )

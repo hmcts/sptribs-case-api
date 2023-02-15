@@ -10,3 +10,13 @@ pluginManagement {
 }
 
 rootProject.name = 'sptribs-case-api'
+
+
+//includeBuild '../dtsse-ccd-config-generator'
+
+// Uncomment if you wish to debug configGenerator locally
+/*var configGenerator = '../dtsse-ccd-config-generator'
+if (file(configGenerator).exists()) {
+  includeBuild configGenerator
+}*/
+

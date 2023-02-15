@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ALL;
 
 @Service
@@ -103,7 +103,6 @@ public class LocationService {
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("region").code(UUID.randomUUID()).build())
             .listItems(regionDynamicList)
             .build();
     }
@@ -121,7 +120,6 @@ public class LocationService {
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("venue").code(UUID.randomUUID()).build())
             .listItems(hearingVenueList)
             .build();
     }

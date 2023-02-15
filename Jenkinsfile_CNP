@@ -1,5 +1,6 @@
 #!groovy
 import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.GithubAPI
 @Library("Infrastructure")
 
 import uk.gov.hmcts.contino.GradleBuilder
@@ -32,12 +33,12 @@ def secrets = [
                 secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET'),
                 secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET'),
                 secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN'),
-                secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
                 secret('idam-data-store-client-secret','IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET'),
                 secret('idam-data-store-system-user-username','IDAM_DATA_STORE_SYSTEM_USER_USERNAME'),
                 secret('idam-data-store-system-user-password','IDAM_DATA_STORE_SYSTEM_USER_PASSWORD'),
         ],
         'sptribs-${env}'    :[
+                secret('app-insights-instrumentation-key', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
                 secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
                 secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
                 secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
@@ -72,111 +73,102 @@ withPipeline(type, product, component) {
       }
     }
 
-    after('test') {
-      builder.gradle('cftlibTest integration')
-      builder.gradle('jacocoTestReport')
+  afterAlways('test') {
+    builder.gradle('jacocoTestReport')
 
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/checkstyle",
-        reportFiles          : "main.html",
-        reportName           : "Checkstyle Main Report"
-      ]
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/checkstyle",
+      reportFiles          : "main.html",
+      reportName           : "Checkstyle Main Report"
+    ]
 
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/checkstyle",
-        reportFiles          : "cftlib.html",
-        reportName           : "Checkstyle Cftlib Report"
-      ]
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/checkstyle",
+      reportFiles          : "test.html",
+      reportName           : "Checkstyle Test Report"
+    ]
 
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/checkstyle",
-        reportFiles          : "test.html",
-        reportName           : "Checkstyle Test Report"
-      ]
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/checkstyle",
+      reportFiles          : "functionalTest.html",
+      reportName           : "Checkstyle Functional Test Report"
+    ]
 
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/checkstyle",
-        reportFiles          : "cftlibTest.html",
-        reportName           : "Checkstyle CftlibTest Report"
-      ]
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/checkstyle",
+      reportFiles          : "integrationTest.html",
+      reportName           : "Checkstyle Integration Test Report"
+    ]
 
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/checkstyle",
-        reportFiles          : "functionalTest.html",
-        reportName           : "Checkstyle Functional Test Report"
-      ]
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/test",
+      reportFiles          : "index.html",
+      reportName           : "Unit Tests Report"
+    ]
 
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/checkstyle",
-        reportFiles          : "integrationTest.html",
-        reportName           : "Checkstyle Integration Test Report"
-      ]
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/pmd",
+      reportFiles          : "main.html",
+      reportName           : "PMD Report"
+    ]
+  }
 
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/test",
-        reportFiles          : "index.html",
-        reportName           : "Unit Tests Report"
-      ]
-    }
+  afterAlways('functionalTest') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/functional",
+      reportFiles          : "index.html",
+      reportName           : "Functional Tests Report"
+    ]
+  }
 
-    after('functionalTest') {
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/functional",
-        reportFiles          : "index.html",
-        reportName           : "Functional Tests Report"
-      ]
-    }
+  afterAlways('smoketest:preview') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/smoke",
+      reportFiles          : "index.html",
+      reportName           : "Smoke Test Report"
+    ]
+  }
 
-    after('smoketest:preview') {
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/smoke",
-        reportFiles          : "index.html",
-        reportName           : "Smoke Test Report"
-      ]
-    }
+  afterAlways('smoketest:aat') {
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/smoke",
+      reportFiles          : "index.html",
+      reportName           : "Smoke Test Report"
+    ]
+  }
 
-    after('smoketest:aat') {
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/smoke",
-        reportFiles          : "index.html",
-        reportName           : "Smoke Test Report"
-      ]
-    }
+  afterAlways('checkout') {
+    builder.gradle('generateCCDConfig')
+    generateDefinitions()
+  }
 
-    after('checkout') {
-      builder.gradle('generateCCDConfig')
-      generateDefinitions()
-    }
 
     onPR {
       env.ENVIRONMENT="preview"
@@ -184,12 +176,18 @@ withPipeline(type, product, component) {
       env.CCD_DEF_NAME = "preview"
       env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.CASE_DATA_STORE_BASEURL = "http://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+      env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.service.core-compute-preview.internal"
       env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
       setCommonEnvVariables()
+
+      def githubApi = new GithubAPI(this)
+      if (!githubApi.getLabelsbyPattern(env.BRANCH_NAME, "keep-helm")) {
+        enableCleanupOfHelmReleaseOnSuccess()
+      }
     }
 
     onMaster {
@@ -203,7 +201,7 @@ withPipeline(type, product, component) {
         setCommonEnvVariables()
     }
 
-    after('functionalTest:aat') {
+    afterSuccess('functionalTest:aat') {
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
         env.CCD_DEF_NAME="prod"

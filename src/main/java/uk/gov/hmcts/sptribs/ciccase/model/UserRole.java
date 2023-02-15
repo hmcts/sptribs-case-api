@@ -10,13 +10,13 @@ import uk.gov.hmcts.ccd.sdk.api.HasRole;
 public enum UserRole implements HasRole {
 
     // Common User roles
-    SUPER_USER("caseworker-divorce-superuser", "CRU"),
-    SYSTEMUPDATE("caseworker-divorce-systemupdate", "CRU"),
-    SOLICITOR("caseworker-divorce-solicitor", "CRU"),
+    //TODO: update : SUPER_USER, SOLICITOR before prod deploy
+    SUPER_USER("caseworker-sptribs-superuser", "CRU"),
+    SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
+    SOLICITOR("caseworker", "CRU"),
     CREATOR("[CREATOR]", "CRU"),
 
     // CIC User roles
-    SUPER_USER_CIC("caseworker-sptribs-superuser", "CRU"),
     COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
     CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
     DISTRICT_REGISTRAR_CIC("caseworker-sptribs-cic-districtregistrar", "CRU"),
@@ -27,14 +27,4 @@ public enum UserRole implements HasRole {
     @JsonValue
     private final String role;
     private final String caseTypePermissions;
-
-    public static UserRole fromString(String value) {
-        for (UserRole role : UserRole.values()) {
-            if (role.getRole().equals(value)) {
-                return role;
-            }
-        }
-        return null;
-    }
-
 }

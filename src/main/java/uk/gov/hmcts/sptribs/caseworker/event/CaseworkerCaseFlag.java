@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagTypePage;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -28,7 +29,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -37,7 +42,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_CASE_FLAG = "caseworker-case-flag";
 
 
     private static final CcdPageConfiguration flagLevel = new FlagLevel();
@@ -57,11 +61,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public PageBuilder caseFlag(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
-            .forStates(POST_SUBMISSION_STATES)
-            .name("Create a case flag")
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .name("Flags: Create flag")
             .showSummary()
-            .description("Create a case flag")
-            .showEventNotes()
+            .description("Create a flag")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
@@ -84,14 +87,16 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         flagDetail.setOtherDescription(caseFlag.getOtherDescription());
         flagDetail.setStatus(Status.ACTIVE.getLabel());
         if (caseFlag.getFlagLevel().isPartyLevel()) {
-            if (null != caseData.getCicCase().getFlagPartyApplicant() && caseData.getCicCase().getFlagPartyApplicant().size() > 0) {
+            if (null != caseData.getCicCase().getNotifyPartyApplicant()
+                && !isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
                 flag.setPartyName(caseData.getCicCase().getApplicantFullName());
                 flag.setRoleOnCase(PartiesCIC.APPLICANT.getLabel());
-            } else if (null != caseData.getCicCase().getFlagPartySubject() && caseData.getCicCase().getFlagPartySubject().size() > 0) {
+            } else if (null != caseData.getCicCase().getNotifyPartySubject()
+                && !isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
                 flag.setPartyName(caseData.getCicCase().getFullName());
                 flag.setRoleOnCase(PartiesCIC.SUBJECT.getLabel());
-            } else if (null != caseData.getCicCase().getFlagPartyRepresentative()
-                && caseData.getCicCase().getFlagPartyRepresentative().size() > 0) {
+            } else if (null != caseData.getCicCase().getNotifyPartyRepresentative()
+                && !isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
                 flag.setPartyName(caseData.getCicCase().getRepresentativeFullName());
                 flag.setRoleOnCase(PartiesCIC.REPRESENTATIVE.getLabel());
             }
@@ -144,22 +149,21 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
 
-        caseData.getCicCase().setFlagPartyApplicant(null);
-        caseData.getCicCase().setFlagPartyRepresentative(null);
-        caseData.getCicCase().setFlagPartySubject(null);
         caseData.getCaseFlag().setFlagLevel(null);
         caseData.getCaseFlag().setFlagType(null);
         caseData.getCaseFlag().setAdditionalDetail(null);
         caseData.getCaseFlag().setOtherDescription(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .state(details.getState())
             .build();
     }
 
     public SubmittedCallbackResponse flagCreated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Flag created %n## This Flag has been added to case"))
+            .confirmationHeader(format("# Case Flag created %n## This Flag has been added to case %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 }

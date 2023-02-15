@@ -2,9 +2,13 @@ package uk.gov.hmcts.sptribs.testutil;
 
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 
+import java.time.LocalDate;
+
 public final class TestConstants {
     public static final String TEST_APPLICANT_2_USER_EMAIL = "applicant2@test.com";
+    public static final String TEST_SUBJECT_EMAIL = "subject2@test.com";
     public static final String TEST_USER_EMAIL = "test@test.com";
+    public static final String TEST_APPLICANT_EMAIL = "applicant@test.com";
     public static final String TEST_SOLICITOR_EMAIL = "solicitor@test.com";
     public static final String TEST_SOLICITOR_NAME = "The Solicitor";
     public static final String TEST_SOLICITOR_ADDRESS = "The Solicitor's Address";
@@ -60,19 +64,29 @@ public final class TestConstants {
     public static final String ENGLISH_TEMPLATE_ID = "divorceminiapplication";
     public static final String WELSH_TEMPLATE_ID = "FL-DIV-GNO-WEL-00256.docx";
     public static final String BEARER = "Bearer ";
-    public static final String TEST_ORG_ID = "ABC123";
-    public static final String TEST_ORG_NAME = "Test Organisation";
-    public static final String PROFESSIONAL_USERS_SIGN_IN_URL = "professional-sign-in-url/1234567890123456";
+    public static final String FILENAME = "file-1616591401473378.pdf";
 
-    public static final String SOLICITOR_MID_EVENT_RESPONSE = "classpath:solicitor-mid-event-response.json";
-    public static final String SOLICITOR_MID_EVENT_ERROR = "classpath:solicitor-mid-event-error-response.json";
-    public static final String LINE_1_LINE_2_CITY_POSTCODE = "line1\nline2\ncity\npostcode";
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")
         .addressLine2("line2")
         .postTown("city")
         .postCode("postcode")
         .build();
+
+    public static final AddressGlobalUK SUBJECT_ADDRESS = AddressGlobalUK.builder()
+        .addressLine1("line1")
+        .addressLine2("line2")
+        .postTown("city")
+        .postCode("postcode")
+        .build();
+
+    public static final AddressGlobalUK SOLICITOR_ADDRESS = AddressGlobalUK.builder()
+        .addressLine1("line1")
+        .addressLine2("line2")
+        .postTown("city")
+        .postCode("postcode")
+        .build();
+
     public static final String ACCESS_CODE = "6E69DKFX";
 
     public static final String SIGN_IN_DIVORCE_TEST_URL = "divorceTestUrl";
@@ -84,6 +98,10 @@ public final class TestConstants {
 
     public static final String TEST_DIVORCE_APPLICATION_SOLE_TEMPLATE_ID = "NFD_CP_Application_Sole_V5.docx";
     public static final String TEST_DIVORCE_APPLICATION_JOINT_TEMPLATE_ID = "NFD_CP_Application_Joint_V5.docx";
+
+    public static final LocalDate HEARING_DATE_1 = LocalDate.now();
+    public static final LocalDate HEARING_DATE_2 = LocalDate.now().minusDays(1);
+    public static final String HEARING_TIME = "11:00";
 
     private TestConstants() {
     }

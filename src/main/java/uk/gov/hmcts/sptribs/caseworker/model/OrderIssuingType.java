@@ -9,12 +9,12 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 public enum OrderIssuingType implements HasLabel {
 
-    @JsonProperty("issueAndSendAnExistingDraft")
-    ISSUE_AND_SEND_AN_EXISTING_DRAFT("Issue and send an existing draft", "Issue and send an existing draft"),
+    @JsonProperty("DraftOrder")
+    ISSUE_AND_SEND_AN_EXISTING_DRAFT("DraftOrder", "Issue and send an existing draft"),
 
 
-    @JsonProperty("uploadANewOrderFromYourComputer")
-    UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER("Upload a new order from your computer", "Upload a new order from your computer");
+    @JsonProperty("UploadOrder")
+    UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER("UploadOrder", "Upload a new order from your computer");
 
     private final String reason;
     private final String label;

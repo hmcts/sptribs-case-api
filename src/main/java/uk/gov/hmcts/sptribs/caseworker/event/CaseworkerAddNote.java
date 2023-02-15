@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ADD_NOTE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -34,7 +35,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
-    public static final String CASEWORKER_ADD_NOTE = "caseworker-add-note";
 
     @Autowired
     private HttpServletRequest request;
@@ -50,10 +50,9 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
         new PageBuilder(configBuilder
             .event(CASEWORKER_ADD_NOTE)
             .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
-            .name("Add note")
-            .description("Add note")
+            .name("Case: Add note")
+            .description("Case: Add note")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .showEventNotes()
             .grant(CREATE_READ_UPDATE,
                 COURT_ADMIN_CIC)
             .grant(CREATE_READ_UPDATE_DELETE,

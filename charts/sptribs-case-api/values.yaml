@@ -21,6 +21,9 @@ aac-manage-case-assignment:
 idam-pr:
   enabled: false
 
+ccd-case-document-am-api:
+  enabled: false
+
 java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'
@@ -34,10 +37,10 @@ java:
   keyVaults:
     sptribs:
       secrets:
-        - name: AppInsightsInstrumentationKey
-          alias: APP_INSIGHTS_KEY
+        - name: app-insights-instrumentation-key
+        - name: app-insights-connection-string
         - name: uk-gov-notify-api-key
-          alias: UK_GOV_NOTIFY_API_KEY
+          alias: UK_GOV_NOTIFY_API_KEY_1
         - name: s2s-case-api-secret
           alias: S2S_SECRET
         - name: idam-secret
@@ -49,18 +52,14 @@ java:
         - name: idam-systemupdate-password
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
   environment:
-    NOTIFY_TEMPLATE_SIGN_IN_DIVORCE_URL: https://sptribs-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/
-    NOTIFY_TEMPLATE_SIGN_IN_DISSOLUTION_URL: https://sptribs-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/
-    NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL: https://sptribs-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/applicant2
-    NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DISSOLUTION_URL: https://sptribs-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/applicant2
-    NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DIVORCE_URL: https://sptribs-apply-for-divorce.{{ .Values.global.environment }}.platform.hmcts.net/respondent
-    NOTIFY_TEMPLATE_RESPONDENT_SIGN_IN_DISSOLUTION_URL: https://sptribs-end-civil-partnership.{{ .Values.global.environment }}.platform.hmcts.net/respondent
     S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FEE_API_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     LOCATION_API_URL: http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    JUDICIAL_API_URL: http://rd-judicial-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     IDAM_API_REDIRECT_URL: https://div-pfe-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/authenticated
     IDAM_API_BASEURL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
     CASE_DATA_STORE_BASEURL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    CASE_DOCUMENT_AM_BASEURL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     PRD_API_BASEURL : "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"

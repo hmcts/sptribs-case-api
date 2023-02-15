@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,27 +25,13 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
-import static uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation.CASE_TYPE;
 
 @Service
 @Slf4j
 public class CcdSearchService {
 
-    public static final String ACCESS_CODE = "data.accessCode";
     public static final String DUE_DATE = "data.dueDate";
-    public static final String ISSUE_DATE = "data.issueDate";
-    public static final String DATA = "data.%s";
     public static final String STATE = "state";
-    public static final String AOS_RESPONSE = "data.howToRespondApplication";
-    public static final String FINAL_ORDER_ELIGIBLE_FROM_DATE = "data.dateFinalOrderEligibleFrom";
-    public static final String FINAL_ORDER_ELIGIBLE_TO_RESPONDENT_DATE = "data.dateFinalOrderEligibleToRespondent";
-    public static final String APPLICATION_TYPE = "applicationType";
-    public static final String SOLE_APPLICATION = "soleApplication";
-    public static final String APPLICANT2_REPRESENTED = "applicant2SolicitorRepresented";
-    public static final String APPLICANT2_SOL_EMAIL = "applicant2SolicitorEmail";
-    public static final String APPLICANT2_SOL_ORG_POLICY = "applicant2SolicitorOrganisationPolicy";
-    public static final String SERVICE_METHOD = "serviceMethod";
-    public static final String COURT_SERVICE = "courtService";
 
     @Value("${core_case_data.search.page_size}")
     private int pageSize;
@@ -96,7 +83,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString());
     }
 
@@ -120,7 +107,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
     }
@@ -143,7 +130,7 @@ public class CcdSearchService {
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
-            CASE_TYPE,
+            CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
     }

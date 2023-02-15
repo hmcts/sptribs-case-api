@@ -21,7 +21,7 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
-public class RequestInterceptorTest {
+class RequestInterceptorTest {
 
     private static final String AUTH_TOKEN_WITH_BEARER_PREFIX = "Bearer " + TEST_AUTHORIZATION_TOKEN;
 
@@ -37,7 +37,7 @@ public class RequestInterceptorTest {
     }
 
     @Test
-    public void shouldAppendBearerPrefixWhenServiceAuthDoesNotIncludeBearerPrefix() throws Exception {
+    void shouldAppendBearerPrefixWhenServiceAuthDoesNotIncludeBearerPrefix() {
         //Given
         when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
             .thenReturn("ccd_data");
@@ -54,7 +54,7 @@ public class RequestInterceptorTest {
     }
 
     @Test
-    public void shouldNotAppendBearerPrefixWhenServiceAuthIncludesBearerPrefix() throws Exception {
+    void shouldNotAppendBearerPrefixWhenServiceAuthIncludesBearerPrefix() {
         //Given
         when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
             .thenReturn("ccd_data");

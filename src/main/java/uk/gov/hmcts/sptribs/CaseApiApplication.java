@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
-import uk.gov.hmcts.sptribs.document.DocumentManagementClient;
-import uk.gov.hmcts.sptribs.payment.FeesAndPaymentsClient;
-import uk.gov.hmcts.sptribs.payment.PaymentPbaClient;
+import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
 import uk.gov.hmcts.sptribs.recordlisting.LocationClient;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
 
@@ -33,13 +33,13 @@ import javax.annotation.PostConstruct;
         IdamApi.class,
         ServiceAuthorisationApi.class,
         CaseUserApi.class,
-        FeesAndPaymentsClient.class,
         LocationClient.class,
+        JudicialClient.class,
         DocAssemblyClient.class,
         CoreCaseDataApi.class,
         CaseAssignmentApi.class,
-        DocumentManagementClient.class,
-        PaymentPbaClient.class
+        CaseDocumentClient.class,
+        CaseDocumentClientApi.class
     }
 )
 @EnableScheduling

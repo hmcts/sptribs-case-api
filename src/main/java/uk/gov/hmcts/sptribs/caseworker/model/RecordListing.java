@@ -43,6 +43,7 @@ public class RecordListing {
     )
     private String selectedRegionId;
 
+
     @CCD(
         label = "Hearing type",
         typeOverride = FixedRadioList,
@@ -79,16 +80,16 @@ public class RecordListing {
     private Set<VenueNotListed> venueNotListedOption;
 
     @CCD(
+        label = "Venue name and address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String hearingVenueNameAndAddress;
+
+    @CCD(
         label = "Venue Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String hearingVenueName;
-
-    @CCD(
-        label = "Venue Address",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String hearingVenueAddress;
+    private String readOnlyHearingVenueName;
 
     @CCD(
         label = "Room at venue",
@@ -103,13 +104,14 @@ public class RecordListing {
     private String addlInstr;
 
     @CCD(
+        label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hearingDate;
 
     @CCD(
-        label = "Start time",
+        label = "Start time (24hr format)",
         regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -128,7 +130,7 @@ public class RecordListing {
     private YesOrNo numberOfDays;
 
     @CCD(
-        label = "Hearing date",
+        label = "Additional Hearing date",
         typeOverride = Collection,
         typeParameterOverride = "HearingDate",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -158,20 +160,28 @@ public class RecordListing {
     private String conferenceCallNumber;
 
     @CCD(
-        label = "Important hearing information",
+        label = "Other important information ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )
     private String importantInfoDetails;
 
+    @CCD(
+        label = "Why is this listing record being changed?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String recordListingChangeReason;
+
+
     @JsonIgnore
     public String getSelectedRegionVal() {
-        return this.getRegionList().getValue().getLabel();
+        return this.getRegionList() != null ? this.getRegionList().getValue().getLabel() : null;
     }
 
     @JsonIgnore
     public String getSelectedVenue() {
-        return this.getHearingVenues().getValue().getLabel();
+        return this.getHearingVenues() != null ? this.getHearingVenues().getValue().getLabel() : null;
     }
 
 }

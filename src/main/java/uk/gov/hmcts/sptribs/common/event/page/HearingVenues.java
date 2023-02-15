@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -12,27 +13,35 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
 
 @Slf4j
 @Component
 public class HearingVenues implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "recordVenueNotListedOption=\"ALWAYS_HIDE\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("listingDetails", this::midEvent)
-            .label("listingDetailsObj", "<h1>Listing details</h1>")
+            .pageLabel("Hearing location and duration")
+            .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getHearingVenuesMessage)
-            .mandatory(RecordListing::getHearingVenues)
+            .optional(RecordListing::getHearingVenues,
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
+            .readonly(RecordListing::getReadOnlyHearingVenueName,
+                CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"")
             .optional(RecordListing::getVenueNotListedOption)
-            .optional(RecordListing::getHearingVenueName, "recordVenueNotListedOption= \"VenueNotListed\"")
-            .optional(RecordListing::getHearingVenueAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
+            .mandatory(RecordListing::getHearingVenueNameAndAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
             .optional(RecordListing::getRoomAtVenue)
-            .optional(RecordListing::getAddlInstr)
+            .optional(RecordListing::getAddlInstr,
+                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
             .label("hearingDateObj", "<h4>Hearing date</h4>")
             .mandatory(RecordListing::getHearingDate)
             .mandatory(RecordListing::getSession)
@@ -50,8 +59,12 @@ public class HearingVenues implements CcdPageConfiguration {
 
         if (!recordListing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
             String selectedVenue = data.getRecordListing().getSelectedVenue();
-            recordListing.setHearingVenueName(getCourtDetails(selectedVenue, 0));
-            recordListing.setHearingVenueAddress(getCourtDetails(selectedVenue, 1));
+            recordListing.setHearingVenueNameAndAddress(selectedVenue);
+        } else {
+            recordListing.setReadOnlyHearingVenueName(null);
+        }
+        if (StringUtils.isBlank(recordListing.getHearingVenueNameAndAddress())) {
+            errors.add("Please enter valid Hearing venue");
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -60,10 +73,4 @@ public class HearingVenues implements CcdPageConfiguration {
             .build();
     }
 
-    private String getCourtDetails(String selectedVenue, int index) {
-        String[] values = Arrays.stream(selectedVenue.split(HYPHEN))
-            .map(String::trim)
-            .toArray(String[]::new);
-        return values.length > 0 ? values[index] : null;
-    }
 }
