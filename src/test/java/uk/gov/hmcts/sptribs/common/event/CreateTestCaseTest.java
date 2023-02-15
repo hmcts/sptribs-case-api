@@ -73,7 +73,7 @@ class CreateTestCaseTest {
     }
 
     @Test
-    void shouldThrowErrorWhenContactPartiesAreNull() {
+    void shouldThrowErrorWhenContactCicCaseIsNull() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
@@ -85,7 +85,43 @@ class CreateTestCaseTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
 
         //Then
-        assertThat(response.getErrors().size()).isEqualTo(0);
+        assertThat(response.getErrors().size()).isZero();
+    }
+
+    @Test
+    void shouldThrowErrorWhenContactPartiesAreNull() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
+
+        //Then
+        assertThat(response.getErrors().size()).isZero();
+    }
+
+
+    @Test
+    void NoErrorWhenContactPartiesHasSubjectSelected() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
+
+        //Then
+        //Then
+        assertThat(response.getErrors().size()).isZero();
     }
 
     @Test
