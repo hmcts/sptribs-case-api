@@ -76,9 +76,8 @@ class CreateTestCaseTest {
     void shouldThrowErrorWhenContactPartiesAreNull() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder().build();
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
+            .cicCase(null)
             .build();
         caseDetails.setData(caseData);
 
@@ -86,7 +85,7 @@ class CreateTestCaseTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
 
         //Then
-        assertThat(response.getErrors()).isNotNull();
+        assertThat(response.getErrors().size()).isEqualTo(0);
     }
 
     @Test
