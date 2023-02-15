@@ -21,10 +21,4 @@ public class DraftOrderMainContentCIC {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String mainContent;
-//
-//    @CCD(
-//       // label = "Final decision notice preview",
-//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-//    )
-//    private Document orderTemplateIssued;
 }
