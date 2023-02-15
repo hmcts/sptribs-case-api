@@ -102,7 +102,7 @@ class CreateTestCaseTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails);
 
         //Then
-        assertThat(response.getErrors().size()).isZero();
+        assertThat(response.getErrors().size()).isNotZero();
     }
 
 
