@@ -107,7 +107,7 @@ class CreateTestCaseTest {
 
 
     @Test
-    void NoErrorWhenContactPartiesHasSubjectSelected() {
+    void noErrorWhenContactPartiesHasSubjectSelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
