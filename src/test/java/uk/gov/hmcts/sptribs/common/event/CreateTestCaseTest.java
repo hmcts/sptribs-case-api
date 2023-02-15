@@ -51,7 +51,7 @@ class CreateTestCaseTest {
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains("create-test-application");
+            .contains("caseworker-create-case");
     }
 
 
