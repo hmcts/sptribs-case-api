@@ -20,7 +20,7 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getOrderTemplateIssued)
             .label("make Changes", "To make changes, choose 'Edit order'\n\n"
-                + "If you are happy , continue to the next screen.")
+                + "If you are happy, continue to the next screen.")
             .done();
 
 
