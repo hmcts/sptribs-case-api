@@ -32,8 +32,8 @@ public class SelectParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (null != data.getCicCase() && null != data.getCicCase().getPartiesCIC()
-            && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.SUBJECT)) {
+        if (null != data.getCicCase()
+            && (null == data.getCicCase().getPartiesCIC()||!data.getCicCase().getPartiesCIC().contains(PartiesCIC.SUBJECT))) {
             errors.add("Subject is mandatory.");
         }
 
