@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -36,7 +37,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
 
         NotificationResponse notificationResponse = null;
-        if (cicCase.getContactPreferenceType().isEmail()) {
+        if (cicCase.getContactPreferenceType()== ContactPreferenceType.EMAIL) {
             List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
@@ -56,7 +57,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse = null;
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
                 uploadedDocumentIds, templateVars);

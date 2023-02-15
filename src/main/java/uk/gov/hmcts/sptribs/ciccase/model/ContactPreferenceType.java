@@ -17,8 +17,4 @@ public enum ContactPreferenceType implements HasLabel {
     private String type;
     private final String label;
 
-    public boolean isEmail() {
-        return EMAIL.name().equalsIgnoreCase(this.name());
-    }
-
 }
