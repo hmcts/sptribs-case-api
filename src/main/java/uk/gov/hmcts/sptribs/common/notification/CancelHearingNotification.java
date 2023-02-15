@@ -33,7 +33,7 @@ public class CancelHearingNotification implements PartiesNotification {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, subjectTemplateVars);
 
         NotificationResponse subjectNotificationResponse;
-        if (cicCase.getContactPreferenceType()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType()== ContactPreferenceType.EMAIL) {
             subjectNotificationResponse = sendEmailNotification(cicCase.getEmail(), subjectTemplateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), subjectTemplateVars);
@@ -51,7 +51,7 @@ public class CancelHearingNotification implements PartiesNotification {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, reprTemplateVars);
 
         NotificationResponse representativeNotificationResponse;
-        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             representativeNotificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), reprTemplateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), reprTemplateVars);

@@ -32,7 +32,7 @@ public class HearingPostponedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
-        if (cicCase.getContactPreferenceType()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType()== ContactPreferenceType.EMAIL) {
             NotificationResponse hearingNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(hearingNotifyResponse);
         } else {
@@ -48,7 +48,7 @@ public class HearingPostponedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
-        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             NotificationResponse hearingNotifyResponse =
                 sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(hearingNotifyResponse);

@@ -33,7 +33,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         RecordListing recordListing = caseData.getRecordListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, recordListing);
-        if (cicCase.getContactPreferenceType()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType()== ContactPreferenceType.EMAIL) {
             // Send Email
             NotificationResponse notificationResponse =  sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
@@ -54,7 +54,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
         RecordListing recordListing = caseData.getRecordListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, recordListing);
 
-        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(), TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);

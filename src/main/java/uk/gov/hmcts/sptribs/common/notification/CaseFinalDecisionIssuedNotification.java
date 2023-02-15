@@ -36,7 +36,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getContactPreferenceType()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType()== ContactPreferenceType.EMAIL) {
             List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(templateVarsSubject,
                 cicCase.getEmail(),
@@ -57,7 +57,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(),

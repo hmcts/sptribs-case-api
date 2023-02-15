@@ -35,7 +35,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getContactPreferenceType()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType()== ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -53,7 +53,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);

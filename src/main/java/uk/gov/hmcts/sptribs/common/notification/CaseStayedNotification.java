@@ -40,7 +40,7 @@ public class CaseStayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
-        if (cicCase.getContactPreferenceType()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType()== ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(response);
         } else {
@@ -57,7 +57,7 @@ public class CaseStayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
-        if (cicCase.getApplicantContactDetailsPreference()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getApplicantContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(response);
         } else {
@@ -74,7 +74,7 @@ public class CaseStayedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
-        if (cicCase.getRepresentativeContactDetailsPreference()==ContactPreferenceType.EMAIL) {
+        if (cicCase.getRepresentativeContactDetailsPreference()== ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(response);
         } else {
