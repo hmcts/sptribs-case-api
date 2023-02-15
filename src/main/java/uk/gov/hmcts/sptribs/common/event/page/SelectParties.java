@@ -27,8 +27,7 @@ public class SelectParties implements CcdPageConfiguration {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
