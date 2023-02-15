@@ -76,26 +76,27 @@ class CaseworkerEditRecordListingTest {
         hearingNotificationPartiesSet.add(NotificationParties.SUBJECT);
         hearingNotificationPartiesSet.add(NotificationParties.REPRESENTATIVE);
         hearingNotificationPartiesSet.add(NotificationParties.RESPONDENT);
-
+        RecordListing listing = getRecordListing();
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         CicCase cicCase = getMockCicCase();
         cicCase.setHearingNotificationParties(hearingNotificationPartiesSet);
-        caseData.setRecordListing(getRecordListing());
+        caseData.setRecordListing(listing);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseData.setCurrentEvent("");
-
+        Mockito.doNothing().when(listingUpdatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingUpdatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingUpdatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditRecordList.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        Mockito.doNothing().when(listingUpdatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
-        Mockito.doNothing().when(listingUpdatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-        Mockito.doNothing().when(listingUpdatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+
         SubmittedCallbackResponse stayedResponse = caseworkerEditRecordList.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -107,6 +108,31 @@ class CaseworkerEditRecordListingTest {
 
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
+        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        final RecordListing listing = RecordListing.builder()
+            .readOnlyHearingVenueName("asa")
+            .hearingVenueNameAndAddress("asa")
+            .build();
+        caseData.setRecordListing(listing);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditRecordList.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response.getState().getName()).isEqualTo("CaseManagement");
+        assertThat(response.getData().getRecordListing().getHearingVenueNameAndAddress()).isNull();
+
+    }
+
+    @Test
+    void shouldAboutToStartMethodSuccessfullyPopulateRegionDataCheck() {
         //Given
         final CaseData caseData = caseData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
