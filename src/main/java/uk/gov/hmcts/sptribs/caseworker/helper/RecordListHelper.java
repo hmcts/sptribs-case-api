@@ -136,4 +136,12 @@ public class RecordListHelper {
         return recordListing;
     }
 
+    public RecordListing checkAndUpdateVenueInformationSummary(RecordListing recordListing) {
+        if ((null == recordListing.getVenueNotListedOption()
+            || !recordListing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED))
+            && null != recordListing.getReadOnlyHearingVenueName() && !recordListing.getReadOnlyHearingVenueName().isEmpty()) {
+            recordListing.setHearingVenueNameAndAddress(recordListing.getReadOnlyHearingVenueName());
+        }
+        return recordListing;
+    }
 }
