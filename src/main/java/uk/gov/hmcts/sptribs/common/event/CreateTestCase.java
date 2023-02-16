@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
-    private static final String TEST_CREATE = "create-test-application";
+    private static final String TEST_CREATE = "caseworker-create-case";
     private final FeatureToggleService featureToggleService;
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
