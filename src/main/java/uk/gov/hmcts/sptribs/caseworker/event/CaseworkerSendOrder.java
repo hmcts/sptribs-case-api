@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,16 +89,17 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         var cicCase = caseData.getCicCase();
 
         var order = Order.builder()
-            .uploadedFile(cicCase.getOrderFile())
+           .uploadedFile(cicCase.getOrderFile())
             .dueDateList(cicCase.getOrderDueDates())
             .parties(getRecipients(cicCase))
+            .orderSentDate(LocalDate.now())
             .reminderDay(cicCase.getOrderReminderDays()).build();
-        String selectedDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
-        String id = getId(selectedDraft);
-        var draftList = caseData.getCicCase().getDraftOrderCICList();
-        for (int i = 0; i < draftList.size(); i++) {
-            if (null != id && Integer.parseInt(id) == i) {
-                order.setDraftOrder(draftList.get(i).getValue());
+        if (null != cicCase.getOrderIssuingType() &&  null != caseData.getCicCase().getDraftOrderDynamicList()
+            && cicCase.getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
+            String selectedDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
+            var draftList = caseData.getCicCase().getDraftOrderCICList();
+            for (int i = 0; i < draftList.size(); i++) {
+                    order.setDraftOrder(draftList.get(i).getValue());
             }
         }
         if (isEmpty(caseData.getCicCase().getOrderList())) {
@@ -131,7 +134,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderDueDates(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(details.getState())
+            .state(State.Sent)
             .build();
     }
 
