@@ -163,6 +163,19 @@ class RecordListHelperTest {
         assertThat(result.getReadOnlyHearingVenueName()).isNotNull();
     }
 
+    @Test
+    void shouldSuccessfullyCheckAndUpdateVenueInformationSummary() {
+        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        RecordListing listing = RecordListing.builder()
+            .readOnlyHearingVenueName("name-address")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(venueNotListedOption)
+            .build();
+
+        RecordListing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+
+        assertThat(result.getHearingVenueNameAndAddress()).isNotNull();
+    }
 
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
