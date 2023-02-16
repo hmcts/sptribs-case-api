@@ -1,7 +1,7 @@
-package uk.gov.hmcts.sptribs.document.dto;
+package uk.gov.hmcts.sptribs.document.bundling;
 
 
 @SuppressWarnings("all")
-    public enum CicBundlePaginationStyle {
+    public enum BundlePaginationStyle {
         off, topLeft, topCenter, topRight, bottomLeft, bottomCenter, bottomRight;
     }
