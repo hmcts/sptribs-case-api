@@ -99,6 +99,7 @@ class CaseworkerSendOrderTest {
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -146,7 +147,7 @@ class CaseworkerSendOrderTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
@@ -197,7 +198,7 @@ class CaseworkerSendOrderTest {
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
