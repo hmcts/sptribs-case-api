@@ -63,7 +63,7 @@ public class CaseData {
     private ContactParties contactParties = new ContactParties();
 
 
-    @JsonUnwrapped(prefix = "cicBundles")
+
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
