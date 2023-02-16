@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document.dto;
+package uk.gov.hmcts.sptribs.document.bundling;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

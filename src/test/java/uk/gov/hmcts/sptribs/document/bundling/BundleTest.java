@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document.dto;
+package uk.gov.hmcts.sptribs.document.bundling;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,18 +17,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @ExtendWith(MockitoExtension.class)
-public class CicBundleDtoTest {
+class BundleTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private final File jsonFile = new File(ClassLoader.getSystemResource("case.json").getPath());
-    private final JavaType type = mapper.getTypeFactory().constructParametricType(CicValue.class, CicBundleDTO.class);
+    private final JavaType type = mapper.getTypeFactory().constructParametricType(ListValue.class, Bundle.class);
 
     @Test
-    public void testDeserialization() throws IOException {
+    void testDeserialization() throws IOException {
         JsonNode root = mapper.readTree(jsonFile);
         ArrayNode bundles = (ArrayNode) root.path("case_details").path("case_data").path("caseBundles");
         JsonNode firstBundle = bundles.get(0);
 
-        CicValue<CicBundleDTO> bundleDTO = mapper.readValue(mapper.treeAsTokens(firstBundle), type);
+        ListValue<Bundle> bundleDTO = mapper.readValue(mapper.treeAsTokens(firstBundle), type);
 
         assertEquals("Bundle Title", bundleDTO.getValue().getTitle());
         assertNull(bundleDTO.getValue().getDescription());
@@ -39,13 +40,13 @@ public class CicBundleDtoTest {
         assertNotNull(bundleDTO.getValue().getPageNumberFormat());
         assertNotNull(bundleDTO.getValue().getPaginationStyle());
         assertNull(bundleDTO.getValue().getStitchedDocument());
-        CicValue<CicBundleDocumentDTO> bundleDocumentDTO = bundleDTO.getValue().getDocuments().get(0);
+        ListValue<BundleDocument> bundleDocumentDTO = bundleDTO.getValue().getDocuments().get(0);
         assertEquals("firstBundle", bundleDocumentDTO.getValue().getName());
         assertEquals("First description", bundleDocumentDTO.getValue().getDescription());
         assertEquals(1, bundleDocumentDTO.getValue().getSortIndex());
         assertNull(bundleDocumentDTO.getValue().getSourceDocument());
 
-        CicValue<CicBundleFolderDTO> bundleFolderDTO = bundleDTO.getValue().getFolders().get(0);
+        ListValue<BundleFolder> bundleFolderDTO = bundleDTO.getValue().getFolders().get(0);
         assertEquals("firstFolder", bundleFolderDTO.getValue().getName());
         assertNull(bundleFolderDTO.getValue().getFolders());
         assertEquals(1, bundleDocumentDTO.getValue().getSortIndex());
