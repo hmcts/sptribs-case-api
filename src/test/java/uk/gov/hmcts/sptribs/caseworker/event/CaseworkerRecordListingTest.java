@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -43,6 +45,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_RECORD
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerRecordListingTest {
+
+    @Mock
+    private RecordListHelper recordListHelper;
 
     @Mock
     private LocationService locationService;
@@ -79,7 +84,8 @@ class CaseworkerRecordListingTest {
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setRecordListing(getRecordListing());
+        RecordListing listing = getRecordListing();
+        caseData.setRecordListing(listing);
         caseData.setCicCase(getMockCicCase());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -88,6 +94,7 @@ class CaseworkerRecordListingTest {
         Mockito.doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =

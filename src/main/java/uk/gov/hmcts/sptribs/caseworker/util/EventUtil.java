@@ -56,4 +56,14 @@ public final class EventUtil {
         }
         return parties;
     }
+
+
+    public static String parseHyphen(String selectedVenue, int index) {
+        String[] values = (selectedVenue != null) ? Arrays.stream(selectedVenue.split(HYPHEN))
+            .map(String::trim)
+            .toArray(String[]::new) : null;
+        return values != null && values.length > 0 ? values[index] : null;
+    }
+
+
 }

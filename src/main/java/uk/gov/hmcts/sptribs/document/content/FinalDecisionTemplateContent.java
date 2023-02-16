@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,10 @@ import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CA
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CIC_CASE_SCHEME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DATED;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DECISION_SIGNATURE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_DATE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_TYPE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_VENUE_NAME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.FILE_NAME_DATE_FORMATTER;
@@ -26,6 +30,8 @@ import static uk.gov.hmcts.sptribs.notification.FormatUtil.FILE_NAME_DATE_FORMAT
 public class FinalDecisionTemplateContent {
 
     private static final String COMMA_SPACE = ", ";
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
 
     public Map<String, Object> apply(final CaseData caseData,
                                      final Long ccdCaseReference) {
@@ -39,6 +45,10 @@ public class FinalDecisionTemplateContent {
         templateContent.put(HEARING_TYPE, caseData.getHearingSummary().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getHearingSummary().getPanelMemberList()));
         templateContent.put(DECISION_SIGNATURE, caseData.getFinalDecisionSignature());
+        templateContent.put(HEARING_TIME, caseData.getRecordListing().getHearingTime());
+        templateContent.put(HEARING_VENUE_NAME, caseData.getRecordListing().getHearingVenueNameAndAddress());
+        templateContent.put(HEARING_DATE, caseData.getRecordListing().getHearingDate().format(formatter));
+
         return templateContent;
     }
 
