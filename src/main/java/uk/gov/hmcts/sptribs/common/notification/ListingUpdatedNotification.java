@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -32,9 +33,9 @@ public class ListingUpdatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         RecordListing recordListing = caseData.getRecordListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, recordListing);
-        if (cicCase.getContactPreferenceType().isEmail()) {
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
-            NotificationResponse notificationResponse =  sendEmailNotification(templateVarsSubject,
+            NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
                 TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
             cicCase.setSubjectLetterNotifyList(notificationResponse);
@@ -53,7 +54,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
         RecordListing recordListing = caseData.getRecordListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, recordListing);
 
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(), TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);

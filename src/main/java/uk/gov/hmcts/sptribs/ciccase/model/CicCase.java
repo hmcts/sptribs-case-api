@@ -54,9 +54,10 @@ public class CicCase {
     private Document orderTemplateIssued;
 
     @CCD(
+        label = "Order to be sent",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DynamicList orderTemplateDynamisList;
+    private DynamicList draftOrderDynamicList;
 
     @CCD(
         label = "Template",
@@ -64,7 +65,7 @@ public class CicCase {
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
-    private OrderTemplate anOrderTemplates;
+    private OrderTemplate orderTemplate;
 
     @CCD(
         label = "Postpone Reason",
@@ -80,11 +81,6 @@ public class CicCase {
         typeOverride = TextArea
     )
     private String postponeAdditionalInformation;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DraftOrderCIC draftOrderCIC;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -147,10 +143,6 @@ public class CicCase {
     )
     private Set<NotificationParties> hearingNotificationParties;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicList draftList;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

@@ -14,8 +14,6 @@ import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
-import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -30,10 +28,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_D
 class CaseWorkerEditDraftOrderTest {
     @InjectMocks
     private CaseWorkerEditDraftOrder caseWorkerEditDraftOrder;
-    @Mock
-    private PreviewDraftOrder previewOrder;
-    @Mock
-    private DraftOrderMainContentPage draftOrderMainContentPage;
 
     @Mock
     private OrderService orderService;

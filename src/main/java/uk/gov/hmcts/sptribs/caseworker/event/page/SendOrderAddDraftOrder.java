@@ -20,11 +20,10 @@ public class SendOrderAddDraftOrder implements CcdPageConfiguration {
         map.put(pageNameUploadOrder, "cicCaseOrderIssuingType = \"UploadOrder\"");
         pageBuilder.page(pageNameDraftOrder)
             .pageLabel("Select order")
+            .label("LabelSelectOrder", "")
             .pageShowConditions(map)
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getDraftList)
-            .readonlyNoSummary(CicCase::getDraftOrderCICList)
-            .label("errorMessageNoDraftOrder", "<h2>There are no draft orders on this case</h2>", "cicCaseDraftOrderCICList =\"\"")
+            .mandatory(CicCase::getDraftOrderDynamicList)
             .done();
     }
 

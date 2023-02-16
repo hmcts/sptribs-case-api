@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -32,9 +33,9 @@ public class ListingCreatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCaseListing);
         RecordListing recordListingSubject = caseDataSubject.getRecordListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, recordListingSubject);
-        if (cicCaseListing.getContactPreferenceType().isEmail()) {
+        if (cicCaseListing.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
-            NotificationResponse notificationResponse =  sendEmailNotification(templateVarsSubject,
+            NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject,
                 cicCaseListing.getEmail(),
                 TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
             cicCaseListing.setSubHearingNotificationResponse(notificationResponse);
@@ -55,7 +56,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         RecordListing recordListing = caseData.getRecordListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, recordListing);
 
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(), TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
