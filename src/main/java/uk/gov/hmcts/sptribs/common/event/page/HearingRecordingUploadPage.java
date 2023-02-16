@@ -24,7 +24,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
             .complex(CaseData::getHearingSummary)
             .optionalWithLabel(HearingSummary::getRecordingUpload, "Upload file")
             .label("HearingRecordDescription", "<h3>If you can't upload a recording of the hearing, "
-                + "please describe where it can be found.You can also enter a link to the recording</h3>")
+                + "please describe where it can be found. You can also enter a link to the recording</h3>")
             .optional(HearingSummary::getHearingRecordingDescription)
             .done();
     }

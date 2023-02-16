@@ -102,6 +102,7 @@ public class HearingSummary {
     private String subjectName;
 
     @CCD(
+        label = "Where can the recording be found?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )
