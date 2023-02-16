@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -107,7 +106,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 order.setDraftOrder(draftList.get(i).getValue());
             }
         }
-        if (isEmpty(caseData.getCicCase().getOrderList())) {
+
+        updateLastSelectedOrder(cicCase, order);
+
+        if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
             var listValue = ListValue
