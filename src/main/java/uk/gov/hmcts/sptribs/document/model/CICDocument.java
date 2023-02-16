@@ -23,7 +23,7 @@ public class CICDocument {
 
     @CCD(
         label = "File",
-        regex = ".pdf,.tif,.tiff,.jpg,.jpeg,.png"
+        regex = ".pdf,.tif,.tiff,.jpg,.jpeg,.png,.mp3"
     )
     private Document documentLink;
 
