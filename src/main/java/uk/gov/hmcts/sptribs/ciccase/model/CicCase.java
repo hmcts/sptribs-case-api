@@ -107,8 +107,9 @@ public class CicCase {
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Due Date"
+        label = "Due Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
     )
     private List<ListValue<DateModel>> orderDueDates;
 
@@ -130,7 +131,6 @@ public class CicCase {
     private ReminderDays orderReminderDays;
 
     @CCD(
-        label = "OrderList",
         typeOverride = Collection,
         typeParameterOverride = "Order",
         access = {CaseworkerAndSuperUserAccess.class}
@@ -150,9 +150,12 @@ public class CicCase {
 
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        label = "Upload a file to the system",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class}
     )
-    private CaseDocumentsCIC orderFile;
+    private List<ListValue<CICDocument>> orderFile;
 
     @CCD(
         label = "Case category",
