@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -89,17 +88,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         var cicCase = caseData.getCicCase();
 
         var order = Order.builder()
-           .uploadedFile(cicCase.getOrderFile())
+            .uploadedFile(cicCase.getOrderFile())
             .dueDateList(cicCase.getOrderDueDates())
             .parties(getRecipients(cicCase))
             .orderSentDate(LocalDate.now())
             .reminderDay(cicCase.getOrderReminderDays()).build();
-        if (null != cicCase.getOrderIssuingType() &&  null != caseData.getCicCase().getDraftOrderDynamicList()
+        if (null != cicCase.getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && cicCase.getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
-            String selectedDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
             var draftList = caseData.getCicCase().getDraftOrderCICList();
             for (int i = 0; i < draftList.size(); i++) {
-                    order.setDraftOrder(draftList.get(i).getValue());
+                order.setDraftOrder(draftList.get(i).getValue());
             }
         }
         if (isEmpty(caseData.getCicCase().getOrderList())) {

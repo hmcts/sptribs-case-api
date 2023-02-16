@@ -107,7 +107,7 @@ public class CicCase {
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
-        label = "Due Dates",
+        label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
 
     )
