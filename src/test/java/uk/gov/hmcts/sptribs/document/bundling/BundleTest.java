@@ -17,13 +17,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @ExtendWith(MockitoExtension.class)
-public class BundleTest {
+class BundleTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private final File jsonFile = new File(ClassLoader.getSystemResource("case.json").getPath());
     private final JavaType type = mapper.getTypeFactory().constructParametricType(ListValue.class, Bundle.class);
 
     @Test
-    public void testDeserialization() throws IOException {
+    void testDeserialization() throws IOException {
         JsonNode root = mapper.readTree(jsonFile);
         ArrayNode bundles = (ArrayNode) root.path("case_details").path("case_data").path("caseBundles");
         JsonNode firstBundle = bundles.get(0);
