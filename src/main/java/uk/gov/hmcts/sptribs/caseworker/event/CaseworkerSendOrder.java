@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -18,11 +19,11 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.common.notification.NewOrderIssuedNotification;
 
 import java.util.ArrayList;
@@ -105,6 +106,33 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 order.setDraftOrder(draftList.get(i).getValue());
             }
         }
+
+        updateLastSelectedOrder(cicCase, order);
+        updateOrderList(caseData, order);
+
+        caseData.getCicCase().setOrderIssuingType(null);
+        caseData.getCicCase().setOrderFile(null);
+        caseData.getCicCase().setOrderReminderYesOrNo(null);
+        caseData.getCicCase().setOrderReminderDays(null);
+        caseData.getCicCase().setOrderDueDates(null);
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .state(details.getState())
+            .build();
+    }
+
+    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
+                                          CaseDetails<CaseData, State> beforeDetails) {
+        var cicCase = details.getData().getCicCase();
+        sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Order sent %n## %s",
+                MessageUtil.generateSimpleMessage(cicCase)))
+            .build();
+    }
+
+    private void updateOrderList(CaseData caseData, Order order) {
         if (isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
@@ -130,26 +158,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
-        caseData.getCicCase().setOrderIssuingType(null);
-        caseData.getCicCase().setOrderFile(null);
-        caseData.getCicCase().setOrderReminderYesOrNo(null);
-        caseData.getCicCase().setOrderReminderDays(null);
-        caseData.getCicCase().setOrderDueDates(null);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(details.getState())
-            .build();
     }
 
-    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
-                                          CaseDetails<CaseData, State> beforeDetails) {
-        var cicCase = details.getData().getCicCase();
-        sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Order sent %n## %s",
-                MessageUtil.generateSimpleMessage(cicCase)))
-            .build();
+    private void updateLastSelectedOrder(CicCase cicCase, Order order) {
+        if (null != order.getDraftOrder()) {
+            cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
+        } else if (null != order.getUploadedFile()
+            && !CollectionUtils.isEmpty(order.getUploadedFile().getApplicantDocumentsUploaded())) {
+            cicCase.setLastSelectedOrder(order.getUploadedFile()
+                .getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink());
+        }
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
@@ -164,6 +182,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
         }
+
+        //Once Notification is sent, nullify the last selected order
+        caseData.getCicCase().setLastSelectedOrder(null);
     }
 
 }

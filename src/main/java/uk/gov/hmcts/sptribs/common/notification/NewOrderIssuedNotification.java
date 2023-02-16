@@ -102,13 +102,12 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     }
 
     private List<String> getUploadedDocumentIds(CaseData caseData) {
-        CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
+        CicCase cicCase = caseData.getCicCase();
         List<String> uploadedDocumentIds = new ArrayList<>();
-        if (caseIssueDecision.getDecisionDocument() != null) {
-            uploadedDocumentIds = caseIssueDecision.getDecisionDocument().stream().map(ListValue::getValue)
-                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
-                .toList();
+        if (null != cicCase.getLastSelectedOrder()) {
+            uploadedDocumentIds.add(StringUtils.substringAfterLast(cicCase.getLastSelectedOrder().getUrl(), "/"));
         }
+
         return uploadedDocumentIds;
     }
 }
