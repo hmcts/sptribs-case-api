@@ -102,6 +102,7 @@ public class HearingSummary {
     private String subjectName;
 
     @CCD(
+        label = "If you can't upload a recording of the hearing, Describe where it can be found",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )
