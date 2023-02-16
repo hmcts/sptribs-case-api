@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import java.util.List;
 
 
+
 @Component
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
@@ -37,6 +38,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 
         ConfigBuilderHelper.configureWithTestEvent(configBuilder);
+
 
         // to shutter the service within xui uncomment this line
         // configBuilder.shutterService();
