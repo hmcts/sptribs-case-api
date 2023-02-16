@@ -54,6 +54,7 @@ public class CicCase {
     private Document orderTemplateIssued;
 
     @CCD(
+        label = "Order to be sent",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList draftOrderDynamicList;

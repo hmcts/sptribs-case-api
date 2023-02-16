@@ -108,7 +108,7 @@ public class HearingSummary {
     private String hearingRecordingDescription;
 
     @CCD(
-        label = "file",
+        label = "Upload the recording of the hearing",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
