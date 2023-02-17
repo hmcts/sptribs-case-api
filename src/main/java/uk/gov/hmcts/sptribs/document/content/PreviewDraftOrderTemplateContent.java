@@ -34,7 +34,7 @@ public class PreviewDraftOrderTemplateContent {
         templateContent.put(HEARING_VENUE_NAME, caseData.getRecordListing().getHearingVenueNameAndAddress());
         templateContent.put(HEARING_DATE, caseData.getRecordListing().getHearingDate() != null
             ? caseData.getRecordListing().getHearingDate().format(formatter) : "");
-        templateContent.put(MAIN_CONTENT, caseData.getDraftOrderMainContentCIC());
+        templateContent.put(MAIN_CONTENT, caseData.getDraftOrderMainContentCIC().getMainContent());
 
         return templateContent;
     }
