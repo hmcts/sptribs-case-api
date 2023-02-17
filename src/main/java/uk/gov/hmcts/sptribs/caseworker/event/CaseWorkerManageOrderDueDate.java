@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrders;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -36,8 +34,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
-    @Autowired
-    private OrderService orderService;
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
 
@@ -62,8 +58,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList orderDynamicList = orderService.getOrderDynamicList(details);
-        caseData.getCicCase().setOrderDynamicList(orderDynamicList);
+        DynamicList draftOrderDynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+        caseData.getCicCase().setOrderDynamicList(draftOrderDynamicList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
