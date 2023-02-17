@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -31,6 +32,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerCreateHearingSummaryTest {
+
+    @Mock
+    private RecordListHelper recordListHelper;
+
     @InjectMocks
     private CaseWorkerCreateHearingSummary caseWorkerCreateHearingSummary;
 
