@@ -89,7 +89,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
+        OrderTemplate orderTemplate = caseData.getCicCase().getOrderTemplate();
 
         DynamicList draftList = orderService.getDraftOrderTemplatesDynamicList(orderTemplate,
             caseData.getCicCase().getDraftOrderDynamicList());
