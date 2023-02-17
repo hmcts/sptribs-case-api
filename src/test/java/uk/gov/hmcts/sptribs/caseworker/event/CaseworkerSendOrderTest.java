@@ -116,6 +116,7 @@ class CaseworkerSendOrderTest {
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -136,7 +137,7 @@ class CaseworkerSendOrderTest {
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNotNull();
-        assertThat(order.getDraftOrder()).isNull();
+        assertThat(order.getDraftOrder()).isNotNull();
     }
 
     @Test
