@@ -137,7 +137,7 @@ class CaseworkerSendOrderTest {
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNotNull();
-        assertThat(order.getDraftOrder()).isNull();
+        assertThat(order.getDraftOrder()).isNotNull();
     }
 
     @Test

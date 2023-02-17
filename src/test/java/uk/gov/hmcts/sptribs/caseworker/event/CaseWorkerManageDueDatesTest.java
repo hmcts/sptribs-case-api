@@ -94,8 +94,6 @@ class CaseWorkerManageDueDatesTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        // when(orderService.getOrderDynamicList(any())).thenReturn(null);
-        // caseData.getCicCase().setOrderDynamicList(draftOrderDynamicList)
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerManageOrderDueDate.aboutToStart(updatedCaseDetails);
 
