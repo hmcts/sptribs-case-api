@@ -41,7 +41,10 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .stream()
             .filter(listValue -> listValue.getValue().getCode().equals(code))
             .findFirst()
-            .ifPresent(listValue -> caseData.setDraftOrderContentCIC(listValue.getValue().getDraftOrderContentCIC()));
+            .ifPresent(listValue -> {
+                caseData.setDraftOrderContentCIC(listValue.getValue().getDraftOrderContentCIC());
+                caseData.getCicCase().setOrderTemplate(listValue.getValue().getTemplate());
+            });
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
