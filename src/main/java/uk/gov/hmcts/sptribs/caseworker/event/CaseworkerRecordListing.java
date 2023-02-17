@@ -10,9 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -51,6 +53,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
     @Autowired
+    private RecordListHelper recordListHelper;
+
+    @Autowired
     private LocationService locationService;
 
     @Autowired
@@ -63,7 +68,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .forStates(CaseManagement, AwaitingHearing)
             .name("Hearings: Create listing")
             .description("Hearings: Create listing")
-            .showEventNotes()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -102,7 +106,11 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         var caseData = details.getData();
         final List<String> errors = new ArrayList<>();
-
+        if (null != caseData.getRecordListing()
+            && null != caseData.getRecordListing().getNumberOfDays()
+            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
+            caseData.getRecordListing().setAdditionalHearingDate(null);
+        }
         if (checkNullCondition(details.getData().getCicCase())) {
             errors.add("One party must be selected.");
         }
@@ -117,6 +125,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             partiesSet.add(NotificationParties.RESPONDENT);
         }
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
+
+        caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getRecordListing()));
         caseData.setCurrentEvent("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

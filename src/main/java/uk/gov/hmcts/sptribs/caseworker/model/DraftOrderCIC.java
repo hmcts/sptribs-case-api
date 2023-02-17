@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -24,7 +25,19 @@ public class DraftOrderCIC {
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
-    private OrderTemplate anOrderTemplate;
+    private OrderTemplate template;
+
+    @CCD(
+        label = "Order File",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document templateGeneratedDocument;
+
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DraftOrderMainContentCIC draftOrderMainContentCIC = new DraftOrderMainContentCIC();
 
 
 }

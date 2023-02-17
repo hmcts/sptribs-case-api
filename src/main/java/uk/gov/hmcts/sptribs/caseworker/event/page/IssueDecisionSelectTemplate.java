@@ -1,19 +1,40 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
+import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueDecisionShowConditions;
 
 public class IssueDecisionSelectTemplate implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        String pageNameSelectTemplate = "SelectTemplate";
-        String pageNameUpload = "UploadNotice";
-        Map<String, String> map = new HashMap<>();
-        map.put(pageNameSelectTemplate, "caseIssueDecisionDecisionNotice = \"Create from a template\"");
-        map.put(pageNameUpload, "caseIssueDecisionDecisionNotice = \"Upload from your computer\"");
+        pageBuilder.page("issueDecisionSelectTemplate", this::midEvent)
+            .pageLabel("Select a template")
+            .pageShowConditions(issueDecisionShowConditions())
+            .complex(CaseData::getCaseIssueDecision)
+            .mandatory(CaseIssueDecision::getIssueDecisionTemplate)
+            .done();
     }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
+        CaseDetails<CaseData, State> details,
+        CaseDetails<CaseData, State> detailsBefore
+    ) {
+        CaseData caseData = details.getData();
+        DecisionTemplate decision = caseData.getCaseIssueDecision().getIssueDecisionTemplate();
+        caseData.setDecisionMainContent(EventUtil.getMainContent(decision));
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
 }

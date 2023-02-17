@@ -80,22 +80,16 @@ public class RecordListing {
     private Set<VenueNotListed> venueNotListedOption;
 
     @CCD(
-        label = "Venue Name",
+        label = "Venue name and address",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String hearingVenueName;
+    private String hearingVenueNameAndAddress;
 
     @CCD(
         label = "Venue Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String readOnlyHearingVenueName;
-
-    @CCD(
-        label = "Venue Address",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String hearingVenueAddress;
 
     @CCD(
         label = "Room at venue",
@@ -166,6 +160,7 @@ public class RecordListing {
     private String conferenceCallNumber;
 
     @CCD(
+        label = "Other important information ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )

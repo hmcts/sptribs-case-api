@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
@@ -10,8 +11,11 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_2;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_3;
@@ -23,6 +27,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 
 
@@ -81,6 +87,20 @@ public class NotificationHelper {
             .build();
     }
 
+    public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
+                                                             boolean hasFileAttachment,
+                                                             List<String> uploadedDocumentIds,
+                                                             Map<String, Object> templateVars,
+                                                             TemplateName emailTemplateName) {
+        return NotificationRequest.builder()
+            .destinationAddress(destinationAddress)
+            .hasFileAttachments(hasFileAttachment)
+            .uploadedDocumentIds(uploadedDocumentIds)
+            .template(emailTemplateName)
+            .templateVars(templateVars)
+            .build();
+    }
+
     public NotificationRequest buildLetterNotificationRequest(Map<String, Object> templateVarsLetter,
                                                               TemplateName letterTemplateName) {
         return NotificationRequest.builder()
@@ -102,8 +122,8 @@ public class NotificationHelper {
             if (null != recordListing.getSelectedVenue()) {
                 templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getSelectedVenue());
             } else
-                if (null != recordListing.getHearingVenueName()) {
-                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueName());
+                if (null != recordListing.getHearingVenueNameAndAddress()) {
+                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueNameAndAddress());
                 } else {
                     templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
                 }
@@ -150,5 +170,19 @@ public class NotificationHelper {
 
     private boolean isTelephoneFormat(RecordListing recordListing) {
         return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+    }
+
+    public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
+        String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
+        String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
+        String hearingDate = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
+            ? hearingDateTimeArr[1].substring(0, hearingDateTimeArr[1].lastIndexOf(SPACE))
+            : null;
+        String hearingTime = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
+            ? hearingDateTimeArr[1].substring(hearingDateTimeArr[1].lastIndexOf(SPACE) + 1)
+            : null;
+
+        templateVars.put(HEARING_DATE, hearingDate);
+        templateVars.put(HEARING_TIME, hearingTime);
     }
 }

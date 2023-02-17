@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +46,9 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
     @Autowired
     private HearingService hearingService;
 
+    @Autowired
+    private HearingPostponedNotification hearingPostponedNotification;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
@@ -56,7 +60,6 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
-                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         createHearingSummary.addTo(pageBuilder);
@@ -82,13 +85,13 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         var caseData = details.getData();
 
         Set<NotificationParties> partiesSet = new HashSet<>();
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartySubject())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             partiesSet.add(NotificationParties.REPRESENTATIVE);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
@@ -101,10 +104,27 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+        sendHearingPostponedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Hearing Postponed %n## The hearing has been postponed, the case has been updated %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
+    }
+
+    private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+            hearingPostponedNotification.sendToSubject(caseData, caseNumber);
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+            hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+            hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
+        }
     }
 
 }

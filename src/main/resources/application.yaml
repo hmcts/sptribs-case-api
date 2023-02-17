@@ -62,6 +62,10 @@ uk:
           LISTING_CREATED_CITIZEN_POST: '6b01b3fd-195e-4266-bfaf-ba028ccb4faa'
           CASE_CANCEL_HEARING_EMAIL: '56ea62fa-99d0-4341-ac03-4c69732035cc'
           CASE_CANCEL_HEARING_POST: '2663b564-c361-420b-a227-c470e6be0703'
+          HEARING_POSTPONED_EMAIL: '6c1ac2dc-cb6a-4e30-ba2f-3e658a57de0a'
+          HEARING_POSTPONED_POST: 'b8a6e858-6e2a-4222-a071-33348bb7fed6'
+          CASE_WITHDRAWN_EMAIL: '12985936-b067-4747-aae6-83a375e8295e'
+          CASE_WITHDRAWN_POST: '54fe1990-2213-4bcb-9027-7b595cd9db12'
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
@@ -76,6 +80,7 @@ idam:
     microservice: sptribs_case_api
   api:
     url: ${IDAM_API_BASEURL:http://localhost:5000}
+
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
@@ -113,7 +118,18 @@ docmosis:
       ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice: ST-CIC-DEC-ENG-CIC4_Blank_Decision_Notice.docx
       ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice: ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice.docx
       ST-CIC-DEC-ENG-CIC12_Decision_Annex: ST-CIC-DEC-ENG-CIC12_Decision_Annex.docx
+      ST-CIC-DEC-ENG-CIC6_General_Directions: ST-CIC-DEC-ENG-CIC6_General_Directions.docx
+      ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports": ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports.docx
+      ST-CIC-DEC-ENG-CIC8_ME_Joint_Instruction: ST-CIC-DEC-ENG-CIC8_ME_Joint_Instruction.docx
+      ST-CIC-DEC-ENG-CIC10_Strike_Out_Warning: ST-CIC-DEC-ENG-CIC10_Strike_Out_Warning.docx
+      ST-CIC-DEC-ENG-CIC13_Pro_Forma_Summons: ST-CIC-DEC-ENG-CIC13_Pro_Forma_Summons.docx
       CIC6_General_Directions: ST-CIC-STD-ENG-CIC6_General_Directions.docx
+      CIC7_ME_Dmi_Reports: ST-CIC-STD-ENG-CIC7_ME_Dmi_Reports.docx
+      CIC8_ME_Joint_Instruction: ST-CIC-STD-ENG-CIC8_ME_Joint_Instruction.docx
+      CIC10_Strike_Out_Warning: ST-CIC-STD-ENG-CIC10_Strike_Out_Warning.docx
+      CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
+
+
     welsh:
       #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.
       DIVORCE_APPLICATION_SOLE: ${DIVORCE_APPLICATION_SOLE_WELSH_TEMPLATE_ID:NFD_CP_Application_Sole_V5.docx}

@@ -2,7 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -56,4 +58,35 @@ public final class EventUtil {
         }
         return parties;
     }
+
+
+    public static String parseHyphen(String selectedVenue, int index) {
+        String[] values = (selectedVenue != null) ? Arrays.stream(selectedVenue.split(HYPHEN))
+            .map(String::trim)
+            .toArray(String[]::new) : null;
+        return values != null && values.length > 0 ? values[index] : null;
+    }
+
+    public static String getMainContent(DecisionTemplate decision) {
+        String mainContent = "";
+        if (decision.equals(DecisionTemplate.ELIGIBILITY)) {
+            mainContent = DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT;
+        } else if (decision.equals(DecisionTemplate.QUANTUM)) {
+            mainContent = DocmosisTemplateConstants.QUANTUM_MAIN_CONTENT;
+        } else if (decision.equals(DecisionTemplate.RULE_27)) {
+            mainContent = DocmosisTemplateConstants.RULE27_MAIN_CONTENT;
+        } else if (decision.equals(DecisionTemplate.ME_DMI_REPORTS)) {
+            mainContent = DocmosisTemplateConstants.ME_DMI_MAIN_CONTENT;
+        } else if (decision.equals(DecisionTemplate.ME_JOINT_INSTRUCTION)) {
+            mainContent = DocmosisTemplateConstants.ME_JOINT_MAIN_CONTENT;
+        } else if (decision.equals(DecisionTemplate.STRIKE_OUT_WARNING)) {
+            mainContent = DocmosisTemplateConstants.STRIKE_OUT_WARNING_MAIN_CONTENT;
+        } else if (decision.equals(DecisionTemplate.STRIKE_OUT_DECISION_NOTICE)) {
+            mainContent = DocmosisTemplateConstants.STRIKE_OUT_NOTICE_MAIN_CONTENT;
+        } else if (decision.equals(DecisionTemplate.PRO_FORMA_SUMMONS)) {
+            mainContent = DocmosisTemplateConstants.PRO_FORMA_MAIN_CONTENT;
+        }
+        return mainContent;
+    }
+
 }

@@ -21,6 +21,4 @@ public class DraftOrderMainContentCIC {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String mainContent;
-
-
 }

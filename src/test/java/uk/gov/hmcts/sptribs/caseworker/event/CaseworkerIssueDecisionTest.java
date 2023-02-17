@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,20 +10,31 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
+import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -32,8 +44,17 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_
 @ExtendWith(MockitoExtension.class)
 class CaseworkerIssueDecisionTest {
 
+    @Mock
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Mock
+    private DecisionTemplateContent decisionTemplateContent;
+
     @InjectMocks
     private CaseWorkerIssueDecision issueDecision;
+
+    @InjectMocks
+    private IssueDecisionSelectTemplate issueDecisionSelectTemplate;
 
     @Mock
     private DecisionIssuedNotification decisionIssuedNotification;
@@ -88,5 +109,67 @@ class CaseworkerIssueDecisionTest {
 
         //Then
         assertThat(response.getConfirmationHeader()).contains("Decision notice issued");
+    }
+
+    @Test
+    void shouldRenderDocumentWithoutError() {
+        //Given
+        final CaseIssueDecision caseIssueDecision = new CaseIssueDecision();
+        caseIssueDecision.setIssueDecisionTemplate(DecisionTemplate.ELIGIBILITY);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .caseIssueDecision(caseIssueDecision)
+            .build();
+        caseDetails.setData(caseData);
+        Document document = new Document();
+        when(caseDataDocumentService.renderDocument(
+            anyMap(),
+            any(),
+            eq(DecisionTemplate.ELIGIBILITY.getId()),
+            eq(LanguagePreference.ENGLISH), any(), any()))
+            .thenReturn(document);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isNull();
+        assertThat(caseIssueDecision.getIssueDecisionDraft()).isEqualTo(document);
+    }
+
+    @Test
+    void shouldReturnMainContentOnMidEvent() {
+        //Given
+        final CaseIssueDecision caseIssueDecision = new CaseIssueDecision();
+        caseIssueDecision.setIssueDecisionTemplate(DecisionTemplate.ELIGIBILITY);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .caseIssueDecision(caseIssueDecision)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+
+        //Then
+        Assertions.assertEquals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT, response.getData().getDecisionMainContent());
+    }
+
+    @Test
+    void shouldRunAboutToStart() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        updatedCaseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getDecisionSignature()).isEmpty();
     }
 }

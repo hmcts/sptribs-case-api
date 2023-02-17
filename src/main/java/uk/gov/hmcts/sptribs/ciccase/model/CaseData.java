@@ -31,9 +31,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -59,6 +61,12 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ContactParties contactParties = new ContactParties();
+
+
+
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
@@ -198,13 +206,15 @@ public class CaseData {
         label = "Decision notice signature",
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String finalDecisionSignature;
+    private String decisionSignature;
 
     @CCD(
-        label = "Decision notice signature",
-        access = {CaseworkerAndSuperUserAccess.class}
+        label = "Enter text in the box below. This will be added into the centre of the generated decision document",
+        access = {CaseworkerAndSuperUserAccess.class},
+        typeOverride = TextArea
     )
-    private String decisionSignature;
+    private String decisionMainContent;
+
 
     @CCD(
         label = "Order signature",

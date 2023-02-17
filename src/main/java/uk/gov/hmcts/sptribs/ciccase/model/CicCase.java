@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -42,14 +43,21 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
-@Builder
 public class CicCase {
 
     @CCD(
+        label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DynamicList orderTemplateDynamisList;
+    private Document orderTemplateIssued;
+
+    @CCD(
+        label = "Order to be sent",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList draftOrderDynamicList;
 
     @CCD(
         label = "Template",
@@ -57,7 +65,7 @@ public class CicCase {
         typeOverride = FixedList,
         typeParameterOverride = "OrderTemplate"
     )
-    private OrderTemplate anOrderTemplates;
+    private OrderTemplate orderTemplate;
 
     @CCD(
         label = "Postpone Reason",
@@ -73,11 +81,6 @@ public class CicCase {
         typeOverride = TextArea
     )
     private String postponeAdditionalInformation;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DraftOrderCIC draftOrderCIC;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -104,10 +107,16 @@ public class CicCase {
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Due Date"
+        label = "Due Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
     )
     private List<ListValue<DateModel>> orderDueDates;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document lastSelectedOrder;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -122,7 +131,6 @@ public class CicCase {
     private ReminderDays orderReminderDays;
 
     @CCD(
-        label = "OrderList",
         typeOverride = Collection,
         typeParameterOverride = "Order",
         access = {CaseworkerAndSuperUserAccess.class}
@@ -135,19 +143,19 @@ public class CicCase {
     private DynamicList orderDynamicList;
 
     @CCD(
+        label = "Notified Parties",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<NotificationParties> hearingNotificationParties;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicList draftList;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        label = "Upload a file to the system",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class}
     )
-    private CaseDocumentsCIC orderFile;
+    private List<ListValue<CICDocument>> orderFile;
 
     @CCD(
         label = "Case category",
