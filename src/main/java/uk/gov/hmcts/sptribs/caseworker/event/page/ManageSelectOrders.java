@@ -20,11 +20,10 @@ public class ManageSelectOrders implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("caseworkerAmendDueDateSelectOrder", this::midEvent)
-            .pageLabel("Select an order")
+            .pageLabel("Select order")
             .label("LabelCaseworkerAmendDueDateSelectOrder", "")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getOrderDynamicList)
-            .readonly(CicCase::getOrderList)
+            .mandatory(CicCase::getOrderDynamicList)
             .done();
 
     }
