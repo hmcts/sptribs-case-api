@@ -8,9 +8,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -76,26 +79,30 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 "\nOrder Signature\n"
                     + "\nConfirm the Role and Surname of the person who made this order - this will be added"
                     + " to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'")
-            .mandatory(CaseData::getOrderSignature)
+            .complex(CaseData::getDraftOrderContentCIC)
+            .mandatory(DraftOrderContentCIC::getOrderSignature)
             .done();
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        OrderTemplate orderTemplate = caseData.getCicCase().getOrderTemplate();
+        OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
         DynamicList draftList = orderService.getDraftOrderTemplatesDynamicList(orderTemplate,
             caseData.getCicCase().getDraftOrderDynamicList());
+        DynamicListElement addedElement = draftList.getListItems().get(draftList.getListItems().size() - 1);
+        UUID code = addedElement.getCode();
         caseData.getCicCase().setDraftOrderDynamicList(draftList);
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-            .draftOrderMainContentCIC(caseData.getDraftOrderMainContentCIC())
+            .code(code.toString())
+            .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
             .template(orderTemplate)
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
+        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         if (isEmpty(caseData.getCicCase().getDraftOrderCICList())) {
             List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
 
@@ -118,7 +125,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             caseData.getCicCase().getDraftOrderCICList().add(0, listValue);
 
             caseData.getCicCase().getDraftOrderCICList().forEach(
-                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+                draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
 

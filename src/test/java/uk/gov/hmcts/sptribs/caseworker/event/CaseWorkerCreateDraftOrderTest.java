@@ -12,9 +12,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -105,11 +105,11 @@ class CaseWorkerCreateDraftOrderTest {
     @Test
     void shouldSuccessfullyShowPreviewOrderWithTemplate() {
 
-        CicCase cicCase = CicCase.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
 
         //Given
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
+            .draftOrderContentCIC(orderContentCIC)
             .build();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
@@ -130,8 +130,9 @@ class CaseWorkerCreateDraftOrderTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
-        caseData.setCicCase(cicCase);
+        final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
+        caseData.setDraftOrderContentCIC(orderContentCIC);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);

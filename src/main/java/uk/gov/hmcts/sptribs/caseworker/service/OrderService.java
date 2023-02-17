@@ -88,20 +88,18 @@ public class OrderService {
     }
 
     public CaseData generateOrderFile(CaseData caseData, Long caseId) {
-        var template = caseData.getCicCase().getOrderTemplate();
         String subjectName = caseData.getCicCase().getFullName();
         final String filename = "Order-[" + subjectName + "]-" + LocalDateTime.now().format(formatter);
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             previewDraftOrderTemplateContent.apply(caseData, caseId),
             caseId,
-            caseData.getCicCase().getOrderTemplate().getId(),
+            caseData.getDraftOrderContentCIC().getOrderTemplate().getId(),
             LanguagePreference.ENGLISH,
             filename,
             request
         );
 
-        caseData.getCicCase().setOrderTemplate(template);
         caseData.getCicCase().setOrderTemplateIssued(generalOrderDocument);
         return caseData;
     }

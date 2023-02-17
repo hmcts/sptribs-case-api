@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -85,13 +86,13 @@ class OrderServiceTest {
     void shouldCreateTemplateWithCurrentDateAndTime() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
-        CicCase cicCase = CicCase.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
-        caseData.setCicCase(cicCase);
+        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        caseData.setDraftOrderContentCIC(orderContentCIC);
         details.setData(caseData);
 
         //When
         DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(OrderTemplate.CIC6_GENERAL_DIRECTIONS,
-            cicCase.getDraftOrderDynamicList());
+            CicCase.builder().build().getDraftOrderDynamicList());
 
         //Then
         assertThat(orderTemplateList).isNotNull();
@@ -102,8 +103,8 @@ class OrderServiceTest {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
-        CicCase cicCase = CicCase.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
-        caseData.setCicCase(cicCase);
+        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        caseData.setDraftOrderContentCIC(orderContentCIC);
         details.setData(caseData);
         //When
         CaseData result = orderService.generateOrderFile(caseData, details.getId());
