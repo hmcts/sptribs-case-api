@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
@@ -45,7 +47,10 @@ public class NotificationServiceCIC {
     private EmailTemplatesConfigCIC emailTemplatesConfig;
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    private IdamService idamService;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
@@ -137,7 +142,8 @@ public class NotificationServiceCIC {
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, List<String> uploadedDocumentIds) throws IOException {
         int count = 0;
 
-        final String authorisation = httpServletRequest.getHeader(AUTHORIZATION);
+        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final String authorisation = caseworkerUser.getAuthToken();
         String serviceAuthorization = authTokenGenerator.generate();
 
         for (String item : uploadedDocumentIds) {
