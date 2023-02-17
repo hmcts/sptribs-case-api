@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
+import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
 
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
+    private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private final CcdPageConfiguration editSelectedPartiesDetails = new SelectParties();
     private final CcdPageConfiguration editSubjectDetails = new SubjectDetails();
     private final CcdPageConfiguration editApplicantDetails = new ApplicantDetails();
@@ -52,6 +54,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
+        dateOfReceipt.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
         editSubjectDetails.addTo(pageBuilder);
         editApplicantDetails.addTo(pageBuilder);
