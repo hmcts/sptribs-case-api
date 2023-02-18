@@ -94,7 +94,7 @@ public class OrderService {
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             previewDraftOrderTemplateContent.apply(caseData, caseId),
             caseId,
-            caseData.getCicCase().getOrderTemplate().getId(),
+            caseData.getDraftOrderContentCIC().getOrderTemplate().getId(),
             LanguagePreference.ENGLISH,
             filename,
             request

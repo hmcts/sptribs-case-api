@@ -61,14 +61,6 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
-        label = "Template",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedList,
-        typeParameterOverride = "OrderTemplate"
-    )
-    private OrderTemplate orderTemplate;
-
-    @CCD(
         label = "Postpone Reason",
         typeOverride = FixedRadioList,
         typeParameterOverride = "PostponeReason",
@@ -465,12 +457,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String caseNumber;
-
-    @CCD(
-        label = "Brand New Field",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String brandNewField;
 
 
     @CCD(
