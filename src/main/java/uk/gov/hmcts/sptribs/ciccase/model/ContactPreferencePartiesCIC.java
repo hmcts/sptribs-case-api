@@ -20,15 +20,4 @@ public enum ContactPreferencePartiesCIC implements HasLabel {
 
     private final String label;
 
-    public boolean isSubject() {
-        return SUBJECT.name().equalsIgnoreCase(this.name());
-    }
-
-    public boolean isRepresentativeCIC() {
-        return REPRESENTATIVE.name().equalsIgnoreCase(this.name());
-    }
-
-    public boolean isApplicantCIC() {
-        return APPLICANT.name().equalsIgnoreCase(this.name());
-    }
 }
