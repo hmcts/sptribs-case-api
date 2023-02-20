@@ -107,19 +107,6 @@ public class CicCase {
     )
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
-//    @CCD(
-//        label = "Template",
-//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-//        typeOverride = FixedList,
-//        typeParameterOverride = "OrderTemplate"
-//    )
-//    private OrderTemplate anOrderTemplates;
-
-//    @CCD(
-//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-//    )
-//    private DraftOrderCIC draftOrderCIC;
-
 
     @CCD(
         label = "Due Date",
