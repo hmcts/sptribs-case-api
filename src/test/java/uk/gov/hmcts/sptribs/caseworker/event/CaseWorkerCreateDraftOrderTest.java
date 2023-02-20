@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -67,6 +65,7 @@ class CaseWorkerCreateDraftOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -92,6 +91,7 @@ class CaseWorkerCreateDraftOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -136,13 +136,14 @@ class CaseWorkerCreateDraftOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(orderService.getDraftOrderTemplatesDynamicList(any(), any())).thenReturn(getOrderDynamicList());
+        //when(orderService.getDraftOrderTemplatesDynamicList(any(), any())).thenReturn(getOrderDynamicList());
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
 
+        caseData.setDraftOrderContentCIC(orderContentCIC);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         //  Then

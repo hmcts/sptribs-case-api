@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -24,8 +25,11 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -44,6 +48,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
@@ -91,11 +97,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         var caseData = details.getData();
         OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
-        DynamicList draftList = orderService.getDraftOrderTemplatesDynamicList(orderTemplate,
-            caseData.getCicCase().getDraftOrderDynamicList());
-        DynamicListElement addedElement = draftList.getListItems().get(draftList.getListItems().size() - 1);
+        DynamicListElement addedElement = addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase());
         UUID code = addedElement.getCode();
-        caseData.getCicCase().setDraftOrderDynamicList(draftList);
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .code(code.toString())
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
@@ -133,7 +136,21 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .state(details.getState())
             .data(caseData)
             .build();
+    }
 
+    private DynamicListElement addToDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, CicCase cicCase) {
+        DynamicList orderTemplateDynamicList = cicCase.getDraftOrderDynamicList();
+        if (orderTemplateDynamicList == null) {
+            orderTemplateDynamicList = DynamicList.builder().listItems(new ArrayList<>()).build();
+            cicCase.setDraftOrderDynamicList(orderTemplateDynamicList);
+        }
+
+        Calendar cal = Calendar.getInstance();
+        String templateNamePlusCurrentDate = orderTemplate.getLabel() + " " + simpleDateFormat.format(cal.getTime()) + "_draft.pdf";
+
+        DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
+        orderTemplateDynamicList.getListItems().add(element);
+        return element;
     }
 
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,

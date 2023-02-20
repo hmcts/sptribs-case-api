@@ -12,18 +12,14 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
-import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -63,28 +59,6 @@ public class OrderService {
                 .build();
         }
         return null;
-    }
-
-    public DynamicList getDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, DynamicList orderTemplateDynamicList) {
-        List<DynamicListElement> dynamicListElements = new ArrayList<>();
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat simpleformat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.ENGLISH);
-        String draftOrderCreateDate = simpleformat.format(cal.getTime());
-
-        String templateNamePlusCurrentDate = orderTemplate.getLabel() + " "
-            + draftOrderCreateDate + "_draft.pdf";
-
-        if (null != orderTemplateDynamicList) {
-            dynamicListElements = orderTemplateDynamicList.getListItems();
-            dynamicListElements.add(DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build());
-        } else {
-            dynamicListElements.add(DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build());
-        }
-
-        return DynamicList
-            .builder()
-            .listItems(dynamicListElements)
-            .build();
     }
 
     public CaseData generateOrderFile(CaseData caseData, Long caseId) {

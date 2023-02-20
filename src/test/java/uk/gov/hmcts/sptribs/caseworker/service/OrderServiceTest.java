@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -61,41 +60,6 @@ class OrderServiceTest {
 
         //Then
         assertThat(regionList).isNotNull();
-    }
-
-    @Test
-    void shouldPopulateDraftOrderDynamicList() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        ListValue<DraftOrderCIC> draftOrderCIC = new ListValue<>();
-        DraftOrderCIC orderCIC = DraftOrderCIC.builder().template(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
-        draftOrderCIC.setValue(orderCIC);
-        CicCase cicCase = CicCase.builder().draftOrderCICList(List.of(draftOrderCIC)).build();
-        caseData.setCicCase(cicCase);
-        details.setData(caseData);
-        //When
-
-        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(OrderTemplate.CIC6_GENERAL_DIRECTIONS,
-            caseData.getCicCase().getDraftOrderDynamicList());
-
-        //Then
-        assertThat(orderTemplateList).isNotNull();
-    }
-
-    @Test
-    void shouldCreateTemplateWithCurrentDateAndTime() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
-        caseData.setDraftOrderContentCIC(orderContentCIC);
-        details.setData(caseData);
-
-        //When
-        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(OrderTemplate.CIC6_GENERAL_DIRECTIONS,
-            CicCase.builder().build().getDraftOrderDynamicList());
-
-        //Then
-        assertThat(orderTemplateList).isNotNull();
     }
 
     @Test

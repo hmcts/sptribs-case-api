@@ -94,6 +94,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         CaseData caseData = details.getData();
+        // Reset values so that they are not prepopulated when creating another draft order
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
