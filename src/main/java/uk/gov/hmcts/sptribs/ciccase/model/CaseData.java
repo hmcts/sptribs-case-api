@@ -21,7 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderMainContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
@@ -55,12 +55,12 @@ public class CaseData {
 //    private DraftOrderMainContentCIC draftOrderMainContentCIC;
 
 
+    @JsonUnwrapped(prefix = "orderContent")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DraftOrderMainContentCIC draftOrderMainContentCIC = new DraftOrderMainContentCIC();
-
+    private DraftOrderContentCIC draftOrderContentCIC = new DraftOrderContentCIC();
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -218,13 +218,6 @@ public class CaseData {
         typeOverride = TextArea
     )
     private String decisionMainContent;
-
-
-    @CCD(
-        label = "Order signature",
-        access = {CaseworkerAndSuperUserAccess.class}
-    )
-    private String orderSignature;
 
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
