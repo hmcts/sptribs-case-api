@@ -14,6 +14,7 @@ public final class DocmosisTemplateConstants {
     public static final String HEARING_TYPE = "venueOrHearingType";
     public static final String TRIBUNAL_MEMBERS = "tribunalMembers";
     public static final String DECISION_SIGNATURE = "decisionSignature";
+    public static final String ORDER_SIGNATURE = "orderSignature";
     public static final String MAIN_CONTENT = "MainBody";
     public static final String REPRESENTATIVE_FULL_NAME = "representativeFullName";
     public static final String HEARING_VENUE_NAME = "recordHearingVenueName";
