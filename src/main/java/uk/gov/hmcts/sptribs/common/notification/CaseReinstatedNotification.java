@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -34,7 +35,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getContactPreferenceType().isEmail()) {
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -52,7 +53,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         NotificationResponse notificationResponse;
-        if (cicCase.getRepresentativeContactDetailsPreference().isEmail()) {
+        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);

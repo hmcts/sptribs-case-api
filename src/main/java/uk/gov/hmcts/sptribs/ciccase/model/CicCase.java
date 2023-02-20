@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,17 +55,10 @@ public class CicCase {
     private Document orderTemplateIssued;
 
     @CCD(
+        label = "Order to be sent",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList draftOrderDynamicList;
-
-    @CCD(
-        label = "Template",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedList,
-        typeParameterOverride = "OrderTemplate"
-    )
-    private OrderTemplate orderTemplate;
 
     @CCD(
         label = "Postpone Reason",
@@ -106,10 +100,16 @@ public class CicCase {
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Due Date"
+        label = "Due Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
     )
     private List<ListValue<DateModel>> orderDueDates;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document lastSelectedOrder;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -124,7 +124,6 @@ public class CicCase {
     private ReminderDays orderReminderDays;
 
     @CCD(
-        label = "OrderList",
         typeOverride = Collection,
         typeParameterOverride = "Order",
         access = {CaseworkerAndSuperUserAccess.class}
@@ -132,6 +131,7 @@ public class CicCase {
     private List<ListValue<Order>> orderList;
 
     @CCD(
+        label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList orderDynamicList;
@@ -144,9 +144,12 @@ public class CicCase {
 
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        label = "Upload a file to the system",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class}
     )
-    private CaseDocumentsCIC orderFile;
+    private List<ListValue<CICDocument>> orderFile;
 
     @CCD(
         label = "Case category",
@@ -243,26 +246,6 @@ public class CicCase {
     )
     private Set<RespondentCIC> notifyPartyRespondent;
 
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "SubjectCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<SubjectCIC> recordNotifyPartySubject;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RepresentativeCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RepresentativeCIC> recordNotifyPartyRepresentative;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RespondentCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RespondentCIC> recordNotifyPartyRespondent;
 
     @CCD(
         label = "What is the reason for reinstating the case?",
@@ -566,5 +549,49 @@ public class CicCase {
     @JsonIgnore
     public String getSelectedHearingToCancel() {
         return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
+    }
+
+    public void removeRepresentative() {
+        if (null != representativeCIC) {
+            representativeCIC = new HashSet<>();
+        }
+        if (null != notifyPartyRepresentative) {
+            notifyPartyRepresentative = new HashSet<>();
+        }
+        if (null != hearingNotificationParties) {
+            hearingNotificationParties.remove(NotificationParties.REPRESENTATIVE);
+        }
+        if (null != contactPartiesCIC) {
+            Set<ContactPartiesCIC> temp = new HashSet<>();
+            for (ContactPartiesCIC partiesCIC : contactPartiesCIC) {
+                if (partiesCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
+                    temp.add(partiesCIC);
+                }
+            }
+            contactPartiesCIC = temp;
+        }
+        representativeFullName = "";
+        representativeOrgName = "";
+        representativeReference = "";
+        representativeAddress = new AddressGlobalUK();
+        representativePhoneNumber = "";
+        representativeEmailAddress = "";
+    }
+
+    public void removeApplicant() {
+        if (null != applicantCIC) {
+            applicantCIC = new HashSet<>();
+        }
+        if (null != notifyPartyApplicant) {
+            notifyPartyApplicant = new HashSet<>();
+        }
+        if (null != hearingNotificationParties) {
+            hearingNotificationParties.remove(NotificationParties.APPLICANT);
+        }
+        applicantFullName = "";
+        applicantAddress = new AddressGlobalUK();
+        applicantPhoneNumber = "";
+        applicantEmailAddress = "";
+
     }
 }

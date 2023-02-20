@@ -17,8 +17,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -96,17 +98,17 @@ class RecordListHelperTest {
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
 
-        cicCase.setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        cicCase.setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        cicCase.setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        cicCase.setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
         caseData.setCicCase(cicCase);
 
         recordListHelper.checkNullCondition(cicCase);
         recordListHelper.getErrorMsg(cicCase);
 
-        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).isNotNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).isNotNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartySubject()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartyRespondent()).isNotNull();
     }
 
 
@@ -115,9 +117,9 @@ class RecordListHelperTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
 
-        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        caseData.getCicCase().setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        caseData.getCicCase().setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -132,6 +134,48 @@ class RecordListHelperTest {
         assertThat(caseData.getCicCase()).isNotNull();
     }
 
+    @Test
+    void shouldSuccessfullyCheckAndUpdateVenueInformationVenueNotListed() {
+
+        RecordListing listing = RecordListing.builder()
+            .hearingVenueNameAndAddress("name-address")
+            .readOnlyHearingVenueName("name-address")
+            .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
+            .build();
+
+        RecordListing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+
+        assertThat(result.getReadOnlyHearingVenueName()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckAndUpdateVenueInformation() {
+        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        RecordListing listing = RecordListing.builder()
+            .hearingVenueNameAndAddress("name-address")
+            .readOnlyHearingVenueName("name-address")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(venueNotListedOption)
+            .build();
+
+        RecordListing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+
+        assertThat(result.getReadOnlyHearingVenueName()).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckAndUpdateVenueInformationSummary() {
+        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        RecordListing listing = RecordListing.builder()
+            .readOnlyHearingVenueName("name-address")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(venueNotListedOption)
+            .build();
+
+        RecordListing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+
+        assertThat(result.getHearingVenueNameAndAddress()).isNotNull();
+    }
 
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement

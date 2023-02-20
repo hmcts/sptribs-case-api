@@ -243,4 +243,25 @@ public class Case extends Base {
         getTextBoxByLabel("Country").fill("UK");
         getTextBoxByLabel("Postcode/Zipcode").fill("SW11 1PD");
     }
+
+    public void createCaseFlag() {
+        page.selectOption("#next-step", new SelectOption().setLabel("Flags: Create flag"));
+        page.waitForFunction("selector => document.querySelector(selector).disabled === false","ccd-event-trigger button[type='submit']",
+            PageHelpers.functionOptionsWithTimeout(6000));
+        PageHelpers.clickButton("Go");
+        assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(30000));
+        assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
+        page.getByLabel("Case").check();
+        clickButton("Continue");
+        page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Subject")).check();
+        clickButton("Continue");
+        page.getByLabel("Other").check();
+        page.getByLabel("Enter a flag type").click();
+        page.getByLabel("Enter a flag type").fill("test flag");
+        clickButton("Continue");
+        clickButton("Continue");
+        clickButton("Save and continue");
+        assertThat(page.locator("h1:has-text('Case Flag created')")).isVisible();
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+    }
 }

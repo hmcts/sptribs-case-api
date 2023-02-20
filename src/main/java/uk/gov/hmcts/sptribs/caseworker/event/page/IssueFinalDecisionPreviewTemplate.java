@@ -5,26 +5,18 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
+import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueFinalDecisionShowConditions;
 
 public class IssueFinalDecisionPreviewTemplate implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        String pageNameSelectTemplate = "issueFinalDecisionSelectTemplate";
-        String pageNamePreviewTemplate = "issueFinalDecisionPreviewTemplate";
-        String pageNameUpload = "issueFinalDecisionUpload";
-        Map<String, String> map = new HashMap<>();
-        map.put(pageNameSelectTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
-        map.put(pageNamePreviewTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
-        map.put(pageNameUpload, "caseIssueFinalDecisionFinalDecisionNotice = \"Upload from your computer\"");
-        pageBuilder.page(pageNamePreviewTemplate)
+        pageBuilder.page("issueFinalDecisionPreviewTemplate")
             .pageLabel("Final decision notice preview")
-            .pageShowConditions(map)
+            .pageShowConditions(issueFinalDecisionShowConditions())
             .complex(CaseData::getCaseIssueFinalDecision)
             .readonly(CaseIssueFinalDecision::getFinalDecisionDraft)
-            .label("issueFinalDecisionPreviewTemplateInfo","If there are no changes to make, continue to the next screen.")
+            .label("issueFinalDecisionPreviewTemplateInfo", "If there are no changes to make, continue to the next screen.")
             .done();
     }
 }

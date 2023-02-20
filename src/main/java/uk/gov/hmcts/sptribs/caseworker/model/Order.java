@@ -1,16 +1,20 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 
 
 @Data
@@ -20,20 +24,24 @@ import java.util.List;
 public class Order {
 
     @CCD(
-        label = "Uploaded File",
+        label = "Due Dates",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CaseDocumentsCIC uploadedFile;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Due Dates"
     )
     private List<ListValue<DateModel>> dueDateList;
 
 
     @CCD(
-        label = "Draft Order",
+        label = "Uploaded File",
+        typeOverride = Collection,
+        typeParameterOverride = "CICDocument",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<CICDocument>> uploadedFile;
+
+
+    @CCD(
+        label = "Order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DraftOrderCIC draftOrder;
@@ -49,5 +57,14 @@ public class Order {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String parties;
+
+    private List<ListValue<DateModel>> orderDueDates;
+
+    @CCD(
+        label = "Date sent",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate orderSentDate;
 
 }

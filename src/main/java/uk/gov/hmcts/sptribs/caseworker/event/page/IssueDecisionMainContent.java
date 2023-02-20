@@ -11,7 +11,7 @@ public class IssueDecisionMainContent implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("issueDecisionMainContent")
-            .pageLabel("Template Main Content")
+            .pageLabel("Edit Decision")
             .label("LabelIssueDecisionMainContent", "")
             .pageShowConditions(issueDecisionShowConditions())
             .label("LabelIssueDecisionMainContentHeader",

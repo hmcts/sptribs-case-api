@@ -16,8 +16,8 @@ public class CaseworkerAddNoteTest extends XuiTest {
         assertThat(page).hasURL("http://localhost:3000/cases/case-filter");
         page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("Jurisdiction")).selectOption("ST_CIC");
         page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("Case type")).selectOption("CriminalInjuriesCompensation");
-        page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("Event")).selectOption("create-test-application");
+        page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("Event")).selectOption("caseworker-create-case");
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Start")).click();
-        assertThat(page).hasURL("http://localhost:3000/cases/case-create/ST_CIC/CriminalInjuriesCompensation/create-test-application/create-test-applicationcaseCategorisationDetails");
+        assertThat(page).hasURL("http://localhost:3000/cases/case-create/ST_CIC/CriminalInjuriesCompensation/caseworker-create-case/caseworker-create-casecaseCategorisationDetails");
     }
 }

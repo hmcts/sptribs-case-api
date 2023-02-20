@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -31,6 +32,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerCreateHearingSummaryTest {
+
+    @Mock
+    private RecordListHelper recordListHelper;
+
     @InjectMocks
     private CaseWorkerCreateHearingSummary caseWorkerCreateHearingSummary;
 
@@ -80,9 +85,9 @@ class CaseworkerCreateHearingSummaryTest {
         //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)

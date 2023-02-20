@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -82,7 +83,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-
+        if (!StringUtils.isEmpty(caseData.getRecordListing().getReadOnlyHearingVenueName())) {
+            caseData.getRecordListing().setHearingVenueNameAndAddress(null);
+        }
         if (caseData.getRecordListing().getRegionList() == null) {
             recordListHelper.regionData(caseData);
         }
@@ -105,6 +108,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             caseData.getRecordListing().setAdditionalHearingDate(null);
         }
         recordListHelper.getNotificationParties(caseData);
+        caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getRecordListing()));
         caseData.setCurrentEvent("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

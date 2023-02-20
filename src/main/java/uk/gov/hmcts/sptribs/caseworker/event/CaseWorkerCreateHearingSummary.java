@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateHearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -50,6 +51,9 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
 
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
+
+    @Autowired
+    private RecordListHelper recordListHelper;
 
     @Autowired
     private HearingService hearingService;
@@ -125,6 +129,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
             && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
             caseData.getRecordListing().setAdditionalHearingDate(null);
         }
+
+        caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformationSummary(caseData.getRecordListing()));
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
