@@ -111,7 +111,7 @@ class CaseworkerEditRecordListingTest {
         //Given
         final CaseData caseData = caseData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         final RecordListing listing = RecordListing.builder()
             .readOnlyHearingVenueName("asa")
             .hearingVenueNameAndAddress("asa")
@@ -136,7 +136,7 @@ class CaseworkerEditRecordListingTest {
         //Given
         final CaseData caseData = caseData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -187,7 +187,7 @@ class CaseworkerEditRecordListingTest {
     void shouldNotReturnErrorsIfCaseDataIsValid() {
         final CaseData caseData = caseData();
 
-        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
@@ -281,9 +281,9 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldChangeStateOnAboutToSubmit() {
         final CicCase cicCase = CicCase.builder()
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -302,9 +302,9 @@ class CaseworkerEditRecordListingTest {
     }
 
     private CicCase getMockCicCase() {
-        return CicCase.builder().fullName("fullName").recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .representativeFullName("repFullName").recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .respondentName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        return CicCase.builder().fullName("fullName").notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .representativeFullName("repFullName").notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .respondentName("respName").notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
     }
 
 
