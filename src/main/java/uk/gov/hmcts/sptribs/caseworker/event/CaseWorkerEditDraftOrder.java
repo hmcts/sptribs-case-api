@@ -93,7 +93,11 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+        CaseData caseData = details.getData();
+        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
+        caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
             .state(details.getState())
             .build();
     }

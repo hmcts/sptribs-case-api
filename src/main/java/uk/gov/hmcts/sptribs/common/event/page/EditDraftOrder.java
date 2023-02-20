@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -20,6 +21,8 @@ import java.util.List;
 @Component
 public class EditDraftOrder implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "cicCaseDraftOrderDynamicList = \"ALWAYS_HIDE\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
@@ -27,7 +30,11 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .pageLabel("Edit order")
             .label("LabelEditDraftOrder", "Draft to be edited")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getDraftOrderDynamicList)
+            .mandatory(CicCase::getDraftOrderDynamicList)
+            .done()
+            .complex(CaseData::getDraftOrderContentCIC)
+            // readonly below is required in order to be able to set the order template in midEvent below
+            .readonly(DraftOrderContentCIC::getOrderTemplate, ALWAYS_HIDE)
             .done();
     }
 
