@@ -22,12 +22,12 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'org.owasp.dependencycheck' version '8.0.2'
-  id 'org.sonarqube' version '3.4.0.2513'
+  id 'org.sonarqube' version '4.0.0.2929'
   id 'io.spring.dependency-management' version '1.0.13.RELEASE'
   id 'org.springframework.boot' version '2.7.5'
   id 'com.github.ben-manes.versions' version '0.41.0'
   id 'hmcts.ccd.sdk'  version '5.3.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.579'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.592'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -319,9 +319,9 @@ dependencies {
   }
 
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-  implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.14'
+  implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.15'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: 'v4.9.1'
-  implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.7.3'
+  implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.1.1'
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.0.1'
   implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.10'
@@ -365,12 +365,12 @@ dependencies {
   testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.5.0'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.4'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.8.0'
+  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.1.1'
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '11.10'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.3.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.28.1'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.30.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -387,8 +387,8 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.28.1'
-  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.0.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.30.0'
+  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:1.9.1'
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
