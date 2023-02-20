@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -78,14 +79,26 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
-        State state = details.getState();
+        CaseData beforeData = beforeDetails.getData();
+        if (null != beforeData.getCicCase() && null != beforeData.getCicCase().getPartiesCIC()
+            && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
+            && null != data.getCicCase() && null != data.getCicCase().getPartiesCIC()
+            && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
+            data.getCicCase().removeRepresentative();
+        }
+
+        if (null != beforeData.getCicCase() && null != beforeData.getCicCase().getPartiesCIC()
+            && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)
+            && null != data.getCicCase() && null != data.getCicCase().getPartiesCIC()
+            && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+            data.getCicCase().removeApplicant();
+        }
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .state(state)
             .build();
     }
 

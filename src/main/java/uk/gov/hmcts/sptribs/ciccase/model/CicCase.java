@@ -253,26 +253,6 @@ public class CicCase {
     )
     private Set<RespondentCIC> notifyPartyRespondent;
 
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "SubjectCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<SubjectCIC> recordNotifyPartySubject;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RepresentativeCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RepresentativeCIC> recordNotifyPartyRepresentative;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RespondentCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RespondentCIC> recordNotifyPartyRespondent;
 
     @CCD(
         label = "What is the reason for reinstating the case?",
@@ -576,5 +556,43 @@ public class CicCase {
     @JsonIgnore
     public String getSelectedHearingToCancel() {
         return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
+    }
+
+    public void removeRepresentative() {
+        if (null != representativeCIC) {
+            representativeCIC.remove(RepresentativeCIC.REPRESENTATIVE);
+        }
+        if (null != notifyPartyRepresentative) {
+            notifyPartyRepresentative.remove(RepresentativeCIC.REPRESENTATIVE);
+        }
+        if (null != hearingNotificationParties) {
+            hearingNotificationParties.remove(NotificationParties.REPRESENTATIVE);
+        }
+        if (null != contactPartiesCIC) {
+            contactPartiesCIC.remove(ContactPartiesCIC.REPRESENTATIVETOCONTACT);
+        }
+        representativeFullName = "";
+        representativeOrgName = "";
+        representativeReference = "";
+        representativeAddress = new AddressGlobalUK();
+        representativePhoneNumber = "";
+        representativeEmailAddress = "";
+    }
+
+    public void removeApplicant() {
+        if (null != applicantCIC) {
+            applicantCIC.remove(ApplicantCIC.APPLICANT_CIC);
+        }
+        if (null != notifyPartyApplicant) {
+            notifyPartyApplicant.remove(ApplicantCIC.APPLICANT_CIC);
+        }
+        if (null != hearingNotificationParties) {
+            hearingNotificationParties.remove(NotificationParties.APPLICANT);
+        }
+        applicantFullName = "";
+        applicantAddress = new AddressGlobalUK();
+        applicantPhoneNumber = "";
+        applicantEmailAddress = "";
+
     }
 }
