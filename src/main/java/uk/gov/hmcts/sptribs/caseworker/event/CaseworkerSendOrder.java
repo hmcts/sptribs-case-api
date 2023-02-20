@@ -140,7 +140,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderReminderDays(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(State.Sent)
+            .state(details.getState())
             .build();
     }
 
