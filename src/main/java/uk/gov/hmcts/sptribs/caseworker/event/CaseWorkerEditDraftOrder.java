@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -71,7 +72,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 "\nOrder Signature\n"
                     + "\nConfirm the Role and Surname of the person who made this order - this will be added"
                     + " to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'")
-            .mandatory(CaseData::getOrderSignature)
+            .complex(CaseData::getDraftOrderContentCIC)
+            .mandatory(DraftOrderContentCIC::getOrderSignature)
             .done();
     }
 
@@ -91,12 +93,14 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-
-
+        CaseData caseData = details.getData();
+        // Reset values so that they are not prepopulated when creating another draft order
+        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
+        caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
             .state(details.getState())
             .build();
-
     }
 
     public SubmittedCallbackResponse draftUpdated(CaseDetails<CaseData, State> details,
