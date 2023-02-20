@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -560,16 +561,22 @@ public class CicCase {
 
     public void removeRepresentative() {
         if (null != representativeCIC) {
-            representativeCIC.remove(RepresentativeCIC.REPRESENTATIVE);
+            representativeCIC = new HashSet<>();
         }
         if (null != notifyPartyRepresentative) {
-            notifyPartyRepresentative.remove(RepresentativeCIC.REPRESENTATIVE);
+            notifyPartyRepresentative = new HashSet<>();
         }
         if (null != hearingNotificationParties) {
             hearingNotificationParties.remove(NotificationParties.REPRESENTATIVE);
         }
         if (null != contactPartiesCIC) {
-            contactPartiesCIC.remove(ContactPartiesCIC.REPRESENTATIVETOCONTACT);
+            Set<ContactPartiesCIC> temp = new HashSet<>();
+            for (ContactPartiesCIC partiesCIC : contactPartiesCIC) {
+                if (partiesCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
+                    temp.add(partiesCIC);
+                }
+            }
+            contactPartiesCIC = temp;
         }
         representativeFullName = "";
         representativeOrgName = "";
@@ -581,10 +588,10 @@ public class CicCase {
 
     public void removeApplicant() {
         if (null != applicantCIC) {
-            applicantCIC.remove(ApplicantCIC.APPLICANT_CIC);
+            applicantCIC = new HashSet<>();
         }
         if (null != notifyPartyApplicant) {
-            notifyPartyApplicant.remove(ApplicantCIC.APPLICANT_CIC);
+            notifyPartyApplicant = new HashSet<>();
         }
         if (null != hearingNotificationParties) {
             hearingNotificationParties.remove(NotificationParties.APPLICANT);

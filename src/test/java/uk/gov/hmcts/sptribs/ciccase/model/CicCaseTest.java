@@ -20,11 +20,16 @@ class CicCaseTest {
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
+        Set<ContactPartiesCIC> contactPartiesCICS = new HashSet<>();
+        contactPartiesCICS.add(ContactPartiesCIC.REPRESENTATIVETOCONTACT);
+        contactPartiesCICS.add(ContactPartiesCIC.RESPONDENTTOCONTACT);
         final CicCase cicCase = CicCase.builder()
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .representativeAddress(SOLICITOR_ADDRESS)
             .representativeFullName(TEST_SOLICITOR_NAME)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .contactPartiesCIC(contactPartiesCICS)
             .hearingNotificationParties(parties)
             .build();
 
@@ -45,7 +50,8 @@ class CicCaseTest {
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .applicantAddress(APPLICANT_ADDRESS)
             .applicantFullName(APPLICANT_2_FIRST_NAME)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .hearingNotificationParties(parties)
             .build();
 
