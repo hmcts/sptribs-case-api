@@ -206,12 +206,6 @@ public class CaseData {
         label = "Decision notice signature",
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String finalDecisionSignature;
-
-    @CCD(
-        label = "Decision notice signature",
-        access = {CaseworkerAndSuperUserAccess.class}
-    )
     private String decisionSignature;
 
     @CCD(

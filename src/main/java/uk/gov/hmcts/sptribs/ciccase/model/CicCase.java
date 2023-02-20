@@ -138,6 +138,7 @@ public class CicCase {
     private List<ListValue<Order>> orderList;
 
     @CCD(
+        label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList orderDynamicList;
