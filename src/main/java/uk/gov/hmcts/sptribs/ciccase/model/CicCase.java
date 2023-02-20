@@ -16,7 +16,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderMainContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
@@ -105,7 +104,6 @@ public class CicCase {
     @CCD(
         label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private List<ListValue<DateModel>> orderDueDates;
 

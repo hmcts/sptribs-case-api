@@ -37,7 +37,6 @@ public class DocAssemblyService {
                                        final String filename) {
 
         final String templateName = docmosisTemplateProvider.templateNameFor(templateId, languagePreference);
-        System.out.println("===========================================___________=++++++++++++++=" + templateName);
 
         final DocAssemblyRequest docAssemblyRequest =
             DocAssemblyRequest
