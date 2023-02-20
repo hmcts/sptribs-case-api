@@ -98,17 +98,17 @@ class RecordListHelperTest {
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
 
-        cicCase.setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        cicCase.setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        cicCase.setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        cicCase.setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
         caseData.setCicCase(cicCase);
 
         recordListHelper.checkNullCondition(cicCase);
         recordListHelper.getErrorMsg(cicCase);
 
-        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).isNotNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).isNotNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartySubject()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartyRespondent()).isNotNull();
     }
 
 
@@ -117,9 +117,9 @@ class RecordListHelperTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
 
-        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        caseData.getCicCase().setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        caseData.getCicCase().setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);

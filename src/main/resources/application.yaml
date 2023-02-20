@@ -66,6 +66,8 @@ uk:
           HEARING_POSTPONED_POST: 'b8a6e858-6e2a-4222-a071-33348bb7fed6'
           CASE_WITHDRAWN_EMAIL: '12985936-b067-4747-aae6-83a375e8295e'
           CASE_WITHDRAWN_POST: '54fe1990-2213-4bcb-9027-7b595cd9db12'
+          NEW_ORDER_ISSUED_EMAIL: 'e451a469-e61d-4daf-95c3-e405448ececf'
+          NEW_ORDER_ISSUED_POST: '797e62bd-a1d4-4a6a-b15d-ddd642d2b14b'
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'

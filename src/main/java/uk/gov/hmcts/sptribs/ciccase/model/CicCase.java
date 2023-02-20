@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -255,26 +256,6 @@ public class CicCase {
     )
     private Set<RespondentCIC> notifyPartyRespondent;
 
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "SubjectCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<SubjectCIC> recordNotifyPartySubject;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RepresentativeCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RepresentativeCIC> recordNotifyPartyRepresentative;
-
-    @CCD(
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "RespondentCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<RespondentCIC> recordNotifyPartyRespondent;
 
     @CCD(
         label = "What is the reason for reinstating the case?",
@@ -578,5 +559,49 @@ public class CicCase {
     @JsonIgnore
     public String getSelectedHearingToCancel() {
         return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
+    }
+
+    public void removeRepresentative() {
+        if (null != representativeCIC) {
+            representativeCIC = new HashSet<>();
+        }
+        if (null != notifyPartyRepresentative) {
+            notifyPartyRepresentative = new HashSet<>();
+        }
+        if (null != hearingNotificationParties) {
+            hearingNotificationParties.remove(NotificationParties.REPRESENTATIVE);
+        }
+        if (null != contactPartiesCIC) {
+            Set<ContactPartiesCIC> temp = new HashSet<>();
+            for (ContactPartiesCIC partiesCIC : contactPartiesCIC) {
+                if (partiesCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
+                    temp.add(partiesCIC);
+                }
+            }
+            contactPartiesCIC = temp;
+        }
+        representativeFullName = "";
+        representativeOrgName = "";
+        representativeReference = "";
+        representativeAddress = new AddressGlobalUK();
+        representativePhoneNumber = "";
+        representativeEmailAddress = "";
+    }
+
+    public void removeApplicant() {
+        if (null != applicantCIC) {
+            applicantCIC = new HashSet<>();
+        }
+        if (null != notifyPartyApplicant) {
+            notifyPartyApplicant = new HashSet<>();
+        }
+        if (null != hearingNotificationParties) {
+            hearingNotificationParties.remove(NotificationParties.APPLICANT);
+        }
+        applicantFullName = "";
+        applicantAddress = new AddressGlobalUK();
+        applicantPhoneNumber = "";
+        applicantEmailAddress = "";
+
     }
 }

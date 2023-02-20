@@ -15,7 +15,6 @@ import java.util.List;
 
 public class ManageSelectOrders implements CcdPageConfiguration {
 
-
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
