@@ -39,9 +39,7 @@ public class Order {
     )
     private List<ListValue<CICDocument>> uploadedFile;
 
-
     @CCD(
-        label = "Order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DraftOrderCIC draftOrder;
