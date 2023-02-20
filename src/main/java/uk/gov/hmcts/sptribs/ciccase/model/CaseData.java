@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.groovy.parser.antlr4.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -28,13 +27,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.ciccase.model.access.Applicant2Access;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccessOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAndSystemUpdateAccess;
+import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -42,17 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.FEMALE;
-import static uk.gov.hmcts.sptribs.ciccase.model.Gender.MALE;
-import static uk.gov.hmcts.sptribs.ciccase.model.SolicitorPaymentMethod.FEES_HELP_WITH;
-import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.HUSBAND;
-import static uk.gov.hmcts.sptribs.ciccase.model.WhoDivorcing.WIFE;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -65,6 +54,7 @@ public class CaseData {
 //    )
 //    private DraftOrderMainContentCIC draftOrderMainContentCIC;
 
+
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -76,6 +66,12 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ContactParties contactParties = new ContactParties();
 
+
+
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
+
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -85,14 +81,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
     private Notifications notifications = new Notifications();
-
-    @CCD(
-        label = "Application type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "ApplicationType"
-    )
-    private ApplicationType applicationType;
 
     @Builder.Default
     @CCD(
@@ -126,108 +114,6 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String hearingLocation;
-
-    @CCD(
-        label = "Divorce or dissolution?",
-        access = {DefaultAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "DivorceOrDissolution"
-    )
-    private DivorceOrDissolution divorceOrDissolution;
-
-    @JsonUnwrapped(prefix = "labelContent")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private LabelContent labelContent = new LabelContent();
-
-    @JsonUnwrapped(prefix = "applicant1")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private Applicant applicant1 = new Applicant();
-
-    @JsonUnwrapped(prefix = "applicant2")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, Applicant2Access.class})
-    private Applicant applicant2 = new Applicant();
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private Application application = new Application();
-
-    @JsonUnwrapped()
-    @CCD(access = {DefaultAccess.class})
-    private CaseInvite caseInvite;
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private AcknowledgementOfService acknowledgementOfService = new AcknowledgementOfService();
-
-    @JsonUnwrapped(prefix = "co")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class})
-    private ConditionalOrder conditionalOrder = new ConditionalOrder();
-
-    @JsonUnwrapped()
-    @Builder.Default
-    private FinalOrder finalOrder = new FinalOrder();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralOrder generalOrder = new GeneralOrder();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralEmail generalEmail = new GeneralEmail();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralLetter generalLetter = new GeneralLetter();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private GeneralReferral generalReferral = new GeneralReferral();
-
-    @JsonUnwrapped
-    @Builder.Default
-    @CCD(access = {SolicitorAndSystemUpdateAccess.class})
-    private GeneralApplication generalApplication = new GeneralApplication();
-
-    @CCD(
-        label = "General Referrals",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralReferral"
-    )
-    private List<ListValue<GeneralReferral>> generalReferrals;
-
-    @CCD(
-        label = "Previous Service Applications",
-        typeOverride = Collection,
-        typeParameterOverride = "AlternativeServiceOutcome",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<AlternativeServiceOutcome>> alternativeServiceOutcomes;
-
-    @JsonUnwrapped
-    @Builder.Default
-    @CCD(access = {CaseworkerAccessOnlyAccess.class})
-    private AlternativeService alternativeService = new AlternativeService();
-
-    @JsonUnwrapped
-    @Builder.Default
-    private CaseDocuments documents = new CaseDocuments();
-
-    @CCD(
-        label = "RDC",
-        hint = "Regional divorce unit",
-        access = {DefaultAccess.class}
-    )
-    private Court divorceUnit;
-
-    @CCD(
-        label = "General Orders",
-        access = {CaseworkerAccessOnlyAccess.class}
-    )
-    private List<ListValue<DivorceGeneralOrder>> generalOrders;
 
     @CCD(
         label = "Due Date",
@@ -286,11 +172,6 @@ public class CaseData {
     )
     private String note;
 
-    @CCD(access = {DefaultAccess.class})
-    @JsonUnwrapped
-    private RetiredFields retiredFields;
-
-
     @CCD(
         label = "Case number",
         access = {CaseworkerAccess.class}
@@ -298,38 +179,14 @@ public class CaseData {
     private String hyphenatedCaseRef;
 
     @CCD(
-        access = {CaseworkerAccess.class}
-    )
-    @JsonUnwrapped(prefix = "noc")
-    private NoticeOfChange noticeOfChange;
-
-    @JsonUnwrapped(prefix = "paperForm")
-    @Builder.Default
-    @CCD(access = {CaseworkerAccess.class})
-    private PaperFormDetails paperFormDetails = new PaperFormDetails();
-
-    @CCD(
         label = "Is case judicial separation?",
         access = {DefaultAccess.class}
     )
     private YesOrNo isJudicialSeparation;
 
-    @CCD(
-        label = "General emails",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralEmailDetails"
-    )
-    private List<ListValue<GeneralEmailDetails>> generalEmails;
-
     @CCD(typeOverride = CasePaymentHistoryViewer)
     private String paymentHistoryField;
 
-    @CCD(
-        label = "General letters",
-        typeOverride = Collection,
-        typeParameterOverride = "GeneralLetterDetails"
-    )
-    private List<ListValue<GeneralLetterDetails>> generalLetters;
     @CCD(
         label = "Closure Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -350,9 +207,24 @@ public class CaseData {
     private String currentEvent;
 
     @CCD(
+        label = "Decision notice signature",
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String finalDecisionSignature;
+    private String decisionSignature;
+
+    @CCD(
+        label = "Enter text in the box below. This will be added into the centre of the generated decision document",
+        access = {CaseworkerAndSuperUserAccess.class},
+        typeOverride = TextArea
+    )
+    private String decisionMainContent;
+
+
+    @CCD(
+        label = "Order signature",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String orderSignature;
 
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
@@ -386,101 +258,6 @@ public class CaseData {
             temp.substring(8, 12),
             temp.substring(12, 16)
         );
-    }
-
-    @JsonIgnore
-    public boolean isSoleApplicationOrApplicant2HasAgreedHwf() {
-        return nonNull(applicationType)
-            && applicationType.isSole()
-            || nonNull(application.getApplicant2HelpWithFees())
-            && nonNull(application.getApplicant2HelpWithFees().getNeedHelp())
-            && application.getApplicant2HelpWithFees().getNeedHelp().toBoolean()
-            || FEES_HELP_WITH.equals(application.getSolPaymentHowToPay());
-    }
-
-    @JsonIgnore
-    public String getApplicant2EmailAddress() {
-        final String applicant2Email = applicant2.getEmail();
-
-        if (StringUtils.isEmpty(applicant2Email)) {
-            if (nonNull(caseInvite)) {
-                return caseInvite.applicant2InviteEmailAddress();
-            } else {
-                return null;
-            }
-        }
-
-        return applicant2Email;
-    }
-
-    public void archiveAlternativeServiceApplicationOnCompletion() {
-
-        AlternativeService alternativeSrv = this.getAlternativeService();
-
-        if (null != alternativeSrv) {
-
-            alternativeSrv.setReceivedServiceAddedDate(LocalDate.now());
-
-            AlternativeServiceOutcome alternativeServiceOutcome = alternativeSrv.getOutcome();
-
-            if (isEmpty(this.getAlternativeServiceOutcomes())) {
-
-                List<ListValue<AlternativeServiceOutcome>> listValues = new ArrayList<>();
-
-                var listValue = ListValue
-                    .<AlternativeServiceOutcome>builder()
-                    .id("1")
-                    .value(alternativeServiceOutcome)
-                    .build();
-
-                listValues.add(listValue);
-                this.setAlternativeServiceOutcomes(listValues);
-
-            } else {
-
-                var listValue = ListValue
-                    .<AlternativeServiceOutcome>builder()
-                    .value(alternativeServiceOutcome)
-                    .build();
-
-                int listValueIndex = 0;
-                this.getAlternativeServiceOutcomes().add(0, listValue);
-                for (ListValue<AlternativeServiceOutcome> asListValue : this.getAlternativeServiceOutcomes()) {
-                    asListValue.setId(String.valueOf(listValueIndex++));
-                }
-            }
-            // Null the current AlternativeService object instance in the CaseData so that a new one can be created
-            this.setAlternativeService(null);
-        }
-    }
-
-    @JsonIgnore
-    public boolean isDivorce() {
-        return divorceOrDissolution.isDivorce();
-    }
-
-    @JsonIgnore
-    public void deriveAndPopulateApplicantGenderDetails() {
-        Gender app1Gender;
-        Gender app2Gender;
-        WhoDivorcing whoDivorcing;
-        if (this.getDivorceOrDissolution().isDivorce()) {
-            // for a divorce we ask who is applicant1 divorcing to infer applicant2's gender, then use the marriage
-            // formation to infer applicant 1's gender
-            whoDivorcing = this.getApplication().getDivorceWho();
-            app2Gender = whoDivorcing == HUSBAND ? MALE : FEMALE;
-            app1Gender = this.getApplication().getMarriageDetails().getFormationType().getPartnerGender(app2Gender);
-        } else {
-            // for a dissolution we ask for applicant1's gender and use the marriage formation to infer applicant 2's
-            // gender and who they are divorcing
-            app1Gender = this.getApplicant1().getGender();
-            app2Gender = this.getApplication().getMarriageDetails().getFormationType().getPartnerGender(app1Gender);
-            whoDivorcing = app2Gender == MALE ? HUSBAND : WIFE;
-        }
-
-        this.getApplicant1().setGender(app1Gender);
-        this.getApplicant2().setGender(app2Gender);
-        this.getApplication().setDivorceWho(whoDivorcing);
     }
 
     public RemoveCaseStay getRemoveCaseStay() {

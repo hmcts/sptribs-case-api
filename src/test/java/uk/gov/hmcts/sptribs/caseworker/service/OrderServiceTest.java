@@ -15,8 +15,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +32,17 @@ class OrderServiceTest {
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
+
+    @Mock
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Mock
+    private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
+
+    @Mock
+    private HttpServletRequest request;
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Test
     void shouldPopulateOrderDynamicList() {
@@ -52,48 +67,50 @@ class OrderServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         ListValue<DraftOrderCIC> draftOrderCIC = new ListValue<>();
-        DraftOrderCIC orderCIC = DraftOrderCIC.builder().anOrderTemplate(OrderTemplate.CIC2_QUANTUM).build();
+        DraftOrderCIC orderCIC = DraftOrderCIC.builder().template(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         draftOrderCIC.setValue(orderCIC);
         CicCase cicCase = CicCase.builder().draftOrderCICList(List.of(draftOrderCIC)).build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
 
-        DynamicList regionList = orderService.getDraftOrderDynamicList(details);
+        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(OrderTemplate.CIC6_GENERAL_DIRECTIONS,
+            caseData.getCicCase().getDraftOrderDynamicList());
 
         //Then
-        assertThat(regionList).isNotNull();
-    }
-
-    @Test
-    void shouldPopulateDraftOrderDynamicListNull() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        details.setData(caseData);
-        //When
-
-        DynamicList regionList = orderService.getDraftOrderDynamicList(details);
-
-        //Then
-        assertThat(regionList).isNull();
+        assertThat(orderTemplateList).isNotNull();
     }
 
     @Test
     void shouldCreateTemplateWithCurrentDateAndTime() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
-        final CicCase cicase = CicCase.builder().build();
-
-        caseData.setCicCase(cicase);
+        CicCase cicCase = CicCase.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        caseData.setCicCase(cicCase);
         details.setData(caseData);
 
-        cicase.setAnOrderTemplates(OrderTemplate.CIC2_QUANTUM);
         //When
-
-        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(details);
+        DynamicList orderTemplateList = orderService.getDraftOrderTemplatesDynamicList(OrderTemplate.CIC6_GENERAL_DIRECTIONS,
+            cicCase.getDraftOrderDynamicList());
 
         //Then
         assertThat(orderTemplateList).isNotNull();
+    }
+
+    @Test
+    void shouldGenerateOrderFile() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        CicCase cicCase = CicCase.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+        //When
+        CaseData result = orderService.generateOrderFile(caseData, details.getId());
+
+        //Then
+        assertThat(result).isNotNull();
+
     }
 
 

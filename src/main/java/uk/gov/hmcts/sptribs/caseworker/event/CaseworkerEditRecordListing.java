@@ -2,12 +2,14 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.sptribs.common.notification.ListingUpdatedNotification;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -58,9 +61,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_RECORD_LISTING)
             .forStates(AwaitingHearing)
-            .name("Edit listing record")
-            .description(" Edit listing record")
-            .showEventNotes()
+            .name("Hearings: Edit listing")
+            .description("Hearings: Edit listing")
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -81,7 +83,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-
+        if (!StringUtils.isEmpty(caseData.getRecordListing().getReadOnlyHearingVenueName())) {
+            caseData.getRecordListing().setHearingVenueNameAndAddress(null);
+        }
         if (caseData.getRecordListing().getRegionList() == null) {
             recordListHelper.regionData(caseData);
         }
@@ -98,8 +102,13 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         var caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
-
+        if (null != caseData.getRecordListing()
+            && null != caseData.getRecordListing().getNumberOfDays()
+            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
+            caseData.getRecordListing().setAdditionalHearingDate(null);
+        }
         recordListHelper.getNotificationParties(caseData);
+        caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getRecordListing()));
         caseData.setCurrentEvent("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -126,14 +135,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
-        var message = MessageUtil.generateWholeMessage(cicCase,
-            "Listing record updated",
-            "If any changes are made to this hearing, remember to make those changes in this listing record.",
-            cicCase.getRecordNotifyPartySubject(),
-            cicCase.getRecordNotifyPartyRepresentative(),
-            cicCase.getRecordNotifyPartyRespondent());
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader(format("# Listing record updated %n##  If any changes are made to this hearing, "
+                    + " remember to make those changes in this listing record. %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
     }
 
@@ -154,9 +159,13 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         recordListHelper.populatedVenuesData(caseData);
 
-        if (caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())) {
+        if (null != caseDataBefore.getRecordListing().getReadOnlyHearingVenueName()
+            && null != caseData.getRecordListing().getSelectedRegionVal()
+            && caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())
+            && null != caseDataBefore.getRecordListing().getHearingVenues()) {
             caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
             caseData.getRecordListing().getHearingVenues().setValue(caseDataBefore.getRecordListing().getHearingVenues().getValue());
+
 
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

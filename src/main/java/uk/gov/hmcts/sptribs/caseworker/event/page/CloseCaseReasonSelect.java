@@ -11,11 +11,12 @@ public class CloseCaseReasonSelect implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("closeCasePage")
-            .label("closeCasePage", "<H2>Close this case</H2>")
+            .page("closeCasePageSelectReason")
+            .pageLabel("Close this case")
+            .label("LabelCloseCasePageSelectReason"," ")
             .complex(CaseData::getCloseCase)
-            .mandatoryWithLabel(CloseCase::getCloseCaseReason, "")
-            .optional(CloseCase::getAdditionalDetail, "")
+            .mandatory(CloseCase::getCloseCaseReason)
+            .optional(CloseCase::getAdditionalDetail)
             .done();
     }
 }

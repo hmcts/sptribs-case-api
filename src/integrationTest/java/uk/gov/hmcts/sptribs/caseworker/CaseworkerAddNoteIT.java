@@ -49,7 +49,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CaseworkerAddNoteIT {
+class CaseworkerAddNoteIT {
 
     private static final String CASEWORKER_ADD_NOTE_RESPONSE =
         "classpath:caseworker-add-note-response.json";

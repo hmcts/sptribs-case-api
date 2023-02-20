@@ -22,7 +22,7 @@ public class NotificationResponse {
     private String id;
 
     @CCD(
-        label = "Client Referemce",
+        label = "Client Reference",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String clientReference;

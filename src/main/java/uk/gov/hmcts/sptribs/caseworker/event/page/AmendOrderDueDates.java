@@ -10,6 +10,8 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("caseworkerAmendDueDateEditDueDate")
+            .pageLabel("Amend due dates")
+            .label("LabelAmendDueDates","Select an order")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getOrderDueDates)
             .done();

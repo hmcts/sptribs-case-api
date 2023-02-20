@@ -26,9 +26,8 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
         new PageBuilder(configBuilder
             .event(CASEWORKER_MANAGE_CASE_FLAG)
             .forStates(POST_SUBMISSION_STATES)
-            .name("Manage case flags")
-            .description("Manage case flags")
-            .showEventNotes()
+            .name("Flags: Manage flags")
+            .description("Flags: Manage flags")
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR))
             .page("manageCaseFlags")

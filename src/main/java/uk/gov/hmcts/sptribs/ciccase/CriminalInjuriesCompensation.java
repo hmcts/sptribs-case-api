@@ -36,8 +36,6 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         configBuilder.jurisdiction(CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
             CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionName(), CcdServiceCode.ST_CIC.getCcdServiceDescription());
 
-
-
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 
         ConfigBuilderHelper.configureWithTestEvent(configBuilder);

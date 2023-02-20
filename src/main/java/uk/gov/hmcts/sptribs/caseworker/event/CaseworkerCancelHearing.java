@@ -10,26 +10,23 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingReasonSelect;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-
-import java.util.Arrays;
+import uk.gov.hmcts.sptribs.common.notification.CancelHearingNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getEmailMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.getPostMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -44,23 +41,28 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
     private static final CcdPageConfiguration reasonSelect = new CancelHearingReasonSelect();
 
+    private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
+
     @Autowired
     private HearingService hearingService;
+
+    @Autowired
+    private CancelHearingNotification cancelHearingNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var pageBuilder = cancelStart(configBuilder);
         hearingDateSelect.addTo(pageBuilder);
         reasonSelect.addTo(pageBuilder);
+        recordNotifyParties.addTo(pageBuilder);
     }
 
     public PageBuilder cancelStart(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CANCEL_HEARING)
             .forStates(AwaitingHearing)
-            .name("Cancel hearing")
-            .description("Cancel hearing")
-            .showEventNotes()
+            .name("Hearings: Cancel hearing")
+            .description("Hearings: Cancel hearing")
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -102,39 +104,27 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse hearingCancelled(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        var cicCase = details.getData().getCicCase();
-        final String emailMessage = getEmailMessage(cicCase, data.getCicCase().getHearingNotificationParties());
-        final String postMessage = getPostMessage(cicCase, data.getCicCase().getHearingNotificationParties());
 
-        String message = "";
-        if (null != postMessage && null != emailMessage) {
-            message = format("#  Hearing cancelled   %n" + " %s  %n  %s", emailMessage, postMessage);
-        } else if (null != emailMessage) {
-            message = format("#  Hearing cancelled  %n" + " %s ", emailMessage);
-
-        } else if (null != postMessage) {
-            message = format("#  Hearing cancelled  %n" + " %s ", postMessage);
-        }
-
+        sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
+            .confirmationHeader(format("# Hearing cancelled %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
             .build();
     }
 
-    public static ListValue<HearingDate> getSelectedHearing(String selectedDraft, RecordListing recordListing) {
-        String[] values = (selectedDraft != null) ? Arrays.stream(selectedDraft.split(SPACE))
-            .map(String::trim)
-            .toArray(String[]::new) : null;
-        if (null != values) {
-            for (ListValue<HearingDate> date : recordListing.getAdditionalHearingDate()) {
-                if (values[0].equals(date.getValue().getHearingVenueDate().toString())
-                    && values[1].equals(date.getValue().getHearingVenueTime())) {
-                    return date;
-                }
-            }
+    private void sendHearingCancelledNotification(String caseNumber, CaseData data) {
+        CicCase cicCase = data.getCicCase();
+
+        if (cicCase.getHearingNotificationParties().contains(NotificationParties.SUBJECT)) {
+            cancelHearingNotification.sendToSubject(data, caseNumber);
         }
-        return null;
+        if (cicCase.getHearingNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
+            cancelHearingNotification.sendToRepresentative(data, caseNumber);
+        }
+        if (cicCase.getHearingNotificationParties().contains(NotificationParties.RESPONDENT)) {
+            cancelHearingNotification.sendToRespondent(data, caseNumber);
+        }
+
     }
 
 }

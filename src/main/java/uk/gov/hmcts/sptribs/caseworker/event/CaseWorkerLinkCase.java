@@ -33,10 +33,9 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_LINK_CASE)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-            .name("Link case")
+            .name("Links: Link case")
             .showSummary()
-            .description("Link case")
-            .showEventNotes()
+            .description("Links: Link case")
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 

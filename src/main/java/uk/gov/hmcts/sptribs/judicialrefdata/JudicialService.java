@@ -34,12 +34,14 @@ public class JudicialService {
     @Autowired
     private JudicialClient judicialClient;
 
-    public DynamicList getAllUsers(String ccdServiceName) {
-        final var users = getUsers(ccdServiceName);
-        return populateRegionDynamicList(users);
+    private static final String SERVICE_NAME = "ST_CIC";
+
+    public DynamicList getAllUsers() {
+        final var users = getUsers();
+        return populateUsersDynamicList(users);
     }
 
-    private UserProfileRefreshResponse[] getUsers(String ccdServiceName) {
+    private UserProfileRefreshResponse[] getUsers() {
         ResponseEntity<UserProfileRefreshResponse[]> regionResponseEntity = null;
 
         try {
@@ -47,7 +49,7 @@ public class JudicialService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 JudicialUsersRequest.builder()
-                    .ccdServiceName(ccdServiceName)
+                    .ccdServiceName(SERVICE_NAME)
                     .build());
         } catch (FeignException exception) {
             log.error("Unable to get user profile data from reference data with exception {}",
@@ -63,21 +65,20 @@ public class JudicialService {
     }
 
 
-    private DynamicList populateRegionDynamicList(UserProfileRefreshResponse... userProfiles) {
-        List<String> regionList = Objects.nonNull(userProfiles)
+    private DynamicList populateUsersDynamicList(UserProfileRefreshResponse... userProfiles) {
+        List<String> usersList = Objects.nonNull(userProfiles)
             ? Arrays.asList(userProfiles).stream().map(v -> v.getFullName()).collect(Collectors.toList())
             : new ArrayList<>();
 
-        List<DynamicListElement> regionDynamicList = regionList
+        List<DynamicListElement> usersDynamicList = usersList
             .stream()
             .sorted()
-            .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
+            .map(user -> DynamicListElement.builder().label(user).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
         return DynamicList
             .builder()
-            .value(DynamicListElement.builder().label("judicialUser").code(UUID.randomUUID()).build())
-            .listItems(regionDynamicList)
+            .listItems(usersDynamicList)
             .build();
     }
 }

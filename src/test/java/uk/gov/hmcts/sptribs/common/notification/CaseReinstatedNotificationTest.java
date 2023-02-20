@@ -85,8 +85,8 @@ class CaseReinstatedNotificationTest {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
-        data.getCicCase().setRespondantName("respondentName");
-        data.getCicCase().setRespondantEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentName("respondentName");
+        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When

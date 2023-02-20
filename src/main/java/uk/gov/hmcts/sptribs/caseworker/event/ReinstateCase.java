@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateWarning;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -56,11 +56,11 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_REINSTATE_CASE)
             .forStates(CaseClosed)
-            .name("Reinstate case")
-            .description("Reinstate case")
+            .name("Case: Reinstate case")
+            .description("Case: Reinstate case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::reinstated)
-            .showEventNotes()
+            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
     }
@@ -80,18 +80,12 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
                                                 CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append(" A notification will be sent  to: ");
-        var recipients = getRecipients(cicCase);
-        if (null != recipients) {
-            messageLine2.append(recipients);
-        }
 
         sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
-                + ". %n## %s ", messageLine2))
+                + ". %n## %s ", MessageUtil.generateSimpleMessage(cicCase)))
             .build();
     }
 

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +12,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.document.DocumentIdProvider;
 import uk.gov.hmcts.sptribs.testutil.ClockTestUtil;
 import uk.gov.hmcts.sptribs.testutil.DocAssemblyWireMock;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -37,18 +33,6 @@ public class CaseworkerCreateGeneralLetterIT {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private AuthTokenGenerator serviceTokenGenerator;
-
-    @MockBean
-    private WebMvcConfig webMvcConfig;
-
-    @MockBean
-    private DocumentIdProvider documentIdProvider;
 
     @MockBean
     private Clock clock;
