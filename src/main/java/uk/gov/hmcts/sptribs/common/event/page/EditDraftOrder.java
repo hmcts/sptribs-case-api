@@ -38,7 +38,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .done();
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> beforeDetails) {
         CaseData caseData = details.getData();
         DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
