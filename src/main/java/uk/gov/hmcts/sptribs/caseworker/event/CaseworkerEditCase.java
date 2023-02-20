@@ -80,17 +80,13 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
         CaseData beforeData = beforeDetails.getData();
-        if (null != beforeData.getCicCase() && null != beforeData.getCicCase().getPartiesCIC()
-            && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
-            && null != data.getCicCase() && null != data.getCicCase().getPartiesCIC()
-            && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
+        if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
+            && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
             data.getCicCase().removeRepresentative();
         }
 
-        if (null != beforeData.getCicCase() && null != beforeData.getCicCase().getPartiesCIC()
-            && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)
-            && null != data.getCicCase() && null != data.getCicCase().getPartiesCIC()
-            && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+        if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)
+            && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
             data.getCicCase().removeApplicant();
         }
 
@@ -107,5 +103,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
+    }
+
+    private boolean checkNull(CaseData data) {
+        return null != data.getCicCase() && null != data.getCicCase().getPartiesCIC();
     }
 }
