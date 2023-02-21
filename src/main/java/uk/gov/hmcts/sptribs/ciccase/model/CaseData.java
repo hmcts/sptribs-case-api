@@ -21,7 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderMainContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
@@ -31,9 +31,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -49,16 +51,22 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CaseData {
 
 
+    @JsonUnwrapped(prefix = "orderContent")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DraftOrderMainContentCIC draftOrderMainContentCIC = new DraftOrderMainContentCIC();
-
+    private DraftOrderContentCIC draftOrderContentCIC = new DraftOrderContentCIC();
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ContactParties contactParties = new ContactParties();
+
+
+
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
@@ -198,27 +206,13 @@ public class CaseData {
         label = "Decision notice signature",
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String finalDecisionSignature;
-
-    @CCD(
-        label = "Decision notice signature",
-        access = {CaseworkerAndSuperUserAccess.class}
-    )
     private String decisionSignature;
 
     @CCD(
-        label = "Enter text in the box below. This will be added into the centre of the generated decision document",
         access = {CaseworkerAndSuperUserAccess.class},
         typeOverride = TextArea
     )
     private String decisionMainContent;
-
-
-    @CCD(
-        label = "Order signature",
-        access = {CaseworkerAndSuperUserAccess.class}
-    )
-    private String orderSignature;
 
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
