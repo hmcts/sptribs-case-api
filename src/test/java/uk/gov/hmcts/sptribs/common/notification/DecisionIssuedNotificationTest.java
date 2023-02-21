@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -19,14 +20,12 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -58,11 +57,13 @@ public class DecisionIssuedNotificationTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .decisionDocument(List.of(documentListValue))
+            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -87,11 +88,13 @@ public class DecisionIssuedNotificationTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .decisionDocument(List.of(documentListValue))
+            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -116,11 +119,14 @@ public class DecisionIssuedNotificationTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .decisionDocument(List.of(documentListValue))
+            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
+            .build();
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -165,19 +171,16 @@ public class DecisionIssuedNotificationTest {
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
         final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
-            .documentEmailContent("content")
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .issueDecisionDraft(document)
+            .decisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         decisionIssuedNotification.sendToRespondent(data, "CN1");
@@ -200,11 +203,14 @@ public class DecisionIssuedNotificationTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .decisionDocument(List.of(documentListValue))
+            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
+            .build();
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         decisionIssuedNotification.sendToRespondent(data, "CN1");
@@ -229,13 +235,14 @@ public class DecisionIssuedNotificationTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .decisionDocument(List.of(documentListValue))
+            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
+            .build();
         data.setCaseIssueDecision(caseIssueDecision);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -262,11 +269,14 @@ public class DecisionIssuedNotificationTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder().decisionDocument(List.of(documentListValue)).build();
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .decisionDocument(List.of(documentListValue))
+            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
+            .build();
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
