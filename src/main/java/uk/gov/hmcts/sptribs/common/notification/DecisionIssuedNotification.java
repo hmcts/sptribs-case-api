@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.common.CommonConstants.ATTACHMENT_COUNT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE_ONLY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
@@ -134,7 +133,9 @@ public class DecisionIssuedNotification implements PartiesNotification {
             }
         } else if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
             && caseIssueDecision.getIssueDecisionDraft() != null) {
-            uploadedDocuments.put(DECISION_NOTICE_ONLY, StringUtils.substringAfterLast(caseIssueDecision.getIssueDecisionDraft().getUrl(), "/"));
+            uploadedDocuments.put(DECISION_NOTICE_ONLY,
+                StringUtils.substringAfterLast(caseIssueDecision.getIssueDecisionDraft().getUrl(),
+                    "/"));
         }
 
         return uploadedDocuments;

@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -133,8 +132,8 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
             finalDecisionNotice = uploadedDecisionNoticeDocs.get(0);
-        } else if(caseIssueFinalDecision.getFinalDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
-            && null != caseIssueFinalDecision.getFinalDecisionDraft()){
+        } else if (caseIssueFinalDecision.getFinalDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
+            && null != caseIssueFinalDecision.getFinalDecisionDraft()) {
             finalDecisionNotice = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionDraft().getUrl(), "/");
         }
 

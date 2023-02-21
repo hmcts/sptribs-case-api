@@ -11,7 +11,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;

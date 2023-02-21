@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -21,26 +19,20 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.ATTACHMENT_COUNT;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 
 @Service
 @Slf4j
 public class NotificationServiceCIC {
-
-    private static final int DOC_ATTACH_LIMIT = 5;
 
     private NotificationRequest notificationRequest;
 
@@ -100,6 +92,13 @@ public class NotificationServiceCIC {
                 notificationClientException
             );
             throw new NotificationException(notificationClientException);
+        } catch (IOException ioException) {
+            log.error("Issue with attach documents to Notification. Failed to send email. Reference ID: {}. Reason: {}",
+                referenceId,
+                ioException.getMessage(),
+                ioException
+            );
+            throw new NotificationException(ioException);
         }
     }
 
@@ -140,47 +139,32 @@ public class NotificationServiceCIC {
         this.notificationRequest = notificationRequest;
     }
 
-    @SuppressWarnings("unchecked")
-    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) {
+    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
 
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = caseworkerUser.getAuthToken();
         String serviceAuthorization = authTokenGenerator.generate();
 
-        uploadedDocuments.forEach((docName, item) -> {
+        for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
+            String docName = document.getKey();
+            String item = document.getValue();
 
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-                ResponseEntity<Resource> responseEntity = new ResponseEntity(HttpStatus.OK);
+                Resource uploadedDocument = (null != item)
+                    ? caseDocumentClient.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody()
+                    : null;
 
-                /*Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
-                    serviceAuthorization,
-                    UUID.fromString(item)).getBody();*/
-
-                if (responseEntity != null) {
-                    byte[] uploadedDocumentContents = getUploadedDocumentContents(responseEntity.getBody());
+                if (uploadedDocument != null) {
+                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
                     templateVars.put(docName, getJsonFileAttachment(uploadedDocumentContents));
                 } else {
-                    log.info("Document not found with uuid : {}", UUID.fromString(item));
+                    log.info("Document not found with uuid : {}", item);
                     templateVars.put(docName, "");
                 }
             }
-            /*final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-            ResponseEntity<Resource> responseEntity = new ResponseEntity(HttpStatus.OK);*/
-        });
-    }
-
-    private byte[] getUploadedDocumentContents(Resource uploadedDocument) {
-        /*byte[] uploadedDocumentContents;
-        try {
-            uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-        } catch (IOException e) {
-            uploadedDocumentContents = null;
         }
-        return uploadedDocumentContents;*/
-        return null;
     }
 
     private JSONObject getJsonFileAttachment(byte[] fileContents) {

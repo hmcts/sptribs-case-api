@@ -20,7 +20,6 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -257,7 +257,7 @@ public class NotificationServiceCICTest {
             any());
     }
 
-   /* @Test
+    @Test
     void shouldThrowNotificationExceptionWhileFileUploadToSendEmail()
         throws IOException {
 
@@ -292,7 +292,7 @@ public class NotificationServiceCICTest {
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
-    }*/
+    }
 
     @Test
     void shouldThrowNotificationExceptionWhenClientFailsToSendLetter()

@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 
-import java.util.List;
 import java.util.Map;
 
 @Builder
