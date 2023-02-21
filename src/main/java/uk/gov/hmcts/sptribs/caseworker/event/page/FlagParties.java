@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkMultiSubjectRepresentativeApplicant;
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeApplicant;
 
 public class FlagParties implements CcdPageConfiguration {
     private static final String RECIPIENT_LABEL = "Case Flag  information recipient";
@@ -45,7 +45,7 @@ public class FlagParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullFlagSubjectRepresentativeApplicant(data)) {
+        if (checkNullSubjectRepresentativeApplicant(data)) {
             errors.add("One field must be selected.");
         } else if (checkMultiSubjectRepresentativeApplicant(data)) {
             errors.add("Only one field must be selected.");
