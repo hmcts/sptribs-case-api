@@ -71,21 +71,21 @@ public class RecordListHelper {
 
     public boolean checkNullCondition(CicCase cicCase) {
         return null != cicCase
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartySubject())
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent());
     }
 
     public void getNotificationParties(CaseData caseData) {
         Set<NotificationParties> partiesSet = new HashSet<>();
 
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartySubject())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             partiesSet.add(NotificationParties.REPRESENTATIVE);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
 

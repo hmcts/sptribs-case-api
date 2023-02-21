@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullRecordSubjectRepresentativeRespondent;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 
 public class RecordNotifyParties implements CcdPageConfiguration {
 
@@ -25,13 +25,13 @@ public class RecordNotifyParties implements CcdPageConfiguration {
             .label("LabelNotifyParties", "")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartySubject,
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
                 "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRepresentative,
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getRecordNotifyPartyRespondent,
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
                 "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
@@ -41,7 +41,7 @@ public class RecordNotifyParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullRecordSubjectRepresentativeRespondent(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add("One recipient must be selected.");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
