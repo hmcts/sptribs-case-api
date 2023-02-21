@@ -5,8 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -14,7 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.List;
+import java.util.UUID;
+import java.util.stream.IntStream;
 
 
 @Slf4j
@@ -42,13 +41,14 @@ public class EditDraftOrder implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> beforeDetails) {
         CaseData caseData = details.getData();
         DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
-        String code = dynamicList.getValue().getCode().toString();
-        List<ListValue<DraftOrderCIC>> draftOrderCICList = caseData.getCicCase().getDraftOrderCICList();
-        draftOrderCICList
-            .stream()
-            .filter(listValue -> listValue.getValue().getCode().equals(code))
+        int listSize = dynamicList.getListItems().size();
+        UUID code = dynamicList.getValue().getCode();
+        IntStream.range(0, listSize)
+            .filter(i -> code.equals(dynamicList.getListItems().get(i).getCode()))
             .findFirst()
-            .ifPresent(listValue -> caseData.setDraftOrderContentCIC(listValue.getValue().getDraftOrderContentCIC()));
+            .ifPresent(index -> caseData.setDraftOrderContentCIC(
+                // draftOrderCICList is in reverse order
+                caseData.getCicCase().getDraftOrderCICList().get(listSize - 1 - index).getValue().getDraftOrderContentCIC()));
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
