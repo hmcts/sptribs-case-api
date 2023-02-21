@@ -159,7 +159,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("Listing details", "recordHearingType!=\"\"", "#### Listing details")
             .field("recordHearingType")
             .field("recordHearingFormat")
-            .field("recordHearingVenues")
+            .field("recordHearingVenueNameAndAddress")
             .field("recordRoomAtVenue")
             .field("recordHearingDate")
             .field("recordSession")
