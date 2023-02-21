@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -19,16 +21,18 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.ATTACHMENT_COUNT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 
@@ -68,7 +72,7 @@ public class NotificationServiceCIC {
 
         try {
             if (notificationRequest.isHasFileAttachments()) {
-                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocumentIds());
+                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments());
             }
 
             String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
@@ -96,13 +100,6 @@ public class NotificationServiceCIC {
                 notificationClientException
             );
             throw new NotificationException(notificationClientException);
-        } catch (IOException ioException) {
-            log.error("Issue with attach documents to Notification. Failed to send email. Reference ID: {}. Reason: {}",
-                referenceId,
-                ioException.getMessage(),
-                ioException
-            );
-            throw new NotificationException(ioException);
         }
     }
 
@@ -139,37 +136,51 @@ public class NotificationServiceCIC {
         }
     }
 
-    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, List<String> uploadedDocumentIds) throws IOException {
-        int count = 0;
+    public void setNotificationRequest(NotificationRequest notificationRequest) {
+        this.notificationRequest = notificationRequest;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) {
 
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = caseworkerUser.getAuthToken();
         String serviceAuthorization = authTokenGenerator.generate();
 
-        for (String item : uploadedDocumentIds) {
-            count++;
+        uploadedDocuments.forEach((docName, item) -> {
 
-            Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
-                serviceAuthorization,
-                UUID.fromString(item)).getBody();
-
-            if (uploadedDocument != null) {
-                log.info("Document found with uuid : {}", UUID.fromString(item));
-                byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                templateVars.put(DOC_AVAILABLE + count, "yes");
-                templateVars.put(DECISION_NOTICE + count, getJsonFileAttachment(uploadedDocumentContents));
+            if (docName.contains(DOC_AVAILABLE)) {
+                templateVars.put(docName, item);
             } else {
-                log.info("Document not found with uuid : {}", UUID.fromString(item));
-                templateVars.put(DOC_AVAILABLE + count, "no");
-                templateVars.put(DECISION_NOTICE + count, "");
-            }
-        }
+                final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+                ResponseEntity<Resource> responseEntity = new ResponseEntity(HttpStatus.OK);
 
-        while (count < DOC_ATTACH_LIMIT) {
-            count++;
-            templateVars.put(DOC_AVAILABLE + count, "no");
-            templateVars.put(DECISION_NOTICE + count, "");
+                /*Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
+                    serviceAuthorization,
+                    UUID.fromString(item)).getBody();*/
+
+                if (responseEntity != null) {
+                    byte[] uploadedDocumentContents = getUploadedDocumentContents(responseEntity.getBody());
+                    templateVars.put(docName, getJsonFileAttachment(uploadedDocumentContents));
+                } else {
+                    log.info("Document not found with uuid : {}", UUID.fromString(item));
+                    templateVars.put(docName, "");
+                }
+            }
+            /*final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+            ResponseEntity<Resource> responseEntity = new ResponseEntity(HttpStatus.OK);*/
+        });
+    }
+
+    private byte[] getUploadedDocumentContents(Resource uploadedDocument) {
+        /*byte[] uploadedDocumentContents;
+        try {
+            uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
+        } catch (IOException e) {
+            uploadedDocumentContents = null;
         }
+        return uploadedDocumentContents;*/
+        return null;
     }
 
     private JSONObject getJsonFileAttachment(byte[] fileContents) {
@@ -182,10 +193,6 @@ public class NotificationServiceCIC {
             log.info("unable to upload", e.getMessage());
         }
         return jsonObject;
-    }
-
-    public void setNotificationRequest(NotificationRequest notificationRequest) {
-        this.notificationRequest = notificationRequest;
     }
 
     private NotificationResponse getNotificationResponse(final SendEmailResponse sendEmailResponse) {

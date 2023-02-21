@@ -245,7 +245,7 @@ public class NotificationHelperTest {
         NotificationRequest emailNotificationRequestWithAttachment = notificationHelper.buildEmailNotificationRequest(
             "id@email.com",
             false,
-            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
         NotificationRequest letterNotificationRequest = notificationHelper.buildLetterNotificationRequest(

@@ -89,13 +89,13 @@ public class NotificationHelper {
 
     public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
                                                              boolean hasFileAttachment,
-                                                             List<String> uploadedDocumentIds,
+                                                             Map<String, String> uploadedDocuments,
                                                              Map<String, Object> templateVars,
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
             .hasFileAttachments(hasFileAttachment)
-            .uploadedDocumentIds(uploadedDocumentIds)
+            .uploadedDocuments(uploadedDocuments)
             .template(emailTemplateName)
             .templateVars(templateVars)
             .build();

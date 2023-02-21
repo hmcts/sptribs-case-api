@@ -14,7 +14,7 @@ public class NotificationRequest {
     private TemplateName template;
     private Map<String, Object> templateVars;
     private boolean hasFileAttachments;
-    private List<String> uploadedDocumentIds;
+    private Map<String, String> uploadedDocuments;
     private byte [] fileContents;
     private byte [] fileContents1;
 }
