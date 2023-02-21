@@ -88,6 +88,9 @@ ccd:
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
+      autoscaling:
+        enabled: false
+
   am-role-assignment-service:
     java:
       disableKeyVaults: true
@@ -106,6 +109,9 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
+      autoscaling:
+        enabled: false
+
   ccd-user-profile-api:
     java:
       disableKeyVaults: true
@@ -203,6 +209,8 @@ ccd-case-document-am-api:
       CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    autoscaling:
+      enabled: false
 
 xui-webapp:
   enabled: true

@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -16,9 +18,12 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANCE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 
 @Component
 @Slf4j
@@ -37,10 +42,10 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(templateVarsSubject,
                 cicCase.getEmail(),
-                uploadedDocumentIds,
+                uploadedDocuments,
                 TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
@@ -54,14 +59,14 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(),
-                uploadedDocumentIds,
+                uploadedDocuments,
                 TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsRepresentative);
@@ -77,22 +82,22 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData.getCicCase());
         CicCase cicCase = caseData.getCicCase();
 
-        List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+        Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
         NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(templateVarsRespondent,
             caseData.getCicCase().getRespondentEmail(),
-            uploadedDocumentIds,
+            uploadedDocuments,
             TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final Map<String, Object> templateVars,
                                                                      String toEmail,
-                                                                     List<String> uploadedDocumentIds,
+                                                                     Map<String, String> uploadedDocuments,
                                                                      TemplateName emailTemplateName) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail,
             true,
-            uploadedDocumentIds,
+            uploadedDocuments,
             templateVars,
             emailTemplateName);
         notificationService.setNotificationRequest(request);
@@ -105,29 +110,30 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         return notificationService.sendLetter();
     }
 
-    private List<String> getUploadedDocumentIds(CaseData caseData) {
+    private Map<String, String> getUploadedDocuments(CaseData caseData) {
         CaseIssueFinalDecision caseIssueFinalDecision = caseData.getCaseIssueFinalDecision();
 
-        List<String> uploadedDocumentIds = new ArrayList<>();
+        Map<String, String> uploadedDocuments = new HashMap<>();
 
         String finalDecisionNotice = getFinalDecisionNoticeDocument(caseIssueFinalDecision);
-        uploadedDocumentIds.add(finalDecisionNotice);
+        uploadedDocuments.put(FINAL_DECISION_NOTICE, finalDecisionNotice);
 
         String finalDecisionGuidance = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionGuidance().getUrl(), "/");
-        uploadedDocumentIds.add(finalDecisionGuidance);
+        uploadedDocuments.put(FINAL_DECISION_GUIDANCE, finalDecisionGuidance);
 
-        return uploadedDocumentIds;
+        return uploadedDocuments;
     }
 
     private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision) {
-        String finalDecisionNotice;
-        if (null != caseIssueFinalDecision.getDocuments() && !caseIssueFinalDecision.getDocuments().isEmpty()) {
+        String finalDecisionNotice = null;
+        if (caseIssueFinalDecision.getFinalDecisionNotice().equals(NoticeOption.UPLOAD_FROM_COMPUTER)
+            && !CollectionUtils.isEmpty(caseIssueFinalDecision.getDocuments())) {
             List<String> uploadedDecisionNoticeDocs = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
             finalDecisionNotice = uploadedDecisionNoticeDocs.get(0);
-
-        } else {
+        } else if (caseIssueFinalDecision.getFinalDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
+            && null != caseIssueFinalDecision.getFinalDecisionDraft()) {
             finalDecisionNotice = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionDraft().getUrl(), "/");
         }
 

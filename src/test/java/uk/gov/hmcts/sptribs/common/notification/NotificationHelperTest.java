@@ -24,7 +24,6 @@ import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -245,7 +244,7 @@ public class NotificationHelperTest {
         NotificationRequest emailNotificationRequestWithAttachment = notificationHelper.buildEmailNotificationRequest(
             "id@email.com",
             false,
-            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
         NotificationRequest letterNotificationRequest = notificationHelper.buildLetterNotificationRequest(
