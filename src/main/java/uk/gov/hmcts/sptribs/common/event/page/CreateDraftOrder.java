@@ -2,11 +2,9 @@ package uk.gov.hmcts.sptribs.common.event.page;
 
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -32,15 +30,13 @@ public class CreateDraftOrder implements CcdPageConfiguration {
         CaseDetails<CaseData, State> detailsBefore
     ) {
         CaseData caseData = details.getData();
-        OrderTemplate order = caseData.getCicCase().getOrderTemplate();
-        caseData.getDraftOrderMainContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
+        OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
+        caseData.getDraftOrderContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
-
-
 
 
 }

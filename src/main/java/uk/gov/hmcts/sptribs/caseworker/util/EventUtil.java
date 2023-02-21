@@ -92,19 +92,13 @@ public final class EventUtil {
 
     public static String getOrderMainContent(OrderTemplate order) {
         String mainContent = "";
-        if (order.equals(OrderTemplate.CIC6_GENERAL_DIRECTIONS)) {
-            mainContent = DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT;
-        }
-        else if (order.equals(OrderTemplate.CIC7_ME_DMI_REPORTS)) {
+        if (order.equals(OrderTemplate.CIC7_ME_DMI_REPORTS)) {
             mainContent = DocmosisTemplateConstants.ME_DMI_MAIN_CONTENT;
-        }
-        else if (order.equals(OrderTemplate.CIC8_ME_JOINT_INSTRUCTION)) {
+        } else if (order.equals(OrderTemplate.CIC8_ME_JOINT_INSTRUCTION)) {
             mainContent = DocmosisTemplateConstants.ME_JOINT_MAIN_CONTENT;
-        }
-        else if (order.equals(OrderTemplate.CIC10_STRIKE_OUT_WARNING)) {
+        } else if (order.equals(OrderTemplate.CIC10_STRIKE_OUT_WARNING)) {
             mainContent = DocmosisTemplateConstants.STRIKE_OUT_WARNING_MAIN_CONTENT;
-        }
-        else if (order.equals(OrderTemplate.CIC13_PRO_FORMA_SUMMONS)) {
+        } else if (order.equals(OrderTemplate.CIC13_PRO_FORMA_SUMMONS)) {
             mainContent = DocmosisTemplateConstants.PRO_FORMA_MAIN_CONTENT;
         }
         return mainContent;
