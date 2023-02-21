@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.common.event.page;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
@@ -20,8 +21,8 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .pageLabel("Create order")
             .label("LabelCreateDraftOrder", "")
             .label("createDraftOrder", "Draft to be created")
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getOrderTemplate)
+            .complex(CaseData::getDraftOrderContentCIC)
+            .mandatory(DraftOrderContentCIC::getOrderTemplate)
             .done();
     }
 
