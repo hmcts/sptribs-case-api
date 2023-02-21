@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 
-import java.util.List;
 import java.util.Map;
 
 @Builder
@@ -14,7 +13,7 @@ public class NotificationRequest {
     private TemplateName template;
     private Map<String, Object> templateVars;
     private boolean hasFileAttachments;
-    private List<String> uploadedDocumentIds;
+    private Map<String, String> uploadedDocuments;
     private byte [] fileContents;
     private byte [] fileContents1;
 }
