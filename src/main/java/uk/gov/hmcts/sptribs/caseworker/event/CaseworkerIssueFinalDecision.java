@@ -29,6 +29,8 @@ import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
@@ -180,7 +182,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         var cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
-        Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(data, details.getId());
+        Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
 
         final StringBuilder messageLine2 = new StringBuilder(100);
@@ -204,11 +206,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .build();
     }
 
-    private Document getFinalDecisionGuidanceDocument(CaseData caseData, Long caseId) {
+    private Document getFinalDecisionGuidanceDocument(Long caseId) {
         final String filename = FINAL_DECISION_ANNEX_FILE + LocalDateTime.now().format(formatter);
+        Map<String, Object> templateContent = new HashMap<>();
 
         return caseDataDocumentService.renderDocument(
-            finalDecisionTemplateContent.apply(caseData, caseId),
+            templateContent,
             caseId,
             FINAL_DECISION_ANNEX_TEMPLATE_ID,
             LanguagePreference.ENGLISH,

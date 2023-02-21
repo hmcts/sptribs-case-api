@@ -16,14 +16,12 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -53,7 +51,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setLastSelectedOrder(document);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -76,10 +74,8 @@ public class NewOrderIssuedNotificationTest {
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
         data.getCicCase().setLastSelectedOrder(document);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -104,7 +100,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setLastSelectedOrder(document);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -150,7 +146,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setLastSelectedOrder(document);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         newOrderIssuedNotification.sendToRespondent(data, "CN1");
@@ -175,7 +171,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setLastSelectedOrder(document);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         newOrderIssuedNotification.sendToRespondent(data, "CN1");
@@ -200,7 +196,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setLastSelectedOrder(document);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
@@ -227,7 +223,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setLastSelectedOrder(document);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
