@@ -34,7 +34,10 @@ public class EditDraftOrderTest {
         final DynamicListElement element = DynamicListElement.builder()
             .code(UUID.randomUUID())
             .build();
+        final List<DynamicListElement> elements = new ArrayList<>();
+        elements.add(element);
         final DynamicList dynamicList = DynamicList.builder()
+            .listItems(elements)
             .value(element)
             .build();
         final List<ListValue<DraftOrderCIC>> draftOrderCICList = new ArrayList<>();
@@ -44,7 +47,6 @@ public class EditDraftOrderTest {
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .build();
         DraftOrderCIC orderCIC = DraftOrderCIC.builder()
-            .code(element.getCode().toString())
             .draftOrderContentCIC(contentCIC)
             .build();
         ListValue<DraftOrderCIC> listValue = ListValue.<DraftOrderCIC>builder()

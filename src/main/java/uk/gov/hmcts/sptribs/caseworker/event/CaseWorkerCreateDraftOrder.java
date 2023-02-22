@@ -97,10 +97,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         var caseData = details.getData();
         OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
-        DynamicListElement addedElement = addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase());
-        UUID code = addedElement.getCode();
+        addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase());
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-            .code(code.toString())
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
             .template(orderTemplate)
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
@@ -138,7 +136,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .build();
     }
 
-    private DynamicListElement addToDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, CicCase cicCase) {
+    private void addToDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, CicCase cicCase) {
         DynamicList orderTemplateDynamicList = cicCase.getDraftOrderDynamicList();
         if (orderTemplateDynamicList == null) {
             orderTemplateDynamicList = DynamicList.builder().listItems(new ArrayList<>()).build();
@@ -150,7 +148,6 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
         orderTemplateDynamicList.getListItems().add(element);
-        return element;
     }
 
     public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
