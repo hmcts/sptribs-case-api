@@ -6,23 +6,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 
 @Component
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
+
+    private static final int DOC_ATTACH_LIMIT = 5;
+    private static final String YES = "yes";
+    private static final String NO = "no";
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -38,7 +47,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         NotificationResponse notificationResponse = null;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
                 uploadedDocumentIds, templateVars);
@@ -58,7 +67,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         NotificationResponse notificationResponse = null;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
                 uploadedDocumentIds, templateVars);
         } else {
@@ -73,15 +82,15 @@ public class DecisionIssuedNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+        Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
         NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
-            uploadedDocumentIds, templateVars);
+            uploadedDocuments, templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
-                                                                     List<String> uploadedDocumentIds,
+                                                                     Map<String, String> uploadedDocumentIds,
                                                                      final Map<String, Object> templateVars) {
         NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
@@ -101,15 +110,37 @@ public class DecisionIssuedNotification implements PartiesNotification {
         return notificationService.sendLetter();
     }
 
-    private List<String> getUploadedDocumentIds(CaseData caseData) {
+    private Map<String, String> getUploadedDocuments(CaseData caseData) {
         CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
-        List<String> uploadedDocumentIds = new ArrayList<>();
-        if (caseIssueDecision.getDecisionDocument() != null) {
-            uploadedDocumentIds = caseIssueDecision.getDecisionDocument().stream().map(ListValue::getValue)
-                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
-                .toList();
+        Map<String, String> uploadedDocuments = new HashMap<>();
+
+        int count = 0;
+        if (caseIssueDecision.getDecisionNotice() == NoticeOption.UPLOAD_FROM_COMPUTER) {
+
+            for (ListValue<CICDocument> listValue : caseIssueDecision.getDecisionDocument()) {
+                count++;
+
+                CICDocument cicDocument = listValue.getValue();
+                String uuid = StringUtils.substringAfterLast(cicDocument.getDocumentLink().getUrl(), "/");
+                uploadedDocuments.put(DOC_AVAILABLE + count, YES);
+                uploadedDocuments.put(DECISION_NOTICE + count, uuid);
+            }
+        } else if (caseIssueDecision.getDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE) {
+            count++;
+
+            uploadedDocuments.put(DOC_AVAILABLE + count, YES);
+            uploadedDocuments.put(DECISION_NOTICE + count,
+                StringUtils.substringAfterLast(caseIssueDecision.getIssueDecisionDraft().getUrl(),
+                    "/"));
         }
-        return uploadedDocumentIds;
+
+        while (count < DOC_ATTACH_LIMIT) {
+            count++;
+            uploadedDocuments.put(DOC_AVAILABLE + count, NO);
+            uploadedDocuments.put(DECISION_NOTICE + count, EMPTY_STRING);
+        }
+
+        return uploadedDocuments;
     }
 
 }

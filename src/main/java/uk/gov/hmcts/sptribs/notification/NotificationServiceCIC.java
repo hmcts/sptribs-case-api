@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -21,7 +22,6 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,14 +29,11 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 
 @Service
 @Slf4j
 public class NotificationServiceCIC {
-
-    private static final int DOC_ATTACH_LIMIT = 5;
 
     private NotificationRequest notificationRequest;
 
@@ -68,7 +65,7 @@ public class NotificationServiceCIC {
 
         try {
             if (notificationRequest.isHasFileAttachments()) {
-                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocumentIds());
+                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments());
             }
 
             String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
@@ -139,36 +136,35 @@ public class NotificationServiceCIC {
         }
     }
 
-    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, List<String> uploadedDocumentIds) throws IOException {
-        int count = 0;
+    public void setNotificationRequest(NotificationRequest notificationRequest) {
+        this.notificationRequest = notificationRequest;
+    }
+
+    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
 
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = caseworkerUser.getAuthToken();
         String serviceAuthorization = authTokenGenerator.generate();
 
-        for (String item : uploadedDocumentIds) {
-            count++;
+        for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
+            String docName = document.getKey();
+            String item = document.getValue();
 
-            Resource uploadedDocument = caseDocumentClient.getDocumentBinary(authorisation,
-                serviceAuthorization,
-                UUID.fromString(item)).getBody();
-
-            if (uploadedDocument != null) {
-                log.info("Document found with uuid : {}", UUID.fromString(item));
-                byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                templateVars.put(DOC_AVAILABLE + count, "yes");
-                templateVars.put(DECISION_NOTICE + count, getJsonFileAttachment(uploadedDocumentContents));
+            if (docName.contains(DOC_AVAILABLE)) {
+                templateVars.put(docName, item);
             } else {
-                log.info("Document not found with uuid : {}", UUID.fromString(item));
-                templateVars.put(DOC_AVAILABLE + count, "no");
-                templateVars.put(DECISION_NOTICE + count, "");
-            }
-        }
+                Resource uploadedDocument = StringUtils.isNotEmpty(item)
+                    ? caseDocumentClient.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody()
+                    : null;
 
-        while (count < DOC_ATTACH_LIMIT) {
-            count++;
-            templateVars.put(DOC_AVAILABLE + count, "no");
-            templateVars.put(DECISION_NOTICE + count, "");
+                if (uploadedDocument != null) {
+                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
+                    templateVars.put(docName, getJsonFileAttachment(uploadedDocumentContents));
+                } else {
+                    log.info("Document not found with uuid : {}", item);
+                    templateVars.put(docName, "");
+                }
+            }
         }
     }
 
@@ -179,13 +175,11 @@ public class NotificationServiceCIC {
                 jsonObject = NotificationClient.prepareUpload(fileContents);
             }
         } catch (NotificationClientException e) {
-            log.info("unable to upload", e.getMessage());
+            log.error("unable to upload file to Notification -", e.getMessage());
+            throw new NotificationException(e);
         }
-        return jsonObject;
-    }
 
-    public void setNotificationRequest(NotificationRequest notificationRequest) {
-        this.notificationRequest = notificationRequest;
+        return jsonObject;
     }
 
     private NotificationResponse getNotificationResponse(final SendEmailResponse sendEmailResponse) {
