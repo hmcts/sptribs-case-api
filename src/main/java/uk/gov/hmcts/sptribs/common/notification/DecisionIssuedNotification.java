@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE_ONLY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 
 @Component
@@ -121,21 +120,23 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
                 CICDocument cicDocument = listValue.getValue();
                 String uuid = StringUtils.substringAfterLast(cicDocument.getDocumentLink().getUrl(), "/");
-
                 uploadedDocuments.put(DOC_AVAILABLE + count, "yes");
                 uploadedDocuments.put(DECISION_NOTICE + count, uuid);
             }
-
-            while (count < DOC_ATTACH_LIMIT) {
-                count++;
-                uploadedDocuments.put(DOC_AVAILABLE + count, "no");
-                uploadedDocuments.put(DECISION_NOTICE + count, "");
-            }
         } else if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
             && caseIssueDecision.getIssueDecisionDraft() != null) {
-            uploadedDocuments.put(DECISION_NOTICE_ONLY,
+            count++;
+
+            uploadedDocuments.put(DOC_AVAILABLE + count, "yes");
+            uploadedDocuments.put(DECISION_NOTICE + count,
                 StringUtils.substringAfterLast(caseIssueDecision.getIssueDecisionDraft().getUrl(),
                     "/"));
+        }
+
+        while (count < DOC_ATTACH_LIMIT) {
+            count++;
+            uploadedDocuments.put(DOC_AVAILABLE + count, "no");
+            uploadedDocuments.put(DECISION_NOTICE + count, "");
         }
 
         return uploadedDocuments;
