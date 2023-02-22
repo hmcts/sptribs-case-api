@@ -383,7 +383,7 @@ dependencies {
   e2eTestsImplementation sourceSets.test.runtimeClasspath
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
-  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.2'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.0.0'
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
