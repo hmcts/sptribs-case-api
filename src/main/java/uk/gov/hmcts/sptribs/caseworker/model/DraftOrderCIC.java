@@ -20,11 +20,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 public class DraftOrderCIC {
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String code;
-
-    @CCD(
         label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,

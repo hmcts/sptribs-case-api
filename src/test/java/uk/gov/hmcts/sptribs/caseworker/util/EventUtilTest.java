@@ -7,6 +7,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -218,6 +219,59 @@ public class EventUtilTest {
 
         //When
         String result = EventUtil.getMainContent(decisionTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
+
+    }
+
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentMedicalDmiReports() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC7_ME_DMI_REPORTS;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
+
+    }
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentMEJoint() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC8_ME_JOINT_INSTRUCTION;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
+
+    }
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentStrikeOutWarning() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC10_STRIKE_OUT_WARNING;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
+
+    }
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentProForma() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC13_PRO_FORMA_SUMMONS;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
 
         //Then
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);

@@ -138,6 +138,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Orders", null, "### Orders")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
+            .field("cicCaseDraftOrderCICList")
             .field("cicCaseOrderList");
 
 
@@ -158,7 +159,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("Listing details", "recordHearingType!=\"\"", "#### Listing details")
             .field("recordHearingType")
             .field("recordHearingFormat")
-            .field("recordHearingVenues")
+            .field("recordHearingVenueNameAndAddress")
             .field("recordRoomAtVenue")
             .field("recordHearingDate")
             .field("recordSession")
