@@ -22,14 +22,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE_ONLY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 
 @Component
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
 
     private static final int DOC_ATTACH_LIMIT = 5;
+    private static final String YES = "yes";
+    private static final String NO = "no";
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -113,29 +115,29 @@ public class DecisionIssuedNotification implements PartiesNotification {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.UPLOAD_FROM_COMPUTER)
-            && caseIssueDecision.getDecisionDocument() != null) {
+        if (caseIssueDecision.getDecisionNotice() == NoticeOption.UPLOAD_FROM_COMPUTER) {
 
             for (ListValue<CICDocument> listValue : caseIssueDecision.getDecisionDocument()) {
                 count++;
 
                 CICDocument cicDocument = listValue.getValue();
                 String uuid = StringUtils.substringAfterLast(cicDocument.getDocumentLink().getUrl(), "/");
-
-                uploadedDocuments.put(DOC_AVAILABLE + count, "yes");
+                uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(DECISION_NOTICE + count, uuid);
             }
+        } else if (caseIssueDecision.getDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE) {
+            count++;
 
-            while (count < DOC_ATTACH_LIMIT) {
-                count++;
-                uploadedDocuments.put(DOC_AVAILABLE + count, "no");
-                uploadedDocuments.put(DECISION_NOTICE + count, "");
-            }
-        } else if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
-            && caseIssueDecision.getIssueDecisionDraft() != null) {
-            uploadedDocuments.put(DECISION_NOTICE_ONLY,
+            uploadedDocuments.put(DOC_AVAILABLE + count, YES);
+            uploadedDocuments.put(DECISION_NOTICE + count,
                 StringUtils.substringAfterLast(caseIssueDecision.getIssueDecisionDraft().getUrl(),
                     "/"));
+        }
+
+        while (count < DOC_ATTACH_LIMIT) {
+            count++;
+            uploadedDocuments.put(DOC_AVAILABLE + count, NO);
+            uploadedDocuments.put(DECISION_NOTICE + count, EMPTY_STRING);
         }
 
         return uploadedDocuments;
