@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.common;
 
 public final class CommonConstants {
 
+    public static final String EMPTY_STRING = "";
+
     public static final String CONTACT_NAME = "ContactName";
     public static final String TRIBUNAL_NAME = "TribunalName";
     public static final String CIC_CASE_NUMBER = "CicCaseNumber";
@@ -27,11 +29,9 @@ public final class CommonConstants {
     public static final String REINSTATE_REASON = "ReinstatementReason";
     public static final String TRIBUNAL_ORDER = "TribunalOrder";
     public static final String DECISION_NOTICE = "DecisionNotice";
-    public static final String DECISION_NOTICE_ONLY = "DecisionNotice0";
     public static final String FINAL_DECISION_NOTICE = "FinalDecisionNotice";
     public static final String FINAL_DECISION_GUIDANCE = "FinalDecisionGuidance";
     public static final String DOC_AVAILABLE = "DocumentAvailable";
-    public static final String ATTACHMENT_COUNT = "AttachmentCount";
     public static final String STAY_EXPIRATION_DATE = "StayExpirationDate";
     public static final String STAY_REASON = "stayStayReason";
     public static final String STAY_ADDITIONAL_DETAIL = "stayAdditionalDetail";
