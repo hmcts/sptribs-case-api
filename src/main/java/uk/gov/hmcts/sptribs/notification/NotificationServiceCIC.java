@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -152,7 +153,7 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                Resource uploadedDocument = (null != item)
+                Resource uploadedDocument = StringUtils.isNotEmpty(item)
                     ? caseDocumentClient.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody()
                     : null;
 
@@ -174,8 +175,10 @@ public class NotificationServiceCIC {
                 jsonObject = NotificationClient.prepareUpload(fileContents);
             }
         } catch (NotificationClientException e) {
-            log.info("unable to upload", e.getMessage());
+            log.error("unable to upload file to Notification -", e.getMessage());
+            throw new NotificationException(e);
         }
+
         return jsonObject;
     }
 
