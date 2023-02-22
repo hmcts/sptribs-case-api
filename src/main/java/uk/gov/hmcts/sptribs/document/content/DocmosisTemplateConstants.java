@@ -88,7 +88,7 @@ public final class DocmosisTemplateConstants {
         + "meet the cost of obtaining a report from a psychiatrist or clinical psychologist.\n"
         + "I remind the parties that they have a duty to cooperate with the tribunal and to avoid any unnecessary delay.\n"
         + "Directions\n"
-        + "1. The CICA and Mr/Mrs …..shal l liaise together to make any necessary and reasonable adjustments to the respondent’s standard "
+        + "1. The CICA and Mr/Mrs …..shall liaise together to make any necessary and reasonable adjustments to the respondent’s standard "
         + "letter of instruction.\n"
         + "2. I expect the parties to be able to adjust the letter of instruction and to obtain all of the documents, records and other "
         + "evidence which the instructed expert requires to examine promptly and without specific direction from the tribunal but in the "
