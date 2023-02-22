@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANCE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 
@@ -125,7 +126,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     }
 
     private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision) {
-        String finalDecisionNotice = null;
+        String finalDecisionNotice = EMPTY_STRING;
         if (caseIssueFinalDecision.getFinalDecisionNotice().equals(NoticeOption.UPLOAD_FROM_COMPUTER)
             && !CollectionUtils.isEmpty(caseIssueFinalDecision.getDocuments())) {
             List<String> uploadedDecisionNoticeDocs = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)

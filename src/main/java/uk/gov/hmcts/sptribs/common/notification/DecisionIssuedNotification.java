@@ -23,12 +23,15 @@ import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 
 @Component
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
 
     private static final int DOC_ATTACH_LIMIT = 5;
+    private static final String YES = "yes";
+    private static final String NO = "no";
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -120,14 +123,14 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
                 CICDocument cicDocument = listValue.getValue();
                 String uuid = StringUtils.substringAfterLast(cicDocument.getDocumentLink().getUrl(), "/");
-                uploadedDocuments.put(DOC_AVAILABLE + count, "yes");
+                uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(DECISION_NOTICE + count, uuid);
             }
         } else if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
             && caseIssueDecision.getIssueDecisionDraft() != null) {
             count++;
 
-            uploadedDocuments.put(DOC_AVAILABLE + count, "yes");
+            uploadedDocuments.put(DOC_AVAILABLE + count, YES);
             uploadedDocuments.put(DECISION_NOTICE + count,
                 StringUtils.substringAfterLast(caseIssueDecision.getIssueDecisionDraft().getUrl(),
                     "/"));
@@ -135,8 +138,8 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         while (count < DOC_ATTACH_LIMIT) {
             count++;
-            uploadedDocuments.put(DOC_AVAILABLE + count, "no");
-            uploadedDocuments.put(DECISION_NOTICE + count, "");
+            uploadedDocuments.put(DOC_AVAILABLE + count, NO);
+            uploadedDocuments.put(DECISION_NOTICE + count, EMPTY_STRING);
         }
 
         return uploadedDocuments;
