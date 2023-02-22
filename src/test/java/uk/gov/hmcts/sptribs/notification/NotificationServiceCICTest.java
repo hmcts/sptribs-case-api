@@ -89,6 +89,8 @@ public class NotificationServiceCICTest {
 
         Map<String, String> uploadedDocuments = new HashMap<>();
         uploadedDocuments.put("FinalDecisionNotice", templateId);
+        uploadedDocuments.put("FinalDecisionNotice1", "");
+        uploadedDocuments.put("DocumentAvailable1", "no");
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)

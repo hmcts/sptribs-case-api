@@ -115,8 +115,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.UPLOAD_FROM_COMPUTER)
-            && caseIssueDecision.getDecisionDocument() != null) {
+        if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.UPLOAD_FROM_COMPUTER)) {
 
             for (ListValue<CICDocument> listValue : caseIssueDecision.getDecisionDocument()) {
                 count++;
@@ -126,8 +125,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(DECISION_NOTICE + count, uuid);
             }
-        } else if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
-            && caseIssueDecision.getIssueDecisionDraft() != null) {
+        } else if (caseIssueDecision.getDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)) {
             count++;
 
             uploadedDocuments.put(DOC_AVAILABLE + count, YES);
