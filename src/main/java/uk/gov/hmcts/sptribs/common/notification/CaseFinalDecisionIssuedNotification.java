@@ -127,13 +127,13 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
     private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision) {
         String finalDecisionNotice = EMPTY_STRING;
-        if (caseIssueFinalDecision.getFinalDecisionNotice().equals(NoticeOption.UPLOAD_FROM_COMPUTER)
+        if (caseIssueFinalDecision.getFinalDecisionNotice() == NoticeOption.UPLOAD_FROM_COMPUTER
             && !CollectionUtils.isEmpty(caseIssueFinalDecision.getDocuments())) {
             List<String> uploadedDecisionNoticeDocs = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
                 .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
                 .toList();
             finalDecisionNotice = uploadedDecisionNoticeDocs.get(0);
-        } else if (caseIssueFinalDecision.getFinalDecisionNotice().equals(NoticeOption.CREATE_FROM_TEMPLATE)
+        } else if (caseIssueFinalDecision.getFinalDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE
             && null != caseIssueFinalDecision.getFinalDecisionDraft()) {
             finalDecisionNotice = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionDraft().getUrl(), "/");
         }
