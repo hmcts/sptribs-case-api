@@ -47,7 +47,7 @@ public final class DocmosisTemplateConstants {
             + "by a Psychiatrist or Clinical Psychologist. \n"
             + "2.     The CICA is directed to commission an assessment by a Psychiatrist or Clinical Psychologist. Up to date GP records "
             + "should be sent to the expert, along with a copy of the questions overleaf. CICA is requested to provide an update on "
-            + "progress, if thereport has not been completed within 4 months of issue of this notice.\n"
+            + "progress, if the report has not been completed within 4 months of issue of this notice.\n"
             + "3.     To .. >: Please could you ask your GP for a copy of all your records up to the present day. You "
             + "are entitled to a copy of these without charge and it is likely to avoid delay if you obtain them yourself. The records can"
             + " be in digital form and emailed to CICA. Please do this as soon as you can. (If you are unable to do this, it may be "
@@ -121,17 +121,17 @@ public final class DocmosisTemplateConstants {
             + "and received by the Tribunal within a month of issue of this notice.";
 
     public static final String PRO_FORMA_MAIN_CONTENT =
-        "<b>In accordance with rule 16 of the Tribunal Procedure (First-tier Tribunal) (Social Entitlement Chamber) Rules 2008 and upon"
+        "In accordance with rule 16 of the Tribunal Procedure (First-tier Tribunal) (Social Entitlement Chamber) Rules 2008 and upon"
             + " the application of\n"
             + "*To *(Name and Address)\n"
             + "*You are summoned to attend the hearing of the appeal in these proceedings\n"
-            + "*(AND/OR) You are ordered to produce the following documents:-</b>\n\n"
+            + "*(AND/OR) You are ordered to produce the following documents:-\n\n"
             + "Where the person being summoned is not a party to the proceedings, then that person’s necessary expenses of attending shall"
             + " be paid or tendered to them by the Tribunals Service\n"
             + "The person on whom the requirement stated above is imposed may apply to the Tribunal to vary or set aside the summons or"
             + " order if they have not had an opportunity to object to it.\n"
-            + "<b>Failure to comply with this summons or order may lead to the matter being referred to the Upper Tribunal in accordance"
-            + " with rule 7(3) of the Rules and section 25 of the Tribunals, Courts and Enforcement Act 2007</b>";
+            + "Failure to comply with this summons or order may lead to the matter being referred to the Upper Tribunal in accordance"
+            + " with rule 7(3) of the Rules and section 25 of the Tribunals, Courts and Enforcement Act 2007";
 
     private DocmosisTemplateConstants() {
     }
