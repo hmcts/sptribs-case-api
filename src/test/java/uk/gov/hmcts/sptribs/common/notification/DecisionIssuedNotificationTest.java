@@ -165,7 +165,7 @@ public class DecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() throws IOException {
+    void shouldNotifyRespondentWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
@@ -191,7 +191,7 @@ public class DecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmailWithException() throws IOException {
+    void shouldNotifyRespondentWithEmailWithException() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
