@@ -45,7 +45,8 @@ public class CloseCase extends Base {
         clickButton("Continue");
         assertThat(page.locator("h2")).hasText("Check your answers",textOptionsWithTimeout(30000));
         clickButton("Save and continue");
-        assertThat(page.locator("h1:has-text('Case closed') ")).isVisible();
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Case closed", textOptionsWithTimeout(60000));
         clickButton("Close and Return to case details");
         page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).getByText("State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
