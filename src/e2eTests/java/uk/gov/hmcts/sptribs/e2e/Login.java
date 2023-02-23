@@ -12,8 +12,10 @@ public class Login extends Base {
     private void loginAs(String user) {
         assertThat(page.locator("h1"))
             .hasText("Sign in or create an account", textOptionsWithTimeout(90000));
-        clickButton("Accept additional cookies");
-        page.locator("button[name=\"hide-accepted\"]").click();
+        if (page.isVisible("#cookie-accept-submit")) {
+            clickButton("Accept additional cookies");
+            page.locator("button[name=\"hide-accepted\"]").click();
+        }
         getTextBoxByLabel("Email address").fill(user);
         getTextBoxByLabel("Password").fill("Pa55w0rd11");
         clickButton("Sign in");
