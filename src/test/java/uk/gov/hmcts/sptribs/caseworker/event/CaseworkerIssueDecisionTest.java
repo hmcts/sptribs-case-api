@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -24,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
+import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 
 import java.util.Set;
 
@@ -49,6 +52,9 @@ class CaseworkerIssueDecisionTest {
 
     @InjectMocks
     private CaseWorkerIssueDecision issueDecision;
+
+    @InjectMocks
+    private IssueDecisionSelectTemplate issueDecisionSelectTemplate;
 
     @Mock
     private DecisionIssuedNotification decisionIssuedNotification;
@@ -120,7 +126,7 @@ class CaseworkerIssueDecisionTest {
             anyMap(),
             any(),
             eq(DecisionTemplate.ELIGIBILITY.getId()),
-            eq(LanguagePreference.ENGLISH), any(),any()))
+            eq(LanguagePreference.ENGLISH), any(), any()))
             .thenReturn(document);
 
         //When
@@ -129,5 +135,41 @@ class CaseworkerIssueDecisionTest {
         //Then
         assertThat(response.getErrors()).isNull();
         assertThat(caseIssueDecision.getIssueDecisionDraft()).isEqualTo(document);
+    }
+
+    @Test
+    void shouldReturnMainContentOnMidEvent() {
+        //Given
+        final CaseIssueDecision caseIssueDecision = new CaseIssueDecision();
+        caseIssueDecision.setIssueDecisionTemplate(DecisionTemplate.ELIGIBILITY);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .caseIssueDecision(caseIssueDecision)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+
+        //Then
+        Assertions.assertEquals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT, response.getData().getDecisionMainContent());
+    }
+
+    @Test
+    void shouldRunAboutToStart() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        updatedCaseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getDecisionSignature()).isEmpty();
     }
 }

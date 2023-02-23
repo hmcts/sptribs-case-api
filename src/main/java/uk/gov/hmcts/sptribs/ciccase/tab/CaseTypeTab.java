@@ -86,14 +86,14 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRepresentativePhoneNumber")
             .field("cicCaseRepresentativeEmailAddress")
             .field("cicCaseRepresentativeReference")
-            .field("cicCaseIsRepresentativeQualified")
-            .field("cicCaseRepresentativeContactDetailsPreference")
+            .field("cicCaseIsRepresentativeQualified", "cicCaseRepresentativeFullName!=\"\"")
+            .field("cicCaseRepresentativeContactDetailsPreference", "cicCaseRepresentativeFullName!=\"\"")
             .field("cicCaseAddress")
             .label("applicantDetails", null, "### Applicant Details")
             .field("cicCaseApplicantFullName")
-            .field("cicCaseApplicantDateOfBirth")
+            .field("cicCaseApplicantDateOfBirth", "cicCaseApplicantFullName!=\"\"")
             .field("cicCaseApplicantPhoneNumber")
-            .field("cicCaseApplicantContactDetailsPreference")
+            .field("cicCaseApplicantContactDetailsPreference", "cicCaseApplicantFullName!=\"\"")
             .field("cicCaseApplicantEmailAddress")
             .field("cicCaseApplicantAddress");
     }
@@ -112,8 +112,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseApplicantFullName")
             .field("cicCaseApplicantEmailAddress")
             .field("cicCaseApplicantPhoneNumber")
-            .field("cicCaseApplicantDateOfBirth")
-            .field("cicCaseApplicantContactDetailsPreference")
+            .field("cicCaseApplicantDateOfBirth", "cicCaseApplicantFullName!=\"\"")
+            .field("cicCaseApplicantContactDetailsPreference", "cicCaseApplicantFullName!=\"\"")
             .field("cicCaseApplicantAddress")
             .label("Representative's details", "cicCaseRepresentativeFullName!=\"\"", "### Representative's details")
             .field("cicCaseRepresentativeFullName")
@@ -122,8 +122,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRepresentativePhoneNumber")
             .field("cicCaseRepresentativeEmailAddress")
             .field("cicCaseRepresentativeReference")
-            .field("cicCaseIsRepresentativeQualified")
-            .field("cicCaseRepresentativeContactDetailsPreference")
+            .field("cicCaseIsRepresentativeQualified", "cicCaseRepresentativeFullName!=\"\"")
+            .field("cicCaseRepresentativeContactDetailsPreference", "cicCaseRepresentativeFullName!=\"\"")
             .field("cicCaseRepresentativeAddress")
             .label("Respondent's details", null, "### Respondent's details")
             .field("cicCaseRespondentName")
@@ -138,7 +138,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Orders", null, "### Orders")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
-            .field("cicCaseDraftOrderCICList");
+            .field("cicCaseDraftOrderCICList")
+            .field("cicCaseOrderList");
 
 
     }
@@ -158,7 +159,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("Listing details", "recordHearingType!=\"\"", "#### Listing details")
             .field("recordHearingType")
             .field("recordHearingFormat")
-            .field("recordHearingVenues")
+            .field("recordHearingVenueNameAndAddress")
             .field("recordRoomAtVenue")
             .field("recordHearingDate")
             .field("recordSession")

@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionMainContent;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionNotice;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectRecipients;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.issueFinalDecisionShowConditions;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -58,6 +60,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private static final CcdPageConfiguration issueFinalDecisionSelectRecipients = new IssueFinalDecisionSelectRecipients();
 
+    private static final CcdPageConfiguration issueFinalDecisionMainContent = new IssueFinalDecisionMainContent();
+
     @Autowired
     private HttpServletRequest request;
 
@@ -78,29 +82,35 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .name("Decision: Issue final decision")
             .description("Decision: Issue final decision")
             .showSummary()
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         issueFinalDecisionNotice.addTo(pageBuilder);
         issueFinalDecisionSelectTemplate.addTo(pageBuilder);
+        issueFinalDecisionMainContent.addTo(pageBuilder);
         uploadDocuments(pageBuilder);
         issueFinalDecisionAddDocumentFooter(pageBuilder);
         issueFinalDecisionPreviewTemplate.addTo(pageBuilder);
         issueFinalDecisionSelectRecipients.addTo(pageBuilder);
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+
+        caseData.setDecisionSignature("");
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
     private void uploadDocuments(PageBuilder pageBuilder) {
-        String pageNameSelectTemplate = "issueFinalDecisionSelectTemplate";
-        String pageNamePreviewTemplate = "issueFinalDecisionPreviewTemplate";
-        String pageNameUpload = "issueFinalDecisionUpload";
-        Map<String, String> map = new HashMap<>();
-        map.put(pageNameSelectTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
-        map.put(pageNamePreviewTemplate, "caseIssueFinalDecisionFinalDecisionNotice = \"Create from a template\"");
-        map.put(pageNameUpload, "caseIssueFinalDecisionFinalDecisionNotice = \"Upload from your computer\"");
-        pageBuilder.page(pageNameUpload)
+
+        pageBuilder.page("issueFinalDecisionUpload")
             .pageLabel("Upload decision notice")
-            .pageShowConditions(map)
+            .pageShowConditions(issueFinalDecisionShowConditions())
             .label("LabelDoc", """
                 Upload a copy of the decision notice that you want to add to this case.
                   *  <h3>The decision notice should be:</h3>
@@ -114,16 +124,17 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     }
 
     private void issueFinalDecisionAddDocumentFooter(PageBuilder pageBuilder) {
-        pageBuilder.page("addDocumentFooter", this::midEvent)
+        pageBuilder.page("issueFinalDecisionAddDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
-            .label("LabelDocFooter",
+            .label("LabelIssueFinalDecisionAddDocumentFooter",
                 """
                     Decision Notice Signature
 
                     Confirm the Role and Surname of the person who made this decision - this will be added
                      to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
                     """)
-            .mandatory(CaseData::getFinalDecisionSignature)
+            .pageShowConditions(issueFinalDecisionShowConditions())
+            .mandatory(CaseData::getDecisionSignature)
             .done();
     }
 
@@ -142,7 +153,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             finalDecisionTemplateContent.apply(caseData, caseId),
             caseId,
-            finalDecision.getFinalDecisionTemplate().getId(),
+            finalDecision.getDecisionTemplate().getId(),
             LanguagePreference.ENGLISH,
             filename,
             request
@@ -171,7 +182,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         var cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
-        Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(data, details.getId());
+        Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
 
         final StringBuilder messageLine2 = new StringBuilder(100);
@@ -195,11 +206,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .build();
     }
 
-    private Document getFinalDecisionGuidanceDocument(CaseData caseData, Long caseId) {
+    private Document getFinalDecisionGuidanceDocument(Long caseId) {
         final String filename = FINAL_DECISION_ANNEX_FILE + LocalDateTime.now().format(formatter);
+        Map<String, Object> templateContent = new HashMap<>();
 
         return caseDataDocumentService.renderDocument(
-            finalDecisionTemplateContent.apply(caseData, caseId),
+            templateContent,
             caseId,
             FINAL_DECISION_ANNEX_TEMPLATE_ID,
             LanguagePreference.ENGLISH,

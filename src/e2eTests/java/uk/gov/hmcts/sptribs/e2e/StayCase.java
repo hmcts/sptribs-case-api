@@ -18,7 +18,7 @@ public class StayCase extends Base {
         Login login = new Login();
         login.loginAsStTest1User();
         Case newCase = new Case();
-        newCase.createCase();
+        newCase.createCase("representative");
         newCase.buildCase();
         newCase.addStayToCase();
     }

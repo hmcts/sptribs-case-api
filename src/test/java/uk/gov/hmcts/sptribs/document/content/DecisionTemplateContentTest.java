@@ -8,11 +8,13 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
+import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,8 @@ public class DecisionTemplateContentTest {
         CaseData caseData = buildCaseData();
         caseData.setDecisionSignature("John Doe");
         caseData.setDecisionMainContent("Case Closed");
+        RecordListing listing = RecordListing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
+        caseData.setRecordListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .panelMemberList(getMembers())
             .build();
@@ -48,11 +52,13 @@ public class DecisionTemplateContentTest {
     }
 
     @Test
-    public void shouldSuccessfullyApplyFinalDecisionContentNoMembers() {
+    public void shouldSuccessfullyApplyDecisionContentNoMembers() {
         //Given
         CaseData caseData = buildCaseData();
+        RecordListing listing = RecordListing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
         HearingSummary summary = HearingSummary.builder()
             .build();
+        caseData.setRecordListing(listing);
         caseData.setHearingSummary(summary);
         //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);

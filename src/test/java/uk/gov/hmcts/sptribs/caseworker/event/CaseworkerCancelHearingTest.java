@@ -141,7 +141,7 @@ class CaseworkerCancelHearingTest {
             .contactPreferenceType(ContactPreferenceType.POST)
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .hearingList(getDynamicList())
             .hearingNotificationParties(parties)
             .build();
@@ -178,9 +178,9 @@ class CaseworkerCancelHearingTest {
             .contactPreferenceType(ContactPreferenceType.POST)
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .hearingList(getDynamicList())
             .hearingNotificationParties(parties)
             .build();
@@ -202,7 +202,7 @@ class CaseworkerCancelHearingTest {
         //Then
         assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
         assertThat(response).isNotNull();
-        assert (response.getState().getName().equals(State.CaseManagement.getName()));
+        assert response.getState().getName().equals(State.CaseManagement.getName());
 
     }
 

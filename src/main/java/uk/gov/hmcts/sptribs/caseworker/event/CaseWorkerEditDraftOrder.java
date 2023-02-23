@@ -7,7 +7,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -17,6 +20,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+
+import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
@@ -71,7 +77,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 "\nOrder Signature\n"
                     + "\nConfirm the Role and Surname of the person who made this order - this will be added"
                     + " to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'")
-            .mandatory(CaseData::getOrderSignature)
+            .complex(CaseData::getDraftOrderContentCIC)
+            .mandatory(DraftOrderContentCIC::getOrderSignature)
             .done();
     }
 
@@ -91,12 +98,26 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-
-
+        CaseData caseData = details.getData();
+        DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+        int listSize = dynamicList.getListItems().size();
+        UUID code = dynamicList.getValue().getCode();
+        IntStream.range(0, listSize)
+            .filter(i -> code.equals(dynamicList.getListItems().get(i).getCode()))
+            .findFirst()
+            .ifPresent(index -> {
+                // draftOrderCICList is in reverse order
+                DraftOrderCIC draftOrderCIC = caseData.getCicCase().getDraftOrderCICList().get(listSize - 1 - index).getValue();
+                draftOrderCIC.setDraftOrderContentCIC(caseData.getDraftOrderContentCIC());
+                draftOrderCIC.setTemplateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued());
+            });
+        // Reset values so that they are not prepopulated when creating another draft order
+        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
+        caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
             .state(details.getState())
             .build();
-
     }
 
     public SubmittedCallbackResponse draftUpdated(CaseDetails<CaseData, State> details,

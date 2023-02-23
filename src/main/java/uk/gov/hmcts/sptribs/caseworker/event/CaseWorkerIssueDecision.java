@@ -74,6 +74,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .name("Decision: Issue a decision")
             .description("Decision: Issue a decision")
             .showSummary()
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
@@ -86,6 +87,16 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         issueDecisionPreviewTemplate.addTo(pageBuilder);
         issueDecisionSelectRecipients.addTo(pageBuilder);
 
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+
+        caseData.setDecisionSignature("");
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
     private void issueDecisionAddDocumentFooter(PageBuilder pageBuilder) {

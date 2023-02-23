@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -96,8 +94,6 @@ class CaseWorkerManageDueDatesTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        when(orderService.getOrderDynamicList(any())).thenReturn(null);
-
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerManageOrderDueDate.aboutToStart(updatedCaseDetails);
 
