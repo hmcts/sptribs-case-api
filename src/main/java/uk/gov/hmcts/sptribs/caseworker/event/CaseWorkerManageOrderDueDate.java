@@ -57,13 +57,16 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+
         var caseData = details.getData();
         DynamicList draftOrderDynamicList = caseData.getCicCase().getDraftOrderDynamicList();
         caseData.getCicCase().setOrderDynamicList(draftOrderDynamicList);
 
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
