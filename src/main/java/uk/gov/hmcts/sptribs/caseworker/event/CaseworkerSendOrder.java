@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
@@ -30,7 +31,9 @@ import uk.gov.hmcts.sptribs.common.notification.NewOrderIssuedNotification;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
@@ -101,6 +104,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .reminderDay(cicCase.getOrderReminderDays()).build();
         if (null != cicCase.getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && cicCase.getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
+
             var draftList = caseData.getCicCase().getDraftOrderCICList();
             for (int i = 0; i < draftList.size(); i++) {
                 order.setDraftOrder(draftList.get(i).getValue());
@@ -138,6 +142,20 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
         caseData.getCicCase().setOrderReminderDays(null);
+        DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+        int listSize = dynamicList.getListItems().size();
+        UUID code = dynamicList.getValue().getCode();
+        IntStream.range(0, listSize)
+            .filter(i -> code.equals(dynamicList.getListItems().get(i).getCode()))
+            .findFirst()
+            .ifPresent(index -> {
+                dynamicList.getListItems().remove(index);
+                dynamicList.setValue(null);
+                // draftOrderCICList is in reverse order
+                caseData.getCicCase().getDraftOrderCICList().remove(listSize - 1 - index);
+            });
+
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
