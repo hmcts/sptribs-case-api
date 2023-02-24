@@ -29,12 +29,15 @@ public class Base {
     @BeforeAll
     public void setUp() {
         playwright = Playwright.create();
+
         var launchOptions = getenv("CI") == null
             ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50)
             : new BrowserType.LaunchOptions().setHeadless(true);
 
-        var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER");
+        var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
+
         switch (browserType) {
+            case "msedge", "chrome" -> browser = playwright.chromium().launch(launchOptions.setChannel(browserType));
             case "firefox" -> browser = playwright.firefox().launch(launchOptions);
             case "webkit" -> browser = playwright.webkit().launch(launchOptions);
             default -> browser = playwright.chromium().launch(launchOptions);
@@ -48,7 +51,13 @@ public class Base {
 
     @BeforeEach
     void createContextAndPage() {
-        context = browser.newContext();
+        if (getenv("BROWSER").toLowerCase() == "firefox") {
+            Browser.NewContextOptions newContextOptions = new Browser.NewContextOptions();
+            newContextOptions.ignoreHTTPSErrors = true;
+            context = browser.newContext(newContextOptions);
+        } else {
+            context = browser.newContext();
+        }
         page = context.newPage();
         page.setDefaultTimeout(30000);
         page.setDefaultNavigationTimeout(30000);
