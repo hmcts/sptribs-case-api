@@ -10,21 +10,20 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 @Slf4j
 @Component
-public class HearingTypeAndFormat implements CcdPageConfiguration {
+public class EditHearingLoadingPage implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "recordVenueNotListedOption=\"ALWAYS_HIDE\"";
+    private static final String SHOW = "recordHearingSummaryExists != \"YES\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("hearingTypeAndFormat")
-            .pageLabel("Hearing type and format")
+            .page("editHearingSummary")
+            .pageLabel("Edit hearing summary")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
-            .label("labelHearingTypeAndFormat", "")
+            .label("labelEditHearingSummary", "")
             .complex(CaseData::getRecordListing)
-            .mandatory(RecordListing::getHearingType)
-            .mandatory(RecordListing::getHearingFormat)
-            .readonly(RecordListing::getHearingSummaryExists,ALWAYS_HIDE)
+            .readonly(RecordListing::getHearingSummaryExists)
+            .label("labelEditHearingSummary", "There are no Completed Hearings to edit", SHOW)
             .done();
     }
 
