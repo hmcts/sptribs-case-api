@@ -24,6 +24,12 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildOrderTab(configBuilder);
         buildCaseDocumentTab(configBuilder);
         buildHearing(configBuilder);
+        buildCaseFileViewTab(configBuilder);
+    }
+
+    private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseFile", "Case File")
+            .field(CaseData::getComponentLauncher, null, "#ARGUMENT(CaseFileView)");
     }
 
 
