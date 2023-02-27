@@ -27,4 +27,13 @@ public enum UserRole implements HasRole {
     @JsonValue
     private final String role;
     private final String caseTypePermissions;
+
+    public static String getAccessProfileName(UserRole userRole) {
+        for (UserRole role : UserRole.values()) {
+            if (role.equals(userRole)) {
+                return role.getRole();
+            }
+        }
+        return null;
+    }
 }
