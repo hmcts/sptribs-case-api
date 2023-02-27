@@ -3,9 +3,8 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
-import com.microsoft.playwright.options.SelectOption;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -32,10 +31,7 @@ public class CreateFlag extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.createCaseFlag();
-        page.selectOption("#next-step", new SelectOption().setLabel("Flags: Manage flags"));
-        page.waitForFunction("selector => document.querySelector(selector).disabled === false","ccd-event-trigger button[type='submit']",
-            PageHelpers.functionOptionsWithTimeout(6000));
-        PageHelpers.clickButton("Go");
+        newCase.startNextStepAction("Flags: Manage flags");
         assertThat(page.locator("h1")).hasText("Flags: Manage flags",textOptionsWithTimeout(30000));
         page.getByLabel("Flag Type (Optional)").click();
         page.getByLabel("Flag Type (Optional)").fill("test flag");
@@ -56,6 +52,9 @@ public class CreateFlag extends Base {
         clickButton("Continue");
         assertThat(page.locator("h1")).hasText("Flags: Manage flags",textOptionsWithTimeout(30000));
         clickButton("Save and continue");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case management", newCase.getCaseStatus());
     }
 }
 

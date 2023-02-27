@@ -281,11 +281,13 @@ public class Case extends Base {
         clickButton("Save and continue");
         assertThat(page.locator("h1:has-text('Case Flag created')")).isVisible();
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case management", getCaseStatus());
     }
 
     public void caseworkerShouldAbleToClosetheCase() {
-        page.selectOption("#next-step", new SelectOption().setLabel("Case: Close case"));
-        clickButton("Go");
+        startNextStepAction("Case: Close case");
         assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(30000));
         clickButton("Continue");
         page.getByLabel("Case Withdrawn").check();
@@ -306,10 +308,11 @@ public class Case extends Base {
         clickButton("Continue");
         assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton("Save and continue");
-        assertThat(page.locator("h1:has-text('Case closed') ")).isVisible();
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Case closed", textOptionsWithTimeout(60000));
         clickButton("Close and Return to case details");
-        page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).getByText("State").click();
-        page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
-        assertThat(page.locator("h4")).containsText("Case Status:  Case closed");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case closed", getCaseStatus());
     }
 }
