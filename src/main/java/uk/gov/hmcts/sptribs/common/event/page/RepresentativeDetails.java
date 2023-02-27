@@ -52,6 +52,9 @@ public class RepresentativeDetails implements CcdPageConfiguration {
             if (StringUtils.isEmpty(data.getCicCase().getRepresentativeAddress().getPostCode())) {
                 errors.add("PostCode is mandatory");
             }
+            if (StringUtils.isEmpty(data.getCicCase().getRepresentativeAddress().getPostTown())) {
+                errors.add("Town or City is mandatory");
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
