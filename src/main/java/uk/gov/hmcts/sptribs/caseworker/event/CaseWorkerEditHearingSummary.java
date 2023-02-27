@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingRecordingUploadPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
@@ -53,9 +52,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
     @Autowired
     private RecordListHelper recordListHelper;
-
-    @Autowired
-    private HearingService hearingService;
 
     @Autowired
     private JudicialService judicialService;
