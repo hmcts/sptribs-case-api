@@ -42,7 +42,7 @@ public class ApplicantDetailsTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = applicantDetails.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getErrors()).hasSize(2);
+        assertThat(response.getErrors()).hasSize(3);
     }
 
     @Test
@@ -53,6 +53,7 @@ public class ApplicantDetailsTest {
             .addressLine1("Street1")
             .country("UK")
             .postCode("postcode")
+            .postTown("Reading")
             .build();
         final CicCase cicCase = CicCase.builder()
             .applicantAddress(addressGlobalUK)
