@@ -99,7 +99,6 @@ class CaseworkerEditHearingSummaryTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCurrentEvent()).isBlank();
     }
 
     @Test

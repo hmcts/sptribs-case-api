@@ -8,8 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingAttendees;
@@ -21,17 +19,14 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -51,10 +46,10 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
 
     @Autowired
-    private RecordListHelper recordListHelper;
+    private JudicialService judicialService;
 
     @Autowired
-    private JudicialService judicialService;
+    private RecordListHelper recordListHelper;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -91,45 +86,18 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
         caseData.getHearingSummary().setJudge(judicialUsersDynamicList);
-        caseData.getHearingSummary().setPanelMemberList(getListValues(judicialUsersDynamicList));
+        caseData.getHearingSummary().setPanelMemberList(getPanelMembers(judicialUsersDynamicList));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
 
-    private List<ListValue<PanelMember>> getListValues(DynamicList judicialUsersDynamicList) {
-        PanelMember panelMember = PanelMember.builder()
-            .name(judicialUsersDynamicList)
-            .build();
-        List<ListValue<PanelMember>> listValues = new ArrayList<>();
-
-        var listValue = ListValue
-            .<PanelMember>builder()
-            .id("1")
-            .value(panelMember)
-            .build();
-
-        listValues.add(listValue);
-        return listValues;
-    }
-
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
-        caseData.getHearingSummary().setHearingFormat(caseData.getRecordListing().getHearingFormat());
-        caseData.getHearingSummary().setHearingType(caseData.getRecordListing().getHearingType());
-        caseData.getHearingSummary().setSubjectName(caseData.getCicCase().getFullName());
-        caseData.setCurrentEvent("");
-        if (null != caseData.getRecordListing()
-            && null != caseData.getRecordListing().getNumberOfDays()
-            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getRecordListing().setAdditionalHearingDate(null);
-        }
-
-        caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformationSummary(caseData.getRecordListing()));
+        var caseData = recordListHelper.saveSummary(details.getData());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)

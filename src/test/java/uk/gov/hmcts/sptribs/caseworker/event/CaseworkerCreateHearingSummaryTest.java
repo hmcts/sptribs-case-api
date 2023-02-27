@@ -33,11 +33,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE
 @ExtendWith(MockitoExtension.class)
 class CaseworkerCreateHearingSummaryTest {
 
-    @Mock
-    private RecordListHelper recordListHelper;
-
     @InjectMocks
     private CaseWorkerCreateHearingSummary caseWorkerCreateHearingSummary;
+
+    @Mock
+    private RecordListHelper recordListHelper;
 
     @Mock
     private HearingService hearingService;
@@ -101,7 +101,6 @@ class CaseworkerCreateHearingSummaryTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCurrentEvent()).isBlank();
     }
 
     @Test
@@ -112,7 +111,7 @@ class CaseworkerCreateHearingSummaryTest {
 
         //When
         SubmittedCallbackResponse response =
-            caseWorkerCreateHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);
+            caseWorkerCreateHearingSummary.summaryEdited(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response).isNotNull();
