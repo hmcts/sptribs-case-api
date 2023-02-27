@@ -61,6 +61,12 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
+        label = "Template",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList orderDynamicList;
+
+    @CCD(
         label = "Postpone Reason",
         typeOverride = FixedRadioList,
         typeParameterOverride = "PostponeReason",
@@ -130,11 +136,6 @@ public class CicCase {
     )
     private List<ListValue<Order>> orderList;
 
-    @CCD(
-        label = "Template",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicList orderDynamicList;
 
     @CCD(
         label = "Notified Parties",
