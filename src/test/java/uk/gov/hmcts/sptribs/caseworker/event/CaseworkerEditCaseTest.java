@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_2_FIRST_NAME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
@@ -147,7 +147,7 @@ class CaseworkerEditCaseTest {
         parties.add(PartiesCIC.APPLICANT);
         final CicCase beforeCicCase = CicCase.builder()
             .applicantContactDetailsPreference(ContactPreferenceType.POST)
-            .applicantFullName(APPLICANT_2_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .hearingNotificationParties(beforeNotificationParties)
             .partiesCIC(parties)

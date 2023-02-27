@@ -43,6 +43,10 @@ public class PageHelpers extends Base {
         return page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName(label));
     }
 
+    public static Locator getTabByText(String tabName) {
+        return page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName(tabName));
+    }
+
     public static Locator getTextBoxByLabel(String label) {
         return page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName(label));
     }
