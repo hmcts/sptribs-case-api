@@ -42,7 +42,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-cic-respondent",
             "caseworker",
             "payments",
-            "solicitor");
+            "solicitor",
+            "cic-superuser");
 
         var users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
@@ -77,7 +78,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-cic-respondent",
             "caseworker",
             "payments",
-            "solicitor"
+            "solicitor",
+            "cic-superuser"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")

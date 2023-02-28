@@ -52,10 +52,5 @@ public class CICAccessProfile extends CriminalInjuriesCompensation {
         configBuilder.caseRoleToAccessProfile(UserRole.CREATOR)
             .accessProfiles(UserRole.getAccessProfileName(UserRole.CREATOR))
             .caseAccessCategories(UserRole.CREATOR.getCaseTypePermissions());
-
-        configBuilder.caseRoleToAccessProfile(UserRole.SUPER_USER_CIC)
-            .accessProfiles(UserRole.getAccessProfileName(UserRole.SUPER_USER_CIC))
-            .caseAccessCategories(UserRole.SUPER_USER_CIC.getCaseTypePermissions());
-
     }
 }
