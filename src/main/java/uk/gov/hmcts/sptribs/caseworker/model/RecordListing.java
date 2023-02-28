@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingSession;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -71,6 +72,13 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList regionList;
+
+
+    @CCD(
+        label = "Case Status",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private State hearingStatus;
 
     @CCD(
         typeOverride = MultiSelectList,

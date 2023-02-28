@@ -37,8 +37,10 @@ import java.util.Set;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -128,6 +130,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getRecordListing()));
         caseData.setCurrentEvent("");
+
+
+        caseData.setHearingStatus(Listed);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -152,6 +157,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
+        data.setHearingStatus(Listed);
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
@@ -174,6 +181,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
 
         }
+
+//        caseData.setHearingStatus(Rejected);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

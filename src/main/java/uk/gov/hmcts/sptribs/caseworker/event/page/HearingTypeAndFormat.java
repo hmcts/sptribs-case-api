@@ -11,6 +11,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 @Component
 public class HearingTypeAndFormat implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "cicCaseHearingList=\"NEVER_SHOW\"";
+
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -21,7 +23,7 @@ public class HearingTypeAndFormat implements CcdPageConfiguration {
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
-            .done();
+           .done();
     }
 
 
