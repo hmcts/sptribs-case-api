@@ -11,6 +11,9 @@ public final class PageShowConditionsUtil {
     private static final String ISSUE_FINAL_DECISION_UPLOAD_CONDITION =
         "caseIssueFinalDecisionFinalDecisionNotice = \"Upload from your computer\"";
 
+    private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " recordHearingSummaryExists != \"YES\"";
+    private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  recordHearingSummaryExists = \"YES\"";
+
     private PageShowConditionsUtil() {
     }
 
@@ -31,6 +34,19 @@ public final class PageShowConditionsUtil {
         map.put("issueFinalDecisionMainContent", ISSUE_FINAL_DECISION_TEMPLATE_CONDITION);
         map.put("issueFinalDecisionPreviewTemplate", ISSUE_FINAL_DECISION_TEMPLATE_CONDITION);
         map.put("issueFinalDecisionUpload", ISSUE_FINAL_DECISION_UPLOAD_CONDITION);
+        return map;
+    }
+
+    public static Map<String, String> editSummaryShowConditions() {
+        Map<String, String> map = new HashMap<>();
+        map.put("hearingTypeAndFormat", EDIT_SUMMARY);
+        map.put("hearingAttendeesRole", EDIT_SUMMARY);
+        map.put("hearingAttendees", EDIT_SUMMARY);
+        map.put("listingDetails", EDIT_SUMMARY);
+        map.put("hearingOutcome", EDIT_SUMMARY);
+        map.put("hearingRecordingUpload", EDIT_SUMMARY);
+
+        map.put("editHearingSummary", EDIT_SUMMARY_SHOW_WARNING_PAGE);
         return map;
     }
 }
