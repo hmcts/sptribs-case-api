@@ -21,7 +21,7 @@ public final class EventConstants {
     public static final String CASEWORKER_ISSUE_CASE = "caseworker-issue-case";
     public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
     public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
-    public static final String CASEWORKER_LINK_CASE = "caseworker-link-case";
+    public static final String CASEWORKER_LINK_CASE = "createCaseLink";
     public static final String CASEWORKER_MANAGE_CASE_FLAG = "caseworker-manage-case-flag";
     public static final String CASEWORKER_AMEND_DUE_DATE = "caseworker-amend-due-date";
     public static final String CASEWORKER_POSTPONE_HEARING = "caseworker-postpone-hearing";

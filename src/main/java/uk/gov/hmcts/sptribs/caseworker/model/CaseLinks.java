@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
@@ -18,17 +18,29 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LinkCase {
-
+public class CaseLinks {
     @CCD(
-        label = "Enter case number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseLink caseNumber;
+    private  String caseReference;
 
     @CCD(
-        label = "Why should these cases be linked?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private LinkCaseReason linkCaseReason;
+    private  String reason;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private  String otherDescription;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private  DateTime createdDateTime ;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private  String caseType;
 }
