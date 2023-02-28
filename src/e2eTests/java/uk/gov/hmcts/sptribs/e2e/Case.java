@@ -25,7 +25,6 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTimeout;
 
-
 public class Case extends Base {
 
     /*
