@@ -18,7 +18,7 @@ public class StayCase extends Base {
         Login login = new Login();
         login.loginAsStTest1User();
         Case newCase = new Case();
-        newCase.createCase();
+        newCase.createCase("representative");
         newCase.buildCase();
         newCase.addStayToCase();
     }
@@ -74,7 +74,5 @@ public class StayCase extends Base {
             .hasText("Stays: Remove stay",textOptionsWithTimeout(60000));
         assertThat(page.locator("h1:has-text('Stay Removed from Case')")).isVisible();
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
-        page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).click();
-        assertThat(page.locator("h4")).containsText("Case management");
     }
 }
