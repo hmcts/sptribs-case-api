@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
+import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.enabledOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -21,8 +21,10 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.functionOptionsWithTime
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getButtonByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTimeout;
+
 
 public class Case extends Base {
 
@@ -92,19 +94,19 @@ public class Case extends Base {
         page.locator("text = What is subject's contact preference type?").click();
         if (options.contains("post")) {
             getRadioButtonByLabel("Post").click();
-            fillAddressDetails("Subject");
         } else {
             getRadioButtonByLabel("Email").click();
             getTextBoxByLabel("Subject's email address")
                         .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
         }
+        fillAddressDetails("Subject");
         clickButton("Continue");
 
         // Fill applicant details form
         if (options.contains("applicant")) {
             assertThat(page.locator("h1"))
                 .hasText("Who is the applicant in this case?", textOptionsWithTimeout(30000));
-            getTextBoxByLabel("Applicant's full name").fill("Subject " + StringHelpers.getRandomString(9));
+            getTextBoxByLabel("Applicant's full name").fill("Applicant " + StringHelpers.getRandomString(9));
             getTextBoxByLabel("Applicant's phone number").fill("07465730467");
             getTextBoxByLabel("Day").fill("3");
             getTextBoxByLabel("Month").fill("10");
@@ -125,7 +127,7 @@ public class Case extends Base {
         if (options.contains("representative")) {
             assertThat(page.locator("h1"))
                 .hasText("Who is the Representative for this case?", textOptionsWithTimeout(30000));
-            getTextBoxByLabel("Representative's full name").fill("Subject " + StringHelpers.getRandomString(9));
+            getTextBoxByLabel("Representative's full name").fill("Representative " + StringHelpers.getRandomString(9));
             getTextBoxByLabel("Organisation or business name (Optional)").fill(StringHelpers.getRandomString(10) + " Limited");
             getTextBoxByLabel("Representative's contact number").fill("07456831774");
             getTextBoxByLabel("Representative's reference (Optional)").fill(StringHelpers.getRandomString(10));
@@ -170,9 +172,9 @@ public class Case extends Base {
         clickButton("Continue");
 
         // Check your answers form
+        page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(30000));
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
-        page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(20000));
         clickButton("Save and continue");
 
         // Case created confirmation screen
@@ -183,16 +185,15 @@ public class Case extends Base {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Submitted", getCaseStatus());
+
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
         return page.locator("ccd-markdown markdown h3")
             .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
     }
 
     public void buildCase() {
-        page.selectOption("#next-step", new SelectOption().setLabel("Case: Build case"));
-        page.locator("ccd-markdown markdown h3").click();
-        assertThat(getButtonByText("Go")).isEnabled(enabledOptionsWithTimeout(3000));
-        clickButton("Go");
+        startNextStepAction("Case: Build case");
         assertThat(page.locator("h1"))
             .hasText("Case Built", textOptionsWithTimeout(20000));
         clickButton("Continue");
@@ -202,13 +203,30 @@ public class Case extends Base {
         assertThat(page.locator("h1").last())
             .hasText("Case built successful", textOptionsWithTimeout(60000));
         clickButton("Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case management", getCaseStatus());
     }
 
-    public void addStayToCase() {
-        page.selectOption("#next-step", new SelectOption().setLabel("Stays: Create/edit stay"));
+    public String getCaseStatus() {
+        getTabByText("State").click();
+        page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
+        String caseStatus = page.locator("h4").textContent().split(":")[1].trim();
+        return caseStatus;
+    }
+
+    public void startNextStepAction(String actionName) {
+        page.selectOption("#next-step", new SelectOption().setLabel(actionName));
         page.waitForFunction("selector => document.querySelector(selector).disabled === false",
             "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
         PageHelpers.clickButton("Go");
+        if (getButtonByText("Go").isVisible()) {
+            clickButton("Go");
+        }
+    }
+
+    public void addStayToCase() {
+        startNextStepAction("Stays: Create/edit stay");
         page.getByLabel("Awaiting outcome of civil case").check();
         page.getByLabel("Day").click();
         page.getByLabel("Day").fill("22");
@@ -222,7 +240,6 @@ public class Case extends Base {
         page.waitForSelector("h1", PageHelpers.selectorOptionsWithTimeout(60000));
         page.waitForFunction("selector => document.querySelector(selector).innerText === 'Stays: Create/edit stay'",
             "h1", PageHelpers.functionOptionsWithTimeout(60000));
-
 
         page.waitForSelector("button:has-text('Save and continue')", PageHelpers.selectorOptionsWithTimeout(60000));
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Save and continue")).click();
@@ -245,23 +262,57 @@ public class Case extends Base {
     }
 
     public void createCaseFlag() {
-        page.selectOption("#next-step", new SelectOption().setLabel("Flags: Create flag"));
-        page.waitForFunction("selector => document.querySelector(selector).disabled === false","ccd-event-trigger button[type='submit']",
-            PageHelpers.functionOptionsWithTimeout(6000));
-        PageHelpers.clickButton("Go");
+        startNextStepAction("Flags: Create flag");
         assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(30000));
         assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
-        page.getByLabel("Case").check();
+        getRadioButtonByLabel("Case").click();
         clickButton("Continue");
-        page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Subject")).check();
+        getCheckBoxByLabel("Subject").check();
         clickButton("Continue");
-        page.getByLabel("Other").check();
+        getRadioButtonByLabel("Other").click();
         page.getByLabel("Enter a flag type").click();
         page.getByLabel("Enter a flag type").fill("test flag");
         clickButton("Continue");
+        assertThat(page.locator("h2"))
+            .hasText("Add comments for this flag (Optional)",textOptionsWithTimeout(30000));
         clickButton("Continue");
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton("Save and continue");
         assertThat(page.locator("h1:has-text('Case Flag created')")).isVisible();
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case management", getCaseStatus());
+    }
+
+    public void caseworkerShouldAbleToClosetheCase() {
+        startNextStepAction("Case: Close case");
+        assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(30000));
+        clickButton("Continue");
+        page.getByLabel("Case Withdrawn").check();
+        clickButton("Continue");
+        assertThat(page.locator("h1")).hasText("Withdrawal details", textOptionsWithTimeout(30000));
+        page.getByLabel("Who withdrew from the case?").fill("case worker");
+        Calendar date = DateHelpers.getYesterdaysDate();
+        getTextBoxByLabel("Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
+        getTextBoxByLabel("Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
+        getTextBoxByLabel("Year").type(String.valueOf(date.get(Calendar.YEAR)));
+        page.locator("h1").click();
+        clickButton("Continue");
+        assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
+        clickButton("Continue");
+        assertThat(page.locator("h1")).hasText("Select recipients", textOptionsWithTimeout(30000));
+        page.getByLabel("Subject").check();
+        page.getByLabel("Respondent").check();
+        clickButton("Continue");
+        assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
+        clickButton("Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Case closed", textOptionsWithTimeout(60000));
+        clickButton("Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case closed", getCaseStatus());
     }
 }

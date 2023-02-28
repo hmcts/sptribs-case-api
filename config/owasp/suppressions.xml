@@ -88,4 +88,8 @@
       <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
       <cpe>cpe:/a:yaml_project:yaml</cpe>
     </suppress>
+    <suppress>
+      <notes>False positive as project does not contain json-java or hutool</notes>
+      <cve>CVE-2022-45688</cve>
+    </suppress>
 </suppressions>

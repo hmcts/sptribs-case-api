@@ -87,14 +87,16 @@ public class NotificationServiceCICTest {
         Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-        Map<String, String> uplodedDocuments = new HashMap<>();
-        uplodedDocuments.put("FinalDecisionNotice", templateId);
+        Map<String, String> uploadedDocuments = new HashMap<>();
+        uploadedDocuments.put("FinalDecisionNotice", templateId);
+        uploadedDocuments.put("FinalDecisionNotice1", "");
+        uploadedDocuments.put("DocumentAvailable1", "no");
         NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
             .hasFileAttachments(true)
-            .uploadedDocuments(uplodedDocuments)
+            .uploadedDocuments(uploadedDocuments)
             .build();
         notificationService.setNotificationRequest(request);
 

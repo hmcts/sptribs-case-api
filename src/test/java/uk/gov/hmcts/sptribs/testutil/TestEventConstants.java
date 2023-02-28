@@ -12,6 +12,7 @@ public final class TestEventConstants {
     public static final String CASEWORKER_CONTACT_PARTIES = "contact-parties";
     public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
     public static final String CASEWORKER_CREATE_HEARING_SUMMARY = "create-hearing-summary";
+    public static final String CASEWORKER_EDIT_HEARING_SUMMARY = "edit-hearing-summary";
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
     public static final String CASEWORKER_EDIT_RECORD_LISTING = "caseworker-edit-record-listing";
