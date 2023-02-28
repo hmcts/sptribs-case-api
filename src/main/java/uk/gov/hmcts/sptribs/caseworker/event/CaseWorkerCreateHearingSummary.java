@@ -20,8 +20,6 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
-import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -33,8 +31,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Complete;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Completed;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
@@ -93,7 +89,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
         caseData.getHearingSummary().setJudge(judicialUsersDynamicList);
         caseData.getHearingSummary().setPanelMemberList(getPanelMembers(judicialUsersDynamicList));
-
+        //        caseData.setHearingStatus(Complete);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -104,8 +100,10 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = recordListHelper.saveSummary(details.getData());
+        var caseData = details.getData();
         caseData.setHearingStatus(Complete);
+        caseData = recordListHelper.saveSummary(details.getData());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
