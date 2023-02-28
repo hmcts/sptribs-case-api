@@ -24,7 +24,8 @@ public enum UserRole implements HasRole {
     RESPONDENT_CIC("caseworker-sptribs-cic-respondent", "CRU"),
     CITIZEN_CIC("citizen-sptribs-cic-dss", "C"),
 
-    SUPER_USER_CIC("cic-superuser", "CRU");
+    SUPER_USER_CIC("cic-superuser", "CRU"),
+    JUDGE("judge", "CRU");
 
     @JsonValue
     private final String role;
