@@ -1,14 +1,19 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
@@ -103,5 +108,22 @@ public final class EventUtil {
         }
         return mainContent;
     }
+
+    public static List<ListValue<PanelMember>> getPanelMembers(DynamicList judicialUsersDynamicList) {
+        PanelMember panelMember = PanelMember.builder()
+            .name(judicialUsersDynamicList)
+            .build();
+        List<ListValue<PanelMember>> listValues = new ArrayList<>();
+
+        var listValue = ListValue
+            .<PanelMember>builder()
+            .id("1")
+            .value(panelMember)
+            .build();
+
+        listValues.add(listValue);
+        return listValues;
+    }
+
 
 }

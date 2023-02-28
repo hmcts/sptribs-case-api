@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.common.event.page;
+package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
@@ -30,13 +32,14 @@ public class HearingVenues implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("listingDetails", this::midEvent)
             .pageLabel("Hearing location and duration")
+            .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getRecordListing)
             .readonly(RecordListing::getHearingVenuesMessage)
             .optional(RecordListing::getHearingVenues,
                 CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
             .readonly(RecordListing::getReadOnlyHearingVenueName,
-                CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"")
+                CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
             .optional(RecordListing::getVenueNotListedOption)
             .mandatory(RecordListing::getHearingVenueNameAndAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
             .optional(RecordListing::getRoomAtVenue)
@@ -48,6 +51,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(RecordListing::getHearingTime)
             .mandatory(RecordListing::getNumberOfDays)
             .mandatory(RecordListing::getAdditionalHearingDate, "recordNumberOfDays = \"Yes\"")
+            .readonly(RecordListing::getHearingSummaryExists, ALWAYS_HIDE)
             .done();
     }
 
@@ -63,7 +67,8 @@ public class HearingVenues implements CcdPageConfiguration {
         } else {
             recordListing.setReadOnlyHearingVenueName(null);
         }
-        if (StringUtils.isBlank(recordListing.getHearingVenueNameAndAddress())) {
+        if (StringUtils.isBlank(recordListing.getHearingVenueNameAndAddress())
+            && StringUtils.isBlank(recordListing.getReadOnlyHearingVenueName())) {
             errors.add("Please enter valid Hearing venue");
         }
 
