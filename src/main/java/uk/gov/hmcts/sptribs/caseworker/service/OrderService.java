@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -44,8 +45,9 @@ public class OrderService {
         List<String> orders = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orderList)) {
             for (ListValue<Order> order : orderList) {
-                String draft = order.getId();
-                orders.add(draft);
+                String item = order.getId() + EventConstants.HYPHEN
+                    + order.getValue().getDraftOrder().getDraftOrderContentCIC().getOrderTemplate();
+                orders.add(item);
             }
             List<DynamicListElement> dynamicListElements = orders
                 .stream()
