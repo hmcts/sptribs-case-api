@@ -22,25 +22,25 @@ public class CaseLinks {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private  String caseReference;
+    private String caseReference;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private  String reason;
+    private String reason;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private  String otherDescription;
+    private String otherDescription;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private  DateTime createdDateTime ;
+    private DateTime createdDateTime;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private  String caseType;
+    private String caseType;
 }
