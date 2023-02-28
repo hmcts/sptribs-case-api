@@ -48,12 +48,6 @@ public enum DocumentType implements HasLabel {
     @JsonAlias({"TG"})
     GENERAL_EVIDENCE("General Evidence"),
 
-
-    //old for family divorce ones
-    @JsonProperty("application")
-    @JsonAlias("divorceApplication")
-    APPLICATION("Application"),
-
     @JsonProperty("certificateOfEntitlement")
     CERTIFICATE_OF_ENTITLEMENT("Certificate of entitlement"),
 

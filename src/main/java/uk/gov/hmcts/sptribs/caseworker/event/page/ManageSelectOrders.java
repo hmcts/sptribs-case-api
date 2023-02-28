@@ -18,7 +18,7 @@ public class ManageSelectOrders implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("caseworkerAmendDueDateSelectOrder", this::midEvent)
+        pageBuilder.page("caseworkerAmendDueDateSelectOrder")
             .pageLabel("Select order")
             .label("LabelCaseworkerAmendDueDateSelectOrder", "")
             .complex(CaseData::getCicCase)

@@ -237,6 +237,11 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CloseCase closeCase = new CloseCase();
 
+    @JsonUnwrapped(prefix = "dssCaseData")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private DssCaseData dssCaseData = new DssCaseData();
+
     @JsonIgnore
     public String formatCaseRef(long caseId) {
         String temp = format("%016d", caseId);

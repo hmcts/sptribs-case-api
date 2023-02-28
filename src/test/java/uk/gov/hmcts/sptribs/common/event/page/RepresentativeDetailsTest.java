@@ -42,7 +42,7 @@ public class RepresentativeDetailsTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = representativeDetails.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getErrors()).hasSize(2);
+        assertThat(response.getErrors()).hasSize(3);
     }
 
     @Test
@@ -53,6 +53,7 @@ public class RepresentativeDetailsTest {
             .addressLine1("Street1")
             .country("UK")
             .postCode("postcode")
+            .postTown("Reading")
             .build();
         final CicCase cicCase = CicCase.builder()
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
@@ -77,6 +78,7 @@ public class RepresentativeDetailsTest {
             .addressLine1("Street1")
             .country("UK")
             .postCode("postcode")
+            .postTown("Reading")
             .build();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()

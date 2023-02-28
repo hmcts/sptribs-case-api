@@ -24,20 +24,19 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 
 @ExtendWith(MockitoExtension.class)
-class CaseworkerCreateHearingSummaryTest {
-
-    @InjectMocks
-    private CaseWorkerCreateHearingSummary caseWorkerCreateHearingSummary;
+class CaseworkerEditHearingSummaryTest {
 
     @Mock
     private RecordListHelper recordListHelper;
+
+    @InjectMocks
+    private CaseWorkerEditHearingSummary caseWorkerEditHearingSummary;
 
     @Mock
     private HearingService hearingService;
@@ -51,12 +50,12 @@ class CaseworkerCreateHearingSummaryTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseWorkerCreateHearingSummary.configure(configBuilder);
+        caseWorkerEditHearingSummary.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_CREATE_HEARING_SUMMARY);
+            .contains(CASEWORKER_EDIT_HEARING_SUMMARY);
     }
 
     @Test
@@ -68,16 +67,15 @@ class CaseworkerCreateHearingSummaryTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
         when(judicialService.getAllUsers()).thenReturn(null);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerEditHearingSummary.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
-        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_CREATE_HEARING_SUMMARY);
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_EDIT_HEARING_SUMMARY);
     }
 
     @Test
@@ -97,7 +95,7 @@ class CaseworkerCreateHearingSummaryTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerCreateHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            caseWorkerEditHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response).isNotNull();
@@ -111,11 +109,11 @@ class CaseworkerCreateHearingSummaryTest {
 
         //When
         SubmittedCallbackResponse response =
-            caseWorkerCreateHearingSummary.summaryEdited(updatedCaseDetails, beforeDetails);
+            caseWorkerEditHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getConfirmationHeader()).contains("Hearing summary created");
+        assertThat(response.getConfirmationHeader()).contains("Hearing summary edited");
     }
 
 }
