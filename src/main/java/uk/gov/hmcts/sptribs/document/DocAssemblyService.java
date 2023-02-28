@@ -20,6 +20,8 @@ public class DocAssemblyService {
     private static final String CASE_TYPE = "CriminalInjuriesCompensation";
     private static final String JURISDICTION = "ST_CIC";
 
+    private String unusedField;
+
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
 
