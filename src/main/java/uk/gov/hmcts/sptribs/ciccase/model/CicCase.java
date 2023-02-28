@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -55,7 +56,7 @@ public class CicCase {
         label = "Enter case number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String linkCaseNumber;
+    private CaseLink linkCaseNumber;
 
     @CCD(
         label = "Why should these cases be linked?",
