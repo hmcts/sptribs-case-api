@@ -158,9 +158,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 .listItems(newElements)
                 .build());
             List<ListValue<DraftOrderCIC>> draftList = new ArrayList<>();
+            AtomicInteger listValueIndex = new AtomicInteger(0);
             for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
                 if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
-                    AtomicInteger listValueIndex = new AtomicInteger(0);
                     var listValue = ListValue
                         .<DraftOrderCIC>builder()
                         .value(draftValue.getValue())
