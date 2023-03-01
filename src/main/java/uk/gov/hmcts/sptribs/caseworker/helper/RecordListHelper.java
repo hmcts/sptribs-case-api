@@ -146,7 +146,7 @@ public class RecordListHelper {
         return recordListing;
     }
 
-    public  CaseData saveSummary(CaseData caseData) {
+    public void saveSummary(CaseData caseData) {
         caseData.getHearingSummary().setHearingFormat(caseData.getRecordListing().getHearingFormat());
         caseData.getHearingSummary().setHearingType(caseData.getRecordListing().getHearingType());
         caseData.getHearingSummary().setSubjectName(caseData.getCicCase().getFullName());
@@ -158,6 +158,5 @@ public class RecordListHelper {
         }
 
         caseData.setRecordListing(checkAndUpdateVenueInformationSummary(caseData.getRecordListing()));
-        return caseData;
     }
 }
