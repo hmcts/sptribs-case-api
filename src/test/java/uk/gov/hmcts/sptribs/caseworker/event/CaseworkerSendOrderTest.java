@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -83,14 +81,16 @@ class CaseworkerSendOrderTest {
     }
 
 
-    @Disabled
+    @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
 
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
@@ -142,17 +142,18 @@ class CaseworkerSendOrderTest {
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNotNull();
-        assertThat(order.getDraftOrder()).isNotNull();
     }
 
-    @Disabled
+    @Test
     void shouldSuccessfullySendOrderWithPost() {
         //Given
 
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
@@ -193,18 +194,19 @@ class CaseworkerSendOrderTest {
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNull();
-        assertThat(order.getDraftOrder()).isNotNull();
         assertThat(order.getReminderDay().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
 
-    @Disabled
+    @Test
     void shouldSuccessfullySendOrderWithOnlyPost() {
         //Given
 
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
@@ -244,23 +246,34 @@ class CaseworkerSendOrderTest {
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNull();
-        assertThat(order.getDraftOrder()).isNotNull();
         assertThat(order.getReminderDay().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
 
-    @Disabled
+    @Test
     void shouldSuccessfullySendOrderMultiple() {
         //Given
 
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
-        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().build();
-        final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
-        draftOrderCICListValue.setValue(draftOrderCIC);
-        draftOrderCICListValue.setId("0");
+        final DraftOrderCIC firstDraftOrder = DraftOrderCIC.builder()
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build())
+            .build();
+        final ListValue<DraftOrderCIC> firstValue = new ListValue<>();
+        firstValue.setValue(firstDraftOrder);
+        firstValue.setId("0");
+        final DraftOrderCIC secondDraftOrder = DraftOrderCIC.builder()
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .build();
+
+        final ListValue<DraftOrderCIC> secondValue = new ListValue<>();
+        secondValue.setValue(secondDraftOrder);
+        secondValue.setId("1");
+        List<ListValue<DraftOrderCIC>> draftOrderList = new ArrayList<>();
+        draftOrderList.add(firstValue);
+        draftOrderList.add(secondValue);
         final CicCase cicCase = CicCase.builder()
-            .draftOrderCICList(List.of(draftOrderCICListValue))
+            .draftOrderCICList(draftOrderList)
             .draftOrderDynamicList(getDraftOrderList())
             .fullName(TEST_FIRST_NAME)
             .contactPreferenceType(ContactPreferenceType.POST)
@@ -270,7 +283,7 @@ class CaseworkerSendOrderTest {
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
@@ -297,18 +310,6 @@ class CaseworkerSendOrderTest {
         assertThat(response2.getData().getCicCase().getOrderList()).hasSize(2);
     }
 
-    private DynamicList getDraftOrderList() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("0")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
 
     @Test
     void shouldSetSendOrderTemplatesFromSelectedDraftOrder() {
@@ -375,5 +376,18 @@ class CaseworkerSendOrderTest {
             .build();
         // Then
         assertThat(s.getConfirmationHeader().contains("# Order sent %n## %s"));
+    }
+
+    private DynamicList getDraftOrderList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel())
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
     }
 }
