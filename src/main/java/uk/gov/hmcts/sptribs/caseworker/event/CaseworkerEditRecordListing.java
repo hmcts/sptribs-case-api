@@ -166,7 +166,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
             caseData.getRecordListing().getHearingVenues().setValue(caseDataBefore.getRecordListing().getHearingVenues().getValue());
 
-
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
