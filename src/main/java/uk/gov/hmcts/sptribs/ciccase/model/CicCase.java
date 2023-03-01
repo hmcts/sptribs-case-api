@@ -511,7 +511,7 @@ public class CicCase {
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseDocumentsCIC reinstateDocuments;
+    List<ListValue<CICDocument>>  reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(
