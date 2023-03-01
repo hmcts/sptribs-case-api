@@ -74,7 +74,7 @@ class CaseworkerContactPartiesTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerContactParties.abutToSubmit(updatedCaseDetails, beforeDetails);
+            caseWorkerContactParties.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRespondent()).hasSize(1);

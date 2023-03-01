@@ -68,6 +68,7 @@ withPipeline(type, product, component) {
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
+      setFeatureFlags(params.environment)
       if(params.environment != 'prod') {
         enableHighLevelDataSetup()
       }
@@ -266,5 +267,11 @@ def generateDefinitions() {
   }
   dir("${WORKSPACE}") {
     steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
+  }
+}
+
+def setFeatureFlags(environment) {
+  if (environment == 'preview') {
+    env.CONTACT_PARTIES_FEATURE = true
   }
 }
