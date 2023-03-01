@@ -12,10 +12,10 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ReinstateUploadDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseDocumentsCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -49,6 +49,9 @@ class ReinstateCaseTest {
     @InjectMocks
     private ReinstateCase reinstateCase;
 
+    @InjectMocks
+    private ReinstateUploadDocuments reinstateUploadDocuments;
+
     @Mock
     private CaseReinstatedNotification caseReinstatedNotification;
 
@@ -76,7 +79,6 @@ class ReinstateCaseTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        CaseDocumentsCIC caseDocumentsCIC = CaseDocumentsCIC.builder().applicantDocumentsUploaded(List.of(documentListValue)).build();
         CicCase cicCase = CicCase.builder()
             .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
             .reinstateAdditionalDetail("some detail")
@@ -91,7 +93,7 @@ class ReinstateCaseTest {
             .subjectCIC(Set.of())
             .applicantCIC(Set.of())
             .representativeCIC(Set.of())
-            .reinstateDocuments(caseDocumentsCIC)
+            .reinstateDocuments(List.of(documentListValue))
             .build();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -113,8 +115,6 @@ class ReinstateCaseTest {
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
         assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
-        assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
-            .get(0).getValue().getDocumentEmailContent()).isNotNull();
 
     }
 
@@ -128,7 +128,6 @@ class ReinstateCaseTest {
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        CaseDocumentsCIC caseDocumentsCIC = CaseDocumentsCIC.builder().applicantDocumentsUploaded(List.of(documentListValue)).build();
         CicCase cicCase = CicCase.builder()
             .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
             .reinstateAdditionalDetail("some detail")
@@ -143,7 +142,7 @@ class ReinstateCaseTest {
             .subjectCIC(Set.of(SubjectCIC.SUBJECT))
             .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .reinstateDocuments(caseDocumentsCIC)
+            .reinstateDocuments(List.of(documentListValue))
             .build();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -165,8 +164,27 @@ class ReinstateCaseTest {
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
         assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
-        assertThat(response.getData().getCicCase().getReinstateDocuments().getApplicantDocumentsUploaded()
-            .get(0).getValue().getDocumentEmailContent()).isNotNull();
 
+    }
+
+
+    @Test
+    void shouldReturnErrorsIfNoDescriptionOnDocument() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CICDocument document = new CICDocument();
+        document.setDocumentLink(new Document());
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(List.of(documentListValue))
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
     }
 }
