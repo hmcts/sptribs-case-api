@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
@@ -31,9 +33,7 @@ import uk.gov.hmcts.sptribs.common.notification.NewOrderIssuedNotification;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
@@ -94,24 +94,27 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        var cicCase = caseData.getCicCase();
-
+        DraftOrderCIC selectedDraftOrder = null;
+        String selectedDynamicDraft = null;
         var order = Order.builder()
-            .uploadedFile(cicCase.getOrderFile())
-            .dueDateList(cicCase.getOrderDueDates())
-            .parties(getRecipients(cicCase))
+            .uploadedFile(caseData.getCicCase().getOrderFile())
+            .dueDateList(caseData.getCicCase().getOrderDueDates())
+            .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
-            .reminderDay(cicCase.getOrderReminderDays()).build();
-        if (null != cicCase.getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
-            && cicCase.getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
-
-            var draftList = caseData.getCicCase().getDraftOrderCICList();
-            for (int i = 0; i < draftList.size(); i++) {
-                order.setDraftOrder(draftList.get(i).getValue());
+            .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
+        if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
+            && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
+            selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
+            for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
+                if (selectedDynamicDraft
+                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                    selectedDraftOrder = draftOrderCICListValue.getValue();
+                    order.setDraftOrder(selectedDraftOrder);
+                }
             }
         }
 
-        updateLastSelectedOrder(cicCase, order);
+        updateLastSelectedOrder(caseData.getCicCase(), order);
 
         if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
@@ -142,20 +145,35 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
         caseData.getCicCase().setOrderReminderDays(null);
-        DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
-        int listSize = dynamicList.getListItems().size();
-        UUID code = dynamicList.getValue().getCode();
-        IntStream.range(0, listSize)
-            .filter(i -> code.equals(dynamicList.getListItems().get(i).getCode()))
-            .findFirst()
-            .ifPresent(index -> {
-                dynamicList.getListItems().remove(index);
-                dynamicList.setValue(null);
-                // draftOrderCICList is in reverse order
-                caseData.getCicCase().getDraftOrderCICList().remove(listSize - 1 - index);
-            });
+        if (null != selectedDraftOrder) {
+            DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+            List<DynamicListElement> newElements = new ArrayList<>();
+            for (DynamicListElement element : dynamicList.getListItems()) {
+                if (!element.getLabel().equals(selectedDynamicDraft)) {
+                    newElements.add(element);
+                }
+            }
+            caseData.getCicCase().setDraftOrderDynamicList(DynamicList
+                .builder()
+                .listItems(newElements)
+                .build());
+            List<ListValue<DraftOrderCIC>> draftList = new ArrayList<>();
+            for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
+                if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
+                    AtomicInteger listValueIndex = new AtomicInteger(0);
+                    var listValue = ListValue
+                        .<DraftOrderCIC>builder()
+                        .value(draftValue.getValue())
+                        .build();
 
+                    draftList.add(0, listValue); // always add new note as first element so that it is displayed on top
 
+                    draftList.forEach(
+                        caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+                }
+            }
+            caseData.getCicCase().setDraftOrderCICList(draftList);
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
