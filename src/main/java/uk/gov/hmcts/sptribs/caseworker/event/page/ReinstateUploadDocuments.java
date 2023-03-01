@@ -1,16 +1,25 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.apache.commons.lang.StringUtils;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReinstateUploadDocuments implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("reinstateUploadDocument")
+            .page("reinstateUploadDocument", this::midEvent)
             .pageLabel("Upload documents")
             .label("LabelReinstateCaseUploadDocument", "")
             .complex(CaseData::getCicCase)
@@ -28,5 +37,24 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
             .optionalWithLabel(CicCase::getReinstateDocuments, "Reinstate Documents")
             .done();
 
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        final List<String> errors = new ArrayList<>();
+
+        if (null != data.getCicCase().getReinstateDocuments()) {
+            for (ListValue<CICDocument> documentListValue : data.getCicCase().getReinstateDocuments()) {
+                if (null != documentListValue.getValue().getDocumentLink()
+                    && StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
+                    errors.add("Description is mandatory for each document");
+                }
+            }
+        }
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
     }
 }
