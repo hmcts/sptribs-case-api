@@ -22,12 +22,12 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_LINK_CASE;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerLinkCaseTest {
+class CaseWorkerMaintainLinkCaseTest {
     @InjectMocks
-    private CaseWorkerLinkCase caseWorkerLinkCase;
+    private CaseWorkerMaintainLinkCase caseWorkerMaintainLinkCase;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -35,14 +35,13 @@ class CaseWorkerLinkCaseTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseWorkerLinkCase.configure(configBuilder);
+        caseWorkerMaintainLinkCase.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_LINK_CASE);
+            .contains(CASEWORKER_MAINTAIN_LINK_CASE);
     }
-
 
     @Test
     void shouldAdd2LinksToCase() {
@@ -60,14 +59,11 @@ class CaseWorkerLinkCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
-            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse submitted = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            caseWorkerMaintainLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse submitted = caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response1).isNotNull();
-        assertThat(response2).isNotNull();
         assertThat(submitted).isNotNull();
     }
 }
