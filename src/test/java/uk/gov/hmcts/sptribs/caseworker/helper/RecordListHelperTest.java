@@ -188,9 +188,9 @@ class RecordListHelperTest {
         CaseData data = caseData();
         caseData().setHearingSummary(summary);
         caseData().setRecordListing(listing);
-        CaseData result = recordListHelper.saveSummary(data);
+        recordListHelper.saveSummary(data);
 
-        assertThat(result).isNotNull();
+        assertThat(data).isNotNull();
     }
 
 }

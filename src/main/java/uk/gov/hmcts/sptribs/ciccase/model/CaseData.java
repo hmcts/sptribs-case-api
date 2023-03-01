@@ -98,6 +98,12 @@ public class CaseData {
     private State caseStatus;
 
     @CCD(
+        label = "Hearing Status",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingState hearingStatus;
+
+    @CCD(
         label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
