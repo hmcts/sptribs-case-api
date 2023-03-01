@@ -155,9 +155,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
             listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
-
         data.setHearingStatus(Listed);
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))

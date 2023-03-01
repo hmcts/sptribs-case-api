@@ -97,7 +97,8 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = recordListHelper.saveSummary(details.getData());
+        var caseData = details.getData();
+        recordListHelper.saveSummary(details.getData());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
