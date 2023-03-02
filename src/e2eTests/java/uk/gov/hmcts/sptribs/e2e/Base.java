@@ -17,10 +17,15 @@ import static java.lang.System.getenv;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Base {
+public abstract class Base {
     private Playwright playwright;
     private Browser browser;
-    protected static Page page;
+    private Page page;
+
+    protected Page getPage() {
+        return page;
+    }
+
     private BrowserContext context;
 
     protected static String BASE_URL;
@@ -31,8 +36,8 @@ public class Base {
         playwright = Playwright.create();
 
         var launchOptions = getenv("CI") == null
-            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50)
-            : new BrowserType.LaunchOptions().setHeadless(true);
+            ? new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(50)
+            : new BrowserType.LaunchOptions().setHeadless(false);
 
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
 
@@ -67,6 +72,8 @@ public class Base {
 
     @AfterEach
     void closeContext() {
-        context.close();
+        if (context != null) {
+            context.close();
+        }
     }
 }
