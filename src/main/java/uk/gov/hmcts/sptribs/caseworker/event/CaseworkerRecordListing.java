@@ -182,13 +182,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    //    private boolean checkNullCondition(CicCase cicCase) {
-    //        return null != cicCase
-    //            && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-    //            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-    //            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent());
-    //    }
-
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
