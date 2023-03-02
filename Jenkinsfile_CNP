@@ -186,12 +186,6 @@ withPipeline(type, product, component) {
 
 
       setCommonEnvVariables()
-      if (env.ENVIRONMENT == "preview") {
-        println "Setting contact parties true"
-        env.CONTACT_PARTIES_FEATURE = true
-      } else {
-        println "Setting contact parties false"
-      }
       setFeatureFlags(env.ENVIRONMENT)
 
       def githubApi = new GithubAPI(this)
