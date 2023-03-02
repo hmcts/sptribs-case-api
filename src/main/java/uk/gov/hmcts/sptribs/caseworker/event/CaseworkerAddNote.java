@@ -28,7 +28,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ADD_NOTE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -56,7 +56,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
             .grant(CREATE_READ_UPDATE,
                 COURT_ADMIN_CIC)
             .grant(CREATE_READ_UPDATE_DELETE,
-                SUPER_USER))
+                SUPER_USER_CIC))
             .page("addCaseNotes")
             .pageLabel("Add case notes")
             .optional(CaseData::getNote);

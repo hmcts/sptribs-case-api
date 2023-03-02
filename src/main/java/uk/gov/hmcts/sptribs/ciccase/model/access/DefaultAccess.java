@@ -10,7 +10,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
 public class DefaultAccess implements HasAccessControl {
@@ -21,7 +21,7 @@ public class DefaultAccess implements HasAccessControl {
         grants.putAll(COURT_ADMIN_CIC, Permissions.READ);
         grants.putAll(SOLICITOR, Permissions.READ);
         grants.putAll(CITIZEN_CIC, Permissions.READ);
-        grants.putAll(SUPER_USER, Permissions.READ);
+        grants.putAll(SUPER_USER_CIC, Permissions.READ);
         grants.putAll(SYSTEMUPDATE, Permissions.CREATE_READ_UPDATE);
         return grants;
     }

@@ -14,7 +14,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
 class DefaultAccessTest {
@@ -36,7 +36,7 @@ class DefaultAccessTest {
                 entry(COURT_ADMIN_CIC, R),
                 entry(SOLICITOR, R),
                 entry(CITIZEN_CIC, R),
-                entry(SUPER_USER, R)
+                entry(SUPER_USER_CIC, R)
             );
     }
 }

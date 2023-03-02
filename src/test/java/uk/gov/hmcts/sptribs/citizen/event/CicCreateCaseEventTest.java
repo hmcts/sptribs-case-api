@@ -20,7 +20,7 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 
@@ -45,9 +45,9 @@ class CicCreateCaseEventTest {
                 .put(CITIZEN_CIC, C)
                 .put(CITIZEN_CIC, R)
                 .put(CITIZEN_CIC, U)
-                .put(SUPER_USER, C)
-                .put(SUPER_USER, R)
-                .put(SUPER_USER, U)
+                .put(SUPER_USER_CIC, C)
+                .put(SUPER_USER_CIC, R)
+                .put(SUPER_USER_CIC, U)
                 .build();
 
         assertThat(getEventsFrom(configBuilder).values())

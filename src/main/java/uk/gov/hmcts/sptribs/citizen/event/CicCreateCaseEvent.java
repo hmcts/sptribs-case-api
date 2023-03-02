@@ -22,7 +22,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var defaultRoles = new ArrayList<UserRole>();
         defaultRoles.add(UserRole.CITIZEN_CIC);
-        defaultRoles.add(UserRole.SUPER_USER);
+        defaultRoles.add(UserRole.SUPER_USER_CIC);
 
         var updatedRoles = defaultRoles;
 

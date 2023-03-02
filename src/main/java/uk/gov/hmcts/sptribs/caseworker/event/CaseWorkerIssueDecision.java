@@ -38,7 +38,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DECISION_FILE;
 
@@ -77,7 +77,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER_CIC)
             .grantHistoryOnly(SOLICITOR));
         issueDecisionNotice.addTo(pageBuilder);
         issueDecisionSelectTemplate.addTo(pageBuilder);

@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REM
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
@@ -51,7 +51,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .description("Stays: Remove stay")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayRemoved)
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER_CIC)
             .grantHistoryOnly(SOLICITOR));
 
     }

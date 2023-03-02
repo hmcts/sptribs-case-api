@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasRole;
 public enum UserRole implements HasRole {
 
     // Common User roles
-    //TODO: update : SUPER_USER, SOLICITOR before prod deploy
+    //TODO: update : SUPER_USER_CIC, SOLICITOR before prod deploy
     SUPER_USER("caseworker-sptribs-superuser", "CRU"),
     SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     SOLICITOR("caseworker", "CRU"),

@@ -22,9 +22,9 @@ public class CICAccessProfile extends CriminalInjuriesCompensation {
         // However if we uncomment this although be case create cases as expected we cannot see them on the case list
         // Commented out until we start to tackle Access Profiles as we're going to need support
         //
-        configBuilder.caseRoleToAccessProfile(UserRole.SUPER_USER)
-            .accessProfiles(UserRole.getAccessProfileName(UserRole.SUPER_USER))
-            .caseAccessCategories(UserRole.SUPER_USER.getCaseTypePermissions()).legacyIdamRole();
+        configBuilder.caseRoleToAccessProfile(UserRole.SUPER_USER_CIC)
+            .accessProfiles(UserRole.getAccessProfileName(UserRole.SUPER_USER_CIC))
+            .caseAccessCategories(UserRole.SUPER_USER_CIC.getCaseTypePermissions()).legacyIdamRole();
         configBuilder.caseRoleToAccessProfile(UserRole.SYSTEMUPDATE)
             .accessProfiles(UserRole.getAccessProfileName(UserRole.SYSTEMUPDATE))
             .caseAccessCategories(UserRole.SYSTEMUPDATE.getCaseTypePermissions()).legacyIdamRole();

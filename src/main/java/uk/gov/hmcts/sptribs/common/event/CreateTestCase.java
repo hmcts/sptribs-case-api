@@ -36,7 +36,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Slf4j
@@ -73,7 +73,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         if (env.contains(ENVIRONMENT_AAT)) {
             roles.add(SOLICITOR);
-            roles.add(SUPER_USER);
+            roles.add(SUPER_USER_CIC);
             roles.add(COURT_ADMIN_CIC);
         }
 
@@ -87,7 +87,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
-                .grantHistoryOnly(SUPER_USER, COURT_ADMIN_CIC, SOLICITOR, CITIZEN_CIC));
+                .grantHistoryOnly(SUPER_USER_CIC, COURT_ADMIN_CIC, SOLICITOR, CITIZEN_CIC));
 
             categorisationDetails.addTo(pageBuilder);
             dateOfReceipt.addTo(pageBuilder);
