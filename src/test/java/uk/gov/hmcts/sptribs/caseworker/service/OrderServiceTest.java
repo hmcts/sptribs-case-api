@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -18,9 +19,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +56,32 @@ class OrderServiceTest {
         DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().draftOrderContentCIC(contentCIC).build();
         Order orderCIC = Order.builder().draftOrder(draftOrderCIC).build();
+        order.setValue(orderCIC);
+        CicCase cicCase = CicCase.builder().orderList(List.of(order)).build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+        //When
+
+        DynamicList regionList = orderService.getOrderDynamicList(details);
+
+        //Then
+        assertThat(regionList).isNotNull();
+    }
+
+    @Test
+    void shouldPopulateOrderDynamicListWithUploadFile() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        ListValue<Order> order = new ListValue<>();
+
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        Order orderCIC = Order.builder().uploadedFile(List.of(documentListValue)).build();
         order.setValue(orderCIC);
         CicCase cicCase = CicCase.builder().orderList(List.of(order)).build();
         caseData.setCicCase(cicCase);
