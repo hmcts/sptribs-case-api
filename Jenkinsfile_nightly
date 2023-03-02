@@ -12,7 +12,7 @@ properties([
 @Library("Infrastructure")
 
 def type = "java"
-def product = "sptribs"
+def product = "sptribs-case-api"
 def component = "spring-boot-template"
 
 withNightlyPipeline(type, product, component) {
