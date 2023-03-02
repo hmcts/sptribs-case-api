@@ -28,6 +28,7 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Postponed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -96,6 +97,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         }
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
         caseData.setCurrentEvent("");
+        caseData.setHearingStatus(Postponed);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
