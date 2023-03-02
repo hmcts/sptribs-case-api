@@ -23,9 +23,9 @@ public class SubjectDetails implements CcdPageConfiguration {
             .mandatory(CicCase::getFullName)
             .optional(CicCase::getPhoneNumber)
             .mandatoryWithLabel(CicCase::getDateOfBirth, "")
+            .mandatory(CicCase::getAddress)
             .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
             .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
-            .mandatory(CicCase::getAddress)
             .done();
     }
 

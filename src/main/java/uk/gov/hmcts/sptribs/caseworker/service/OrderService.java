@@ -45,9 +45,15 @@ public class OrderService {
         List<String> orders = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orderList)) {
             for (ListValue<Order> order : orderList) {
-                String item = order.getId() + EventConstants.HYPHEN
-                    + order.getValue().getDraftOrder().getDraftOrderContentCIC().getOrderTemplate();
-                orders.add(item);
+                if (null != order.getValue().getDraftOrder()) {
+                    String item = order.getId() + EventConstants.HYPHEN
+                        + order.getValue().getDraftOrder().getDraftOrderContentCIC().getOrderTemplate();
+                    orders.add(item);
+                } else {
+                    String item = order.getId() + EventConstants.HYPHEN
+                        + order.getValue().getUploadedFile().get(0).getValue().getDocumentLink().getFilename();
+                    orders.add(item);
+                }
             }
             List<DynamicListElement> dynamicListElements = orders
                 .stream()
