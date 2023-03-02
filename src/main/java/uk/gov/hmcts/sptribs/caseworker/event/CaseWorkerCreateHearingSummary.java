@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Complete;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -88,7 +89,6 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
         caseData.getHearingSummary().setJudge(judicialUsersDynamicList);
         caseData.getHearingSummary().setPanelMemberList(getPanelMembers(judicialUsersDynamicList));
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -99,7 +99,10 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = recordListHelper.saveSummary(details.getData());
+        var caseData = details.getData();
+        caseData.setHearingStatus(Complete);
+        recordListHelper.saveSummary(details.getData());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
