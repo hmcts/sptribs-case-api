@@ -51,6 +51,10 @@ public class PageHelpers extends Base {
         return page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName(label));
     }
 
+    public static String getValueFromTableFor(String rowHeader) {
+        return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
+    }
+
     public static void clickLink(String linkText) {
         page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(linkText)).click();
     }

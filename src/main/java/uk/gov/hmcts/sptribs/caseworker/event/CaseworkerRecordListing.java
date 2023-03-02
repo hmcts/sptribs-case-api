@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
@@ -24,7 +25,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
@@ -37,6 +37,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -128,6 +129,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getRecordListing()));
         caseData.setCurrentEvent("");
+
+
+        caseData.setHearingStatus(Listed);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -151,7 +155,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
             listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
-
+        data.setHearingStatus(Listed);
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
@@ -174,7 +178,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             caseData.getRecordListing().setHearingVenuesMessage(hearingVenueMessage);
 
         }
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
