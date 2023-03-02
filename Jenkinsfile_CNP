@@ -69,7 +69,8 @@ withPipeline(type, product, component) {
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       //setFeatureFlags(params.environment)
-      println "Environment: " + params.environment
+      println 'Environment (1): ${env}'
+      println "Environment (2): " + env.ENVIRONMENT
       //env.CONTACT_PARTIES_FEATURE = true
       if(params.environment != 'prod') {
         enableHighLevelDataSetup()
