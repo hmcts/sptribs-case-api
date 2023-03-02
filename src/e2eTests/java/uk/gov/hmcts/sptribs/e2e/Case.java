@@ -100,7 +100,7 @@ public class Case {
         if (options.contains("post")) {
             getRadioButtonByLabel(page, "Post").click();
         } else {
-            getRadioButtonByLabel(page,"Email").click();
+            getRadioButtonByLabel(page, "Email").click();
             getTextBoxByLabel(page, "Subject's email address")
                         .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
         }
@@ -118,14 +118,14 @@ public class Case {
             getTextBoxByLabel(page, "Year").fill("1992");
             page.locator("text = What is applicant's contact preference?").click();
             if (options.contains("post")) {
-                getRadioButtonByLabel(page,"Post").click();
+                getRadioButtonByLabel(page, "Post").click();
                 fillAddressDetails("Applicant");
             } else {
                 getRadioButtonByLabel(page, "Email").click();
                 getTextBoxByLabel(page, "Applicant's email address")
                     .fill(StringHelpers.getRandomString(9).toLowerCase() + "@applicant.com");
             }
-            clickButton(page,"Continue");
+            clickButton(page, "Continue");
         }
 
         // Fill representative details form
@@ -150,12 +150,12 @@ public class Case {
         }
 
         // Fill contact preferences form
-        getCheckBoxByLabel(page,"Subject").first().check();
+        getCheckBoxByLabel(page, "Subject").first().check();
         if (page.isVisible("#cicCaseApplicantCIC-ApplicantCIC")) {
-            getCheckBoxByLabel(page,"Applicant (if different from subject)").check();
+            getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
         }
         if (page.isVisible("#cicCaseRepresentativeCIC-RepresentativeCIC")) {
-            getCheckBoxByLabel(page,"Representative").check();
+            getCheckBoxByLabel(page, "Representative").check();
         }
         clickButton(page, "Continue");
 
@@ -270,11 +270,11 @@ public class Case {
         startNextStepAction("Flags: Create flag");
         assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(30000));
         assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page,"Case").click();
+        getRadioButtonByLabel(page, "Case").click();
         clickButton(page, "Continue");
-        getCheckBoxByLabel(page,"Subject").check();
+        getCheckBoxByLabel(page, "Subject").check();
         clickButton(page, "Continue");
-        getRadioButtonByLabel(page,"Other").click();
+        getRadioButtonByLabel(page, "Other").click();
         page.getByLabel("Enter a flag type").click();
         page.getByLabel("Enter a flag type").fill("test flag");
         clickButton(page, "Continue");

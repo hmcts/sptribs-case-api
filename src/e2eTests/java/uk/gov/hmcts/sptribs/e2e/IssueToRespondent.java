@@ -23,7 +23,7 @@ public class IssueToRespondent extends Base {
         newCase.buildCase();
         newCase.startNextStepAction("Case: Issue to respondent");
         assertThat(page.locator("h1")).hasText("Select documentation",textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page,"Tribunal form").first().check();
+        getCheckBoxByLabel(page, "Tribunal form").first().check();
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Notify other parties",textOptionsWithTimeout(30000));
         page.getByLabel("Subject").check();

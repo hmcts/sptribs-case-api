@@ -35,9 +35,9 @@ public class CloseCase extends Base {
         assertThat(page.locator("h1")).hasText("Withdrawal details", textOptionsWithTimeout(30000));
         page.getByLabel("Who withdrew from the case?").fill("case worker");
         Calendar date = DateHelpers.getYesterdaysDate();
-        getTextBoxByLabel(page,"Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
-        getTextBoxByLabel(page,"Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
-        getTextBoxByLabel(page,"Year").type(String.valueOf(date.get(Calendar.YEAR)));
+        getTextBoxByLabel(page, "Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
+        getTextBoxByLabel(page, "Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
+        getTextBoxByLabel(page, "Year").type(String.valueOf(date.get(Calendar.YEAR)));
         page.locator("h1").click();
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
