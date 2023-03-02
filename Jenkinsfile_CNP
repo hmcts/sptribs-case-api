@@ -275,7 +275,6 @@ def generateDefinitions() {
 }
 
 def setFeatureFlags(environment) {
-  println "The environment is: " + environment
   if (environment =~ /preview/) {
     env.CONTACT_PARTIES_FEATURE = true
   } else if (environment =~ /demo/) {
@@ -285,5 +284,4 @@ def setFeatureFlags(environment) {
   } else if (environment =~ /aat|prod/) {
     env.CONTACT_PARTIES_FEATURE = false
   }
-  println "Contact parties: " + env.CONTACT_PARTIES_FEATURE
 }
