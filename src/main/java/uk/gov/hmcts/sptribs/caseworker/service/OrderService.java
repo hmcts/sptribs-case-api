@@ -40,9 +40,7 @@ public class OrderService {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public DynamicList getOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
-
         CaseData data = caseDetails.getData();
-
         List<ListValue<Order>> orderList = data.getCicCase().getOrderList();
         List<String> orders = new ArrayList<>();
         if (!CollectionUtils.isEmpty(orderList)) {
