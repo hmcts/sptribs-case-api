@@ -24,7 +24,7 @@ public class CreateHearingSummary extends Base {
         Hearing hearing = new Hearing(page);
         hearing.createListing();
         hearing.createHearingSummary();
-        getTabByText(page,"Hearings").click();
+        getTabByText(page, "Hearings").click();
         assertThat(page.locator("h4").first()).hasText("Listing details");
         String hearingType = PageHelpers.getValueFromTableFor(page,"Hearing type");
         Assertions.assertEquals("Case management", hearingType);

@@ -29,12 +29,12 @@ public class ContactParties extends Base {
         page.getByLabel("Respondent").check();
         page.getByLabel("Message").click();
         page.getByLabel("Message").fill("test123");
-        clickButton(page,"Continue");
+        clickButton(page, "Continue");
         assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
-        clickButton(page,"Save and continue");
+        clickButton(page, "Save and continue");
         assertThat(page.locator("ccd-markdown markdown h1"))
             .hasText("Message sent", textOptionsWithTimeout(60000));
-        clickButton(page,"Close and Return to case details");
+        clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals("Case management", newCase.getCaseStatus());

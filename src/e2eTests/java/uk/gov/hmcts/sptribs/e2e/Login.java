@@ -24,7 +24,7 @@ public class Login {
         assertThat(page.locator("h1"))
             .hasText("Sign in or create an account", textOptionsWithTimeout(90000));
         if (page.isVisible("#cookie-accept-submit")) {
-            clickButton(page,"Accept additional cookies");
+            clickButton(page, "Accept additional cookies");
             page.locator("button[name=\"hide-accepted\"]").click();
         }
         enterCredentialsAndClickSignIn(user);
@@ -38,7 +38,7 @@ public class Login {
         assertThat(page.locator("h1"))
             .hasText("Case list", textOptionsWithTimeout(90000));
         if (page.isVisible("button[value=\"accept\"][name=\"cookies\"]")) {
-            clickButton(page,"Accept analytics cookies");
+            clickButton(page, "Accept analytics cookies");
             page.waitForLoadState(LoadState.DOMCONTENTLOADED,loadStateOptionsWithTimeout(120000));
             page.waitForURL(BASE_URL + "/cases", urlOptionsWithTimeout(90000));
             page.waitForSelector("h1", selectorOptionsWithTimeout(90000));
@@ -51,11 +51,11 @@ public class Login {
     }
 
     private void enterCredentialsAndClickSignIn(String user) {
-        getTextBoxByLabel(page,"Email address").clear();
-        getTextBoxByLabel(page,"Email address").fill(user);
-        getTextBoxByLabel(page,"Password").clear();
-        getTextBoxByLabel(page,"Password").fill("Pa55w0rd11");
-        clickButton(page,"Sign in");
+        getTextBoxByLabel(page, "Email address").clear();
+        getTextBoxByLabel(page, "Email address").fill(user);
+        getTextBoxByLabel(page, "Password").clear();
+        getTextBoxByLabel(page, "Password").fill("Pa55w0rd11");
+        clickButton(page, "Sign in");
     }
 
     public void loginAsStTest1User() {

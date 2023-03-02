@@ -39,7 +39,7 @@ public class StayCase extends Base {
         page.selectOption("#next-step", new SelectOption().setLabel("Stays: Create/edit stay"));
         page.waitForFunction("selector => document.querySelector(selector).disabled === false",
             "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
-        PageHelpers.clickButton(page,"Go");
+        PageHelpers.clickButton(page, "Go");
         assertThat(page.locator("h1")).hasText("Add a Stay to this case",textOptionsWithTimeout(30000));
         page.getByLabel("Awaiting a court judgement").check();
         page.getByLabel("Year").click();
@@ -47,8 +47,8 @@ public class StayCase extends Base {
         page.getByLabel("Year").fill("2021");
         page.getByLabel("Provide additional details (Optional)").click();
         page.getByLabel("Provide additional details (Optional)").fill("Additional info for create stay case run time");
-        clickButton(page,"Continue");
-        clickButton(page,"Save and continue");
+        clickButton(page, "Continue");
+        clickButton(page, "Save and continue");
         assertThat(page.locator("h1:has-text('Stay Added to Case')")).isVisible();
         assertThat(page.locator("h2")).hasText("A notification has been sent to: Subject",textOptionsWithTimeout(30000));
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
@@ -70,11 +70,11 @@ public class StayCase extends Base {
         page.selectOption("#next-step", new SelectOption().setLabel("Stays: Remove stay"));
         page.waitForFunction("selector => document.querySelector(selector).disabled === false",
             "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
-        PageHelpers.clickButton(page,"Go");
+        PageHelpers.clickButton(page, "Go");
         assertThat(page.locator("h1")).hasText("Remove stay from this case",textOptionsWithTimeout(30000));
         page.getByLabel("Received outcome of criminal proceedings").check();
-        clickButton(page,"Continue");
-        clickButton(page,"Save and continue");
+        clickButton(page, "Continue");
+        clickButton(page, "Save and continue");
         assertThat(page.locator("h1"))
             .hasText("Stays: Remove stay",textOptionsWithTimeout(60000));
         assertThat(page.locator("h1:has-text('Stay Removed from Case')")).isVisible();
