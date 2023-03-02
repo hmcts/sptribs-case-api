@@ -163,7 +163,7 @@ public class CicCase {
     private ReminderDays orderReminderDays;
 
     @CCD(
-        label = "Order",
+        label = "Sent Order",
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<Order>> orderList;

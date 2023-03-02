@@ -260,6 +260,7 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '31.1-jre') {
       entry 'guava'
     }
+
     //CVE-2022-31692, CVE-2022-31690
     dependencySet( group: 'org.springframework.security', version: '5.7.5'){
       entry 'spring-security-core'
