@@ -170,3 +170,7 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
+
+feature:
+  contact-parties:
+    enabled: ${CONTACT_PARTIES_FEATURE:false}
