@@ -84,7 +84,7 @@ public class Hearing {
         // Fill Other information form
         assertThat(page.locator("h1"))
             .hasText("Other information", textOptionsWithTimeout(20000));
-        getTextBoxByLabel(page,"Other important information (Optional)")
+        getTextBoxByLabel(page, "Other important information (Optional)")
             .fill("Lorem Ipsum is simply dummy text of the printing and typesetting industry");
         clickButton(page, "Continue");
 
@@ -95,7 +95,7 @@ public class Hearing {
         if (page.isVisible("#cicCaseNotifyPartyRepresentative-RepresentativeCIC")) {
             getCheckBoxByLabel(page, "Representative").check();
         }
-        getCheckBoxByLabel(page,"Respondent").check();
+        getCheckBoxByLabel(page, "Respondent").check();
         clickButton(page, "Continue");
 
         // Check your answers form
@@ -127,8 +127,8 @@ public class Hearing {
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
             .hasText("Hearing type and format", textOptionsWithTimeout(30000));
-        assertThat(getRadioButtonByLabel(page,"Case management")).isChecked();
-        assertThat(getRadioButtonByLabel(page,"Face to Face")).isChecked();
+        assertThat(getRadioButtonByLabel(page, "Case management")).isChecked();
+        assertThat(getRadioButtonByLabel(page, "Face to Face")).isChecked();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing location and duration form

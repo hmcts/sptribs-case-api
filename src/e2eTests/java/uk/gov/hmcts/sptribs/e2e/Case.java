@@ -143,7 +143,7 @@ public class Case {
                 fillAddressDetails("Representative");
             } else {
                 getRadioButtonByLabel(page, "Email").click();
-                getTextBoxByLabel(page,"Representative's email address")
+                getTextBoxByLabel(page, "Representative's email address")
                     .fill(StringHelpers.getRandomString(9).toLowerCase() + "@representative.com");
             }
             clickButton(page, "Continue");
@@ -214,7 +214,7 @@ public class Case {
     }
 
     public String getCaseStatus() {
-        getTabByText(page,"State").click();
+        getTabByText(page, "State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
         String caseStatus = page.locator("h4").textContent().split(":")[1].trim();
         return caseStatus;
