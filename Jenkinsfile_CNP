@@ -67,12 +67,7 @@ withPipeline(type, product, component) {
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
-    println "Environment (3): " + params.environment
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
-      //setFeatureFlags(params.environment)
-
-      println "Environment (2): " + env.ENVIRONMENT
-      //env.CONTACT_PARTIES_FEATURE = true
       if(params.environment != 'prod') {
         enableHighLevelDataSetup()
       }
@@ -189,7 +184,9 @@ withPipeline(type, product, component) {
 
 
 
+
       setCommonEnvVariables()
+      setFeatureFlags(env.ENVIRONMENT)
 
       def githubApi = new GithubAPI(this)
       if (!githubApi.getLabelsbyPattern(env.BRANCH_NAME, "keep-helm")) {
@@ -206,6 +203,7 @@ withPipeline(type, product, component) {
         env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
         env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         setCommonEnvVariables()
+        setFeatureFlags(env.ENVIRONMENT)
     }
 
     afterSuccess('functionalTest:aat') {
@@ -219,6 +217,7 @@ withPipeline(type, product, component) {
         env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
         env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
         env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+        setFeatureFlags(env.ENVIRONMENT)
 
         builder.gradle('generateCCDConfig --rerun-tasks')
         generateDefinitions()
@@ -230,6 +229,7 @@ withPipeline(type, product, component) {
       env.CCD_DEF_NAME = "demo"
       env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
+      setFeatureFlags(env.ENVIRONMENT)
     }
 
     onPerftest {
@@ -239,6 +239,7 @@ withPipeline(type, product, component) {
       env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
       env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
+      setFeatureFlags(env.ENVIRONMENT)
     }
 
     before('functionalTest:preview') {
@@ -274,7 +275,13 @@ def generateDefinitions() {
 }
 
 def setFeatureFlags(environment) {
-  if (environment == 'preview') {
+  if (environment =~ /preview/) {
     env.CONTACT_PARTIES_FEATURE = true
+  } else if (environment =~ /demo/) {
+    env.CONTACT_PARTIES_FEATURE = true
+  } else if (environment =~ /perftest/) {
+    env.CONTACT_PARTIES_FEATURE = true
+  } else if (environment =~ /aat|prod/) {
+    env.CONTACT_PARTIES_FEATURE = false
   }
 }
