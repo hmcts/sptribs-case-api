@@ -111,9 +111,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
             caseData.getRecordListing().setAdditionalHearingDate(null);
         }
-        //        if (checkNullCondition(details.getData().getCicCase())) {
-        //            errors.add("One party must be selected.");
-        //        }
         Set<NotificationParties> partiesSet = new HashSet<>();
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
