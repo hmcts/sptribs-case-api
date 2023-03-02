@@ -67,9 +67,10 @@ withPipeline(type, product, component) {
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
+    println "Environment (3): " + params.environment
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       //setFeatureFlags(params.environment)
-      println 'Environment (1): ${env}'
+
       println "Environment (2): " + env.ENVIRONMENT
       //env.CONTACT_PARTIES_FEATURE = true
       if(params.environment != 'prod') {
