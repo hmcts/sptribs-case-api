@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.notification.CancelHearingNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
@@ -96,6 +97,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             state = CaseManagement;
             caseData.setRecordListing(null);
         }
+        caseData.setHearingStatus(Cancelled);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(state)

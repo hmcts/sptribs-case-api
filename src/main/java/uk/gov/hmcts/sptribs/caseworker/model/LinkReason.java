@@ -14,3 +14,4 @@ public class LinkReason {
     private final String reason;
     private final String otherDescription;
 }
+

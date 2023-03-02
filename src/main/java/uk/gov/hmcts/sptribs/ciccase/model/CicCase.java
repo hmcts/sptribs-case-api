@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -10,12 +11,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
+import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
@@ -47,6 +52,33 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+    @CCD(
+        label = "Enter case number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseLink linkCaseNumber;
+
+    @CCD(
+        label = "Why should these cases be linked?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private LinkCaseReason linkCaseReason;
+
+    @CCD(
+        label = "Other Description",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String linkCaseOtherDescription;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "CaseLinks")
+    private List<ListValue<CaseLinks>> caseLinks;
+
+    @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ComponentLauncher linkedCasesComponentLauncher;
+
 
     @CCD(
         label = "Preview order",
@@ -479,7 +511,7 @@ public class CicCase {
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseDocumentsCIC reinstateDocuments;
+    List<ListValue<CICDocument>>  reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(
