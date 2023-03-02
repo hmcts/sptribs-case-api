@@ -43,6 +43,7 @@ class CaseworkerContactPartiesTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
+        caseWorkerContactParties.setContactPartiesEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -52,6 +53,19 @@ class CaseworkerContactPartiesTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CONTACT_PARTIES);
+    }
+
+    @Test
+    void shouldNotConfigureContactPartiesIfFeatureFlagFalse() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        //When
+        caseWorkerContactParties.configure(configBuilder);
+
+        //Then
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .doesNotContain(CASEWORKER_CONTACT_PARTIES);
     }
 
     @Test
