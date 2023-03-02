@@ -186,6 +186,12 @@ withPipeline(type, product, component) {
 
 
       setCommonEnvVariables()
+      if (env.ENVIRONMENT == "preview") {
+        println "Setting contact parties true"
+        env.CONTACT_PARTIES_FEATURE = true
+      } else {
+        println "Setting contact parties false"
+      }
       setFeatureFlags(env.ENVIRONMENT)
 
       def githubApi = new GithubAPI(this)
@@ -275,6 +281,7 @@ def generateDefinitions() {
 }
 
 def setFeatureFlags(environment) {
+  println "The environment is: " + environment
   if (environment =~ /preview/) {
     env.CONTACT_PARTIES_FEATURE = true
   } else if (environment =~ /demo/) {
@@ -284,4 +291,5 @@ def setFeatureFlags(environment) {
   } else if (environment =~ /aat|prod/) {
     env.CONTACT_PARTIES_FEATURE = false
   }
+  println "Contact parties: " + env.CONTACT_PARTIES_FEATURE
 }
