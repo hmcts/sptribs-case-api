@@ -68,8 +68,9 @@ withPipeline(type, product, component) {
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
-      setFeatureFlags(params.environment)
+      //setFeatureFlags(params.environment)
       if(params.environment != 'prod') {
+        env.CONTACT_PARTIES_FEATURE = true
         enableHighLevelDataSetup()
       }
     }
@@ -182,8 +183,6 @@ withPipeline(type, product, component) {
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      env.CONTACT_PARTIES_FEATURE = true
-
 
 
 
