@@ -96,6 +96,7 @@ configurations {
   e2eTestsRuntime.extendsFrom testRuntime
 }
 
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
@@ -171,6 +172,13 @@ task highLevelDataSetup(type: JavaExec) {
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
+task fortifyScan(type: JavaExec)  {
+  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+  // The line below prevents the build from failing if the Fortify scan detects issues
+  ignoreExitValue = true
+}
 checkstyle {
   maxWarnings = 0
   toolVersion = '9.2.1'
@@ -252,6 +260,7 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '31.1-jre') {
       entry 'guava'
     }
+
     //CVE-2022-31692, CVE-2022-31690
     dependencySet( group: 'org.springframework.security', version: '5.7.5'){
       entry 'spring-security-core'
@@ -347,6 +356,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  testImplementation 'com.github.hmcts:fortify-client:1.2.2:all'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
@@ -358,7 +368,6 @@ dependencies {
     exclude(module: 'commons-logging')
     exclude(module: 'android-json')
   }
-
   testImplementation group: 'com.jayway.awaitility', name: 'awaitility', version: '1.7.0'
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
@@ -520,10 +529,6 @@ cftlibTest {
   environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,payment-api,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
 }
 
-tasks.withType(Test).configureEach {
-  maxParallelForks = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
-}
-
 // exclude the logback binding is coming in via cftlib
 configurations.cftlibTestImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
@@ -538,6 +543,14 @@ task installChromium(type: JavaExec) {
 }
 
 tasks.cftlibTest.dependsOn(installChromium)
+
+task installBrowser(type: JavaExec) {
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  main = 'com.microsoft.playwright.CLI'
+  args = ['install', 'chromium']
+}
+
+tasks.e2eTests.dependsOn(installBrowser)
 
 tasks.withType(Test).configureEach {
   maxParallelForks = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1

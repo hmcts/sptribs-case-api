@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -112,9 +111,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
             caseData.getRecordListing().setAdditionalHearingDate(null);
         }
-        if (checkNullCondition(details.getData().getCicCase())) {
-            errors.add("One party must be selected.");
-        }
         Set<NotificationParties> partiesSet = new HashSet<>();
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
@@ -181,13 +177,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
-    }
-
-    private boolean checkNullCondition(CicCase cicCase) {
-        return null != cicCase
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent());
     }
 
     private void addRegionInfo(PageBuilder pageBuilder) {
