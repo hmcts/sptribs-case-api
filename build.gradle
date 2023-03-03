@@ -529,10 +529,6 @@ cftlibTest {
   environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,payment-api,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
 }
 
-tasks.withType(Test).configureEach {
-  maxParallelForks = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
-}
-
 // exclude the logback binding is coming in via cftlib
 configurations.cftlibTestImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
@@ -547,6 +543,14 @@ task installChromium(type: JavaExec) {
 }
 
 tasks.cftlibTest.dependsOn(installChromium)
+
+task installBrowser(type: JavaExec) {
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  main = 'com.microsoft.playwright.CLI'
+  args = ['install', 'chromium']
+}
+
+tasks.e2eTests.dependsOn(installBrowser)
 
 tasks.withType(Test).configureEach {
   maxParallelForks = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
