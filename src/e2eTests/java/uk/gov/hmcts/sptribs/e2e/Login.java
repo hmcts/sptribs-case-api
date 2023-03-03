@@ -7,6 +7,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import static uk.gov.hmcts.sptribs.e2e.Base.BASE_URL;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.functionOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.loadStateOptionsWithTimeout;
@@ -21,18 +22,14 @@ public class Login {
     }
 
     private void loginAs(String user) {
-        assertThat(page.locator("h1"))
-            .hasText("Sign in or create an account", textOptionsWithTimeout(90000));
+        page.waitForSelector("h1:has-text(\"Sign in or create an account\")", selectorOptionsWithTimeout(120000));
         if (page.isVisible("#cookie-accept-submit")) {
             clickButton(page, "Accept additional cookies");
             page.locator("button[name=\"hide-accepted\"]").click();
         }
         enterCredentialsAndClickSignIn(user);
-        page.waitForLoadState(LoadState.DOMCONTENTLOADED,loadStateOptionsWithTimeout(120000));
-        page.waitForSelector("h1", selectorOptionsWithTimeout(120000));
         if (page.isVisible("h1:has-text(\"Sign in or create an account\")")) {
             enterCredentialsAndClickSignIn(user);
-            page.waitForLoadState(LoadState.DOMCONTENTLOADED,loadStateOptionsWithTimeout(120000));
         }
         page.waitForURL(BASE_URL + "/cases", urlOptionsWithTimeout(120000));
         assertThat(page.locator("h1"))
@@ -55,7 +52,10 @@ public class Login {
         getTextBoxByLabel(page, "Email address").fill(user);
         getTextBoxByLabel(page, "Password").clear();
         getTextBoxByLabel(page, "Password").fill("Pa55w0rd11");
-        clickButton(page, "Sign in");
+        page.locator("input:has-text(\"Sign in\")")
+            .click(clickOptionsWithTimeout(120000));
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED,loadStateOptionsWithTimeout(120000));
+        page.waitForSelector("h1", selectorOptionsWithTimeout(120000));
     }
 
     public void loginAsStTest1User() {

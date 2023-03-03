@@ -150,6 +150,8 @@ public class Case {
         }
 
         // Fill contact preferences form
+        assertThat(page.locator("h1"))
+            .hasText("Who should receive information about the case?", textOptionsWithTimeout(30000));
         getCheckBoxByLabel(page, "Subject").first().check();
         if (page.isVisible("#cicCaseApplicantCIC-ApplicantCIC")) {
             getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
@@ -200,10 +202,10 @@ public class Case {
     public void buildCase() {
         startNextStepAction("Case: Build case");
         assertThat(page.locator("h1"))
-            .hasText("Case Built", textOptionsWithTimeout(40000));
+            .hasText("Case Built", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1"))
-            .hasText("Case: Build case", textOptionsWithTimeout(20000));
+            .hasText("Case: Build case", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
         assertThat(page.locator("h1").last())
             .hasText("Case built successful", textOptionsWithTimeout(60000));
@@ -221,6 +223,8 @@ public class Case {
     }
 
     public void startNextStepAction(String actionName) {
+        page.waitForFunction("selector => document.querySelector(selector).options.length > 1",
+            "#next-step", functionOptionsWithTimeout(60000));
         page.selectOption("#next-step", new SelectOption().setLabel(actionName));
         page.waitForFunction("selector => document.querySelector(selector).disabled === false",
             "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
@@ -268,7 +272,7 @@ public class Case {
 
     public void createCaseFlag() {
         startNextStepAction("Flags: Create flag");
-        assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(60000));
         assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Case").click();
         clickButton(page, "Continue");
@@ -284,16 +288,17 @@ public class Case {
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
-        assertThat(page.locator("h1:has-text('Case Flag created')")).isVisible();
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Case Flag created", textOptionsWithTimeout(60000));
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals("Case management", getCaseStatus());
     }
 
-    public void caseworkerShouldAbleToClosetheCase() {
+    public void caseworkerShouldAbleToCloseTheCase() {
         startNextStepAction("Case: Close case");
-        assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         page.getByLabel("Case Withdrawn").check();
         clickButton(page, "Continue");

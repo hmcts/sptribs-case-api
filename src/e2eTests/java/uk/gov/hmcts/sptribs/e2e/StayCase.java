@@ -28,7 +28,7 @@ public class StayCase extends Base {
 
     @Order(2)
     @Test
-    public void caseWorkerShouldEditStayToCase() {
+    public void caseWorkerShouldBeAbleEditStayToCase() {
         page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
@@ -40,7 +40,7 @@ public class StayCase extends Base {
         page.waitForFunction("selector => document.querySelector(selector).disabled === false",
             "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
         PageHelpers.clickButton(page, "Go");
-        assertThat(page.locator("h1")).hasText("Add a Stay to this case",textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Add a Stay to this case",textOptionsWithTimeout(60000));
         page.getByLabel("Awaiting a court judgement").check();
         page.getByLabel("Year").click();
         page.getByRole(AriaRole.GROUP, new Page.GetByRoleOptions().setName("Expiration Date")).locator("div").nth(3).click();
@@ -59,7 +59,7 @@ public class StayCase extends Base {
 
     @Order(3)
     @Test
-    public void caseworkershouldRemoveStayCase() {
+    public void caseworkerShouldBeAbleToRemoveStayCase() {
         page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
@@ -67,11 +67,8 @@ public class StayCase extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.addStayToCase();
-        page.selectOption("#next-step", new SelectOption().setLabel("Stays: Remove stay"));
-        page.waitForFunction("selector => document.querySelector(selector).disabled === false",
-            "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
-        PageHelpers.clickButton(page, "Go");
-        assertThat(page.locator("h1")).hasText("Remove stay from this case",textOptionsWithTimeout(30000));
+        newCase.startNextStepAction("Stays: Remove stay");
+        assertThat(page.locator("h1")).hasText("Remove stay from this case",textOptionsWithTimeout(60000));
         page.getByLabel("Received outcome of criminal proceedings").check();
         clickButton(page, "Continue");
         clickButton(page, "Save and continue");

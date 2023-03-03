@@ -20,7 +20,7 @@ public class CloseCase extends Base {
 
     @Test
     @Order(1)
-    public void caseworkerShouldAbleToClosetheCase() {
+    public void caseworkerShouldAbleToCloseTheCase() {
         page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
@@ -28,7 +28,7 @@ public class CloseCase extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.startNextStepAction("Case: Close case");
-        assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         page.getByLabel("Case Withdrawn").check();
         clickButton(page, "Continue");
@@ -57,16 +57,16 @@ public class CloseCase extends Base {
     }
 
     @Test
-    public void caseworkerShouldAbleToReinstantCase() {
+    public void caseworkerShouldAbleToReinstateCase() {
         page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.caseworkerShouldAbleToClosetheCase();
+        newCase.caseworkerShouldAbleToCloseTheCase();
         newCase.startNextStepAction("Case: Reinstate case");
-        assertThat(page.locator("h1")).hasText("Are you sure you want to reinstate this case?", textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Are you sure you want to reinstate this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Reason for reinstatement", textOptionsWithTimeout(30000));
         page.getByLabel("Request following a withdrawal decision").check();

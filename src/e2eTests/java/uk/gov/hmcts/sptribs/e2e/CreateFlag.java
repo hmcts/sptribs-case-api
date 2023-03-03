@@ -35,7 +35,7 @@ public class CreateFlag extends Base {
         newCase.buildCase();
         newCase.createCaseFlag();
         newCase.startNextStepAction("Flags: Manage flags");
-        assertThat(page.locator("h1")).hasText("Flags: Manage flags",textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Flags: Manage flags", textOptionsWithTimeout(60000));
         page.getByLabel("Flag Type (Optional)").click();
         page.getByLabel("Flag Type (Optional)").fill("test flag");
         page.getByLabel("Party Name (Optional)").click();

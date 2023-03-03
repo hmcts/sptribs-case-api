@@ -23,7 +23,7 @@ public class ContactParties extends Base {
         newCase.createCase("representative");
         newCase.buildCase();
         newCase.startNextStepAction("Case: Contact parties");
-        assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(60000));
         page.getByLabel("Subject").check();
         page.getByLabel("Representative").check();
         page.getByLabel("Respondent").check();

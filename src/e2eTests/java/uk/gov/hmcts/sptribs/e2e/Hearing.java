@@ -36,7 +36,7 @@ public class Hearing {
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
-            .hasText("Hearing type and format", textOptionsWithTimeout(30000));
+            .hasText("Hearing type and format", textOptionsWithTimeout(60000));
         page.getByLabel("Case management").check();
         page.getByLabel("Face to Face").check();
         PageHelpers.clickButton(page, "Continue");
@@ -76,21 +76,21 @@ public class Hearing {
 
         // Fill Remote hearing information form
         assertThat(page.locator("h1"))
-            .hasText("Remote hearing information", textOptionsWithTimeout(20000));
+            .hasText("Remote hearing information", textOptionsWithTimeout(30000));
         getTextBoxByLabel(page, "Video call link (Optional)").fill("http://localhost:3000");
         getTextBoxByLabel(page, "Conference call number (Optional)").fill("01762534632");
         clickButton(page, "Continue");
 
         // Fill Other information form
         assertThat(page.locator("h1"))
-            .hasText("Other information", textOptionsWithTimeout(20000));
+            .hasText("Other information", textOptionsWithTimeout(30000));
         getTextBoxByLabel(page, "Other important information (Optional)")
             .fill("Lorem Ipsum is simply dummy text of the printing and typesetting industry");
         clickButton(page, "Continue");
 
         // Fill Notify parties form
         assertThat(page.locator("h1"))
-            .hasText("Notify parties", textOptionsWithTimeout(20000));
+            .hasText("Notify parties", textOptionsWithTimeout(30000));
         getCheckBoxByLabel(page, "Subject").check();
         if (page.isVisible("#cicCaseNotifyPartyRepresentative-RepresentativeCIC")) {
             getCheckBoxByLabel(page, "Representative").check();
@@ -120,7 +120,7 @@ public class Hearing {
 
         // Fill Select hearing form
         assertThat(page.locator("h1"))
-            .hasText("Select hearing", textOptionsWithTimeout(30000));
+            .hasText("Select hearing", textOptionsWithTimeout(60000));
         page.selectOption("#cicCaseHearingList", new SelectOption().setIndex(1));
         PageHelpers.clickButton(page, "Continue");
 

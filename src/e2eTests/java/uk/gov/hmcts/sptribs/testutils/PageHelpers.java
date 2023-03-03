@@ -28,6 +28,10 @@ public class PageHelpers {
         return new Page.WaitForFunctionOptions().setTimeout(timeout);
     }
 
+    public static Locator.ClickOptions clickOptionsWithTimeout(int timeout) {
+        return new Locator.ClickOptions().setTimeout(timeout);
+    }
+
     public static Page.GetByRoleOptions getRoleOptions(String buttonText) {
         return new Page.GetByRoleOptions().setName(buttonText);
     }
