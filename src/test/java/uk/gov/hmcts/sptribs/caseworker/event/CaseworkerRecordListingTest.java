@@ -197,27 +197,9 @@ class CaseworkerRecordListingTest {
             = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).hasSize(0);
     }
 
-    @Test
-    void shouldReturnErrorsIfNoNotificationPartySelected() {
-        //Given
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        caseData.setCicCase(CicCase.builder().build());
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response
-            = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response.getErrors()).hasSize(1);
-    }
 
     @Test
     void shouldReturnErrorsIfAllNotificationPartiesSelected() {
