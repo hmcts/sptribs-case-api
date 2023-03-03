@@ -533,6 +533,8 @@ task installChromium(type: JavaExec) {
   args = ['install', 'chromium']
 }
 
+tasks.cftlibTest.dependsOn(installChromium)
+
 task installBrowser(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
   main = 'com.microsoft.playwright.CLI'
