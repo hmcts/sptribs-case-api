@@ -89,3 +89,5 @@ toggle:
 feature:
   contact-parties:
     enabled: ${CONTACT_PARTIES_FEATURE:false}
+  link-case:
+    enabled: ${LINK_CASE_FEATURE:false}

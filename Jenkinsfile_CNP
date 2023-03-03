@@ -275,13 +275,11 @@ def generateDefinitions() {
 }
 
 def setFeatureFlags(environment) {
-  if (environment =~ /preview/) {
+  if (environment =~ /preview|demo|perftest/) {
     env.CONTACT_PARTIES_FEATURE = true
-  } else if (environment =~ /demo/) {
-    env.CONTACT_PARTIES_FEATURE = true
-  } else if (environment =~ /perftest/) {
-    env.CONTACT_PARTIES_FEATURE = true
+    env.LINK_CASE_FEATURE = true
   } else if (environment =~ /aat|prod/) {
     env.CONTACT_PARTIES_FEATURE = false
+    env.LINK_CASE_FEATURE = false
   }
 }
