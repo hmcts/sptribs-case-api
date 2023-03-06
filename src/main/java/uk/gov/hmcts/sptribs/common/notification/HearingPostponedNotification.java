@@ -78,16 +78,14 @@ public class HearingPostponedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.HEARING_POSTPONED_EMAIL);
-        notificationService.setNotificationRequest(request);
-        return notificationService.sendEmail();
+        return notificationService.sendEmail(request);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.HEARING_POSTPONED_POST);
-        notificationService.setNotificationRequest(letterRequest);
-        return notificationService.sendLetter();
+        return notificationService.sendLetter(letterRequest);
     }
 
 }

@@ -33,7 +33,7 @@ public class CaseIssuedNotificationTest {
     private CaseIssuedNotification caseIssuedNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifySubjectOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -44,9 +44,7 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -62,13 +60,11 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifyApplicantOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -80,13 +76,11 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithPost() throws IOException {
+    void shouldNotifyApplicantOfCaseIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -99,13 +93,11 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -117,13 +109,11 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() throws IOException {
+    void shouldNotifyRepresentativeOfCaseIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -136,13 +126,11 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
@@ -153,9 +141,7 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {
