@@ -101,14 +101,12 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             uploadedDocuments,
             templateVars,
             emailTemplateName);
-        notificationService.setNotificationRequest(request);
-        return notificationService.sendEmail();
+        return notificationService.sendEmail(request);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName letterTemplateName) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter, letterTemplateName);
-        notificationService.setNotificationRequest(letterRequest);
-        return notificationService.sendLetter();
+        return notificationService.sendLetter(letterRequest);
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {
