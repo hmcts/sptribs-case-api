@@ -30,6 +30,8 @@ public final class TestEventConstants {
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
     public static final String CASEWORKER_POSTPONE_HEARING = "caseworker-postpone-hearing";
     public static final String TEST_CHANGE_STATE = "change-state";
+    public static final String CHANGE_SECURITY_CLASS = "change-security-class";
+
 
     private TestEventConstants() {
     }

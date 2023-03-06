@@ -158,6 +158,29 @@ public class TestDataHelper {
             .builder()
             .forename("testFname")
             .surname("testSname")
+            .roles(List.of(""))
+            .build();
+
+        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+    }
+
+    public static User getUserWithHmctsJudiciary() {
+        UserDetails userDetails = UserDetails
+            .builder()
+            .forename("testFname")
+            .surname("testSname")
+            .roles(List.of("hmcts-judiciary"))
+            .build();
+
+        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+    }
+
+    public static User getUserWithSeniorJudge() {
+        UserDetails userDetails = UserDetails
+            .builder()
+            .forename("testFname")
+            .surname("testSname")
+            .roles(List.of("senior-judge"))
             .build();
 
         return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
@@ -206,7 +229,7 @@ public class TestDataHelper {
         return list;
     }
 
-    public static  DynamicList getDynamicList() {
+    public static DynamicList getDynamicList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("0")
@@ -219,7 +242,7 @@ public class TestDataHelper {
             .build();
     }
 
-    public static  DynamicList getMockedRegionData() {
+    public static DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("1-region")
@@ -234,7 +257,7 @@ public class TestDataHelper {
     }
 
 
-    public static  DynamicList getMockedHearingVenueData() {
+    public static DynamicList getMockedHearingVenueData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label("courtname-courtAddress")
