@@ -88,16 +88,14 @@ public class CaseStayedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.CASE_STAYED_EMAIL);
-        notificationService.setNotificationRequest(request);
-        return notificationService.sendEmail();
+        return notificationService.sendEmail(request);
     }
 
     private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.CASE_STAYED_POST);
-        notificationService.setNotificationRequest(letterRequest);
-        notificationService.sendLetter();
+        notificationService.sendLetter(letterRequest);
     }
 
     private void addCaseStayTemplateVars(CaseStay caseStay, Map<String, Object> templateVars) {
