@@ -16,28 +16,8 @@ public class IssueCaseAdditionalDocument implements CcdPageConfiguration {
             .label("LabelSelectAdditionalDocument", "")
             .complex(CaseData::getCaseIssue)
             .mandatory(CaseIssue::getAdditionalDocument)
-            .label("tribunalDocuments", """
-                        * Application Form
-                        * First decision
-                        * Application for review
-                        * Review decision
-                        * Notice of Appeal
-                        * Evidence/correspondence from the Appellant
-                        * Correspondence from the CICA
-                """, "issueCaseAdditionalDocumentCONTAINS  \"Tribunal form\"")
-            .label("applicantEvidenceDocuments", """
-                            * Police evidence
-                            * GP records
-                            * Hospital records
-                            * Mental Health records
-                            * Expert evidence
-                            * Other medical records
-                            * Application for an extension of time
-                            * Application for a postponement
-                            * Submission from appellant
-                            * Submission from respondent
-                            * Other
-                """, "issueCaseAdditionalDocumentCONTAINS  \"Applicant evidence\"")
+            .mandatory(CaseIssue::getTribunalDocuments, "issueCaseAdditionalDocumentCONTAINS  \"Tribunal form\"")
+            .mandatory(CaseIssue::getApplicationEvidences, "issueCaseAdditionalDocumentCONTAINS  \"Applicant evidence\"")
             .done();
     }
 
