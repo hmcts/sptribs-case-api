@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -71,21 +72,21 @@ public class RecordListHelper {
 
     public boolean checkNullCondition(CicCase cicCase) {
         return null != cicCase
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartySubject())
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(cicCase.getRecordNotifyPartyRespondent());
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent());
     }
 
     public void getNotificationParties(CaseData caseData) {
         Set<NotificationParties> partiesSet = new HashSet<>();
 
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartySubject())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             partiesSet.add(NotificationParties.REPRESENTATIVE);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getRecordNotifyPartyRespondent())) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
 
@@ -143,5 +144,19 @@ public class RecordListHelper {
             recordListing.setHearingVenueNameAndAddress(recordListing.getReadOnlyHearingVenueName());
         }
         return recordListing;
+    }
+
+    public void saveSummary(CaseData caseData) {
+        caseData.getHearingSummary().setHearingFormat(caseData.getRecordListing().getHearingFormat());
+        caseData.getHearingSummary().setHearingType(caseData.getRecordListing().getHearingType());
+        caseData.getHearingSummary().setSubjectName(caseData.getCicCase().getFullName());
+        caseData.setCurrentEvent("");
+        if (null != caseData.getRecordListing()
+            && null != caseData.getRecordListing().getNumberOfDays()
+            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
+            caseData.getRecordListing().setAdditionalHearingDate(null);
+        }
+
+        caseData.setRecordListing(checkAndUpdateVenueInformationSummary(caseData.getRecordListing()));
     }
 }

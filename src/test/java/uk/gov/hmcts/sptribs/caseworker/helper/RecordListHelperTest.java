@@ -6,8 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -21,15 +20,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedHearingVenueData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedRegionData;
 
 @ExtendWith(MockitoExtension.class)
 class RecordListHelperTest {
@@ -98,17 +97,17 @@ class RecordListHelperTest {
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
 
-        cicCase.setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        cicCase.setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        cicCase.setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        cicCase.setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        cicCase.setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        cicCase.setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
         caseData.setCicCase(cicCase);
 
         recordListHelper.checkNullCondition(cicCase);
         recordListHelper.getErrorMsg(cicCase);
 
-        assertThat(caseData.getCicCase().getRecordNotifyPartySubject()).isNotNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRepresentative()).isNotNull();
-        assertThat(caseData.getCicCase().getRecordNotifyPartyRespondent()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartySubject()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).isNotNull();
+        assertThat(caseData.getCicCase().getNotifyPartyRespondent()).isNotNull();
     }
 
 
@@ -117,9 +116,9 @@ class RecordListHelperTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
 
-        caseData.getCicCase().setRecordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        caseData.getCicCase().setRecordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        caseData.getCicCase().setRecordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
+        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -177,33 +176,21 @@ class RecordListHelperTest {
         assertThat(result.getHearingVenueNameAndAddress()).isNotNull();
     }
 
-    private DynamicList getMockedRegionData() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("1-region")
-            .code(UUID.randomUUID())
+    @Test
+    void shouldSuccessfullySaveSummary() {
+        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        RecordListing listing = RecordListing.builder()
+            .readOnlyHearingVenueName("name-address")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(venueNotListedOption)
             .build();
+        HearingSummary summary = HearingSummary.builder().hearingFormat(listing.getHearingFormat()).build();
+        CaseData data = caseData();
+        caseData().setHearingSummary(summary);
+        caseData().setRecordListing(listing);
+        recordListHelper.saveSummary(data);
 
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
+        assertThat(data).isNotNull();
     }
-
-
-    private DynamicList getMockedHearingVenueData() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("courtname-courtAddress")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
-
 
 }

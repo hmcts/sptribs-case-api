@@ -19,6 +19,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.util.ArrayList;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_AMEND_DUE_DATE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -36,10 +38,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
-    @Autowired
-    private OrderService orderService;
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
+
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -53,6 +56,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::orderDatesManaged)
+                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
 
@@ -76,8 +80,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     ) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
-        String selectedDraft = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
-        String id = getId(selectedDraft);
+        String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
+        String id = getId(selectedOrder);
         var orderList = caseData.getCicCase().getOrderList();
         Order order = new Order();
         for (int i = 0; i < orderList.size(); i++) {
@@ -88,7 +92,9 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 break;
             }
         }
+
         caseData.getCicCase().setOrderList(orderList);
+        cicCase.setOrderDueDates(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)

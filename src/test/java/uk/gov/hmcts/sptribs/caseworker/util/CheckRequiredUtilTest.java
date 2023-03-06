@@ -105,65 +105,6 @@ public class CheckRequiredUtilTest {
     }
 
     @Test
-    void shouldSuccessfullyCheckNullFlagSubjectRepresentativeApplicant() {
-        //Given
-        final CaseData caseData = new CaseData();
-        final CicCase cicCase = new CicCase();
-        caseData.setCicCase(cicCase);
-
-        //When
-        boolean result = CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant(caseData);
-
-        //Then
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void shouldSuccessfullyCheckNullFlagSubjectRepresentativeApplicantWithRepresentative() {
-        //Given
-        final CaseData caseData = new CaseData();
-        final CicCase cicCase = new CicCase();
-        cicCase.setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
-        caseData.setCicCase(cicCase);
-
-        //When
-        boolean result = CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant(caseData);
-
-        //Then
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void shouldSuccessfullyCheckNullFlagSubjectRepresentativeApplicantWithSubject() {
-        //Given
-        final CaseData caseData = new CaseData();
-        final CicCase cicCase = new CicCase();
-        cicCase.setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        caseData.setCicCase(cicCase);
-
-        //When
-        boolean result = CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant(caseData);
-
-        //Then
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void shouldSuccessfullyCheckNullFlagSubjectRepresentativeApplicantWithApplicant() {
-        //Given
-        final CaseData caseData = new CaseData();
-        final CicCase cicCase = new CicCase();
-        cicCase.setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
-        caseData.setCicCase(cicCase);
-
-        //When
-        boolean result = CheckRequiredUtil.checkNullFlagSubjectRepresentativeApplicant(caseData);
-
-        //Then
-        assertThat(result).isFalse();
-    }
-
-    @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithApplicant() {
         //Given
         final CaseData caseData = new CaseData();
@@ -265,17 +206,5 @@ public class CheckRequiredUtilTest {
         assertThat(result).isFalse();
     }
 
-    @Test
-    void shouldSuccessfullyCheckNullRecordSubjectRepresentativeApplicant() {
-        //Given
-        final CaseData caseData = new CaseData();
-        final CicCase cicCase = new CicCase();
-        caseData.setCicCase(cicCase);
 
-        //When
-        boolean result = CheckRequiredUtil.checkNullRecordSubjectRepresentativeRespondent(caseData);
-
-        //Then
-        assertThat(result).isTrue();
-    }
 }

@@ -80,7 +80,7 @@ public class RecordListing {
     private Set<VenueNotListed> venueNotListedOption;
 
     @CCD(
-        label = "Venue name and address",
+        label = "Hearing Venue",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String hearingVenueNameAndAddress;
@@ -173,6 +173,10 @@ public class RecordListing {
     )
     private String recordListingChangeReason;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private String hearingSummaryExists = "YES";
 
     @JsonIgnore
     public String getSelectedRegionVal() {

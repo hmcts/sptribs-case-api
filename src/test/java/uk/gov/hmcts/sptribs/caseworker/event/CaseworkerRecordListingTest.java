@@ -76,9 +76,9 @@ class CaseworkerRecordListingTest {
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
         final CicCase cicCase = CicCase.builder()
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -126,10 +126,12 @@ class CaseworkerRecordListingTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse recordResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         verifyNoInteractions(listingCreatedNotification);
+        assertThat(recordResponse).isNotNull();
+        assertThat(response).isNotNull();
     }
 
     @Test
@@ -195,35 +197,17 @@ class CaseworkerRecordListingTest {
             = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).hasSize(0);
     }
 
-    @Test
-    void shouldReturnErrorsIfNoNotificationPartySelected() {
-        //Given
-        final CaseData caseData = CaseData.builder().build();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        caseData.setCicCase(CicCase.builder().build());
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response
-            = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response.getErrors()).hasSize(1);
-    }
 
     @Test
     void shouldReturnErrorsIfAllNotificationPartiesSelected() {
         //Given
         final CicCase cicCase = CicCase.builder()
-            .recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -245,9 +229,9 @@ class CaseworkerRecordListingTest {
     }
 
     private CicCase getMockCicCase() {
-        return CicCase.builder().fullName("fullName").recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .representativeFullName("repFullName").recordNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .respondentName("respName").recordNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        return CicCase.builder().fullName("fullName").notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .representativeFullName("repFullName").notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .respondentName("respName").notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
     }
 
 

@@ -21,10 +21,9 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderMainContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -51,12 +50,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CaseData {
 
 
+    @JsonUnwrapped(prefix = "orderContent")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DraftOrderMainContentCIC draftOrderMainContentCIC = new DraftOrderMainContentCIC();
-
+    private DraftOrderContentCIC draftOrderContentCIC = new DraftOrderContentCIC();
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -99,6 +98,12 @@ public class CaseData {
     private State caseStatus;
 
     @CCD(
+        label = "Hearing Status",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingState hearingStatus;
+
+    @CCD(
         label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -136,10 +141,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
-    @JsonUnwrapped(prefix = "link")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private LinkCase linkCase = new LinkCase();
 
     @JsonUnwrapped(prefix = "record")
     @Builder.Default
@@ -209,18 +210,10 @@ public class CaseData {
     private String decisionSignature;
 
     @CCD(
-        label = "Enter text in the box below. This will be added into the centre of the generated decision document",
         access = {CaseworkerAndSuperUserAccess.class},
         typeOverride = TextArea
     )
     private String decisionMainContent;
-
-
-    @CCD(
-        label = "Order signature",
-        access = {CaseworkerAndSuperUserAccess.class}
-    )
-    private String orderSignature;
 
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
@@ -244,6 +237,11 @@ public class CaseData {
         label = "Close Case",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CloseCase closeCase = new CloseCase();
+
+    @JsonUnwrapped(prefix = "dssCaseData")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private DssCaseData dssCaseData = new DssCaseData();
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

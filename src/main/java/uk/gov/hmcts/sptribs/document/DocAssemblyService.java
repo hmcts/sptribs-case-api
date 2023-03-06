@@ -16,6 +16,10 @@ import java.util.Map;
 @Service
 @Slf4j
 public class DocAssemblyService {
+
+    private static final String CASE_TYPE = "CriminalInjuriesCompensation";
+    private static final String JURISDICTION = "ST_CIC";
+
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
 
@@ -43,6 +47,9 @@ public class DocAssemblyService {
                 .builder()
                 .templateId(templateName)
                 .outputType("PDF")
+                .secureDocStoreEnabled(true)
+                .caseTypeId(CASE_TYPE)
+                .jurisdictionId(JURISDICTION)
                 .formPayload(objectMapper.valueToTree(templateContent))
                 .build();
 

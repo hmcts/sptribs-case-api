@@ -25,7 +25,7 @@ public class RecordNotifyPartiesTest {
     void shouldBeSuccessfulForValidRecipients() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder().recordNotifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
+        final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
 
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)

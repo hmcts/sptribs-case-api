@@ -47,6 +47,8 @@ public class DocAssemblyServiceTest {
     private static final String DOC_STORE_BASE_URL_PATH = "http://localhost:4200/assets/";
     private static final String BINARY = "/binary";
     private static final String DRAFT_APPLICATION_FILENAME = "draft-divorce-application-1616591401473378.pdf";
+    private static final String CASE_TYPE = "CriminalInjuriesCompensation";
+    private static final String JURISDICTION = "ST_CIC";
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -77,6 +79,9 @@ public class DocAssemblyServiceTest {
                 .builder()
                 .templateId(ENGLISH_TEMPLATE_ID)
                 .outputType("PDF")
+                .secureDocStoreEnabled(true)
+                .caseTypeId(CASE_TYPE)
+                .jurisdictionId(JURISDICTION)
                 .formPayload(objectMapper.valueToTree(caseDataMap))
                 .build();
 
@@ -142,6 +147,9 @@ public class DocAssemblyServiceTest {
                 .builder()
                 .templateId(ENGLISH_TEMPLATE_ID)
                 .outputType("PDF")
+                .secureDocStoreEnabled(true)
+                .caseTypeId(CASE_TYPE)
+                .jurisdictionId(JURISDICTION)
                 .formPayload(objectMapper.valueToTree(caseDataMap))
                 .build();
 

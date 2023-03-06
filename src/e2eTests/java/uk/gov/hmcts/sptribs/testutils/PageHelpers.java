@@ -3,12 +3,17 @@ package uk.gov.hmcts.sptribs.testutils;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
-import uk.gov.hmcts.sptribs.e2e.Base;
 
-public class PageHelpers extends Base {
+public class PageHelpers {
+    private PageHelpers() {
+    }
 
     public static Page.WaitForSelectorOptions selectorOptionsWithTimeout(int timeout) {
         return new Page.WaitForSelectorOptions().setTimeout(timeout);
+    }
+
+    public static Page.WaitForLoadStateOptions loadStateOptionsWithTimeout(int timeout) {
+        return new Page.WaitForLoadStateOptions().setTimeout(timeout);
     }
 
     public static Page.SelectOptionOptions selectOptionWithTimeout(int timeout) {
@@ -23,31 +28,47 @@ public class PageHelpers extends Base {
         return new Page.WaitForFunctionOptions().setTimeout(timeout);
     }
 
-    public static void clickButton(String buttonText) {
+    public static Locator.ClickOptions clickOptionsWithTimeout(int timeout) {
+        return new Locator.ClickOptions().setTimeout(timeout);
+    }
+
+    public static Page.GetByRoleOptions getRoleOptions(String buttonText) {
+        return new Page.GetByRoleOptions().setName(buttonText);
+    }
+
+    public static void clickButton(Page page, String buttonText) {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(buttonText)).click();
     }
 
-    public static Locator getButtonByText(String buttonText) {
+    public static Locator getButtonByText(Page page, String buttonText) {
         return page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(buttonText));
     }
 
-    public static Locator getRadioButtonByLabel(String label) {
+    public static Locator getRadioButtonByLabel(Page page, String label) {
         return page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName(label));
     }
 
-    public static Locator getListBoxByLabel(String label) {
+    public static Locator getListBoxByLabel(Page page, String label) {
         return page.getByRole(AriaRole.LISTBOX, new Page.GetByRoleOptions().setName(label));
     }
 
-    public static Locator getCheckBoxByLabel(String label) {
+    public static Locator getCheckBoxByLabel(Page page, String label) {
         return page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName(label));
     }
 
-    public static Locator getTextBoxByLabel(String label) {
+    public static Locator getTabByText(Page page, String tabName) {
+        return page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName(tabName));
+    }
+
+    public static Locator getTextBoxByLabel(Page page, String label) {
         return page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName(label));
     }
 
-    public static void clickLink(String linkText) {
+    public static String getValueFromTableFor(Page page, String rowHeader) {
+        return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
+    }
+
+    public static void clickLink(Page page, String linkText) {
         page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(linkText)).click();
     }
 }
