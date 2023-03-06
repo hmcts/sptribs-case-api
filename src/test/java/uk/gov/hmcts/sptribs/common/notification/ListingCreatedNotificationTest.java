@@ -35,7 +35,7 @@ public class ListingCreatedNotificationTest {
     private ListingCreatedNotification listingCreatedNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifySubjectOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -46,13 +46,11 @@ public class ListingCreatedNotificationTest {
         listingCreatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail_withFullRecordListing() throws IOException {
+    void shouldNotifySubjectOfCaseIssuedWithEmail_withFullRecordListing() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -71,9 +69,7 @@ public class ListingCreatedNotificationTest {
         listingCreatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -89,14 +85,12 @@ public class ListingCreatedNotificationTest {
         listingCreatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -108,13 +102,11 @@ public class ListingCreatedNotificationTest {
         listingCreatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() throws IOException {
+    void shouldNotifyRepresentativeOfCaseIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -127,13 +119,11 @@ public class ListingCreatedNotificationTest {
         listingCreatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() throws IOException {
+    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
@@ -144,9 +134,7 @@ public class ListingCreatedNotificationTest {
         listingCreatedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {

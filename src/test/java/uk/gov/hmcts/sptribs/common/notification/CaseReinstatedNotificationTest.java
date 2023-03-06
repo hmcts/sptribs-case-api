@@ -53,9 +53,7 @@ class CaseReinstatedNotificationTest {
         reinstatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -75,9 +73,7 @@ class CaseReinstatedNotificationTest {
         reinstatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
@@ -96,9 +92,7 @@ class CaseReinstatedNotificationTest {
         reinstatedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -118,9 +112,7 @@ class CaseReinstatedNotificationTest {
         reinstatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -141,9 +133,7 @@ class CaseReinstatedNotificationTest {
         reinstatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(null);
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {

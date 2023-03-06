@@ -41,8 +41,7 @@ public class NewOrderIssuedNotificationTest {
     @Test
     void shouldNotifySubjectWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
 
@@ -58,15 +57,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifySubjectWithEmailWithNoUploadedDocument() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
 
@@ -82,15 +79,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifySubjectWithEmailThrowsException() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -107,15 +102,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifySubjectWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -128,16 +121,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifyRespondentWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
 
@@ -152,16 +142,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifyRespondentWithEmailWithException() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
@@ -177,15 +164,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifyRepresentativeWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -203,16 +188,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifyRepresentativeWithEmailWithException() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
@@ -230,15 +212,13 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
     void shouldNotifyRepresentativeWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
+        final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
@@ -251,12 +231,10 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(null);
     }
 
-    private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
+    private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();

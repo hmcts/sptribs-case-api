@@ -70,8 +70,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -101,8 +100,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -133,8 +131,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -159,9 +156,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
@@ -186,8 +181,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -216,12 +210,11 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() throws IOException {
+    void shouldNotifyRepresentativeWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -249,9 +242,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -283,8 +274,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -303,9 +293,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {
