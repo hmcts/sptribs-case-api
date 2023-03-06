@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -19,10 +21,20 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@Setter
 public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, UserRole> {
+
+    @Value("${feature.case-flags.enabled}")
+    private boolean caseFlagsEnabled;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (caseFlagsEnabled) {
+            doConfigure(configBuilder);
+        }
+    }
+
+    public void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_MANAGE_CASE_FLAG)
             .forStates(POST_SUBMISSION_STATES)
