@@ -87,39 +87,8 @@ public class DecisionIssuedNotificationTest {
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
+            .decisionDocument(List.of())
             .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
-        data.setCaseIssueDecision(caseIssueDecision);
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        decisionIssuedNotification.sendToSubject(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
-    void shouldNotifySubjectWithEmailThrowsException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
-
-        final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
-            .documentEmailContent("content")
-            .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
-            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
-            .build();
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
