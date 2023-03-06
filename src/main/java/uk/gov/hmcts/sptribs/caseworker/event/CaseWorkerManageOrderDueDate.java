@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -11,11 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrders;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+
+import java.util.ArrayList;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_AMEND_DUE_DATE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
@@ -37,6 +41,9 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
 
+    @Autowired
+    private OrderService orderService;
+
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
@@ -49,6 +56,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::orderDatesManaged)
+                .showEventNotes()
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
 
@@ -58,8 +66,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList draftOrderDynamicList = caseData.getCicCase().getDraftOrderDynamicList();
-        caseData.getCicCase().setOrderDynamicList(draftOrderDynamicList);
+        DynamicList orderDynamicList = orderService.getOrderDynamicList(details);
+        caseData.getCicCase().setOrderDynamicList(orderDynamicList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -72,8 +80,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     ) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
-        String selectedDraft = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
-        String id = getId(selectedDraft);
+        String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
+        String id = getId(selectedOrder);
         var orderList = caseData.getCicCase().getOrderList();
         Order order = new Order();
         for (int i = 0; i < orderList.size(); i++) {
@@ -84,7 +92,9 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 break;
             }
         }
+
         caseData.getCicCase().setOrderList(orderList);
+        cicCase.setOrderDueDates(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)

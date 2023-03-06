@@ -104,11 +104,11 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .pageLabel("Document footer")
             .label("LabelDocFooter",
                 """
+                 Decision Notice Signature
 
-                    Decision Notice Signature
-                    Confirm the Role and Surname of the person who made this decision - this will be added"
-                                        + " to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
-                    """)
+                 Confirm the Role and Surname of the person who made this decision - this will be added
+                  to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
+                 """)
             .pageShowConditions(issueDecisionShowConditions())
             .mandatory(CaseData::getDecisionSignature)
             .done();

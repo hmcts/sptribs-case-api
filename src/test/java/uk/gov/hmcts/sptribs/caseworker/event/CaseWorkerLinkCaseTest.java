@@ -10,9 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCase;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
@@ -32,6 +32,7 @@ class CaseWorkerLinkCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
+        caseWorkerLinkCase.setLinkCaseEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -44,26 +45,43 @@ class CaseWorkerLinkCaseTest {
     }
 
     @Test
-    void shouldSuccessfullyCaseLinked() {
+    void shouldNotConfigureLinkCaseIfFeatureFlagFalse() {
         //Given
-        final CaseData caseData = caseData();
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        //When
+        caseWorkerLinkCase.configure(configBuilder);
+
+        //Then
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .doesNotContain(CASEWORKER_LINK_CASE);
+    }
+
+    @Test
+    void shouldAdd2LinksToCase() {
+        //Given
+        CicCase cicCase = CicCase.builder()
+            .linkCaseNumber(new CaseLink())
+            .linkCaseReason(LinkCaseReason.CASE_CONSOLIDATED)
+            .build();
+        CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        LinkCase caseLink = new LinkCase();
-        caseLink.setLinkCaseReason(LinkCaseReason.CASE_CONSOLIDATED);
-        caseLink.setCaseNumber(new CaseLink());
-        caseData.setLinkCase(caseLink);
-
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse submitted = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response2 =
+            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getLinkCase()).isNotNull();
-        assertThat(stayedResponse).isNotNull();
+        assertThat(response1).isNotNull();
+        assertThat(response2).isNotNull();
+        assertThat(submitted).isNotNull();
     }
 }

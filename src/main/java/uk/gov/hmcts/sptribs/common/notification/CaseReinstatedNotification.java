@@ -79,16 +79,14 @@ public class CaseReinstatedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.CASE_REINSTATED_EMAIL);
-        notificationService.setNotificationRequest(request);
-        return notificationService.sendEmail();
+        return notificationService.sendEmail(request);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.CASE_REINSTATED_POST);
-        notificationService.setNotificationRequest(letterRequest);
-        return notificationService.sendLetter();
+        return notificationService.sendLetter(letterRequest);
     }
 
     private void addCaseReInstateTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {

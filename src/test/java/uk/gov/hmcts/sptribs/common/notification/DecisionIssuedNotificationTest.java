@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -70,8 +69,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -89,7 +87,7 @@ public class DecisionIssuedNotificationTest {
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
+            .decisionDocument(List.of())
             .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
@@ -101,40 +99,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
-    }
-
-    @Test
-    void shouldNotifySubjectWithEmailThrowsException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
-
-        final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
-            .documentEmailContent("content")
-            .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
-            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
-            .build();
-        data.setCaseIssueDecision(caseIssueDecision);
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        decisionIssuedNotification.sendToSubject(data, "CN1");
-
-        //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -159,9 +124,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
@@ -186,8 +149,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -216,12 +178,11 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() throws IOException {
+    void shouldNotifyRepresentativeWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -249,9 +210,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -283,8 +242,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -303,9 +261,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {

@@ -12,6 +12,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
+
 
 public class ManageSelectOrders implements CcdPageConfiguration {
 
@@ -33,10 +35,10 @@ public class ManageSelectOrders implements CcdPageConfiguration {
         final CicCase cicCase = data.getCicCase();
         final List<String> errors = new ArrayList<>();
         String selectedOrder = data.getCicCase().getOrderDynamicList().getValue().getLabel();
-
+        String id = getId(selectedOrder);
         var orderList = data.getCicCase().getOrderList();
         for (int i = 0; i < orderList.size(); i++) {
-            if (selectedOrder.equals(orderList.get(i).getId())) {
+            if (null != id && id.equals(orderList.get(i).getId())) {
                 cicCase.setOrderDueDates(orderList.get(i).getValue().getDueDateList());
                 break;
             }

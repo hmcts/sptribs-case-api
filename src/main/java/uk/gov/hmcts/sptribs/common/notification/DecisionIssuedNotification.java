@@ -98,16 +98,14 @@ public class DecisionIssuedNotification implements PartiesNotification {
             uploadedDocumentIds,
             templateVars,
             TemplateName.DECISION_ISSUED_EMAIL);
-        notificationService.setNotificationRequest(emailRequest);
-        return notificationService.sendEmail();
+        return notificationService.sendEmail(emailRequest);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.DECISION_ISSUED_POST);
-        notificationService.setNotificationRequest(letterRequest);
-        return notificationService.sendLetter();
+        return notificationService.sendLetter(letterRequest);
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {

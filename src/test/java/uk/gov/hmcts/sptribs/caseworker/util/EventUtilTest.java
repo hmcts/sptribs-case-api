@@ -3,15 +3,20 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -277,4 +282,18 @@ public class EventUtilTest {
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
 
     }
+
+    @Test
+    void shouldSuccessfullyGetPanelMembers() {
+        //Given
+        final DynamicList list = TestDataHelper.getDynamicList();
+
+        //When
+        List<ListValue<PanelMember>> result = EventUtil.getPanelMembers(list);
+
+        //Then
+        assertThat(result).isNotNull();
+
+    }
+
 }
