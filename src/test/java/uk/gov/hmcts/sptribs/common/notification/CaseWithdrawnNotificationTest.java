@@ -50,9 +50,7 @@ public class CaseWithdrawnNotificationTest {
         caseWithdrawnNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -70,9 +68,7 @@ public class CaseWithdrawnNotificationTest {
         caseWithdrawnNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
@@ -90,9 +86,7 @@ public class CaseWithdrawnNotificationTest {
         caseWithdrawnNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -110,9 +104,7 @@ public class CaseWithdrawnNotificationTest {
         caseWithdrawnNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -131,9 +123,7 @@ public class CaseWithdrawnNotificationTest {
         caseWithdrawnNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {
