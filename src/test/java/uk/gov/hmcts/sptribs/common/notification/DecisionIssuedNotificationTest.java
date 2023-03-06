@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;

@@ -133,7 +133,7 @@ class CaseReinstatedNotificationTest {
         reinstatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(null);
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {

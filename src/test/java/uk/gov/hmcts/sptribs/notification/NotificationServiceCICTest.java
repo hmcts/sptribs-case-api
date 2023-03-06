@@ -91,7 +91,7 @@ public class NotificationServiceCICTest {
         uploadedDocuments.put("FinalDecisionNotice", templateId);
         uploadedDocuments.put("FinalDecisionNotice1", "");
         uploadedDocuments.put("DocumentAvailable1", "no");
-        NotificationRequest request = NotificationRequest.builder()
+        final NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
@@ -142,7 +142,7 @@ public class NotificationServiceCICTest {
 
         Map<String, String> uplodedDocuments = new HashMap<>();
         uplodedDocuments.put("FinalDecisionNotice", templateId);
-        NotificationRequest request = NotificationRequest.builder()
+        final NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
@@ -186,7 +186,7 @@ public class NotificationServiceCICTest {
         //Given
         String templateId = UUID.randomUUID().toString();
         Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
-        NotificationRequest request = NotificationRequest.builder()
+        final NotificationRequest request = NotificationRequest.builder()
             .template(CASE_ISSUED_CITIZEN_POST)
             .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
             .build();

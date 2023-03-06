@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -231,7 +230,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(null);
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {
