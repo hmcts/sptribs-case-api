@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
@@ -32,7 +33,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.Bundle;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -42,7 +42,6 @@ import java.util.List;
 import static java.lang.String.format;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -200,10 +199,9 @@ public class CaseData {
 
     @CCD(
         label = "Case file view",
-        typeOverride = ComponentLauncher
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private ComponentLauncher componentLauncher;
+    private ComponentLauncher caseFileView1;
 
     @CCD(
         label = "Event",

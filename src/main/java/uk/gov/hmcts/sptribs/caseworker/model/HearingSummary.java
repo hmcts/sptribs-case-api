@@ -112,6 +112,7 @@ public class HearingSummary {
         label = "Upload the recording of the hearing",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
+        //categoryID = "C",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<CICDocument>> recordingUpload;

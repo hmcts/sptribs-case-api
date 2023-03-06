@@ -54,6 +54,7 @@ public class CaseIssueFinalDecision {
         label = "Decision notice documents",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
+        //categoryID = "B",
         access = {DefaultAccess.class}
     )
     private List<ListValue<CICDocument>> documents;

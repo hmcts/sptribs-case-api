@@ -471,6 +471,7 @@ public class CicCase {
         label = "Case Documents",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
+       // categoryID = "A",
         access = {DefaultAccess.class}
     )
     private List<ListValue<CICDocument>> applicantDocumentsUploaded;

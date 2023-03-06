@@ -26,11 +26,11 @@ public final class EventConstants {
     public static final String CASEWORKER_AMEND_DUE_DATE = "caseworker-amend-due-date";
     public static final String CASEWORKER_POSTPONE_HEARING = "caseworker-postpone-hearing";
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
+    public static final String CASEWORKER_CASE_FILE_VIEW = "caseworker-case-file-view";
     public static final String CASEWORKER_REMOVE_STAY = "caseworker-remove-stay";
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     public static final String CASEWORKER_STAY_THE_CASE = "caseworker-stay-the-case";
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
-    public static final String CASEWORKER_CASE_FILE_VIEW = "caseworker-case-file-view";
     public static final String TEST_CHANGE_STATE = "change-state";
 
     private EventConstants() {

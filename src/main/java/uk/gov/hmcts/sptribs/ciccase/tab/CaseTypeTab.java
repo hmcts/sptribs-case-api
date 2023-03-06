@@ -28,8 +28,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("caseFile", "Case File")
-            .field(CaseData::getComponentLauncher, null, "#ARGUMENT(CaseFileView)");
+        configBuilder.tab("caseFileView", "Case file view")
+            .field(CaseData::getCaseFileView1, null, "#ARGUMENT(CaseFileView)");
     }
 
 
@@ -42,6 +42,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
             .field(CaseData::getHyphenatedCaseRef)
+            .field("stayStayReason")
             .field("cicCaseIsRepresentativePresent")
             .label("representativeDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
             .field("cicCaseIsRepresentativeQualified")
