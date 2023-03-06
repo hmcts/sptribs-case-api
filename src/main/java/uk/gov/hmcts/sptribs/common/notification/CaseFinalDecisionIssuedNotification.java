@@ -70,7 +70,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
                 uploadedDocuments,
                 TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsRepresentative);
+            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             notificationResponse = sendLetterNotification(templateVarsRepresentative,
                 TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
         }
