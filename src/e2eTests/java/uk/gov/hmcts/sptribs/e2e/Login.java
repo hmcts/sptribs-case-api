@@ -28,7 +28,7 @@ public class Login {
             page.locator("button[name=\"hide-accepted\"]").click();
         }
         enterCredentialsAndClickSignIn(user);
-        if (page.isVisible("h1:has-text(\"Sign in or create an account\")")) {
+        if (page.locator("h1:has-text(\"Sign in or create an account\")").count() > 0) {
             enterCredentialsAndClickSignIn(user);
         }
         page.waitForURL(BASE_URL + "/cases", urlOptionsWithTimeout(120000));

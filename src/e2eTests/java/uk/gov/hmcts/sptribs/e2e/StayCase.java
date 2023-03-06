@@ -12,12 +12,11 @@ import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTim
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class StayCase extends Base {
-    private Page page;
 
     @Test
     @Order(1)
     public void caseWorkerShouldBeAbleToAddStayToCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -29,7 +28,7 @@ public class StayCase extends Base {
     @Order(2)
     @Test
     public void caseWorkerShouldBeAbleEditStayToCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -60,7 +59,7 @@ public class StayCase extends Base {
     @Order(3)
     @Test
     public void caseworkerShouldBeAbleToRemoveStayCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);

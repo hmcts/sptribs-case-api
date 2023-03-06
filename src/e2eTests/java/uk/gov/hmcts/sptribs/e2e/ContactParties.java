@@ -11,12 +11,10 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class ContactParties extends Base {
 
-    private Page page;
-
     @Test
     @Order(1)
     public void caseWorkerShouldBeAbleToConnectContactParties() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);

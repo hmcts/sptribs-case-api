@@ -144,10 +144,11 @@ task e2eTests(type: Test) {
     // Configuration parameters to execute top-level classes in parallel but methods in same thread
     'junit.jupiter.execution.parallel.enabled': 'true',
     'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.mode.classes.default': 'concurrent',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'BASE_URL', 'http://localhost:3000'
   environment 'BROWSER', 'chromium'
 }
 
@@ -552,8 +553,11 @@ task installBrowser(type: JavaExec) {
 
 tasks.e2eTests.dependsOn(installBrowser)
 
+def E2E_MAX_PARALLEL_FORKS = 2
+def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
+
 tasks.withType(Test).configureEach {
-  maxParallelForks = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
+  maxParallelForks = name.toLowerCase().contains("e2etests") ? E2E_MAX_PARALLEL_FORKS : MAX_PARALLEL_FORKS
 }
 
 // exclude the logback binding is coming in via cftlib

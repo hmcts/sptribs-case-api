@@ -4,6 +4,11 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.sptribs.e2e.Base.BASE_URL;
+
 public class PageHelpers {
     private PageHelpers() {
     }
@@ -66,6 +71,15 @@ public class PageHelpers {
 
     public static String getValueFromTableFor(Page page, String rowHeader) {
         return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
+    }
+
+//    public static List<String> getValuesFromTableFor(Page page, String rowHeader) {
+//        List<Locator> locators = (List<Locator>) (page.locator("th:has-text(\"" + rowHeader + "\") + td"));
+//        return locators.stream().map(locator -> locator.textContent()).collect(Collectors.toList());
+//    }
+
+    public static String getCaseUrl(String caseNumber) {
+        return BASE_URL + "/cases/case-details/" + caseNumber.replace("-", "") + "#History";
     }
 
     public static void clickLink(Page page, String linkText) {

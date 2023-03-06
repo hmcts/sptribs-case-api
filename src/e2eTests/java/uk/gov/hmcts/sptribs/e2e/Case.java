@@ -55,7 +55,7 @@ public class Case {
         page.selectOption("#cc-jurisdiction", new SelectOption().setLabel("CIC"));
         page.selectOption("#cc-case-type", new SelectOption().setLabel("CIC"));
         page.selectOption("#cc-event", new SelectOption().setLabel("Create Case"));
-        page.locator("ccd-create-case-filters button[type='submit']").click();
+//        page.locator("ccd-create-case-filters button[type='submit']").click();
         clickButton(page, "Start");
 
         // Select case categories

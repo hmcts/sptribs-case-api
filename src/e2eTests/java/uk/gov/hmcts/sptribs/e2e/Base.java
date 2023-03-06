@@ -12,10 +12,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.parallel.*;
 
 import static java.lang.System.getenv;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@Execution()
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class Base {
     private Playwright playwright;
@@ -28,7 +30,7 @@ public abstract class Base {
 
     private BrowserContext context;
 
-    protected static String BASE_URL;
+    public static String BASE_URL;
     protected static final String AAT_URL = "https://manage-case.aat.platform.hmcts.net";
 
     @BeforeAll

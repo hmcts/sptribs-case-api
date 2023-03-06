@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.e2e;
 
-
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
@@ -16,12 +15,11 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 
 public class CloseCase extends Base {
-    private Page page;
 
     @Test
     @Order(1)
     public void caseworkerShouldAbleToCloseTheCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -58,7 +56,7 @@ public class CloseCase extends Base {
 
     @Test
     public void caseworkerShouldAbleToReinstateCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);

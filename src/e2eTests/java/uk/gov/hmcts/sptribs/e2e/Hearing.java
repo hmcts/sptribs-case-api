@@ -13,10 +13,11 @@ import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
- import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
- import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
- import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
- import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 
 public class Hearing {
     private Page page;
@@ -89,14 +90,7 @@ public class Hearing {
         clickButton(page, "Continue");
 
         // Fill Notify parties form
-        assertThat(page.locator("h1"))
-            .hasText("Notify parties", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Subject").check();
-        if (page.isVisible("#cicCaseNotifyPartyRepresentative-RepresentativeCIC")) {
-            getCheckBoxByLabel(page, "Representative").check();
-        }
-        getCheckBoxByLabel(page, "Respondent").check();
-        clickButton(page, "Continue");
+        fillNotifyPartiesForm();
 
         // Check your answers form
         assertThat(page.locator("h2.heading-h2"))
@@ -119,10 +113,7 @@ public class Hearing {
         newCase.startNextStepAction("Hearings: Create summary");
 
         // Fill Select hearing form
-        assertThat(page.locator("h1"))
-            .hasText("Select hearing", textOptionsWithTimeout(60000));
-        page.selectOption("#cicCaseHearingList", new SelectOption().setIndex(1));
-        PageHelpers.clickButton(page, "Continue");
+        selectHearing();
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -180,5 +171,162 @@ public class Hearing {
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals("Awaiting outcome", newCase.getCaseStatus());
+    }
+
+    public void editHearingSummary() {
+        Case newCase = new Case(page);
+        newCase.startNextStepAction("Hearings: Edit summary");
+
+        // Fill Select hearing form
+//        selectHearing();
+
+        // Fill hearing type and format form
+        assertThat(page.locator("h1"))
+            .hasText("Hearing type and format", textOptionsWithTimeout(30000));
+        assertThat(getRadioButtonByLabel(page, "Case management")).isChecked();
+        assertThat(getRadioButtonByLabel(page, "Face to Face")).isChecked();
+        getRadioButtonByLabel(page, "Final").click();
+        getRadioButtonByLabel(page, "Hybrid").click();
+        PageHelpers.clickButton(page, "Continue");
+
+        // Fill Hearing location and duration form
+        assertThat(page.locator("h1"))
+            .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
+        PageHelpers.clickButton(page, "Continue");
+
+        // Fill Hearing attendees form
+        assertThat(page.locator("h1"))
+            .hasText("Hearing attendees", textOptionsWithTimeout(30000));
+        page.selectOption("#hearingSummaryJudge", new SelectOption().setLabel("Chetan Lad"));
+        getRadioButtonByLabel(page, "Yes").click();
+        page.selectOption("#hearingSummaryPanelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        getRadioButtonByLabel(page, "Observer").click();
+        PageHelpers.clickButton(page, "Continue");
+
+        // Fill Hearing attendees second form
+        assertThat(page.locator("h1"))
+            .hasText("Hearing attendees", textOptionsWithTimeout(30000));
+        getCheckBoxByLabel(page, "Appellant").first().check();
+        getCheckBoxByLabel(page, "Observer").check();
+        getCheckBoxByLabel(page, "Other").check();
+        getTextBoxByLabel(page, "Who was this other attendee?").fill("Special officer");
+        PageHelpers.clickButton(page, "Continue");
+
+        // Fill Hearing outcome form
+        assertThat(page.locator("h1"))
+            .hasText("Hearing outcome", textOptionsWithTimeout(30000));
+        getRadioButtonByLabel(page, "Adjourned").click();
+        PageHelpers.clickButton(page, "Continue");
+
+        // Fill Upload hearing recording form
+        assertThat(page.locator("h1"))
+            .hasText("Upload hearing recording", textOptionsWithTimeout(30000));
+        getTextBoxByLabel(page, "Where can the recording be found? (Optional)").fill("http://localhost:3000");
+        PageHelpers.clickButton(page, "Continue");
+
+        // Check your answers form
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+
+        // Hearing created confirmation screen
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Hearing summary edited", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Awaiting outcome", newCase.getCaseStatus());
+    }
+
+    public void cancelHearing() {
+        Case newCase = new Case(page);
+        newCase.startNextStepAction("Hearings: Cancel hearing");
+
+        // Fill Select hearing form
+        selectHearing();
+
+        // Fill Reasons for cancellation form
+        assertThat(page.locator("h1"))
+            .hasText("Reasons for cancellation", textOptionsWithTimeout(30000));
+        getRadioButtonByLabel(page, "Incomplete Panel").click();
+        getTextBoxByLabel(page, "Enter any other important information about this cancellation (Optional)")
+            .fill("Lorem Ipsum is simply dummy text of the printing and typesetting industry");
+        clickButton(page, "Continue");
+
+        // Fill Notify parties form
+        fillNotifyPartiesForm();
+
+        // Check your answers form
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+//        String postponeReason = getValueFromTableFor(page, "Why was the hearing cancelled?");
+//        Assertions.assertEquals("Incomplete Panel", postponeReason);
+        clickButton(page, "Save and continue");
+
+        // Hearing created confirmation screen
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Hearing cancelled", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+    }
+
+    public void postponeHearing() {
+        Case newCase = new Case(page);
+        newCase.startNextStepAction("Hearings: Postpone hearing");
+
+        // Fill Select hearing form
+        selectHearing();
+
+        // Fill Reasons for postponement form
+        assertThat(page.locator("h1"))
+            .hasText("Reasons for postponement", textOptionsWithTimeout(30000));
+        getRadioButtonByLabel(page, "Appellant not ready to proceed").click();
+        getTextBoxByLabel(page, "Enter any other important information about this postponement (Optional)")
+            .fill("Lorem Ipsum is simply dummy text of the printing and typesetting industry");
+        clickButton(page, "Continue");
+
+        // Fill Notify parties form
+        fillNotifyPartiesForm();
+
+        // Check your answers form
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+        String postponeReason = getValueFromTableFor(page, "Why was the hearing postponed?");
+        Assertions.assertEquals("Appellant not ready to proceed", postponeReason);
+        clickButton(page, "Save and continue");
+
+        // Hearing postponed confirmation screen
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Hearing Postponed", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+    }
+
+    private void selectHearing() {
+        assertThat(page.locator("h1"))
+            .hasText("Select hearing", textOptionsWithTimeout(60000));
+        page.selectOption("#cicCaseHearingList", new SelectOption().setIndex(1));
+        PageHelpers.clickButton(page, "Continue");
+    }
+
+    private void fillNotifyPartiesForm() {
+        assertThat(page.locator("h1"))
+            .hasText("Notify parties", textOptionsWithTimeout(30000));
+        getCheckBoxByLabel(page, "Subject").check();
+        if (page.isVisible("#cicCaseNotifyPartyRepresentative-RepresentativeCIC")) {
+            getCheckBoxByLabel(page, "Representative").check();
+        }
+        getCheckBoxByLabel(page, "Respondent").check();
+        clickButton(page, "Continue");
     }
 }

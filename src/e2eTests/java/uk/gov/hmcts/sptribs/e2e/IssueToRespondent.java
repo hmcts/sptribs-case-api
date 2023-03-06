@@ -11,11 +11,10 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 
 public class IssueToRespondent extends Base {
-    private Page page;
 
     @Test
     public void caseWorkerShouldAbleToManageIssueToRespondent() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);

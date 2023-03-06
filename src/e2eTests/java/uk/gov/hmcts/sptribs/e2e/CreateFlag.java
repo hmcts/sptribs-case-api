@@ -12,11 +12,10 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 
 public class CreateFlag extends Base {
-    private Page page;
 
     @Test
     public void caseWorkerShouldBeAbleToCreateACaseFlag() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -27,7 +26,7 @@ public class CreateFlag extends Base {
 
     @Test
     public void caseWorkerShouldAbleToDoManageFlags() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
