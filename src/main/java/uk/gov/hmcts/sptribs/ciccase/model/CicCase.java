@@ -118,6 +118,11 @@ public class CicCase {
     )
     private DynamicList hearingList;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList hearingSummaryList;
+
 
     @CCD(
         typeOverride = MultiSelectList,
