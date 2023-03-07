@@ -12,8 +12,8 @@ properties([
 @Library("Infrastructure")
 
 def type = "java"
-def product = "sptribs-case-api"
-def component = "spring-boot-template"
+def product = "sptribs"
+def component = "case-api"
 
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aatservice.core-compute-aat.internal"

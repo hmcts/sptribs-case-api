@@ -35,8 +35,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 @Slf4j
 public class NotificationServiceCIC {
 
-    private NotificationRequest notificationRequest;
-
     @Autowired
     private NotificationClient notificationClient;
 
@@ -55,7 +53,7 @@ public class NotificationServiceCIC {
     @Autowired
     private CaseDocumentClient caseDocumentClient;
 
-    public NotificationResponse sendEmail() {
+    public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
         SendEmailResponse sendEmailResponse;
         String destinationAddress = notificationRequest.getDestinationAddress();
         TemplateName template = notificationRequest.getTemplate();
@@ -103,7 +101,7 @@ public class NotificationServiceCIC {
         }
     }
 
-    public NotificationResponse sendLetter() {
+    public NotificationResponse sendLetter(NotificationRequest notificationRequest) {
         TemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
@@ -134,10 +132,6 @@ public class NotificationServiceCIC {
             );
             throw new NotificationException(notificationClientException);
         }
-    }
-
-    public void setNotificationRequest(NotificationRequest notificationRequest) {
-        this.notificationRequest = notificationRequest;
     }
 
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
