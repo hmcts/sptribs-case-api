@@ -12,7 +12,6 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 
 public class CreateFlag extends Base {
-    private Page page;
 
     @Test
     public void caseWorkerShouldBeAbleToCreateACaseFlag() {

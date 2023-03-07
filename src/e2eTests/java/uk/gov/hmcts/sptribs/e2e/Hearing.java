@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -20,7 +19,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 
 public class Hearing {
-    private Page page;
+    private final Page page;
 
     public Hearing(Page page) {
         this.page = page;
@@ -38,8 +37,8 @@ public class Hearing {
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
             .hasText("Hearing type and format", textOptionsWithTimeout(60000));
-        page.getByLabel("Case management").check();
-        page.getByLabel("Face to Face").check();
+        getRadioButtonByLabel(page, "Case management").check();
+        getRadioButtonByLabel(page, "Face to Face").check();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Region data form
@@ -53,8 +52,7 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase())
-            .collect(Collectors.toList());
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
@@ -100,6 +98,91 @@ public class Hearing {
         // Hearing created confirmation screen
         assertThat(page.locator("ccd-markdown markdown h1"))
             .hasText("Listing record created", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals("Awaiting hearing", newCase.getCaseStatus());
+    }
+
+    public void editListing(String... args) {
+        Case newCase = new Case(page);
+        newCase.startNextStepAction("Hearings: Edit listing");
+
+        // Fill hearing type and format form
+        assertThat(page.locator("h1"))
+            .hasText("Hearing type and format", textOptionsWithTimeout(60000));
+        assertThat(getRadioButtonByLabel(page, "Case management")).isChecked();
+        assertThat(getRadioButtonByLabel(page, "Face to Face")).isChecked();
+        getRadioButtonByLabel(page, "Interlocutory").check();
+        getRadioButtonByLabel(page,"Video").check();
+        PageHelpers.clickButton(page, "Continue");
+
+        // Fill Region data form
+        assertThat(page.locator("h1"))
+            .hasText("Region Data", textOptionsWithTimeout(30000));
+        page.selectOption("#recordRegionList", new SelectOption().setLabel("1-London"));
+        PageHelpers.clickButton(page, "Continue");
+
+        // Fill Hearing location and duration form
+        assertThat(page.locator("h1"))
+            .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
+
+        List<String> options = Arrays.stream(args)
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
+        if (options.contains("entervenue")) {
+            getCheckBoxByLabel(page, "Venue not listed").check();
+            getTextBoxByLabel(page, "Hearing Venue").last()
+                .fill("Hendon Magistrates Court, The Court House, The Hyde");
+        } else {
+            page.selectOption("#recordHearingVenues",
+                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+        }
+        getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
+        getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
+            .fill("Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry");
+        Calendar date = DateHelpers.getFutureDate(45);
+        getTextBoxByLabel(page, "Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
+        getTextBoxByLabel(page, "Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
+        getTextBoxByLabel(page, "Year").fill(String.valueOf(date.get(Calendar.YEAR)));
+        getTextBoxByLabel(page, "Start time (24hr format)").fill("10:10");
+        getRadioButtonByLabel(page, "Morning").click();
+        getRadioButtonByLabel(page, "No").last().click();
+        clickButton(page, "Continue");
+
+        // Fill Remote hearing information form
+        assertThat(page.locator("h1"))
+            .hasText("Remote hearing information", textOptionsWithTimeout(30000));
+        getTextBoxByLabel(page, "Video call link (Optional)").fill("http://localhost:3001");
+        getTextBoxByLabel(page, "Conference call number (Optional)").fill("01762534634");
+        clickButton(page, "Continue");
+
+        // Fill Other information form
+        assertThat(page.locator("h1"))
+            .hasText("Other information", textOptionsWithTimeout(30000));
+        getTextBoxByLabel(page, "Other important information (Optional)")
+            .fill("Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry");
+        clickButton(page, "Continue");
+
+        // Fill Reason for listing change screen
+        assertThat(page.locator("h1"))
+            .hasText("Reason for listing change", textOptionsWithTimeout(30000));
+        getTextBoxByLabel(page, "Why is this listing record being changed?")
+            .fill("Listing record is being changed for testing purpose");
+        clickButton(page, "Continue");
+
+        // Fill Notify parties form
+        fillNotifyPartiesForm();
+
+        // Check your answers form
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+
+        // Hearing created confirmation screen
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Listing record updated", textOptionsWithTimeout(60000));
         clickButton(page, "Close and Return to case details");
 
         // Case details screen
@@ -176,9 +259,6 @@ public class Hearing {
     public void editHearingSummary() {
         Case newCase = new Case(page);
         newCase.startNextStepAction("Hearings: Edit summary");
-
-        // Fill Select hearing form
-//        selectHearing();
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -261,8 +341,8 @@ public class Hearing {
         // Check your answers form
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
-//        String postponeReason = getValueFromTableFor(page, "Why was the hearing cancelled?");
-//        Assertions.assertEquals("Incomplete Panel", postponeReason);
+        // String cancelReason = getValueFromTableFor(page, "Why was the hearing cancelled?");
+        // Assertions.assertEquals("Incomplete Panel", cancelReason);
         clickButton(page, "Save and continue");
 
         // Hearing created confirmation screen

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.options.*;
+import com.microsoft.playwright.options.LoadState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -13,8 +13,31 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.loadStateOptionsWithTimeout;
 
-public class HearingJourneys extends Base {
+public class HearingJourneyTests extends Base {
     private String caseNumber;
+
+    @Test
+    public void caseWorkerShouldBeAbleToEditListingAndViewDetailsInHearingTab() {
+        Page page = getPage();
+        Login login = new Login(page);
+        login.loginAsStTest1User();
+
+        Case newCase = new Case(page);
+        caseNumber = newCase.createCase("representative");
+        newCase.buildCase();
+
+        Hearing hearing = new Hearing(page);
+        hearing.createListing();
+        hearing.editListing();
+        getTabByText(page, "Hearings").click();
+        assertThat(page.locator("h4").first()).hasText("Listing details");
+        String hearingStatus = PageHelpers.getValueFromTableFor(page, "Hearing Status");
+        Assertions.assertEquals("Listed", hearingStatus);
+        String hearingType = PageHelpers.getValueFromTableFor(page, "Hearing type");
+        Assertions.assertEquals("Interlocutory", hearingType);
+        String hearingFormat = PageHelpers.getValueFromTableFor(page, "Hearing format");
+        Assertions.assertEquals("Video", hearingFormat);
+    }
 
     @Test
     @Order(1)
@@ -76,7 +99,7 @@ public class HearingJourneys extends Base {
         Assertions.assertEquals("Special officer", otherAttendee);
     }
 
-//    @Test
+    @Test
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         Login login = new Login(page);
@@ -102,7 +125,7 @@ public class HearingJourneys extends Base {
         Assertions.assertEquals("Appellant not ready to proceed", postponeReason);
     }
 
-//    @Test
+    @Test
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         Login login = new Login(page);

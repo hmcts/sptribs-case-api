@@ -15,7 +15,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTime
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.urlOptionsWithTimeout;
 
 public class Login {
-    private Page page;
+    private final Page page;
 
     public Login(Page page) {
         this.page = page;
@@ -28,9 +28,6 @@ public class Login {
             page.locator("button[name=\"hide-accepted\"]").click();
         }
         enterCredentialsAndClickSignIn(user);
-        if (page.locator("h1:has-text(\"Sign in or create an account\")").count() > 0) {
-            enterCredentialsAndClickSignIn(user);
-        }
         page.waitForURL(BASE_URL + "/cases", urlOptionsWithTimeout(120000));
         assertThat(page.locator("h1"))
             .hasText("Case list", textOptionsWithTimeout(90000));
@@ -48,14 +45,15 @@ public class Login {
     }
 
     private void enterCredentialsAndClickSignIn(String user) {
-        getTextBoxByLabel(page, "Email address").clear();
-        getTextBoxByLabel(page, "Email address").fill(user);
-        getTextBoxByLabel(page, "Password").clear();
-        getTextBoxByLabel(page, "Password").fill("Pa55w0rd11");
-        page.locator("input:has-text(\"Sign in\")")
-            .click(clickOptionsWithTimeout(120000));
-        page.waitForLoadState(LoadState.DOMCONTENTLOADED,loadStateOptionsWithTimeout(120000));
-        page.waitForSelector("h1", selectorOptionsWithTimeout(120000));
+        int i = 0;
+        while (page.locator("h1:has-text(\"Sign in or create an account\")").count() > 0 && i < 5) {
+            getTextBoxByLabel(page, "Email address").fill(user);
+            getTextBoxByLabel(page, "Password").fill("Pa55w0rd11");
+            page.locator("input:has-text(\"Sign in\")").click(clickOptionsWithTimeout(120000));
+            page.waitForLoadState(LoadState.DOMCONTENTLOADED, loadStateOptionsWithTimeout(120000));
+            page.waitForSelector("h1", selectorOptionsWithTimeout(120000));
+            i++;
+        }
     }
 
     public void loginAsStTest1User() {

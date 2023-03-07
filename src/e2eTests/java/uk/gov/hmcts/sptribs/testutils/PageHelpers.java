@@ -1,13 +1,14 @@
 package uk.gov.hmcts.sptribs.testutils;
 
+import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static uk.gov.hmcts.sptribs.e2e.Base.BASE_URL;
+
+ import java.util.List;
+ import java.util.stream.Collectors;
 
 public class PageHelpers {
     private PageHelpers() {
@@ -73,10 +74,19 @@ public class PageHelpers {
         return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
     }
 
-//    public static List<String> getValuesFromTableFor(Page page, String rowHeader) {
-//        List<Locator> locators = (List<Locator>) (page.locator("th:has-text(\"" + rowHeader + "\") + td"));
-//        return locators.stream().map(locator -> locator.textContent()).collect(Collectors.toList());
-//    }
+    public static String getCaseStatus(Page page) {
+        return page.locator("th:has-text(\"EndState\") + td").textContent();
+    }
+
+    // public static List<String> getValuesFromTableFor(Page page, String rowHeader) {
+    //    List<Locator> locators = (List<Locator>) (page.locator("th:has-text(\"" + rowHeader + "\") + td"));
+    //    return locators.stream().map(locator -> locator.textContent()).collect(Collectors.toList());
+    // }
+
+    public static List<String> getListOfNextStepActions(Page page) {
+        List<ElementHandle> elements = page.querySelectorAll("#next-step option");
+        return elements.stream().map(ElementHandle::textContent).collect(Collectors.toList());
+    }
 
     public static String getCaseUrl(String caseNumber) {
         return BASE_URL + "/cases/case-details/" + caseNumber.replace("-", "") + "#History";

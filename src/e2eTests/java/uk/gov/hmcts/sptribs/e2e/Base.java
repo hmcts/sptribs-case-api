@@ -12,12 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.parallel.*;
 
 import static java.lang.System.getenv;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//@Execution()
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class Base {
     private Playwright playwright;
@@ -38,7 +36,7 @@ public abstract class Base {
         playwright = Playwright.create();
 
         var launchOptions = getenv("CI") == null
-            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(100)
+            ? new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(100)
             : new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(100);
 
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
@@ -58,7 +56,7 @@ public abstract class Base {
 
     @BeforeEach
     void createContextAndPage() {
-        if (getenv("BROWSER").toLowerCase() == "firefox") {
+        if (getenv("BROWSER").equalsIgnoreCase("firefox")) {
             Browser.NewContextOptions newContextOptions = new Browser.NewContextOptions();
             newContextOptions.ignoreHTTPSErrors = true;
             context = browser.newContext(newContextOptions);

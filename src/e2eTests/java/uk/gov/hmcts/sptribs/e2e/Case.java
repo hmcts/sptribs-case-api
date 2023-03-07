@@ -11,7 +11,6 @@ import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -27,7 +26,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTime
 
 public class Case {
 
-    private Page page;
+    private final Page page;
 
     public Case(Page page) {
         this.page = page;
@@ -55,7 +54,6 @@ public class Case {
         page.selectOption("#cc-jurisdiction", new SelectOption().setLabel("CIC"));
         page.selectOption("#cc-case-type", new SelectOption().setLabel("CIC"));
         page.selectOption("#cc-event", new SelectOption().setLabel("Create Case"));
-//        page.locator("ccd-create-case-filters button[type='submit']").click();
         clickButton(page, "Start");
 
         // Select case categories
@@ -79,7 +77,7 @@ public class Case {
             .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
         getCheckBoxByLabel(page, "Subject").first().check();
 
-        List<String> options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
+        List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
         if (options.contains("representative")) {
             getCheckBoxByLabel(page, "Representative").check();
         }
@@ -218,8 +216,7 @@ public class Case {
     public String getCaseStatus() {
         getTabByText(page, "State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
-        String caseStatus = page.locator("h4").textContent().split(":")[1].trim();
-        return caseStatus;
+        return page.locator("h4").textContent().split(":")[1].trim();
     }
 
     public void startNextStepAction(String actionName) {
