@@ -70,7 +70,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
                 uploadedDocuments,
                 TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsRepresentative);
+            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             notificationResponse = sendLetterNotification(templateVarsRepresentative,
                 TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
         }
@@ -101,14 +101,12 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             uploadedDocuments,
             templateVars,
             emailTemplateName);
-        notificationService.setNotificationRequest(request);
-        return notificationService.sendEmail();
+        return notificationService.sendEmail(request);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName letterTemplateName) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter, letterTemplateName);
-        notificationService.setNotificationRequest(letterRequest);
-        return notificationService.sendLetter();
+        return notificationService.sendLetter(letterRequest);
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {

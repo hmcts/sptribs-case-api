@@ -20,4 +20,19 @@ public class CaseIssue {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<AdditionalDocument> additionalDocument;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "ApplicationEvidence",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<ApplicationEvidence> applicationEvidences;
+
+    @CCD(
+        label = "Choose the additional documentation that should be sent to the respondent",
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "TribunalDocuments",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<TribunalDocuments> tribunalDocuments;
 }

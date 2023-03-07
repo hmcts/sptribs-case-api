@@ -19,6 +19,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.util.ArrayList;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_AMEND_DUE_DATE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -90,7 +92,9 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 break;
             }
         }
+
         caseData.getCicCase().setOrderList(orderList);
+        cicCase.setOrderDueDates(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)

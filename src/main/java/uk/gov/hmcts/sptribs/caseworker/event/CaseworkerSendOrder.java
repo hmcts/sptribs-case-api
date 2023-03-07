@@ -174,6 +174,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
             caseData.getCicCase().setDraftOrderCICList(draftList);
         }
+        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
