@@ -21,7 +21,7 @@ plugins {
   id 'idea'
   id 'pmd'
   id 'jacoco'
-  id 'org.owasp.dependencycheck' version '8.0.2'
+  id 'org.owasp.dependencycheck' version '8.1.2'
   id 'org.sonarqube' version '4.0.0.2929'
   id 'io.spring.dependency-management' version '1.1.0'
   id 'org.springframework.boot' version '2.7.5'
@@ -333,13 +333,13 @@ dependencies {
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.1.1'
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.0.1'
-  implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.14'
+  implementation group: 'com.github.hmcts', name: 'send-letter-client', version: '3.0.16'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.3'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.20.0'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.69'
-  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.5'
+  implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.7'
   implementation group: 'org.elasticsearch', name: 'elasticsearch'
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.14'
@@ -351,7 +351,7 @@ dependencies {
   implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.0'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.4'
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.0-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.1-RELEASE'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.0.5'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
 
@@ -375,11 +375,11 @@ dependencies {
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.1.4'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.1.1'
-  testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '11.10'
+  testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '12.2'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.3.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.30.0'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.31.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -396,7 +396,7 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.30.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.31.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:1.9.1'
 }
 
