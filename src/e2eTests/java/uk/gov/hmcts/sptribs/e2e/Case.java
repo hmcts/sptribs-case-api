@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.Actions.CreateDraft;
+import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.containsTextOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -27,7 +29,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTime
 
 public class Case {
 
-    private Page page;
+    private final Page page;
 
     public Case(Page page) {
         this.page = page;
@@ -218,8 +220,7 @@ public class Case {
     public String getCaseStatus() {
         getTabByText(page, "State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
-        String caseStatus = page.locator("h4").textContent().split(":")[1].trim();
-        return caseStatus;
+        return page.locator("h4").textContent().split(":")[1].trim();
     }
 
     public void startNextStepAction(String actionName) {
@@ -230,6 +231,10 @@ public class Case {
             "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
         page.locator("label:has-text(\"Next step\")").click();
         clickButton(page, "Go");
+    }
+
+    public void startNextStepAction(Actions actionName) {
+        startNextStepAction(actionName.label);
     }
 
     public void addStayToCase() {
@@ -324,5 +329,45 @@ public class Case {
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals("Case closed", getCaseStatus());
+    }
+
+    public boolean testChangeStateTo(CaseState state) {
+        startNextStepAction("Test change state");
+        assertThat(page.locator("h1")).hasText("Test change state", textOptionsWithTimeout(30000));
+        getRadioButtonByLabel(page, state.label).click();
+        clickButton(page, "Continue");
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("State changed", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        return true;
+    }
+
+    public void createDraft(DraftOrderTemplate cic6GeneralDirections) {
+        startNextStepAction(CreateDraft);
+        page.selectOption("#orderContentOrderTemplate",
+            new SelectOption().setLabel(cic6GeneralDirections.label));
+        clickButton(page, "Continue");
+        getTextBoxByLabel(page, "Main content").type("  +++  This is the main content area");
+        clickButton(page, "Continue");
+        getTextBoxByLabel(page, "Order signature").fill("Tribunal Judge Farrelly");
+        clickButton(page, "Continue");
+        assertThat(page.locator("a.ng-star-inserted").last())
+            .containsText(" Order-[Subject", containsTextOptionsWithTimeout(60000));
+        assertThat(page.locator("a.ng-star-inserted").last())
+            .containsText(".pdf", containsTextOptionsWithTimeout(60000));
+        clickButton(page, "Continue");
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Draft order created.", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        assertThat(page.locator("tr a").first())
+            .hasText(CreateDraft.label, textOptionsWithTimeout(60000));
     }
 }
