@@ -164,6 +164,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Listing details", "recordHearingType!=\"\"", "#### Listing details")
+            .field("hearingStatus")
             .field("recordHearingType")
             .field("recordHearingFormat")
             .field("recordHearingVenueNameAndAddress")

@@ -13,7 +13,7 @@ properties([
 
 def type = "java"
 def product = "sptribs"
-def component = "spring-boot-template"
+def component = "case-api"
 
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aatservice.core-compute-aat.internal"

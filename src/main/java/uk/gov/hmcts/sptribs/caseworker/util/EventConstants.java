@@ -21,7 +21,8 @@ public final class EventConstants {
     public static final String CASEWORKER_ISSUE_CASE = "caseworker-issue-case";
     public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
     public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
-    public static final String CASEWORKER_LINK_CASE = "caseworker-link-case";
+    public static final String CASEWORKER_LINK_CASE = "createCaseLink";
+    public static final String CASEWORKER_MAINTAIN_LINK_CASE = "maintainCaseLink";
     public static final String CASEWORKER_MANAGE_CASE_FLAG = "caseworker-manage-case-flag";
     public static final String CASEWORKER_AMEND_DUE_DATE = "caseworker-amend-due-date";
     public static final String CASEWORKER_POSTPONE_HEARING = "caseworker-postpone-hearing";
@@ -32,6 +33,7 @@ public final class EventConstants {
     public static final String CASEWORKER_STAY_THE_CASE = "caseworker-stay-the-case";
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
     public static final String TEST_CHANGE_STATE = "change-state";
+    public static final String CHANGE_SECURITY_CLASS = "change-security-class";
 
     private EventConstants() {
     }

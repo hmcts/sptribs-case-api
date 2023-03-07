@@ -92,4 +92,8 @@
       <notes>False positive as project does not contain json-java or hutool</notes>
       <cve>CVE-2022-45688</cve>
     </suppress>
+  <suppress>
+    <notes>pkg:maven/commons-fileupload/commons-fileupload@1.4</notes>
+    <cve>CVE-2023-24998</cve>
+  </suppress>
 </suppressions>

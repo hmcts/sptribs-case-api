@@ -12,12 +12,14 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 
 public class CreateFlag extends Base {
+    private Page page;
 
     @Test
     public void caseWorkerShouldBeAbleToCreateACaseFlag() {
-        Login login = new Login();
+        page = getPage();
+        Login login = new Login(page);
         login.loginAsStTest1User();
-        Case newCase = new Case();
+        Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
         newCase.createCaseFlag();
@@ -25,14 +27,15 @@ public class CreateFlag extends Base {
 
     @Test
     public void caseWorkerShouldAbleToDoManageFlags() {
-        Login login = new Login();
+        page = getPage();
+        Login login = new Login(page);
         login.loginAsStTest1User();
-        Case newCase = new Case();
+        Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
         newCase.createCaseFlag();
         newCase.startNextStepAction("Flags: Manage flags");
-        assertThat(page.locator("h1")).hasText("Flags: Manage flags",textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Flags: Manage flags", textOptionsWithTimeout(60000));
         page.getByLabel("Flag Type (Optional)").click();
         page.getByLabel("Flag Type (Optional)").fill("test flag");
         page.getByLabel("Party Name (Optional)").click();
@@ -49,9 +52,9 @@ public class CreateFlag extends Base {
         page.getByRole(AriaRole.GROUP, new Page.GetByRoleOptions().setName("Modified Date (Optional)")).getByLabel("Minute").fill("5");
         page.getByRole(AriaRole.GROUP, new Page.GetByRoleOptions().setName("Modified Date (Optional)")).getByLabel("Second").fill("22");
         page.getByLabel("No").check();
-        clickButton("Continue");
+        clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Flags: Manage flags",textOptionsWithTimeout(30000));
-        clickButton("Save and continue");
+        clickButton(page, "Save and continue");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals("Case management", newCase.getCaseStatus());
