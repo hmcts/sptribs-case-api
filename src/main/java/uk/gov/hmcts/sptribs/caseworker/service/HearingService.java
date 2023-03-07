@@ -4,18 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.UK;
+import static uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil.createDynamicListWithOneElement;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 
@@ -31,17 +27,17 @@ public class HearingService {
                 + data.getRecordListing().getHearingDate().format(dateFormatter)
                 + SPACE
                 + data.getRecordListing().getHearingTime();
-        List<String> hearingDateList = new ArrayList<>();
-        hearingDateList.add(hearingDate);
-        List<DynamicListElement> dynamicListElements = hearingDateList
-            .stream()
-            .sorted()
-            .map(date -> DynamicListElement.builder().label(date).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
 
-        return DynamicList
-            .builder()
-            .listItems(dynamicListElements)
-            .build();
+        return createDynamicListWithOneElement(hearingDate);
+    }
+
+    public DynamicList getHearingSummaryDynamicList(final CaseDetails<CaseData, State> caseDetails) {
+        CaseData data = caseDetails.getData();
+        String hearingSummary =
+            data.getHearingSummary().getHearingType().getLabel()
+                + SPACE + HYPHEN + SPACE
+                + data.getHearingSummary().getHearingFormat();
+
+        return createDynamicListWithOneElement(hearingSummary);
     }
 }

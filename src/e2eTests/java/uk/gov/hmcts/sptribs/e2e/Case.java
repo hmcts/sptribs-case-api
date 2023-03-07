@@ -13,6 +13,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.Actions.CreateDraft;
+import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.containsTextOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -229,6 +231,10 @@ public class Case {
         clickButton(page, "Go");
     }
 
+    public void startNextStepAction(Actions actionName) {
+        startNextStepAction(actionName.label);
+    }
+
     public void addStayToCase() {
         startNextStepAction("Stays: Create/edit stay");
         assertThat(page.locator("h1"))
@@ -321,5 +327,45 @@ public class Case {
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals("Case closed", getCaseStatus());
+    }
+
+    public boolean testChangeStateTo(CaseState state) {
+        startNextStepAction("Test change state");
+        assertThat(page.locator("h1")).hasText("Test change state", textOptionsWithTimeout(30000));
+        getRadioButtonByLabel(page, state.label).click();
+        clickButton(page, "Continue");
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("State changed", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        return true;
+    }
+
+    public void createDraft(DraftOrderTemplate cic6GeneralDirections) {
+        startNextStepAction(CreateDraft);
+        page.selectOption("#orderContentOrderTemplate",
+            new SelectOption().setLabel(cic6GeneralDirections.label));
+        clickButton(page, "Continue");
+        getTextBoxByLabel(page, "Main content").type("  +++  This is the main content area");
+        clickButton(page, "Continue");
+        getTextBoxByLabel(page, "Order signature").fill("Tribunal Judge Farrelly");
+        clickButton(page, "Continue");
+        assertThat(page.locator("a.ng-star-inserted").last())
+            .containsText(" Order-[Subject", containsTextOptionsWithTimeout(60000));
+        assertThat(page.locator("a.ng-star-inserted").last())
+            .containsText(".pdf", containsTextOptionsWithTimeout(60000));
+        clickButton(page, "Continue");
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Draft order created.", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        assertThat(page.locator("tr a").first())
+            .hasText(CreateDraft.label, textOptionsWithTimeout(60000));
     }
 }

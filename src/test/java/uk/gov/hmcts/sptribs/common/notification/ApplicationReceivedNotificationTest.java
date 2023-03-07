@@ -50,9 +50,7 @@ public class ApplicationReceivedNotificationTest {
         applicationReceivedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -73,9 +71,7 @@ public class ApplicationReceivedNotificationTest {
         applicationReceivedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -96,9 +92,7 @@ public class ApplicationReceivedNotificationTest {
         applicationReceivedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
@@ -196,6 +197,13 @@ public class TestDataHelper {
         recordListing.setHearingDate(LocalDate.now());
         recordListing.setHearingTime("10:00");
         return recordListing;
+    }
+
+    public static HearingSummary getHearingSummary() {
+        return HearingSummary.builder()
+            .hearingFormat(HearingFormat.FACE_TO_FACE)
+            .hearingType(HearingType.FINAL)
+            .build();
     }
 
     public static RecordListing getRecordListingWithOneHearingDate() {
