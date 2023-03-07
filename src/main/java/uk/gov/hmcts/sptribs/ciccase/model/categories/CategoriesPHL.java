@@ -16,11 +16,6 @@ public class CategoriesPHL extends PrimaryHealthLists {
     @Override
     public void configure(final ConfigBuilder<PrimaryHealthListsData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
-
-        configBuilder.categories(UserRole.SUPER_USER)
-            .categoryID("A")
-            .categoryLabel("Application (A Docs)")
-            .displayOrder(1)
-            .build();
+        ConfigBuilderHelper.configureCategories(configBuilder);
     }
 }

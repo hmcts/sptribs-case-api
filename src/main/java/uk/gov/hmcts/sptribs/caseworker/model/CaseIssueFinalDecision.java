@@ -41,14 +41,14 @@ public class CaseIssueFinalDecision {
     @CCD(
         label = "Final decision notice preview",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "TD"
+        categoryID = "A"
     )
     private Document finalDecisionDraft;
 
     @CCD(
         label = "Final decision notice preview",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "TD"
+        categoryID = "A"
     )
     private Document finalDecisionGuidance;
 

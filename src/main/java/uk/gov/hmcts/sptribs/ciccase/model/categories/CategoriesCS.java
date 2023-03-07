@@ -16,11 +16,6 @@ public class CategoriesCS extends CareStandards {
     @Override
     public void configure(final ConfigBuilder<CareStandardsData, State, UserRole> configBuilder) {
         ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
-
-        configBuilder.categories(UserRole.SUPER_USER)
-            .categoryID("A")
-            .categoryLabel("Application (A Docs)")
-            .displayOrder(1)
-            .build();
+        ConfigBuilderHelper.configureCategories(configBuilder);
     }
 }

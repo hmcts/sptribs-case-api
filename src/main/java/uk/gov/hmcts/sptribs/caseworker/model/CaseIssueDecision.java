@@ -42,7 +42,7 @@ public class CaseIssueDecision {
     @CCD(
         label = "Decision notice preview",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "TD"
+        categoryID = "A"
     )
     private Document issueDecisionDraft;
 
