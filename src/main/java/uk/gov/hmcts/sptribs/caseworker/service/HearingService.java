@@ -18,8 +18,10 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 @Service
 @Slf4j
 public class HearingService {
+
+    final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+
     public DynamicList getHearingDateDynamicList(final CaseDetails<CaseData, State> caseDetails) {
-        final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         CaseData data = caseDetails.getData();
         String hearingDate =
             data.getRecordListing().getHearingType().getLabel()
@@ -34,9 +36,11 @@ public class HearingService {
     public DynamicList getHearingSummaryDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
         String hearingSummary =
-            data.getHearingSummary().getHearingType().getLabel()
+            data.getRecordListing().getHearingType().getLabel()
                 + SPACE + HYPHEN + SPACE
-                + data.getHearingSummary().getHearingFormat();
+                + data.getRecordListing().getHearingDate().format(dateFormatter)
+                + SPACE
+                + data.getRecordListing().getHearingTime();
 
         return createDynamicListWithOneElement(hearingSummary);
     }
