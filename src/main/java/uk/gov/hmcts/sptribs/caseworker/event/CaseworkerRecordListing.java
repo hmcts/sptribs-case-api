@@ -65,7 +65,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
-            .forStates(CaseManagement, AwaitingHearing)
+            .forStates(CaseManagement)
             .name("Hearings: Create listing")
             .description("Hearings: Create listing")
             .showSummary()
