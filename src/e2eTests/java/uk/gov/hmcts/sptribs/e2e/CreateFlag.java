@@ -1,15 +1,14 @@
 package uk.gov.hmcts.sptribs.e2e;
 
-
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
-
 
 public class CreateFlag extends Base {
 
@@ -56,7 +55,7 @@ public class CreateFlag extends Base {
         clickButton(page, "Save and continue");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 }
 

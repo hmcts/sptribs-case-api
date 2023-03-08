@@ -11,6 +11,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
@@ -103,7 +106,7 @@ public class Hearing {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Awaiting hearing", newCase.getCaseStatus());
+        Assertions.assertEquals(AwaitingHearing.label, newCase.getCaseStatus());
     }
 
     public void editListing(String... args) {
@@ -188,7 +191,7 @@ public class Hearing {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Awaiting hearing", newCase.getCaseStatus());
+        Assertions.assertEquals(AwaitingHearing.label, newCase.getCaseStatus());
     }
 
     public void createHearingSummary() {
@@ -253,12 +256,18 @@ public class Hearing {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Awaiting outcome", newCase.getCaseStatus());
+        Assertions.assertEquals(AwaitingOutcome.label, newCase.getCaseStatus());
     }
 
     public void editHearingSummary() {
         Case newCase = new Case(page);
         newCase.startNextStepAction("Hearings: Edit summary");
+
+        // Fill select hearing form
+        assertThat(page.locator("h1"))
+            .hasText("Select hearing summary", textOptionsWithTimeout(60000));
+        page.selectOption("#cicCaseHearingSummaryList", new SelectOption().setIndex(1));
+        PageHelpers.clickButton(page, "Continue");
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -317,7 +326,7 @@ public class Hearing {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Awaiting outcome", newCase.getCaseStatus());
+        Assertions.assertEquals(AwaitingOutcome.label, newCase.getCaseStatus());
     }
 
     public void cancelHearing() {
@@ -341,8 +350,8 @@ public class Hearing {
         // Check your answers form
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
-        // String cancelReason = getValueFromTableFor(page, "Why was the hearing cancelled?");
-        // Assertions.assertEquals("Incomplete Panel", cancelReason);
+        String cancelReason = getValueFromTableFor(page, "Why was the hearing cancelled?");
+        Assertions.assertEquals("Incomplete Panel", cancelReason);
         clickButton(page, "Save and continue");
 
         // Hearing created confirmation screen
@@ -353,7 +362,7 @@ public class Hearing {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
     public void postponeHearing() {
@@ -389,7 +398,7 @@ public class Hearing {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
     private void selectHearing() {

@@ -9,10 +9,11 @@ import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 import java.util.Calendar;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseClosed;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
-
 
 public class CloseCase extends Base {
 
@@ -51,7 +52,7 @@ public class CloseCase extends Base {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case closed", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseClosed.label, newCase.getCaseStatus());
     }
 
     @Test
@@ -80,7 +81,7 @@ public class CloseCase extends Base {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 }
 

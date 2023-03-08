@@ -14,6 +14,10 @@ import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.Actions.CreateDraft;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseClosed;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseStayed;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.Submitted;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.containsTextOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -24,7 +28,6 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTimeout;
-
 
 public class Case {
 
@@ -110,7 +113,7 @@ public class Case {
         // Fill applicant details form
         if (options.contains("applicant")) {
             assertThat(page.locator("h1"))
-                .hasText("Who is the applicant in this case?", textOptionsWithTimeout(30000));
+                .hasText("Who is the applicant in this case?", textOptionsWithTimeout(60000));
             getTextBoxByLabel(page, "Applicant's full name").fill("Applicant " + StringHelpers.getRandomString(9));
             getTextBoxByLabel(page, "Applicant's phone number").fill("07465730467");
             getTextBoxByLabel(page, "Day").fill("3");
@@ -131,7 +134,7 @@ public class Case {
         // Fill representative details form
         if (options.contains("representative")) {
             assertThat(page.locator("h1"))
-                .hasText("Who is the Representative for this case?", textOptionsWithTimeout(30000));
+                .hasText("Who is the Representative for this case?", textOptionsWithTimeout(60000));
             getTextBoxByLabel(page, "Representative's full name").fill("Representative " + StringHelpers.getRandomString(9));
             getTextBoxByLabel(page, "Organisation or business name (Optional)").fill(StringHelpers.getRandomString(10) + " Limited");
             getTextBoxByLabel(page, "Representative's contact number").fill("07456831774");
@@ -192,7 +195,7 @@ public class Case {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Submitted", getCaseStatus());
+        Assertions.assertEquals(Submitted.label, getCaseStatus());
 
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
         return page.locator("ccd-markdown markdown h3")
@@ -212,7 +215,7 @@ public class Case {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
     }
 
     public String getCaseStatus() {
@@ -258,7 +261,7 @@ public class Case {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
-        assertThat(page.locator("h4")).containsText("Case stayed");
+        assertThat(page.locator("h4")).containsText(CaseStayed.label);
     }
 
     private void fillAddressDetails(String partyType) {
@@ -296,7 +299,7 @@ public class Case {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
     }
 
     public void caseworkerShouldAbleToCloseTheCase() {
@@ -326,7 +329,7 @@ public class Case {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case closed", getCaseStatus());
+        Assertions.assertEquals(CaseClosed.label, getCaseStatus());
     }
 
     public boolean testChangeStateTo(CaseState state) {
@@ -343,10 +346,12 @@ public class Case {
         return true;
     }
 
-    public void createDraft(DraftOrderTemplate cic6GeneralDirections) {
-        startNextStepAction(CreateDraft);
+    public void createDraft(DraftOrderTemplate template) {
+        startNextStepAction(CreateDraft.label);
+        assertThat(page.locator("h1"))
+            .hasText("Create order", textOptionsWithTimeout(60000));
         page.selectOption("#orderContentOrderTemplate",
-            new SelectOption().setLabel(cic6GeneralDirections.label));
+            new SelectOption().setLabel(template.label));
         clickButton(page, "Continue");
         getTextBoxByLabel(page, "Main content").type("  +++  This is the main content area");
         clickButton(page, "Continue");
