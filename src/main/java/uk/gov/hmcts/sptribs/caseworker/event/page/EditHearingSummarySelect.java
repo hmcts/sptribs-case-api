@@ -17,7 +17,7 @@ public class EditHearingSummarySelect implements CcdPageConfiguration {
             .page("editHearingSummarySelect")
             .pageLabel("Select hearing summary")
             .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getHearingSummaryList,"Choose a hearing summarise to edit")
+            .mandatoryWithLabel(CicCase::getHearingSummaryList,"Choose a hearing summary to edit")
             .done();
     }
 
