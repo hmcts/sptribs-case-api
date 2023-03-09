@@ -1,25 +1,25 @@
-package uk.gov.hmcts.sptribs.e2e;
+package uk.gov.hmcts.sptribs.cftlib.action;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
-import uk.gov.hmcts.sptribs.testutils.DateHelpers;
-import uk.gov.hmcts.sptribs.testutils.PageHelpers;
+import uk.gov.hmcts.sptribs.cftlib.util.DateHelpers;
+import uk.gov.hmcts.sptribs.cftlib.util.PageHelpers;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.AwaitingHearing;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.AwaitingOutcome;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
-import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
+import static uk.gov.hmcts.sptribs.cftlib.util.AssertionHelpers.textOptionsWithTimeout;
+import static uk.gov.hmcts.sptribs.cftlib.util.CaseState.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.cftlib.util.CaseState.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.cftlib.util.CaseState.CaseManagement;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getCheckBoxByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getRadioButtonByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getValueFromTableFor;
 
 public class Hearing {
     private final Page page;
@@ -119,7 +119,7 @@ public class Hearing {
         assertThat(getRadioButtonByLabel(page, "Case management")).isChecked();
         assertThat(getRadioButtonByLabel(page, "Face to Face")).isChecked();
         getRadioButtonByLabel(page, "Interlocutory").check();
-        getRadioButtonByLabel(page,"Video").check();
+        getRadioButtonByLabel(page, "Video").check();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Region data form

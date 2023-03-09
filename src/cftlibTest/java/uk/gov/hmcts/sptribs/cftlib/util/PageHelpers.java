@@ -1,10 +1,8 @@
-package uk.gov.hmcts.sptribs.testutils;
+package uk.gov.hmcts.sptribs.cftlib.util;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
-
-import static uk.gov.hmcts.sptribs.e2e.Base.BASE_URL;
 
 public class PageHelpers {
     private PageHelpers() {
@@ -68,14 +66,6 @@ public class PageHelpers {
 
     public static String getValueFromTableFor(Page page, String rowHeader) {
         return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
-    }
-
-    public static String getCaseStatus(Page page) {
-        return page.locator("th:has-text(\"EndState\") + td").textContent();
-    }
-
-    public static String getCaseUrl(String caseNumber) {
-        return BASE_URL + "/cases/case-details/" + caseNumber.replace("-", "") + "#History";
     }
 
     public static void clickLink(Page page, String linkText) {
