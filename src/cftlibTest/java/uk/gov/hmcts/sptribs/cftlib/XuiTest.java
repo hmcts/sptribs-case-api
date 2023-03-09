@@ -30,7 +30,7 @@ public class XuiTest extends CftlibTest {
     void launchBrowser() {
         playwright = Playwright.create();
         var launchOptions = getenv("CI") == null
-            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50)
+            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(2000)
             : new BrowserType.LaunchOptions().setHeadless(true);
 
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER");
