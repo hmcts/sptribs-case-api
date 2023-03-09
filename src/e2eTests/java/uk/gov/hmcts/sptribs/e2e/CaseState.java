@@ -1,9 +1,13 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 public enum CaseState {
-    CaseManagement("Case management"),
+
     AwaitingHearing("Awaiting hearing"),
-    AwaitingOutcome("Awaiting outcome");
+    AwaitingOutcome("Awaiting outcome"),
+    CaseManagement("Case management"),
+    CaseClosed("Case closed"),
+    CaseStayed("Case stayed"),
+    Submitted("Submitted");
 
     public final String label;
 

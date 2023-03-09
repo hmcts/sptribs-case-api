@@ -8,16 +8,16 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseStayed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class StayCase extends Base {
-    private Page page;
 
     @Test
     @Order(1)
     public void caseWorkerShouldBeAbleToAddStayToCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -29,7 +29,7 @@ public class StayCase extends Base {
     @Order(2)
     @Test
     public void caseWorkerShouldBeAbleEditStayToCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -54,13 +54,13 @@ public class StayCase extends Base {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).getByText("State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
-        assertThat(page.locator("h4")).containsText("Case stayed");
+        assertThat(page.locator("h4")).containsText(CaseStayed.label);
     }
 
     @Order(3)
     @Test
     public void caseworkerShouldBeAbleToRemoveStayCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
