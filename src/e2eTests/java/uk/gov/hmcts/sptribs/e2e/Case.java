@@ -34,7 +34,6 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTimeout;
 
-
 public class Case {
 
     public static final String SELECT_A_VALUE = "--Select a value--";
@@ -89,7 +88,7 @@ public class Case {
             .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
         getCheckBoxByLabel(page, "Subject").first().check();
 
-        List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
+        List<String> options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
         if (options.contains("representative")) {
             getCheckBoxByLabel(page, "Representative").check();
         }
@@ -306,7 +305,7 @@ public class Case {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
     }
 
     public void caseworkerShouldAbleToCloseTheCase() {

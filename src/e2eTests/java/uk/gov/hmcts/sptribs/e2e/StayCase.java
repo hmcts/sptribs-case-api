@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseStayed;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseStayed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
