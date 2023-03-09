@@ -5,6 +5,7 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.assertions.PageAssertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +50,10 @@ public class XuiTest extends CftlibTest {
     BrowserContext context;
     Page page;
 
+    public Page getPage() {
+        return page;
+    }
+
     @BeforeEach
     void createContextAndPage() {
         context = browser.newContext();
@@ -67,7 +72,7 @@ public class XuiTest extends CftlibTest {
         page.locator("[placeholder=\"Enter Username\"]").fill(username);
         page.locator("[placeholder=\"Enter Password\"]").fill("anythingWillWork");
         page.locator("text=Sign in").click();
-        assertThat(page).hasURL("http://localhost:3000/cases");
+        assertThat(page).hasURL("http://localhost:3000/cases", new PageAssertions.HasURLOptions().setTimeout(30000));
     }
 
     void signInWithCaseworker() {

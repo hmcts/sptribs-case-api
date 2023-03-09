@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.cftlib;
 
+import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
 import org.junitpioneer.jupiter.RetryingTest;
 import uk.gov.hmcts.sptribs.cftlib.action.Case;
@@ -18,7 +19,7 @@ public class CaseworkerCloseCaseTest extends XuiTest {
     @RetryingTest(maxAttempts = PlaywrightHelpers.RETRIES)
     public void caseworkerShouldAbleToCloseTheCase() {
         signInWithCaseworker();
-
+        Page page = getPage();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();

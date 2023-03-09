@@ -3,7 +3,10 @@ package uk.gov.hmcts.sptribs.cftlib.util;
 import com.microsoft.playwright.assertions.LocatorAssertions;
 
 
-public class AssertionHelpers extends Base {
+public class AssertionHelpers {
+    private AssertionHelpers() {
+
+    }
 
     public static LocatorAssertions.HasTextOptions textOptionsWithTimeout(int timeout) {
         return new LocatorAssertions.HasTextOptions().setTimeout(timeout);
