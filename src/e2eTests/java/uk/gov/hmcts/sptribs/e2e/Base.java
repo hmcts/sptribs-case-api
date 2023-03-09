@@ -28,7 +28,7 @@ public abstract class Base {
 
     private BrowserContext context;
 
-    protected static String BASE_URL;
+    public static String BASE_URL;
     protected static final String AAT_URL = "https://manage-case.aat.platform.hmcts.net";
 
     @BeforeAll
@@ -56,7 +56,7 @@ public abstract class Base {
 
     @BeforeEach
     void createContextAndPage() {
-        if (getenv("BROWSER").toLowerCase() == "firefox") {
+        if (getenv("BROWSER").equalsIgnoreCase("firefox")) {
             Browser.NewContextOptions newContextOptions = new Browser.NewContextOptions();
             newContextOptions.ignoreHTTPSErrors = true;
             context = browser.newContext(newContextOptions);
