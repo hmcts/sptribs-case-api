@@ -4,6 +4,9 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
+import uk.gov.hmcts.sptribs.e2e.enums.Actions;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
+import uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
@@ -14,7 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.Actions.CreateDraft;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.containsTextOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -29,6 +33,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTime
 
 public class Case {
 
+    public static final String SELECT_A_VALUE = "--Select a value--";
     private final Page page;
 
     public Case(Page page) {
@@ -369,5 +374,41 @@ public class Case {
             .hasText("History", textOptionsWithTimeout(60000));
         assertThat(page.locator("tr a").first())
             .hasText(CreateDraft.label, textOptionsWithTimeout(60000));
+    }
+
+    public void sendOrder() {
+        startNextStepAction(SendOrder);
+        getRadioButtonByLabel(page, "Issue and send an existing draft").click();
+        clickButton(page, "Continue");
+        assertThat(page.locator("#cicCaseDraftOrderDynamicList option").first())
+            .hasText(SELECT_A_VALUE);
+        Assertions.assertTrue(page.locator("#cicCaseDraftOrderDynamicList option").count() > 1);
+        String draftName = page.locator("#cicCaseDraftOrderDynamicList option").allTextContents().get(1);
+        page.selectOption("#cicCaseDraftOrderDynamicList", draftName);
+        clickButton(page, "Continue");
+        clickButton(page, "Add new");
+        Calendar date = DateHelpers.getYesterdaysDate();
+        getTextBoxByLabel(page, "Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
+        getTextBoxByLabel(page, "Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
+        getTextBoxByLabel(page, "Year").type(String.valueOf(date.get(Calendar.YEAR)));
+        getTextBoxByLabel(page, "Due Date information (Optional)").type("OPTIONAL Due date information populated by automation framework");
+        getCheckBoxByLabel(page, "Yes").check();
+        clickButton(page, "Continue");
+        getCheckBoxByLabel(page, "Subject").check();
+        getCheckBoxByLabel(page, "Respondent").check();
+        clickButton(page, "Continue");
+        getRadioButtonByLabel(page, "Yes").click();
+        getRadioButtonByLabel(page, "7 days").click();
+        clickButton(page, "Continue");
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Order sent", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        assertThat(page.locator("tr a").first())
+            .hasText(SendOrder.label, textOptionsWithTimeout(60000));
     }
 }

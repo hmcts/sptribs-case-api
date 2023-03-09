@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.e2e;
+package uk.gov.hmcts.sptribs.e2e.enums;
 
 public enum CaseState {
     CaseManagement("Case management"),
