@@ -5,7 +5,6 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-import com.microsoft.playwright.assertions.PageAssertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
 
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static java.lang.System.getenv;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -66,21 +64,5 @@ public class XuiTest extends CftlibTest {
         context.close();
     }
 
-    void signInWith(String username) {
-        page.navigate("http://localhost:3000");
-
-        page.locator("[placeholder=\"Enter Username\"]").fill(username);
-        page.locator("[placeholder=\"Enter Password\"]").fill("anythingWillWork");
-        page.locator("text=Sign in").click();
-        assertThat(page).hasURL("http://localhost:3000/cases", new PageAssertions.HasURLOptions().setTimeout(30000));
-    }
-
-    void signInWithCaseworker() {
-        signInWith("TEST_CASE_WORKER_USER@mailinator.com");
-    }
-
-    void signInWithSolicitor() {
-        signInWith("TEST_SOLICITOR@mailinator.com");
-    }
 }
 
