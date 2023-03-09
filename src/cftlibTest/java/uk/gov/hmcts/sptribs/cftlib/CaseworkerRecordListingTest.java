@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.cftlib.util.PlaywrightHelpers;
 public class CaseworkerRecordListingTest extends XuiTest {
 
     @RetryingTest(maxAttempts = PlaywrightHelpers.RETRIES)
-    public void caseworkerShouldAbleToCloseTheCase() {
+    public void caseworkerShouldAbleToRecordListing() {
         Page page = getPage();
         Login login = new Login(page);
         login.signInWithCaseworker();
