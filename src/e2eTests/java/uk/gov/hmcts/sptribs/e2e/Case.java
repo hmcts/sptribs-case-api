@@ -21,8 +21,8 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import static java.lang.String.valueOf;
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseStayed;
