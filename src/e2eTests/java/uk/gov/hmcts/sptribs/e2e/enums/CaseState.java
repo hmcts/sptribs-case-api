@@ -1,10 +1,9 @@
-package uk.gov.hmcts.sptribs.e2e;
+package uk.gov.hmcts.sptribs.e2e.enums;
 
 public enum CaseState {
-
+    CaseManagement("Case management"),
     AwaitingHearing("Awaiting hearing"),
     AwaitingOutcome("Awaiting outcome"),
-    CaseManagement("Case management"),
     CaseClosed("Case closed"),
     CaseStayed("Case stayed"),
     Submitted("Submitted");
