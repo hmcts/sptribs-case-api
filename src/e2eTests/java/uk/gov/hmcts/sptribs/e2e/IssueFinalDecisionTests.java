@@ -8,12 +8,13 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueFinalDecision;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
-public class IssueFinalDecision extends Base {
+public class IssueFinalDecisionTests extends Base {
 
     @Test
     public void caseWorkerShouldBeAbleToIssueFinalDecision() {
@@ -26,7 +27,7 @@ public class IssueFinalDecision extends Base {
         Hearing hearing = new Hearing(page);
         hearing.createListing();
         hearing.createHearingSummary();
-        newCase.startNextStepAction("Decision: Issue final decision");
+        newCase.startNextStepAction(IssueFinalDecision);
         assertThat(page.locator("h1"))
             .hasText("Create a final decision notice", textOptionsWithTimeout(60000));
         page.getByLabel("Create from a template").check();
