@@ -11,9 +11,11 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -28,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,6 +95,9 @@ class CaseworkerCreateHearingSummaryTest {
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
+
+        RecordListing recordListing = getRecordListing();
+        caseData.setRecordListing(recordListing);
         updatedCaseDetails.setData(caseData);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
@@ -101,6 +107,7 @@ class CaseworkerCreateHearingSummaryTest {
 
         //Then
         assertThat(response).isNotNull();
+        assert (response.getData().getRecordListing().getHearingStatus().equals(HearingState.Complete));
     }
 
     @Test
