@@ -23,6 +23,11 @@ import static java.time.LocalDate.now;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.BuildCase;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseStayed;
@@ -213,7 +218,7 @@ public class Case {
     }
 
     public void buildCase() {
-        startNextStepAction("Case: Build case");
+        startNextStepAction(BuildCase);
         assertThat(page.locator("h1"))
             .hasText("Case Built", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
@@ -234,22 +239,18 @@ public class Case {
         return page.locator("h4").textContent().split(":")[1].trim();
     }
 
-    public void startNextStepAction(String actionName) {
+    public void startNextStepAction(Actions actionName) {
         page.waitForFunction("selector => document.querySelector(selector).options.length > 1",
             "#next-step", functionOptionsWithTimeout(60000));
-        page.selectOption("#next-step", new SelectOption().setLabel(actionName));
+        page.selectOption("#next-step", new SelectOption().setLabel(actionName.label));
         page.waitForFunction("selector => document.querySelector(selector).disabled === false",
             "ccd-event-trigger button[type='submit']", PageHelpers.functionOptionsWithTimeout(6000));
         page.locator("label:has-text(\"Next step\")").click();
         clickButton(page, "Go");
     }
 
-    public void startNextStepAction(Actions actionName) {
-        startNextStepAction(actionName.label);
-    }
-
     public void addStayToCase() {
-        startNextStepAction("Stays: Create/edit stay");
+        startNextStepAction(CreateEditStay);
         assertThat(page.locator("h1"))
             .hasText("Add a Stay to this case", textOptionsWithTimeout(60000));
         page.getByLabel("Awaiting outcome of civil case").check();
@@ -287,7 +288,7 @@ public class Case {
     }
 
     public void createCaseFlag() {
-        startNextStepAction("Flags: Create flag");
+        startNextStepAction(CreateFlag);
         assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(60000));
         assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Case").click();
@@ -313,7 +314,7 @@ public class Case {
     }
 
     public void caseworkerShouldAbleToCloseTheCase() {
-        startNextStepAction("Case: Close case");
+        startNextStepAction(CloseCase);
         assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         page.getByLabel("Case Withdrawn").check();
@@ -343,7 +344,7 @@ public class Case {
     }
 
     public boolean testChangeStateTo(CaseState state) {
-        startNextStepAction("Test change state");
+        startNextStepAction(TestChangeState);
         assertThat(page.locator("h1")).hasText("Test change state", textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, state.label).click();
         clickButton(page, "Continue");
@@ -357,7 +358,7 @@ public class Case {
     }
 
     public void createDraft(DraftOrderTemplate template) {
-        startNextStepAction(CreateDraft.label);
+        startNextStepAction(CreateDraft);
         assertThat(page.locator("h1"))
             .hasText("Create order", textOptionsWithTimeout(60000));
         page.selectOption("#orderContentOrderTemplate",

@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateListing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditListing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateSummary;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditSummary;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CancelHearing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.PostponeHearing;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
@@ -36,7 +42,7 @@ public class Hearing {
      */
     public void createListing(String... args) {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Create listing");
+        newCase.startNextStepAction(CreateListing);
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -112,7 +118,7 @@ public class Hearing {
 
     public void editListing(String... args) {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Edit listing");
+        newCase.startNextStepAction(EditListing);
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -197,7 +203,7 @@ public class Hearing {
 
     public void createHearingSummary() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Create summary");
+        newCase.startNextStepAction(CreateSummary);
 
         // Fill Select hearing form
         selectHearing();
@@ -262,7 +268,7 @@ public class Hearing {
 
     public void editHearingSummary() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Edit summary");
+        newCase.startNextStepAction(EditSummary);
 
         // Fill select hearing form
         assertThat(page.locator("h1"))
@@ -332,7 +338,7 @@ public class Hearing {
 
     public void cancelHearing() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Cancel hearing");
+        newCase.startNextStepAction(CancelHearing);
 
         // Fill Select hearing form
         selectHearing();
@@ -368,7 +374,7 @@ public class Hearing {
 
     public void postponeHearing() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Postpone hearing");
+        newCase.startNextStepAction(PostponeHearing);
 
         // Fill Select hearing form
         selectHearing();
