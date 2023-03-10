@@ -6,6 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -13,6 +15,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
@@ -28,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -155,6 +159,29 @@ public class TestDataHelper {
             .builder()
             .forename("testFname")
             .surname("testSname")
+            .roles(List.of(""))
+            .build();
+
+        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+    }
+
+    public static User getUserWithHmctsJudiciary() {
+        UserDetails userDetails = UserDetails
+            .builder()
+            .forename("testFname")
+            .surname("testSname")
+            .roles(List.of("hmcts-judiciary"))
+            .build();
+
+        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+    }
+
+    public static User getUserWithSeniorJudge() {
+        UserDetails userDetails = UserDetails
+            .builder()
+            .forename("testFname")
+            .surname("testSname")
+            .roles(List.of("senior-judge"))
             .build();
 
         return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
@@ -170,6 +197,13 @@ public class TestDataHelper {
         recordListing.setHearingDate(LocalDate.now());
         recordListing.setHearingTime("10:00");
         return recordListing;
+    }
+
+    public static HearingSummary getHearingSummary() {
+        return HearingSummary.builder()
+            .hearingFormat(HearingFormat.FACE_TO_FACE)
+            .hearingType(HearingType.FINAL)
+            .build();
     }
 
     public static RecordListing getRecordListingWithOneHearingDate() {
@@ -201,5 +235,46 @@ public class TestDataHelper {
         list.add(listValue1);
         list.add(listValue2);
         return list;
+    }
+
+    public static DynamicList getDynamicList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("0")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
+
+    public static DynamicList getMockedRegionData() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("1-region")
+            .code(UUID.randomUUID())
+            .build();
+
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
+
+
+    public static DynamicList getMockedHearingVenueData() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("courtname-courtAddress")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
     }
 }

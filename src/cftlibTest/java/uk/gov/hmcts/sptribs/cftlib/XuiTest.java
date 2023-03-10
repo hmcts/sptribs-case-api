@@ -15,7 +15,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
 
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static java.lang.System.getenv;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -30,7 +29,7 @@ public class XuiTest extends CftlibTest {
     void launchBrowser() {
         playwright = Playwright.create();
         var launchOptions = getenv("CI") == null
-            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50)
+            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(2000)
             : new BrowserType.LaunchOptions().setHeadless(true);
 
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER");
@@ -49,6 +48,10 @@ public class XuiTest extends CftlibTest {
     BrowserContext context;
     Page page;
 
+    public Page getPage() {
+        return page;
+    }
+
     @BeforeEach
     void createContextAndPage() {
         context = browser.newContext();
@@ -61,21 +64,5 @@ public class XuiTest extends CftlibTest {
         context.close();
     }
 
-    void signInWith(String username) {
-        page.navigate("http://localhost:3000");
-
-        page.locator("[placeholder=\"Enter Username\"]").fill(username);
-        page.locator("[placeholder=\"Enter Password\"]").fill("anythingWillWork");
-        page.locator("text=Sign in").click();
-        assertThat(page).hasURL("http://localhost:3000/cases");
-    }
-
-    void signInWithCaseworker() {
-        signInWith("TEST_CASE_WORKER_USER@mailinator.com");
-    }
-
-    void signInWithSolicitor() {
-        signInWith("TEST_SOLICITOR@mailinator.com");
-    }
 }
 

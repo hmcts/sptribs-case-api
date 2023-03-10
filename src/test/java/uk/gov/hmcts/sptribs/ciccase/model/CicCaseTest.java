@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_2_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 
@@ -49,7 +49,7 @@ class CicCaseTest {
         final CicCase cicCase = CicCase.builder()
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .applicantAddress(APPLICANT_ADDRESS)
-            .applicantFullName(APPLICANT_2_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .hearingNotificationParties(parties)

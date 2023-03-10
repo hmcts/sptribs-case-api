@@ -23,9 +23,7 @@ import uk.gov.service.notify.SendLetterResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -86,18 +84,20 @@ public class NotificationServiceCICTest {
         String templateId = UUID.randomUUID().toString();
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final UUID uuid = UUID.randomUUID();
         Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-        NotificationRequest request = NotificationRequest.builder()
+        Map<String, String> uploadedDocuments = new HashMap<>();
+        uploadedDocuments.put("FinalDecisionNotice", templateId);
+        uploadedDocuments.put("FinalDecisionNotice1", "");
+        uploadedDocuments.put("DocumentAvailable1", "no");
+        final NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
             .hasFileAttachments(true)
-            .uploadedDocumentIds(List.of(uuid.toString()))
+            .uploadedDocuments(uploadedDocuments)
             .build();
-        notificationService.setNotificationRequest(request);
 
         User user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
@@ -117,7 +117,57 @@ public class NotificationServiceCICTest {
         )).thenReturn(sendEmailResponse);
 
         //When
-        notificationService.sendEmail();
+        notificationService.sendEmail(request);
+
+        //Then
+        verify(notificationClient).sendEmail(
+            eq(templateId),
+            eq(EMAIL_ADDRESS),
+            any(),
+            any());
+
+        verify(sendEmailResponse, times(2)).getNotificationId();
+        verify(sendEmailResponse, times(2)).getReference();
+
+    }
+
+    @Test
+    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException, IOException {
+        //Given
+        String templateId = UUID.randomUUID().toString();
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
+        Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+
+        Map<String, String> uplodedDocuments = new HashMap<>();
+        uplodedDocuments.put("FinalDecisionNotice", templateId);
+        final NotificationRequest request = NotificationRequest.builder()
+            .destinationAddress(EMAIL_ADDRESS)
+            .template(TemplateName.APPLICATION_RECEIVED)
+            .templateVars(templateVars)
+            .hasFileAttachments(true)
+            .uploadedDocuments(uplodedDocuments)
+            .build();
+
+        User user = TestDataHelper.getUser();
+        when(idamService.retrieveUser(any())).thenReturn(user);
+        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
+        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(null));
+
+        when(notificationClient.sendEmail(
+            eq(templateId),
+            eq(EMAIL_ADDRESS),
+            any(),
+            any()
+        )).thenReturn(sendEmailResponse);
+
+        //When
+        notificationService.sendEmail(request);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -136,11 +186,10 @@ public class NotificationServiceCICTest {
         //Given
         String templateId = UUID.randomUUID().toString();
         Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
-        NotificationRequest request = NotificationRequest.builder()
+        final NotificationRequest request = NotificationRequest.builder()
             .template(CASE_ISSUED_CITIZEN_POST)
             .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
             .build();
-        notificationService.setNotificationRequest(request);
 
         when(sendLetterResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendLetterResponse.getNotificationId()).thenReturn(UUID.randomUUID());
@@ -153,7 +202,7 @@ public class NotificationServiceCICTest {
         )).thenReturn(sendLetterResponse);
 
         //When
-        notificationService.sendLetter();
+        notificationService.sendLetter(request);
 
         //Then
         verify(notificationClient).sendLetter(
@@ -167,7 +216,7 @@ public class NotificationServiceCICTest {
 
     @Test
     void shouldThrowNotificationExceptionWhenClientFailsToSendEmail()
-        throws NotificationClientException, IOException {
+        throws NotificationClientException {
 
         //Given
         String templateId = UUID.randomUUID().toString();
@@ -182,9 +231,8 @@ public class NotificationServiceCICTest {
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
             .hasFileAttachments(false)
-            .uploadedDocumentIds(new ArrayList<>())
+            .uploadedDocuments(new HashMap<>())
             .build();
-        notificationService.setNotificationRequest(request);
 
         doThrow(new NotificationClientException("some message"))
             .when(notificationClient).sendEmail(
@@ -196,7 +244,7 @@ public class NotificationServiceCICTest {
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail())
+        assertThatThrownBy(() -> notificationService.sendEmail(request))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
@@ -224,9 +272,8 @@ public class NotificationServiceCICTest {
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
             .hasFileAttachments(true)
-            .uploadedDocumentIds(List.of(uuid.toString()))
+            .uploadedDocuments(Map.of("docName", uuid.toString()))
             .build();
-        notificationService.setNotificationRequest(request);
 
         User user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
@@ -238,7 +285,7 @@ public class NotificationServiceCICTest {
             .when(resource).getInputStream();
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail())
+        assertThatThrownBy(() -> notificationService.sendEmail(request))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
@@ -254,7 +301,6 @@ public class NotificationServiceCICTest {
             .template(CASE_ISSUED_CITIZEN_POST)
             .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
             .build();
-        notificationService.setNotificationRequest(request);
 
         doThrow(new NotificationClientException("some message"))
             .when(notificationClient).sendLetter(
@@ -265,7 +311,7 @@ public class NotificationServiceCICTest {
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendLetter())
+        assertThatThrownBy(() -> notificationService.sendLetter(request))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 

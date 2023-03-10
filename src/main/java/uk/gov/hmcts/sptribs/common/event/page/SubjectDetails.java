@@ -23,9 +23,9 @@ public class SubjectDetails implements CcdPageConfiguration {
             .mandatory(CicCase::getFullName)
             .optional(CicCase::getPhoneNumber)
             .mandatoryWithLabel(CicCase::getDateOfBirth, "")
+            .mandatory(CicCase::getAddress)
             .mandatoryWithLabel(CicCase::getContactPreferenceType, "")
             .mandatory(CicCase::getEmail, "cicCaseContactPreferenceType = \"Email\"")
-            .mandatory(CicCase::getAddress)
             .done();
     }
 
@@ -42,8 +42,8 @@ public class SubjectDetails implements CcdPageConfiguration {
             if (StringUtils.isEmpty(data.getCicCase().getAddress().getPostCode())) {
                 errors.add("PostCode is mandatory");
             }
-            if (StringUtils.isEmpty(data.getCicCase().getAddress().getCounty())) {
-                errors.add("County is mandatory");
+            if (StringUtils.isEmpty(data.getCicCase().getAddress().getPostTown())) {
+                errors.add("Town or City is mandatory");
             }
         }
 

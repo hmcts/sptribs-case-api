@@ -14,9 +14,10 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+
+import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_ORDER;
 
 @Component
 @Slf4j
@@ -35,10 +36,10 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
-                uploadedDocumentIds, templateVars);
+                uploadedDocuments, templateVars);
             cicCase.setSubjectNotifyList(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -55,9 +56,9 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+            Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
-                uploadedDocumentIds, templateVars);
+                uploadedDocuments, templateVars);
             cicCase.setRepNotificationResponse(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
@@ -72,41 +73,39 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
-        List<String> uploadedDocumentIds = getUploadedDocumentIds(caseData);
+        Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
 
         NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
-            uploadedDocumentIds, respondentTemplateVars);
+            uploadedDocuments, respondentTemplateVars);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
-                                                                     List<String> uploadedDocumentIds,
+                                                                     Map<String, String> uploadedDocuments,
                                                                      final Map<String, Object> templateVars) {
         NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             true,
-            uploadedDocumentIds,
+            uploadedDocuments,
             templateVars,
             TemplateName.NEW_ORDER_ISSUED_EMAIL);
-        notificationService.setNotificationRequest(emailRequest);
-        return notificationService.sendEmail();
+        return notificationService.sendEmail(emailRequest);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.NEW_ORDER_ISSUED_POST);
-        notificationService.setNotificationRequest(letterRequest);
-        return notificationService.sendLetter();
+        return notificationService.sendLetter(letterRequest);
     }
 
-    private List<String> getUploadedDocumentIds(CaseData caseData) {
+    private Map<String, String> getUploadedDocumentIds(CaseData caseData) {
         CicCase cicCase = caseData.getCicCase();
-        List<String> uploadedDocumentIds = new ArrayList<>();
+        Map<String, String> uploadedDocuments = new HashMap<>();
         if (null != cicCase.getLastSelectedOrder()) {
-            uploadedDocumentIds.add(StringUtils.substringAfterLast(cicCase.getLastSelectedOrder().getUrl(), "/"));
+            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getLastSelectedOrder().getUrl(), "/"));
         }
 
-        return uploadedDocumentIds;
+        return uploadedDocuments;
     }
 }

@@ -99,7 +99,6 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase());
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
-            .template(orderTemplate)
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());

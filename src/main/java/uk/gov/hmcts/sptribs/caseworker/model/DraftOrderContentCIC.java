@@ -32,6 +32,7 @@ public class DraftOrderContentCIC {
     private OrderTemplate orderTemplate;
 
     @CCD(
+        label = "Main content",
         typeOverride = TextArea,
         access = {CaseworkerAndSuperUserAccess.class}
     )

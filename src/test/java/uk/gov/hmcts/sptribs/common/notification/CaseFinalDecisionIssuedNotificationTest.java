@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -27,7 +28,6 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -62,22 +62,23 @@ public class CaseFinalDecisionIssuedNotificationTest {
         ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().documents(List.of(documentListValue))
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
+            .documents(List.of(documentListValue))
             .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -93,6 +94,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionDraft(document)
+            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
@@ -100,15 +102,14 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -125,20 +126,20 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionDraft(document)
+            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -158,9 +159,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     @Test
@@ -176,6 +175,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionDraft(document)
+            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
@@ -183,15 +183,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -208,6 +206,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionDraft(document)
+            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
@@ -215,14 +214,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -240,6 +238,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionDraft(document)
+            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
@@ -247,16 +246,14 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -274,20 +271,20 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionDraft(document)
+            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyList(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-        verify(notificationService).sendEmail();
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -307,9 +304,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).setNotificationRequest(any(NotificationRequest.class));
-
-        verify(notificationService).sendLetter();
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {

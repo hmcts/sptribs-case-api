@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -143,5 +144,19 @@ public class RecordListHelper {
             recordListing.setHearingVenueNameAndAddress(recordListing.getReadOnlyHearingVenueName());
         }
         return recordListing;
+    }
+
+    public void saveSummary(CaseData caseData) {
+        caseData.getHearingSummary().setHearingFormat(caseData.getRecordListing().getHearingFormat());
+        caseData.getHearingSummary().setHearingType(caseData.getRecordListing().getHearingType());
+        caseData.getHearingSummary().setSubjectName(caseData.getCicCase().getFullName());
+        caseData.setCurrentEvent("");
+        if (null != caseData.getRecordListing()
+            && null != caseData.getRecordListing().getNumberOfDays()
+            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
+            caseData.getRecordListing().setAdditionalHearingDate(null);
+        }
+
+        caseData.setRecordListing(checkAndUpdateVenueInformationSummary(caseData.getRecordListing()));
     }
 }

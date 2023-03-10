@@ -3,14 +3,20 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -223,4 +229,71 @@ public class EventUtilTest {
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
 
     }
+
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentMedicalDmiReports() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC7_ME_DMI_REPORTS;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
+
+    }
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentMEJoint() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC8_ME_JOINT_INSTRUCTION;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
+
+    }
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentStrikeOutWarning() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC10_STRIKE_OUT_WARNING;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
+
+    }
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentProForma() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC13_PRO_FORMA_SUMMONS;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
+
+    }
+
+    @Test
+    void shouldSuccessfullyGetPanelMembers() {
+        //Given
+        final DynamicList list = TestDataHelper.getDynamicList();
+
+        //When
+        List<ListValue<PanelMember>> result = EventUtil.getPanelMembers(list);
+
+        //Then
+        assertThat(result).isNotNull();
+
+    }
+
 }

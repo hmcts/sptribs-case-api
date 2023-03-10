@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -11,16 +12,19 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 @Component
 public class HearingTypeAndFormat implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "recordVenueNotListedOption=\"ALWAYS_HIDE\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("hearingTypeAndFormat")
             .pageLabel("Hearing type and format")
+            .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("labelHearingTypeAndFormat", "")
             .complex(CaseData::getRecordListing)
             .mandatory(RecordListing::getHearingType)
             .mandatory(RecordListing::getHearingFormat)
+            .readonly(RecordListing::getHearingSummaryExists,ALWAYS_HIDE)
             .done();
     }
 
