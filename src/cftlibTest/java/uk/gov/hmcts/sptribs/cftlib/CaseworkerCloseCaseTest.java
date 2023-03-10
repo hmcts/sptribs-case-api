@@ -17,6 +17,7 @@ import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
 
 public class CaseworkerCloseCaseTest extends XuiTest {
+
     @Disabled
     @RetryingTest(maxAttempts = PlaywrightHelpers.RETRIES)
     public void caseworkerShouldAbleToCloseTheCase() {
