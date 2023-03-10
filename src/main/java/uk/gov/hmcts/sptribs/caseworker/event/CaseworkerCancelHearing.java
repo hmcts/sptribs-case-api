@@ -95,9 +95,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
         if (null != selectedHearing) {
             state = CaseManagement;
-            caseData.setRecordListing(null);
         }
-        caseData.setHearingStatus(Cancelled);
+        caseData.getRecordListing().setHearingStatus(Cancelled);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(state)
