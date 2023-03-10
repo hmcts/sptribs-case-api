@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.e2e;
+package uk.gov.hmcts.sptribs.e2e.enums;
 
 public enum Actions {
     AddNote("Case: Add note"),
