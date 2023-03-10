@@ -24,11 +24,11 @@ public class HearingService {
     public DynamicList getHearingDateDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
         String hearingDate =
-            data.getRecordListing().getHearingType().getLabel()
+            data.getListing().getHearingType().getLabel()
                 + SPACE + HYPHEN + SPACE
-                + data.getRecordListing().getHearingDate().format(dateFormatter)
+                + data.getListing().getHearingDate().format(dateFormatter)
                 + SPACE
-                + data.getRecordListing().getHearingTime();
+                + data.getListing().getHearingTime();
 
         return createDynamicListWithOneElement(hearingDate);
     }
@@ -36,11 +36,11 @@ public class HearingService {
     public DynamicList getHearingSummaryDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
         String hearingSummary =
-            data.getRecordListing().getHearingType().getLabel()
+            data.getListing().getHearingType().getLabel()
                 + SPACE + HYPHEN + SPACE
-                + data.getRecordListing().getHearingDate().format(dateFormatter)
+                + data.getListing().getHearingDate().format(dateFormatter)
                 + SPACE
-                + data.getRecordListing().getHearingTime();
+                + data.getListing().getHearingTime();
 
         return createDynamicListWithOneElement(hearingSummary);
     }

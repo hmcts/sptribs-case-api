@@ -26,14 +26,14 @@ public class PreviewDraftOrderTemplateContent {
                                      final Long ccdCaseReference) {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getHearingSummary().getSubjectName());
-        templateContent.put(HEARING_TYPE, caseData.getHearingSummary().getHearingType());
-        templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getHearingSummary().getPanelMemberList()));
+        templateContent.put(SUBJECT_FULL_NAME, caseData.getListing().getSummary().getSubjectName());
+        templateContent.put(HEARING_TYPE, caseData.getListing().getHearingType());
+        templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getListing().getSummary().getMemberList()));
         templateContent.put(ORDER_SIGNATURE, caseData.getDraftOrderContentCIC().getOrderSignature());
-        templateContent.put(HEARING_TIME, caseData.getRecordListing().getHearingTime());
-        templateContent.put(HEARING_VENUE_NAME, caseData.getRecordListing().getHearingVenueNameAndAddress());
-        templateContent.put(HEARING_DATE, caseData.getRecordListing().getHearingDate() != null
-            ? caseData.getRecordListing().getHearingDate().format(formatter) : "");
+        templateContent.put(HEARING_TIME, caseData.getListing().getHearingTime());
+        templateContent.put(HEARING_VENUE_NAME, caseData.getListing().getHearingVenueNameAndAddress());
+        templateContent.put(HEARING_DATE, caseData.getListing().getHearingDate() != null
+            ? caseData.getListing().getHearingDate().format(formatter) : "");
         templateContent.put(MAIN_CONTENT, caseData.getDraftOrderContentCIC().getMainContent());
 
         return templateContent;

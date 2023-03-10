@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -55,7 +55,7 @@ public class NotificationHelperTest {
     @Test
     void setRecordingTemplateVarsTest() {
         //Given
-        RecordListing recordListing = RecordListing.builder()
+        Listing listing = Listing.builder()
             .conferenceCallNumber("cmi459t5iut5")
             .hearingDate(LocalDate.of(2022, 12, 23))
             .importantInfoDetails("Imp Info")
@@ -66,7 +66,7 @@ public class NotificationHelperTest {
         Map<String, Object> templateVars = new HashMap<>();
 
 
-        notificationHelper.setRecordingTemplateVars(templateVars, recordListing);
+        notificationHelper.setRecordingTemplateVars(templateVars, listing);
         //Then
         Assertions.assertThat(templateVars.size()).isEqualTo(10);
         Assertions.assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE)).isEqualTo(true);
@@ -75,13 +75,13 @@ public class NotificationHelperTest {
     @Test
     void setRecordingTemplateVarsTest_VideoFormat() {
         //Given
-        RecordListing recordListing = RecordListing.builder()
+        Listing listing = Listing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
             .hearingFormat(HearingFormat.VIDEO)
             .build();
         Map<String, Object> templateVars = new HashMap<>();
 
-        notificationHelper.setRecordingTemplateVars(templateVars, recordListing);
+        notificationHelper.setRecordingTemplateVars(templateVars, listing);
         //Then
         Assertions.assertThat(templateVars.size()).isEqualTo(10);
         Assertions.assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO)).isEqualTo(true);
@@ -90,12 +90,12 @@ public class NotificationHelperTest {
     @Test
     void setRecordingTemplateVarsTest_HearingFormat_null() {
         //Given
-        RecordListing recordListing = RecordListing.builder()
+        Listing listing = Listing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
             .build();
         Map<String, Object> templateVars = new HashMap<>();
 
-        notificationHelper.setRecordingTemplateVars(templateVars, recordListing);
+        notificationHelper.setRecordingTemplateVars(templateVars, listing);
         //Then
         Assertions.assertThat(templateVars.size()).isEqualTo(10);
     }
@@ -103,15 +103,15 @@ public class NotificationHelperTest {
     @Test
     void setRecordingTemplateVarsTest_SelectedVenueSet() {
         //Given
-        RecordListing recordListing = Mockito.mock(RecordListing.class);
+        Listing listing = Mockito.mock(Listing.class);
 
-        when(recordListing.getSelectedVenue()).thenReturn("London Hearing Venue");
-        when(recordListing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
-        when(recordListing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
+        when(listing.getSelectedVenue()).thenReturn("London Hearing Venue");
+        when(listing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
+        when(listing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
 
         Map<String, Object> templateVars = new HashMap<>();
 
-        notificationHelper.setRecordingTemplateVars(templateVars, recordListing);
+        notificationHelper.setRecordingTemplateVars(templateVars, listing);
         //Then
         Assertions.assertThat(templateVars.size()).isEqualTo(10);
     }
@@ -119,14 +119,14 @@ public class NotificationHelperTest {
     @Test
     void setRecordingTemplateVarsTest_ManualHearingVenueSet() throws IOException {
         //Given
-        RecordListing recordListing = Mockito.mock(RecordListing.class);
+        Listing listing = Mockito.mock(Listing.class);
 
-        when(recordListing.getHearingVenueNameAndAddress()).thenReturn("London Hearing Venue - London");
-        when(recordListing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
-        when(recordListing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
+        when(listing.getHearingVenueNameAndAddress()).thenReturn("London Hearing Venue - London");
+        when(listing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
+        when(listing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
         Map<String, Object> templateVars = new HashMap<>();
 
-        notificationHelper.setRecordingTemplateVars(templateVars, recordListing);
+        notificationHelper.setRecordingTemplateVars(templateVars, listing);
         //Then
         Assertions.assertThat(templateVars.size()).isEqualTo(10);
     }
@@ -134,7 +134,7 @@ public class NotificationHelperTest {
     @Test
     void setRecordingTemplateVarsTest_TelephoneFormat() {
         //Given
-        RecordListing recordListing = RecordListing.builder()
+        Listing listing = Listing.builder()
             .hearingDate(LocalDate.of(2022, 12, 23))
             .conferenceCallNumber("cmi459t5iut5")
             .addlInstr("Test Instructions")
@@ -145,7 +145,7 @@ public class NotificationHelperTest {
 
         Map<String, Object> templateVars = new HashMap<>();
 
-        notificationHelper.setRecordingTemplateVars(templateVars, recordListing);
+        notificationHelper.setRecordingTemplateVars(templateVars, listing);
         //Then
         Assertions.assertThat(templateVars.size()).isEqualTo(10);
         Assertions.assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL)).isEqualTo(true);

@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -187,34 +187,32 @@ public class TestDataHelper {
         return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
     }
 
-    public static RecordListing getRecordListing() {
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setConferenceCallNumber("");
-        recordListing.setHearingType(HearingType.FINAL);
-        recordListing.setImportantInfoDetails("some details");
-        recordListing.setVideoCallLink("");
-        recordListing.setHearingDate(LocalDate.now());
-        recordListing.setHearingTime("10:00");
-        return recordListing;
+    public static Listing getRecordListing() {
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setConferenceCallNumber("");
+        listing.setHearingType(HearingType.FINAL);
+        listing.setImportantInfoDetails("some details");
+        listing.setVideoCallLink("");
+        listing.setHearingDate(LocalDate.now());
+        listing.setHearingTime("10:00");
+        return listing;
     }
 
     public static HearingSummary getHearingSummary() {
         return HearingSummary.builder()
-            .hearingFormat(HearingFormat.FACE_TO_FACE)
-            .hearingType(HearingType.FINAL)
             .build();
     }
 
-    public static RecordListing getRecordListingWithOneHearingDate() {
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setConferenceCallNumber("");
-        recordListing.setHearingType(HearingType.FINAL);
-        recordListing.setImportantInfoDetails("some details");
-        recordListing.setVideoCallLink("");
-        recordListing.setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
-        return recordListing;
+    public static Listing getRecordListingWithOneHearingDate() {
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setConferenceCallNumber("");
+        listing.setHearingType(HearingType.FINAL);
+        listing.setImportantInfoDetails("some details");
+        listing.setVideoCallLink("");
+        listing.setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        return listing;
     }
 
 

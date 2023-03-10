@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
@@ -38,12 +38,12 @@ public class FinalDecisionTemplateContentTest {
     public void shouldSuccessfullyApplyFinalDecisionContent() {
         //Given
         CaseData caseData = buildCaseData();
-        RecordListing listing = RecordListing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
-        caseData.setRecordListing(listing);
+        Listing listing = Listing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
+        caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
-            .panelMemberList(getMembers())
+            .memberList(getMembers())
             .build();
-        caseData.setHearingSummary(summary);
+        caseData.getListing().setSummary(summary);
         //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
@@ -57,11 +57,11 @@ public class FinalDecisionTemplateContentTest {
     public void shouldSuccessfullyApplyFinalDecisionContentNoMembers() {
         //Given
         CaseData caseData = buildCaseData();
-        RecordListing listing = RecordListing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
-        caseData.setRecordListing(listing);
+        Listing listing = Listing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
+        caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .build();
-        caseData.setHearingSummary(summary);
+        caseData.getListing().setSummary(summary);
         //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 

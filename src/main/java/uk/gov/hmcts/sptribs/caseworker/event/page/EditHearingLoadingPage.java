@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -21,8 +21,8 @@ public class EditHearingLoadingPage implements CcdPageConfiguration {
             .pageLabel("Edit hearing summary")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("labelEditHearingSummary", "")
-            .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getHearingSummaryExists)
+            .complex(CaseData::getListing)
+            .readonly(Listing::getHearingSummaryExists)
             .label("labelEditHearingSummary", "There are no Completed Hearings to edit", SHOW)
             .done();
     }

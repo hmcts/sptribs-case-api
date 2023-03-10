@@ -11,9 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -23,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -35,22 +32,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class HearingSummary {
 
     @CCD(
-        label = "Hearing type",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "HearingType",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private HearingType hearingType;
-
-    @CCD(
-        label = "Hearing format",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "HearingFormat",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private HearingFormat hearingFormat;
-
-    @CCD(
         label = "Which judge heard the case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -60,13 +41,13 @@ public class HearingSummary {
         label = "panel member Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DynamicList panelMemberName;
+    private DynamicList names;
 
     @CCD(
         label = "Was it a full panel hearing?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private FullPanelHearing fullPanelHearing;
+    private FullPanelHearing isFullPanel;
 
     @CCD(
         label = "Panel member and Role",
@@ -74,7 +55,7 @@ public class HearingSummary {
         typeParameterOverride = "PanelMember",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<PanelMember>> panelMemberList;
+    private List<ListValue<PanelMember>> memberList;
 
     @CCD(
         label = "Who attended the hearing?",
@@ -82,19 +63,19 @@ public class HearingSummary {
         typeParameterOverride = "HearingAttendeesRole",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<HearingAttendeesRole> hearingAttendeesRole;
+    private Set<HearingAttendeesRole> roles;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Who was this other attendee?"
     )
-    private String otherAttendee;
+    private String others;
 
     @CCD(
         label = "What type of decision was given at the hearing?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private HearingOutcome hearingOutcome;
+    private HearingOutcome outcome;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -106,7 +87,7 @@ public class HearingSummary {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )
-    private String hearingRecordingDescription;
+    private String recDesc;
 
     @CCD(
         label = "Upload the recording of the hearing",
@@ -114,5 +95,5 @@ public class HearingSummary {
         typeParameterOverride = "CICDocument",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<CICDocument>> recordingUpload;
+    private List<ListValue<CICDocument>> recFile;
 }

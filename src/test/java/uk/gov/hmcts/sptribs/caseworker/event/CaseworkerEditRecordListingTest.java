@@ -14,7 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -76,13 +76,13 @@ class CaseworkerEditRecordListingTest {
         hearingNotificationPartiesSet.add(NotificationParties.SUBJECT);
         hearingNotificationPartiesSet.add(NotificationParties.REPRESENTATIVE);
         hearingNotificationPartiesSet.add(NotificationParties.RESPONDENT);
-        RecordListing listing = getRecordListing();
+        Listing listing = getRecordListing();
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         CicCase cicCase = getMockCicCase();
         cicCase.setHearingNotificationParties(hearingNotificationPartiesSet);
-        caseData.setRecordListing(listing);
+        caseData.setListing(listing);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -100,8 +100,8 @@ class CaseworkerEditRecordListingTest {
         SubmittedCallbackResponse stayedResponse = caseworkerEditRecordList.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getRecordListing().getHearingType().getLabel()).isEqualTo("Final");
-        assertThat(response.getData().getRecordListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
+        assertThat(response.getData().getListing().getHearingType().getLabel()).isEqualTo("Final");
+        assertThat(response.getData().getListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
         assertThat(stayedResponse).isNotNull();
         assertThat(response.getErrors()).isEmpty();
     }
@@ -112,11 +112,11 @@ class CaseworkerEditRecordListingTest {
         final CaseData caseData = caseData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
-        final RecordListing listing = RecordListing.builder()
+        final Listing listing = Listing.builder()
             .readOnlyHearingVenueName("asa")
             .hearingVenueNameAndAddress("asa")
             .build();
-        caseData.setRecordListing(listing);
+        caseData.setListing(listing);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -127,7 +127,7 @@ class CaseworkerEditRecordListingTest {
 
         //Then
         assertThat(response.getState().getName()).isEqualTo("CaseManagement");
-        assertThat(response.getData().getRecordListing().getHearingVenueNameAndAddress()).isNull();
+        assertThat(response.getData().getListing().getHearingVenueNameAndAddress()).isNull();
 
     }
 
@@ -156,12 +156,12 @@ class CaseworkerEditRecordListingTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
+        final Listing listing = new Listing();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setRegionList(getMockedRegionData());
-        caseData.setRecordListing(recordListing);
-        caseData.getRecordListing().setHearingVenues(getMockedHearingVenueData());
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
+        caseData.getListing().setHearingVenues(getMockedHearingVenueData());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -178,7 +178,7 @@ class CaseworkerEditRecordListingTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(caseData.getRecordListing().getSelectedRegionVal()).isNotNull();
+        assertThat(caseData.getListing().getSelectedRegionVal()).isNotNull();
 
 
     }
@@ -207,12 +207,12 @@ class CaseworkerEditRecordListingTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
+        final Listing listing = new Listing();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setRegionList(getMockedRegionData());
-        caseData.setRecordListing(recordListing);
-        caseData.getRecordListing().setHearingVenues(getMockedHearingVenueData());
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
+        caseData.getListing().setHearingVenues(getMockedHearingVenueData());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -222,8 +222,8 @@ class CaseworkerEditRecordListingTest {
         recordListHelper.populatedVenuesData(caseData);
 
 
-        if (caseData.getRecordListing().getSelectedRegionVal().equals(beforeDetails.getData().getRecordListing().getSelectedRegionVal())) {
-            caseData.getRecordListing().setHearingVenues(beforeDetails.getData().getRecordListing().getHearingVenues());
+        if (caseData.getListing().getSelectedRegionVal().equals(beforeDetails.getData().getListing().getSelectedRegionVal())) {
+            caseData.getListing().setHearingVenues(beforeDetails.getData().getListing().getHearingVenues());
 
         }
         //When
@@ -231,7 +231,7 @@ class CaseworkerEditRecordListingTest {
             caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().equals(beforeDetails.getData()));
-        assertThat(beforeDetails.getData().getRecordListing().getRegionList()).isNotNull();
+        assertThat(beforeDetails.getData().getListing().getRegionList()).isNotNull();
     }
 
     @Test
@@ -239,12 +239,12 @@ class CaseworkerEditRecordListingTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
+        final Listing listing = new Listing();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setRegionList(getMockedRegionData());
-        caseData.setRecordListing(recordListing);
-        caseData.getRecordListing().setHearingVenues(getMockedHearingVenueData());
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
+        caseData.getListing().setHearingVenues(getMockedHearingVenueData());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);

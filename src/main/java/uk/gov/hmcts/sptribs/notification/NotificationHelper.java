@@ -3,7 +3,7 @@ package uk.gov.hmcts.sptribs.notification;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
@@ -108,67 +108,67 @@ public class NotificationHelper {
             .build();
     }
 
-    public void setRecordingTemplateVars(Map<String, Object> templateVars, RecordListing recordListing) {
-        templateVars.put(CommonConstants.CIC_CASE_HEARING_TYPE, recordListing.getHearingType());
+    public void setRecordingTemplateVars(Map<String, Object> templateVars, Listing listing) {
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_TYPE, listing.getHearingType());
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommonConstants.CIC_CASE_UK_DATE_FORMAT);
-        templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, recordListing.getHearingDate().format(dateTimeFormatter));
-        templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, recordListing.getHearingTime());
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, listing.getHearingDate().format(dateTimeFormatter));
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, listing.getHearingTime());
 
-        if (isVideoFormat(recordListing) || isTelephoneFormat(recordListing)) {
+        if (isVideoFormat(listing) || isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
         } else
-            if (null != recordListing.getSelectedVenue()) {
-                templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getSelectedVenue());
+            if (null != listing.getSelectedVenue()) {
+                templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getSelectedVenue());
             } else
-                if (null != recordListing.getHearingVenueNameAndAddress()) {
-                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, recordListing.getHearingVenueNameAndAddress());
+                if (null != listing.getHearingVenueNameAndAddress()) {
+                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getHearingVenueNameAndAddress());
                 } else {
                     templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
                 }
 
-        if (null != recordListing.getAddlInstr()) {
-            templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, recordListing.getAddlInstr());
+        if (null != listing.getAddlInstr()) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, listing.getAddlInstr());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, " ");
         }
-        if (null != recordListing.getVideoCallLink()) {
-            templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, recordListing.getVideoCallLink());
+        if (null != listing.getVideoCallLink()) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
         }
-        if (null != recordListing.getConferenceCallNumber()) {
-            templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, recordListing.getConferenceCallNumber());
+        if (null != listing.getConferenceCallNumber()) {
+            templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, listing.getConferenceCallNumber());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
         }
-        if (isVideoFormat(recordListing)) {
+        if (isVideoFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
         }
-        if (isTelephoneFormat(recordListing)) {
+        if (isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
         }
-        if (isFaceToFaceFormat(recordListing)) {
+        if (isFaceToFaceFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false);
         }
     }
 
-    private boolean isFaceToFaceFormat(RecordListing recordListing) {
-        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
+    private boolean isFaceToFaceFormat(Listing listing) {
+        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
     }
 
-    private boolean isVideoFormat(RecordListing recordListing) {
-        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.VIDEO);
+    private boolean isVideoFormat(Listing listing) {
+        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.VIDEO);
     }
 
-    private boolean isTelephoneFormat(RecordListing recordListing) {
-        return null != recordListing.getHearingFormat() && recordListing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+    private boolean isTelephoneFormat(Listing listing) {
+        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
     }
 
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
