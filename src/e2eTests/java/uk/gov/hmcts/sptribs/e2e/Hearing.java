@@ -9,11 +9,12 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.AwaitingHearing;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.AwaitingOutcome;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
@@ -55,7 +56,7 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
+            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
@@ -133,7 +134,7 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
+            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
