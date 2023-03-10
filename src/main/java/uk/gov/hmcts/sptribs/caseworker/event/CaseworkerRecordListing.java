@@ -123,7 +123,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
 
-        caseData.getRecordListing().setHearingStatus(Listed);
+        caseData.getListing().setHearingStatus(Listed);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -146,7 +146,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
             listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
-        data.getRecordListing().setHearingStatus(Listed);
+        data.getListing().setHearingStatus(Listed);
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))

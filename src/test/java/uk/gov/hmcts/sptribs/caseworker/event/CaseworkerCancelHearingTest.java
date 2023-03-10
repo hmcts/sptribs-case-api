@@ -204,7 +204,7 @@ class CaseworkerCancelHearingTest {
         assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
         assertThat(response).isNotNull();
         assert response.getState().getName().equals(State.CaseManagement.getName());
-        assert (response.getData().getRecordListing().getHearingStatus().equals(HearingState.Cancelled));
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Cancelled));
 
     }
 

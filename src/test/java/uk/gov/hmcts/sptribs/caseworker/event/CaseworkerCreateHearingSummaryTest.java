@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
-import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.util.Set;
 
@@ -97,8 +95,12 @@ class CaseworkerCreateHearingSummaryTest {
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
+
+        Listing recordListing = getRecordListing();
+        caseData.setListing(recordListing);
         updatedCaseDetails.setData(caseData);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -106,6 +108,7 @@ class CaseworkerCreateHearingSummaryTest {
 
         //Then
         assertThat(response).isNotNull();
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Complete));
     }
 
     @Test

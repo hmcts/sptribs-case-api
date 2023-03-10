@@ -52,7 +52,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(Listing::getNumberOfDays)
             .mandatory(Listing::getAdditionalHearingDate, "recordNumberOfDays = \"Yes\"")
             .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
-            .readonly(RecordListing::getHearingStatus,ALWAYS_HIDE)
+            .readonly(Listing::getHearingStatus,ALWAYS_HIDE)
             .done();
     }
 
