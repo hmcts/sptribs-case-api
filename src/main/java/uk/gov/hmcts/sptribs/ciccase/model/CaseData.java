@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
@@ -84,14 +83,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     private Notifications notifications = new Notifications();
 
-    @Builder.Default
-    @CCD(
-        label = "Cancel Hearing",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CancelHearing cancelHearing = new CancelHearing();
-
-
     @CCD(
         label = "Flag Location",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -104,11 +95,6 @@ public class CaseData {
     )
     private State caseStatus;
 
-    @CCD(
-        label = "Hearing Status",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private HearingState hearingStatus;
 
     @CCD(
         label = "Hearing Date",
