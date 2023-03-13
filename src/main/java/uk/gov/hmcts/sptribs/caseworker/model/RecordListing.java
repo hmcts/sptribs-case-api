@@ -16,6 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingSession;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -37,6 +38,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RecordListing {
+
+    @CCD(
+        label = "Hearing Status",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingState hearingStatus;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

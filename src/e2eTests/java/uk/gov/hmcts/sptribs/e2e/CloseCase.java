@@ -9,8 +9,8 @@ import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 import java.util.Calendar;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseClosed;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
