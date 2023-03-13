@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
@@ -42,6 +43,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .name("Stays: Create/edit stay")
             .showSummary()
             .description("Stays: Create/edit stay")
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayed)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
@@ -56,12 +58,21 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .optional(CaseStay::getAdditionalDetail, "");
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
         var caseData = details.getData();
+        caseData.getCaseStay().setIsCaseStayed(YesOrNo.YES);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseStayed)

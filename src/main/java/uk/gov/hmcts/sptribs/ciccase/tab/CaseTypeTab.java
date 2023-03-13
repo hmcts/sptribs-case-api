@@ -36,20 +36,23 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
             .field(CaseData::getHyphenatedCaseRef)
-            .field("stayStayReason")
-            .field("stayAdditionalDetail")
-            .field("stayExpirationDate")
-            .field("removeStayStayRemoveReason")
-            .field("removeStayAdditionalDetail")
-            .field("removeStayStayRemoveOtherDescription")
-            .field("cicCaseIsRepresentativePresent")
             .label("representativeDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
             .field("cicCaseIsRepresentativeQualified")
             .field("cicCaseRepresentativeOrgName")
             .field("cicCaseRepresentativeFullName")
             .field("cicCaseRepresentativePhoneNumber")
             .field("cicCaseRepresentativeEmailAddress")
-            .field("cicCaseRepresentativeReference");
+            .field("cicCaseRepresentativeReference")
+            .field("cicCaseIsRepresentativePresent")
+            .label("stayDetails", "stayIsCaseStayed=\"Yes\"", "### Stay Details")
+            .field("stayStayReason", "stayIsCaseStayed=\"Yes\"")
+            .field("stayExpirationDate", "stayIsCaseStayed=\"Yes\"")
+            .field("stayAdditionalDetail", "stayIsCaseStayed=\"Yes\"")
+            .label("removeStayDetails", "removeStayStayRemoveReason!=\"\"", "### Remove Stay Details")
+            .field("removeStayStayRemoveReason")
+            .field("removeStayStayRemoveOtherDescription")
+            .field("removeStayAdditionalDetail");
+
     }
 
     private void buildStateTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
