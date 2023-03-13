@@ -43,7 +43,6 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .name("Stays: Create/edit stay")
             .showSummary()
             .description("Stays: Create/edit stay")
-            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayed)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
@@ -56,13 +55,6 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .mandatory(CaseStay::getFlagType, "stayStayReason = \"Other\"")
             .mandatoryWithLabel(CaseStay::getExpirationDate, "")
             .optional(CaseStay::getAdditionalDetail, "");
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(

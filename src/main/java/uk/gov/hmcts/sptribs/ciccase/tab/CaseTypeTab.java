@@ -13,6 +13,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 @Component
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
@@ -44,14 +46,16 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRepresentativeEmailAddress")
             .field("cicCaseRepresentativeReference")
             .field("cicCaseIsRepresentativePresent")
-            .label("stayDetails", "stayIsCaseStayed=\"Yes\"", "### Stay Details")
+            .label("stayDetails", "stayStayReason!=\"\" AND stayIsCaseStayed=\"Yes\"", "### Stay Details")
+            .field("stayIsCaseStayed", ALWAYS_HIDE)
             .field("stayStayReason", "stayIsCaseStayed=\"Yes\"")
             .field("stayExpirationDate", "stayIsCaseStayed=\"Yes\"")
             .field("stayAdditionalDetail", "stayIsCaseStayed=\"Yes\"")
-            .label("removeStayDetails", "removeStayStayRemoveReason!=\"\"", "### Remove Stay Details")
-            .field("removeStayStayRemoveReason")
-            .field("removeStayStayRemoveOtherDescription")
-            .field("removeStayAdditionalDetail");
+            .field("stayFlagType", "stayIsCaseStayed=\"Yes\"")
+            .label("removeStayDetails", "removeStayStayRemoveReason!=\"\" AND stayIsCaseStayed=\"No\"", "### Remove Stay Details")
+            .field("removeStayStayRemoveReason", "stayIsCaseStayed=\"No\"")
+            .field("removeStayStayRemoveOtherDescription", "stayIsCaseStayed=\"No\"")
+            .field("removeStayAdditionalDetail", "stayIsCaseStayed=\"No\"");
 
     }
 
