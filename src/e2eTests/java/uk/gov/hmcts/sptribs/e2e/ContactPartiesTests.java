@@ -4,6 +4,7 @@ import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
@@ -11,7 +12,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ContactParties;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
-public class ContactParties extends Base {
+public class ContactPartiesTests extends Base {
 
     @Test
     @Order(1)
