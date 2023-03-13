@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateListing;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditListing;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateSummary;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditSummary;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CancelHearing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateListing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateSummary;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditListing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditSummary;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.PostponeHearing;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingOutcome;
