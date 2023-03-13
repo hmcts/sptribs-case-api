@@ -27,10 +27,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -105,7 +103,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-        final List<String> errors = new ArrayList<>();
         if (null != caseData.getRecordListing()
             && null != caseData.getRecordListing().getNumberOfDays()
             && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
@@ -126,12 +123,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getRecordListing()));
         caseData.setCurrentEvent("");
 
-
-        caseData.setHearingStatus(Listed);
+        caseData.getRecordListing().setHearingStatus(Listed);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
-            .errors(errors)
             .build();
     }
 
@@ -151,7 +146,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
             listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
-        data.setHearingStatus(Listed);
+        data.getRecordListing().setHearingStatus(Listed);
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))

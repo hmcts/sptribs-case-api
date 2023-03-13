@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.testutils;
+package uk.gov.hmcts.sptribs.cftlib.util;
 
 import java.util.Random;
 
@@ -10,6 +10,7 @@ public class StringHelpers {
     private static final String CHAR_LIST = "abcdefghijklmnopqrstuvwxyz1234567890";
 
     public static String getRandomString(int length) {
+        char firstLetter = getRandomCharacter("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         Random random = new Random();
         char[] randomChars = new char[length];
         for (int i = 0; i < length; i++) {

@@ -8,17 +8,16 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
-
 public class IssueADecision extends Base {
-    private Page page;
 
     @Test
     public void caseWorkerShouldIssueADecision() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -56,13 +55,13 @@ public class IssueADecision extends Base {
         assertThat(page.locator("h2"))
             .hasText("Check your answers", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
-        assertThat(page.locator("h1").locator("nth=1"))
-            .hasText("Decision notice issued", textOptionsWithTimeout(30000));
-        assertThat(page.locator("h2"))
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Decision notice issued", textOptionsWithTimeout(60000));
+        assertThat(page.locator("ccd-markdown markdown h2"))
             .hasText("A notification has been sent to: Subject, Respondent, Representative", textOptionsWithTimeout(30000));
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 }

@@ -1,46 +1,34 @@
-package uk.gov.hmcts.sptribs.e2e;
+package uk.gov.hmcts.sptribs.cftlib.action;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
-import uk.gov.hmcts.sptribs.e2e.enums.Actions;
-import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
-import uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate;
-import uk.gov.hmcts.sptribs.testutils.DateHelpers;
-import uk.gov.hmcts.sptribs.testutils.PageHelpers;
-import uk.gov.hmcts.sptribs.testutils.StringHelpers;
+import uk.gov.hmcts.sptribs.cftlib.util.DateHelpers;
+import uk.gov.hmcts.sptribs.cftlib.util.PageHelpers;
+import uk.gov.hmcts.sptribs.cftlib.util.StringHelpers;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static java.lang.String.valueOf;
-import static java.time.LocalDate.now;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
-import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
-import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
-import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseStayed;
-import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.Submitted;
-import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.containsTextOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.functionOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.selectorOptionsWithTimeout;
+import static uk.gov.hmcts.sptribs.cftlib.util.AssertionHelpers.textOptionsWithTimeout;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.clickLink;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.functionOptionsWithTimeout;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getCheckBoxByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getRadioButtonByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTabByText;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.selectorOptionsWithTimeout;
+
+
+
 
 public class Case {
 
-    public static final String SELECT_A_VALUE = "--Select a value--";
     private final Page page;
 
     public Case(Page page) {
@@ -69,6 +57,7 @@ public class Case {
         page.selectOption("#cc-jurisdiction", new SelectOption().setLabel("CIC"));
         page.selectOption("#cc-case-type", new SelectOption().setLabel("CIC"));
         page.selectOption("#cc-event", new SelectOption().setLabel("Create Case"));
+        page.locator("ccd-create-case-filters button[type='submit']").click();
         clickButton(page, "Start");
 
         // Select case categories
@@ -82,9 +71,9 @@ public class Case {
         assertThat(page.locator("h1"))
             .hasText("When was the case received?", textOptionsWithTimeout(30000));
         Calendar date = DateHelpers.getYesterdaysDate();
-        getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
-        getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
-        getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
+        getTextBoxByLabel(page, "Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
+        getTextBoxByLabel(page, "Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
+        getTextBoxByLabel(page, "Year").type(String.valueOf(date.get(Calendar.YEAR)));
         clickButton(page, "Continue");
 
         // Fill identified parties form
@@ -115,7 +104,7 @@ public class Case {
         } else {
             getRadioButtonByLabel(page, "Email").click();
             getTextBoxByLabel(page, "Subject's email address")
-                        .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
+                .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
         }
         fillAddressDetails("Subject");
         clickButton(page, "Continue");
@@ -123,7 +112,7 @@ public class Case {
         // Fill applicant details form
         if (options.contains("applicant")) {
             assertThat(page.locator("h1"))
-                .hasText("Who is the applicant in this case?", textOptionsWithTimeout(60000));
+                .hasText("Who is the applicant in this case?", textOptionsWithTimeout(30000));
             getTextBoxByLabel(page, "Applicant's full name").fill("Applicant " + StringHelpers.getRandomString(9));
             getTextBoxByLabel(page, "Applicant's phone number").fill("07465730467");
             getTextBoxByLabel(page, "Day").fill("3");
@@ -144,7 +133,7 @@ public class Case {
         // Fill representative details form
         if (options.contains("representative")) {
             assertThat(page.locator("h1"))
-                .hasText("Who is the Representative for this case?", textOptionsWithTimeout(60000));
+                .hasText("Who is the Representative for this case?", textOptionsWithTimeout(30000));
             getTextBoxByLabel(page, "Representative's full name").fill("Representative " + StringHelpers.getRandomString(9));
             getTextBoxByLabel(page, "Organisation or business name (Optional)").fill(StringHelpers.getRandomString(10) + " Limited");
             getTextBoxByLabel(page, "Representative's contact number").fill("07456831774");
@@ -205,7 +194,7 @@ public class Case {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(Submitted.label, getCaseStatus());
+        Assertions.assertEquals("Submitted", getCaseStatus());
 
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
         return page.locator("ccd-markdown markdown h3")
@@ -225,7 +214,7 @@ public class Case {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+        Assertions.assertEquals("Case management", getCaseStatus());
     }
 
     public String getCaseStatus() {
@@ -271,7 +260,7 @@ public class Case {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
-        assertThat(page.locator("h4")).containsText(CaseStayed.label);
+        assertThat(page.locator("h4")).containsText("Case stayed");
     }
 
     private void fillAddressDetails(String partyType) {
@@ -309,7 +298,7 @@ public class Case {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+        Assertions.assertEquals("Case management", getCaseStatus());
     }
 
     public void caseworkerShouldAbleToCloseTheCase() {
@@ -321,9 +310,9 @@ public class Case {
         assertThat(page.locator("h1")).hasText("Withdrawal details", textOptionsWithTimeout(30000));
         page.getByLabel("Who withdrew from the case?").fill("case worker");
         Calendar date = DateHelpers.getYesterdaysDate();
-        getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
-        getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
-        getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
+        getTextBoxByLabel(page, "Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
+        getTextBoxByLabel(page, "Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
+        getTextBoxByLabel(page, "Year").type(String.valueOf(date.get(Calendar.YEAR)));
         page.locator("h1").click();
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
@@ -339,111 +328,7 @@ public class Case {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseClosed.label, getCaseStatus());
+        Assertions.assertEquals("Case closed", getCaseStatus());
     }
 
-    public boolean testChangeStateTo(CaseState state) {
-        startNextStepAction("Test change state");
-        assertThat(page.locator("h1")).hasText("Test change state", textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, state.label).click();
-        clickButton(page, "Continue");
-        clickButton(page, "Save and continue");
-        assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("State changed", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        return true;
-    }
-
-    public void createDraft(DraftOrderTemplate template) {
-        startNextStepAction(CreateDraft.label);
-        assertThat(page.locator("h1"))
-            .hasText("Create order", textOptionsWithTimeout(60000));
-        page.selectOption("#orderContentOrderTemplate",
-            new SelectOption().setLabel(template.label));
-        clickButton(page, "Continue");
-        getTextBoxByLabel(page, "Main content").type("  +++  This is the main content area");
-        clickButton(page, "Continue");
-        getTextBoxByLabel(page, "Order signature").fill("Tribunal Judge Farrelly");
-        clickButton(page, "Continue");
-        assertThat(page.locator("a.ng-star-inserted").last())
-            .containsText(" Order-[Subject", containsTextOptionsWithTimeout(60000));
-        assertThat(page.locator("a.ng-star-inserted").last())
-            .containsText(".pdf", containsTextOptionsWithTimeout(60000));
-        clickButton(page, "Continue");
-        assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
-        clickButton(page, "Save and continue");
-        assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Draft order created.", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        assertThat(page.locator("tr a").first())
-            .hasText(CreateDraft.label, textOptionsWithTimeout(60000));
-    }
-
-    public void sendOrder(LocalDate localDate) {
-        startNextStepAction(SendOrder);
-        getRadioButtonByLabel(page, "Issue and send an existing draft").click();
-        clickButton(page, "Continue");
-        assertThat(page.locator("#cicCaseDraftOrderDynamicList option").first())
-            .hasText(SELECT_A_VALUE);
-        Assertions.assertTrue(page.locator("#cicCaseDraftOrderDynamicList option").count() > 1);
-        String draftName = page.locator("#cicCaseDraftOrderDynamicList option").allTextContents().get(1);
-        page.selectOption("#cicCaseDraftOrderDynamicList", draftName);
-        clickButton(page, "Continue");
-        clickButton(page, "Add new");
-        getTextBoxByLabel(page, "Day").fill(valueOf(localDate.getDayOfMonth()));
-        getTextBoxByLabel(page, "Month").fill(valueOf(localDate.getMonthValue()));
-        getTextBoxByLabel(page, "Year").type(valueOf(localDate.getYear()));
-        getTextBoxByLabel(page, "Due Date information (Optional)").type("OPTIONAL Due date information populated by automation framework");
-        getCheckBoxByLabel(page, "Yes").check();
-        clickButton(page, "Continue");
-        getCheckBoxByLabel(page, "Subject").check();
-        getCheckBoxByLabel(page, "Respondent").check();
-        clickButton(page, "Continue");
-        getRadioButtonByLabel(page, "Yes").click();
-        getRadioButtonByLabel(page, "7 days").click();
-        clickButton(page, "Continue");
-        assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
-        clickButton(page, "Save and continue");
-        assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Order sent", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        assertThat(page.locator("tr a").first())
-            .hasText(SendOrder.label, textOptionsWithTimeout(60000));
-    }
-
-    public void sendOrder() {
-        sendOrder(now().plusMonths(1));
-    }
-
-    public void mangeOrderDueDateAmendDueDate(LocalDate localDate) {
-        startNextStepAction(ManageDueDate);
-        assertThat(page.locator("#cicCaseOrderDynamicList option").first())
-            .hasText(SELECT_A_VALUE);
-        Assertions.assertTrue(page.locator("#cicCaseOrderDynamicList option").count() > 1);
-        String draftName = page.locator("#cicCaseOrderDynamicList option").allTextContents().get(1);
-        page.selectOption("#cicCaseOrderDynamicList", draftName);
-        clickButton(page, "Continue");
-        getTextBoxByLabel(page, "Day").fill(String.valueOf(localDate.getDayOfMonth()));
-        getTextBoxByLabel(page, "Month").fill(String.valueOf(localDate.getMonthValue()));
-        getTextBoxByLabel(page, "Year").fill(String.valueOf(localDate.getYear()));
-        clickButton(page, "Continue");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
-        clickButton(page, "Save and continue");
-        assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Due dates amended.", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        assertThat(page.locator("tr a").first())
-            .hasText(ManageDueDate.label, textOptionsWithTimeout(60000));
-    }
 }

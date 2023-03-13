@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -203,6 +204,7 @@ class CaseworkerCancelHearingTest {
         assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
         assertThat(response).isNotNull();
         assert response.getState().getName().equals(State.CaseManagement.getName());
+        assert (response.getData().getRecordListing().getHearingStatus().equals(HearingState.Cancelled));
 
     }
 

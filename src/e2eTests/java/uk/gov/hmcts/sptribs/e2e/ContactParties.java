@@ -6,17 +6,16 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class ContactParties extends Base {
 
-    private Page page;
-
     @Test
     @Order(1)
     public void caseWorkerShouldBeAbleToConnectContactParties() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
@@ -37,7 +36,7 @@ public class ContactParties extends Base {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 }
 
