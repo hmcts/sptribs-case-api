@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
@@ -62,6 +63,8 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     ) {
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
         var caseData = details.getData();
+        caseData.getCaseStay().setIsCaseStayed(YesOrNo.YES);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseStayed)
