@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseStayed;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.RemoveStay;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseStayed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
@@ -67,7 +68,7 @@ public class StayCase extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.addStayToCase();
-        newCase.startNextStepAction("Stays: Remove stay");
+        newCase.startNextStepAction(RemoveStay);
         assertThat(page.locator("h1")).hasText("Remove stay from this case",textOptionsWithTimeout(60000));
         page.getByLabel("Received outcome of criminal proceedings").check();
         clickButton(page, "Continue");

@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.CaseState.CaseManagement;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
@@ -32,7 +33,7 @@ public class CreateFlag extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.createCaseFlag();
-        newCase.startNextStepAction("Flags: Manage flags");
+        newCase.startNextStepAction(ManageFlags);
         assertThat(page.locator("h1")).hasText("Flags: Manage flags", textOptionsWithTimeout(60000));
         page.getByLabel("Flag Type (Optional)").click();
         page.getByLabel("Flag Type (Optional)").fill("test flag");

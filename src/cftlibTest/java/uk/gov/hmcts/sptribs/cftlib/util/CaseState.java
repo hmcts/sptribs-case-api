@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.e2e;
+package uk.gov.hmcts.sptribs.cftlib.util;
 
 public enum CaseState {
 

@@ -1,31 +1,25 @@
-package uk.gov.hmcts.sptribs.e2e;
+package uk.gov.hmcts.sptribs.cftlib.action;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
-import uk.gov.hmcts.sptribs.testutils.DateHelpers;
-import uk.gov.hmcts.sptribs.testutils.PageHelpers;
+import uk.gov.hmcts.sptribs.cftlib.util.DateHelpers;
+import uk.gov.hmcts.sptribs.cftlib.util.PageHelpers;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CancelHearing;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateListing;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateSummary;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditListing;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditSummary;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.PostponeHearing;
-import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingHearing;
-import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingOutcome;
-import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
-import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getRadioButtonByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
+import static uk.gov.hmcts.sptribs.cftlib.util.AssertionHelpers.textOptionsWithTimeout;
+import static uk.gov.hmcts.sptribs.cftlib.util.CaseState.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.cftlib.util.CaseState.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.cftlib.util.CaseState.CaseManagement;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getCheckBoxByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getRadioButtonByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
+import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getValueFromTableFor;
 
 public class Hearing {
     private final Page page;
@@ -41,7 +35,7 @@ public class Hearing {
      */
     public void createListing(String... args) {
         Case newCase = new Case(page);
-        newCase.startNextStepAction(CreateListing);
+        newCase.startNextStepAction("Hearings: Create listing");
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -61,7 +55,7 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
@@ -117,7 +111,7 @@ public class Hearing {
 
     public void editListing(String... args) {
         Case newCase = new Case(page);
-        newCase.startNextStepAction(EditListing);
+        newCase.startNextStepAction("Hearings: Edit listing");
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -125,7 +119,7 @@ public class Hearing {
         assertThat(getRadioButtonByLabel(page, "Case management")).isChecked();
         assertThat(getRadioButtonByLabel(page, "Face to Face")).isChecked();
         getRadioButtonByLabel(page, "Interlocutory").check();
-        getRadioButtonByLabel(page,"Video").check();
+        getRadioButtonByLabel(page, "Video").check();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Region data form
@@ -139,7 +133,7 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
@@ -202,7 +196,7 @@ public class Hearing {
 
     public void createHearingSummary() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction(CreateSummary);
+        newCase.startNextStepAction("Hearings: Create summary");
 
         // Fill Select hearing form
         selectHearing();
@@ -267,7 +261,7 @@ public class Hearing {
 
     public void editHearingSummary() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction(EditSummary);
+        newCase.startNextStepAction("Hearings: Edit summary");
 
         // Fill select hearing form
         assertThat(page.locator("h1"))
@@ -337,7 +331,7 @@ public class Hearing {
 
     public void cancelHearing() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction(CancelHearing);
+        newCase.startNextStepAction("Hearings: Cancel hearing");
 
         // Fill Select hearing form
         selectHearing();
@@ -373,7 +367,7 @@ public class Hearing {
 
     public void postponeHearing() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction(PostponeHearing);
+        newCase.startNextStepAction("Hearings: Postpone hearing");
 
         // Fill Select hearing form
         selectHearing();
