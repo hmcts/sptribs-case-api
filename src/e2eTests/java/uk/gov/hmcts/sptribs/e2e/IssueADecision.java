@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueDecision;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -26,7 +27,7 @@ public class IssueADecision extends Base {
         Hearing hearing = new Hearing(page);
         hearing.createListing();
         hearing.createHearingSummary();
-        newCase.startNextStepAction("Decision: Issue a decision");
+        newCase.startNextStepAction(IssueDecision);
         assertThat(page.locator("h1"))
             .hasText("Create a decision notice", textOptionsWithTimeout(60000));
         page.getByLabel("Create from a template").check();
