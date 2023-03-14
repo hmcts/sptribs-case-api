@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueCaseToRespondent;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -20,7 +21,7 @@ public class IssueToRespondent extends Base {
         Case newCase = new Case(page);
         newCase.createCase("representative");
         newCase.buildCase();
-        newCase.startNextStepAction("Case: Issue to respondent");
+        newCase.startNextStepAction(IssueCaseToRespondent);
         assertThat(page.locator("h1")).hasText("Select documentation", textOptionsWithTimeout(60000));
         getCheckBoxByLabel(page, "Tribunal form").first().check();
         clickButton(page, "Continue");

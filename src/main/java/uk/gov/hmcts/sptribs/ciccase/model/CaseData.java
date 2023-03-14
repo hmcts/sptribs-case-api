@@ -241,10 +241,6 @@ public class CaseData {
         );
     }
 
-    public RemoveCaseStay getRemoveCaseStay() {
-        return new RemoveCaseStay();
-    }
-
     public String getClosedDayCount() {
         if (null != closureDate) {
             LocalDate now = LocalDate.now();
