@@ -62,7 +62,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#recordHearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -140,7 +140,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#recordHearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")

@@ -61,14 +61,14 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
-                .fill("Hendon Magistrates Court, The Court House, The Hyde");
+                .fill("Hendon Magistrates Court-The Court House, The Hyde");
         } else {
             page.selectOption("#recordHearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -139,14 +139,14 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#recordHearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
