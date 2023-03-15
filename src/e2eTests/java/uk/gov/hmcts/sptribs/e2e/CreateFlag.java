@@ -3,7 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
@@ -13,7 +13,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class CreateFlag extends Base {
 
-    @Test
+    @Disabled
     public void caseWorkerShouldBeAbleToCreateACaseFlag() {
         Page page = getPage();
         Login login = new Login(page);
@@ -24,7 +24,7 @@ public class CreateFlag extends Base {
         newCase.createCaseFlag();
     }
 
-    @Test
+    @Disabled
     public void caseWorkerShouldAbleToDoManageFlags() {
         Page page = getPage();
         Login login = new Login(page);

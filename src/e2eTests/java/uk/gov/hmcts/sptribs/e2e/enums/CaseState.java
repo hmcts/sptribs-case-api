@@ -4,8 +4,8 @@ public enum CaseState {
 
     AwaitingHearing("Awaiting hearing"),
     AwaitingOutcome("Awaiting outcome"),
-    CaseManagement("Case management"),
     CaseClosed("Case closed"),
+    CaseManagement("Case management"),
     CaseStayed("Case stayed"),
     Submitted("Submitted");
 
