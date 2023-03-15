@@ -26,7 +26,7 @@ public class HearingService {
         String hearingDate =
             data.getListing().getHearingType().getLabel()
                 + SPACE + HYPHEN + SPACE
-                + data.getListing().getHearingDate().format(dateFormatter)
+                + data.getListing().getDate().format(dateFormatter)
                 + SPACE
                 + data.getListing().getHearingTime();
 
@@ -38,7 +38,7 @@ public class HearingService {
         String hearingSummary =
             data.getListing().getHearingType().getLabel()
                 + SPACE + HYPHEN + SPACE
-                + data.getListing().getHearingDate().format(dateFormatter)
+                + data.getListing().getDate().format(dateFormatter)
                 + SPACE
                 + data.getListing().getHearingTime();
 

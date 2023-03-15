@@ -18,7 +18,7 @@ public class HearingAttendeesRolePage implements CcdPageConfiguration {
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .mandatory(HearingSummary::getRoles)
-            .mandatory(HearingSummary::getOthers, "recordHearingSummaryRolesCONTAINS \"other\"")
+            .mandatory(HearingSummary::getOthers, "rolesCONTAINS \"other\"")
             .done();
     }
 }

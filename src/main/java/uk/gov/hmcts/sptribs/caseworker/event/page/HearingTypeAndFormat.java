@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 @Component
 public class HearingTypeAndFormat implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "recordVenueNotListedOption=\"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {

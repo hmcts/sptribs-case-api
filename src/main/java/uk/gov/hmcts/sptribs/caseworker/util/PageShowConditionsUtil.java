@@ -11,8 +11,8 @@ public final class PageShowConditionsUtil {
     private static final String ISSUE_FINAL_DECISION_UPLOAD_CONDITION =
         "caseIssueFinalDecisionFinalDecisionNotice = \"Upload from your computer\"";
 
-    private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " recordHearingSummaryExists != \"YES\"";
-    private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  recordHearingSummaryExists = \"YES\"";
+    private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " hearingSummaryExists != \"YES\"";
+    private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  hearingSummaryExists = \"YES\"";
 
     private PageShowConditionsUtil() {
     }

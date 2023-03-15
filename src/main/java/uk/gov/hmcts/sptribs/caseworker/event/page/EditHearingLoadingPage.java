@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 @Component
 public class EditHearingLoadingPage implements CcdPageConfiguration {
 
-    private static final String SHOW = "recordHearingSummaryExists != \"YES\"";
+    private static final String SHOW = "hearingSummaryExists != \"YES\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {

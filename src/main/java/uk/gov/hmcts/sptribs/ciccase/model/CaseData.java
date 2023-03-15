@@ -134,7 +134,7 @@ public class CaseData {
     private CaseBuilt caseBuilt = new CaseBuilt();
 
 
-    @JsonUnwrapped(prefix = "record")
+    @JsonUnwrapped
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private Listing listing = new Listing();

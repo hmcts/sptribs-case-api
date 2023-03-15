@@ -112,7 +112,7 @@ public class NotificationHelper {
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TYPE, listing.getHearingType());
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommonConstants.CIC_CASE_UK_DATE_FORMAT);
-        templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, listing.getHearingDate().format(dateTimeFormatter));
+        templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, listing.getDate().format(dateTimeFormatter));
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, listing.getHearingTime());
 
         if (isVideoFormat(listing) || isTelephoneFormat(listing)) {

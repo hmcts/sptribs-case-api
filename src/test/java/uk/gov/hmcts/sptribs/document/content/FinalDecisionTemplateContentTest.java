@@ -38,7 +38,7 @@ public class FinalDecisionTemplateContentTest {
     public void shouldSuccessfullyApplyFinalDecisionContent() {
         //Given
         CaseData caseData = buildCaseData();
-        Listing listing = Listing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
+        Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00").build();
         caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
@@ -57,7 +57,7 @@ public class FinalDecisionTemplateContentTest {
     public void shouldSuccessfullyApplyFinalDecisionContentNoMembers() {
         //Given
         CaseData caseData = buildCaseData();
-        Listing listing = Listing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
+        Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00").build();
         caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .build();

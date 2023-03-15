@@ -26,7 +26,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
 @Component
 public class HearingVenues implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "recordVenueNotListedOption=\"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -41,16 +41,16 @@ public class HearingVenues implements CcdPageConfiguration {
             .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
             .optional(Listing::getVenueNotListedOption)
-            .mandatory(Listing::getHearingVenueNameAndAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
+            .mandatory(Listing::getHearingVenueNameAndAddress, "venueNotListedOption= \"VenueNotListed\"")
             .optional(Listing::getRoomAtVenue)
             .optional(Listing::getAddlInstr,
                 CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
             .label("hearingDateObj", "<h4>Hearing date</h4>")
-            .mandatory(Listing::getHearingDate)
+            .mandatory(Listing::getDate)
             .mandatory(Listing::getSession)
             .mandatory(Listing::getHearingTime)
             .mandatory(Listing::getNumberOfDays)
-            .mandatory(Listing::getAdditionalHearingDate, "recordNumberOfDays = \"Yes\"")
+            .mandatory(Listing::getAdditionalHearingDate, "numberOfDays = \"Yes\"")
             .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
             .readonly(Listing::getHearingStatus,ALWAYS_HIDE)
             .done();

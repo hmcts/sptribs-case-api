@@ -57,7 +57,7 @@ public class NotificationHelperTest {
         //Given
         Listing listing = Listing.builder()
             .conferenceCallNumber("cmi459t5iut5")
-            .hearingDate(LocalDate.of(2022, 12, 23))
+            .date(LocalDate.of(2022, 12, 23))
             .importantInfoDetails("Imp Info")
             .videoCallLink("http://abc.com")
             .conferenceCallNumber("+56677778")
@@ -76,7 +76,7 @@ public class NotificationHelperTest {
     void setRecordingTemplateVarsTest_VideoFormat() {
         //Given
         Listing listing = Listing.builder()
-            .hearingDate(LocalDate.of(2022, 12, 23))
+            .date(LocalDate.of(2022, 12, 23))
             .hearingFormat(HearingFormat.VIDEO)
             .build();
         Map<String, Object> templateVars = new HashMap<>();
@@ -91,7 +91,7 @@ public class NotificationHelperTest {
     void setRecordingTemplateVarsTest_HearingFormat_null() {
         //Given
         Listing listing = Listing.builder()
-            .hearingDate(LocalDate.of(2022, 12, 23))
+            .date(LocalDate.of(2022, 12, 23))
             .build();
         Map<String, Object> templateVars = new HashMap<>();
 
@@ -106,7 +106,7 @@ public class NotificationHelperTest {
         Listing listing = Mockito.mock(Listing.class);
 
         when(listing.getSelectedVenue()).thenReturn("London Hearing Venue");
-        when(listing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
+        when(listing.getDate()).thenReturn(LocalDate.of(2022, 12, 23));
         when(listing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
 
         Map<String, Object> templateVars = new HashMap<>();
@@ -123,7 +123,7 @@ public class NotificationHelperTest {
 
         when(listing.getHearingVenueNameAndAddress()).thenReturn("London Hearing Venue - London");
         when(listing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
-        when(listing.getHearingDate()).thenReturn(LocalDate.of(2022, 12, 23));
+        when(listing.getDate()).thenReturn(LocalDate.of(2022, 12, 23));
         Map<String, Object> templateVars = new HashMap<>();
 
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
@@ -135,7 +135,7 @@ public class NotificationHelperTest {
     void setRecordingTemplateVarsTest_TelephoneFormat() {
         //Given
         Listing listing = Listing.builder()
-            .hearingDate(LocalDate.of(2022, 12, 23))
+            .date(LocalDate.of(2022, 12, 23))
             .conferenceCallNumber("cmi459t5iut5")
             .addlInstr("Test Instructions")
             .videoCallLink("http://abc.com")

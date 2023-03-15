@@ -216,9 +216,9 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#hearingSummaryJudge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#hearingSummaryPanelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
@@ -286,9 +286,9 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#hearingSummaryJudge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#hearingSummaryPanelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 

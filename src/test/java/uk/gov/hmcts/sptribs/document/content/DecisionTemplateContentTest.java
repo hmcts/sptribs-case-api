@@ -36,7 +36,7 @@ public class DecisionTemplateContentTest {
         CaseData caseData = buildCaseData();
         caseData.setDecisionSignature("John Doe");
         caseData.setDecisionMainContent("Case Closed");
-        Listing listing = Listing.builder().hearingDate(LocalDate.now()).hearingTime("11::00").build();
+        Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00").build();
         caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
@@ -59,7 +59,7 @@ public class DecisionTemplateContentTest {
             .build();
         Listing listing = Listing.builder()
             .summary(summary)
-            .hearingDate(LocalDate.now())
+            .date(LocalDate.now())
             .hearingTime("11::00")
             .build();
 

@@ -23,7 +23,7 @@ public class HearingAttendees implements CcdPageConfiguration {
             .complex(Listing::getSummary)
             .optional(HearingSummary::getJudge)
             .mandatory(HearingSummary::getIsFullPanel)
-            .mandatory(HearingSummary::getMemberList, "recordHearingSummaryIsFullPanel = \"Yes\"")
+            .mandatory(HearingSummary::getMemberList, "isFullPanel = \"Yes\"")
             .done();
     }
 }

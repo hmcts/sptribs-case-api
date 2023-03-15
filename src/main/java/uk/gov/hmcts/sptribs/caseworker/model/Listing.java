@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,7 +33,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Listing {
@@ -116,7 +113,7 @@ public class Listing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate hearingDate;
+    private LocalDate date;
 
     @CCD(
         label = "Start time (24hr format)",
@@ -186,7 +183,7 @@ public class Listing {
     @Builder.Default
     private String hearingSummaryExists = "YES";
 
-    @JsonUnwrapped(prefix = "hearingSummary")
+    @JsonUnwrapped
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private HearingSummary summary = new HearingSummary();

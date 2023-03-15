@@ -34,8 +34,8 @@ public class DecisionTemplateContent {
         templateContent.put(MAIN_CONTENT, caseData.getDecisionMainContent());
         templateContent.put(HEARING_TIME, caseData.getListing().getHearingTime());
         templateContent.put(HEARING_VENUE_NAME, caseData.getListing().getHearingVenueNameAndAddress());
-        templateContent.put(HEARING_DATE, caseData.getListing().getHearingDate() != null
-            ? caseData.getListing().getHearingDate().format(formatter) : "");
+        templateContent.put(HEARING_DATE, caseData.getListing().getDate() != null
+            ? caseData.getListing().getDate().format(formatter) : "");
         return templateContent;
     }
 
