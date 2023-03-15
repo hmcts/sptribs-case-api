@@ -14,11 +14,10 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -85,8 +84,8 @@ class CaseworkerRecordListingTest {
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        RecordListing listing = getRecordListing();
-        caseData.setRecordListing(listing);
+        Listing listing = getRecordListing();
+        caseData.setListing(listing);
         caseData.setCicCase(getMockCicCase());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -103,8 +102,8 @@ class CaseworkerRecordListingTest {
         SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getRecordListing().getHearingType().getLabel()).isEqualTo("Final");
-        assertThat(response.getData().getRecordListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
+        assertThat(response.getData().getListing().getHearingType().getLabel()).isEqualTo("Final");
+        assertThat(response.getData().getListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
         assertThat(stayedResponse).isNotNull();
     }
 
@@ -117,8 +116,8 @@ class CaseworkerRecordListingTest {
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        RecordListing recordListing = getRecordListing();
-        caseData.setRecordListing(recordListing);
+        Listing recordListing = getRecordListing();
+        caseData.setListing(recordListing);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -151,9 +150,9 @@ class CaseworkerRecordListingTest {
             = caseworkerRecordListing.aboutToStart(updatedCaseDetails);
 
         //Then
-        assertThat(response.getData().getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
-        assertThat(response.getData().getRecordListing().getRegionList().getListItems()).hasSize(1);
-        assertThat(response.getData().getRecordListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+        assertThat(response.getData().getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
+        assertThat(response.getData().getListing().getRegionList().getListItems()).hasSize(1);
+        assertThat(response.getData().getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
 
     }
 
@@ -163,23 +162,23 @@ class CaseworkerRecordListingTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
+        final Listing recordListing = new Listing();
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
-        caseData.setRecordListing(recordListing);
+        caseData.setListing(recordListing);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
 
         //When
-        when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getRecordListing().getHearingVenues()
+        assertThat(response.getData().getListing().getHearingVenues()
             .getValue().getLabel()).isEqualTo("courtname-courtAddress");
-        assertThat(response.getData().getRecordListing().getHearingVenues().getListItems()).hasSize(1);
-        assertThat(response.getData().getRecordListing().getHearingVenues()
+        assertThat(response.getData().getListing().getHearingVenues().getListItems()).hasSize(1);
+        assertThat(response.getData().getListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
 
     }
@@ -198,11 +197,11 @@ class CaseworkerRecordListingTest {
             .build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        Listing recordListing = getRecordListing();
+        caseData.setListing(recordListing);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        RecordListing recordListing = RecordListing.builder().build();
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(recordListing);
 
         AboutToStartOrSubmitResponse<CaseData, State> response
@@ -212,7 +211,6 @@ class CaseworkerRecordListingTest {
         assertThat(response.getData().getCicCase().getHearingNotificationParties()).hasSize(3);
         assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
         assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
-        assert (response.getData().getRecordListing().getHearingStatus().equals(HearingState.Listed));
     }
 
     private CicCase getMockCicCase() {

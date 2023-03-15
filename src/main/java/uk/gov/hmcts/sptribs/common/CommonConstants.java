@@ -16,11 +16,11 @@ public final class CommonConstants {
     public static final String CIC_CASE_HEARING_DATE = "HearingDate";
     public static final String CIC_CASE_HEARING_TIME = "HearingTime";
     public static final String CIC_CASE_HEARING_INFO = "HearingInfo";
-    public static final String CIC_CASE_RECORD_HEARING_FORMAT_VIDEO = "recordHearingFormatVideo";
-    public static final String CIC_CASE_RECORD_VIDEO_CALL_LINK = "recordVideoCallLink";
-    public static final String CIC_CASE_RECORD_FORMAT_TEL = "recordHearingFormatTelephone";
-    public static final String CIC_CASE_RECORD_CONF_CALL_NUM = "recordConferenceCallNumber";
-    public static final String CIC_CASE_RECORD_HEARING_1FACE_TO_FACE = "recordHearingFormatFaceToFace";
+    public static final String CIC_CASE_RECORD_HEARING_FORMAT_VIDEO = "hearingFormatVideo";
+    public static final String CIC_CASE_RECORD_VIDEO_CALL_LINK = "videoCallLink";
+    public static final String CIC_CASE_RECORD_FORMAT_TEL = "hearingFormatTelephone";
+    public static final String CIC_CASE_RECORD_CONF_CALL_NUM = "conferenceCallNumber";
+    public static final String CIC_CASE_RECORD_HEARING_1FACE_TO_FACE = "hearingFormatFaceToFace";
     public static final String CIC_CASE_RECORD_REMOTE_HEARING = "Remote Hearing";
     public static final String CIC_CASE_UK_DATE_FORMAT = "dd-MM-yyyy";
 
