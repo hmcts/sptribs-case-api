@@ -15,7 +15,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSu
 
 public class RecordNotifyParties implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "recordHearingType=\"NEVER_SHOW\"";
+    private static final String ALWAYS_HIDE = "hearingType=\"NEVER_SHOW\"";
     private static final String RECIPIENT_LABEL = "Listing information recipient";
 
     @Override

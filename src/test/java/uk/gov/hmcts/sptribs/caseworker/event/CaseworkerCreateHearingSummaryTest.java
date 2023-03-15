@@ -11,7 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -96,10 +96,11 @@ class CaseworkerCreateHearingSummaryTest {
             .cicCase(cicCase)
             .build();
 
-        RecordListing recordListing = getRecordListing();
-        caseData.setRecordListing(recordListing);
+        Listing recordListing = getRecordListing();
+        caseData.setListing(recordListing);
         updatedCaseDetails.setData(caseData);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -107,7 +108,7 @@ class CaseworkerCreateHearingSummaryTest {
 
         //Then
         assertThat(response).isNotNull();
-        assert (response.getData().getRecordListing().getHearingStatus().equals(HearingState.Complete));
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Complete));
     }
 
     @Test
