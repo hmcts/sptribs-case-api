@@ -47,7 +47,7 @@ public class Hearing {
         // Fill Region data form
         assertThat(page.locator("h1"))
             .hasText("Region Data", textOptionsWithTimeout(30000));
-        page.selectOption("#recordRegionList", new SelectOption().setLabel("1-London"));
+        page.selectOption("#regionList", new SelectOption().setLabel("1-London"));
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing location and duration form
@@ -61,7 +61,7 @@ public class Hearing {
             getTextBoxByLabel(page, "Hearing Venue").last()
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
-            page.selectOption("#recordHearingVenues",
+            page.selectOption("#hearingVenues",
                 new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
@@ -125,7 +125,7 @@ public class Hearing {
         // Fill Region data form
         assertThat(page.locator("h1"))
             .hasText("Region Data", textOptionsWithTimeout(30000));
-        page.selectOption("#recordRegionList", new SelectOption().setLabel("1-London"));
+        page.selectOption("#regionList", new SelectOption().setLabel("1-London"));
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing location and duration form
@@ -139,7 +139,7 @@ public class Hearing {
             getTextBoxByLabel(page, "Hearing Venue").last()
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
-            page.selectOption("#recordHearingVenues",
+            page.selectOption("#hearingVenues",
                 new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
