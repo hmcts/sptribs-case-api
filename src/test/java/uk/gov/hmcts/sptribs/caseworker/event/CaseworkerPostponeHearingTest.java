@@ -122,6 +122,6 @@ class CaseworkerPostponeHearingTest {
 
         //Then
         assertThat(submitted.getConfirmationHeader()).contains("Hearing Postponed");
-        assert (response.getData().getRecordListing().getHearingStatus().equals(HearingState.Postponed));
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Postponed));
     }
 }
