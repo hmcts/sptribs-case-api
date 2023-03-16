@@ -33,6 +33,9 @@ public final class EventConstants {
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
     public static final String TEST_CHANGE_STATE = "change-state";
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
+    public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
+
+    public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
 
     private EventConstants() {
     }

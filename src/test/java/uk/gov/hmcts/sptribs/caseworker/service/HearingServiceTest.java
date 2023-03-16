@@ -24,8 +24,8 @@ class HearingServiceTest {
     @Test
     void shouldPopulateHearingDateDynamicList() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().recordListing(getRecordListing()).build();
-        caseData.getRecordListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
+        caseData.getListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
         details.setData(caseData);
         //When
 
@@ -38,7 +38,7 @@ class HearingServiceTest {
     @Test
     void shouldPopulateHearingDateDynamicListWhenAdditionalHearingDatesNull() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().recordListing(getRecordListing()).build();
+        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
         details.setData(caseData);
         //When
 
@@ -51,9 +51,9 @@ class HearingServiceTest {
     @Test
     void shouldPopulateHearingSummaryDynamicList() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().recordListing(getRecordListing()).build();
-        caseData.getRecordListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
-        caseData.setHearingSummary(getHearingSummary());
+        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
+        caseData.getListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        caseData.getListing().setSummary(getHearingSummary());
         details.setData(caseData);
         //When
 

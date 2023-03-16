@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -45,10 +45,10 @@ class RecordListHelperTest {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setRegionList(getMockedRegionData());
-        caseData.setRecordListing(recordListing);
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -59,9 +59,9 @@ class RecordListHelperTest {
 
 
         //Then
-        assertThat(caseData.getRecordListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
-        assertThat(caseData.getRecordListing().getRegionList().getListItems()).hasSize(1);
-        assertThat(caseData.getRecordListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+        assertThat(caseData.getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
+        assertThat(caseData.getListing().getRegionList().getListItems()).hasSize(1);
+        assertThat(caseData.getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
 
 
     }
@@ -70,10 +70,10 @@ class RecordListHelperTest {
     void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final RecordListing recordListing = new RecordListing();
-        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
-        recordListing.setRegionList(getMockedRegionData());
-        caseData.setRecordListing(recordListing);
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -82,10 +82,10 @@ class RecordListHelperTest {
         recordListHelper.populatedVenuesData(caseData);
 
         //Then
-        assertThat(caseData.getRecordListing().getHearingVenues()
+        assertThat(caseData.getListing().getHearingVenues()
             .getValue().getLabel()).isEqualTo("courtname-courtAddress");
-        assertThat(caseData.getRecordListing().getHearingVenues().getListItems()).hasSize(1);
-        assertThat(caseData.getRecordListing().getHearingVenues()
+        assertThat(caseData.getListing().getHearingVenues().getListItems()).hasSize(1);
+        assertThat(caseData.getListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
 
 
@@ -136,13 +136,13 @@ class RecordListHelperTest {
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformationVenueNotListed() {
 
-        RecordListing listing = RecordListing.builder()
+        Listing listing = Listing.builder()
             .hearingVenueNameAndAddress("name-address")
             .readOnlyHearingVenueName("name-address")
             .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
             .build();
 
-        RecordListing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+        Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
 
         assertThat(result.getReadOnlyHearingVenueName()).isNull();
     }
@@ -150,14 +150,14 @@ class RecordListHelperTest {
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformation() {
         Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        RecordListing listing = RecordListing.builder()
+        Listing listing = Listing.builder()
             .hearingVenueNameAndAddress("name-address")
             .readOnlyHearingVenueName("name-address")
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
 
-        RecordListing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+        Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
 
         assertThat(result.getReadOnlyHearingVenueName()).isNotNull();
     }
@@ -165,13 +165,13 @@ class RecordListHelperTest {
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformationSummary() {
         Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        RecordListing listing = RecordListing.builder()
+        Listing listing = Listing.builder()
             .readOnlyHearingVenueName("name-address")
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
 
-        RecordListing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+        Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
 
         assertThat(result.getHearingVenueNameAndAddress()).isNotNull();
     }
@@ -179,18 +179,18 @@ class RecordListHelperTest {
     @Test
     void shouldSuccessfullySaveSummary() {
         Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        RecordListing listing = RecordListing.builder()
+        HearingSummary summary = HearingSummary.builder().build();
+        Listing listing = Listing.builder()
             .readOnlyHearingVenueName("name-address")
+            .summary(summary)
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
-        HearingSummary summary = HearingSummary.builder().hearingFormat(listing.getHearingFormat()).build();
         CaseData data = caseData();
-        caseData().setHearingSummary(summary);
-        caseData().setRecordListing(listing);
-        recordListHelper.saveSummary(data);
+        caseData().setListing(listing);
+        Listing result = recordListHelper.saveSummary(data);
 
-        assertThat(data).isNotNull();
+        assertThat(result).isNotNull();
     }
 
 }
