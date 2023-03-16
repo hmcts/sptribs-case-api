@@ -9,6 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.event.page.EditCicaCaseDetailsPage;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CICA_CASE_DETAILS;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -26,19 +29,21 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final CcdPageConfiguration editCicaCaseDetailsPage = new EditCicaCaseDetailsPage();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
-
-        configBuilder
-            .event(CASEWORKER_EDIT_CICA_CASE_DETAILS)
-            .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
-            .name("Case: Edit case details")
-            .description("Case: Edit case details")
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR);
+        PageBuilder pageBuilder = new PageBuilder(
+            configBuilder
+                .event(CASEWORKER_EDIT_CICA_CASE_DETAILS)
+                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
+                .name("Case: Edit case details")
+                .description("Case: Edit case details")
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+                .grantHistoryOnly(SOLICITOR));
+        editCicaCaseDetailsPage.addTo(pageBuilder);
 
 
     }
