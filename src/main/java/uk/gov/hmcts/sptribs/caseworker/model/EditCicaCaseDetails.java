@@ -14,9 +14,21 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 public class EditCicaCaseDetails {
 
     @CCD(
-        label = "nn",
+        label = "CICA reference number",
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private String st1;
+    private String cicaReferenceNumber;
+
+    @CCD(
+        label = "CICA case worker",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String cicaCaseWorker;
+
+    @CCD(
+        label = "CICA case presenting officer",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String cicaCasePresentingOfficer;
 
 }
