@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -385,8 +386,23 @@ public class Case {
             .hasText(CreateDraft.label, textOptionsWithTimeout(60000));
     }
 
-    public void sendOrder(LocalDate localDate) {
+    public void selectAnExistingDraftOrderAndSend() {
+        selectAnExistingDraftOrderAndSend(now().plusMonths(1));
+    }
+
+    public void selectAnExistingDraftOrderAndSend(LocalDate localDate) {
         startNextStepAction(SendOrder);
+        selectAnExistingDraft();
+        AddOrderDueDatesAndCompleteJourney(localDate);
+    }
+
+    public void uploadAndSendOrder(LocalDate localDate) {
+        startNextStepAction(SendOrder);
+        uploadAnewDocument();
+        AddOrderDueDatesAndCompleteJourney(localDate);
+    }
+
+    private void selectAnExistingDraft() {
         getRadioButtonByLabel(page, "Issue and send an existing draft").click();
         clickButton(page, "Continue");
         assertThat(page.locator("#cicCaseDraftOrderDynamicList option").first())
@@ -395,6 +411,24 @@ public class Case {
         String draftName = page.locator("#cicCaseDraftOrderDynamicList option").allTextContents().get(1);
         page.selectOption("#cicCaseDraftOrderDynamicList", draftName);
         clickButton(page, "Continue");
+    }
+
+    private void uploadAnewDocument() {
+        getRadioButtonByLabel(page, "Upload a new order from your computer").click();
+        clickButton(page, "Continue");
+        clickButton(page, "Add new");
+        getTextBoxByLabel(page, "Description").fill("PDF file upload");
+        page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/sample_file.pdf"));
+        page.waitForFunction("selector => document.querySelector(selector).disabled === true",
+            "button[aria-label='Cancel upload']", PageHelpers.functionOptionsWithTimeout(6000));
+        clickButton(page, "Continue");
+        clickButton(page, "Previous");
+        assertThat(page.locator("ccd-read-document-field")).hasText("sample_file.pdf");
+        clickButton(page, "Continue");
+        assertThat(page.locator("h1.govuk-heading-l")).hasText("Add a due date");
+    }
+
+    private void AddOrderDueDatesAndCompleteJourney(LocalDate localDate) {
         clickButton(page, "Add new");
         getTextBoxByLabel(page, "Day").fill(valueOf(localDate.getDayOfMonth()));
         getTextBoxByLabel(page, "Month").fill(valueOf(localDate.getMonthValue()));
@@ -418,10 +452,6 @@ public class Case {
             .hasText("History", textOptionsWithTimeout(60000));
         assertThat(page.locator("tr a").first())
             .hasText(SendOrder.label, textOptionsWithTimeout(60000));
-    }
-
-    public void sendOrder() {
-        sendOrder(now().plusMonths(1));
     }
 
     public void mangeOrderDueDateAmendDueDate(LocalDate localDate) {
