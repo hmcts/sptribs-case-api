@@ -58,6 +58,7 @@ public class CaseData {
     private EditCicaCaseDetails editCicaCaseDetails = new EditCicaCaseDetails();
 
 
+    @JsonUnwrapped(prefix = "orderContent")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
