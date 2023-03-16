@@ -393,13 +393,13 @@ public class Case {
     public void selectAnExistingDraftOrderAndSend(LocalDate localDate) {
         startNextStepAction(SendOrder);
         selectAnExistingDraft();
-        AddOrderDueDatesAndCompleteJourney(localDate);
+        addOrderDueDatesAndCompleteJourney(localDate);
     }
 
     public void uploadAndSendOrder(LocalDate localDate) {
         startNextStepAction(SendOrder);
         uploadAnewDocument();
-        AddOrderDueDatesAndCompleteJourney(localDate);
+        addOrderDueDatesAndCompleteJourney(localDate);
     }
 
     private void selectAnExistingDraft() {
@@ -428,7 +428,7 @@ public class Case {
         assertThat(page.locator("h1.govuk-heading-l")).hasText("Add a due date");
     }
 
-    private void AddOrderDueDatesAndCompleteJourney(LocalDate localDate) {
+    private void addOrderDueDatesAndCompleteJourney(LocalDate localDate) {
         clickButton(page, "Add new");
         getTextBoxByLabel(page, "Day").fill(valueOf(localDate.getDayOfMonth()));
         getTextBoxByLabel(page, "Month").fill(valueOf(localDate.getMonthValue()));
