@@ -44,7 +44,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Component
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
-    private static final String ENVIRONMENT_AAT = "aat";
+    private static final String ENVIRONMENT_PROD = "prod";
     private static final String TEST_CREATE = "caseworker-create-case";
     private final FeatureToggleService featureToggleService;
 
@@ -72,9 +72,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
         var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
-
-        if (env.contains(ENVIRONMENT_AAT)) {
-            roles.add(SOLICITOR);
+        roles.add(SOLICITOR);
+        roles.add(COURT_ADMIN_CIC);
+        if (!env.contains(ENVIRONMENT_PROD)) {
             roles.add(SUPER_USER);
             roles.add(COURT_ADMIN_CIC);
             roles.add(DISTRICT_JUDGE_CIC);

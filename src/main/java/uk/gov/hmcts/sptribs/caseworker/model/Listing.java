@@ -3,8 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,10 +33,9 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RecordListing {
+public class Listing {
 
     @CCD(
         label = "Hearing Status",
@@ -115,7 +113,7 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate hearingDate;
+    private LocalDate date;
 
     @CCD(
         label = "Start time (24hr format)",
@@ -184,6 +182,11 @@ public class RecordListing {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private String hearingSummaryExists = "YES";
+
+    @JsonUnwrapped
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private HearingSummary summary = new HearingSummary();
 
     @JsonIgnore
     public String getSelectedRegionVal() {

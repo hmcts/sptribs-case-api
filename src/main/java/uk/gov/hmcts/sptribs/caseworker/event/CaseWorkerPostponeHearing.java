@@ -97,7 +97,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         }
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
         caseData.setCurrentEvent("");
-        caseData.getRecordListing().setHearingStatus(Postponed);
+        caseData.getListing().setHearingStatus(Postponed);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
