@@ -16,7 +16,7 @@ public class EditCicaCaseDetailsPage implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("editCaseDetails")
-            .pageLabel("Edit case details")
+            .pageLabel("Case details")
             .complex(CaseData::getEditCicaCaseDetails)
             .optional(EditCicaCaseDetails::getCicaReferenceNumber)
             .optional(EditCicaCaseDetails::getCicaCaseWorker)
