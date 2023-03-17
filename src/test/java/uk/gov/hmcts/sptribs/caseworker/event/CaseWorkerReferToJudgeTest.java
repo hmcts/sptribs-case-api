@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -22,6 +23,9 @@ public class CaseWorkerReferToJudgeTest {
 
     @Mock
     private ReferToJudgeReason referToJudgeReason;
+
+    @Mock
+    private ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo;
 
     @InjectMocks
     private CaseWorkerReferToJudge caseWorkerReferToJudge;
