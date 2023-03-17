@@ -233,6 +233,13 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ReferToJudge referToJudge = new ReferToJudge();
 
+    @JsonUnwrapped(prefix = "referToLegalOfficer")
+    @Builder.Default
+    @CCD(
+        label = "Why are you referring the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ReferToJudge referToLegalOfficer = new ReferToJudge();
+
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
