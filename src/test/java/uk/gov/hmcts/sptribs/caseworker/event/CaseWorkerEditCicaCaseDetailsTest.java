@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CICA_CASE_DETAILS;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,10 +40,9 @@ class CaseWorkerEditCicaCaseDetailsTest {
     }
 
     @Test
-    void shouldSuccessfullySaveDraftOrder() {
+    void shouldSuccessfullySave() {
 
         //Given
-        final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
