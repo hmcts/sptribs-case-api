@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -233,6 +234,13 @@ public class CaseData {
         label = "Close Case",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CloseCase closeCase = new CloseCase();
+
+    @JsonUnwrapped(prefix = "referToJudge")
+    @Builder.Default
+    @CCD(
+        label = "Why are you referring the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ReferToJudge referToJudge = new ReferToJudge();
 
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default
