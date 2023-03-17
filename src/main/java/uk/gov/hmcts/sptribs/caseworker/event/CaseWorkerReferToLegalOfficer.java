@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToLegalOfficerReason;
+import uk.gov.hmcts.sptribs.caseworker.helper.ReferralReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -26,12 +27,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State, UserRole> {
 
+
     @Autowired
     private ReferToLegalOfficerReason referToLegalOfficerReason;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-       PageBuilder pageBuilder =  new PageBuilder(configBuilder
+        PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_REFER_TO_LEGAL_OFFICER)
             .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
             .name("Refer case to legal officer")

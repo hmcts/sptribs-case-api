@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -12,7 +14,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +22,12 @@ import static java.util.EnumSet.allOf;
 import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
+
+
 @Component
+@Slf4j
 public class ReferToLegalOfficerReason implements CcdPageConfiguration {
+
 
     private final Map<ReferralReason, Set<State>> permittedStatesByReason =
         Map.ofEntries(
@@ -34,7 +39,7 @@ public class ReferToLegalOfficerReason implements CcdPageConfiguration {
             new AbstractMap.SimpleEntry<>(ReferralReason.POSTPONEMENT_REQUEST, of(State.AwaitingHearing)),
             new AbstractMap.SimpleEntry<>(ReferralReason.REINSTATEMENT_REQUEST, of(State.CaseClosed)),
             new AbstractMap.SimpleEntry<>(ReferralReason.RULE_27_REQUEST, complementOf(of(State.CaseClosed))),
-            new AbstractMap.SimpleEntry<>(ReferralReason.SET_ASIDE_REQUEST, EnumSet.of(State.CaseClosed)),
+            new AbstractMap.SimpleEntry<>(ReferralReason.SET_ASIDE_REQUEST, of(State.CaseClosed)),
             new AbstractMap.SimpleEntry<>(ReferralReason.STAY_REQUEST, complementOf(of(State.CaseClosed))),
             new AbstractMap.SimpleEntry<>(ReferralReason.STRIKE_OUT_REQUEST, complementOf(of(State.CaseClosed))),
             new AbstractMap.SimpleEntry<>(ReferralReason.TIME_EXTENSION_REQUEST, complementOf(of(State.CaseClosed))),

@@ -11,6 +11,8 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +23,9 @@ public class ReferToLegalOfficer {
 
     @CCD(
         label = "Why are you referring this case?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedList,
+        typeParameterOverride = "ReferralReason"
     )
     private ReferralReason referralReason;
 
