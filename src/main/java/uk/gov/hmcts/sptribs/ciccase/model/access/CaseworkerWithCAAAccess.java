@@ -25,7 +25,7 @@ public class CaseworkerWithCAAAccess implements HasAccessControl {
         grants.putAll(CITIZEN_CIC, READ);
         grants.putAll(SOLICITOR, READ);
         grants.putAll(SUPER_USER, READ);
-        grants.putAll(DISTRICT_JUDGE_CIC,CREATE_READ_UPDATE);
+        grants.putAll(DISTRICT_JUDGE_CIC,READ);
 
         grants.putAll(CREATOR, CREATE_READ_UPDATE);
         grants.putAll(COURT_ADMIN_CIC, CREATE_READ_UPDATE);

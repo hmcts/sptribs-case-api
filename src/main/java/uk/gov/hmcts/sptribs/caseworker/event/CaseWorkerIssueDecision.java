@@ -78,7 +78,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC,DISTRICT_JUDGE_CIC,SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE,COURT_ADMIN_CIC,DISTRICT_JUDGE_CIC,SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         issueDecisionNotice.addTo(pageBuilder);
         issueDecisionSelectTemplate.addTo(pageBuilder);
