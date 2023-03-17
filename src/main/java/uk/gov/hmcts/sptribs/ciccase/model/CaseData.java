@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
+import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -247,7 +248,7 @@ public class CaseData {
     @CCD(
         label = "Why are you referring the case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ReferToJudge referToLegalOfficer = new ReferToJudge();
+    private ReferToLegalOfficer referToLegalOfficer = new ReferToLegalOfficer();
 
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default
