@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -29,6 +30,9 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
     @Autowired
     private ReferToJudgeReason referToJudgeReason;
 
+    @Autowired
+    private ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo;
+
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
@@ -43,5 +47,6 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         referToJudgeReason.addTo(pageBuilder);
+        referToJudgeAdditionalInfo.addTo(pageBuilder);
     }
 }
