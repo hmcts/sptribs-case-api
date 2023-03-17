@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeAdditionalInfo;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -24,9 +26,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRole> {
 
+    private final ReferToJudgeReason referToJudgeReason = new ReferToJudgeReason();
+
+    private final ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo = new ReferToJudgeAdditionalInfo();
+
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+        PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_REFER_TO_JUDGE)
             .forStates(
                 CaseManagement,
@@ -37,5 +43,7 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
             .name("Refer case to judge")
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
+        referToJudgeReason.addTo(pageBuilder);
+        referToJudgeAdditionalInfo.addTo(pageBuilder);
     }
 }
