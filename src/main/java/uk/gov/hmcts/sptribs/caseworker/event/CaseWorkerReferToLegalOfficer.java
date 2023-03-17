@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -27,8 +26,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State, UserRole> {
 
 
-    @Autowired
-    private ReferToLegalOfficerReason referToLegalOfficerReason;
+    private final ReferToLegalOfficerReason referToLegalOfficerReason = new ReferToLegalOfficerReason();
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

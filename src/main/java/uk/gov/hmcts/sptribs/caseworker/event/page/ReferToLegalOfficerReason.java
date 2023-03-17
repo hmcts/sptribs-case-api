@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
@@ -22,11 +20,7 @@ import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 
-
-@Component
-@Slf4j
 public class ReferToLegalOfficerReason implements CcdPageConfiguration {
-
 
     private final Map<ReferralReason, Set<State>> permittedStatesByReason =
         Map.ofEntries(

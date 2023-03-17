@@ -26,9 +26,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRole> {
 
-    private ReferToJudgeReason referToJudgeReason = new ReferToJudgeReason();
+    private final ReferToJudgeReason referToJudgeReason = new ReferToJudgeReason();
 
-    private ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo = new ReferToJudgeAdditionalInfo();
+    private final ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo = new ReferToJudgeAdditionalInfo();
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
