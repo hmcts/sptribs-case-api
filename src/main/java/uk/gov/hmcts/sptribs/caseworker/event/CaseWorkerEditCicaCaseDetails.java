@@ -39,7 +39,7 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                 .event(CASEWORKER_EDIT_CICA_CASE_DETAILS)
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
                 .name("Case: Edit case details")
-                .description("Case: Edit case details")
+                .description("Edit case details")
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
