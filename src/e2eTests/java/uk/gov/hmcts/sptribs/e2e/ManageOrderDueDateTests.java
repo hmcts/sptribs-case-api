@@ -21,7 +21,7 @@ public class ManageOrderDueDateTests extends Base {
     private void createAndSendOrderWithDueDate(LocalDate localDate) {
         newCase.buildCase();
         newCase.createDraft(CIC6GeneralDirections);
-        newCase.sendOrder(localDate);
+        newCase.selectAnExistingDraftOrderAndSend(localDate);
     }
 
     private void createCase() {
