@@ -41,6 +41,7 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 CaseClosed,
                 CaseStayed)
             .name("Refer case to judge")
+            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         referToJudgeReason.addTo(pageBuilder);
