@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -42,6 +43,7 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                 .description("Edit case details")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::detailsUpdated)
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
         editCicaCaseDetailsPage.addTo(pageBuilder);
@@ -59,6 +61,13 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
+            .build();
+    }
+
+    public SubmittedCallbackResponse detailsUpdated(CaseDetails<CaseData, State> details,
+                                                  CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# Case details updated. ")
             .build();
     }
 
