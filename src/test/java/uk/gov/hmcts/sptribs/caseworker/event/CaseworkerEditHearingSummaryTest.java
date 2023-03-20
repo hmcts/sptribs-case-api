@@ -19,12 +19,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
@@ -40,9 +38,6 @@ class CaseworkerEditHearingSummaryTest {
 
     @Mock
     private HearingService hearingService;
-
-    @Mock
-    private JudicialService judicialService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -67,7 +62,6 @@ class CaseworkerEditHearingSummaryTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        when(judicialService.getAllUsers()).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerEditHearingSummary.aboutToStart(updatedCaseDetails);

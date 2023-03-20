@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -121,5 +122,6 @@ class CaseworkerPostponeHearingTest {
 
         //Then
         assertThat(submitted.getConfirmationHeader()).contains("Hearing Postponed");
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Postponed));
     }
 }

@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -54,13 +54,13 @@ public class ListingUpdatedNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        RecordListing recordListing = RecordListing.builder().hearingVenueNameAndAddress("London Centre - London")
+        Listing listing = Listing.builder().hearingVenueNameAndAddress("London Centre - London")
                 .conferenceCallNumber("cmi459t5iut5")
                     .videoCallLink("http://abc.com")
                         .conferenceCallNumber("+56677778")
                             .hearingFormat(HearingFormat.FACE_TO_FACE)
                                 .build();
-        data.setRecordListing(recordListing);
+        data.setListing(listing);
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
