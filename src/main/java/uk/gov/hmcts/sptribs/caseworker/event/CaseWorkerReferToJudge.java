@@ -3,7 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToJudgeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -41,9 +44,31 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 CaseClosed,
                 CaseStayed)
             .name("Refer case to judge")
+            .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::referred)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
         referToJudgeReason.addTo(pageBuilder);
         referToJudgeAdditionalInfo.addTo(pageBuilder);
     }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+        log.info("Caseworker refer case to judge for Case Id: {}", details.getId());
+
+        var caseData = details.getData();
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
+    public SubmittedCallbackResponse referred(CaseDetails<CaseData, State> details,
+                                              CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# Referral completed")
+            .build();
+    }
+
+
 }

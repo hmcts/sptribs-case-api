@@ -7,14 +7,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REFER_TO_JUDGE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -22,10 +21,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseWorkerReferToJudgeTest {
+public class CaseworkerDocumentManagementTest {
 
     @InjectMocks
-    private CaseWorkerReferToJudge caseWorkerReferToJudge;
+    private CaseworkerDocumentManagement caseworkerDocumentManagement;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -33,34 +32,30 @@ public class CaseWorkerReferToJudgeTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseWorkerReferToJudge.configure(configBuilder);
+        caseworkerDocumentManagement.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_REFER_TO_JUDGE);
+            .contains(CASEWORKER_DOCUMENT_MANAGEMENT);
     }
 
-
     @Test
-    void shouldReferToJudge() {
+    void shouldSuccessfullyAddDocument() {
         //Given
-
-        CaseData caseData = caseData();
+        final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
-            caseWorkerReferToJudge.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse response2 =
-            caseWorkerReferToJudge.referred(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagement.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response1).isNotNull();
-        assertThat(response2).isNotNull();
+        assertThat(documentMgmtResponse).isNotNull();
     }
 }
