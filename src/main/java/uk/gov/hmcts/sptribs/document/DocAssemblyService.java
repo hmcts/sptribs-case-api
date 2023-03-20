@@ -69,7 +69,7 @@ public class DocAssemblyService {
         return new DocumentInfo(
             docAssemblyResponse.getRenditionOutputLocation(),
             filename + ".pdf",
-            docAssemblyResponse.getBinaryFilePath()
+            docAssemblyResponse.getBinaryFilePath(), null
         );
     }
 }

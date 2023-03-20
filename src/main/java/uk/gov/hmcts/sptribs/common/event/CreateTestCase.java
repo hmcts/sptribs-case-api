@@ -108,7 +108,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
 
     private void uploadDocuments(PageBuilder pageBuilder) {
-        pageBuilder.page("documentsUploadObjets")
+        pageBuilder.page("documentsUploadObjets", this::midEvent)
             .pageLabel("Upload tribunal forms")
             .label("LabelDoc",
                 "\nPlease upload a copy of the completed tribunal form, as well as any"
@@ -122,6 +122,20 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .done();
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
+        CaseDetails<CaseData, State> details,
+        CaseDetails<CaseData, State> detailsBefore
+    ) {
+
+        CaseData data = details.getData();
+        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setFilename("ABC.pdf");
+        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setCategoryId("A");
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .build();
+    }
+
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
@@ -129,6 +143,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         CaseData data = submittedDetails.getData();
         State state = submittedDetails.getState();
 
+        /*data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setFilename("ABC.pdf");
+        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setCategoryId("A");*/
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
