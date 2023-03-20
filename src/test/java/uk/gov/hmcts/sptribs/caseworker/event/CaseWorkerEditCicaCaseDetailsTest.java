@@ -54,8 +54,8 @@ class CaseWorkerEditCicaCaseDetailsTest {
         assertThat(response).isNotNull();
 
 
-         SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditCicaCaseDetails.detailsUpdated(updatedCaseDetails, beforeDetails);
-          //Then
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditCicaCaseDetails.detailsUpdated(updatedCaseDetails, beforeDetails);
+        //Then
         assertThat(draftCreatedResponse).isNotNull();
 
     }
