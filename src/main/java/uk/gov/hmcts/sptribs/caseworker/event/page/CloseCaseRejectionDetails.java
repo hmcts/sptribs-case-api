@@ -23,7 +23,7 @@ public class CloseCaseRejectionDetails implements CcdPageConfiguration {
             .label("LabelRejectionDetails", "")
             .pageShowConditions(map)
             .complex(CaseData::getCloseCase)
-            .mandatory(CloseCase::getRejectionName)
+            .optional(CloseCase::getRejectionName)
             .mandatory(CloseCase::getRejectionReason)
             .mandatory(CloseCase::getRejectionDetails, "closeRejectionReason = \"other\"")
             .done();
