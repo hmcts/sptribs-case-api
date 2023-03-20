@@ -9,6 +9,10 @@ public class AssertionHelpers extends Base {
         return new LocatorAssertions.HasTextOptions().setTimeout(timeout);
     }
 
+    public static LocatorAssertions.ContainsTextOptions containsTextOptionsWithTimeout(int timeout) {
+        return new LocatorAssertions.ContainsTextOptions().setTimeout(timeout);
+    }
+
     public static LocatorAssertions.HasValueOptions valueOptionsWithTimeout(int timeout) {
         return new LocatorAssertions.HasValueOptions().setTimeout(timeout);
     }

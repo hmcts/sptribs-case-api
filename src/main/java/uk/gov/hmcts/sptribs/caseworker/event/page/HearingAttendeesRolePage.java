@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -14,9 +15,10 @@ public class HearingAttendeesRolePage implements CcdPageConfiguration {
         pageBuilder.page("hearingAttendeesRole")
             .pageLabel("Hearing attendees")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
-            .complex(CaseData::getHearingSummary)
-            .mandatory(HearingSummary::getHearingAttendeesRole)
-            .mandatory(HearingSummary::getOtherAttendee, "hearingSummaryHearingAttendeesRoleCONTAINS \"other\"")
+            .complex(CaseData::getListing)
+            .complex(Listing::getSummary)
+            .mandatory(HearingSummary::getRoles)
+            .mandatory(HearingSummary::getOthers, "rolesCONTAINS \"other\"")
             .done();
     }
 }
