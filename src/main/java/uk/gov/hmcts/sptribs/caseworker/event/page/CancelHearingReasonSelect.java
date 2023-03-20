@@ -12,6 +12,7 @@ public class CancelHearingReasonSelect implements CcdPageConfiguration {
 
         pageBuilder.page("caseworkerCancelHearingReason")
             .pageLabel("Reasons for cancellation")
+            .label("LabelCaseworkerCancelHearingReason", "")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getHearingCancellationReason)
             .optional(CicCase::getCancelHearingAdditionalDetail)
