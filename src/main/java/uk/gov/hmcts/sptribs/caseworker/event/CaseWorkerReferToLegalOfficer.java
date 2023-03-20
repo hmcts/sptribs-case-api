@@ -37,6 +37,7 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
             .event(CASEWORKER_REFER_TO_LEGAL_OFFICER)
             .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
             .name("Refer case to legal officer")
+            .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
