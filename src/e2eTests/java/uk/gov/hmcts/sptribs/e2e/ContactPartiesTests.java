@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ContactParties;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
-public class ContactParties extends Base {
+public class ContactPartiesTests extends Base {
 
     @Test
     @Order(1)
@@ -21,7 +22,7 @@ public class ContactParties extends Base {
         Case newCase = new Case(page);
         newCase.createCase("representative");
         newCase.buildCase();
-        newCase.startNextStepAction("Case: Contact parties");
+        newCase.startNextStepAction(ContactParties);
         assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(60000));
         page.getByLabel("Subject").check();
         page.getByLabel("Representative").check();

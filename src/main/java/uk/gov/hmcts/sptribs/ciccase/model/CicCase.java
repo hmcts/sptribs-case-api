@@ -54,6 +54,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
 
+
     @CCD(
         label = "Enter any other important information about this cancellation",
         typeOverride = TextArea
@@ -532,7 +533,7 @@ public class CicCase {
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    List<ListValue<CICDocument>>  reinstateDocuments;
+    List<ListValue<CICDocument>> reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(
