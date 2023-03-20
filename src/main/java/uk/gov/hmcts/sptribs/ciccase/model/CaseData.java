@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CancelHearing;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
@@ -22,10 +21,13 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
+import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -52,6 +54,19 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
+    @JsonUnwrapped
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DocumentManagement docManagement = new DocumentManagement();
+
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private EditCicaCaseDetails editCicaCaseDetails = new EditCicaCaseDetails();
+
 
     @JsonUnwrapped(prefix = "orderContent")
     @Builder.Default
@@ -59,6 +74,7 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DraftOrderContentCIC draftOrderContentCIC = new DraftOrderContentCIC();
+
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -85,14 +101,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     private Notifications notifications = new Notifications();
 
-    @Builder.Default
-    @CCD(
-        label = "Cancel Hearing",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CancelHearing cancelHearing = new CancelHearing();
-
-
     @CCD(
         label = "Flag Location",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -105,11 +113,6 @@ public class CaseData {
     )
     private State caseStatus;
 
-    @CCD(
-        label = "Hearing Status",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private HearingState hearingStatus;
 
     @CCD(
         label = "Hearing Date",
@@ -150,10 +153,10 @@ public class CaseData {
     private CaseBuilt caseBuilt = new CaseBuilt();
 
 
-    @JsonUnwrapped(prefix = "record")
+    @JsonUnwrapped
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private RecordListing recordListing = new RecordListing();
+    private Listing listing = new Listing();
 
     @JsonUnwrapped(prefix = "caseFlag")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -163,11 +166,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private RemoveCaseStay removeCaseStay = new RemoveCaseStay();
-
-    @JsonUnwrapped(prefix = "hearingSummary")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private HearingSummary hearingSummary = new HearingSummary();
 
     @CCD(
         label = "Add a case note",
@@ -252,6 +250,20 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CloseCase closeCase = new CloseCase();
 
+    @JsonUnwrapped(prefix = "referToJudge")
+    @Builder.Default
+    @CCD(
+        label = "Why are you referring the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ReferToJudge referToJudge = new ReferToJudge();
+
+    @JsonUnwrapped(prefix = "referToLegalOfficer")
+    @Builder.Default
+    @CCD(
+        label = "Why are you referring the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ReferToLegalOfficer referToLegalOfficer = new ReferToLegalOfficer();
+
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -266,10 +278,6 @@ public class CaseData {
             temp.substring(8, 12),
             temp.substring(12, 16)
         );
-    }
-
-    public RemoveCaseStay getRemoveCaseStay() {
-        return new RemoveCaseStay();
     }
 
     public String getClosedDayCount() {

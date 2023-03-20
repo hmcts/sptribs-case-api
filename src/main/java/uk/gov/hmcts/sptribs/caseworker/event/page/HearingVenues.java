@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
 @Component
 public class HearingVenues implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "recordVenueNotListedOption=\"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -34,26 +34,25 @@ public class HearingVenues implements CcdPageConfiguration {
             .pageLabel("Hearing location and duration")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
-            .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getHearingVenuesMessage)
-            .optional(RecordListing::getHearingVenues,
+            .complex(CaseData::getListing)
+            .readonly(Listing::getHearingVenuesMessage)
+            .optional(Listing::getHearingVenues,
                 CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
-            .readonly(RecordListing::getReadOnlyHearingVenueName,
+            .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
-            .optional(RecordListing::getVenueNotListedOption)
-            .mandatory(RecordListing::getHearingVenueNameAndAddress, "recordVenueNotListedOption= \"VenueNotListed\"")
-            .optional(RecordListing::getRoomAtVenue)
-            .optional(RecordListing::getAddlInstr,
+            .optional(Listing::getVenueNotListedOption)
+            .mandatory(Listing::getHearingVenueNameAndAddress, "venueNotListedOption= \"VenueNotListed\"")
+            .optional(Listing::getRoomAtVenue)
+            .optional(Listing::getAddlInstr,
                 CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
             .label("hearingDateObj", "<h4>Hearing date</h4>")
-            .mandatory(RecordListing::getHearingDate)
-            .mandatory(RecordListing::getSession)
-            .mandatory(RecordListing::getHearingTime)
-            .mandatory(RecordListing::getNumberOfDays)
-            .mandatory(RecordListing::getAdditionalHearingDate, "recordNumberOfDays = \"Yes\"")
-            .readonly(RecordListing::getHearingSummaryExists, ALWAYS_HIDE)
-            .done()
-            .readonly(CaseData::getHearingStatus,ALWAYS_HIDE)
+            .mandatory(Listing::getDate)
+            .mandatory(Listing::getSession)
+            .mandatory(Listing::getHearingTime)
+            .mandatory(Listing::getNumberOfDays)
+            .mandatory(Listing::getAdditionalHearingDate, "numberOfDays = \"Yes\"")
+            .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
+            .readonly(Listing::getHearingStatus,ALWAYS_HIDE)
             .done();
     }
 
@@ -61,16 +60,16 @@ public class HearingVenues implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        final RecordListing recordListing = data.getRecordListing();
+        final Listing listing = data.getListing();
 
-        if (!recordListing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
-            String selectedVenue = data.getRecordListing().getSelectedVenue();
-            recordListing.setHearingVenueNameAndAddress(selectedVenue);
+        if (!listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
+            String selectedVenue = data.getListing().getSelectedVenue();
+            listing.setHearingVenueNameAndAddress(selectedVenue);
         } else {
-            recordListing.setReadOnlyHearingVenueName(null);
+            listing.setReadOnlyHearingVenueName(null);
         }
-        if (StringUtils.isBlank(recordListing.getHearingVenueNameAndAddress())
-            && StringUtils.isBlank(recordListing.getReadOnlyHearingVenueName())) {
+        if (StringUtils.isBlank(listing.getHearingVenueNameAndAddress())
+            && StringUtils.isBlank(listing.getReadOnlyHearingVenueName())) {
             errors.add("Please enter valid Hearing venue");
         }
 

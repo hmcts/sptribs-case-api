@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
@@ -52,6 +53,22 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+
+
+    @CCD(
+        label = "Enter any other important information about this cancellation",
+        typeOverride = TextArea
+    )
+    private String cancelHearingAdditionalDetail;
+
+    @CCD(
+        label = "Why was the hearing cancelled?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingCancellationReason"
+    )
+    private HearingCancellationReason hearingCancellationReason;
+
     @CCD(
         label = "Enter case number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -119,6 +136,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList hearingList;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList hearingSummaryList;
 
 
     @CCD(
@@ -515,7 +537,7 @@ public class CicCase {
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    List<ListValue<CICDocument>>  reinstateDocuments;
+    List<ListValue<CICDocument>> reinstateDocuments;
     private YesOrNo selectedCheckBox;
 
     @CCD(

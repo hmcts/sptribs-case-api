@@ -1,33 +1,34 @@
 package uk.gov.hmcts.sptribs.e2e;
 
-
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 
 import java.util.Calendar;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReinstateCase;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
-
 public class CloseCase extends Base {
-    private Page page;
 
     @Test
     @Order(1)
     public void caseworkerShouldAbleToCloseTheCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.startNextStepAction("Case: Close case");
+        newCase.startNextStepAction(Actions.CloseCase);
         assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         page.getByLabel("Case Withdrawn").check();
@@ -53,19 +54,19 @@ public class CloseCase extends Base {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case closed", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseClosed.label, newCase.getCaseStatus());
     }
 
     @Test
     public void caseworkerShouldAbleToReinstateCase() {
-        page = getPage();
+        Page page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
         newCase.caseworkerShouldAbleToCloseTheCase();
-        newCase.startNextStepAction("Case: Reinstate case");
+        newCase.startNextStepAction(ReinstateCase);
         assertThat(page.locator("h1")).hasText("Are you sure you want to reinstate this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Reason for reinstatement", textOptionsWithTimeout(30000));
@@ -82,7 +83,7 @@ public class CloseCase extends Base {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals("Case management", newCase.getCaseStatus());
+        Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 }
 

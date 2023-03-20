@@ -86,7 +86,6 @@ class CaseworkerRemoveStayTest {
 
         //Then
         assert (response.getState().equals(State.CaseManagement));
-        assertThat(response.getData().getCaseStay()).isNull();
         assertThat(stayedResponse).isNotNull();
     }
 
@@ -122,7 +121,6 @@ class CaseworkerRemoveStayTest {
 
         //Then
         assert (response.getState().equals(State.CaseManagement));
-        assertThat(response.getData().getCaseStay()).isNull();
         assertThat(stayedResponse).isNotNull();
     }
 

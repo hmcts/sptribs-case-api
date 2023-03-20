@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RemoveStay;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
@@ -63,7 +64,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-        caseData.setCaseStay(null);
+        caseData.getCaseStay().setIsCaseStayed(YesOrNo.NO);
 
         State newState = State.CaseManagement;
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -75,7 +76,6 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
     public SubmittedCallbackResponse stayRemoved(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
-        caseData.setRemoveCaseStay(null);
 
         sendCaseUnStayedNotification(caseData.getHyphenatedCaseRef(), caseData);
 

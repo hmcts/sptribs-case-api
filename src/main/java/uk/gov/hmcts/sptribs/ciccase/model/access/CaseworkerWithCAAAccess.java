@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
@@ -24,6 +25,7 @@ public class CaseworkerWithCAAAccess implements HasAccessControl {
         grants.putAll(CITIZEN_CIC, READ);
         grants.putAll(SOLICITOR, READ);
         grants.putAll(SUPER_USER, READ);
+        grants.putAll(DISTRICT_JUDGE_CIC,READ);
 
         grants.putAll(CREATOR, CREATE_READ_UPDATE);
         grants.putAll(COURT_ADMIN_CIC, CREATE_READ_UPDATE);

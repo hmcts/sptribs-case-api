@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDatesOneDate;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getHearingSummary;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,8 +24,8 @@ class HearingServiceTest {
     @Test
     void shouldPopulateHearingDateDynamicList() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().recordListing(getRecordListing()).build();
-        caseData.getRecordListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
+        caseData.getListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
         details.setData(caseData);
         //When
 
@@ -37,11 +38,26 @@ class HearingServiceTest {
     @Test
     void shouldPopulateHearingDateDynamicListWhenAdditionalHearingDatesNull() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().recordListing(getRecordListing()).build();
+        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
         details.setData(caseData);
         //When
 
         DynamicList hearingList = hearingService.getHearingDateDynamicList(details);
+
+        //Then
+        assertThat(hearingList).isNotNull();
+    }
+
+    @Test
+    void shouldPopulateHearingSummaryDynamicList() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
+        caseData.getListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        caseData.getListing().setSummary(getHearingSummary());
+        details.setData(caseData);
+        //When
+
+        DynamicList hearingList = hearingService.getHearingSummaryDynamicList(details);
 
         //Then
         assertThat(hearingList).isNotNull();

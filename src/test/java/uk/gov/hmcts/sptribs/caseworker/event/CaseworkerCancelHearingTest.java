@@ -12,11 +12,12 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -94,8 +95,8 @@ class CaseworkerCancelHearingTest {
     @Test
     void shouldReturnCancelHearingWhenThereAreTwoHearingDates() {
         //Given
-        final RecordListing recordListing = getRecordListing();
-        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
+        final Listing listing = getRecordListing();
+        listing.setAdditionalHearingDate(getAdditionalHearingDates());
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
@@ -110,7 +111,7 @@ class CaseworkerCancelHearingTest {
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-            .recordListing(recordListing)
+            .listing(listing)
             .build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -130,8 +131,8 @@ class CaseworkerCancelHearingTest {
     @Test
     void shouldReturnCancelHearingWhenThereAreTwoHearingDatesWithPost() {
         //Given
-        final RecordListing recordListing = getRecordListing();
-        recordListing.setAdditionalHearingDate(getAdditionalHearingDates());
+        final Listing listing = getRecordListing();
+        listing.setAdditionalHearingDate(getAdditionalHearingDates());
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
@@ -147,7 +148,7 @@ class CaseworkerCancelHearingTest {
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-            .recordListing(recordListing)
+            .listing(listing)
             .build();
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -168,7 +169,7 @@ class CaseworkerCancelHearingTest {
     @Test
     void shouldReturnCancelHearingWhenThereIsOneHearingDate() {
         //Given
-        final RecordListing recordListing = getRecordListingWithOneHearingDate();
+        final Listing listing = getRecordListingWithOneHearingDate();
         Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
@@ -186,7 +187,7 @@ class CaseworkerCancelHearingTest {
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-            .recordListing(recordListing)
+            .listing(listing)
             .build();
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -203,6 +204,7 @@ class CaseworkerCancelHearingTest {
         assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
         assertThat(response).isNotNull();
         assert response.getState().getName().equals(State.CaseManagement.getName());
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Cancelled));
 
     }
 

@@ -7,9 +7,9 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
+import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingAttendees;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingAttendeesRolePage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingOutcomePage;
@@ -17,16 +17,15 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingRecordingUploadPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -44,9 +43,10 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration editHearingLoadingPage = new EditHearingLoadingPage();
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
+    private static final EditHearingSummarySelect hearingSummarySelect = new EditHearingSummarySelect();
 
     @Autowired
-    private JudicialService judicialService;
+    private HearingService hearingService;
 
     @Autowired
     private RecordListHelper recordListHelper;
@@ -64,7 +64,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::summaryCreated)
                 .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
                 .grantHistoryOnly(SOLICITOR));
-
+        hearingSummarySelect.addTo(pageBuilder);
         editHearingLoadingPage.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
@@ -78,15 +78,12 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_HEARING_SUMMARY);
-        if (null != caseData.getHearingSummary() && null != caseData.getHearingSummary().getHearingFormat()) {
-            caseData.getRecordListing().setHearingSummaryExists("YES");
+        if (null != caseData.getListing().getSummary() && null != caseData.getListing().getHearingFormat()) {
+            caseData.getListing().setHearingSummaryExists("YES");
         } else {
-            caseData.getRecordListing().setHearingSummaryExists("There are no Completed Hearings to edit");
+            caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");
         }
-
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
-        caseData.getHearingSummary().setJudge(judicialUsersDynamicList);
-        caseData.getHearingSummary().setPanelMemberList(getPanelMembers(judicialUsersDynamicList));
+        caseData.getCicCase().setHearingSummaryList(hearingService.getHearingSummaryDynamicList(details));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

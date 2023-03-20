@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -23,11 +24,12 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     + "\n- File must be no larger than 500 MB\n"
                     + "\n- You can only upload mp3 files\n"
                     + "\n- Give the files a meaningful name. for example, bail-hearing-John-Smith.mp3\n")
-            .complex(CaseData::getHearingSummary)
-            .optionalWithLabel(HearingSummary::getRecordingUpload, "Upload file")
+            .complex(CaseData::getListing)
+            .complex(Listing::getSummary)
+            .optionalWithLabel(HearingSummary::getRecFile, "Upload file")
             .label("HearingRecordDescription", "<h3>If you can't upload a recording of the hearing, "
                 + "please describe where it can be found. You can also enter a link to the recording</h3>")
-            .optional(HearingSummary::getHearingRecordingDescription)
+            .optional(HearingSummary::getRecDesc)
             .done();
     }
 
