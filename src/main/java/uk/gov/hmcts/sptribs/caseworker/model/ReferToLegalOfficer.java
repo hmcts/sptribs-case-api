@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
@@ -34,4 +35,12 @@ public class ReferToLegalOfficer {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String reasonForReferral;
+
+    @CCD(
+        label = "Provide additional details",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String additionalInformation;
+
 }
