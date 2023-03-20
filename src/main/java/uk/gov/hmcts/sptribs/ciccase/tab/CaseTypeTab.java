@@ -175,7 +175,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("hearingFormat")
             .field("hearingVenueNameAndAddress")
             .field("roomAtVenue")
-            .field("hearingDate")
+            .field("date")
             .field("session")
             .field("hearingTime")
             .field("videoCallLink")
