@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 public enum CloseCaseStrikeOutReason implements HasLabel {
 
     @JsonProperty("noncomplianceWithDirections")
-    NO_JURISDICTION("Noncompliance with Directions"),
+    NO_JURISDICTION("Non-compliance with Directions"),
 
     @JsonProperty("other")
     OTHER("Other");
