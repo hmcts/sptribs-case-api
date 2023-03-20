@@ -3,7 +3,7 @@ package uk.gov.hmcts.sptribs.common.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -31,8 +31,8 @@ public class ListingCreatedNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseDataSubject, final String caseNumber) {
         CicCase cicCaseListing = caseDataSubject.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCaseListing);
-        RecordListing recordListingSubject = caseDataSubject.getRecordListing();
-        notificationHelper.setRecordingTemplateVars(templateVarsSubject, recordListingSubject);
+        Listing listingSubject = caseDataSubject.getListing();
+        notificationHelper.setRecordingTemplateVars(templateVarsSubject, listingSubject);
         if (cicCaseListing.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject,
@@ -53,8 +53,8 @@ public class ListingCreatedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
-        RecordListing recordListing = caseData.getRecordListing();
-        notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, recordListing);
+        Listing listing = caseData.getListing();
+        notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, listing);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
@@ -74,8 +74,8 @@ public class ListingCreatedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
-        RecordListing recordListing = caseData.getRecordListing();
-        notificationHelper.setRecordingTemplateVars(templateVarsRespondent, recordListing);
+        Listing listing = caseData.getListing();
+        notificationHelper.setRecordingTemplateVars(templateVarsRespondent, listing);
         // Send Email
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
             cicCase.getRespondentEmail(), TemplateName.LISTING_CREATED_CITIZEN_EMAIL);

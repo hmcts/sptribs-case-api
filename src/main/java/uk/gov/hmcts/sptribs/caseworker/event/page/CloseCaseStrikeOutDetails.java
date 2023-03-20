@@ -23,7 +23,7 @@ public class CloseCaseStrikeOutDetails implements CcdPageConfiguration {
             .label("LabelStrikeOutDetails", "")
             .pageShowConditions(map)
             .complex(CaseData::getCloseCase)
-            .mandatory(CloseCase::getStrikeOutName)
+            .optional(CloseCase::getStrikeOutName)
             .mandatory(CloseCase::getStrikeOutReason)
             .mandatory(CloseCase::getStrikeOutDetails, "closeStrikeOutReason = \"other\"")
             .done();
