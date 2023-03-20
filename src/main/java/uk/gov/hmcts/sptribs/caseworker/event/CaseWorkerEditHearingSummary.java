@@ -78,10 +78,10 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_HEARING_SUMMARY);
-        if (null != caseData.getHearingSummary() && null != caseData.getHearingSummary().getHearingFormat()) {
-            caseData.getRecordListing().setHearingSummaryExists("YES");
+        if (null != caseData.getListing().getSummary() && null != caseData.getListing().getHearingFormat()) {
+            caseData.getListing().setHearingSummaryExists("YES");
         } else {
-            caseData.getRecordListing().setHearingSummaryExists("There are no Completed Hearings to edit");
+            caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");
         }
         caseData.getCicCase().setHearingSummaryList(hearingService.getHearingSummaryDynamicList(details));
 

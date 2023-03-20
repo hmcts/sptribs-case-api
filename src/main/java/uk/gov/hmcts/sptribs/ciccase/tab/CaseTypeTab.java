@@ -13,6 +13,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 @Component
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
@@ -36,20 +38,25 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
             .field(CaseData::getHyphenatedCaseRef)
-            .field("stayStayReason")
-            .field("stayAdditionalDetail")
-            .field("stayExpirationDate")
-            .field("removeStayStayRemoveReason")
-            .field("removeStayAdditionalDetail")
-            .field("removeStayStayRemoveOtherDescription")
-            .field("cicCaseIsRepresentativePresent")
             .label("representativeDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
             .field("cicCaseIsRepresentativeQualified")
             .field("cicCaseRepresentativeOrgName")
             .field("cicCaseRepresentativeFullName")
             .field("cicCaseRepresentativePhoneNumber")
             .field("cicCaseRepresentativeEmailAddress")
-            .field("cicCaseRepresentativeReference");
+            .field("cicCaseRepresentativeReference")
+            .field("cicCaseIsRepresentativePresent")
+            .label("stayDetails", "stayStayReason!=\"\" AND stayIsCaseStayed=\"Yes\"", "### Stay Details")
+            .field("stayIsCaseStayed", ALWAYS_HIDE)
+            .field("stayStayReason", "stayIsCaseStayed=\"Yes\"")
+            .field("stayExpirationDate", "stayIsCaseStayed=\"Yes\"")
+            .field("stayAdditionalDetail", "stayIsCaseStayed=\"Yes\"")
+            .field("stayFlagType", "stayIsCaseStayed=\"Yes\"")
+            .label("removeStayDetails", "removeStayStayRemoveReason!=\"\" AND stayIsCaseStayed=\"No\"", "### Remove Stay Details")
+            .field("removeStayStayRemoveReason", "stayIsCaseStayed=\"No\"")
+            .field("removeStayStayRemoveOtherDescription", "stayIsCaseStayed=\"No\"")
+            .field("removeStayAdditionalDetail", "stayIsCaseStayed=\"No\"");
+
     }
 
     private void buildStateTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -162,30 +169,28 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private void buildHearing(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
-            .label("Listing details", "recordHearingType!=\"\"", "#### Listing details")
-            .field("recordHearingStatus")
-            .field("recordHearingType")
-            .field("recordHearingFormat")
-            .field("recordHearingVenueNameAndAddress")
-            .field("recordRoomAtVenue")
-            .field("recordHearingDate")
-            .field("recordSession")
-            .field("recordHearingTime")
-            .field("recordVideoCallLink")
-            .field("recordImportantInfoDetails")
+            .label("Listing details", "hearingType!=\"\"", "#### Listing details")
+            .field("hearingStatus")
+            .field("hearingType")
+            .field("hearingFormat")
+            .field("hearingVenueNameAndAddress")
+            .field("roomAtVenue")
+            .field("hearingDate")
+            .field("session")
+            .field("hearingTime")
+            .field("videoCallLink")
+            .field("importantInfoDetails")
             .field("cicCaseHearingNotificationParties")
 
-            .label("Hearing summary", "hearingSummaryFullPanelHearing!=\"\"", "#### Hearing summary")
-            .field("hearingSummaryJudge")
-            .field("hearingSummaryFullPanelHearing")
-            .field("hearingSummaryPanelMemberList")
-            .field("hearingSummaryHearingAttendeesRole")
-            .field("hearingSummaryOtherAttendee")
-            .field("hearingSummaryHearingOutcome")
-            .field("hearingSummaryRecordingUpload")
-            .field("hearingSummaryHearingRecordingDescription")
-
-
+            .label("Hearing summary", "isFullPanel!=\"\"", "#### Hearing summary")
+            .field("judge")
+            .field("isFullPanel")
+            .field("memberList")
+            .field("roles")
+            .field("others")
+            .field("outcome")
+            .field("recFile")
+            .field("recDesc")
             .label("Postponement summary", "cicCasePostponeReason!=\"\"", "#### Postponement summary")
             .field("cicCasePostponeReason")
             .field("cicCasePostponeAdditionalInformation");
