@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
@@ -16,7 +17,9 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CaseworkerCICDocument {
 
     @CCD(
-        label = "Document Category"
+        label = "Document Category",
+        typeOverride = FixedList,
+        typeParameterOverride = "DocumentType"
     )
     private DocumentType documentCategory;
 
