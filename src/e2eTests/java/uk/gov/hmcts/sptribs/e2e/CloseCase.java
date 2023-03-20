@@ -4,11 +4,13 @@ import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 
 import java.util.Calendar;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReinstateCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -26,7 +28,7 @@ public class CloseCase extends Base {
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.startNextStepAction("Case: Close case");
+        newCase.startNextStepAction(Actions.CloseCase);
         assertThat(page.locator("h1")).hasText("Are you sure you want to close this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         page.getByLabel("Case Withdrawn").check();
@@ -64,7 +66,7 @@ public class CloseCase extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.caseworkerShouldAbleToCloseTheCase();
-        newCase.startNextStepAction("Case: Reinstate case");
+        newCase.startNextStepAction(ReinstateCase);
         assertThat(page.locator("h1")).hasText("Are you sure you want to reinstate this case?", textOptionsWithTimeout(60000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Reason for reinstatement", textOptionsWithTimeout(30000));

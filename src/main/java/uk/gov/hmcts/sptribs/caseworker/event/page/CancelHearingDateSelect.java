@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -18,8 +18,8 @@ public class CancelHearingDateSelect implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getHearingList,"Choose a hearing to cancel")
             .done()
-            .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getHearingType, ALWAYS_HIDE)
+            .complex(CaseData::getListing)
+            .readonly(Listing::getHearingType, ALWAYS_HIDE)
             .done();
 
     }

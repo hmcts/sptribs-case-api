@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.RecordListing;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -83,10 +83,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-        if (!StringUtils.isEmpty(caseData.getRecordListing().getReadOnlyHearingVenueName())) {
-            caseData.getRecordListing().setHearingVenueNameAndAddress(null);
+        if (!StringUtils.isEmpty(caseData.getListing().getReadOnlyHearingVenueName())) {
+            caseData.getListing().setHearingVenueNameAndAddress(null);
         }
-        if (caseData.getRecordListing().getRegionList() == null) {
+        if (caseData.getListing().getRegionList() == null) {
             recordListHelper.regionData(caseData);
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -102,13 +102,13 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         var caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
-        if (null != caseData.getRecordListing()
-            && null != caseData.getRecordListing().getNumberOfDays()
-            && caseData.getRecordListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getRecordListing().setAdditionalHearingDate(null);
+        if (null != caseData.getListing()
+            && null != caseData.getListing().getNumberOfDays()
+            && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
+            caseData.getListing().setAdditionalHearingDate(null);
         }
         recordListHelper.getNotificationParties(caseData);
-        caseData.setRecordListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getRecordListing()));
+        caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -146,9 +146,9 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         pageBuilder.page("regionInfo", this::midEvent)
             .pageLabel("Region Data")
             .label("labelEditRecordingRegionData", "")
-            .complex(CaseData::getRecordListing)
-            .readonly(RecordListing::getRegionsMessage)
-            .optional(RecordListing::getRegionList)
+            .complex(CaseData::getListing)
+            .readonly(Listing::getRegionsMessage)
+            .optional(Listing::getRegionList)
             .done();
     }
 
@@ -159,12 +159,12 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         recordListHelper.populatedVenuesData(caseData);
 
-        if (null != caseDataBefore.getRecordListing().getReadOnlyHearingVenueName()
-            && null != caseData.getRecordListing().getSelectedRegionVal()
-            && caseData.getRecordListing().getSelectedRegionVal().equals(caseDataBefore.getRecordListing().getSelectedRegionVal())
-            && null != caseDataBefore.getRecordListing().getHearingVenues()) {
-            caseData.getRecordListing().setHearingVenues(caseDataBefore.getRecordListing().getHearingVenues());
-            caseData.getRecordListing().getHearingVenues().setValue(caseDataBefore.getRecordListing().getHearingVenues().getValue());
+        if (null != caseDataBefore.getListing().getReadOnlyHearingVenueName()
+            && null != caseData.getListing().getSelectedRegionVal()
+            && caseData.getListing().getSelectedRegionVal().equals(caseDataBefore.getListing().getSelectedRegionVal())
+            && null != caseDataBefore.getListing().getHearingVenues()) {
+            caseData.getListing().setHearingVenues(caseDataBefore.getListing().getHearingVenues());
+            caseData.getListing().getHearingVenues().setValue(caseDataBefore.getListing().getHearingVenues().getValue());
 
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
