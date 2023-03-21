@@ -552,6 +552,7 @@ task installBrowser(type: JavaExec) {
   args = ['install', 'chromium']
 }
 
+tasks.e2eTests.dependsOn(functional)
 tasks.e2eTests.dependsOn(installBrowser)
 
 tasks.withType(Test).configureEach {
