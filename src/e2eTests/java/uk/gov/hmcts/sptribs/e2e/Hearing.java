@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CancelHearing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateListing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateSummary;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditListing;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditSummary;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.PostponeHearing;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
@@ -36,7 +42,7 @@ public class Hearing {
      */
     public void createListing(String... args) {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Create listing");
+        newCase.startNextStepAction(CreateListing);
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -48,7 +54,7 @@ public class Hearing {
         // Fill Region data form
         assertThat(page.locator("h1"))
             .hasText("Region Data", textOptionsWithTimeout(30000));
-        page.selectOption("#recordRegionList", new SelectOption().setLabel("1-London"));
+        page.selectOption("#regionList", new SelectOption().setLabel("1-London"));
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing location and duration form
@@ -62,7 +68,7 @@ public class Hearing {
             getTextBoxByLabel(page, "Hearing Venue").last()
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
-            page.selectOption("#recordHearingVenues",
+            page.selectOption("#hearingVenues",
                 new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
@@ -112,7 +118,7 @@ public class Hearing {
 
     public void editListing(String... args) {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Edit listing");
+        newCase.startNextStepAction(EditListing);
 
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
@@ -126,7 +132,7 @@ public class Hearing {
         // Fill Region data form
         assertThat(page.locator("h1"))
             .hasText("Region Data", textOptionsWithTimeout(30000));
-        page.selectOption("#recordRegionList", new SelectOption().setLabel("1-London"));
+        page.selectOption("#regionList", new SelectOption().setLabel("1-London"));
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing location and duration form
@@ -140,7 +146,7 @@ public class Hearing {
             getTextBoxByLabel(page, "Hearing Venue").last()
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
-            page.selectOption("#recordHearingVenues",
+            page.selectOption("#hearingVenues",
                 new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
@@ -197,7 +203,7 @@ public class Hearing {
 
     public void createHearingSummary() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Create summary");
+        newCase.startNextStepAction(CreateSummary);
 
         // Fill Select hearing form
         selectHearing();
@@ -217,9 +223,9 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#hearingSummaryJudge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#hearingSummaryPanelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
@@ -262,7 +268,7 @@ public class Hearing {
 
     public void editHearingSummary() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Edit summary");
+        newCase.startNextStepAction(EditSummary);
 
         // Fill select hearing form
         assertThat(page.locator("h1"))
@@ -287,9 +293,9 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#hearingSummaryJudge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#hearingSummaryPanelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 
@@ -332,7 +338,7 @@ public class Hearing {
 
     public void cancelHearing() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Cancel hearing");
+        newCase.startNextStepAction(CancelHearing);
 
         // Fill Select hearing form
         selectHearing();
@@ -368,7 +374,7 @@ public class Hearing {
 
     public void postponeHearing() {
         Case newCase = new Case(page);
-        newCase.startNextStepAction("Hearings: Postpone hearing");
+        newCase.startNextStepAction(PostponeHearing);
 
         // Fill Select hearing form
         selectHearing();
