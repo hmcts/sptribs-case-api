@@ -117,6 +117,7 @@ tasks.withType(Test) {
 test {
   failFast = true
   useJUnitPlatform()
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
 task functional(type: Test) {
@@ -124,6 +125,7 @@ task functional(type: Test) {
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
 task integration(type: Test) {
@@ -169,7 +171,7 @@ task smoke(type: Test) {
 task highLevelDataSetup(type: JavaExec) {
   mainClass.set("uk.gov.hmcts.sptribs.common.ccd.HighLevelDataSetupApp")
   classpath += sourceSets.main.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
 task fortifyScan(type: JavaExec)  {
