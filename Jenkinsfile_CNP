@@ -211,16 +211,14 @@ withPipeline(type, product, component) {
           builder.gradle('e2eTests')
         } finally {
 
-          publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "build/reports/tests/functional",
-            reportFiles          : "overview-features.html,overview-failures.html,",
-            reportTitles         : "Features,Failures",
-            reportName           : "Next Hearing Date Updater Functional Test Report"
-          ]
-          junit '**/test-results/functional/*.xml'
+           publishHTML target: [
+              allowMissing         : true,
+              alwaysLinkToLastBuild: true,
+              keepAll              : true,
+              reportDir            : "build/reports/tests/e2eTests",
+              reportFiles          : "index.html",
+              reportName           : "E2E Tests Report"
+           ]
         }
       
         env.ENVIRONMENT="prod"
@@ -281,16 +279,14 @@ withPipeline(type, product, component) {
         builder.gradle('e2eTests')
       } finally {
 
-//         publishHTML target: [
-//           allowMissing         : true,
-//           alwaysLinkToLastBuild: true,
-//           keepAll              : true,
-//           reportDir            : "build/reports/tests/functional",
-//           reportFiles          : "overview-features.html,overview-failures.html,",
-//           reportTitles         : "Features,Failures",
-//           reportName           : "Next Hearing Date Updater Functional Test Report"
-//         ]
-//         junit '**/test-results/functional/*.xml'
+         publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/e2eTests",
+            reportFiles          : "index.html",
+            reportName           : "E2E Tests Report"
+         ]        
       }
     }
 }
