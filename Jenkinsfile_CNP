@@ -139,9 +139,7 @@ withPipeline(type, product, component) {
       reportDir            : "build/reports/tests/functional",
       reportFiles          : "index.html",
       reportName           : "Functional Tests Report"
-    ]
-    
-    builder.gradle('e2eTests')
+    ]  
   }
 
   afterAlways('smoketest:preview') {
@@ -170,7 +168,6 @@ withPipeline(type, product, component) {
     builder.gradle('generateCCDConfig')
     generateDefinitions()
   }
-
 
     onPR {
       env.ENVIRONMENT="preview"
@@ -209,6 +206,23 @@ withPipeline(type, product, component) {
     }
 
     afterSuccess('functionalTest:aat') {
+     
+        try {
+          builder.gradle('e2eTests')
+        } finally {
+
+          publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/functional",
+            reportFiles          : "overview-features.html,overview-failures.html,",
+            reportTitles         : "Features,Failures",
+            reportName           : "Next Hearing Date Updater Functional Test Report"
+          ]
+          junit '**/test-results/functional/*.xml'
+        }
+      
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
         env.CCD_DEF_NAME="prod"
@@ -222,8 +236,10 @@ withPipeline(type, product, component) {
         setFeatureFlags(env.ENVIRONMENT)
 
         builder.gradle('generateCCDConfig --rerun-tasks')
-        generateDefinitions()
+
+        generateDefinitions()    
     }
+ 
 
     onDemo {
       env.ENVIRONMENT="demo"
@@ -257,6 +273,25 @@ withPipeline(type, product, component) {
     before('functionalTest:preview') {
       // Only for preview upload the definitions via script as high level data set up relies on an existing environment
       uploadCoreCaseDataDefinitions()
+    }
+  
+    afterSuccess('functionalTest:preview') {
+
+      try {
+        builder.gradle('e2eTests')
+      } finally {
+
+//         publishHTML target: [
+//           allowMissing         : true,
+//           alwaysLinkToLastBuild: true,
+//           keepAll              : true,
+//           reportDir            : "build/reports/tests/functional",
+//           reportFiles          : "overview-features.html,overview-failures.html,",
+//           reportTitles         : "Features,Failures",
+//           reportName           : "Next Hearing Date Updater Functional Test Report"
+//         ]
+//         junit '**/test-results/functional/*.xml'
+      }
     }
 }
 
