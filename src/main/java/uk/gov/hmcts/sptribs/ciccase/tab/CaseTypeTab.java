@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.ciccase.tab;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -173,7 +172,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("CICA Details", null, "#### CICA Details")
             .field(CaseData::getEditCicaCaseDetails);
-            //.field("cicaReferenceNumber");
 
 
     }
