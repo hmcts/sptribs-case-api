@@ -140,6 +140,8 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "Functional Tests Report"
     ]
+    
+    builder.gradle('e2eTests')
   }
 
   afterAlways('smoketest:preview') {
