@@ -17,7 +17,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("hearingRecordingUpload")
             .pageLabel("Upload hearing recording")
-            .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
+            .label("LabelhearingRecordingUpload","")
             .label("LabelHearingRecordingUpload",
                 "\n<h2>Upload the recording of the hearing (Optional)</h2>\n"
                     + "\n\nAdvice on uploads\n\n"
