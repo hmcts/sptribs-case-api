@@ -74,6 +74,8 @@ withPipeline(type, product, component) {
     }
 
   afterAlways('test') {
+    
+    builder.gradle('e2eTests')
     builder.gradle('jacocoTestReport')
 
     publishHTML target: [
