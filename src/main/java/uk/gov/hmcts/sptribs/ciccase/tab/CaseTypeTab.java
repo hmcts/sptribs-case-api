@@ -26,6 +26,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildOrderTab(configBuilder);
         buildCaseDocumentTab(configBuilder);
         buildHearing(configBuilder);
+        buildCicaDetails(configBuilder);
     }
 
 
@@ -147,14 +148,18 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildOrderTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("orders", "Orders")
+        configBuilder.tab("orders", "Orders & Decisions")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Orders", null, "### Orders")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
             .field("cicCaseDraftOrderCICList")
-            .field("cicCaseOrderList");
-
-
+            .field("cicCaseOrderList")
+            .label("Decision", null, "### Decision")
+            .field("caseIssueDecisionDecisionDocument", "caseIssueDecisionDecisionDocument!=\"\"")
+            .field("caseIssueDecisionIssueDecisionDraft", "caseIssueDecisionIssueDecisionDraft!=\"\"")
+            .label("FinalDecision", null, "### Final Decision")
+            .field("caseIssueFinalDecisionDocument", "caseIssueFinalDecisionDocument!=\"\"")
+            .field("caseIssueFinalDecisionFinalDecisionDraft", "caseIssueFinalDecisionFinalDecisionDraft!=\"\"");
     }
 
     private void buildCaseDocumentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -162,6 +167,15 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(COURT_ADMIN_CIC, SUPER_USER)
             .label("Case Documents", null, "#### Case Documents")
             .field("cicCaseApplicantDocumentsUploaded");
+
+
+    }
+
+    private void buildCicaDetails(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("cicaDetails", "CICA Details")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .label("CICA Details", null, "#### CICA Details")
+            .field(CaseData::getEditCicaCaseDetails);
 
 
     }
@@ -175,7 +189,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("hearingFormat")
             .field("hearingVenueNameAndAddress")
             .field("roomAtVenue")
-            .field("hearingDate")
+            .field("date")
             .field("session")
             .field("hearingTime")
             .field("videoCallLink")

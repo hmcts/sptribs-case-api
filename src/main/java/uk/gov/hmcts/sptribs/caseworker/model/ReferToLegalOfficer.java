@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -7,44 +8,39 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder(toBuilder = true)
+@AllArgsConstructor
+@Builder
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
-public class CaseIssueDecision {
-    @CCD(
-        label = "How would you like to create the decision notice?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private NoticeOption decisionNotice;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ReferToLegalOfficer {
 
     @CCD(
-        label = "Templates",
+        label = "Why are you referring this case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
-        typeParameterOverride = "DecisionTemplate"
+        typeParameterOverride = "ReferralReason"
     )
-    private DecisionTemplate issueDecisionTemplate;
+    private ReferralReason referralReason;
 
     @CCD(
-        label = "Decision Document",
+        label = "Reason for referral",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Document issueDecisionDraft;
+    private String reasonForReferral;
 
     @CCD(
-        label = "Decision Document",
-        typeParameterOverride = "CICDocument",
-        access = {DefaultAccess.class}
+        label = "Provide additional details",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
     )
-    private CICDocument decisionDocument;
+    private String additionalInformation;
+
 }

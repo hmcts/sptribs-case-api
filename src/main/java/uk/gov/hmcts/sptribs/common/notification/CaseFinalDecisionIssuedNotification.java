@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
@@ -117,7 +115,8 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         String finalDecisionNotice = getFinalDecisionNoticeDocument(caseIssueFinalDecision);
         uploadedDocuments.put(FINAL_DECISION_NOTICE, finalDecisionNotice);
 
-        String finalDecisionGuidance = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionGuidance().getUrl(), "/");
+        String finalDecisionGuidance = StringUtils.substringAfterLast(caseIssueFinalDecision
+            .getFinalDecisionGuidance().getUrl(), "/");
         uploadedDocuments.put(FINAL_DECISION_GUIDANCE, finalDecisionGuidance);
 
         return uploadedDocuments;
@@ -126,11 +125,9 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision) {
         String finalDecisionNotice = EMPTY_STRING;
         if (caseIssueFinalDecision.getFinalDecisionNotice() == NoticeOption.UPLOAD_FROM_COMPUTER
-            && !CollectionUtils.isEmpty(caseIssueFinalDecision.getDocuments())) {
-            List<String> uploadedDecisionNoticeDocs = caseIssueFinalDecision.getDocuments().stream().map(ListValue::getValue)
-                .map(item -> StringUtils.substringAfterLast(item.getDocumentLink().getUrl(), "/"))
-                .toList();
-            finalDecisionNotice = uploadedDecisionNoticeDocs.get(0);
+            && !ObjectUtils.isEmpty(caseIssueFinalDecision.getDocument())) {
+            finalDecisionNotice = StringUtils.substringAfterLast(caseIssueFinalDecision
+                .getDocument().getDocumentLink().getUrl(), "/");
         } else if (caseIssueFinalDecision.getFinalDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE
             && null != caseIssueFinalDecision.getFinalDecisionDraft()) {
             finalDecisionNotice = StringUtils.substringAfterLast(caseIssueFinalDecision.getFinalDecisionDraft().getUrl(), "/");

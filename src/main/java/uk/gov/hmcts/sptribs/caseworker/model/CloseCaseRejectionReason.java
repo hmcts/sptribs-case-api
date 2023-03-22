@@ -9,23 +9,17 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum CloseCaseRejectionReason implements HasLabel {
 
-    @JsonProperty("noJurisdiction")
-    NO_JURISDICTION("No jurisdiction"),
+    @JsonProperty("createdInError")
+    CREATED_IN_ERROR("Case created in error"),
 
     @JsonProperty("deadlineMissed")
     DEADLINE_MISSED("Deadline missed without sufficient explanation"),
 
-    @JsonProperty("vexatiousLitigant")
-    VEXATIOUS_LITIGANT("Vexatious litigant"),
-
     @JsonProperty("duplicateCase")
     DUPLICATE_CASE("Duplicate case"),
 
-    @JsonProperty("createdInError")
-    CREATED_IN_ERROR("Case created in error"),
-
-    @JsonProperty("invalidApplication")
-    INVALID_APPLICATION("Invalid application"),
+    @JsonProperty("vexatiousLitigant")
+    VEXATIOUS_LITIGANT("Vexatious litigant"),
 
     @JsonProperty("other")
     OTHER("Other");

@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -59,12 +57,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
-            .documents(List.of(documentListValue))
+            .document(document)
             .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
