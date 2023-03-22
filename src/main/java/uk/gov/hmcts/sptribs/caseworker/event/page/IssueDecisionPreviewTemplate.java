@@ -15,7 +15,7 @@ public class IssueDecisionPreviewTemplate implements CcdPageConfiguration {
             .pageLabel("Decision notice preview")
             .pageShowConditions(issueDecisionShowConditions())
             .complex(CaseData::getCaseIssueDecision)
-            .readonly(CaseIssueDecision::getIssueDecisionDraft)
+            .readonlyWithLabel(CaseIssueDecision::getIssueDecisionDraft,"Decision notice preview")
             .label("issueDecisionPreviewTemplateInfo","If there are no changes to make, continue to the next screen.")
             .done();
     }
