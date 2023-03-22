@@ -4,14 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -115,14 +113,10 @@ public class DecisionIssuedNotification implements PartiesNotification {
         int count = 0;
         if (caseIssueDecision.getDecisionNotice() == NoticeOption.UPLOAD_FROM_COMPUTER) {
 
-            for (ListValue<CICDocument> listValue : caseIssueDecision.getDecisionDocument()) {
-                count++;
+            String uuid = StringUtils.substringAfterLast(caseIssueDecision.getDecisionDocument().getDocumentLink().getUrl(), "/");
+            uploadedDocuments.put(DOC_AVAILABLE + count, YES);
+            uploadedDocuments.put(DECISION_NOTICE + count, uuid);
 
-                CICDocument cicDocument = listValue.getValue();
-                String uuid = StringUtils.substringAfterLast(cicDocument.getDocumentLink().getUrl(), "/");
-                uploadedDocuments.put(DOC_AVAILABLE + count, YES);
-                uploadedDocuments.put(DECISION_NOTICE + count, uuid);
-            }
         } else if (caseIssueDecision.getDecisionNotice() == NoticeOption.CREATE_FROM_TEMPLATE) {
             count++;
 
