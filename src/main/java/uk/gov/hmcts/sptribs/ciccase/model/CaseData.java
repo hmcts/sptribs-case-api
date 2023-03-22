@@ -20,10 +20,13 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
+import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -50,6 +53,19 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
+    @JsonUnwrapped
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DocumentManagement docManagement = new DocumentManagement();
+
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private EditCicaCaseDetails editCicaCaseDetails = new EditCicaCaseDetails();
+
 
     @JsonUnwrapped(prefix = "orderContent")
     @Builder.Default
@@ -57,6 +73,7 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DraftOrderContentCIC draftOrderContentCIC = new DraftOrderContentCIC();
+
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -232,6 +249,13 @@ public class CaseData {
         label = "Why are you referring the case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ReferToJudge referToJudge = new ReferToJudge();
+
+    @JsonUnwrapped(prefix = "referToLegalOfficer")
+    @Builder.Default
+    @CCD(
+        label = "Why are you referring the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ReferToLegalOfficer referToLegalOfficer = new ReferToLegalOfficer();
 
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default

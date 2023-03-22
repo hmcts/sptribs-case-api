@@ -14,18 +14,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REFER_TO_LEGAL_OFFICER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CICA_CASE_DETAILS;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerReferToLegalOfficerTest {
+class CaseWorkerEditCicaCaseDetailsTest {
 
     @InjectMocks
-    private CaseWorkerReferToLegalOfficer caseWorkerReferToLegalOfficer;
+    private CaseWorkerEditCicaCaseDetails caseWorkerEditCicaCaseDetails;
+
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -34,32 +32,34 @@ class CaseWorkerReferToLegalOfficerTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseWorkerReferToLegalOfficer.configure(configBuilder);
+        caseWorkerEditCicaCaseDetails.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_REFER_TO_LEGAL_OFFICER);
+            .contains(CASEWORKER_EDIT_CICA_CASE_DETAILS);
     }
 
     @Test
-    void shouldReferToLegalOfficer() {
+    void shouldSuccessfullySave() {
+
         //Given
-        CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
-            caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse response2 =
-            caseWorkerReferToLegalOfficer.referred(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerEditCicaCaseDetails.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        assertThat(response).isNotNull();
 
+
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditCicaCaseDetails.detailsUpdated(updatedCaseDetails, beforeDetails);
         //Then
-        assertThat(response1).isNotNull();
-        assertThat(response2.getConfirmationHeader()).contains("Referral completed");
+        assertThat(draftCreatedResponse).isNotNull();
+
     }
+
+
 }
+

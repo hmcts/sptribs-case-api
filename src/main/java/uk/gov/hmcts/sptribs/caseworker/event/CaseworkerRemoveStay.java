@@ -50,11 +50,25 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .name("Stays: Remove stay")
             .showSummary(true)
             .description("Stays: Remove stay")
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::stayRemoved)
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
             .grantHistoryOnly(SOLICITOR));
 
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+        if (details.getState() == CaseStayed) {
+            caseData.getRemoveCaseStay().setStayRemoveReason(null);
+            caseData.getRemoveCaseStay().setStayRemoveOtherDescription(null);
+            caseData.getRemoveCaseStay().setAdditionalDetail(null);
+        }
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(

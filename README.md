@@ -1,6 +1,6 @@
 # Special Tribunals Case API [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This API handles callbacks from CCD for the NFD case type.
+This API handles callbacks from CCD for the CIC case type.
 
 ## Overview
 

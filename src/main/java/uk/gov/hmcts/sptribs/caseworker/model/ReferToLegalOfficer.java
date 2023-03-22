@@ -20,7 +20,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ReferToJudge {
+public class ReferToLegalOfficer {
 
     @CCD(
         label = "Why are you referring this case?",
@@ -42,4 +42,5 @@ public class ReferToJudge {
         typeOverride = TextArea
     )
     private String additionalInformation;
+
 }

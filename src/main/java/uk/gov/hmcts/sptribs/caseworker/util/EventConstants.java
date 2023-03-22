@@ -17,8 +17,10 @@ public final class EventConstants {
     public static final String CASEWORKER_EDIT_HEARING_SUMMARY = "edit-hearing-summary";
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
+    public static final String CASEWORKER_EDIT_CICA_CASE_DETAILS = "caseworker-edit-cica-case-details";
     public static final String CASEWORKER_EDIT_RECORD_LISTING = "caseworker-edit-record-listing";
     public static final String CASEWORKER_ISSUE_CASE = "caseworker-issue-case";
+    public static final String CASEWORKER_DOCUMENT_MANAGEMENT = "caseworker-document-management";
     public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
     public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
     public static final String CASEWORKER_LINK_CASE = "createCaseLink";
