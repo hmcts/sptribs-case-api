@@ -30,9 +30,9 @@ java:
   ingressHost: sptribs-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: sptribs
   autoscaling:
-    enabled: false
-    maxReplicas: 1
-    minReplicas: 1
+    enabled: true
+    maxReplicas: 9
+    minReplicas: 6
     targetCPUUtilizationPercentage: 80 # Default is 80% target CPU utilization
   keyVaults:
     sptribs:
