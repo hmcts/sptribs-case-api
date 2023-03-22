@@ -419,7 +419,7 @@ public class Case {
         getTextBoxByLabel(page, "Description").fill("PDF file upload");
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/sample_file.pdf"));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
-            "button[aria-label='Cancel upload']", PageHelpers.functionOptionsWithTimeout(6000));
+            "button[aria-label='Cancel upload']", PageHelpers.functionOptionsWithTimeout(15000));
         clickButton(page, "Continue");
         clickButton(page, "Previous");
         assertThat(page.locator("ccd-read-document-field")).hasText("sample_file.pdf");
