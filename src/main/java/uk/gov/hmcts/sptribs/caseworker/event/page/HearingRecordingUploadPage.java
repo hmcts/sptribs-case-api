@@ -15,10 +15,10 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingRecordingUpload")
+        pageBuilder.page("hearingRecordingUploadPage")
             .pageLabel("Upload hearing recording")
-            //.label("LabelHearingRecordingUpload","")
-            .label("HearingRecordingUpload",
+            .label("LabelHearingRecordingUploadPage","")
+            .label("theHearingRecordingUpload",
                 "\n<h2>Upload the recording of the hearing (Optional)</h2>\n"
                     + "\n\nAdvice on uploads\n\n"
                     + "\n- File must be no larger than 500 MB\n"
@@ -27,7 +27,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .optionalWithLabel(HearingSummary::getRecFile, "Upload file")
-            .label("HearingRecordDescription", "<h3>If you can't upload a recording of the hearing, "
+            .label("theHearingRecordDescription", "<h3>If you can't upload a recording of the hearing, "
                 + "please describe where it can be found. You can also enter a link to the recording</h3>")
             .optional(HearingSummary::getRecDesc)
             .done();
