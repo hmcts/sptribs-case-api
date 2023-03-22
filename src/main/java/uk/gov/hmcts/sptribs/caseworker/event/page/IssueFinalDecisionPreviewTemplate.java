@@ -15,7 +15,7 @@ public class IssueFinalDecisionPreviewTemplate implements CcdPageConfiguration {
             .pageLabel("Final decision notice preview")
             .pageShowConditions(issueFinalDecisionShowConditions())
             .complex(CaseData::getCaseIssueFinalDecision)
-            .readonly(CaseIssueFinalDecision::getFinalDecisionDraft)
+            .readonlyWithLabel(CaseIssueFinalDecision::getFinalDecisionDraft,"Final decision notice preview")
             .label("issueFinalDecisionPreviewTemplateInfo", "If there are no changes to make, continue to the next screen.")
             .done();
     }
