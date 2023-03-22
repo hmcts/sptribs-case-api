@@ -272,23 +272,6 @@ withPipeline(type, product, component) {
       // Only for preview upload the definitions via script as high level data set up relies on an existing environment
       uploadCoreCaseDataDefinitions()
     }
-  
-    afterSuccess('functionalTest:preview') {
-
-      try {
-        builder.gradle('e2eTests')
-      } finally {
-
-         publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
-            reportDir            : "build/reports/tests/e2eTests",
-            reportFiles          : "index.html",
-            reportName           : "E2E Tests Report"
-         ]        
-      }
-    }
 }
 
 def setCommonEnvVariables() {
