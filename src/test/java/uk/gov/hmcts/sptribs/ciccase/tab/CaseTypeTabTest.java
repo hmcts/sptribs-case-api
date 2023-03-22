@@ -48,7 +48,7 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("notes", "Notes")).thenReturn(notesTabBuilder);
         when(configBuilder.tab("caseDetails", "Case Details")).thenReturn(caseDetailsTabBuilder);
         when(configBuilder.tab("caseParties", "Case Parties")).thenReturn(casePartiesTabBuilder);
-        when(configBuilder.tab("orders", "Orders")).thenReturn(ordersTabBuilder);
+        when(configBuilder.tab("orders", "Orders & Decisions")).thenReturn(ordersTabBuilder);
         when(configBuilder.tab("caseDocuments", "Case Documents")).thenReturn(caseDocsTabBuilder);
         when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
         when(configBuilder.tab("cicaDetails", "CICA Details")).thenReturn(cicaDetailsTabBuilder);
