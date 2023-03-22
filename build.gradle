@@ -67,7 +67,7 @@ sourceSets {
 }
 
 ext{
-  set('snakeyaml.version', '1.32')
+  set('snakeyaml.version', '1.33')
 }
 
 java {
