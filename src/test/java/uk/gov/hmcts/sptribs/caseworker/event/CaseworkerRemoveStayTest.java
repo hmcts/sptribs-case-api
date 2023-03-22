@@ -59,6 +59,29 @@ class CaseworkerRemoveStayTest {
     }
 
     @Test
+    void shouldSuccessfullyClearPreviousRemoveStayFromCase() {
+        //Given
+        final CaseData caseData = caseData();
+        RemoveCaseStay removeCaseStay = new RemoveCaseStay();
+        removeCaseStay.setStayRemoveReason(StayRemoveReason.OTHER);
+        removeCaseStay.setAdditionalDetail("some detail");
+        caseData.setRemoveCaseStay(removeCaseStay);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setState(State.CaseStayed);
+        caseDetails.setData(caseData);
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerRemoveStay.aboutToStart(caseDetails);
+
+
+        //Then
+        assertThat(response.getData().getRemoveCaseStay().getStayRemoveReason()).isNull();
+    }
+
+    @Test
     void shouldSuccessfullyRemoveStayFromCase() {
         //Given
         final CaseData caseData = caseData();
