@@ -20,7 +20,7 @@ public class EditCicaCaseDetails {
     private String cicaReferenceNumber;
 
     @CCD(
-        label = "CICA caseworker",
+        label = "CICA case worker",
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String cicaCaseWorker;
