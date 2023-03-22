@@ -46,7 +46,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .optional(Listing::getRoomAtVenue)
             .optional(Listing::getAddlInstr,
                 CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
-            //.label("LabelListingDetails", "<h4>Hearing date</h4>")
+            .label("theLabelListingDetails", "<h4>Hearing date</h4>")
             .mandatory(Listing::getDate)
             .mandatory(Listing::getSession)
             .mandatory(Listing::getHearingTime)
