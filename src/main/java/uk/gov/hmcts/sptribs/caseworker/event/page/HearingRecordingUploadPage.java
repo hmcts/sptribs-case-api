@@ -17,8 +17,8 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("hearingRecordingUpload")
             .pageLabel("Upload hearing recording")
-            .label("LabelhearingRecordingUpload","")
-            .label("LabelHearingRecordingUpload",
+            //.label("LabelHearingRecordingUpload","")
+            .label("HearingRecordingUpload",
                 "\n<h2>Upload the recording of the hearing (Optional)</h2>\n"
                     + "\n\nAdvice on uploads\n\n"
                     + "\n- File must be no larger than 500 MB\n"
