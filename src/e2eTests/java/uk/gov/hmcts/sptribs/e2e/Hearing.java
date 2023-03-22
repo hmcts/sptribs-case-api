@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CancelHearing;
@@ -62,14 +61,14 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
-                .fill("Hendon Magistrates Court, The Court House, The Hyde");
+                .fill("Hendon Magistrates Court-The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -140,14 +139,14 @@ public class Hearing {
             .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
-            .map(arg -> arg.replace(" ", "").toLowerCase()).collect(Collectors.toList());
+            .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
         if (options.contains("entervenue")) {
             getCheckBoxByLabel(page, "Venue not listed").check();
             getTextBoxByLabel(page, "Hearing Venue").last()
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -225,7 +224,7 @@ public class Hearing {
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
@@ -295,7 +294,7 @@ public class Hearing {
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
         getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 
