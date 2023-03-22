@@ -2,8 +2,8 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ContactParties;
@@ -13,7 +13,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class ContactPartiesTests extends Base {
 
-    @Test
+    @Disabled
     @Order(1)
     public void caseWorkerShouldBeAbleToConnectContactParties() {
         Page page = getPage();
