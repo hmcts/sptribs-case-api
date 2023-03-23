@@ -65,7 +65,6 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-
         var caseData = details.getData();
         String securityClassification = caseData.getSecurityClass().getLabel();
 
