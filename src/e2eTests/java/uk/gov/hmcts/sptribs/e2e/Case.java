@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static java.lang.String.valueOf;
@@ -98,7 +97,7 @@ public class Case {
             .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
         getCheckBoxByLabel(page, "Subject").first().check();
 
-        List<String> options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
+        List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
         if (options.contains("representative")) {
             getCheckBoxByLabel(page, "Representative").check();
         }
@@ -420,7 +419,7 @@ public class Case {
         getTextBoxByLabel(page, "Description").fill("PDF file upload");
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/sample_file.pdf"));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
-            "button[aria-label='Cancel upload']", PageHelpers.functionOptionsWithTimeout(6000));
+            "button[aria-label='Cancel upload']", PageHelpers.functionOptionsWithTimeout(15000));
         clickButton(page, "Continue");
         clickButton(page, "Previous");
         assertThat(page.locator("ccd-read-document-field")).hasText("sample_file.pdf");

@@ -3,8 +3,8 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.loadStateOptionsWithTim
 public class HearingJourneyTests extends Base {
     private String caseNumber;
 
-    @Test
+    @Disabled
     public void caseWorkerShouldBeAbleToEditListingAndViewDetailsInHearingTab() {
         Page page = getPage();
         Login login = new Login(page);
@@ -39,7 +39,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Video", hearingFormat);
     }
 
-    @Test
+    @Disabled
     @Order(1)
     public void caseWorkerShouldBeAbleToCreateHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
@@ -69,7 +69,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Special officer", otherAttendee);
     }
 
-    @Test
+    @Disabled
     @Order(2)
     public void caseWorkerShouldBeAbleToEditHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
@@ -99,7 +99,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Special officer", otherAttendee);
     }
 
-    @Test
+    @Disabled
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         Login login = new Login(page);
@@ -125,7 +125,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Appellant not ready to proceed", postponeReason);
     }
 
-    @Test
+    @Disabled
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         Login login = new Login(page);

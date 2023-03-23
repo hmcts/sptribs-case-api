@@ -120,7 +120,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 """
             )
             .complex(CaseData::getCaseIssueFinalDecision)
-            .mandatoryWithLabel(CaseIssueFinalDecision::getDocuments, "File Attachments")
+            .mandatoryWithLabel(CaseIssueFinalDecision::getDocument, "File Attachments")
             .done();
     }
 

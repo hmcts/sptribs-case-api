@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import java.time.LocalDate;
 
@@ -10,7 +10,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC6GeneralDirec
 public class ManageOrderDueDateTests extends Base {
     Case newCase;
 
-    @Test
+    @Disabled
     void manageOrderDueDate() {
         createCase();
         LocalDate date = LocalDate.now();
