@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CHANGE_SECURITY_CLASS;
-import static uk.gov.hmcts.sptribs.caseworker.util.SecurityUtil.checkAvailableForNewClass;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -97,9 +96,9 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         var caseData = details.getData();
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        if (!checkAvailableForNewClass(user, caseData.getSecurityClass())) {
-            errors.add("You do not have permission to change the case to the selected Security Classification");
-        }
+//        if (!checkAvailableForNewClass(user, caseData.getSecurityClass())) {
+//            errors.add("You do not have permission to change the case to the selected Security Classification");
+//        }
 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
