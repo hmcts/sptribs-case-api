@@ -22,7 +22,7 @@ public class Login {
     }
 
     private void loginAs(String user) {
-        page.waitForSelector("h1:has-text(\"Sign in or create an account\")", selectorOptionsWithTimeout(120000));
+        page.waitForSelector("h1:has-text(\"Sign in\")", selectorOptionsWithTimeout(120000));
         if (page.isVisible("#cookie-accept-submit")) {
             clickButton(page, "Accept additional cookies");
             page.locator("button[name=\"hide-accepted\"]").click();
@@ -46,7 +46,7 @@ public class Login {
 
     private void enterCredentialsAndClickSignIn(String user) {
         int i = 0;
-        while (page.locator("h1:has-text(\"Sign in or create an account\")").count() > 0 && i < 5) {
+        while (page.locator("h1:has-text(\"Sign in\")").count() > 0 && i < 5) {
             getTextBoxByLabel(page, "Email address").fill(user);
             getTextBoxByLabel(page, "Password").fill("Pa55w0rd11");
             page.locator("input:has-text(\"Sign in\")").click(clickOptionsWithTimeout(120000));
@@ -58,6 +58,10 @@ public class Login {
 
     public void loginAsStTest1User() {
         loginAs("st-test1@mailinator.com");
+    }
+
+    public void loginAsStJudge2User() {
+        loginAs("st-judge2@mailinator.com");
     }
 
     public void loginAsStSuperUser() {
