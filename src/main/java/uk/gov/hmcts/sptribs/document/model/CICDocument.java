@@ -43,7 +43,6 @@ public class CICDocument {
         String fileName = this.documentLink.getFilename();
         String fileExtension = StringUtils.substringAfter(fileName, ".");
 
-        return this.documentLink != null
-            && regex.contains(fileExtension);
+        return regex.contains(fileExtension);
     }
 }
