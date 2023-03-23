@@ -67,9 +67,11 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
     ) {
 
         var caseData = details.getData();
+        String securityClassification = caseData.getSecurityClass().getLabel();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .securityClassification(securityClassification)
             .build();
     }
 
