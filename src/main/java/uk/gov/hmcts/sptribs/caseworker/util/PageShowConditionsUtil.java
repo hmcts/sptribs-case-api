@@ -45,7 +45,6 @@ public final class PageShowConditionsUtil {
         map.put("listingDetails", EDIT_SUMMARY);
         map.put("hearingOutcome", EDIT_SUMMARY);
         map.put("hearingRecordingUpload", EDIT_SUMMARY);
-
         map.put("editHearingSummary", EDIT_SUMMARY_SHOW_WARNING_PAGE);
         return map;
     }
