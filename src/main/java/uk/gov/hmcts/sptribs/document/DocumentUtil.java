@@ -13,7 +13,8 @@ public final class DocumentUtil {
             documentInfo.getUrl(),
             documentInfo.getFilename(),
             documentInfo.getBinaryUrl(),
-            documentInfo.getCategoryId());
+            documentInfo.getCategoryId()
+        );
     }
 
 }

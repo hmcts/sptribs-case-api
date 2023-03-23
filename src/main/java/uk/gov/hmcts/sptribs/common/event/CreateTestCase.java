@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -122,17 +123,18 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
+    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                   CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        final List<String> errors = new ArrayList<>();
 
-        CaseData data = details.getData();
-        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setFilename("ABC.pdf");
-        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setCategoryId("A");
+        if (!data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().isDocumentValid()) {
+            errors.add("Please upload valid document");
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
+            .errors(errors)
             .build();
     }
 
@@ -142,14 +144,17 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
         State state = submittedDetails.getState();
+        final List<String> errors = new ArrayList<>();
 
-        /*data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setFilename("ABC.pdf");
-        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setCategoryId("A");*/
+        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setFilename("ABC.txt");
+        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setCategoryId("A");
+
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .state(state)
+            .errors(errors)
             .build();
     }
 
