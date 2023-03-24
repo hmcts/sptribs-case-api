@@ -35,4 +35,13 @@ public final class DocumentUtil {
         return errors;
     }
 
+    public static List<String> validateDecisionDocumentFormat(CICDocument document) {
+        final List<String> errors = new ArrayList<>();
+        if (null != document && !document.isDocumentValid()) {
+            errors.add("Please upload valid document");
+        }
+
+        return errors;
+    }
+
 }

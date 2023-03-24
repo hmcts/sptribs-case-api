@@ -21,6 +21,8 @@ public class DraftOrderCIC {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
         //categoryID = "TD"
     )
+    // TODO: Same filename as Order document, so will be categorised with same name as in CICCase.orderTemplateIssued
+    //- Santoshini to confirm with Ben
     private Document templateGeneratedDocument;
 
     @JsonUnwrapped(prefix = "orderContent")

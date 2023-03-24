@@ -170,9 +170,11 @@ public class CicCase {
     private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "TD"
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        //categoryID = "TD"
     )
+    // TODO: Same filename as Order document, so will be categorised with same name same as CICCase.orderTemplateIssued
+    //- Santoshini to confirm with Ben
     private Document lastSelectedOrder;
 
     @CCD(

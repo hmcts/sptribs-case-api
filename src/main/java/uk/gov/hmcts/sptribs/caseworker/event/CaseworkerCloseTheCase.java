@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConcessionDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConsentOrder;
@@ -27,7 +28,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -36,6 +40,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
 @Component
 @Slf4j
@@ -104,6 +110,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     ) {
         log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
         var caseData = details.getData();
+        updateCategoryToDocument(caseData.getCloseCase().getDocuments());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
@@ -136,7 +143,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     private void uploadDocuments(PageBuilder pageBuilder) {
         String pageNameUpload = "closeCaseUploadDocuments";
-        pageBuilder.page(pageNameUpload)
+        pageBuilder.page(pageNameUpload, this::midEvent)
             .pageLabel("Upload case documents")
             .label("LabelCloseCaseUploadDoc",
                 """
@@ -149,5 +156,17 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();
+    }
+
+    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                   CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        List<ListValue<CICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
+        final List<String> errors = validateDocumentFormat(uploadedDocuments);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
     }
 }

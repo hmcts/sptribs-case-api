@@ -96,6 +96,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
+        updateCategoryToDocument(caseData.getCicCase().getOrderFile());
+
         DraftOrderCIC selectedDraftOrder = null;
         String selectedDynamicDraft = null;
         var order = Order.builder()
@@ -199,7 +201,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
         } else if (null != order.getUploadedFile()
             && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-            //updateCategoryToDocument(order.getUploadedFile());
+            updateCategoryToDocument(order.getUploadedFile());
             cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
     }

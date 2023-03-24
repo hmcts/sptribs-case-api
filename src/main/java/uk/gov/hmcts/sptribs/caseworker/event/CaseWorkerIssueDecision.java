@@ -147,6 +147,11 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
+        var decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
+
+        if(null != decisionDocument) {
+            decisionDocument.getDocumentLink().setCategoryId("TD");
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

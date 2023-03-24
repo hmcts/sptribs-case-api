@@ -26,10 +26,12 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,6 +48,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_FILE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FILE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDecisionDocumentFormat;
 
 @Component
 @Slf4j
@@ -109,7 +112,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private void uploadDocuments(PageBuilder pageBuilder) {
 
-        pageBuilder.page("issueFinalDecisionUpload")
+        pageBuilder.page("issueFinalDecisionUpload", this::uploadDocumentMidEvent)
             .pageLabel("Upload decision notice")
             .pageShowConditions(issueFinalDecisionShowConditions())
             .label("LabelDoc", """
@@ -168,9 +171,27 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .build();
     }
 
+    private AboutToStartOrSubmitResponse<CaseData, State> uploadDocumentMidEvent(CaseDetails<CaseData, State> details,
+                                                                   CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        CICDocument uploadedDocument = data.getCaseIssueFinalDecision().getDocument();
+        final List<String> errors = validateDecisionDocumentFormat(uploadedDocument);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
+    }
+
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
+        var finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
+
+        if(null != finalDecisionDocument) {
+            finalDecisionDocument.getDocumentLink().setCategoryId("TD");
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
