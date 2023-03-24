@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
@@ -41,6 +43,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
 @Slf4j
 @Component
@@ -81,7 +85,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             roles.add(DISTRICT_JUDGE_CIC);
         }
 
-
         if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
             PageBuilder pageBuilder = new PageBuilder(configBuilder
                 .event(TEST_CREATE)
@@ -100,8 +103,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
             contactPreferenceDetails.addTo(pageBuilder);
-
-
             uploadDocuments(pageBuilder);
             furtherDetails.addTo(pageBuilder);
         }
@@ -126,11 +127,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
-
-        if (!data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().isDocumentValid()) {
-            errors.add("Please upload valid document");
-        }
+        List<ListValue<CICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
+        final List<String> errors = validateDocumentFormat(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -146,11 +144,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         State state = submittedDetails.getState();
         final List<String> errors = new ArrayList<>();
 
-        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setFilename("ABC.txt");
-        data.getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentLink().setCategoryId("A");
-
+        updateCategoryToDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .state(state)

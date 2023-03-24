@@ -16,9 +16,11 @@ class DocumentUtilTest {
     private static final String DOC_URL = "http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003";
     private static final String DOC_BINARY_URL = "http://localhost:4200/assets/59a54ccc-979f-11eb-a8b3-0242ac130003/binary";
     private static final String PDF_FILENAME = "draft-divorce-application-1616591401473378.pdf";
+    private static final String CATEGORY_ID_VAL = "A";
     private static final String URL = "url";
     private static final String FILENAME = "filename";
     private static final String BINARY_URL = "binaryUrl";
+    private static final String CATEGORY_ID = "categoryId";
 
     @Test
     void shouldConvertFromDocumentInfoToDocument() {
@@ -27,18 +29,20 @@ class DocumentUtilTest {
 
         //Then
         assertThat(document)
-            .extracting(URL, FILENAME, BINARY_URL)
+            .extracting(URL, FILENAME, BINARY_URL, CATEGORY_ID)
             .contains(
                 DOC_URL,
                 PDF_FILENAME,
-                DOC_BINARY_URL);
+                DOC_BINARY_URL,
+                CATEGORY_ID_VAL);
     }
 
     private DocumentInfo documentInfo() {
         return new DocumentInfo(
             DOC_URL,
             PDF_FILENAME,
-            DOC_BINARY_URL
+            DOC_BINARY_URL,
+            CATEGORY_ID_VAL
         );
     }
 }

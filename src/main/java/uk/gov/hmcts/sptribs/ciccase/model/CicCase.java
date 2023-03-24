@@ -100,7 +100,7 @@ public class CicCase {
     @CCD(
         label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "A"
+        categoryID = "TD"
 
     )
     private Document orderTemplateIssued;
@@ -171,7 +171,7 @@ public class CicCase {
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "A"
+        categoryID = "TD"
     )
     private Document lastSelectedOrder;
 
@@ -528,7 +528,6 @@ public class CicCase {
         label = "Case Documents",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
-       // categoryID = "A",
         access = {DefaultAccess.class}
     )
     private List<ListValue<CICDocument>> applicantDocumentsUploaded;

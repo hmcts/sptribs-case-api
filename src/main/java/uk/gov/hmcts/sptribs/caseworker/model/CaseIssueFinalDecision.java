@@ -41,14 +41,14 @@ public class CaseIssueFinalDecision {
     @CCD(
         label = "Final decision notice preview",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "A"
+        categoryID = "TD"
     )
     private Document finalDecisionDraft;
 
     @CCD(
         label = "Final decision notice preview",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "A"
+        categoryID = "TD"
     )
     private Document finalDecisionGuidance;
 
@@ -56,7 +56,6 @@ public class CaseIssueFinalDecision {
         label = "Decision notice documents",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
-        //categoryID = "B",
         access = {DefaultAccess.class}
     )
     private List<ListValue<CICDocument>> documents;

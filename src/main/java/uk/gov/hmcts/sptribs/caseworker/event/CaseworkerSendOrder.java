@@ -48,6 +48,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
 @Component
 @Slf4j
@@ -198,6 +199,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
         } else if (null != order.getUploadedFile()
             && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+            //updateCategoryToDocument(order.getUploadedFile());
             cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
     }

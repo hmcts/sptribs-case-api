@@ -24,7 +24,6 @@ public class CaseDocumentsCIC {
         label = "Upload a file to the system",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
-        //categoryID = "A",
         access = {DefaultAccess.class}
     )
     private List<ListValue<CICDocument>> applicantDocumentsUploaded;

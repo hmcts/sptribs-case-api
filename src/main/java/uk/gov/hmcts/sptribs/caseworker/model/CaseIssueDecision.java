@@ -50,7 +50,6 @@ public class CaseIssueDecision {
         label = "Case Documents",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
-        //categoryID = "B",
         access = {DefaultAccess.class}
     )
     private List<ListValue<CICDocument>> decisionDocument;

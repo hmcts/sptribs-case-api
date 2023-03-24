@@ -18,8 +18,8 @@ public class DraftOrderCIC {
 
     @CCD(
         label = "Order File",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        categoryID = "A"
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        //categoryID = "TD"
     )
     private Document templateGeneratedDocument;
 

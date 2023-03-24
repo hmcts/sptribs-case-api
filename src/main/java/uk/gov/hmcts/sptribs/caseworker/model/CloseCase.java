@@ -108,7 +108,6 @@ public class CloseCase {
         label = "Close case documents",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
-        //categoryID = "A",
         access = {DefaultAccess.class}
     )
     private List<ListValue<CICDocument>> documents;
