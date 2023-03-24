@@ -8,7 +8,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+
+
 
 @Component
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
@@ -26,6 +29,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildOrderTab(configBuilder);
         buildCaseDocumentTab(configBuilder);
         buildHearing(configBuilder);
+        buildCicaDetails(configBuilder);
         buildCaseFileViewTab(configBuilder);
     }
 
@@ -37,7 +41,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildSummaryTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("summary", "Summary")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC,SUPER_USER,DISTRICT_JUDGE_CIC)
             .label("LabelState", null, "#### Case Status:  ${[STATE]}")
             .label("case-details", null, "### Case details")
             .field("cicCaseFullName")
@@ -72,13 +76,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildNotesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("notes", "Notes")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC,SUPER_USER,DISTRICT_JUDGE_CIC)
             .field(CaseData::getNotes);
     }
 
     private void buildFlagsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("flags", "Flags")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
             .label("partyLevel", "caseFlagPartyLevelFlags!=\"\"", "Party level flags")
             .field("caseFlagPartyLevelFlags")
             .label("caseLevel", "caseFlagCaseLevelFlags!=\"\"", "Case level flags")
@@ -87,7 +91,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseDetails", "Case Details")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
             .label("case-details", null, "### Case details")
             .field("cicCaseCaseCategory")
             .field("cicCaseCaseReceivedDate")
@@ -119,7 +123,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseParties", "Case Parties")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
             .label("Subject's details", null, "### Subject's details")
             .field("cicCaseFullName")
             .field("cicCaseEmail")
@@ -153,35 +157,48 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildOrderTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("orders", "Orders")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+        configBuilder.tab("orders", "Orders & Decisions")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
             .label("Orders", null, "### Orders")
             .label("LabelState", null, "#### Case Status: ${[STATE]}")
             .field("cicCaseDraftOrderCICList")
-            .field("cicCaseOrderList");
-
-
+            .field("cicCaseOrderList")
+            .label("Decision", null, "### Decision")
+            .field("caseIssueDecisionDecisionDocument", "caseIssueDecisionDecisionDocument!=\"\"")
+            .field("caseIssueDecisionIssueDecisionDraft", "caseIssueDecisionIssueDecisionDraft!=\"\"")
+            .label("FinalDecision", null, "### Final Decision")
+            .field("caseIssueFinalDecisionDocument", "caseIssueFinalDecisionDocument!=\"\"")
+            .field("caseIssueFinalDecisionFinalDecisionDraft", "caseIssueFinalDecisionFinalDecisionDraft!=\"\"");
     }
 
     private void buildCaseDocumentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseDocuments", "Case Documents")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
             .label("Case Documents", null, "#### Case Documents")
             .field("cicCaseApplicantDocumentsUploaded");
 
 
     }
 
+    private void buildCicaDetails(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("cicaDetails", "CICA Details")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
+            .label("CICA Details", null, "#### CICA Details")
+            .field(CaseData::getEditCicaCaseDetails);
+
+
+    }
+
     private void buildHearing(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("hearings", "Hearings")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
             .label("Listing details", "hearingType!=\"\"", "#### Listing details")
             .field("hearingStatus")
             .field("hearingType")
             .field("hearingFormat")
             .field("hearingVenueNameAndAddress")
             .field("roomAtVenue")
-            .field("hearingDate")
+            .field("date")
             .field("session")
             .field("hearingTime")
             .field("videoCallLink")
