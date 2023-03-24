@@ -116,7 +116,7 @@ public class Listing {
     private LocalDate date;
 
     @CCD(
-        label = "Start time (24hr format)",
+        label = "Start time (24 hour format; e.g. 14:30)",
         regex = "^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
