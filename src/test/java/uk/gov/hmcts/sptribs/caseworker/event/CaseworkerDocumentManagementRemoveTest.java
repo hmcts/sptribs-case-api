@@ -12,10 +12,15 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.DocumentListService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
@@ -81,6 +86,48 @@ public class CaseworkerDocumentManagementRemoveTest {
         assertThat(documentMgmtResponse).isNotNull();
     }
 
+    @Test
+    void shouldSuccessfullyRemoveDocumentSuccessfully() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        CICDocument doc = CICDocument.builder()
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
+        caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
+        caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
+        CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
+        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
+        cicDocumentListValue.setValue(document);
+        Order order = Order.builder().uploadedFile(List.of(cicDocumentListValue)).build();
+        ListValue<Order> orderListValue = new ListValue<>();
+        orderListValue.setValue(order);
+        beforeDetails.setData(caseData);
+
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(documentListService.getAllDecisionDocuments(any())).thenReturn(get2Document());
+        when(documentListService.getAllFinalDecisionDocuments(any())).thenReturn(get2Document());
+        when(documentListService.getAllOrderDocuments(any())).thenReturn(get2Document());
+        CicCase cicCase = CicCase.builder()
+            .orderDocumentList(getDocument())
+            .orderList(List.of(orderListValue))
+            .decisionDocumentList(getDocument())
+            .finalDecisionDocumentList(getDocument())
+            .build();
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        //When
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerDocumentManagementRemove.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(documentMgmtResponse).isNotNull();
+    }
 
     private List<ListValue<CaseworkerCICDocument>> getDocument() {
         List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
