@@ -76,7 +76,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
-        String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
+        final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
         roles.add(SOLICITOR);
         roles.add(COURT_ADMIN_CIC);
         roles.add(ST_CIC_CASEWORKER);
