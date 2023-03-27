@@ -48,7 +48,14 @@ public class CftLibConfig implements CFTLibConfigurer {
             "pui-organisation-manager",
             "pui-user-manager",
             "jrd-system-user",
-            "jrd-admin");
+            "jrd-admin",
+            "caseworker-st_cic-caseworker",
+            "caseworker-st_cic-senior-caseworker",
+            "caseworker-st_cic-hearing-centre-admin",
+            "caseworker-st_cic-hearing-centre-team-leader",
+            "caseworker-st_cic-senior-judge",
+            "caseworker-st_cic-judge",
+            "caseworker-st_cic-respondent");
 
         var users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
