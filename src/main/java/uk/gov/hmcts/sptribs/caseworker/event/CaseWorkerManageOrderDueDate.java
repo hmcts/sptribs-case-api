@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_AMEND_DUE_DATE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
@@ -50,7 +49,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_AMEND_DUE_DATE)
-                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
+                .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
                 .name("Orders: Manage due date")
                 .description("Orders: Manage due date")
                 .showSummary()
