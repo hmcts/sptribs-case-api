@@ -38,6 +38,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -74,6 +79,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
         roles.add(SOLICITOR);
         roles.add(COURT_ADMIN_CIC);
+        roles.add(ST_CIC_CASEWORKER);
+        roles.add(ST_CIC_SENIOR_CASEWORKER);
+        roles.add(ST_CIC_HEARING_CENTRE_ADMIN);
+        roles.add(ST_CIC_HEARING_CENTRE_TEAM_LEADER);
+        roles.add(ST_CIC_SENIOR_JUDGE);
         if (!env.contains(ENVIRONMENT_PROD)) {
             roles.add(SUPER_USER);
             roles.add(COURT_ADMIN_CIC);
