@@ -96,7 +96,14 @@ public class CftLibConfig implements CFTLibConfigurer {
             "pui-organisation-manager",
             "pui-user-manager",
             "jrd-system-user",
-            "jrd-admin"
+            "jrd-admin",
+            "caseworker-st_cic-caseworker",
+            "caseworker-st_cic-senior-caseworker",
+            "caseworker-st_cic-hearing-centre-admin",
+            "caseworker-st_cic-hearing-centre-team-leader",
+            "caseworker-st_cic-senior-judge",
+            "caseworker-st_cic-judge",
+            "caseworker-st_cic-respondent"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
