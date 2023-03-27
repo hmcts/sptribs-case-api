@@ -8,7 +8,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +21,6 @@ public class PreviewDraftOrderTemplateContentTest {
     @InjectMocks
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
-    private static final LocalDate ISSUE_DATE = LocalDate.of(2022, 2, 2);
 
     @Test
     public void shouldSuccessfullyPreviewDraftOrderContent() {

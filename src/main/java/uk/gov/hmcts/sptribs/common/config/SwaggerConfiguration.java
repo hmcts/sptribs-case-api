@@ -11,7 +11,7 @@ public class SwaggerConfiguration {
     @Bean
     public OpenAPI api() {
         return new OpenAPI()
-            .info(new Info().title("No Fault Divorce API")
+            .info(new Info().title("Sptribs case API")
                 .description("Callback handler for CCD")
                 .version("v0.0.1"));
     }

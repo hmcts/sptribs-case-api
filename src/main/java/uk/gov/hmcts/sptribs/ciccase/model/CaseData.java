@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.CasePaymentHistoryViewer;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -186,8 +185,6 @@ public class CaseData {
     )
     private YesOrNo isJudicialSeparation;
 
-    @CCD(typeOverride = CasePaymentHistoryViewer)
-    private String paymentHistoryField;
 
     @CCD(
         label = "Closure Date",
