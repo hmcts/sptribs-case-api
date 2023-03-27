@@ -50,7 +50,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_AMEND_DUE_DATE)
-                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
+                .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
                 .name("Orders: Manage due date")
                 .description("Orders: Manage due date")
                 .showSummary()

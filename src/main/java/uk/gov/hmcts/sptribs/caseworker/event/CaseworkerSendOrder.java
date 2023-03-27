@@ -76,11 +76,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
-            .forStates(CaseManagement,
-                AwaitingHearing,
-                AwaitingOutcome,
-                CaseClosed,
-                CaseStayed)
+            .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
             .name("Orders: Send order")
             .description("Orders: Send order")
             .showSummary()

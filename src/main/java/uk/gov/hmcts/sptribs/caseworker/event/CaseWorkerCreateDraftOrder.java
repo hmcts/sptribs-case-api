@@ -64,7 +64,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_CREATE_DRAFT_ORDER)
-                .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
+                .forStates(CaseManagement, AwaitingHearing, CaseStayed, CaseClosed)
                 .name("Orders: Create draft")
                 .description("Orders: Create draft")
                 .showSummary()
