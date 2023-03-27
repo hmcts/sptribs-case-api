@@ -39,7 +39,6 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
@@ -76,11 +75,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
-            .forStates(CaseManagement,
-                AwaitingHearing,
-                AwaitingOutcome,
-                CaseClosed,
-                CaseStayed)
+            .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
             .name("Orders: Send order")
             .description("Orders: Send order")
             .showSummary()
