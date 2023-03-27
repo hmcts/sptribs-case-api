@@ -60,6 +60,31 @@ class CaseworkerStayTheCaseTest {
     }
 
     @Test
+    void shouldSuccessfullyClearPreviousRemoveStayFromCase() {
+        //Given
+        final CaseData caseData = caseData();
+        CaseStay caseStay = new CaseStay();
+        caseStay.setStayReason(StayReason.AWAITING_OUTCOME_OF_LINKED_CASE);
+        caseStay.setAdditionalDetail("some detail");
+        caseStay.setFlagType(null);
+        caseStay.setExpirationDate(LocalDate.now());
+        caseData.setCaseStay(caseStay);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setState(State.CaseManagement);
+        caseDetails.setData(caseData);
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerStayTheCase.aboutToStart(caseDetails);
+
+
+        //Then
+        assertThat(response.getData().getCaseStay().getStayReason()).isNull();
+    }
+
+    @Test
     void shouldSuccessfullyStayTheCase() {
         //Given
         final CaseData caseData = caseData();

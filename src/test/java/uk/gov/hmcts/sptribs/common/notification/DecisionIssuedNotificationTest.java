@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -54,10 +52,8 @@ public class DecisionIssuedNotificationTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
+            .decisionDocument(document)
             .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
@@ -84,10 +80,8 @@ public class DecisionIssuedNotificationTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of())
+            .decisionDocument(document)
             .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
         data.setCaseIssueDecision(caseIssueDecision);
 
@@ -163,10 +157,8 @@ public class DecisionIssuedNotificationTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
+            .decisionDocument(document)
             .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
             .build();
         data.setCaseIssueDecision(caseIssueDecision);
@@ -194,10 +186,8 @@ public class DecisionIssuedNotificationTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
+            .decisionDocument(document)
             .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
             .build();
         data.setCaseIssueDecision(caseIssueDecision);
@@ -226,10 +216,8 @@ public class DecisionIssuedNotificationTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
         final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(List.of(documentListValue))
+            .decisionDocument(document)
             .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
             .build();
         data.setCaseIssueDecision(caseIssueDecision);

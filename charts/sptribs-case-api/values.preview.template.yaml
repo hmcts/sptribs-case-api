@@ -172,12 +172,11 @@ ccd:
         value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
-
+   
   logstash:
-    image:
-      repository: hmctspublic.azurecr.io/ccd/logstash
-      tag: latest
-      pullPolicy: Always
+    image: hmctspublic.azurecr.io/imported/logstash/logstash
+    imageTag: 8.5.1
+    imagePullPolicy: "IfNotPresent"
     logstashJavaOpts: -Xmx1g -Xms512M
     persistence:
       enabled: false

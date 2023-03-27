@@ -62,7 +62,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -140,7 +140,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("CROYDON MAGISTRATES COURT-BARCLAY ROAD"));
+                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -218,7 +218,7 @@ public class Hearing {
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
@@ -288,7 +288,7 @@ public class Hearing {
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#panelMemberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 
