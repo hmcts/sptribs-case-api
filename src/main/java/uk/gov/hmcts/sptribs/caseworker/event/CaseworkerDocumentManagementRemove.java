@@ -128,7 +128,8 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                         caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
                     } else if (doc.getValue().getDocumentLink()
                         .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
-                        caseData.getCaseIssueDecision().setDecisionDocument(new CICDocument());
+                        CICDocument decisionDocument = new CICDocument();
+                        caseData.getCaseIssueDecision().setDecisionDocument(decisionDocument);
                     }
                 }
             }
@@ -153,7 +154,8 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                                     ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
                                     if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
                                         .equals(cicDocumentListValue.getValue().getDocumentLink())) {
-                                        orderListValue.getValue().getUploadedFile().get(i).setValue(new CICDocument());
+                                        CICDocument value = new CICDocument();
+                                        orderListValue.getValue().getUploadedFile().get(i).setValue(value);
                                     }
                                 }
                             }
