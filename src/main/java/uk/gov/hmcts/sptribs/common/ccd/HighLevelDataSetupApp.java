@@ -28,7 +28,14 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("caseworker-sptribs-cic-districtjudge", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-cic-courtadmin", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-cic-caseofficer", "PUBLIC"),
-        new CcdRoleConfig("caseworker-sptribs-cic-respondent", "PUBLIC")
+        new CcdRoleConfig("caseworker-sptribs-cic-respondent", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-caseworker", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-senior-caseworker", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-hearing-centre-admin", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-hearing-centre-team-leader", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-senior-judge", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-judge", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-respondent", "PUBLIC")
     };
 
     private final CcdEnvironment environment;
