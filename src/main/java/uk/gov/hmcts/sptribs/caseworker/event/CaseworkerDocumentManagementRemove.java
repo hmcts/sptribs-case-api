@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.DocumentListService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -32,7 +33,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
@@ -62,7 +62,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .name("Document Management: Remove")
             .description("Document Management: Remove")
             .showSummary()
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER)
             .grantHistoryOnly(SOLICITOR)
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -86,8 +86,21 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = documentListService.getAllOrderDocuments(caseData.getCicCase());
-        List<ListValue<CaseworkerCICDocument>> wholeDecisionDocList = documentListService.getAllDecisionDocuments(caseData);
+        var newCaseData = removeEvaluatedListDoc(caseData);
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(newCaseData)
+            .state(details.getState())
+            .build();
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# Case Updated")
+            .build();
+    }
+
+    private CaseData removeFinalDecisionDoc(CaseData caseData) {
         List<ListValue<CaseworkerCICDocument>> wholeFinalDecisionDocList = documentListService.getAllFinalDecisionDocuments(caseData);
         if (wholeFinalDecisionDocList.size() > caseData.getCicCase().getFinalDecisionDocumentList().size()) {
             for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeFinalDecisionDocList) {
@@ -102,6 +115,12 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 }
             }
         }
+        return caseData;
+    }
+
+    private CaseData removeDecisionDoc(CaseData caseData) {
+        List<ListValue<CaseworkerCICDocument>> wholeDecisionDocList = documentListService.getAllDecisionDocuments(caseData);
+
         if (wholeDecisionDocList.size() > caseData.getCicCase().getDecisionDocumentList().size()) {
             for (ListValue<CaseworkerCICDocument> doc : wholeDecisionDocList) {
                 if (!caseData.getCicCase().getDecisionDocumentList().contains(doc)) {
@@ -114,10 +133,16 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 }
             }
         }
-        if (wholeOrderDocList.size() > caseData.getCicCase().getOrderDocumentList().size()) {
+        return caseData;
+    }
+
+    private CicCase removeOrderDoc(CicCase cicCase) {
+        List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = documentListService.getAllOrderDocuments(cicCase);
+
+        if (wholeOrderDocList.size() > cicCase.getOrderDocumentList().size()) {
             for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeOrderDocList) {
-                if (!caseData.getCicCase().getOrderDocumentList().contains(cicDocumentListValue)) {
-                    for (ListValue<Order> orderListValue : caseData.getCicCase().getOrderList()) {
+                if (!cicCase.getOrderDocumentList().contains(cicDocumentListValue)) {
+                    for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
                         if (null != orderListValue.getValue().getDraftOrder()
                             && cicDocumentListValue.getValue().getDocumentLink()
                             .equals(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())) {
@@ -137,17 +162,15 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 }
             }
         }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(details.getState())
-            .build();
+        return cicCase;
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case Updated")
-            .build();
+    private CaseData removeEvaluatedListDoc(CaseData caseData) {
+        var caseDataAfterDecision = removeDecisionDoc(caseData);
+        var caseDataAfterFinalDecision = removeFinalDecisionDoc(caseDataAfterDecision);
+        var cic = removeOrderDoc(caseDataAfterFinalDecision.getCicCase());
+        caseDataAfterFinalDecision.setCicCase(cic);
+        return caseDataAfterFinalDecision;
     }
 
 }
