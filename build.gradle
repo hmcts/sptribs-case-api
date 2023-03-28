@@ -381,7 +381,7 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.3.0'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.31.0'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.32.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -398,7 +398,7 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.31.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.32.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:1.9.1'
 }
 
