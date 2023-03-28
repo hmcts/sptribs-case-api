@@ -137,6 +137,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .build();
     }
 
+
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
