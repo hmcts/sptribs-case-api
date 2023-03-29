@@ -45,6 +45,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     DocumentListService documentListService;
 
     private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
+    private final CICDocument emptyDocument = new CICDocument();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -96,7 +97,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case Updated ")
+            .confirmationHeader("# Case Updated")
             .build();
     }
 
@@ -110,7 +111,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                         caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
                     } else if (cicDocumentListValue.getValue().getDocumentLink()
                         .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
-                        caseData.getCaseIssueFinalDecision().setDocument(new CICDocument());
+                        caseData.getCaseIssueFinalDecision().setDocument(emptyDocument);
                     }
                 }
             }
@@ -128,8 +129,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                         caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
                     } else if (doc.getValue().getDocumentLink()
                         .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
-                        CICDocument decisionDocument = new CICDocument();
-                        caseData.getCaseIssueDecision().setDecisionDocument(decisionDocument);
+                        caseData.getCaseIssueDecision().setDecisionDocument(emptyDocument);
                     }
                 }
             }
@@ -154,8 +154,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                                     ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
                                     if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
                                         .equals(cicDocumentListValue.getValue().getDocumentLink())) {
-                                        CICDocument value = new CICDocument();
-                                        orderListValue.getValue().getUploadedFile().get(i).setValue(value);
+                                        orderListValue.getValue().getUploadedFile().get(i).setValue(emptyDocument);
                                     }
                                 }
                             }
