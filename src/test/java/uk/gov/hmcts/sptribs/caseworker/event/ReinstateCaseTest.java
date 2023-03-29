@@ -23,7 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.List;
 import java.util.Set;
@@ -73,11 +73,11 @@ class ReinstateCaseTest {
     void shouldSuccessfullyReinstateTheCaseEmail() {
         //Given
         final CaseData caseData = caseData();
-        final CICDocument document = CICDocument.builder()
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
             .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
@@ -122,11 +122,11 @@ class ReinstateCaseTest {
     void shouldSuccessfullyReinstateTheCasePost() {
         //Given
         final CaseData caseData = caseData();
-        final CICDocument document = CICDocument.builder()
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
             .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
@@ -171,9 +171,9 @@ class ReinstateCaseTest {
     @Test
     void shouldReturnErrorsIfNoDescriptionOnDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CICDocument document = new CICDocument();
+        CaseworkerCICDocument document = new CaseworkerCICDocument();
         document.setDocumentLink(new Document());
-        ListValue<CICDocument> documentListValue = new ListValue<>();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(List.of(documentListValue))

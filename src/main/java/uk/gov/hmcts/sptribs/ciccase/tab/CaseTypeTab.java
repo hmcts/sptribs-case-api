@@ -164,10 +164,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseDraftOrderCICList")
             .field("cicCaseOrderList")
             .label("Decision", null, "### Decision")
-            .field("caseIssueDecisionDecisionDocument", "caseIssueDecisionDecisionDocument!=\"\"")
-            .field("caseIssueDecisionIssueDecisionDraft", "caseIssueDecisionIssueDecisionDraft!=\"\"")
+            .field("caseIssueDecisionDecisionDocument")
+            .field("caseIssueDecisionIssueDecisionDraft")
             .label("FinalDecision", null, "### Final Decision")
-            .field("caseIssueFinalDecisionDocument", "caseIssueFinalDecisionDocument!=\"\"")
+            .field("caseIssueFinalDecisionDocument")
             .field("caseIssueFinalDecisionFinalDecisionDraft", "caseIssueFinalDecisionFinalDecisionDraft!=\"\"");
     }
 

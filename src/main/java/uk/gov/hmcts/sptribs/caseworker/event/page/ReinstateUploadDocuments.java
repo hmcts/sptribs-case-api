@@ -9,7 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +45,11 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        List<ListValue<CICDocument>> documents = data.getCicCase().getReinstateDocuments();
+        List<ListValue<CaseworkerCICDocument>> documents = data.getCicCase().getReinstateDocuments();
 
         if (null != documents) {
             updateCategoryToDocument(documents);
-            for (ListValue<CICDocument> documentListValue : documents) {
+            for (ListValue<CaseworkerCICDocument> documentListValue : data.getCicCase().getReinstateDocuments()) {
                 if (null != documentListValue.getValue().getDocumentLink()
                     && StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                     errors.add("Description is mandatory for each document");
