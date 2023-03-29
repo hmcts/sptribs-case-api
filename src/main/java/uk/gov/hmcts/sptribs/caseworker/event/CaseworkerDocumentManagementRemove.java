@@ -96,7 +96,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case Updated")
+            .confirmationHeader("# Case Updated ")
             .build();
     }
 
