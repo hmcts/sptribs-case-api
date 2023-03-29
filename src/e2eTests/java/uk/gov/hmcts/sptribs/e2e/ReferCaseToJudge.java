@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCasetoJudge;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCaseToJudge;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -23,7 +23,7 @@ public class ReferCaseToJudge extends Base {
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.startNextStepAction(ReferCasetoJudge);
+        newCase.startNextStepAction(ReferCaseToJudge);
         assertThat(page.locator("h1")).hasText("Refer case to judge", textOptionsWithTimeout(60000));
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Time extension request"));
@@ -50,14 +50,13 @@ public class ReferCaseToJudge extends Base {
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.startNextStepAction(ReferCasetoJudge);
+        newCase.startNextStepAction(ReferCaseToJudge);
         assertThat(page.locator("h1")).hasText("Refer case to judge", textOptionsWithTimeout(60000));
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Reinstatement request"));
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("#errors li"))
             .hasText("The case state is incompatible with the selected referral reason", textOptionsWithTimeout(30000));
-
     }
 }
 
