@@ -3,11 +3,13 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCaseToJudge;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCaseToLegalOfficer;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -15,16 +17,23 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 
 public class ReferCaseToJudge extends Base {
-    @Test
-    public void caseworkerShouldAbleToReferCaseToJudge() {
-        Page page = getPage();
+
+    private Page page;
+    private Case newCase;
+
+    @BeforeEach
+    void startReferCaseToJudgeJourney() {
+        page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
-        Case newCase = new Case(page);
+        newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
         newCase.startNextStepAction(ReferCaseToJudge);
-        assertThat(page.locator("h1")).hasText("Refer case to judge", textOptionsWithTimeout(60000));
+        assertThat(page.locator("h1")).hasText(ReferCaseToJudge.label, textOptionsWithTimeout(60000));
+    }
+    @Test
+    public void caseworkerShouldAbleToReferCaseToJudge() {
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Time extension request"));
         PageHelpers.clickButton(page, "Continue");
@@ -44,14 +53,6 @@ public class ReferCaseToJudge extends Base {
 
     @Test
     public void errorInvalidCaseStatusReferCaseToJudge() {
-        Page page = getPage();
-        Login login = new Login(page);
-        login.loginAsStTest1User();
-        Case newCase = new Case(page);
-        newCase.createCase();
-        newCase.buildCase();
-        newCase.startNextStepAction(ReferCaseToJudge);
-        assertThat(page.locator("h1")).hasText("Refer case to judge", textOptionsWithTimeout(60000));
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Reinstatement request"));
         PageHelpers.clickButton(page, "Continue");
