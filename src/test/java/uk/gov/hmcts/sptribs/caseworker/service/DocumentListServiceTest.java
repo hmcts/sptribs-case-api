@@ -162,40 +162,6 @@ public class DocumentListServiceTest {
     }
 
     @Test
-    void shouldGenerateDecisionDoc() {
-        //Given
-        CaseIssueDecision decision = CaseIssueDecision.builder()
-            .decisionDocument(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
-
-    @Test
-    void shouldGenerateDecisionDocTemp() {
-        //Given
-        CaseIssueDecision decision = CaseIssueDecision.builder()
-            .issueDecisionDraft(Document.builder().filename("name").binaryUrl("d").build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
-
-    @Test
     void shouldGenerateDecisionDocAll() {
         //Given
         CaseIssueDecision decision = CaseIssueDecision.builder()
@@ -212,22 +178,6 @@ public class DocumentListServiceTest {
         assertThat(result).isNotNull();
     }
 
-    @Test
-    void shouldGenerateFinalDecisionDoc() {
-        //Given
-        CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .document(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueFinalDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getFinalDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
 
     @Test
     void shouldGenerateFinalDecisionDocList() {
@@ -246,23 +196,6 @@ public class DocumentListServiceTest {
         assertThat(result).isNotNull();
     }
 
-
-    @Test
-    void shouldGenerateFinalDecisionDocTemp() {
-        //Given
-        CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .finalDecisionDraft(Document.builder().filename("name").binaryUrl("d").build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueFinalDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getFinalDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
 
     @Test
     void shouldGenerateOrderAll() {
