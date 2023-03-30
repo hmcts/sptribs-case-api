@@ -45,6 +45,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     DocumentListService documentListService;
 
     private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
+    private final CICDocument emptyDocument = new CICDocument();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -110,7 +111,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                         caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
                     } else if (cicDocumentListValue.getValue().getDocumentLink()
                         .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
-                        caseData.getCaseIssueFinalDecision().setDocument(new CICDocument());
+                        caseData.getCaseIssueFinalDecision().setDocument(emptyDocument);
                     }
                 }
             }
@@ -128,7 +129,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                         caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
                     } else if (doc.getValue().getDocumentLink()
                         .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
-                        caseData.getCaseIssueDecision().setDecisionDocument(new CICDocument());
+                        caseData.getCaseIssueDecision().setDecisionDocument(emptyDocument);
                     }
                 }
             }
@@ -153,7 +154,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                                     ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
                                     if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
                                         .equals(cicDocumentListValue.getValue().getDocumentLink())) {
-                                        orderListValue.getValue().getUploadedFile().get(i).setValue(new CICDocument());
+                                        orderListValue.getValue().getUploadedFile().get(i).setValue(emptyDocument);
                                     }
                                 }
                             }
