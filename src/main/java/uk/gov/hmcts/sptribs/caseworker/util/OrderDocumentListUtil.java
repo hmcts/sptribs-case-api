@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderDocumentListUtil {
+public final class OrderDocumentListUtil {
 
     private OrderDocumentListUtil() {
 
