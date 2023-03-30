@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.72
+version: 0.0.73
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
@@ -11,7 +11,7 @@ dependencies:
     version: 4.0.13
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: 8.0.27
+    version: 8.0.28
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
       - ccd-idam-pr
