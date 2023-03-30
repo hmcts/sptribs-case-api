@@ -13,7 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -107,8 +107,8 @@ public class CloseCase {
     @CCD(
         label = "Close case documents",
         typeOverride = Collection,
-        typeParameterOverride = "CICDocument",
+        typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}
     )
-    private List<ListValue<CICDocument>> documents;
+    private List<ListValue<CaseworkerCICDocument>>  documents;
 }
