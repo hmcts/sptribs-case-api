@@ -8,7 +8,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DecisionDocumentListUtil {
+public  final class DecisionDocumentListUtil {
 
     private DecisionDocumentListUtil() {
 
