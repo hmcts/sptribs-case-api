@@ -31,16 +31,7 @@ public class OrderDocumentListUtil {
                         .build();
                     orderList.add(doc);
                 } else if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
-                    for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
-                        if (null != document.getValue().getDocumentLink()) {
-                            CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                                .documentLink(document.getValue().getDocumentLink())
-                                .documentEmailContent(document.getValue().getDocumentEmailContent())
-                                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                                .build();
-                            orderList.add(doc);
-                        }
-                    }
+                    orderList.addAll(checkUploadedFile(orderListValue));
                 }
             }
         }
@@ -48,4 +39,18 @@ public class OrderDocumentListUtil {
     }
 
 
+    private static List<CaseworkerCICDocument> checkUploadedFile(ListValue<Order> orderListValue) {
+        List<CaseworkerCICDocument> orderUploadList = new ArrayList<>();
+        for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
+            if (null != document.getValue().getDocumentLink()) {
+                CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                    .documentLink(document.getValue().getDocumentLink())
+                    .documentEmailContent(document.getValue().getDocumentEmailContent())
+                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .build();
+                orderUploadList.add(doc);
+            }
+        }
+        return orderUploadList;
+    }
 }
