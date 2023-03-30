@@ -95,7 +95,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE_DELETE,COURT_ADMIN_CIC,DISTRICT_JUDGE_CIC,SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, DISTRICT_JUDGE_CIC, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
             .grantHistoryOnly(SOLICITOR));
         issueFinalDecisionNotice.addTo(pageBuilder);
@@ -179,7 +179,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     }
 
     private AboutToStartOrSubmitResponse<CaseData, State> uploadDocumentMidEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+                                                                                 CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         CICDocument uploadedDocument = data.getCaseIssueFinalDecision().getDocument();
         final List<String> errors = validateDecisionDocumentFormat(uploadedDocument);
@@ -195,7 +195,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         var caseData = details.getData();
         var finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
 
-        if(null != finalDecisionDocument) {
+        if (null != finalDecisionDocument) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
         }
 

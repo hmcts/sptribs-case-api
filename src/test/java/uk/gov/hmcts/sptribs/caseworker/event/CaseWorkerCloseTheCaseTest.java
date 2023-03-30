@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -21,9 +22,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +47,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_
 class CaseWorkerCloseTheCaseTest {
 
     @InjectMocks
-    private CaseworkerCloseTheCase closeCase;
+    private CaseworkerCloseTheCase caseworkerCloseTheCase;
 
     @Mock
     private JudicialService judicialService;
@@ -59,7 +62,7 @@ class CaseWorkerCloseTheCaseTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        closeCase.configure(configBuilder);
+        caseworkerCloseTheCase.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
@@ -80,7 +83,7 @@ class CaseWorkerCloseTheCaseTest {
         when(judicialService.getAllUsers()).thenReturn(userList);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = closeCase.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();
@@ -94,12 +97,17 @@ class CaseWorkerCloseTheCaseTest {
 
         //Given
         final CaseData caseData = closedCaseData();
-        final CICDocument document = CICDocument.builder()
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("some email content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+
+        CloseCase closeCase = CloseCase.builder().documents(documentList).build();
+        caseData.setCloseCase(closeCase);
 
         CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -122,10 +130,10 @@ class CaseWorkerCloseTheCaseTest {
         //When
         assertThat(caseData.getCaseStatus()).isEqualTo(State.CaseManagement);
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            closeCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         SubmittedCallbackResponse closedCase =
-            closeCase.closed(updatedCaseDetails, beforeDetails);
+            caseworkerCloseTheCase.closed(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(closedCase).isNotNull();

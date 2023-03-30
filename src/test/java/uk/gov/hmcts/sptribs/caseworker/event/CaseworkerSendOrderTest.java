@@ -158,6 +158,8 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
+        List<ListValue<CICDocument>> documentList = getDocumentList();
+
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
             .fullName(TEST_FIRST_NAME)
@@ -175,6 +177,7 @@ class CaseworkerSendOrderTest {
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .draftOrderDynamicList(getDraftOrderList())
+            .orderFile(documentList)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -193,7 +196,7 @@ class CaseworkerSendOrderTest {
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
-        assertThat(order.getUploadedFile()).isNull();
+        assertThat(order.getUploadedFile()).isNotNull();
         assertThat(order.getReminderDay().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
 
@@ -211,6 +214,8 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
+        List<ListValue<CICDocument>> documentList = getDocumentList();
+
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
             .draftOrderDynamicList(getDraftOrderList())
@@ -226,6 +231,7 @@ class CaseworkerSendOrderTest {
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .orderFile(documentList)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -245,7 +251,7 @@ class CaseworkerSendOrderTest {
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
-        assertThat(order.getUploadedFile()).isNull();
+        assertThat(order.getUploadedFile()).isNotNull();
         assertThat(order.getReminderDay().getLabel()).isEqualTo(ReminderDays.DAY_COUNT_1.getLabel());
     }
 
@@ -272,6 +278,9 @@ class CaseworkerSendOrderTest {
         List<ListValue<DraftOrderCIC>> draftOrderList = new ArrayList<>();
         draftOrderList.add(firstValue);
         draftOrderList.add(secondValue);
+
+        List<ListValue<CICDocument>> documentList = getDocumentList();
+
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(draftOrderList)
             .draftOrderDynamicList(getDraftOrderList())
@@ -287,6 +296,7 @@ class CaseworkerSendOrderTest {
             .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .orderFile(documentList)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -338,9 +348,12 @@ class CaseworkerSendOrderTest {
             .build();
         draftOrderCICList.add(listValue);
 
+        List<ListValue<CICDocument>> documentList = getDocumentList();
+
         final CicCase cicCase = CicCase.builder()
             .draftOrderDynamicList(dynamicList)
             .draftOrderCICList(draftOrderCICList)
+            .orderFile(documentList)
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -376,6 +389,18 @@ class CaseworkerSendOrderTest {
             .build();
         // Then
         assertThat(s.getConfirmationHeader().contains("# Order sent %n## %s"));
+    }
+
+    private List<ListValue<CICDocument>> getDocumentList() {
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().build())
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
+        return documentList;
     }
 
     private DynamicList getDraftOrderList() {

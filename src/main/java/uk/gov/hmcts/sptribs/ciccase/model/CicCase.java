@@ -172,10 +172,7 @@ public class CicCase {
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-        //categoryID = "TD"
     )
-    // TODO: Same filename as Order document, so will be categorised with same name same as CICCase.orderTemplateIssued
-    //- Santoshini to confirm with Ben
     private Document lastSelectedOrder;
 
     @CCD(
@@ -538,7 +535,7 @@ public class CicCase {
         typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}
     )
-    private List<ListValue<CaseworkerCICDocument>>  applicantDocumentsUploaded;
+    private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
 
     @CCD(
         label = "Reinstate Documents",

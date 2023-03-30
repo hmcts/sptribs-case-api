@@ -84,7 +84,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE_DELETE,COURT_ADMIN_CIC,DISTRICT_JUDGE_CIC,SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, DISTRICT_JUDGE_CIC, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
             .grantHistoryOnly(SOLICITOR));
         issueDecisionNotice.addTo(pageBuilder);
@@ -112,11 +112,11 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .pageLabel("Document footer")
             .label("LabelDocFooter",
                 """
-                 Decision Notice Signature
+                    Decision Notice Signature
 
-                 Confirm the Role and Surname of the person who made this decision - this will be added
-                  to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
-                 """)
+                    Confirm the Role and Surname of the person who made this decision - this will be added
+                     to the bottom of the generated decision notice. E.g. 'Tribunal Judge Farrelly'
+                    """)
             .pageShowConditions(issueDecisionShowConditions())
             .mandatory(CaseData::getDecisionSignature)
             .done();
@@ -156,7 +156,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
         var decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
-        if(null != decisionDocument) {
+        if (null != decisionDocument) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
         }
 

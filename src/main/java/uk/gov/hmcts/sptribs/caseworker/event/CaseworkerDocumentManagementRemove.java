@@ -105,18 +105,22 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         List<ListValue<CaseworkerCICDocument>> wholeFinalDecisionDocList = documentListService.getAllFinalDecisionDocuments(caseData);
         if (wholeFinalDecisionDocList.size() > caseData.getCicCase().getFinalDecisionDocumentList().size()) {
             for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeFinalDecisionDocList) {
-                if (!caseData.getCicCase().getFinalDecisionDocumentList().contains(cicDocumentListValue)) {
-                    if (cicDocumentListValue.getValue().getDocumentLink()
-                        .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
-                        caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
-                    } else if (cicDocumentListValue.getValue().getDocumentLink()
-                        .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
-                        caseData.getCaseIssueFinalDecision().setDocument(emptyDocument);
-                    }
-                }
+                removeFinalDecisionDocuments(caseData, cicDocumentListValue);
             }
         }
         return caseData;
+    }
+
+    private void removeFinalDecisionDocuments(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+        if (!caseData.getCicCase().getFinalDecisionDocumentList().contains(cicDocumentListValue)) {
+            if (cicDocumentListValue.getValue().getDocumentLink()
+                .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
+                caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
+            } else if (cicDocumentListValue.getValue().getDocumentLink()
+                .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
+                caseData.getCaseIssueFinalDecision().setDocument(emptyDocument);
+            }
+        }
     }
 
     private CaseData removeDecisionDoc(CaseData caseData) {

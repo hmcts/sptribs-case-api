@@ -18,7 +18,7 @@ public class IssueDecisionUploadNotice implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("issueDecisionUploadNotice")
+        pageBuilder.page("issueDecisionUploadNotice", this::midEvent)
             .pageLabel("Upload decision notice")
             .pageShowConditions(issueDecisionShowConditions())
             .label("labelIssueDecisionUpload",

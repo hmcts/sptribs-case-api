@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDecisionDocumentFormat;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
 public class SendOrderUploadOrder implements CcdPageConfiguration {

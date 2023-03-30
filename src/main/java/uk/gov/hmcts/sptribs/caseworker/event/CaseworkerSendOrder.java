@@ -88,7 +88,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::sent)
-            .grant(CREATE_READ_UPDATE_DELETE,DISTRICT_JUDGE_CIC,COURT_ADMIN_CIC,SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+            .grant(CREATE_READ_UPDATE_DELETE, DISTRICT_JUDGE_CIC, COURT_ADMIN_CIC, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
             .grantHistoryOnly(SOLICITOR));
     }
@@ -98,7 +98,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        updateCategoryToDocument(caseData.getCicCase().getOrderFile());
+        if (null != caseData.getCicCase().getOrderFile()) {
+            updateCategoryToDocument(caseData.getCicCase().getOrderFile());
+        }
 
         DraftOrderCIC selectedDraftOrder = null;
         String selectedDynamicDraft = null;

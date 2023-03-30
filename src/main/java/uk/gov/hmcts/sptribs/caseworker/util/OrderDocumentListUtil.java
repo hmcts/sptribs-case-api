@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderDocumentListUtil {
+public final class OrderDocumentListUtil {
 
     private OrderDocumentListUtil() {
 
@@ -21,30 +21,34 @@ public class OrderDocumentListUtil {
     public static List<CaseworkerCICDocument> getOrderDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> orderList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getOrderList())) {
-            for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
-                if (null != orderListValue.getValue().getDraftOrder()
-                    && null != orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
-                    && !ObjectUtils.isEmpty(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
-                    CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                        .documentLink(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())
-                        .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                        .build();
-                    orderList.add(doc);
-                } else if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
-                    for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
-                        if (null != document.getValue().getDocumentLink()) {
-                            CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                                .documentLink(document.getValue().getDocumentLink())
-                                .documentEmailContent(document.getValue().getDocumentEmailContent())
-                                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                                .build();
-                            orderList.add(doc);
-                        }
+            populateOrderList(cicCase, orderList);
+        }
+        return orderList;
+    }
+
+    private static void populateOrderList(CicCase cicCase, List<CaseworkerCICDocument> orderList) {
+        for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
+            if (null != orderListValue.getValue().getDraftOrder()
+                && null != orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
+                && !ObjectUtils.isEmpty(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
+                CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                    .documentLink(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())
+                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .build();
+                orderList.add(doc);
+            } else if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
+                for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
+                    if (null != document.getValue().getDocumentLink()) {
+                        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                            .documentLink(document.getValue().getDocumentLink())
+                            .documentEmailContent(document.getValue().getDocumentEmailContent())
+                            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                            .build();
+                        orderList.add(doc);
                     }
                 }
             }
         }
-        return orderList;
     }
 
 
