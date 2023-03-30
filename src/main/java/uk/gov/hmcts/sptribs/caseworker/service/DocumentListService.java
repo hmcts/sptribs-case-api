@@ -3,14 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +16,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
 
 @Service
@@ -71,50 +71,6 @@ public class DocumentListService {
             }
         }
         return caseDocs;
-    }
-
-    public List<CaseworkerCICDocument> getDecisionDocs(CaseData caseData) {
-        List<CaseworkerCICDocument> decisionDocs = new ArrayList<>();
-        if (null != caseData.getCaseIssueDecision()) {
-            if (null != caseData.getCaseIssueDecision().getDecisionDocument()
-                && null != caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink()) {
-                CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                    .documentLink(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())
-                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                    .build();
-                decisionDocs.add(doc);
-            } else if (null != caseData.getCaseIssueDecision().getIssueDecisionDraft()
-                && !ObjectUtils.isEmpty(caseData.getCaseIssueDecision().getIssueDecisionDraft().getFilename())) {
-                CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                    .documentLink(caseData.getCaseIssueDecision().getIssueDecisionDraft())
-                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                    .build();
-                decisionDocs.add(doc);
-            }
-        }
-        return decisionDocs;
-    }
-
-    public List<CaseworkerCICDocument> getFinalDecisionDocs(CaseData caseData) {
-        List<CaseworkerCICDocument> finalDecisionDocs = new ArrayList<>();
-        if (null != caseData.getCaseIssueFinalDecision()) {
-            if (null != caseData.getCaseIssueFinalDecision().getDocument()
-                && null != caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink()) {
-                CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                    .documentLink(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())
-                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                    .build();
-                finalDecisionDocs.add(doc);
-            } else if (null != caseData.getCaseIssueFinalDecision().getFinalDecisionDraft()
-                && !ObjectUtils.isEmpty(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft().getFilename())) {
-                CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                    .documentLink(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())
-                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                    .build();
-                finalDecisionDocs.add(doc);
-            }
-        }
-        return finalDecisionDocs;
     }
 
     private List<CaseworkerCICDocument> getDocumentManagementDocs(CaseData caseData) {
