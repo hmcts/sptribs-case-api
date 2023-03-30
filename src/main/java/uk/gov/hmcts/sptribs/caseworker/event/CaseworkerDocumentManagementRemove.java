@@ -117,13 +117,12 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
 
         if (wholeDecisionDocList.size() > caseData.getCicCase().getDecisionDocumentList().size()) {
             for (ListValue<CaseworkerCICDocument> doc : wholeDecisionDocList) {
-                if (!caseData.getCicCase().getDecisionDocumentList().contains(doc)) {
-                    if (doc.getValue().getDocumentLink().equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
-                        caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
-                    } else if (doc.getValue().getDocumentLink()
-                        .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
-                        caseData.getCaseIssueDecision().setDecisionDocument(emptyDocument);
-                    }
+                if (!caseData.getCicCase().getDecisionDocumentList().contains(doc)
+                    && doc.getValue().getDocumentLink().equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
+                    caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
+                } else if (doc.getValue().getDocumentLink()
+                    .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
+                    caseData.getCaseIssueDecision().setDecisionDocument(emptyDocument);
                 }
             }
         }
