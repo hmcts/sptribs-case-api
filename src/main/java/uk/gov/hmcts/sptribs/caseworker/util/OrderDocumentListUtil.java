@@ -21,35 +21,36 @@ public final class OrderDocumentListUtil {
     public static List<CaseworkerCICDocument> getOrderDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> orderList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getOrderList())) {
-            populateOrderList(cicCase, orderList);
+            for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
+                if (null != orderListValue.getValue().getDraftOrder()
+                    && null != orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
+                    && !ObjectUtils.isEmpty(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
+                    CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                        .documentLink(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())
+                        .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                        .build();
+                    orderList.add(doc);
+                } else if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
+                    orderList.addAll(checkUploadedFile(orderListValue));
+                }
+            }
         }
         return orderList;
     }
 
-    private static void populateOrderList(CicCase cicCase, List<CaseworkerCICDocument> orderList) {
-        for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
-            if (null != orderListValue.getValue().getDraftOrder()
-                && null != orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
-                && !ObjectUtils.isEmpty(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
+
+    private static List<CaseworkerCICDocument> checkUploadedFile(ListValue<Order> orderListValue) {
+        List<CaseworkerCICDocument> orderUploadList = new ArrayList<>();
+        for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
+            if (null != document.getValue().getDocumentLink()) {
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                    .documentLink(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())
+                    .documentLink(document.getValue().getDocumentLink())
+                    .documentEmailContent(document.getValue().getDocumentEmailContent())
                     .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
                     .build();
-                orderList.add(doc);
-            } else if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
-                for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
-                    if (null != document.getValue().getDocumentLink()) {
-                        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                            .documentLink(document.getValue().getDocumentLink())
-                            .documentEmailContent(document.getValue().getDocumentEmailContent())
-                            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-                            .build();
-                        orderList.add(doc);
-                    }
-                }
+                orderUploadList.add(doc);
             }
         }
+        return orderUploadList;
     }
-
-
 }
