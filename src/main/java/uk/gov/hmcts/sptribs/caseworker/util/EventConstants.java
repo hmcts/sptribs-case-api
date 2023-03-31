@@ -12,7 +12,7 @@ public final class EventConstants {
     public static final String CASEWORKER_CASE_FLAG = "caseworker-case-flag";
     public static final String CASEWORKER_CLOSE_THE_CASE = "caseworker-close-the-case";
     public static final String CASEWORKER_CONTACT_PARTIES = "contact-parties";
-//    public static final String RESPONDENT_CONTACT_PARTIES = "respondent-contact-parties";
+    public static final String RESPONDENT_CONTACT_PARTIES = "respondent-contact-parties";
     public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
     public static final String CASEWORKER_CREATE_HEARING_SUMMARY = "create-hearing-summary";
     public static final String CASEWORKER_EDIT_HEARING_SUMMARY = "edit-hearing-summary";

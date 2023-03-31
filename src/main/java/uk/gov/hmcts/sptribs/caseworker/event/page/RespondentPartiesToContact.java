@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class ResPartiesToContact implements CcdPageConfiguration {
+public class RespondentPartiesToContact implements CcdPageConfiguration {
 
 
     @Override
