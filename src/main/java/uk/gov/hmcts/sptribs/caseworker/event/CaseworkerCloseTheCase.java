@@ -135,6 +135,18 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .build();
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
+        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
+    }
+
     private void sendCaseWithdrawnNotification(String caseNumber, CaseData caseData) {
         CicCase cicCase = caseData.getCicCase();
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
@@ -163,17 +175,5 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();
-    }
-
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
-        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .errors(errors)
-            .build();
     }
 }

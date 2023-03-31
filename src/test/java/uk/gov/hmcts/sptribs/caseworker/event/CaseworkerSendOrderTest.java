@@ -54,6 +54,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_SEND_ORDER;
 
 
@@ -158,7 +159,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -214,7 +215,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -279,7 +280,7 @@ class CaseworkerSendOrderTest {
         draftOrderList.add(firstValue);
         draftOrderList.add(secondValue);
 
-        List<ListValue<CICDocument>> documentList = getDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(draftOrderList)
@@ -348,7 +349,7 @@ class CaseworkerSendOrderTest {
             .build();
         draftOrderCICList.add(listValue);
 
-        List<ListValue<CICDocument>> documentList = getDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderDynamicList(dynamicList)
@@ -389,18 +390,6 @@ class CaseworkerSendOrderTest {
             .build();
         // Then
         assertThat(s.getConfirmationHeader().contains("# Order sent %n## %s"));
-    }
-
-    private List<ListValue<CICDocument>> getDocumentList() {
-        List<ListValue<CICDocument>> documentList = new ArrayList<>();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().build())
-            .documentEmailContent("some email content")
-            .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
-        return documentList;
     }
 
     private DynamicList getDraftOrderList() {
