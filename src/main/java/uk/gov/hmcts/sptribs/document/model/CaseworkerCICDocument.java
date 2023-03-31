@@ -1,10 +1,12 @@
 package uk.gov.hmcts.sptribs.document.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 
@@ -44,5 +46,14 @@ public class CaseworkerCICDocument {
         this.documentCategory = documentCategory;
         this.documentEmailContent = documentEmailContent;
         this.documentLink = documentLink;
+    }
+
+    @JsonIgnore
+    public boolean isDocumentValid() {
+        String regex = ".pdf,.tif,.tiff,.jpg,.jpeg,.png,.mp3";
+        String fileName = this.documentLink.getFilename();
+        String fileExtension = StringUtils.substringAfter(fileName, ".");
+
+        return regex.contains(fileExtension);
     }
 }
