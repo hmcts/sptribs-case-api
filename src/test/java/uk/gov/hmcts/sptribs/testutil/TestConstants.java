@@ -40,8 +40,8 @@ public final class TestConstants {
     public static final Long TEST_CASE_ID = 1616591401473378L;
     public static final String TEST_SERVICE_AUTH_TOKEN = "Bearer TestServiceAuth";
 
-    public static final String ENGLISH_TEMPLATE_ID = "divorceminiapplication";
-    public static final String WELSH_TEMPLATE_ID = "FL-DIV-GNO-WEL-00256.docx";
+    public static final String ENGLISH_TEMPLATE_ID = "sptribsminiapplication";
+    public static final String WELSH_TEMPLATE_ID = "FL-SPTRIBS-GNO-WEL-00256.docx";
     public static final String BEARER = "Bearer ";
     public static final String FILENAME = "file-1616591401473378.pdf";
 
