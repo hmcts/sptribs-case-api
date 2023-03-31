@@ -12,7 +12,8 @@ public final class DocumentUtil {
         return new Document(
             documentInfo.getUrl(),
             documentInfo.getFilename(),
-            documentInfo.getBinaryUrl());
+            documentInfo.getBinaryUrl(),
+            null);
     }
 
 }

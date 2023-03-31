@@ -25,11 +25,12 @@ public class ExtendedCaseDataService {
     private IdamService idamService;
 
     @Autowired
-    private ExtendedCaseDataApi coreCaseDataApi;
+    private ExtendedCaseDataApi caseDataApi;
 
     public Map<String, Object> getDataClassification(String caseId) {
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        ExtendedCaseDetails caseDetails = coreCaseDataApi.getExtendedCaseDetails(caseworkerUser.getAuthToken(), authTokenGenerator.generate(), caseId);
+        ExtendedCaseDetails caseDetails = caseDataApi.getExtendedCaseDetails(caseworkerUser.getAuthToken(),
+            authTokenGenerator.generate(), caseId);
         return caseDetails.getDataClassification();
     }
 }
