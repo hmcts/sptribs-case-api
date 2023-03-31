@@ -11,7 +11,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.SYSTEM_USER_ROLE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -59,7 +58,6 @@ public final class DocManagementStoreWireMock {
             .withHeader(AUTHORIZATION, new EqualToPattern(BEARER + TEST_SYSTEM_AUTHORISATION_TOKEN))
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern(TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-id", new EqualToPattern("4"))
-            .withHeader("user-roles", new EqualToPattern(SYSTEM_USER_ROLE))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withBody(documentBytes)
