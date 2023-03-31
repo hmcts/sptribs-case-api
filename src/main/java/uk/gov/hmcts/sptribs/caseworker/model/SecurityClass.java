@@ -10,22 +10,23 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 public enum SecurityClass implements HasLabel {
 
     @JsonProperty("PUBLIC")
-    PUBLIC("PUBLIC", "PUBLIC"),
+    PUBLIC("PUBLIC", new String[] {
+        "hmcts-judiciary"
+    }),
 
     @JsonProperty("PRIVATE")
-    PRIVATE("PRIVATE", "PRIVATE"),
+    PRIVATE("PRIVATE", new String[] {
+        "caseworker-st_cic-senior-judge",
+        "caseworker-st_cic-hearing-centre-team-leader",
+        "caseworker-st_cic-senior-caseworker"
+    }),
 
     @JsonProperty("Restricted")
-    RESTRICTED("RESTRICTED", "RESTRICTED");
+    RESTRICTED("RESTRICTED", new String[] {
+        "caseworker-st_cic-senior-judge"
+    });
 
-    private final String reason;
     private final String label;
+    private final String[] permittedRoles;
 
-    public String getReason() {
-        return this.reason;
-    }
-
-    public String getLabel() {
-        return this.label;
-    }
 }
