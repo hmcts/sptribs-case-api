@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.testutil;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.experimental.categories.Categories;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.ResolvedCCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseCategory;

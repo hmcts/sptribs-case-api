@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createSpecialEducationalNeedsDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getCategories;
 
-public class CategoriesSENDTest {
+public class CategoriesSendTest {
 
     @Test
     void shouldConfigureCategoriesForSEND() throws IllegalAccessException {

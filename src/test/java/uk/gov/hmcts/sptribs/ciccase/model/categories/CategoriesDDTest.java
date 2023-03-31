@@ -15,7 +15,8 @@ public class CategoriesDDTest {
     @Test
     void shouldConfigureCategoriesForDD() throws IllegalAccessException {
         //Given
-        final ConfigBuilder<DisabilityDiscriminationData, State, UserRole> configBuilder = createDisabilityDiscriminationDataConfigBuilder();
+        final ConfigBuilder<DisabilityDiscriminationData, State, UserRole> configBuilder
+            = createDisabilityDiscriminationDataConfigBuilder();
 
         //When
         new CategoriesDD().configure(configBuilder);
