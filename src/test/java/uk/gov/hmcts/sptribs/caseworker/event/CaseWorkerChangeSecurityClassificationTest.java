@@ -11,6 +11,8 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -40,6 +42,9 @@ class CaseWorkerChangeSecurityClassificationTest {
     @Mock
     private IdamService idamService;
 
+    @Mock
+    private ExtendedCaseDataService caseDataService;
+
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
@@ -59,6 +64,7 @@ class CaseWorkerChangeSecurityClassificationTest {
         //Given
 
         CaseData caseData = caseData();
+        caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -75,10 +81,11 @@ class CaseWorkerChangeSecurityClassificationTest {
     }
 
     @Test
-    void shouldCheckRoles() {
+    void shouldCheckRolesSuccessfully() {
         //Given
 
         CaseData caseData = caseData();
+        caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -92,6 +99,28 @@ class CaseWorkerChangeSecurityClassificationTest {
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response1).isNotNull();
+        assertThat(response1.getErrors()).hasSize(0);
+    }
+
+    @Test
+    void shouldFailIfInsufficientRolesForSecurityClass() {
+        //Given
+
+        CaseData caseData = caseData();
+        caseData.setSecurityClass(SecurityClass.PRIVATE);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        User user = TestDataHelper.getUser();
+        when(request.getHeader(any())).thenReturn("listing");
+        when(idamService.retrieveUser(any())).thenReturn(user);
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+            caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response1.getErrors()).hasSize(1);
     }
 }

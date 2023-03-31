@@ -181,7 +181,7 @@ public class TestDataHelper {
             .builder()
             .forename("testFname")
             .surname("testSname")
-            .roles(List.of("senior-judge"))
+            .roles(List.of("caseworker-st_cic-senior-judge"))
             .build();
 
         return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
