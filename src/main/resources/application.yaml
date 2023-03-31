@@ -90,10 +90,6 @@ idam:
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
-  client:
-    id: 'divorce'
-    secret: ${OAUTH2_CLIENT_SECRET:dummy}
-    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
 
 location:
   api:
@@ -135,13 +131,6 @@ docmosis:
       CIC10_Strike_Out_Warning: ST-CIC-STD-ENG-CIC10_Strike_Out_Warning.docx
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
 
-
-    welsh:
-      #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.
-      DIVORCE_APPLICATION_SOLE: ${DIVORCE_APPLICATION_SOLE_WELSH_TEMPLATE_ID:NFD_CP_Application_Sole_V5.docx}
-  templateVars:
-    #TO DO-below template var needs to be removed from here once some other template var for sp-tribs is in place here, left for keeping structure.
-    applicant2SignInDivorceUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL:https://sptribs-apply-for-divorce.aat.platform.hmcts.net/applicant2}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
