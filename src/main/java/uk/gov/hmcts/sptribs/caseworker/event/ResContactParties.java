@@ -1,5 +1,5 @@
 
-    package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ResPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -50,17 +51,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class ResContactParties implements CCDConfig<CaseData, State, UserRole> {
 
-//    @Value("${feature.respondent-parties.enabled}")
-//    private boolean resContactPartiesEnabled;
-
-    private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
-
-//    @Override
-//    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-//        if (resContactPartiesEnabled) {
-//            doConfigure(configBuilder);
-//        }
-//    }
+    private static final CcdPageConfiguration resPartiesToContact = new ResPartiesToContact();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -83,7 +74,7 @@ public class ResContactParties implements CCDConfig<CaseData, State, UserRole> {
                 .submittedCallback(this::partiesContacted)
                 .grant(CREATE_READ_UPDATE_DELETE, ST_CIC_RESPONDENT)
                 .grantHistoryOnly(SOLICITOR));
-        partiesToContact.addTo(pageBuilder);
+        resPartiesToContact.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
