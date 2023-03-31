@@ -16,7 +16,6 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
 public class ReinstateUploadDocuments implements CcdPageConfiguration {
 
