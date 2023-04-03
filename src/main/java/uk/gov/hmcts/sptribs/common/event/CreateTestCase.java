@@ -158,6 +158,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
+            .state(submittedDetails.getState())
             .build();
     }
 
