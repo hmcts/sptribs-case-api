@@ -10,6 +10,7 @@ public final class DocumentConstants {
     public static final String SPTRIBS_DRAFT_APPLICATION_DOCUMENT_NAME = "draft-sptribs-application-";
 
     public static final String DOCUMENT_ID = "documentId";
+    public static final String DOCUMENT_VALIDATION_MESSAGE = "Please upload valid document";
 
     private DocumentConstants() {
     }

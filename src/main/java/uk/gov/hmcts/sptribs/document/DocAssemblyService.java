@@ -19,6 +19,7 @@ public class DocAssemblyService {
 
     private static final String CASE_TYPE = "CriminalInjuriesCompensation";
     private static final String JURISDICTION = "ST_CIC";
+    private static final String CATEGORY_ID = "TD";
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
@@ -69,7 +70,7 @@ public class DocAssemblyService {
         return new DocumentInfo(
             docAssemblyResponse.getRenditionOutputLocation(),
             filename + ".pdf",
-            docAssemblyResponse.getBinaryFilePath()
+            docAssemblyResponse.getBinaryFilePath(), CATEGORY_ID
         );
     }
 }
