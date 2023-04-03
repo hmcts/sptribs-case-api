@@ -51,8 +51,8 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                 AwaitingOutcome,
                 CaseClosed,
                 CaseStayed)
-            .name("Document Management: Upload")
-            .description("Document Management: Upload")
+            .name("Document management: Upload")
+            .description("Document management: Upload")
             .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
