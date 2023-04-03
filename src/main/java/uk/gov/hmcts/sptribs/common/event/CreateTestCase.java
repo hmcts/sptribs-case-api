@@ -151,6 +151,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
+        State state = submittedDetails.getState();
 
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
@@ -158,6 +159,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
+            .state(state)
             .build();
     }
 
