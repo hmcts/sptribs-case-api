@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.testutil;
 import com.google.common.collect.ImmutableSet;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.ResolvedCCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseCategory;
+import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Search;
@@ -109,9 +111,9 @@ public final class ConfigTestUtil {
             .orElseThrow(() -> new AssertionError("Unable to find ConfigBuilderImpl.class method getEvents"));
     }
 
-    public static <T, S, R extends HasRole> Search<T, R> getSearchInputFields(
-        final ConfigBuilderImpl<T, S, R> configBuilder) throws IllegalAccessException {
-        return getSearchFor("searchInputFields", configBuilder);
+    public static <T, S, R extends HasRole> List<CaseCategory.CaseCategoryBuilder> getCategories(
+        final ConfigBuilder<T, S, R> configBuilder) throws IllegalAccessException {
+        return getCategoriesFor("categories", configBuilder);
     }
 
     public static <T, S, R extends HasRole> Search<T, R> getSearchResultFields(
@@ -148,5 +150,16 @@ public final class ConfigTestUtil {
             (List<SearchBuilder>) getValueIncludingSuperclasses(fieldName, configBuilder);
         final var workBasketBuilder = workBasketInputFields.get(0);
         return workBasketBuilder.build();
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static <T, S, R extends HasRole> List<CaseCategory.CaseCategoryBuilder> getCategoriesFor(
+        final String fieldName,
+        final ConfigBuilder<T, S, R> configBuilder) throws IllegalAccessException {
+
+        final List<CaseCategory.CaseCategoryBuilder> categories =
+            (List<CaseCategory.CaseCategoryBuilder>) getValueIncludingSuperclasses(fieldName, configBuilder);
+        //final var categoriesBuilder = categories.get(0);
+        return categories;
     }
 }

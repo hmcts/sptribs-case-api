@@ -172,7 +172,7 @@ class ReinstateCaseTest {
     void shouldReturnErrorsIfNoDescriptionOnDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CaseworkerCICDocument document = new CaseworkerCICDocument();
-        document.setDocumentLink(new Document());
+        document.setDocumentLink(Document.builder().binaryUrl("url").filename("file.txt").build());
         ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
@@ -185,6 +185,6 @@ class ReinstateCaseTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
 
-        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).hasSize(2);
     }
 }

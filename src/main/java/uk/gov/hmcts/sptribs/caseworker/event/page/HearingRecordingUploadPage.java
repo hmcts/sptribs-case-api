@@ -2,12 +2,21 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+
+import java.util.List;
+
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 @Slf4j
 @Component
@@ -15,7 +24,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("hearingRecordingUploadPage")
+        pageBuilder.page("hearingRecordingUploadPage", this::midEvent)
             .pageLabel("Upload hearing recording")
             .label("LabelHearingRecordingUploadPage","")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
@@ -32,6 +41,18 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                 + "please describe where it can be found. You can also enter a link to the recording</h3>")
             .optional(HearingSummary::getRecDesc)
             .done();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                   CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
+        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
     }
 
 }
