@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
@@ -197,6 +198,12 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String closedDayCount;
+
+    @CCD(
+        label = "Case file view",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ComponentLauncher caseFileView1;
 
     @CCD(
         label = "Event",

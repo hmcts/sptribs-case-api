@@ -15,6 +15,8 @@ public final class MessageUtil {
     private static final String RESPONDENT = "Respondent";
     private static final String SUBJECT = "Subject";
 
+    private static final String TRIBUNAL = "Tribunal";
+
     private static final String COMMA_SPACE = ", ";
 
     private MessageUtil() {
@@ -85,6 +87,9 @@ public final class MessageUtil {
         }
         if (!CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())) {
             message.append(REPRESENTATIVE + COMMA_SPACE);
+        }
+        if (!CollectionUtils.isEmpty(contactParties.getTribunal())) {
+            message.append(TRIBUNAL + COMMA_SPACE);
         }
 
         return message.substring(0, message.length() - 2);

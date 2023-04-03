@@ -30,13 +30,14 @@ public class Order {
     )
     private List<ListValue<DateModel>> dueDateList;
 
-
     @CCD(
         label = "Uploaded File",
         typeOverride = Collection,
         typeParameterOverride = "CICDocument",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    // TODO: Same filename as Order document, so will be categorised with same name as in CicCase.orderFile
+    //- Santoshini to confirm with Ben
     private List<ListValue<CICDocument>> uploadedFile;
 
     @CCD(
