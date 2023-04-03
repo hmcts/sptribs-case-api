@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.ArrayList;
@@ -102,6 +103,7 @@ class CaseWorkerCloseTheCaseTest {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("some email content")
+            .documentCategory(DocumentType.LINKED_DOCS)
             .build();
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
@@ -158,7 +160,7 @@ class CaseWorkerCloseTheCaseTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
+        assert(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
 
 }

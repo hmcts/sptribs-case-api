@@ -139,14 +139,14 @@ public class CaseworkerDocumentManagementRemoveTest {
     private List<ListValue<CaseworkerCICDocument>> get2Document() {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.CARE_DOCUMENTS)
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);
         listValueList.add(list);
         CaseworkerCICDocument doc2 = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.CARE_DOCUMENTS)
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
             .build();
         ListValue<CaseworkerCICDocument> list2 = new ListValue<>();
