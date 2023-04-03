@@ -37,7 +37,8 @@ public class CaseIssueDecision {
 
     @CCD(
         label = "Decision Document",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        categoryID = "TD"
     )
     private Document issueDecisionDraft;
 

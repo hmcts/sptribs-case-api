@@ -9,6 +9,8 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -16,12 +18,13 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CHANGE_SECURITY_CLASS;
-import static uk.gov.hmcts.sptribs.caseworker.util.SecurityUtil.checkAvailableForNewClass;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -41,6 +44,9 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
 
     @Autowired
     private IdamService idamService;
+
+    @Autowired
+    private ExtendedCaseDataService caseDataService;
 
 
     @Override
@@ -65,11 +71,13 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-
         var caseData = details.getData();
-
+        String securityClassification = caseData.getSecurityClass().getLabel();
+        Map<String, Object> dataClassification = caseDataService.getDataClassification(details.getId().toString());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .dataClassification(dataClassification)
+            .securityClassification(securityClassification)
             .build();
     }
 
@@ -100,11 +108,15 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             errors.add("You do not have permission to change the case to the selected Security Classification");
         }
 
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();
 
+    }
+
+    private boolean checkAvailableForNewClass(User user, SecurityClass newClass) {
+        List<String> roles = user.getUserDetails().getRoles();
+        return Arrays.stream(newClass.getPermittedRoles()).anyMatch(role -> roles.contains(role));
     }
 }
