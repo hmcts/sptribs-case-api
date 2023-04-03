@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
@@ -24,8 +25,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.util.Set;
 
@@ -105,11 +108,18 @@ class CaseworkerIssueFinalDecisionTest {
     }
 
     @Test
-    void shouldCloseCase() {
+    void shouldIssueCaseFinalDecision() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CaseData caseData = caseData();
+        final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
+            .documentEmailContent("content")
+            .build();
+        caseIssueFinalDecision.setDocument(document);
+        caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
         details.setData(caseData);
 
         //When
@@ -118,6 +128,28 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(response.getState())
             .isEqualTo(CaseClosed);
+    }
+
+    @Test
+    void shouldReturnErrorsInvalidDocumentUploaded() {
+        //Given
+
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
+            .documentEmailContent("content")
+            .build();
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().document(document).build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .caseIssueFinalDecision(caseIssueFinalDecision)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.uploadDocumentMidEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);
     }
 
     @Test
