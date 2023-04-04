@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -99,7 +100,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     ) {
         var caseData = details.getData();
         if (null != caseData.getCicCase().getOrderFile()) {
-            updateCategoryToDocument(caseData.getCicCase().getOrderFile());
+            updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
 
         DraftOrderCIC selectedDraftOrder = null;
@@ -205,7 +206,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
         } else if (null != order.getUploadedFile()
             && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-            updateCategoryToDocument(order.getUploadedFile());
+            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
     }

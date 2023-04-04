@@ -105,6 +105,10 @@
     <cve>CVE-2023-28708</cve>
   </suppress>
   <suppress>
+    <notes>pkg:maven/org.springframework/spring-webmvc@5.3.23</notes>
+    <cve>CVE-2023-20860</cve>
+  </suppress>
+  <suppress>
     <notes>pkg:maven/org.springframework/spring-aop@5.3.23</notes>
     <cve>CVE-2023-20860</cve>
     <cve>CVE-2023-20861</cve>
