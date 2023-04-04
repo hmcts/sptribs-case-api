@@ -11,14 +11,17 @@ public enum SecurityClass implements HasLabel {
 
     @JsonProperty("PUBLIC")
     PUBLIC("PUBLIC", new String[] {
-        "hmcts-judiciary"
+        "hmcts-judiciary",
+        "caseworker-st_cic-hearing-centre-team-leader",
+        "caseworker-st_cic-senior-caseworker",
+        "caseworker-st_cic-senior-judge"
     }),
 
     @JsonProperty("PRIVATE")
     PRIVATE("PRIVATE", new String[] {
-        "caseworker-st_cic-senior-judge",
         "caseworker-st_cic-hearing-centre-team-leader",
-        "caseworker-st_cic-senior-caseworker"
+        "caseworker-st_cic-senior-caseworker",
+        "caseworker-st_cic-senior-judge"
     }),
 
     @JsonProperty("Restricted")
