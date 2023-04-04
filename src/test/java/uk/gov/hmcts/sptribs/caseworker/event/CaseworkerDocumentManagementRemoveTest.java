@@ -49,6 +49,7 @@ public class CaseworkerDocumentManagementRemoveTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
+        caseworkerDocumentManagementRemove.setCaseFileViewAndDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -58,6 +59,20 @@ public class CaseworkerDocumentManagementRemoveTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE);
+    }
+
+    @Test
+    void shouldNotConfigureDocumentManagementRemoveIfFeatureFlagFalse() {
+        //Given
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        //When
+        caseworkerDocumentManagementRemove.configure(configBuilder);
+
+        //Then
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .doesNotContain(CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE);
     }
 
     @Test

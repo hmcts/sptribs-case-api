@@ -139,7 +139,7 @@ withPipeline(type, product, component) {
       reportDir            : "build/reports/tests/functional",
       reportFiles          : "index.html",
       reportName           : "Functional Tests Report"
-    ]  
+    ]
   }
 
   afterAlways('smoketest:preview') {
@@ -206,7 +206,7 @@ withPipeline(type, product, component) {
     }
 
     afterSuccess('functionalTest:aat') {
-     
+
         try {
           builder.gradle('e2eTests')
         } finally {
@@ -220,7 +220,7 @@ withPipeline(type, product, component) {
               reportName           : "E2E Tests Report"
            ]
         }
-      
+
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
         env.CCD_DEF_NAME="prod"
@@ -235,9 +235,9 @@ withPipeline(type, product, component) {
 
         builder.gradle('generateCCDConfig --rerun-tasks')
 
-        generateDefinitions()    
+        generateDefinitions()
     }
- 
+
 
     onDemo {
       env.ENVIRONMENT="demo"
@@ -305,9 +305,11 @@ def setFeatureFlags(environment) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
+    env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
   } else if (environment =~ /aat|prod/) {
     env.CONTACT_PARTIES_FEATURE = false
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
+    env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = false
   }
 }
