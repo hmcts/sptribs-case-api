@@ -30,6 +30,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCaseDocumentTab(configBuilder);
         buildHearing(configBuilder);
         buildCicaDetails(configBuilder);
+        buildCaseFileViewTab(configBuilder);
+    }
+
+    private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseFileView", "Case file view")
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
+            .field(CaseData::getCaseFileView1, null, "#ARGUMENT(CaseFileView)");
     }
 
 
@@ -169,7 +176,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("caseDocuments", "Case Documents")
             .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
             .label("Case Documents", null, "#### Case Documents")
-            .field("cicCaseApplicantDocumentsUploaded");
+            .field("cicCaseApplicantDocumentsUploaded")
+            .field("caseworkerCICDocument");
 
 
     }

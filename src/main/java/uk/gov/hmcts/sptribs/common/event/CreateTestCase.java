@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
@@ -27,9 +28,11 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -38,8 +41,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 @Slf4j
 @Component
@@ -71,15 +81,19 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
-        var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
+        final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
         roles.add(SOLICITOR);
         roles.add(COURT_ADMIN_CIC);
+        roles.add(ST_CIC_CASEWORKER);
+        roles.add(ST_CIC_SENIOR_CASEWORKER);
+        roles.add(ST_CIC_HEARING_CENTRE_ADMIN);
+        roles.add(ST_CIC_HEARING_CENTRE_TEAM_LEADER);
+        roles.add(ST_CIC_SENIOR_JUDGE);
         if (!env.contains(ENVIRONMENT_PROD)) {
             roles.add(SUPER_USER);
             roles.add(COURT_ADMIN_CIC);
             roles.add(DISTRICT_JUDGE_CIC);
         }
-
 
         if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
             PageBuilder pageBuilder = new PageBuilder(configBuilder
@@ -99,8 +113,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
             contactPreferenceDetails.addTo(pageBuilder);
-
-
             uploadDocuments(pageBuilder);
             furtherDetails.addTo(pageBuilder);
         }
@@ -108,7 +120,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
 
     private void uploadDocuments(PageBuilder pageBuilder) {
-        pageBuilder.page("documentsUploadObjets")
+        pageBuilder.page("documentsUploadObjets", this::midEvent)
             .pageLabel("Upload tribunal forms")
             .label("LabelDoc",
                 "\nPlease upload a copy of the completed tribunal form, as well as any"
@@ -122,18 +134,31 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .done();
     }
 
+    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                   CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData data = details.getData();
+        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
+        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
+    }
+
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
-        State state = submittedDetails.getState();
 
+        updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .state(state)
+            .state(submittedDetails.getState())
             .build();
     }
 

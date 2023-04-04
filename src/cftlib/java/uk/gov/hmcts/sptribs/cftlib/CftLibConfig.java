@@ -41,14 +41,18 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-cic-districtregistrar",
             "caseworker-sptribs-cic-respondent",
             "caseworker",
-            "payments",
             "solicitor",
             "pui-case-manager",
             "pui-finance-manager",
             "pui-organisation-manager",
             "pui-user-manager",
             "jrd-system-user",
-            "jrd-admin");
+            "jrd-admin",
+            "caseworker-st_cic-caseworker",
+            "caseworker-st_cic-senior-caseworker",
+            "caseworker-st_cic-hearing-centre-admin",
+            "caseworker-st_cic-hearing-centre-team-leader",
+            "caseworker-st_cic-respondent");
 
         var users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
@@ -82,14 +86,20 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-cic-districtjudge",
             "caseworker-sptribs-cic-respondent",
             "caseworker",
-            "payments",
             "solicitor",
             "pui-case-manager",
             "pui-finance-manager",
             "pui-organisation-manager",
             "pui-user-manager",
             "jrd-system-user",
-            "jrd-admin"
+            "jrd-admin",
+            "caseworker-st_cic-caseworker",
+            "caseworker-st_cic-senior-caseworker",
+            "caseworker-st_cic-hearing-centre-admin",
+            "caseworker-st_cic-hearing-centre-team-leader",
+            "caseworker-st_cic-senior-judge",
+            "caseworker-st_cic-judge",
+            "caseworker-st_cic-respondent"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")

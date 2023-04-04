@@ -26,8 +26,8 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.0'
   id 'org.springframework.boot' version '2.7.5'
   id 'com.github.ben-manes.versions' version '0.46.0'
-  id 'hmcts.ccd.sdk'  version '5.3.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.632'
+  id 'hmcts.ccd.sdk'  version '5.3.3'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.643'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -330,7 +330,7 @@ dependencies {
   }
 
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-  implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.16'
+  implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.17'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: 'v4.9.1'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '2.1.1'
@@ -344,7 +344,7 @@ dependencies {
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.7'
   implementation group: 'org.elasticsearch', name: 'elasticsearch'
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
@@ -521,14 +521,13 @@ cftlibTest {
   environment 'PRD_API_BASEURL', 'http://localhost:8765'
   environment 'DOC_ASSEMBLY_URL', 'http://localhost:8765'
   environment 'FEE_API_URL', 'http://localhost:8765'
-  environment 'PAYMENT_API_BASEURL', 'http://localhost:8765'
   environment 'CCD_DOCUMENT_URL_PATTERN', '.*'
   environment 'DM_STORE_BASE_URL', 'http://localhost:8765'
   environment 'CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED', 'false'
   environment 'CASE_DATA_STORE_BASEURL', 'http://localhost:4452'
   environment 'ROLE_ASSIGNMENT_URL', 'http://localhost:4096'
   environment 'CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES', 'sptribs_case_api'
-  environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,payment-api,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
+  environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
 }
 
 // exclude the logback binding is coming in via cftlib

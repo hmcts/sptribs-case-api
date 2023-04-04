@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.DocumentListService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -32,7 +33,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
@@ -45,6 +45,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     DocumentListService documentListService;
 
     private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
+    private final CICDocument emptyDocument = new CICDocument();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -59,10 +60,10 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 AwaitingOutcome,
                 CaseClosed,
                 CaseStayed)
-            .name("Document Management: Remove")
-            .description("Document Management: Remove")
+            .name("Document management: Remove")
+            .description("Document management: Remove")
             .showSummary()
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER)
             .grantHistoryOnly(SOLICITOR)
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -86,59 +87,9 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = documentListService.getAllOrderDocuments(caseData.getCicCase());
-        List<ListValue<CaseworkerCICDocument>> wholeDecisionDocList = documentListService.getAllDecisionDocuments(caseData);
-        List<ListValue<CaseworkerCICDocument>> wholeFinalDecisionDocList = documentListService.getAllFinalDecisionDocuments(caseData);
-        if (wholeFinalDecisionDocList.size() > caseData.getCicCase().getFinalDecisionDocumentList().size()) {
-            for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeFinalDecisionDocList) {
-                if (!caseData.getCicCase().getFinalDecisionDocumentList().contains(cicDocumentListValue)) {
-                    if (cicDocumentListValue.getValue().getDocumentLink()
-                        .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
-                        caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
-                    } else if (cicDocumentListValue.getValue().getDocumentLink()
-                        .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
-                        caseData.getCaseIssueFinalDecision().setDocument(new CICDocument());
-                    }
-                }
-            }
-        }
-        if (wholeDecisionDocList.size() > caseData.getCicCase().getDecisionDocumentList().size()) {
-            for (ListValue<CaseworkerCICDocument> doc : wholeDecisionDocList) {
-                if (!caseData.getCicCase().getDecisionDocumentList().contains(doc)) {
-                    if (doc.getValue().getDocumentLink().equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
-                        caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
-                    } else if (doc.getValue().getDocumentLink()
-                        .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
-                        caseData.getCaseIssueDecision().setDecisionDocument(new CICDocument());
-                    }
-                }
-            }
-        }
-        if (wholeOrderDocList.size() > caseData.getCicCase().getOrderDocumentList().size()) {
-            for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeOrderDocList) {
-                if (!caseData.getCicCase().getOrderDocumentList().contains(cicDocumentListValue)) {
-                    for (ListValue<Order> orderListValue : caseData.getCicCase().getOrderList()) {
-                        if (null != orderListValue.getValue().getDraftOrder()
-                            && cicDocumentListValue.getValue().getDocumentLink()
-                            .equals(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())) {
-                            orderListValue.getValue().getDraftOrder().setTemplateGeneratedDocument(null);
-                        } else {
-                            if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
-                                for (int i = 0; i < orderListValue.getValue().getUploadedFile().size(); i++) {
-                                    ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
-                                    if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
-                                        .equals(cicDocumentListValue.getValue().getDocumentLink())) {
-                                        orderListValue.getValue().getUploadedFile().get(i).setValue(new CICDocument());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        var newCaseData = removeEvaluatedListDoc(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
+            .data(newCaseData)
             .state(details.getState())
             .build();
     }
@@ -148,6 +99,88 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
+    }
+
+    private CaseData removeFinalDecisionDoc(CaseData caseData) {
+        List<ListValue<CaseworkerCICDocument>> wholeFinalDecisionDocList = documentListService.getAllFinalDecisionDocuments(caseData);
+
+        if (wholeFinalDecisionDocList.size() > caseData.getCicCase().getFinalDecisionDocumentList().size()) {
+            for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeFinalDecisionDocList) {
+                checkFinalDecision(caseData, cicDocumentListValue);
+            }
+        }
+        return caseData;
+    }
+
+    private CaseData removeDecisionDoc(CaseData caseData) {
+        List<ListValue<CaseworkerCICDocument>> wholeDecisionDocList = documentListService.getAllDecisionDocuments(caseData);
+
+        if (wholeDecisionDocList.size() > caseData.getCicCase().getDecisionDocumentList().size()) {
+            for (ListValue<CaseworkerCICDocument> doc : wholeDecisionDocList) {
+                if (!caseData.getCicCase().getDecisionDocumentList().contains(doc)
+                    && doc.getValue().getDocumentLink().equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
+                    caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
+                } else if (doc.getValue().getDocumentLink()
+                    .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
+                    caseData.getCaseIssueDecision().setDecisionDocument(emptyDocument);
+                }
+            }
+        }
+        return caseData;
+    }
+
+    private CaseData checkFinalDecision(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+        if (!caseData.getCicCase().getFinalDecisionDocumentList().contains(cicDocumentListValue)) {
+            if (cicDocumentListValue.getValue().getDocumentLink()
+                .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
+                caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
+            } else if (cicDocumentListValue.getValue().getDocumentLink()
+                .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
+                caseData.getCaseIssueFinalDecision().setDocument(emptyDocument);
+            }
+        }
+        return caseData;
+    }
+
+    private CicCase removeOrderDoc(CicCase cicCase) {
+        List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = documentListService.getAllOrderDocuments(cicCase);
+
+        if (wholeOrderDocList.size() > cicCase.getOrderDocumentList().size()) {
+            for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeOrderDocList) {
+                if (!cicCase.getOrderDocumentList().contains(cicDocumentListValue)) {
+                    for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
+                        if (null != orderListValue.getValue().getDraftOrder()
+                            && cicDocumentListValue.getValue().getDocumentLink()
+                            .equals(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())) {
+                            orderListValue.getValue().getDraftOrder().setTemplateGeneratedDocument(null);
+                        } else {
+                            manageUploadedFiles(orderListValue, cicDocumentListValue);
+                        }
+                    }
+                }
+            }
+        }
+        return cicCase;
+    }
+
+    private void manageUploadedFiles(ListValue<Order> orderListValue, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+        if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
+            for (int i = 0; i < orderListValue.getValue().getUploadedFile().size(); i++) {
+                ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
+                if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
+                    .equals(cicDocumentListValue.getValue().getDocumentLink())) {
+                    orderListValue.getValue().getUploadedFile().get(i).setValue(emptyDocument);
+                }
+            }
+        }
+    }
+
+    private CaseData removeEvaluatedListDoc(CaseData caseData) {
+        var caseDataAfterDecision = removeDecisionDoc(caseData);
+        var caseDataAfterFinalDecision = removeFinalDecisionDoc(caseDataAfterDecision);
+        var cic = removeOrderDoc(caseDataAfterFinalDecision.getCicCase());
+        caseDataAfterFinalDecision.setCicCase(cic);
+        return caseDataAfterFinalDecision;
     }
 
 }

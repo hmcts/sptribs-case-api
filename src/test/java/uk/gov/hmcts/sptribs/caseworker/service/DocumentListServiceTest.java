@@ -162,40 +162,6 @@ public class DocumentListServiceTest {
     }
 
     @Test
-    void shouldGenerateDecisionDoc() {
-        //Given
-        CaseIssueDecision decision = CaseIssueDecision.builder()
-            .decisionDocument(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
-
-    @Test
-    void shouldGenerateDecisionDocTemp() {
-        //Given
-        CaseIssueDecision decision = CaseIssueDecision.builder()
-            .issueDecisionDraft(Document.builder().filename("name").binaryUrl("d").build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
-
-    @Test
     void shouldGenerateDecisionDocAll() {
         //Given
         CaseIssueDecision decision = CaseIssueDecision.builder()
@@ -212,22 +178,6 @@ public class DocumentListServiceTest {
         assertThat(result).isNotNull();
     }
 
-    @Test
-    void shouldGenerateFinalDecisionDoc() {
-        //Given
-        CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .document(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueFinalDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getFinalDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
 
     @Test
     void shouldGenerateFinalDecisionDocList() {
@@ -248,40 +198,6 @@ public class DocumentListServiceTest {
 
 
     @Test
-    void shouldGenerateFinalDecisionDocTemp() {
-        //Given
-        CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .finalDecisionDraft(Document.builder().filename("name").binaryUrl("d").build())
-            .build();
-
-        final CaseData caseData = CaseData.builder().build();
-        caseData.setCaseIssueFinalDecision(decision);
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getFinalDecisionDocs(caseData);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
-
-    @Test
-    void shouldGenerateOrderDocTemp() {
-        //Given
-
-        Order order = Order.builder().draftOrder(DraftOrderCIC.builder()
-            .templateGeneratedDocument(Document.builder().filename("name").build()).build()).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        CicCase cicCase = CicCase.builder().orderList(List.of(orderListValue)).build();
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getOrderDocuments(cicCase);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
-
-    @Test
     void shouldGenerateOrderAll() {
         //Given
         Order order = Order.builder().draftOrder(DraftOrderCIC.builder()
@@ -297,23 +213,5 @@ public class DocumentListServiceTest {
         assertThat(result).isNotNull();
     }
 
-    @Test
-    void shouldGenerateOrderDocUpload() {
-        //Given
-
-        CICDocument document = CICDocument.builder().documentLink(Document.builder().filename("name").build()).build();
-        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
-        cicDocumentListValue.setValue(document);
-        Order order = Order.builder().uploadedFile(List.of(cicDocumentListValue)).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        CicCase cicCase = CicCase.builder().orderList(List.of(orderListValue)).build();
-
-        //When
-        List<CaseworkerCICDocument> result = documentListService.getOrderDocuments(cicCase);
-
-        //Then
-        assertThat(result).isNotNull();
-    }
 
 }

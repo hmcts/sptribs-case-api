@@ -46,7 +46,7 @@ public class CaseDataDocumentServiceTest {
         final Map<String, Object> templateContent = new HashMap<>();
         Map<String, Object> caseDataMap = expectedCaseData();
         User user = TestDataHelper.getUser();
-        DocumentInfo info = new DocumentInfo("", FILENAME, "");
+        DocumentInfo info = new DocumentInfo("", FILENAME, "", "");
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(docAssemblyService.renderDocument(any(), any(), any(), any(), any(), any())).thenReturn(info);
 

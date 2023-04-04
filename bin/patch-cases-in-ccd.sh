@@ -34,9 +34,6 @@ for user in $users; do
   email=$(echo $user | cut -f1 -d'|')
   password=$(echo $user | cut -f2 -d'|')
 
-  echo "Generating Idam token for user $email"
-  code=$(curl --insecure --fail --show-error --silent -X POST --user "$email:$password" "${IDAM_API_BASE_URL}/oauth2/authorize?redirect_uri=${REDIRECT_URI}&response_type=code&client_id=divorce" -d "" | docker run --rm --interactive stedolan/jq -r .code)
-  idamToken=$(curl --insecure --fail --show-error --silent -X POST -H "Content-Type: application/x-www-form-urlencoded" --user "divorce:${OAUTH2_CLIENT_SECRET}" "${IDAM_API_BASE_URL}/oauth2/token?code=${code}&redirect_uri=${REDIRECT_URI}&grant_type=authorization_code" -d "" | docker run --rm --interactive stedolan/jq -r .access_token)
 
   echo "Retrieving user details for user $email"
   userDetails=$(curl --insecure --fail --show-error --silent -X GET -H "Authorization: Bearer $idamToken" "${IDAM_API_BASE_URL}/details")
@@ -44,11 +41,4 @@ for user in $users; do
   lastName=$(echo "$userDetails" | docker run --rm --interactive stedolan/jq -r .surname)
   userId=$(echo "$userDetails" | docker run --rm --interactive stedolan/jq -r .id)
 
-  echo "Retrieving ccd case with user id $userId"
-  caseId=$(curl --insecure --fail --show-error --silent -X GET ${CCD_BASE_URL}/citizens/$userId/jurisdictions/DIVORCE/case-types/NO_FAULT_DIVORCE/cases -H "Authorization: Bearer $idamToken" -H "Content-Type: application/json" -H "ServiceAuthorization: Bearer $serviceToken" | docker run --rm --interactive stedolan/jq '.[0].id')
-  eventToken=$(curl --insecure --fail --show-error --silent -X GET ${CCD_BASE_URL}/cases/$caseId/event-triggers/patchCase -H "Authorization: Bearer $idamToken" -H "Content-Type: application/json" -H "ServiceAuthorization: Bearer $serviceToken" | docker run --rm --interactive stedolan/jq -r .token)
-
-  echo "Patching ccd case $caseId for $userId"
-
-  curl --insecure --fail --show-error --silent -X POST http://ccd-data-store-api-aat.service.core-compute-aat.internal/citizens/$userId/jurisdictions/DIVORCE/case-types/NO_FAULT_DIVORCE/cases/$caseId/events -H "Authorization: Bearer $idamToken" -H "Content-Type: application/json" -H "ServiceAuthorization: Bearer $serviceToken" -d '{"event_token" : "'${eventToken}'","data":{"applicant1FirstName": "'${firstName}'","applicant1LastName":"'${lastName}'","applicant1Email" : "'${email}'"},"event" :{"id" :"patchCase"}}'
 done

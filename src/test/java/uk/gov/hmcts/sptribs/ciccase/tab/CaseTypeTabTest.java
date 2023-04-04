@@ -41,6 +41,7 @@ public class CaseTypeTabTest {
         Tab.TabBuilder<CaseData, UserRole> caseDocsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> cicaDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
 
         when(configBuilder.tab("summary", "Summary")).thenReturn(summaryTabBuilder);
         when(configBuilder.tab("flags", "Flags")).thenReturn(flagsTabBuilder);
@@ -52,6 +53,7 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("caseDocuments", "Case Documents")).thenReturn(caseDocsTabBuilder);
         when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
         when(configBuilder.tab("cicaDetails", "CICA Details")).thenReturn(cicaDetailsTabBuilder);
+        when(configBuilder.tab("caseFileView", "Case file view")).thenReturn(caseCategoryTabBuilder);
 
         //When
         caseTypeTab.configure(configBuilder);
@@ -63,6 +65,7 @@ public class CaseTypeTabTest {
         Tab<CaseData, UserRole> caseDocsTab = caseDocsTabBuilder.build();
         Tab<CaseData, UserRole> hearingsTab = hearingsTabBuilder.build();
         Tab<CaseData, UserRole> cicaDetailsTab = cicaDetailsTabBuilder.build();
+        Tab<CaseData, UserRole> caseCategoryTab = caseCategoryTabBuilder.build();
 
         //Then
         assertThat(summaryTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
@@ -73,5 +76,6 @@ public class CaseTypeTabTest {
         assertThat(caseDocsTab.getFields()).extracting(TabField::getId).contains("cicCaseApplicantDocumentsUploaded");
         assertThat(hearingsTab.getFields()).extracting(TabField::getId).contains("cicCaseHearingNotificationParties");
         assertThat(cicaDetailsTab.getFields()).extracting(TabField::getId).contains("CICA Details");
+        assertThat(caseCategoryTab.getFields()).extracting(TabField::getDisplayContextParameter).isNotNull();
     }
 }
