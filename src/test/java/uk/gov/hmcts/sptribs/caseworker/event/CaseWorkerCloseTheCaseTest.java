@@ -160,7 +160,7 @@ class CaseWorkerCloseTheCaseTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.midEvent(caseDetails, caseDetails);
 
         //Then
-        assert(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
+        assert (response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
 
 }
