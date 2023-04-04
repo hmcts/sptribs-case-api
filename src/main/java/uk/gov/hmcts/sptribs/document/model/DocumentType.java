@@ -67,7 +67,7 @@ public enum DocumentType implements HasLabel {
 
     @JsonProperty("Other medical records")
     @JsonAlias({"C Docs"})
-    OTHER_MEDIAL_RECORDS("C - Other medical records", "Other medical records", "C"),
+    OTHER_MEDICAL_RECORDS("C - Other medical records", "Other medical records", "C"),
 
     @JsonProperty("DWP records")
     @JsonAlias({"DWP records", "D Docs"})
@@ -103,7 +103,7 @@ public enum DocumentType implements HasLabel {
 
     @JsonProperty("Other-E")
     @JsonAlias({"E Docs"})
-    OTHER_E("E - Other", "Other-E", "E"),
+    OTHER_EVIDENCE("E - Other", "Other-E", "E"),
 
     @JsonProperty("Linked docs")
     @JsonAlias({"L Docs"})
@@ -131,7 +131,7 @@ public enum DocumentType implements HasLabel {
 
     @JsonProperty("Other-TG")
     @JsonAlias({"TG Docs"})
-    OTHER_TG("TG - Other", "Other-TG", "TG");
+    OTHER_GENERAL_EVIDENCE("TG - Other", "Other-TG", "TG");
 
 
     private final String label;
