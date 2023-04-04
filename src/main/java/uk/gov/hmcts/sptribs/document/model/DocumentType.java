@@ -91,7 +91,7 @@ public enum DocumentType implements HasLabel {
 
     @JsonProperty("Other-D")
     @JsonAlias({"Other-D", "D Docs"})
-    OTHER_D("D - Other", "Other-D", "D"),
+    OTHER_FINANCIAL("D - Other", "Other-D", "D"),
 
     @JsonProperty("Care plan")
     @JsonAlias({"E Docs"})
