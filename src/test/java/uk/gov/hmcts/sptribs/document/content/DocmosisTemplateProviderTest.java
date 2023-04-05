@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.DIVORCE_DRAFT_APPLICATION;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.SPTRIBS_DRAFT_APPLICATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ENGLISH_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.WELSH_TEMPLATE_ID;
 
@@ -33,7 +33,7 @@ class DocmosisTemplateProviderTest {
         mockDocmosisTemplateConfig();
 
         //When
-        final String name = docmosisTemplateProvider.templateNameFor(DIVORCE_DRAFT_APPLICATION, ENGLISH);
+        final String name = docmosisTemplateProvider.templateNameFor(SPTRIBS_DRAFT_APPLICATION, ENGLISH);
 
         //Then
         assertThat(name, is(ENGLISH_TEMPLATE_ID));
@@ -45,7 +45,7 @@ class DocmosisTemplateProviderTest {
         mockDocmosisTemplateConfig();
 
         //When
-        final String name = docmosisTemplateProvider.templateNameFor(DIVORCE_DRAFT_APPLICATION, WELSH);
+        final String name = docmosisTemplateProvider.templateNameFor(SPTRIBS_DRAFT_APPLICATION, WELSH);
 
         //Then
         assertThat(name, is(WELSH_TEMPLATE_ID));
@@ -55,10 +55,10 @@ class DocmosisTemplateProviderTest {
         when(docmosisTemplatesConfig.getTemplates()).thenReturn(
             Map.of(
                 ENGLISH, Map.of(
-                    DIVORCE_DRAFT_APPLICATION, ENGLISH_TEMPLATE_ID
+                    SPTRIBS_DRAFT_APPLICATION, ENGLISH_TEMPLATE_ID
                 ),
                 WELSH, Map.of(
-                    DIVORCE_DRAFT_APPLICATION, WELSH_TEMPLATE_ID
+                    SPTRIBS_DRAFT_APPLICATION, WELSH_TEMPLATE_ID
                 )
             )
         );

@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -99,7 +100,9 @@ public class CicCase {
 
     @CCD(
         label = "Preview order",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        categoryID = "TD"
+
     )
     private Document orderTemplateIssued;
 
@@ -190,6 +193,11 @@ public class CicCase {
     )
     private List<ListValue<Order>> orderList;
 
+    @CCD(
+        label = "Order Documents",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
     @CCD(
         label = "Notified Parties",
@@ -524,16 +532,32 @@ public class CicCase {
     @CCD(
         label = "Case Documents",
         typeOverride = Collection,
-        typeParameterOverride = "CICDocument",
+        typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}
     )
-    private List<ListValue<CICDocument>> applicantDocumentsUploaded;
+    private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
 
     @CCD(
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    List<ListValue<CICDocument>> reinstateDocuments;
+    List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
+
+
+    @CCD(
+        label = "Decision Documents",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> decisionDocumentList;
+
+
+    @CCD(
+        label = "Final Decision Documents",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
+
+
     private YesOrNo selectedCheckBox;
 
     @CCD(
