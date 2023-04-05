@@ -41,7 +41,6 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-cic-districtregistrar",
             "caseworker-sptribs-cic-respondent",
             "caseworker",
-            "payments",
             "solicitor",
             "pui-case-manager",
             "pui-finance-manager",
@@ -84,9 +83,9 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-st_cic",
             "caseworker-sptribs-cic-caseofficer",
             "caseworker-sptribs-cic-districtregistrar",
+            "caseworker-sptribs-cic-districtjudge",
             "caseworker-sptribs-cic-respondent",
             "caseworker",
-            "payments",
             "solicitor",
             "pui-case-manager",
             "pui-finance-manager",
@@ -98,6 +97,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-st_cic-senior-caseworker",
             "caseworker-st_cic-hearing-centre-admin",
             "caseworker-st_cic-hearing-centre-team-leader",
+            "caseworker-st_cic-senior-judge",
+            "caseworker-st_cic-judge",
             "caseworker-st_cic-respondent"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
