@@ -44,7 +44,7 @@ public class LocationService {
             return populateVenueDynamicList(hearingVenues);
         } else {
             HearingVenue[] filteredHearingVenus = Arrays.stream(hearingVenues)
-                .filter(v -> v.getCourtTypeId().equals(COURT_TYPE_ID)).toArray(HearingVenue[]::new);
+                .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId())).toArray(HearingVenue[]::new);
             return populateVenueDynamicList(filteredHearingVenus);
         }
     }
