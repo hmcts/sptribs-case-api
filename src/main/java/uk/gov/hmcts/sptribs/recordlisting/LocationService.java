@@ -40,8 +40,13 @@ public class LocationService {
 
     public DynamicList getHearingVenuesByRegion(String regionId) {
         final HearingVenue[] hearingVenues = getCourtVenues(regionId);
-        HearingVenue[] filteredHearingVenus = Arrays.stream(hearingVenues).filter(v -> v.getCourtTypeId().equals(COURT_TYPE_ID)).toArray(HearingVenue[]::new);
-        return populateVenueDynamicList(filteredHearingVenus == null ? hearingVenues:filteredHearingVenus);
+        if (hearingVenues == null) {
+            return populateVenueDynamicList(hearingVenues);
+        } else {
+            HearingVenue[] filteredHearingVenus = Arrays.stream(hearingVenues)
+                .filter(v -> v.getCourtTypeId().equals(COURT_TYPE_ID)).toArray(HearingVenue[]::new);
+            return populateVenueDynamicList(filteredHearingVenus);
+        }
     }
 
     public DynamicList getAllRegions() {
