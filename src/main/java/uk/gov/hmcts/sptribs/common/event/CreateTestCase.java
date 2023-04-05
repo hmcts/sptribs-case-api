@@ -120,7 +120,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
 
     private void uploadDocuments(PageBuilder pageBuilder) {
-        pageBuilder.page("documentsUploadObjets", this::midEvent)
+        pageBuilder.page("documentsUploadObjets")
             .pageLabel("Upload tribunal forms")
             .label("LabelDoc",
                 "\nPlease upload a copy of the completed tribunal form, as well as any"
