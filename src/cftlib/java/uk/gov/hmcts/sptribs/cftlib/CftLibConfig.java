@@ -31,28 +31,20 @@ public class CftLibConfig implements CFTLibConfigurer {
     @Override
     public void configure(CFTLib lib) throws Exception {
 
-        var roleList = List.of("caseworker-sptribs-superuser",
-            "caseworker-sptribs-systemupdate",
-            "caseworker-sptribs",
-            "caseworker-sptribs-cic-courtadmin",
-            "citizen-sptribs-cic-dss",
+        var roleList = List.of("caseworker",
             "caseworker-st_cic",
-            "caseworker-sptribs-cic-caseofficer",
-            "caseworker-sptribs-cic-districtregistrar",
-            "caseworker-sptribs-cic-respondent",
-            "caseworker",
-            "solicitor",
+            "caseworker-st_send",
+            "caseworker-st_phl",
+            "caseworker-st_cs",
+            "caseworker-st_mh",
+            "caseworker-sptribs",
+            "caseworker-sptribs-superuser",
             "pui-case-manager",
             "pui-finance-manager",
             "pui-organisation-manager",
             "pui-user-manager",
             "jrd-system-user",
-            "jrd-admin",
-            "caseworker-st_cic-caseworker",
-            "caseworker-st_cic-senior-caseworker",
-            "caseworker-st_cic-hearing-centre-admin",
-            "caseworker-st_cic-hearing-centre-team-leader",
-            "caseworker-st_cic-respondent");
+            "jrd-admin");
 
         var users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
@@ -75,31 +67,20 @@ public class CftLibConfig implements CFTLibConfigurer {
         }
 
         lib.createRoles(
-            "caseworker-sptribs-superuser",
-            "caseworker-sptribs-systemupdate",
-            "caseworker-sptribs",
-            "caseworker-sptribs-cic-courtadmin",
-            "citizen-sptribs-cic-dss",
-            "caseworker-st_cic",
-            "caseworker-sptribs-cic-caseofficer",
-            "caseworker-sptribs-cic-districtregistrar",
-            "caseworker-sptribs-cic-districtjudge",
-            "caseworker-sptribs-cic-respondent",
             "caseworker",
-            "solicitor",
+            "caseworker-st_cic",
+            "caseworker-st_send",
+            "caseworker-st_phl",
+            "caseworker-st_cs",
+            "caseworker-st_mh",
+            "caseworker-sptribs",
+            "caseworker-sptribs-superuser",
             "pui-case-manager",
             "pui-finance-manager",
             "pui-organisation-manager",
             "pui-user-manager",
             "jrd-system-user",
-            "jrd-admin",
-            "caseworker-st_cic-caseworker",
-            "caseworker-st_cic-senior-caseworker",
-            "caseworker-st_cic-hearing-centre-admin",
-            "caseworker-st_cic-hearing-centre-team-leader",
-            "caseworker-st_cic-senior-judge",
-            "caseworker-st_cic-judge",
-            "caseworker-st_cic-respondent"
+            "jrd-admin"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
