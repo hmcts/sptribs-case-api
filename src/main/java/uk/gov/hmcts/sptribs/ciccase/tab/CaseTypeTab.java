@@ -11,6 +11,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 
 
@@ -195,7 +197,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildCicaDetails(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("cicaDetails", "CICA Details")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
+            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC,ST_CIC_CASEWORKER,ST_CIC_RESPONDENT)
             .label("CICA Details", null, "#### CICA Details")
             .field(CaseData::getEditCicaCaseDetails);
 
