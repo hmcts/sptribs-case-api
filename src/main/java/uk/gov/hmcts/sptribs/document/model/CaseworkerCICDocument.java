@@ -32,8 +32,7 @@ public class CaseworkerCICDocument {
     private String documentEmailContent;
 
     @CCD(
-        label = "File",
-        regex = ".pdf,.tif,.tiff,.jpg,.jpeg,.png,.mp3"
+        label = "File"
     )
     private Document documentLink;
 
