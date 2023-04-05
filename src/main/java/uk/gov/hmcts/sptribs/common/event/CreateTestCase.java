@@ -134,6 +134,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .done();
     }
 
+
     private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
