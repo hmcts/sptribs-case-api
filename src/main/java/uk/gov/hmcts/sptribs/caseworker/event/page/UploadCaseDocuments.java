@@ -13,12 +13,12 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
             .page("uploadCaseDocuments")
             .pageLabel("Upload case documents")
             .label("LabelUploadCaseDocuments", "")
-            .label("uploadCaseDocumentLabel", "Please upload copies of any information or evidence that you want to add to this case")
+            .label("uploadCaseDocumentLabel", "Upload a copy of the order that you want to issue as part of this case")
             .label("uploadCaseDocumentConditions", """
-                Files should be:
-                 *  uploaded separately and not in one large file
+                The order should be:
+                 *  uploaded separately, not in one large file
                  *  a maximum of 100MB in size (larger files must be split)
-                 *  labelled clearly, e.g. applicant-name-B1-form.pdf
+                 *  labelled clearly, e.g. applicant-name-decision-notice.pdf
                  """
             )
             .complex(CaseData::getDocManagement)
