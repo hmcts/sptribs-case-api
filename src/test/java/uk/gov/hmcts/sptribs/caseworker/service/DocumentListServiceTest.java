@@ -41,7 +41,7 @@ public class DocumentListServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.CARE_DOCUMENTS)
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
@@ -68,7 +68,7 @@ public class DocumentListServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.CARE_DOCUMENTS)
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
@@ -95,7 +95,7 @@ public class DocumentListServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.CARE_DOCUMENTS)
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
@@ -120,7 +120,7 @@ public class DocumentListServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.CARE_DOCUMENTS)
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
@@ -144,7 +144,7 @@ public class DocumentListServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.CARE_DOCUMENTS)
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
