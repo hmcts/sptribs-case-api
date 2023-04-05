@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -294,6 +295,7 @@ public class TestDataHelper {
     public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList() {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().build())
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
@@ -319,6 +321,7 @@ public class TestDataHelper {
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().filename("file.txt").build())
+            .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();
         ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
