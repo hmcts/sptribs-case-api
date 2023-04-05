@@ -29,6 +29,7 @@ public class CaseworkerCaseFileViewTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
+        caseworkerCaseFileView.setCaseFileViewAndDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -38,6 +39,20 @@ public class CaseworkerCaseFileViewTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CASE_FILE_VIEW);
+    }
+
+    @Test
+    void shouldNotConfigureCaseFileViewIfFeatureFlagFalse() {
+        //Given
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        //When
+        caseworkerCaseFileView.configure(configBuilder);
+
+        //Then
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .doesNotContain(CASEWORKER_CASE_FILE_VIEW);
     }
 
     @Test
