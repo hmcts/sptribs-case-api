@@ -3,7 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
@@ -14,9 +14,9 @@ import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTim
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
-public class IssueADecision extends Base {
+public class IssueADecisionTests extends Base {
 
-    @Disabled
+    @Test
     public void caseWorkerShouldIssueADecision() {
         Page page = getPage();
         Login login = new Login(page);

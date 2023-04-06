@@ -25,7 +25,8 @@ public enum Actions {
     IssueFinalDecision("Decision: Issue final decision"),
     IssueCaseToRespondent("Case: Issue to respondent"),
     RemoveStay("Stays: Remove stay"),
-    TestChangeState("Test change state");
+    TestChangeState("Test change state"),
+    UploadDocuments("Document Management: Upload");
 
     public final String label;
 

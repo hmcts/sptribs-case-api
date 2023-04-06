@@ -58,7 +58,7 @@ public class Hearing {
 
         // Fill Hearing location and duration form
         assertThat(page.locator("h1"))
-            .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
+            .hasText("Listing Details", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
             .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
@@ -77,7 +77,7 @@ public class Hearing {
         getTextBoxByLabel(page, "Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
         getTextBoxByLabel(page, "Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
         getTextBoxByLabel(page, "Year").fill(String.valueOf(date.get(Calendar.YEAR)));
-        getTextBoxByLabel(page, "Start time (24hr format)").fill("10:10");
+        getTextBoxByLabel(page, "Start time (24 hour format; e.g. 14:30)").fill("10:10");
         getRadioButtonByLabel(page, "Morning").click();
         getRadioButtonByLabel(page, "No").last().click();
         clickButton(page, "Continue");
@@ -136,7 +136,7 @@ public class Hearing {
 
         // Fill Hearing location and duration form
         assertThat(page.locator("h1"))
-            .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
+            .hasText("Listing Details", textOptionsWithTimeout(30000));
 
         List<String> options = Arrays.stream(args)
             .map(arg -> arg.replace(" ", "").toLowerCase()).toList();
@@ -155,7 +155,7 @@ public class Hearing {
         getTextBoxByLabel(page, "Day").fill(String.valueOf(date.get(Calendar.DAY_OF_MONTH)));
         getTextBoxByLabel(page, "Month").fill(String.valueOf(date.get(Calendar.MONTH) + 1));
         getTextBoxByLabel(page, "Year").fill(String.valueOf(date.get(Calendar.YEAR)));
-        getTextBoxByLabel(page, "Start time (24hr format)").fill("10:10");
+        getTextBoxByLabel(page, "Start time (24 hour format; e.g. 14:30)").fill("10:10");
         getRadioButtonByLabel(page, "Morning").click();
         getRadioButtonByLabel(page, "No").last().click();
         clickButton(page, "Continue");
@@ -216,7 +216,7 @@ public class Hearing {
 
         // Fill Hearing location and duration form
         assertThat(page.locator("h1"))
-            .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
+            .hasText("Listing Details", textOptionsWithTimeout(30000));
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees form
@@ -286,7 +286,7 @@ public class Hearing {
 
         // Fill Hearing location and duration form
         assertThat(page.locator("h1"))
-            .hasText("Hearing location and duration", textOptionsWithTimeout(30000));
+            .hasText("Listing Details", textOptionsWithTimeout(30000));
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees form
