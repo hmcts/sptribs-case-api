@@ -11,8 +11,6 @@ public class CreateCaseTest extends XuiTest {
     @Test
     public void createCase() {
         Mockito.doNothing().when(applicationReceivedNotification).sendToSubject(Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(applicationReceivedNotification).sendToApplicant(Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(applicationReceivedNotification).sendToRepresentative(Mockito.any(), Mockito.any());
         Page page = getPage();
         Login login = new Login(page);
         login.signInWithCaseworker();

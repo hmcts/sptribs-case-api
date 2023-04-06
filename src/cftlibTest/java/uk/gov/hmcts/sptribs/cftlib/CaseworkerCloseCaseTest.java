@@ -20,11 +20,7 @@ public class CaseworkerCloseCaseTest extends XuiTest {
     @Test
     public void caseworkerShouldAbleToCloseTheCase() {
         Mockito.doNothing().when(applicationReceivedNotification).sendToSubject(Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(applicationReceivedNotification).sendToApplicant(Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(applicationReceivedNotification).sendToRepresentative(Mockito.any(), Mockito.any());
         Mockito.doNothing().when(caseWithdrawnNotification).sendToSubject(Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(caseWithdrawnNotification).sendToApplicant(Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(caseWithdrawnNotification).sendToRepresentative(Mockito.any(), Mockito.any());
         Page page = getPage();
         Login login = new Login(page);
         login.signInWithCaseworker();
