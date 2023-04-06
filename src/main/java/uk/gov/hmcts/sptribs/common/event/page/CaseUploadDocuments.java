@@ -12,7 +12,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.CreateTestCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDo
 @Component
 public class CaseUploadDocuments implements CcdPageConfiguration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateTestCase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CaseUploadDocuments.class);
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
