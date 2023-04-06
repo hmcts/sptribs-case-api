@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COURT_TYPE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
@@ -83,6 +84,7 @@ class LocationServiceTest {
             .regionId("1")
             .courtName("courtName")
             .courtAddress("courtAddress")
+            .courtTypeId(COURT_TYPE_ID)
             .build();
 
         //When
@@ -106,6 +108,7 @@ class LocationServiceTest {
             .builder()
             .regionId("1")
             .courtName("courtName")
+            .courtTypeId(COURT_TYPE_ID)
             .build();
 
         //When

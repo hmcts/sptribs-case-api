@@ -6,6 +6,8 @@ public final class EventConstants {
     public static final String SPACE = " ";
     public static final String CURRENT_EVENT = "currentEvent = \"";
 
+    public static final String COURT_TYPE_ID = "14";
+
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
     public static final String CASEWORKER_ADD_NOTE = "caseworker-add-note";
     public static final String CASEWORKER_CASE_BUILT = "caseworker-case-built";

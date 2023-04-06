@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
+import uk.gov.hmcts.sptribs.common.event.page.CaseUploadDocuments;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCasewor
 @Slf4j
 @Component
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
+
     private static final String ENVIRONMENT_PROD = "prod";
     private static final String TEST_CREATE = "caseworker-create-case";
     private final FeatureToggleService featureToggleService;
@@ -57,6 +59,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private static final CcdPageConfiguration selectParties = new SelectParties();
+    private static final CcdPageConfiguration caseUploadDocuments = new CaseUploadDocuments();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
     private static final CcdPageConfiguration applicantDetails = new ApplicantDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
@@ -109,38 +112,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
             contactPreferenceDetails.addTo(pageBuilder);
-            uploadDocuments(pageBuilder);
+            caseUploadDocuments.addTo(pageBuilder);
             furtherDetails.addTo(pageBuilder);
         }
     }
 
-
-    private void uploadDocuments(PageBuilder pageBuilder) {
-        pageBuilder.page("documentsUploadObjets")
-            .pageLabel("Upload tribunal forms")
-            .label("LabelDoc",
-                "\nPlease upload a copy of the completed tribunal form, as well as any"
-                    + " supporting documents or other information that has been supplied.\n"
-                    + "\n<h3>Files should be:</h3>\n"
-                    + "\n- uploaded separately, and not in one large file\n"
-                    + "\n- a maximum of 100MB in size (large files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n")
-            .complex(CaseData::getCicCase)
-            .optionalWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
-            .done();
-    }
-
-    /*private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
-        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .errors(errors)
-            .build();
-    }*/
 
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
