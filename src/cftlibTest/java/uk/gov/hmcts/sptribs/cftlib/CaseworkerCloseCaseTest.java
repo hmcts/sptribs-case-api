@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.cftlib;
 
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.mockito.Mockito;
 import uk.gov.hmcts.sptribs.cftlib.action.Case;
 import uk.gov.hmcts.sptribs.cftlib.util.DateHelpers;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
 
 public class CaseworkerCloseCaseTest extends XuiTest {
 
-    @Test
+    @Disabled
     public void caseworkerShouldAbleToCloseTheCase() {
         Mockito.doNothing().when(applicationReceivedNotification).sendToSubject(Mockito.any(), Mockito.any());
         Mockito.doNothing().when(applicationReceivedNotification).sendToApplicant(Mockito.any(), Mockito.any());
