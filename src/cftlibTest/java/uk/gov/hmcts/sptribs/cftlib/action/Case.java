@@ -24,9 +24,6 @@ import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTabByText;
 import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
 import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.selectorOptionsWithTimeout;
 
-
-
-
 public class Case {
 
     private final Page page;

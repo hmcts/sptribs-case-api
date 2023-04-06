@@ -527,6 +527,7 @@ cftlibTest {
   environment 'CASE_DATA_STORE_BASEURL', 'http://localhost:4452'
   environment 'ROLE_ASSIGNMENT_URL', 'http://localhost:4096'
   environment 'CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES', 'sptribs_case_api'
+  environment 'XUI_MANAGE_CASES_TAG', 'pr-2658'
   environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
 }
 
