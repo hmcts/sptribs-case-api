@@ -65,7 +65,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case Updated")
+            .confirmationHeader("# document Updated")
             .build();
     }
 
