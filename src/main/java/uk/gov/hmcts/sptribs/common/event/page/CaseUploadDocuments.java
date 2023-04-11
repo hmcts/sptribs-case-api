@@ -15,17 +15,15 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-@Component
 public class CaseUploadDocuments implements CcdPageConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(CaseUploadDocuments.class);
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("documentsUploadObjets", this::midEvent)
+        pageBuilder.page("documentsUploadObject", this::midEvent)
             .pageLabel("Upload tribunal forms")
-            .label("LabelDoc",
+            .label("LabelCaseUploadDocuments",
                 "\nPlease upload a copy of the completed tribunal form, as well as any"
                     + " supporting documents or other information that has been supplied.\n"
                     + "\n<h3>Files should be:</h3>\n"
