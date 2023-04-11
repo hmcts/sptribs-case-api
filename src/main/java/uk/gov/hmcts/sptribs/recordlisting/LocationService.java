@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COURT_TYPE_ID;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ALL;
 
@@ -38,8 +39,10 @@ public class LocationService {
     private LocationClient locationClient;
 
     public DynamicList getHearingVenuesByRegion(String regionId) {
-        final var hearingVenues = getCourtVenues(regionId);
-        return populateVenueDynamicList(hearingVenues);
+        final HearingVenue[] hearingVenues = getCourtVenues(regionId);
+        HearingVenue[] filteredHearingVenues = hearingVenues == null ? null : Arrays.stream(hearingVenues)
+                .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId())).toArray(HearingVenue[]::new);
+        return populateVenueDynamicList(filteredHearingVenues);
     }
 
     public DynamicList getAllRegions() {
