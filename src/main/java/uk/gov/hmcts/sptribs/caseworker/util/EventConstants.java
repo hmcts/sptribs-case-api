@@ -26,6 +26,7 @@ public final class EventConstants {
     public static final String CASEWORKER_DOCUMENT_MANAGEMENT = "caseworker-document-management";
     public static final String RESPONDENT_DOCUMENT_MANAGEMENT = "respondent-document-management";
     public static final String CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE = "caseworker-remove-document";
+    public static final String CASEWORKER_DOCUMENT_MANAGEMENT_AMEND = "caseworker-amend-document";
     public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
     public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
     public static final String CASEWORKER_LINK_CASE = "createCaseLink";
