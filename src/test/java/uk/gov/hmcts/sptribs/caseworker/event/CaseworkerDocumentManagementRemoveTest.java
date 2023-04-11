@@ -143,16 +143,17 @@ public class CaseworkerDocumentManagementRemoveTest {
 
         DocumentManagement documentManagementOld = DocumentManagement.builder().caseworkerCICDocument(get2Document()).build();
         oldData.setDocManagement(documentManagementOld);
-        CICDocument documentOld = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
-        ListValue<CICDocument> cicDocumentListValueOld = new ListValue<>();
-        cicDocumentListValue.setValue(documentOld);
-        Order orderOld = Order.builder().uploadedFile(List.of(cicDocumentListValueOld)).build();
+        Order orderOld = Order.builder().uploadedFile(get2DocumentCiC()).build();
+        Order orderOld2 = Order.builder().uploadedFile(get2DocumentCiC()).build();
         ListValue<Order> orderListValueOld = new ListValue<>();
         orderListValueOld.setValue(orderOld);
+        ListValue<Order> orderListValueOld2 = new ListValue<>();
+        orderListValueOld2.setValue(orderOld2);
+        List<ListValue<Order>> orderList = new ArrayList<>();
+        orderList.add(orderListValueOld);
+        orderList.add(orderListValueOld2);
         CicCase cicCaseOld = CicCase.builder()
-            .orderDocumentList(get2Document())
-            .orderList(List.of(orderListValueOld))
+            .orderList(orderList)
             .decisionDocumentList(get2Document())
             .finalDecisionDocumentList(get2Document())
             .applicantDocumentsUploaded(get2Document())
@@ -219,16 +220,7 @@ public class CaseworkerDocumentManagementRemoveTest {
 
         DocumentManagement documentManagementOld = DocumentManagement.builder().caseworkerCICDocument(get2Document()).build();
         oldData.setDocManagement(documentManagementOld);
-        CICDocument documentOld = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
-        ListValue<CICDocument> cicDocumentListValueOld = new ListValue<>();
-        cicDocumentListValue.setValue(documentOld);
-        Order orderOld = Order.builder().uploadedFile(List.of(cicDocumentListValueOld)).build();
-        ListValue<Order> orderListValueOld = new ListValue<>();
-        orderListValueOld.setValue(orderOld);
         CicCase cicCaseOld = CicCase.builder()
-            .orderDocumentList(get2Document())
-            .orderList(List.of(orderListValueOld))
             .decisionDocumentList(get2Document())
             .finalDecisionDocumentList(get2Document())
             .applicantDocumentsUploaded(get2Document())
@@ -276,6 +268,24 @@ public class CaseworkerDocumentManagementRemoveTest {
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
             .build();
         ListValue<CaseworkerCICDocument> list2 = new ListValue<>();
+        list2.setValue(doc2);
+        listValueList.add(list2);
+        return listValueList;
+    }
+
+
+    private List<ListValue<CICDocument>> get2DocumentCiC() {
+        List<ListValue<CICDocument>> listValueList = new ArrayList<>();
+        CICDocument doc = CICDocument.builder()
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+            .build();
+        ListValue<CICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CICDocument doc2 = CICDocument.builder()
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CICDocument> list2 = new ListValue<>();
         list2.setValue(doc2);
         listValueList.add(list2);
         return listValueList;

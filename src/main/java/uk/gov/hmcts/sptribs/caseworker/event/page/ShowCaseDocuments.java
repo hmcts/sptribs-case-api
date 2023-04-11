@@ -66,10 +66,10 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
     }
 
     private void removeEvaluatedListDoc(CaseData caseData, CaseData oldData) {
-        removeDecisionDoc(caseData,oldData);
-        removeFinalDecisionDoc(caseData,oldData);
+        removeDecisionDoc(caseData, oldData);
+        removeFinalDecisionDoc(caseData, oldData);
         var cic = caseData.getCicCase();
-        removeOrderDoc(cic);
+        removeOrderDoc(cic, oldData.getCicCase());
         if (!CollectionUtils.isEmpty(oldData.getDocManagement().getCaseworkerCICDocument())
             && (CollectionUtils.isEmpty(caseData.getDocManagement().getCaseworkerCICDocument())
             || caseData.getDocManagement().getCaseworkerCICDocument().size()
@@ -99,7 +99,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
         }
     }
 
-    private void removeFinalDecisionDoc(CaseData caseData,CaseData oldData) {
+    private void removeFinalDecisionDoc(CaseData caseData, CaseData oldData) {
         List<ListValue<CaseworkerCICDocument>> wholeFinalDecisionDocList = DocumentListUtil.getAllFinalDecisionDocuments(oldData);
 
         if (wholeFinalDecisionDocList.size() > caseData.getCicCase().getFinalDecisionDocumentList().size()) {
@@ -109,7 +109,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
         }
     }
 
-    private void removeDecisionDoc(CaseData caseData,CaseData oldData) {
+    private void removeDecisionDoc(CaseData caseData, CaseData oldData) {
         List<ListValue<CaseworkerCICDocument>> wholeDecisionDocList = DocumentListUtil.getAllDecisionDocuments(oldData);
 
         if (wholeDecisionDocList.size() > caseData.getCicCase().getDecisionDocumentList().size()) {
@@ -140,8 +140,8 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
 
     }
 
-    private CicCase removeOrderDoc(CicCase cicCase) {
-        List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = DocumentListUtil.getAllOrderDocuments(cicCase);
+    private CicCase removeOrderDoc(CicCase cicCase, CicCase oldCicCase) {
+        List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = DocumentListUtil.getAllOrderDocuments(oldCicCase);
 
         if (wholeOrderDocList.size() > cicCase.getOrderDocumentList().size()) {
             for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeOrderDocList) {
