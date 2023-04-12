@@ -1,35 +1,27 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
-
-@Slf4j
-@Component
 public class CaseUploadDocuments implements CcdPageConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(CaseUploadDocuments.class);
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("documentsUploadObjets", this::midEvent)
+        pageBuilder.page("documentsUploadObject", this::midEvent)
             .pageLabel("Upload tribunal forms")
-            .label("LabelDoc",
+            .label("LabelCaseUploadDocuments",
                 "\nPlease upload a copy of the completed tribunal form, as well as any"
                     + " supporting documents or other information that has been supplied.\n"
                     + "\n<h3>Files should be:</h3>\n"
@@ -47,12 +39,12 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
         List<String> errors = new ArrayList<>();
         LOG.info("Start of midEvent");
 
-        try {
+        /*try {
             List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
             errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
         } catch (Exception exception) {
             LOG.error("Exception in Create-Case midEvent: ", exception.getMessage() + exception.getStackTrace());
-        }
+        }*/
 
         LOG.info("End of midEvent");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
