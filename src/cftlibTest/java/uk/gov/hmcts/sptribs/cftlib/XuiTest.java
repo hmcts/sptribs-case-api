@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
 import uk.gov.hmcts.sptribs.cftlib.util.Wiremock;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
-import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
 import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 
 import static java.lang.System.getenv;
@@ -37,9 +36,6 @@ public class XuiTest extends CftlibTest {
     public ApplicationReceivedNotification applicationReceivedNotification;
     @MockBean
     public CaseWithdrawnNotification caseWithdrawnNotification;
-    @MockBean
-    public CaseStayedNotification caseStayedNotification;
-
     static final String BASE_URL = "http://localhost:3000";
 
     protected Page getPage() {
