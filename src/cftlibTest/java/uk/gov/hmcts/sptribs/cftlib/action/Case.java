@@ -214,6 +214,37 @@ public class Case {
         Assertions.assertEquals("Case management", getCaseStatus());
     }
 
+    public void editCase() {
+        startNextStepAction("Case: Edit case");
+        assertThat(page.locator("h1"))
+            .hasText("Case categorisation", textOptionsWithTimeout(30000));
+        clickButton(page, "Continue");
+        assertThat(page.locator("h1"))
+            .hasText("When was the case received?", textOptionsWithTimeout(30000));
+        clickButton(page, "Continue");
+        assertThat(page.locator("h1"))
+            .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
+        clickButton(page, "Continue");
+        assertThat(page.locator("h1"))
+            .hasText("Who is the subject of this case?", textOptionsWithTimeout(30000));
+        clickButton(page, "Continue");
+        assertThat(page.locator("h1"))
+            .hasText("Who should receive information about the case?", textOptionsWithTimeout(30000));
+        clickButton(page, "Continue");
+        assertThat(page.locator("h1"))
+            .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
+        clickButton(page, "Continue");
+        page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(30000));
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("h1").last())
+            .hasText("Case Updated", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+    }
+
     public String getCaseStatus() {
         getTabByText(page, "State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
