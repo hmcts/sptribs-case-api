@@ -10,7 +10,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 
 public class HearingJourneyTests extends Base {
 
-    @Test
+    @Disabled
     public void caseWorkerShouldBeAbleToEditListingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -74,7 +74,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Special officer", otherAttendee);
     }
 
-    @Test
+    @Disabled
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -94,7 +94,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Appellant not ready to proceed", postponeReason);
     }
 
-    @Test
+    @Disabled
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);

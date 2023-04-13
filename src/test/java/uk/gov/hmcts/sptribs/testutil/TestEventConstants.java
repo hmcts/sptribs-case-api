@@ -4,6 +4,8 @@ public final class TestEventConstants {
 
     public static final String SPACE = " ";
 
+    public static final String CASEWORKER_DOCUMENT_MANAGEMENT = "caseworker-document-management";
+    public static final String CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE = "caseworker-remove-document";
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
     public static final String CASEWORKER_ADD_NOTE = "caseworker-add-note";
     public static final String CASEWORKER_CASE_BUILT = "caseworker-case-built";
