@@ -26,7 +26,10 @@ springdoc:
 logging:
   level:
     ROOT: DEBUG
-    
+    uk:
+      gov:
+        hmcts: DEBUG
+
 azure:
   application-insights:
     instrumentation-key: ${app-insights-instrumentation-key:00000000-0000-0000-0000-000000000000}
