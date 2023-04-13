@@ -1,8 +1,7 @@
-package uk.gov.hmcts.sptribs.caseworker.service;
+package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -29,10 +28,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class DocumentListServiceTest {
+public class DocumentListUtilTest {
 
-    @InjectMocks
-    private DocumentListService documentListService;
 
     @Test
     void shouldGenerateDocList() {
@@ -54,7 +51,7 @@ public class DocumentListServiceTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicList result = documentListService.prepareDocumentList(caseData);
+        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -81,7 +78,7 @@ public class DocumentListServiceTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicList result = documentListService.prepareDocumentList(caseData);
+        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -105,7 +102,7 @@ public class DocumentListServiceTest {
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicList result = documentListService.prepareDocumentList(caseData);
+        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -130,7 +127,7 @@ public class DocumentListServiceTest {
         caseData.setDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicList result = documentListService.prepareDocumentList(caseData);
+        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -154,7 +151,7 @@ public class DocumentListServiceTest {
         caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
         details.setData(caseData);
         //When
-        DynamicList result = documentListService.prepareDocumentList(caseData);
+        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -172,7 +169,7 @@ public class DocumentListServiceTest {
         caseData.setCaseIssueDecision(decision);
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = documentListService.getAllDecisionDocuments(caseData);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllDecisionDocuments(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -190,7 +187,7 @@ public class DocumentListServiceTest {
         caseData.setCaseIssueFinalDecision(decision);
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = documentListService.getAllFinalDecisionDocuments(caseData);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllFinalDecisionDocuments(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -207,7 +204,7 @@ public class DocumentListServiceTest {
         CicCase cicCase = CicCase.builder().orderList(List.of(orderListValue)).build();
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = documentListService.getAllOrderDocuments(cicCase);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllOrderDocuments(cicCase);
 
         //Then
         assertThat(result).isNotNull();
