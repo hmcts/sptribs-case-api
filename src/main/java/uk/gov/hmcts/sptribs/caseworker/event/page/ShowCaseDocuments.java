@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ShowCaseDocuments implements CcdPageConfiguration {
 
@@ -121,7 +122,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
                     .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
                     caseData.getCaseIssueDecision().setDecisionDocument(emptyDocument);
                 }
-                caseData.getCicCase().getRemovedDocumentList().add(doc);
+                addToRemovedDocuments(caseData.getCicCase(), doc.getValue());
             }
         }
     }
@@ -135,7 +136,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
                 .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
                 caseData.getCaseIssueFinalDecision().setDocument(emptyDocument);
             }
-            caseData.getCicCase().getRemovedDocumentList().add(cicDocumentListValue);
+            addToRemovedDocuments(caseData.getCicCase(), cicDocumentListValue.getValue());
         }
 
     }
@@ -155,7 +156,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
                             manageUploadedFiles(orderListValue, cicDocumentListValue);
                         }
                     }
-                    cicCase.getRemovedDocumentList().add(cicDocumentListValue);
+                    addToRemovedDocuments(cicCase, cicDocumentListValue.getValue());
                 }
             }
         }
@@ -178,17 +179,51 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
     private void checkLists(CaseData caseData, List<ListValue<CaseworkerCICDocument>> oldList,
                             List<ListValue<CaseworkerCICDocument>> updatedList) {
         if (CollectionUtils.isEmpty(updatedList)) {
-            caseData.getCicCase().getRemovedDocumentList().addAll(oldList);
+            for (ListValue<CaseworkerCICDocument> doc : oldList) {
+                addToRemovedDocuments(caseData.getCicCase(), doc.getValue());
+            }
         } else {
             for (ListValue<CaseworkerCICDocument> cicDocumentListValue : oldList) {
+                boolean found = false;
                 for (ListValue<CaseworkerCICDocument> doc : updatedList) {
                     if (cicDocumentListValue.getValue().equals(doc.getValue())) {
+                        found = true;
                         break;
                     }
-                    caseData.getCicCase().getRemovedDocumentList().add(cicDocumentListValue);
+                }
+                if (!found) {
+                    addToRemovedDocuments(caseData.getCicCase(), cicDocumentListValue.getValue());
                 }
             }
         }
 
+    }
+
+    private void addToRemovedDocuments(CicCase cicCase, CaseworkerCICDocument caseworkerCICDocument) {
+        if (CollectionUtils.isEmpty(cicCase.getRemovedDocumentList())) {
+            List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
+
+            var listValue = ListValue
+                .<CaseworkerCICDocument>builder()
+                .id("1")
+                .value(caseworkerCICDocument)
+                .build();
+
+            listValues.add(listValue);
+
+            cicCase.setRemovedDocumentList(listValues);
+        } else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            var listValue = ListValue
+                .<CaseworkerCICDocument>builder()
+                .value(caseworkerCICDocument)
+                .build();
+
+            cicCase.getRemovedDocumentList().add(0, listValue); // always add new note as first element so that it is displayed on top
+
+            cicCase.getRemovedDocumentList().forEach(
+                removedFileListValue -> removedFileListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+
+        }
     }
 }
