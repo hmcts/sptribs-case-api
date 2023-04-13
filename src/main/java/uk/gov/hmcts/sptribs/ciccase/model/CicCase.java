@@ -550,6 +550,10 @@ public class CicCase {
     )
     private List<ListValue<CaseworkerCICDocument>> decisionDocumentList;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
 
     @CCD(
         label = "Final Decision Documents",
