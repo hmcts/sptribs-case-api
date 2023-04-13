@@ -30,9 +30,9 @@ java:
   ingressHost: sptribs-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: sptribs
   autoscaling:
-    enabled: false
-    maxReplicas: 1
-    minReplicas: 1
+    enabled: true
+    maxReplicas: 9
+    minReplicas: 6
     targetCPUUtilizationPercentage: 80 # Default is 80% target CPU utilization
   keyVaults:
     sptribs:
@@ -64,8 +64,8 @@ java:
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     PRD_API_BASEURL : "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     SEND_LETTER_SERVICE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
-    PAYMENT_API_BASEURL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CITIZEN_UPDATE_CASE_STATE_ENABLED: false
     SERVICE_AUTH_MICROSERVICE: sptribs_case_api
     SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/cases/case-details/
+

@@ -15,11 +15,7 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     private static final Logger logger = LoggerFactory.getLogger(HighLevelDataSetupApp.class);
 
     private static final CcdRoleConfig[] CCD_ROLES_NEEDED_FOR_NFD = {
-        new CcdRoleConfig("caseworker-divorce-superuser", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-superuser", "PUBLIC"),
-        new CcdRoleConfig("caseworker-divorce-solicitor", "PUBLIC"),
-        new CcdRoleConfig("caseworker-divorce-systemupdate", "PUBLIC"),
-        new CcdRoleConfig("payments", "PUBLIC"),
         new CcdRoleConfig("caseworker", "PUBLIC"),
         new CcdRoleConfig("citizen-sptribs-cic-dss", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-systemupdate", "PUBLIC"),
@@ -28,7 +24,14 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("caseworker-sptribs-cic-districtjudge", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-cic-courtadmin", "PUBLIC"),
         new CcdRoleConfig("caseworker-sptribs-cic-caseofficer", "PUBLIC"),
-        new CcdRoleConfig("caseworker-sptribs-cic-respondent", "PUBLIC")
+        new CcdRoleConfig("caseworker-sptribs-cic-respondent", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-caseworker", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-senior-caseworker", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-hearing-centre-admin", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-hearing-centre-team-leader", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-senior-judge", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-judge", "PUBLIC"),
+        new CcdRoleConfig("caseworker-st_cic-respondent", "PUBLIC")
     };
 
     private final CcdEnvironment environment;

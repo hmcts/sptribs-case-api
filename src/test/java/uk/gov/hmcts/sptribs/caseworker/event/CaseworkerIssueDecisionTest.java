@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.util.Set;
 
@@ -79,6 +80,13 @@ class CaseworkerIssueDecisionTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
+            .documentEmailContent("content")
+            .build();
+        decision.setDecisionDocument(document);
+        caseData.setCaseIssueDecision(decision);
         details.setData(caseData);
 
         //When

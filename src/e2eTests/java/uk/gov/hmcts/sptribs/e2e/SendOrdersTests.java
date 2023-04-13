@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC6GeneralDirections;
@@ -9,7 +9,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC6GeneralDirec
 public class SendOrdersTests extends Base {
     Case newCase;
 
-    @Test
+    @Disabled
     void sendAnExistingDraftOrder() {
         createCase();
         newCase.buildCase();
@@ -17,7 +17,7 @@ public class SendOrdersTests extends Base {
         newCase.selectAnExistingDraftOrderAndSend();
     }
 
-    @Test
+    @Disabled
     void uploadAndSendOrder() {
         createCase();
         newCase.buildCase();

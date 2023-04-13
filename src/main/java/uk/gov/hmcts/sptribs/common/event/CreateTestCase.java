@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
+import uk.gov.hmcts.sptribs.common.event.page.CaseUploadDocuments;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
@@ -38,12 +39,19 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
 @Slf4j
 @Component
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
+
     private static final String ENVIRONMENT_PROD = "prod";
     private static final String TEST_CREATE = "caseworker-create-case";
     private final FeatureToggleService featureToggleService;
@@ -51,6 +59,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private static final CcdPageConfiguration selectParties = new SelectParties();
+    private static final CcdPageConfiguration caseUploadDocuments = new CaseUploadDocuments();
     private static final CcdPageConfiguration subjectDetails = new SubjectDetails();
     private static final CcdPageConfiguration applicantDetails = new ApplicantDetails();
     private static final CcdPageConfiguration representativeDetails = new RepresentativeDetails();
@@ -71,15 +80,19 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
-        var env = getenv().getOrDefault("S2S_URL_BASE", "aat");
+        final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
         roles.add(SOLICITOR);
         roles.add(COURT_ADMIN_CIC);
+        roles.add(ST_CIC_CASEWORKER);
+        roles.add(ST_CIC_SENIOR_CASEWORKER);
+        roles.add(ST_CIC_HEARING_CENTRE_ADMIN);
+        roles.add(ST_CIC_HEARING_CENTRE_TEAM_LEADER);
+        roles.add(ST_CIC_SENIOR_JUDGE);
         if (!env.contains(ENVIRONMENT_PROD)) {
             roles.add(SUPER_USER);
             roles.add(COURT_ADMIN_CIC);
             roles.add(DISTRICT_JUDGE_CIC);
         }
-
 
         if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
             PageBuilder pageBuilder = new PageBuilder(configBuilder
@@ -99,41 +112,25 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             applicantDetails.addTo(pageBuilder);
             representativeDetails.addTo(pageBuilder);
             contactPreferenceDetails.addTo(pageBuilder);
-
-
-            uploadDocuments(pageBuilder);
+            caseUploadDocuments.addTo(pageBuilder);
             furtherDetails.addTo(pageBuilder);
         }
     }
 
-
-    private void uploadDocuments(PageBuilder pageBuilder) {
-        pageBuilder.page("documentsUploadObjets")
-            .pageLabel("Upload tribunal forms")
-            .label("LabelDoc",
-                "\nPlease upload a copy of the completed tribunal form, as well as any"
-                    + " supporting documents or other information that has been supplied.\n"
-                    + "\n<h3>Files should be:</h3>\n"
-                    + "\n- uploaded separately, and not in one large file\n"
-                    + "\n- a maximum of 100MB in size (large files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n")
-            .complex(CaseData::getCicCase)
-            .optionalWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
-            .done();
-    }
 
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
-        State state = submittedDetails.getState();
 
+        updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .state(state)
+            .state(submittedDetails.getState())
             .build();
     }
 

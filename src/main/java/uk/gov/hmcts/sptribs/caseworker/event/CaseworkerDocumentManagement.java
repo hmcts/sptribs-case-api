@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -24,17 +26,31 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
+@Setter
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
+
+    @Value("${feature.case-file-view-and-document-management.enabled}")
+    private boolean caseFileViewAndDocumentManagementEnabled;
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
 
-    @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (caseFileViewAndDocumentManagementEnabled) {
+            doConfigure(configBuilder);
+        }
+    }
+
+    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_DOCUMENT_MANAGEMENT)
             .forStates(Withdrawn,
@@ -46,10 +62,11 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                 AwaitingOutcome,
                 CaseClosed,
                 CaseStayed)
-            .name("Document Management: Upload")
-            .description("Document Management: Upload")
+            .name("Document management: Upload")
+            .description("Document management: Upload")
             .showSummary()
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
+            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(SOLICITOR)
             .submittedCallback(this::submitted));
 

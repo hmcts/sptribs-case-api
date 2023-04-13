@@ -24,6 +24,7 @@ public class RecordNotifyParties implements CcdPageConfiguration {
             .pageLabel("Notify parties")
             .label("LabelNotifyParties", "")
             .complex(CaseData::getCicCase)
+            .label("caseworkerCreateListingNotifyParty","Who should be notified about the listing?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
                 "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
