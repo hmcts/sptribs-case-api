@@ -37,8 +37,8 @@ public class HearingVenues implements CcdPageConfiguration {
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getListing)
             .readonly(Listing::getHearingVenuesMessage)
-            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" 
-                      + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
+            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND (" + CURRENT_EVENT 
+            + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
             .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
             .optional(Listing::getVenueNotListedOption)
