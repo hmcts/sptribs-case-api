@@ -2,12 +2,11 @@ package uk.gov.hmcts.sptribs.cftlib;
 
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junitpioneer.jupiter.RetryingTest;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import uk.gov.hmcts.sptribs.cftlib.action.Case;
 import uk.gov.hmcts.sptribs.cftlib.util.DateHelpers;
 import uk.gov.hmcts.sptribs.cftlib.util.Login;
-import uk.gov.hmcts.sptribs.cftlib.util.PlaywrightHelpers;
 
 import java.util.Calendar;
 
@@ -18,9 +17,10 @@ import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
 
 public class CaseworkerCloseCaseTest extends XuiTest {
 
-    @Disabled
-    @RetryingTest(maxAttempts = PlaywrightHelpers.RETRIES)
+    @Test
     public void caseworkerShouldAbleToCloseTheCase() {
+        Mockito.doNothing().when(applicationReceivedNotification).sendToSubject(Mockito.any(), Mockito.any());
+        Mockito.doNothing().when(caseWithdrawnNotification).sendToSubject(Mockito.any(), Mockito.any());
         Page page = getPage();
         Login login = new Login(page);
         login.signInWithCaseworker();

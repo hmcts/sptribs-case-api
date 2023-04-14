@@ -100,7 +100,9 @@ public class CicCase {
 
     @CCD(
         label = "Preview order",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        categoryID = "TD"
+
     )
     private Document orderTemplateIssued;
 
@@ -533,7 +535,7 @@ public class CicCase {
         typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}
     )
-    private List<ListValue<CaseworkerCICDocument>>  applicantDocumentsUploaded;
+    private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
 
     @CCD(
         label = "Reinstate Documents",
@@ -548,6 +550,10 @@ public class CicCase {
     )
     private List<ListValue<CaseworkerCICDocument>> decisionDocumentList;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
 
     @CCD(
         label = "Final Decision Documents",

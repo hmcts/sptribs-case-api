@@ -23,6 +23,10 @@ springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
+logging:
+  level:
+    ROOT: DEBUG
+
 azure:
   application-insights:
     instrumentation-key: ${app-insights-instrumentation-key:00000000-0000-0000-0000-000000000000}
@@ -39,6 +43,10 @@ uk:
           respondentName: 'Appeals Team'
           respondentOrganisation: 'CICA'
           respondentEmail: appeals.team@cica.gov.uk
+
+          tribunalName: 'First-tier Tribunal (CIC)'
+          tribunalOrganisation: 'CICA'
+          tribunalEmail: CIC.enquiries@justice.gov.uk
         templatesCIC:
           APPLICATION_NEW_ORDER_ISSUED: 'e451a469-e61d-4daf-95c3-e405448ececf'
           APPLICATION_RECEIVED: '5385bfc6-eb33-41f6-ad2b-590a4f427606'
@@ -86,10 +94,6 @@ idam:
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
-  client:
-    id: 'divorce'
-    secret: ${OAUTH2_CLIENT_SECRET:dummy}
-    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
 
 location:
   api:
@@ -132,13 +136,6 @@ docmosis:
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
 
 
-    welsh:
-      #TO DO-below template name needs to be removed from here once some other template for sp-tribs is in place here, left for keeping structure.
-      DIVORCE_APPLICATION_SOLE: ${DIVORCE_APPLICATION_SOLE_WELSH_TEMPLATE_ID:NFD_CP_Application_Sole_V5.docx}
-  templateVars:
-    #TO DO-below template var needs to be removed from here once some other template var for sp-tribs is in place here, left for keeping structure.
-    applicant2SignInDivorceUrl: ${NOTIFY_TEMPLATE_APPLICANT2_SIGN_IN_DIVORCE_URL:https://sptribs-apply-for-divorce.aat.platform.hmcts.net/applicant2}
-
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
 
@@ -178,3 +175,6 @@ feature:
     enabled: ${LINK_CASE_FEATURE:false}
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:false}
+  case-file-view-and-document-management:
+    enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
+

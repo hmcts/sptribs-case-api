@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
 @Component
 @Slf4j
@@ -87,7 +89,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::sent)
-            .grant(CREATE_READ_UPDATE_DELETE,DISTRICT_JUDGE_CIC,COURT_ADMIN_CIC,SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+            .grant(CREATE_READ_UPDATE_DELETE, DISTRICT_JUDGE_CIC, COURT_ADMIN_CIC, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
             .grantHistoryOnly(SOLICITOR));
     }
@@ -97,6 +99,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
+        if (null != caseData.getCicCase().getOrderFile()) {
+            updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        }
+
         DraftOrderCIC selectedDraftOrder = null;
         String selectedDynamicDraft = null;
         var order = Order.builder()
@@ -200,6 +206,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
         } else if (null != order.getUploadedFile()
             && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
     }
