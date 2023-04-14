@@ -30,7 +30,8 @@ public enum PostponeReason implements HasLabel {
     CASESTAYED_DUE_TO_CIVIL_PROSEEDINGS("Case stayed due to Civil proceedings", "Case stayed due to Civil proceedings"),
 
     @JsonProperty("CICA requests case be heard by a single Judge as a Rule 27 decision")
-    CICA_REQUSETS_CASE_BE_HEARD_BY_A_SINGLE_JUDGE_AS_A_RULE_27_DECISION("CICA requests case be heard by a single Judge as a Rule 27 decision",
+    CICA_REQUSETS_CASE_BE_HEARD_BY_A_SINGLE_JUDGE_AS_A_RULE_27_DECISION(
+        "CICA requests case be heard by a single Judge as a Rule 27 decision",
         "CICA requests case be heard by a single Judge as a Rule 27 decision"),
 
     @JsonProperty("CICA seeking Counsel")
