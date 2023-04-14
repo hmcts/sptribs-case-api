@@ -4,14 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 public class CaseUploadDocuments implements CcdPageConfiguration {
 
@@ -39,12 +43,8 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
         List<String> errors = new ArrayList<>();
         LOG.info("Start of midEvent");
 
-        /*try {
-            List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
-            errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-        } catch (Exception exception) {
-            LOG.error("Exception in Create-Case midEvent: ", exception.getMessage() + exception.getStackTrace());
-        }*/
+        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
+        errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
 
         LOG.info("End of midEvent");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
