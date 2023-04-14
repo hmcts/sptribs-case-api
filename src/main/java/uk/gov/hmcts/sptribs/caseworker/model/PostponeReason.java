@@ -8,82 +8,70 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @RequiredArgsConstructor
 @Getter
 public enum PostponeReason implements HasLabel {
-    @JsonProperty("Adjourned to face to face")
-    ADJOURNED_TO_FACE_TO_FACE("Adjourned to face to face", "Adjourned to face to face"),
 
-    @JsonProperty("Adjourned to Video")
-    ADJOURNED_TO_VIDEO("Adjourned to Video", "Adjourned to Video"),
+    @JsonProperty("Appellant is out of country")
+    APPELLANT_IS_OUT_OF_COUNTRY("Appellant is out of country", "Appellant is out of country"),
 
-    @JsonProperty("Admin error")
-    ADMIN_ERROR("Admin error", "Admin error"),
+    @JsonProperty("Appellant seeking legal advice")
+    APPELLANT_SEEKING_LEGAL_ADVICE("Appellant seeking legal advice", "Appellant seeking legal advice"),
 
-    @JsonProperty("Appellant did not attend")
-    APPELLANT_DID_NOT_ATTEND("Appellant did not attend", "Appellant did not attend"),
+    @JsonProperty("Appellant unable to attend face to face,change of hearing format requested")
+    APPELLANT_UNABLE_TO_ATTEND_FACE_TO_FACE("Appellant unable to attend face to face,change of hearing format requested",
+        "Appellant unable to attend face to face,change of hearing format requested"),
 
-    @JsonProperty("Appellant not ready to proceed")
-    APPELLANT_NOT_READY_TO_PROCEED("Appellant not ready to proceed", "Appellant not ready to proceed"),
+    @JsonProperty("Appellant unavailable (holiday/work/appointmaent/unwell)")
+    APPELLANT_UNAVAILABLE("Appellant unavailable (holiday/work/appointmaent/unwell)",
+        "Appellant unavailable (holiday/work/appointmaent/unwell)"),
 
-    @JsonProperty("Complex case")
-    COMPLEX_CASE("Complex case", "Complex case"),
+    @JsonProperty("Bereavement")
+    BEREAVEMENT("Bereavement", "Bereavement"),
 
-    @JsonProperty("For Legal Rep/No Sol")
-    FOR_LEGAL_REP_NO_SOL("For Legal Rep/No Sol", "For Legal Rep/No Sol"),
+    @JsonProperty("Case stayed due to Civil proceedings")
+    CASESTAYED_DUE_TO_CIVIL_PROSEEDINGS("Case stayed due to Civil proceedings", "Case stayed due to Civil proceedings"),
 
-    @JsonProperty("For Other Parties to Attend")
-    FOR_OTHER_PARTIES_TO_ATTEND("For Other Parties to Attend", "For Other Parties to Attend"),
+    @JsonProperty("CICA requests case be heard by a single Judge as a Rule 27 decision")
+    CICA_REQUSETS_CASE_BE_HEARD_BY_A_SINGLE_JUDGE_AS_A_RULE_27_DECISION("CICA requests case be heard by a single Judge as a Rule 27 decision",
+        "CICA requests case be heard by a single Judge as a Rule 27 decision"),
 
-    @JsonProperty("Further evidence received at hearing")
-    FURTHER_EVIDENCE_RECEIVED_AT_HEARING("Further evidence received at hearing", "Further evidence received at hearing"),
+    @JsonProperty("CICA seeking Counsel")
+    CICA_SEEKING_COUNCIL("CICA seeking Counsel", "CICA seeking Counsel"),
 
-    @JsonProperty("Further Loss of Earnings information required - Appellant")
-    FURTHER_LOSS_OF_EARNINGS_INFORMATION_REQUIRED_APPELLANT("Further Loss of Earnings information required - Appellant",
-        "Further Loss of Earnings information required - Appellant"),
+    @JsonProperty("Extension granted")
+    extension_granted("Extension granted", "Extension granted"),
 
-    @JsonProperty("Further Loss of Earnings information required - Respondent")
-    FURTHER_LOSS_OF_EARNINGS_INFORMATION_REQUIRED_RESPONDENT("Further Loss of Earnings information required - Respondent",
-        "Further Loss of Earnings information required - Respondent"),
+    @JsonProperty("Face to face hearing required")
+    FACE_TO_FACE_HEARING_REQUIRED("Face to face hearing required", "Face to face hearing required"),
 
-    @JsonProperty("Further medical evidence required - Appellant")
-    FURTHER_MEDICAL_EVIDENCE_REQUIRED_APPELLANT("Further medical evidence required - Appellant",
-        "Further medical evidence required - Appellant"),
 
-    @JsonProperty("Further medical evidence required - Respondent")
-    FURTHER_MEDICAL_EVIDENCE_REQUIRED_RESPONDENT("Further medical evidence required - Respondent",
-        "Further medical evidence required - Respondent"),
+    @JsonProperty(" Last minute submissions i.e. 1-2 weeks prior to hearing")
+    LAST_MINUTE_SUBMISSION(" Last minute submissions i.e. 1-2 weeks prior to hearing",
+        " Last minute submissions i.e. 1-2 weeks prior to hearing"),
 
-    @JsonProperty("Further police evidence required - Appellant")
-    FURTHER_POLICE_EVIDENCE_REQUIRED_APPELLANT("Further police evidence required - Appellant",
-        "Further police evidence required - Appellant"),
+    @JsonProperty("Linked cases - to be heard together")
+    LINKED_CASE_TO_BE_HEARD_TOGETHER("Linked cases - to be heard together", "Linked cases - to be heard together"),
 
-    @JsonProperty("Further police evidence required - HMCTS (Summons)")
-    FURTHER_POLICE_EVIDENCE_REQUIRED_HMCTS_SUMMONS("Further police evidence required - HMCTS (Summons)",
-        "Further police evidence required - HMCTS (Summons)"),
+    @JsonProperty("Member excluded - listed in error")
+    MEMBER_EXCLUDED_LISTED_IN_ERROR("Member excluded - listed in error", "Member excluded - listed in error"),
 
-    @JsonProperty("Further police evidence required - Respondent")
-    FURTHER_POLICE_EVIDENCE_REQUIRED_RESPONDENT("Further police evidence required - Respondent",
-        "Further police evidence required - Respondent"),
+    @JsonProperty(" Representative/Solicitor cannot make contact with Appellant")
+    REPRESENTATIVE_CANNOT_MAKE_CONTACT_WITH_APPELLANT(" Representative/Solicitor cannot make contact with Appellant",
+        " Representative/Solicitor cannot make contact with Appellant"),
 
-    @JsonProperty("Interpreter required")
-    INTERPRETER_REQUIRED("Interpreter required", "Interpreter required"),
+    @JsonProperty("  Representative/Solicitor seeking further evidence")
+    REPRESENTATIVE_SEEKING_FURTHER_EVIDENCE("  Representative/Solicitor seeking further evidence",
+        "  Representative/Solicitor seeking further evidence"),
 
-    @JsonProperty("Lack of time")
-    LACK_OF_TIME("Lack of time", "Lack of time"),
+    @JsonProperty(" Representative/Solicitor unavailable (holiday/work/appointment/unwell)")
+    REPRESENTATIVE_UNAVAILABLE(" Representative/Solicitor unavailable (holiday/work/appointment/unwell)",
+        " Representative/Solicitor unavailable (holiday/work/appointment/unwell)"),
 
-    @JsonProperty("Member Unable to Attend")
-    MEMBER_UNABLE_TO_ATTEND("Member Unable to Attend", "Member Unable to Attend"),
+    @JsonProperty(" Tribunal members unavailable (holiday/work/appointment/unwell)")
+    TRIBUNAL_MEMBER_UNAVAILABLE(" Tribunal members unavailable (holiday/work/appointment/unwell)",
+        " Tribunal members unavailable (holiday/work/appointment/unwell)"),
 
-    @JsonProperty("PO did not attend")
-    PO_DID_NOT_ATTEND("PO did not attend", "PO did not attend"),
-
-    @JsonProperty("Poor Evidence")
-    POOR_EVIDENCE("Poor Evidence", "Poor Evidence"),
-
-    @JsonProperty("Venue room - minimum standards not reached")
-    VENUE_ROOM_MINIMUM_STANDARDS_NOT_REACHED("Venue room - minimum standards not reached",
-        "Venue room - minimum standards not reached"),
-
-    @JsonProperty("Witness did not attend")
-    WITNESS_DID_NOT_ATTEND("Witness did not attend", "Witness did not attend"),
+    @JsonProperty("Tribunal members deemed listing time directed inadequate")
+    TRIBUNAL_MEMBER_DEEMED_LISTING_TIME_DIRECTED_INEDEQUATE("Tribunal members deemed listing time directed inadequate",
+        "Tribunal members deemed listing time directed inadequate"),
 
     @JsonProperty("Other")
     OTHER("Other", "Other");
