@@ -1,7 +1,5 @@
-package uk.gov.hmcts.sptribs.caseworker.service;
+package uk.gov.hmcts.sptribs.caseworker.util;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -20,11 +18,13 @@ import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getD
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
 
-@Service
-@Slf4j
-public class DocumentListService {
 
-    private List<CaseworkerCICDocument> prepareList(CaseData data) {
+public final class DocumentListUtil {
+    private DocumentListUtil() {
+
+    }
+
+    private static List<CaseworkerCICDocument> prepareList(CaseData data) {
         List<CaseworkerCICDocument> docList = new ArrayList<>();
         docList.addAll(getOrderDocuments(data.getCicCase()));
         docList.addAll(getCaseDocs(data.getCicCase()));
@@ -38,7 +38,7 @@ public class DocumentListService {
     }
 
 
-    public DynamicList prepareDocumentList(final CaseData data) {
+    public static DynamicList prepareDocumentList(final CaseData data) {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
         List<DynamicListElement> dynamicListElements = docList
@@ -53,7 +53,7 @@ public class DocumentListService {
             .build();
     }
 
-    private List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
+    private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getReinstateDocuments())) {
             for (ListValue<CaseworkerCICDocument> document : cicCase.getReinstateDocuments()) {
@@ -63,7 +63,7 @@ public class DocumentListService {
         return reinstateDocList;
     }
 
-    private List<CaseworkerCICDocument> getCaseDocs(CicCase cicCase) {
+    private  static List<CaseworkerCICDocument> getCaseDocs(CicCase cicCase) {
         List<CaseworkerCICDocument> caseDocs = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getApplicantDocumentsUploaded())) {
             for (ListValue<CaseworkerCICDocument> document : cicCase.getApplicantDocumentsUploaded()) {
@@ -73,7 +73,7 @@ public class DocumentListService {
         return caseDocs;
     }
 
-    private List<CaseworkerCICDocument> getDocumentManagementDocs(CaseData caseData) {
+    private static List<CaseworkerCICDocument> getDocumentManagementDocs(CaseData caseData) {
         List<CaseworkerCICDocument> docManagementDocs = new ArrayList<>();
         if (null != caseData.getDocManagement() && !CollectionUtils.isEmpty(caseData.getDocManagement().getCaseworkerCICDocument())) {
             for (ListValue<CaseworkerCICDocument> document : caseData.getDocManagement().getCaseworkerCICDocument()) {
@@ -83,7 +83,7 @@ public class DocumentListService {
         return docManagementDocs;
     }
 
-    private List<CaseworkerCICDocument> getCloseCaseDocuments(CaseData caseData) {
+    private static List<CaseworkerCICDocument> getCloseCaseDocuments(CaseData caseData) {
         List<CaseworkerCICDocument> closeCaseDocs = new ArrayList<>();
         if (null != caseData.getCloseCase() && !CollectionUtils.isEmpty(caseData.getCloseCase().getDocuments())) {
             for (ListValue<CaseworkerCICDocument> document : caseData.getCloseCase().getDocuments()) {
@@ -93,7 +93,7 @@ public class DocumentListService {
         return closeCaseDocs;
     }
 
-    private List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
+    private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
         if (null != caseData.getListing() && null != caseData.getListing().getSummary()
             && !CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())) {
@@ -104,19 +104,19 @@ public class DocumentListService {
         return hearingSummaryDocs;
     }
 
-    public List<ListValue<CaseworkerCICDocument>> getAllDecisionDocuments(CaseData caseData) {
+    public static List<ListValue<CaseworkerCICDocument>> getAllDecisionDocuments(CaseData caseData) {
         return buildListValues(getDecisionDocs(caseData));
     }
 
-    public List<ListValue<CaseworkerCICDocument>> getAllFinalDecisionDocuments(CaseData caseData) {
+    public  static List<ListValue<CaseworkerCICDocument>> getAllFinalDecisionDocuments(CaseData caseData) {
         return buildListValues(getFinalDecisionDocs(caseData));
     }
 
-    public List<ListValue<CaseworkerCICDocument>> getAllOrderDocuments(CicCase cicCase) {
+    public static List<ListValue<CaseworkerCICDocument>> getAllOrderDocuments(CicCase cicCase) {
         return buildListValues(getOrderDocuments(cicCase));
     }
 
-    private List<ListValue<CaseworkerCICDocument>> buildListValues(List<CaseworkerCICDocument> docList) {
+    private static List<ListValue<CaseworkerCICDocument>> buildListValues(List<CaseworkerCICDocument> docList) {
         List<ListValue<CaseworkerCICDocument>> newList = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
         for (CaseworkerCICDocument doc : docList) {

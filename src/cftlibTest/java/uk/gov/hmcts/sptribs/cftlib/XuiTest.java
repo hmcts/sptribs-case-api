@@ -13,7 +13,12 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
+import uk.gov.hmcts.sptribs.cftlib.util.Wiremock;
+import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
+import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
+import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 
 import static java.lang.System.getenv;
 
@@ -25,11 +30,27 @@ public class XuiTest extends CftlibTest {
     Playwright playwright;
     Browser browser;
 
+    BrowserContext context;
+    Page page;
+
+    @MockBean
+    public ApplicationReceivedNotification applicationReceivedNotification;
+    @MockBean
+    public CaseWithdrawnNotification caseWithdrawnNotification;
+    @MockBean
+    public CaseStayedNotification caseStayedNotification;
+
+    static final String BASE_URL = "http://localhost:3000";
+
+    protected Page getPage() {
+        return page;
+    }
+
     @BeforeAll
     void launchBrowser() {
         playwright = Playwright.create();
         var launchOptions = getenv("CI") == null
-            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(2000)
+            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50)
             : new BrowserType.LaunchOptions().setHeadless(true);
 
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER");
@@ -43,20 +64,16 @@ public class XuiTest extends CftlibTest {
     @AfterAll
     void closeBrowser() {
         playwright.close();
+        Wiremock.stopAndReset();
     }
 
-    BrowserContext context;
-    Page page;
-
-    public Page getPage() {
-        return page;
-    }
 
     @BeforeEach
     void createContextAndPage() {
         context = browser.newContext();
         page = context.newPage();
-        page.setDefaultTimeout(20000);
+        page.setDefaultTimeout(30000);
+        page.setDefaultNavigationTimeout(30000);
     }
 
     @AfterEach
