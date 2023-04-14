@@ -28,6 +28,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.46.0'
   id 'hmcts.ccd.sdk'  version '5.3.6'
   id 'com.github.hmcts.rse-cft-lib' version '0.19.655'
+  id 'org.gradle.test-retry' version '1.5.2'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -146,13 +147,17 @@ task e2eTests(type: Test) {
     // Configuration parameters to execute top-level classes in parallel but methods in same thread
     'junit.jupiter.execution.parallel.enabled': 'true',
     'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
-//    'junit.jupiter.execution.parallel.mode.classes.default': 'concurrent'
+    'junit.jupiter.execution.parallel.mode.classes.default': 'concurrent'
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
+
+  retry {
+    maxRetries = 3
+    maxParallelForks = 1
+  }
 }
 
 // Invoked from CftLibConfig when booting with CCD.
@@ -556,11 +561,8 @@ task installBrowser(type: JavaExec) {
 
 tasks.e2eTests.dependsOn(installBrowser)
 
-def E2E_MAX_PARALLEL_FORKS = 2
-def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
-
 tasks.withType(Test).configureEach {
-  maxParallelForks = name.toLowerCase().contains("e2etests") ? E2E_MAX_PARALLEL_FORKS : MAX_PARALLEL_FORKS
+  maxParallelForks = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
 }
 
 // exclude the logback binding is coming in via cftlib

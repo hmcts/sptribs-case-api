@@ -68,7 +68,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court-The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
+                new SelectOption().setLabel("East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -146,7 +146,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
+                new SelectOption().setLabel("East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
