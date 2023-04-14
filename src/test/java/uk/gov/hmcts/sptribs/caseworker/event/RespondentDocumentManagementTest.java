@@ -13,46 +13,32 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_DOCUMENT_MANAGEMENT;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseworkerDocumentManagementTest {
+class RespondentDocumentManagementTest {
 
     @InjectMocks
-    private CaseworkerDocumentManagement caseworkerDocumentManagement;
+    private RespondentDocumentManagement respondentDocumentManagement;
+
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseworkerDocumentManagement.setCaseFileViewAndDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseworkerDocumentManagement.configure(configBuilder);
+        respondentDocumentManagement.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_DOCUMENT_MANAGEMENT);
-    }
-
-    @Test
-    void shouldNotConfigureMaintainLinkCaseIfFeatureFlagFalse() {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        //When
-        caseworkerDocumentManagement.configure(configBuilder);
-
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_DOCUMENT_MANAGEMENT);
+            .contains(RESPONDENT_DOCUMENT_MANAGEMENT);
     }
 
     @Test
@@ -68,9 +54,10 @@ public class CaseworkerDocumentManagementTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagement.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse documentMgmtResponse = respondentDocumentManagement.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(documentMgmtResponse).isNotNull();
     }
+
 }

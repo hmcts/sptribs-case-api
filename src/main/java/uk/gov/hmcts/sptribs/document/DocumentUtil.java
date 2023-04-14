@@ -26,11 +26,12 @@ public final class DocumentUtil {
     }
 
     public static void updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> documentList) {
-        documentList.stream().forEach(doc -> doc.getValue().getDocumentLink().setCategoryId("A"));
+        documentList.forEach(doc -> doc.getValue().getDocumentLink()
+            .setCategoryId(doc.getValue().getDocumentCategory().getCategory()));
     }
 
-    public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList) {
-        documentList.stream().forEach(doc -> doc.getValue().getDocumentLink().setCategoryId("A"));
+    public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList, String categoryId) {
+        documentList.forEach(doc -> doc.getValue().getDocumentLink().setCategoryId(categoryId));
     }
 
     public static List<String> validateDocumentFormat(List<ListValue<CICDocument>> documentList) {
