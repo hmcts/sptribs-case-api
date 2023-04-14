@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
@@ -264,6 +265,12 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private DssCaseData dssCaseData = new DssCaseData();
+
+    @CCD(
+        label = "PCQ ID",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private String pcqId;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

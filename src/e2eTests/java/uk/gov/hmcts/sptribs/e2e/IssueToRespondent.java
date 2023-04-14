@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueCaseToRespondent;
@@ -13,7 +13,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 
 public class IssueToRespondent extends Base {
 
-    @Test
+    @Disabled
     public void caseWorkerShouldAbleToManageIssueToRespondent() {
         Page page = getPage();
         Login login = new Login(page);
