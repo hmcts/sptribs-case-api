@@ -44,6 +44,11 @@ public class HearingVenues implements CcdPageConfiguration {
 //  C and ( a or b ) ==> did not work
             .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
 
+//  simple condition
+//            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND currentEventCONTAINS \"listing\"")
+
+
+
 //  C and a  ==== worked only condition a met
 //            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND " + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"")
 
