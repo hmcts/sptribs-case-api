@@ -155,7 +155,7 @@ task e2eTests(type: Test) {
   environment 'CI', 'true'
 
   retry {
-    maxRetries = 3
+    maxRetries = 2
     maxParallelForks = 1
   }
 }
