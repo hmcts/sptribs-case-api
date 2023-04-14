@@ -5,11 +5,10 @@ import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCaseToJudge;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCaseToLegalOfficer;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -29,9 +28,10 @@ public class ReferCaseToJudge extends Base {
         newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.startNextStepAction(ReferCaseToJudge);
-        assertThat(page.locator("h1")).hasText(ReferCaseToJudge.label, textOptionsWithTimeout(60000));
+        newCase.startNextStepAction(Actions.ReferCaseToJudge);
+        assertThat(page.locator("h1")).hasText(Actions.ReferCaseToJudge.label, textOptionsWithTimeout(60000));
     }
+
     @Test
     public void caseworkerShouldAbleToReferCaseToJudge() {
         page.selectOption("#referToJudgeReferralReason",
