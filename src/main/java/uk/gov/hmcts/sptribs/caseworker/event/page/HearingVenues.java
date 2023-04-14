@@ -37,32 +37,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getListing)
             .readonly(Listing::getHearingVenuesMessage)
-// Original A or B worked
-//            .optional(Listing::getHearingVenues,
-//                CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
-
-//  C and ( a or b ) ==> did not work
             .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
-
-//  simple condition
-//            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND currentEventCONTAINS \"listing\"")
-
-
-
-//  C and a  ==== worked only condition a met
-//            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND " + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"")
-
-
-//  a or b and C ==> did not work
-//            .optional(Listing::getHearingVenues,"(" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"" + ") AND " + "venueNotListedOption!=\"VenueNotListed\"" )
-
-//  C and A or C and B ===> did not work
-//            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"" + " AND " + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" + " OR " + "venueNotListedOption!=\"VenueNotListed\"" + " AND " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\"")
-
-//  C only worked .
-//            .optional(Listing::getHearingVenues,"venueNotListedOption!=\"VenueNotListed\"")
-//  No Condition
-//            .optional(Listing::getHearingVenues)
             .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
             .optional(Listing::getVenueNotListedOption)
