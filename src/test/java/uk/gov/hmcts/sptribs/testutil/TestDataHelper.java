@@ -252,6 +252,49 @@ public class TestDataHelper {
             .build();
     }
 
+    public static  List<ListValue<CaseworkerCICDocument>> getDocument() {
+        List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
+        ListValue<CaseworkerCICDocument> last = listValueList.get(1);
+        listValueList.remove(last);
+        return listValueList;
+    }
+
+    public static  List<ListValue<CaseworkerCICDocument>> get2Document() {
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CaseworkerCICDocument doc2 = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list2 = new ListValue<>();
+        list2.setValue(doc2);
+        listValueList.add(list2);
+        return listValueList;
+    }
+
+    public static  List<ListValue<CICDocument>> get2DocumentCiC() {
+        List<ListValue<CICDocument>> listValueList = new ArrayList<>();
+        CICDocument doc = CICDocument.builder()
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+            .build();
+        ListValue<CICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CICDocument doc2 = CICDocument.builder()
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CICDocument> list2 = new ListValue<>();
+        list2.setValue(doc2);
+        listValueList.add(list2);
+        return listValueList;
+    }
+
     public static DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
