@@ -172,5 +172,5 @@ feature:
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:false}
   case-file-view-and-document-management:
-    enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
+    enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
 
