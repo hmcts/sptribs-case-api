@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -17,9 +18,11 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentList;
 
 @ExtendWith(MockitoExtension.class)
 public class CaseIssuedNotificationTest {
@@ -137,6 +140,23 @@ public class CaseIssuedNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        caseIssuedNotification.sendToRespondent(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
+        //Given
+        final CaseData data = getMockCaseData();
+        CaseIssue caseIssue = CaseIssue.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setCaseIssue(caseIssue);
+        data.getCicCase().setRepresentativeFullName("respFullName");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         caseIssuedNotification.sendToRespondent(data, "CN1");
 
