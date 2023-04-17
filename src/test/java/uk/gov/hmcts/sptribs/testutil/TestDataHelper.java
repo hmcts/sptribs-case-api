@@ -9,6 +9,7 @@ import feign.Response;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -250,6 +251,108 @@ public class TestDataHelper {
             .value(listItem)
             .listItems(List.of(listItem))
             .build();
+    }
+
+    public static DynamicMultiSelectList getDynamicMultiSelectDocumentListWith6Elements() {
+        List<DynamicListElement> elements = new ArrayList<>();
+        final DynamicListElement listItem0 = DynamicListElement
+            .builder()
+            .label("0--0")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem0);
+        final DynamicListElement listItem1 = DynamicListElement
+            .builder()
+            .label("1--1")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem1);
+        final DynamicListElement listItem2 = DynamicListElement
+            .builder()
+            .label("2--2")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem2);
+        final DynamicListElement listItem3 = DynamicListElement
+            .builder()
+            .label("3--3")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem3);
+        final DynamicListElement listItem4 = DynamicListElement
+            .builder()
+            .label("4--4")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem4);
+        final DynamicListElement listItem5 = DynamicListElement
+            .builder()
+            .label("1--5")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem5);
+
+        return DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build();
+    }
+
+    public static DynamicMultiSelectList getDynamicMultiSelectDocumentList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("0--0")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicMultiSelectList
+            .builder()
+            .value(List.of(listItem))
+            .listItems(List.of(listItem))
+            .build();
+    }
+
+    public static  List<ListValue<CaseworkerCICDocument>> getDocument() {
+        List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
+        ListValue<CaseworkerCICDocument> last = listValueList.get(1);
+        listValueList.remove(last);
+        return listValueList;
+    }
+
+    public static  List<ListValue<CaseworkerCICDocument>> get2Document() {
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CaseworkerCICDocument doc2 = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list2 = new ListValue<>();
+        list2.setValue(doc2);
+        listValueList.add(list2);
+        return listValueList;
+    }
+
+    public static  List<ListValue<CICDocument>> get2DocumentCiC() {
+        List<ListValue<CICDocument>> listValueList = new ArrayList<>();
+        CICDocument doc = CICDocument.builder()
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+            .build();
+        ListValue<CICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CICDocument doc2 = CICDocument.builder()
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CICDocument> list2 = new ListValue<>();
+        list2.setValue(doc2);
+        listValueList.add(list2);
+        return listValueList;
     }
 
     public static DynamicList getMockedRegionData() {

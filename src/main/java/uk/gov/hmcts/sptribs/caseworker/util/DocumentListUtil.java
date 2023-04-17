@@ -1,12 +1,17 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.ApplicationEvidence;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.model.TribunalDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +21,18 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeDecisionDoc;
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeFinalDecisionDoc;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.checkLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
+import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.removeOrderDoc;
 
 
 public final class DocumentListUtil {
     private DocumentListUtil() {
 
     }
+
 
     private static List<CaseworkerCICDocument> prepareList(CaseData data) {
         List<CaseworkerCICDocument> docList = new ArrayList<>();
@@ -37,20 +47,44 @@ public final class DocumentListUtil {
         return docList;
     }
 
-
-    public static DynamicList prepareDocumentList(final CaseData data) {
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data, boolean withCaseIssueFilters) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-
+        if (withCaseIssueFilters) {
+            docList = filterCaseIssue(docList, data.getCaseIssue());
+        }
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .sorted()
-            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()).code(UUID.randomUUID()).build())
+            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
+                + "--" + doc.getDocumentLink().getUrl()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
-        return DynamicList
+        return DynamicMultiSelectList
             .builder()
             .listItems(dynamicListElements)
+            .value(new ArrayList<>())
             .build();
+    }
+
+    private static List<CaseworkerCICDocument> filterCaseIssue(List<CaseworkerCICDocument> docList, CaseIssue caseIssue) {
+        List<CaseworkerCICDocument> filteredList = new ArrayList<>();
+        List<DocumentType> documentTypes = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(caseIssue.getTribunalDocuments())) {
+            for (TribunalDocuments tribunalDocuments : caseIssue.getTribunalDocuments()) {
+                documentTypes.add(tribunalDocuments.getDocumentType());
+            }
+        }
+        if (!CollectionUtils.isEmpty(caseIssue.getApplicationEvidences())) {
+            for (ApplicationEvidence applicationEvidence : caseIssue.getApplicationEvidences()) {
+                documentTypes.add(applicationEvidence.getDocumentType());
+            }
+        }
+        for (CaseworkerCICDocument caseworkerCICDocument : docList) {
+            if (!ObjectUtils.isEmpty(caseworkerCICDocument.getDocumentCategory())
+                && documentTypes.contains(caseworkerCICDocument.getDocumentCategory())) {
+                filteredList.add(caseworkerCICDocument);
+            }
+        }
+        return filteredList;
     }
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
@@ -63,7 +97,7 @@ public final class DocumentListUtil {
         return reinstateDocList;
     }
 
-    private  static List<CaseworkerCICDocument> getCaseDocs(CicCase cicCase) {
+    private static List<CaseworkerCICDocument> getCaseDocs(CicCase cicCase) {
         List<CaseworkerCICDocument> caseDocs = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getApplicantDocumentsUploaded())) {
             for (ListValue<CaseworkerCICDocument> document : cicCase.getApplicantDocumentsUploaded()) {
@@ -108,7 +142,7 @@ public final class DocumentListUtil {
         return buildListValues(getDecisionDocs(caseData));
     }
 
-    public  static List<ListValue<CaseworkerCICDocument>> getAllFinalDecisionDocuments(CaseData caseData) {
+    public static List<ListValue<CaseworkerCICDocument>> getAllFinalDecisionDocuments(CaseData caseData) {
         return buildListValues(getFinalDecisionDocs(caseData));
     }
 
@@ -131,4 +165,40 @@ public final class DocumentListUtil {
         }
         return newList;
     }
+
+    public static CaseData removeEvaluatedListDoc(CaseData caseData, CaseData oldData) {
+        removeDecisionDoc(caseData, oldData);
+        removeFinalDecisionDoc(caseData, oldData);
+        var cic = caseData.getCicCase();
+        removeOrderDoc(cic, oldData.getCicCase());
+        if (!CollectionUtils.isEmpty(oldData.getDocManagement().getCaseworkerCICDocument())
+            && (CollectionUtils.isEmpty(caseData.getDocManagement().getCaseworkerCICDocument())
+            || caseData.getDocManagement().getCaseworkerCICDocument().size()
+            < oldData.getDocManagement().getCaseworkerCICDocument().size())) {
+            checkLists(caseData, oldData.getDocManagement().getCaseworkerCICDocument(),
+                caseData.getDocManagement().getCaseworkerCICDocument());
+        }
+        if (!CollectionUtils.isEmpty(oldData.getCloseCase().getDocuments())
+            && (CollectionUtils.isEmpty(caseData.getCloseCase().getDocuments())
+            || caseData.getCloseCase().getDocuments().size() < oldData.getCloseCase().getDocuments().size())) {
+            checkLists(caseData, oldData.getCloseCase().getDocuments(), caseData.getCloseCase().getDocuments());
+        }
+        if (!CollectionUtils.isEmpty(oldData.getCicCase().getReinstateDocuments())
+            && (CollectionUtils.isEmpty(caseData.getCicCase().getReinstateDocuments())
+            || cic.getReinstateDocuments().size() < oldData.getCicCase().getReinstateDocuments().size())) {
+            checkLists(caseData, oldData.getCicCase().getReinstateDocuments(), cic.getReinstateDocuments());
+        }
+        if (!CollectionUtils.isEmpty(oldData.getCicCase().getApplicantDocumentsUploaded())
+            && (CollectionUtils.isEmpty(cic.getApplicantDocumentsUploaded())
+            || cic.getApplicantDocumentsUploaded().size() < oldData.getCicCase().getApplicantDocumentsUploaded().size())) {
+            checkLists(caseData, oldData.getCicCase().getApplicantDocumentsUploaded(), cic.getApplicantDocumentsUploaded());
+        }
+        if (!CollectionUtils.isEmpty(oldData.getListing().getSummary().getRecFile())
+            && (CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())
+            || caseData.getListing().getSummary().getRecFile().size() < oldData.getListing().getSummary().getRecFile().size())) {
+            checkLists(caseData, oldData.getListing().getSummary().getRecFile(), caseData.getListing().getSummary().getRecFile());
+        }
+        return caseData;
+    }
+
 }
