@@ -24,8 +24,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +34,10 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2DocumentCiC;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
 
 @ExtendWith(MockitoExtension.class)
@@ -247,47 +249,5 @@ public class CaseworkerDocumentManagementRemoveTest {
         assertThat(documentMgmtResponse).isNotNull();
     }
 
-    private List<ListValue<CaseworkerCICDocument>> getDocument() {
-        List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
-        ListValue<CaseworkerCICDocument> last = listValueList.get(1);
-        listValueList.remove(last);
-        return listValueList;
-    }
 
-    private List<ListValue<CaseworkerCICDocument>> get2Document() {
-        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
-        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
-            .build();
-        ListValue<CaseworkerCICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
-        CaseworkerCICDocument doc2 = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
-            .build();
-        ListValue<CaseworkerCICDocument> list2 = new ListValue<>();
-        list2.setValue(doc2);
-        listValueList.add(list2);
-        return listValueList;
-    }
-
-
-    private List<ListValue<CICDocument>> get2DocumentCiC() {
-        List<ListValue<CICDocument>> listValueList = new ArrayList<>();
-        CICDocument doc = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
-            .build();
-        ListValue<CICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
-        CICDocument doc2 = CICDocument.builder()
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
-            .build();
-        ListValue<CICDocument> list2 = new ListValue<>();
-        list2.setValue(doc2);
-        listValueList.add(list2);
-        return listValueList;
-    }
 }

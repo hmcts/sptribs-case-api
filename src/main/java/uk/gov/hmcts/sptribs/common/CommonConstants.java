@@ -31,6 +31,7 @@ public final class CommonConstants {
     public static final String DECISION_NOTICE = "DecisionNotice";
     public static final String FINAL_DECISION_NOTICE = "FinalDecisionNotice";
     public static final String FINAL_DECISION_GUIDANCE = "FinalDecisionGuidance";
+    public static final String CASE_DOCUMENT = "CaseDocument";
     public static final String DOC_AVAILABLE = "DocumentAvailable";
     public static final String STAY_EXPIRATION_DATE = "StayExpirationDate";
     public static final String STAY_REASON = "stayStayReason";
