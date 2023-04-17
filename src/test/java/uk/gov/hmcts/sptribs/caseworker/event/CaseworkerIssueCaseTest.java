@@ -10,9 +10,14 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseAdditionalDocument;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.AdditionalDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.model.TribunalDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -22,7 +27,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +45,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWith6Elements;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_CASE;
 
 
@@ -44,6 +54,12 @@ class CaseworkerIssueCaseTest {
 
     @InjectMocks
     private CaseworkerIssueCase caseworkerIssueCase;
+
+    @InjectMocks
+    private IssueCaseAdditionalDocument issueCaseAdditionalDocument;
+
+    @InjectMocks
+    private IssueCaseSelectDocument issueCaseSelectDocument;
 
     @Mock
     private CaseIssuedNotification caseIssuedNotification;
@@ -104,5 +120,94 @@ class CaseworkerIssueCaseTest {
         assertThat(response.getData().getCaseIssue().getAdditionalDocument()).doesNotContain(AdditionalDocument.TRIBUNAL_FORM);
         assertThat(response.getData().getCicCase().getNotifyPartyApplicant()).isNotNull();
         assertThat(issuedResponse).isNotNull();
+    }
+
+    @Test
+    void shouldSendErrorOnTooManyDocuments() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        caseData.setCicCase(cicCase);
+
+        final CaseIssue caseIssue = new CaseIssue();
+        caseIssue.setAdditionalDocument(Set.of(AdditionalDocument.APPLICANT_EVIDENCE));
+        caseIssue.setDocumentList(getDynamicMultiSelectDocumentListWith6Elements());
+        caseData.setCaseIssue(caseIssue);
+
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            issueCaseSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
+
+
+        //Then
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    void shouldCreateDocumentList() {
+        //Given
+        final CaseData caseData = caseData();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .applicantDocumentsUploaded(listValueList)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        caseData.setCicCase(cicCase);
+
+        final CaseIssue caseIssue = new CaseIssue();
+        caseIssue.setAdditionalDocument(Set.of(AdditionalDocument.APPLICANT_EVIDENCE));
+        caseIssue.setTribunalDocuments(Set.of(TribunalDocuments.APPLICATION_FORM));
+        caseData.setCaseIssue(caseIssue);
+
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            issueCaseAdditionalDocument.midEvent(updatedCaseDetails, beforeDetails);
+
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCaseIssue().getDocumentList()).isNotNull();
+        assertThat(response.getData().getCaseIssue().getDocumentList().getListItems()).hasSize(1);
     }
 }

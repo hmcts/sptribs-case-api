@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DocumentManagementUtil {
+    public static final CICDocument EMPTY_DOCUMENT = new CICDocument();
+
     private DocumentManagementUtil() {
 
     }
-
-    public static final CICDocument EMPTY_DOCUMENT = new CICDocument();
 
     public static void addToRemovedDocuments(CicCase cicCase, CaseworkerCICDocument caseworkerCICDocument) {
         if (CollectionUtils.isEmpty(cicCase.getRemovedDocumentList())) {

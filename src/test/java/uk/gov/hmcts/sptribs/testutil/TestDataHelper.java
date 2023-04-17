@@ -9,6 +9,7 @@ import feign.Response;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -248,6 +249,65 @@ public class TestDataHelper {
         return DynamicList
             .builder()
             .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
+
+    public static DynamicMultiSelectList getDynamicMultiSelectDocumentListWith6Elements() {
+        List<DynamicListElement> elements = new ArrayList<>();
+        final DynamicListElement listItem0 = DynamicListElement
+            .builder()
+            .label("0--0")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem0);
+        final DynamicListElement listItem1 = DynamicListElement
+            .builder()
+            .label("1--1")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem1);
+        final DynamicListElement listItem2 = DynamicListElement
+            .builder()
+            .label("2--2")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem2);
+        final DynamicListElement listItem3 = DynamicListElement
+            .builder()
+            .label("3--3")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem3);
+        final DynamicListElement listItem4 = DynamicListElement
+            .builder()
+            .label("4--4")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem4);
+        final DynamicListElement listItem5 = DynamicListElement
+            .builder()
+            .label("1--5")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem5);
+
+        return DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build();
+    }
+
+    public static DynamicMultiSelectList getDynamicMultiSelectDocumentList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("0--0")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicMultiSelectList
+            .builder()
+            .value(List.of(listItem))
             .listItems(List.of(listItem))
             .build();
     }
