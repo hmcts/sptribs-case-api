@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseAdditionalDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -38,6 +39,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
 
     private static final CcdPageConfiguration issueCaseAdditionalDocument = new IssueCaseAdditionalDocument();
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
+    private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
 
     @Autowired
     private CaseIssuedNotification caseIssuedNotification;
@@ -56,6 +58,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(SOLICITOR));
         issueCaseAdditionalDocument.addTo(pageBuilder);
+        issueCaseSelectDocument.addTo(pageBuilder);
         issueCaseNotifyParties.addTo(pageBuilder);
     }
 
