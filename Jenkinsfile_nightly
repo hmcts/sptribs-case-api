@@ -18,7 +18,6 @@ def component = "case-api"
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aatservice.core-compute-aat.internal"
   enableSlackNotifications('#special-tribunals-builds')
-  enableSecurityScan()
   enableFortifyScan()
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
