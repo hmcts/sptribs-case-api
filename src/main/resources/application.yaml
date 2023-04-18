@@ -23,10 +23,6 @@ springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
-logging:
-  level:
-    ROOT: DEBUG
-
 azure:
   application-insights:
     instrumentation-key: ${app-insights-instrumentation-key:00000000-0000-0000-0000-000000000000}
