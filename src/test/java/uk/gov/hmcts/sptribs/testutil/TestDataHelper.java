@@ -397,7 +397,7 @@ public class TestDataHelper {
 
     public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList() {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().build())
+            .documentLink(Document.builder().filename("test.pdf").build())
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();
