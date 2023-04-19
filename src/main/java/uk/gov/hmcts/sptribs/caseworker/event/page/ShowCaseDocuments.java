@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -57,8 +58,13 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             data.getCicCase().setRemovedDocumentList(removedDocumentList);
         }
         var newCaseData = removeEvaluatedListDoc(data, oldData);
+        final List<String> errors = new ArrayList<>();
+        if (CollectionUtils.isEmpty(newCaseData.getCicCase().getRemovedDocumentList())) {
+            errors.add("Please remove at least one document to continue");
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(newCaseData)
+            .errors(errors)
             .build();
     }
 
