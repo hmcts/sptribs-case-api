@@ -264,7 +264,7 @@ dependencyManagement {
     }
 
     //CVE-2022-31692, CVE-2022-31690
-    dependencySet( group: 'org.springframework.security', version: '5.7.5'){
+    dependencySet( group: 'org.springframework.security', version: '5.8.3'){
       entry 'spring-security-core'
       entry 'spring-security-acl'
       entry 'spring-security-aspects'
@@ -399,7 +399,7 @@ dependencies {
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.32.0'
-  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:1.9.1'
+  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.0.1'
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
