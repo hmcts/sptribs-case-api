@@ -5,7 +5,7 @@
       {
         "id": "1",
         "value": {
-          "author": "Cic Casey",
+          "author": "User Test",
           "date": "${json-unit.any-string}"
         }
       }
