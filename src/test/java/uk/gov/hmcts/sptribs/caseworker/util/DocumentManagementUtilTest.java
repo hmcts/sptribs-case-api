@@ -10,10 +10,12 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocument;
@@ -87,5 +89,21 @@ public class DocumentManagementUtilTest {
         //When
         DocumentManagementUtil.checkLists(caseData, get2Document(), new ArrayList<>());
 
+    }
+
+    @Test
+    void shouldSuccessfullyBuildList() {
+        //Given
+        List<CaseworkerCICDocument> list = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+            .build();
+        list.add(doc);
+
+        //When
+        List<ListValue<CaseworkerCICDocument>> result = DocumentManagementUtil.buildListValues(list);
+
+        //Then
+        assertThat(result).isNotNull();
     }
 }
