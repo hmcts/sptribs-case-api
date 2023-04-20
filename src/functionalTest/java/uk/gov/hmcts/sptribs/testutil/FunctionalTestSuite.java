@@ -71,10 +71,6 @@ public abstract class FunctionalTestSuite {
                 .description("Create draft case for functional tests")
                 .build())
             .data(Map.of(
-//                "applicant1SolicitorName", "functional test",
-//                "applicant1LanguagePreferenceWelsh", "NO",
-//                "divorceOrDissolution", "divorce",
-//                "applicant1FinancialOrder", "NO"
             ))
             .build();
 
