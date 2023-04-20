@@ -19,7 +19,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.removeEvaluatedListDoc;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil.removeEvaluatedListDoc;
 
 public class ShowCaseDocuments implements CcdPageConfiguration {
 
