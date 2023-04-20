@@ -32,18 +32,18 @@ public enum DocumentType implements HasLabel {
     @JsonAlias({"A Docs"})
     NOTICE_OF_APPEAL("A - Notice of Appeal", "Notice of Appeal", "A"),
 
-    /*@JsonProperty("Evidence/correspondence from the Appellant")
+    @JsonProperty("Evidence/correspondence from the Appellant")
     @JsonAlias({"A Docs"})
     EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT("A - Evidence/correspondence from the Appellant",
-        "Evidence/correspondence from the Appellant", "A"),*/
+        "Evidence/correspondence from the Appellant", "A"),
 
     @JsonProperty("Correspondence from the CICA")
     @JsonAlias({"A Docs"})
     CORRESPONDENCE_FROM_THE_CICA("A - Correspondence from the CICA", "Correspondence from the CICA", "A"),
 
-    @JsonProperty("Direction decision notices")
-    @JsonAlias({"Direction decision notices", "TD"})
-    TRIBUNAL_DIRECTION("TD - Direction decision notices", "Direction decision notices", "TD"),
+    @JsonProperty("Direction / decision notices")
+    @JsonAlias({"Direction / decision notices", "TD"})
+    TRIBUNAL_DIRECTION("TD - Direction / decision notices", "Direction / decision notices", "TD"),
 
     @JsonProperty("PoliceEvidence")
     @JsonAlias({"B Docs"})
@@ -97,9 +97,9 @@ public enum DocumentType implements HasLabel {
     @JsonAlias({"E Docs"})
     CARE_PLAN("E - Care plan", "Care plan", "E"),
 
-    /*@JsonProperty("Local Authority/care records")
+    @JsonProperty("Local Authority/care records")
     @JsonAlias({"E Docs"})
-    LOCAL_AUTHORITY_CARE_RECORDS("E - Local Authority/care records", "Local Authority/care records", "E"),*/
+    LOCAL_AUTHORITY_CARE_RECORDS("E - Local Authority/care records", "Local Authority/care records", "E"),
 
     @JsonProperty("Other-E")
     @JsonAlias({"E Docs"})
