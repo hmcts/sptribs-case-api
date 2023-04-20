@@ -14,6 +14,8 @@ import java.util.List;
 
 public class IssueCaseSelectDocument implements CcdPageConfiguration {
 
+    private static final int MAX_DOCUMENT_COUNT = 5;
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
@@ -32,7 +34,7 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         DynamicMultiSelectList list = data.getCaseIssue().getDocumentList();
-        if (list.getValue().size() > 5) {
+        if (list.getValue().size() > MAX_DOCUMENT_COUNT) {
             errors.add("Select up to 5 documents");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
