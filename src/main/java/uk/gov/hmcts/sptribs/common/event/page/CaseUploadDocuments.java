@@ -12,7 +12,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
@@ -40,11 +39,10 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        List<String> errors = new ArrayList<>();
         LOG.info("Start of midEvent");
 
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
-        errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
+        List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
 
         LOG.info("End of midEvent");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
