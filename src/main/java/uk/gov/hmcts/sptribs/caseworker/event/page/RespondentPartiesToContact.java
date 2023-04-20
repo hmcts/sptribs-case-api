@@ -38,7 +38,6 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-
         if (null != data.getContactParties() && CollectionUtils.isEmpty(data.getContactParties().getRepresentativeContactParties())
             && CollectionUtils.isEmpty(data.getContactParties().getSubjectContactParties())
             && CollectionUtils.isEmpty(data.getContactParties().getTribunal())) {
