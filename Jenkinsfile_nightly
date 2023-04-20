@@ -19,7 +19,13 @@ withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aatservice.core-compute-aat.internal"
   enableSlackNotifications('#special-tribunals-builds')
   enableFortifyScan()
+  enableFullFunctionalTest()
+
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
+
+  afterAlways('fullFunctionalTest') {
+    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }
