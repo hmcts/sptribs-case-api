@@ -27,8 +27,6 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .label("LabelPartiesToContact", "")
             .complex(CaseData::getContactParties)
             .optional(ContactParties::getSubjectContactParties)
-//            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ")
-//            .optional(ContactParties::getRepresentativeContactParties, "representativeContactPartiesExists != \"YES\"")
             .optional(ContactParties::getRepresentativeContactParties)
             .optional(ContactParties::getTribunal)
             .mandatory(ContactParties::getMessage)
