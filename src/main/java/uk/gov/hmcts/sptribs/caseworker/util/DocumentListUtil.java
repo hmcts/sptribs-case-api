@@ -16,23 +16,21 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeDecisionDoc;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeFinalDecisionDoc;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.checkLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.removeOrderDoc;
-
 
 public final class DocumentListUtil {
     private DocumentListUtil() {
 
     }
-
 
     private static List<CaseworkerCICDocument> prepareList(CaseData data) {
         List<CaseworkerCICDocument> docList = new ArrayList<>();
@@ -148,22 +146,6 @@ public final class DocumentListUtil {
 
     public static List<ListValue<CaseworkerCICDocument>> getAllOrderDocuments(CicCase cicCase) {
         return buildListValues(getOrderDocuments(cicCase));
-    }
-
-    private static List<ListValue<CaseworkerCICDocument>> buildListValues(List<CaseworkerCICDocument> docList) {
-        List<ListValue<CaseworkerCICDocument>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (CaseworkerCICDocument doc : docList) {
-            var listValue = ListValue
-                .<CaseworkerCICDocument>builder()
-                .value(doc)
-                .build();
-
-            newList.add(0, listValue);
-            newList.forEach(
-                document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-        return newList;
     }
 
     public static CaseData removeEvaluatedListDoc(CaseData caseData, CaseData oldData) {
