@@ -51,12 +51,20 @@ public class DocumentRemoveListUtilTest {
             .decisionDocumentList(new ArrayList<>())
             .finalDecisionDocumentList(new ArrayList<>())
             .applicantDocumentsUploaded(getDocument())
+            .reinstateDocuments(getDocument())
             .build();
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
         caseData.setDocManagement(documentManagement);
+        CloseCase closeCase = CloseCase.builder()
+            .documents(getDocument())
+            .build();
+        caseData.setCloseCase(closeCase);
         final CaseData oldData = caseData();
-
+        CloseCase closeCaseOld = CloseCase.builder()
+            .documents(get2Document())
+            .build();
+        oldData.setCloseCase(closeCaseOld);
         CICDocument docOld = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
