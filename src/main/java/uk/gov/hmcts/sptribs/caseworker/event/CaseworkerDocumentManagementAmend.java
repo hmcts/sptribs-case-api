@@ -7,9 +7,13 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.AmendCaseDocuments;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectCaseDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
@@ -37,10 +41,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final CcdPageConfiguration selectCaseDocuments = new SelectCaseDocuments();
+    private static final CcdPageConfiguration amendCaseDocuments = new AmendCaseDocuments();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
+        PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_DOCUMENT_MANAGEMENT_AMEND)
             .forStates(Withdrawn,
                 Rejected,
@@ -59,7 +65,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .grantHistoryOnly(SOLICITOR)
             .submittedCallback(this::submitted));
 
-
+        selectCaseDocuments.addTo(pageBuilder);
+        amendCaseDocuments.addTo(pageBuilder);
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

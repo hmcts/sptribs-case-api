@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,10 +46,13 @@ public final class DocumentListUtil {
         return docList;
     }
 
-    public static DynamicMultiSelectList prepareDocumentList(final CaseData data, boolean withCaseIssueFilters) {
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data,
+                                                             boolean withCaseIssueFilters,
+                                                             Set<TribunalDocuments> tribunalDocuments,
+                                                             Set<ApplicationEvidence> applicationEvidences) {
         List<CaseworkerCICDocument> docList = prepareList(data);
         if (withCaseIssueFilters) {
-            docList = filterCaseIssue(docList, data.getCaseIssue());
+            docList = filterCaseIssue(docList, tribunalDocuments, applicationEvidences);
         }
         List<DynamicListElement> dynamicListElements = docList
             .stream()
@@ -63,16 +67,18 @@ public final class DocumentListUtil {
             .build();
     }
 
-    private static List<CaseworkerCICDocument> filterCaseIssue(List<CaseworkerCICDocument> docList, CaseIssue caseIssue) {
+    private static List<CaseworkerCICDocument> filterCaseIssue(List<CaseworkerCICDocument> docList,
+                                                               Set<TribunalDocuments> tribunalDocuments,
+                                                               Set<ApplicationEvidence> applicationEvidences) {
         List<CaseworkerCICDocument> filteredList = new ArrayList<>();
         List<DocumentType> documentTypes = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(caseIssue.getTribunalDocuments())) {
-            for (TribunalDocuments tribunalDocuments : caseIssue.getTribunalDocuments()) {
-                documentTypes.add(tribunalDocuments.getDocumentType());
+        if (!CollectionUtils.isEmpty(tribunalDocuments)) {
+            for (TribunalDocuments tribunalDocument : tribunalDocuments) {
+                documentTypes.add(tribunalDocument.getDocumentType());
             }
         }
-        if (!CollectionUtils.isEmpty(caseIssue.getApplicationEvidences())) {
-            for (ApplicationEvidence applicationEvidence : caseIssue.getApplicationEvidences()) {
+        if (!CollectionUtils.isEmpty(applicationEvidences)) {
+            for (ApplicationEvidence applicationEvidence : applicationEvidences) {
                 documentTypes.add(applicationEvidence.getDocumentType());
             }
         }
