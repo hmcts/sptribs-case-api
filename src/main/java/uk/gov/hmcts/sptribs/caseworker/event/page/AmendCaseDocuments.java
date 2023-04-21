@@ -12,8 +12,8 @@ public class AmendCaseDocuments implements CcdPageConfiguration {
 
         pageBuilder.page("amendCaseDocuments")
             .pageLabel("Amend case documents")
-            .label("LabelAmendCaseDocuments", "Amend the document details below")
-            .label("LabelAmendCaseDocumentsWarning", "")
+            .label("LabelAmendCaseDocuments", "")
+            .label("LabelAmendCaseDocumentsMessage", "Amend the document details below")
             .complex(CaseData::getDocManagement)
             .optional(DocumentManagement::getDocumentList)
             .done();

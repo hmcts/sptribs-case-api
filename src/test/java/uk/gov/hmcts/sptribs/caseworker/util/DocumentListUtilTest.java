@@ -58,7 +58,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false, Collections.emptySet(), Collections.emptySet());
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -85,7 +85,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false, Collections.emptySet(), Collections.emptySet());
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -109,7 +109,7 @@ public class DocumentListUtilTest {
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false, Collections.emptySet(), Collections.emptySet());
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -134,7 +134,7 @@ public class DocumentListUtilTest {
         caseData.setDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false, Collections.emptySet(), Collections.emptySet());
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -158,7 +158,7 @@ public class DocumentListUtilTest {
         caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false, Collections.emptySet(), Collections.emptySet());
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -243,8 +243,7 @@ public class DocumentListUtilTest {
         caseData.setCaseIssue(caseIssue);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, true,
-            Set.of(TribunalDocuments.APPLICATION_FORM), Set.of(ApplicationEvidence.APPLICATION_FOR_A_POSTPONEMENT));
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, true);
 
         //Then
         assertThat(result).isNotNull();

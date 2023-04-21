@@ -55,10 +55,11 @@ public class DocumentManagement {
     )
     private Set<TribunalDocuments> tribunalDocuments;
 
-    @CCD(typeOverride = DynamicMultiSelectList,
-        typeParameterOverride = "DynamicList",
+    @CCD(
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList documentList;
+    private List<ListValue<CaseworkerCICDocument>> documentList;
 }

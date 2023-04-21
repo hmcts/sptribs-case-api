@@ -35,8 +35,7 @@ public class IssueCaseAdditionalDocument implements CcdPageConfiguration {
         var caseData = details.getData();
         var caseIssue = caseData.getCaseIssue();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, true,
-            caseIssue.getTribunalDocuments(), caseIssue.getApplicationEvidences());
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, true);
         caseData.getCaseIssue().setDocumentList(documentList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

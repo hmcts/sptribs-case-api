@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -10,6 +11,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+
+import java.util.List;
 
 public class SelectCaseDocuments implements CcdPageConfiguration {
 
@@ -35,9 +39,10 @@ public class SelectCaseDocuments implements CcdPageConfiguration {
         var caseData = details.getData();
         var documentManagement = caseData.getDocManagement();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, true,
+        List<ListValue<CaseworkerCICDocument>> documentList = DocumentListUtil.prepareSelectedDocumentList(caseData, true,
             documentManagement.getTribunalDocuments(), documentManagement.getApplicationEvidences());
         documentManagement.setDocumentList(documentList);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
