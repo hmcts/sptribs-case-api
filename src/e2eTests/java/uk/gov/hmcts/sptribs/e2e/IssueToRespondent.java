@@ -22,7 +22,7 @@ public class IssueToRespondent extends Base {
         newCase.createCase("representative");
         newCase.buildCase();
         newCase.startNextStepAction(IssueCaseToRespondent);
-        assertThat(page.locator("h1")).hasText("Select documentation", textOptionsWithTimeout(60000));
+        assertThat(page.locator("h1")).hasText("Select additional documentation", textOptionsWithTimeout(60000));
         getCheckBoxByLabel(page, "Tribunal form").first().check();
         getCheckBoxByLabel(page, "Application form").check();
         clickButton(page, "Continue");

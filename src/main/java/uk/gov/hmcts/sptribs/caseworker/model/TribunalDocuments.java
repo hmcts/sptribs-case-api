@@ -25,9 +25,9 @@ public enum TribunalDocuments implements HasLabel {
     @JsonProperty("Notice of Appeal")
     NOTICE_OF_APPEAL("Notice of Appeal", "Notice of Appeal", DocumentType.NOTICE_OF_APPEAL),
 
-    //@JsonProperty("Evidence/correspondence from the Appellant")
-    //EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT("Evidence/correspondence from the Appellant",
-    // "Evidence/correspondence from the Appellant",DocumentType.EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT),
+    @JsonProperty("Evidence/correspondence from the Appellant")
+    EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT("Evidence/correspondence from the Appellant",
+        "Evidence/correspondence from the Appellant", DocumentType.EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT),
 
     @JsonProperty("Correspondence from the CICA")
     CORRESPONDENCE_FROM_THE_CICA("Correspondence from the CICA", "Correspondence from the CICA",
