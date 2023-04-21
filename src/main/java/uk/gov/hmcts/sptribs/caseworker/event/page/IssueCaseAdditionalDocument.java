@@ -17,12 +17,14 @@ public class IssueCaseAdditionalDocument implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("selectAdditionalDocument", this::midEvent)
-            .pageLabel("Select documentation")
+            .pageLabel("Select additional documentation")
             .label("LabelSelectAdditionalDocument", "")
             .complex(CaseData::getCaseIssue)
             .mandatory(CaseIssue::getAdditionalDocument)
-            .mandatory(CaseIssue::getTribunalDocuments, "issueCaseAdditionalDocumentCONTAINS  \"Tribunal form\"")
-            .mandatory(CaseIssue::getApplicationEvidences, "issueCaseAdditionalDocumentCONTAINS  \"Applicant evidence\"")
+            .mandatory(CaseIssue::getTribunalDocuments, "issueCaseAdditionalDocumentCONTAINS  \"Tribunal form\"",
+                "", "Tribunal form")
+            .mandatory(CaseIssue::getApplicationEvidences, "issueCaseAdditionalDocumentCONTAINS  \"Applicant evidence\"",
+                "", "Applicant evidence")
             .done();
     }
 

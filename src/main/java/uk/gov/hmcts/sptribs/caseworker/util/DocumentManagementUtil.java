@@ -68,4 +68,20 @@ public final class DocumentManagementUtil {
         }
 
     }
+
+    public static List<ListValue<CaseworkerCICDocument>> buildListValues(List<CaseworkerCICDocument> docList) {
+        List<ListValue<CaseworkerCICDocument>> newList = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
+        for (CaseworkerCICDocument doc : docList) {
+            var listValue = ListValue
+                .<CaseworkerCICDocument>builder()
+                .value(doc)
+                .build();
+
+            newList.add(0, listValue);
+            newList.forEach(
+                document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
+        }
+        return newList;
+    }
 }
