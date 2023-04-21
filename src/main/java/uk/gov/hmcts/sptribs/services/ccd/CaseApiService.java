@@ -7,10 +7,9 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.edgecase.event.EventEnum;
+import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
 import uk.gov.hmcts.sptribs.services.SystemUserService;
 
@@ -46,7 +45,7 @@ public class CaseApiService {
         );
     }
 
-    public CaseDetails updateCase(String authorization, EventEnum eventEnum, Long caseId,
+    public CaseDetails updateCase(String authorization, Event eventEnum, Long caseId,
                                   CaseData caseData, AppsConfig.AppsDetails appsDetails) {
 
         String userId = systemUserService.getUserId(authorization);
@@ -68,20 +67,20 @@ public class CaseApiService {
                                                AppsConfig.AppsDetails appsDetails) {
         return CaseDataContent.builder()
             .data(caseData)
-            .event(Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
+            .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
             .eventToken(getEventToken(authorization, userId, appsDetails.getEventIds().getCreateEvent(), appsDetails))
             .build();
     }
 
-    private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, EventEnum eventEnum,
+    private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, Event eventEnum,
                                                String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
         CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseData);
-        if (eventEnum.getEventType().equalsIgnoreCase(EventEnum.UPDATE.getEventType())) {
-            builder.event(Event.builder().id(appsDetails.getEventIds().getUpdateEvent()).build())
+        if (eventEnum.getEventType().equalsIgnoreCase(Event.UPDATE.getEventType())) {
+            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateEvent()).build())
                 .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateEvent(),
                                                    caseId, appsDetails));
-        } else if (eventEnum.getEventType().equalsIgnoreCase(EventEnum.SUBMIT.getEventType())) {
-            builder.event(Event.builder().id(appsDetails.getEventIds().getSubmitEvent()).build())
+        } else if (eventEnum.getEventType().equalsIgnoreCase(Event.SUBMIT.getEventType())) {
+            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getSubmitEvent()).build())
                 .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getSubmitEvent(),
                                                    caseId, appsDetails));
         }

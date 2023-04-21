@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EventEnum {
+public enum Event {
     SUBMIT("submit"),
     UPDATE("update");
 

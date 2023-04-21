@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.sptribs.edgecase.event.EventEnum;
+import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.services.CaseManagementService;
@@ -51,7 +51,7 @@ public class CaseManagementController {
     })
     public ResponseEntity<?> updateCase(@PathVariable final Long caseId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                        @RequestParam final EventEnum event,
+                                        @RequestParam final Event event,
                                         @RequestBody final CaseData caseData) {
 
         CaseResponse updatedCase = caseManagementService.updateCase(authorisation, event, caseData, caseId);

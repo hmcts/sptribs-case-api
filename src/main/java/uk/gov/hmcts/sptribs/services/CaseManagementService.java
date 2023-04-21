@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.edgecase.event.EventEnum;
+import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
@@ -44,7 +44,7 @@ public class CaseManagementService {
         }
     }
 
-    public CaseResponse updateCase(String authorization, EventEnum event, CaseData caseData, Long caseId) {
+    public CaseResponse updateCase(String authorization, Event event, CaseData caseData, Long caseId) {
         try {
             // Validate Case Type of application
             if (!AppsUtil.isValidCaseTypeOfApplication(appsConfig, caseData)) {
