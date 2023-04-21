@@ -130,24 +130,10 @@ public enum State {
         Draft
     ));
 
-    public static final EnumSet<State> PRE_RETURN_TO_PREVIOUS_STATES = EnumSet.complementOf(EnumSet.of(
-        Draft,
-        Withdrawn,
-        Rejected
-    ));
 
-
-    protected static final EnumSet<State> ALL_STATES = EnumSet.complementOf(EnumSet.of(
-        Draft,
-        Withdrawn,
-        Rejected,
-        Submitted,
-        NewCaseReceived,
+    public static final EnumSet<State> BUNDLE_STATES = EnumSet.complementOf(EnumSet.of(
         CaseManagement,
-        AwaitingHearing,
-        AwaitingOutcome,
-        CaseClosed,
-        CaseStayed
+        AwaitingHearing
     ));
     private final String name;
 }

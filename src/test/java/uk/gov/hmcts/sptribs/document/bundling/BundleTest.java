@@ -12,9 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class BundleTest {
@@ -30,32 +28,65 @@ class BundleTest {
 
         ListValue<Bundle> bundleDTO = mapper.readValue(mapper.treeAsTokens(firstBundle), type);
 
-        assertEquals("Bundle Title", bundleDTO.getValue().getTitle());
-        assertNull(bundleDTO.getValue().getDescription());
-        assertNotNull(bundleDTO.getValue().getStitchingFailureMessage());
-        assertNotNull(bundleDTO.getValue().getDocuments());
-        assertNotNull(bundleDTO.getValue().getFolders());
-        assertNull(bundleDTO.getValue().getId());
-        assertNotNull(bundleDTO.getValue().getDocumentImage());
-        assertNotNull(bundleDTO.getValue().getPageNumberFormat());
-        assertNotNull(bundleDTO.getValue().getPaginationStyle());
-        assertNull(bundleDTO.getValue().getStitchedDocument());
+        assertThat(bundleDTO.getValue().getTitle()).isEqualTo("Bundle Title");
+        assertThat(bundleDTO.getValue().getDescription()).isNull();
+        assertThat(bundleDTO.getValue().getStitchingFailureMessage()).isNotNull();
+        assertThat(bundleDTO.getValue().getDocuments()).isNotNull();
+        assertThat(bundleDTO.getValue().getFolders()).isNotNull();
+        assertThat(bundleDTO.getValue().getFolders().get(0).getValue().getFolders()).isNotNull();
+        assertThat(bundleDTO.getValue().getFolders().get(0).getValue().getFolders().get(0).getValue().getFolders()).isNotNull();
+        assertThat(bundleDTO.getValue().getId()).isNull();
+        assertThat(bundleDTO.getValue().getDocumentImage()).isNotNull();
+        assertThat(bundleDTO.getValue().getPageNumberFormat()).isNotNull();
+        assertThat(bundleDTO.getValue().getPaginationStyle()).isNotNull();
+        assertThat(bundleDTO.getValue().getStitchedDocument()).isNull();
+
         ListValue<BundleDocument> bundleDocumentDTO = bundleDTO.getValue().getDocuments().get(0);
-        assertEquals("firstBundle", bundleDocumentDTO.getValue().getName());
-        assertEquals("First description", bundleDocumentDTO.getValue().getDescription());
-        assertEquals(1, bundleDocumentDTO.getValue().getSortIndex());
-        assertNull(bundleDocumentDTO.getValue().getSourceDocument());
+        assertDocument(bundleDocumentDTO);
 
         ListValue<BundleFolder> bundleFolderDTO = bundleDTO.getValue().getFolders().get(0);
-        assertEquals("firstFolder", bundleFolderDTO.getValue().getName());
-        assertNull(bundleFolderDTO.getValue().getFolders());
-        assertEquals(1, bundleDocumentDTO.getValue().getSortIndex());
-        assertNull(bundleFolderDTO.getValue().getDocuments());
+        assertFolder(bundleFolderDTO, bundleDocumentDTO);
 
-        assertEquals(10, bundleDTO.getValue().getDocumentImage().getCoordinateX().intValue());
-        assertEquals(20, bundleDTO.getValue().getDocumentImage().getCoordinateY().intValue());
-        assertEquals("12345", bundleDTO.getValue().getDocumentImage().getDocmosisAssetId());
-        assertNull(bundleDTO.getValue().getDocumentImage().getImageRendering());
-        assertNull(bundleDTO.getValue().getDocumentImage().getImageRenderingLocation());
+        ListValue<BundleSubFolder> bundleSubFolderDTO = bundleFolderDTO.getValue().getFolders().get(0);
+        assertSubFolder(bundleSubFolderDTO);
+        assertSubFolder2(bundleSubFolderDTO);
+        assertDocumentImage(bundleDTO);
+
+    }
+
+    private void assertDocument(ListValue<BundleDocument> bundleDocumentDTO) {
+        assertThat(bundleDocumentDTO.getValue().getName()).isEqualTo("firstBundle");
+        assertThat(bundleDocumentDTO.getValue().getDescription()).isEqualTo("First description");
+        assertThat(bundleDocumentDTO.getValue().getSortIndex()).isEqualTo(1);
+        assertThat(bundleDocumentDTO.getValue().getSourceDocument()).isNull();
+    }
+
+    private void assertFolder(ListValue<BundleFolder> bundleFolderDTO, ListValue<BundleDocument> bundleDocumentDTO) {
+        assertThat(bundleFolderDTO.getValue().getName()).isEqualTo("firstFolder");
+        assertThat(bundleFolderDTO.getValue().getFolders()).isNotNull();
+        assertThat(bundleDocumentDTO.getValue().getSortIndex()).isEqualTo(1);
+        assertThat(bundleFolderDTO.getValue().getDocuments()).isNull();
+    }
+
+    private void assertSubFolder(ListValue<BundleSubFolder> bundleSubFolderDTO) {
+        assertThat(bundleSubFolderDTO.getValue().getName()).isEqualTo("firstSubFolder");
+        assertThat(bundleSubFolderDTO.getValue().getFolders()).isNotNull();
+        assertThat(bundleSubFolderDTO.getValue().getSortIndex()).isEqualTo(1);
+        assertThat(bundleSubFolderDTO.getValue().getDocuments()).isNull();
+    }
+
+    private void assertDocumentImage(ListValue<Bundle> bundleDTO) {
+        assertThat(bundleDTO.getValue().getDocumentImage().getCoordinateX().intValue()).isEqualTo(10);
+        assertThat(bundleDTO.getValue().getDocumentImage().getCoordinateY().intValue()).isEqualTo(20);
+        assertThat(bundleDTO.getValue().getDocumentImage().getDocmosisAssetId()).isEqualTo("12345");
+        assertThat(bundleDTO.getValue().getDocumentImage().getImageRendering()).isNull();
+        assertThat(bundleDTO.getValue().getDocumentImage().getImageRenderingLocation()).isNull();
+    }
+
+    private void assertSubFolder2(ListValue<BundleSubFolder> bundleSubFolderDTO) {
+        ListValue<BundleSubFolder2> bundleSubSubFolderDTO = bundleSubFolderDTO.getValue().getFolders().get(0);
+        assertThat(bundleSubSubFolderDTO.getValue().getName()).isEqualTo("firstSubSubFolder");
+        assertThat(bundleSubSubFolderDTO.getValue().getSortIndex()).isEqualTo(1);
+        assertThat(bundleSubSubFolderDTO.getValue().getDocuments()).isNull();
     }
 }

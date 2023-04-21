@@ -21,7 +21,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class BundleFolder {
+public class BundleSubFolder {
 
     private String name;
     @JsonUnwrapped(prefix = "documents")
@@ -31,6 +31,6 @@ public class BundleFolder {
     @JsonUnwrapped(prefix = "folders")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<BundleSubFolder>> folders = new ArrayList<>();
+    private List<ListValue<BundleSubFolder2>> folders = new ArrayList<>();
     private int sortIndex;
 }
