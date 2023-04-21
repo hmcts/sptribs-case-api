@@ -23,11 +23,9 @@ def secrets = [
   ]
 ]
 
-def pipelineConf = new AppPipelineConfig()
-pipelineConf.vaultSecrets = secrets
-
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
+  loadVaultSecrets(secrets)
   enableSlackNotifications('#special-tribunals-builds')
   enableFortifyScan()
   enableFullFunctionalTest()
