@@ -16,7 +16,7 @@ def product = "sptribs"
 def component = "case-api"
 
 withNightlyPipeline(type, product, component) {
-  env.TEST_URL = "http://sptribs-case-api-aatservice.core-compute-aat.internal"
+  env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
   enableSlackNotifications('#special-tribunals-builds')
   enableFortifyScan()
   enableFullFunctionalTest()
