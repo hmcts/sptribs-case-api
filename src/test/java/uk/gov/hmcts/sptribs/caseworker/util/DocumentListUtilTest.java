@@ -26,7 +26,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -59,6 +58,40 @@ public class DocumentListUtilTest {
         details.setData(caseData);
         //When
         DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
+
+        //Then
+        assertThat(result).isNotNull();
+
+    }
+
+    @Test
+    void shouldGenerateSelectedAmendDocList() {
+        //Given
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .tribunalDocuments(Set.of(TribunalDocuments.APPLICATION_FORM))
+            .applicationEvidences(Set.of(ApplicationEvidence.APPLICATION_FOR_A_POSTPONEMENT))
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .docManagement(documentManagement)
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+        //When
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.prepareSelectedDocumentList(caseData, true,
+            Set.of(TribunalDocuments.APPLICATION_FORM), Set.of(ApplicationEvidence.APPLICATION_FOR_A_POSTPONEMENT));
 
         //Then
         assertThat(result).isNotNull();

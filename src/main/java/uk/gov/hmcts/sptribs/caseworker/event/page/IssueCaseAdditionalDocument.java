@@ -33,7 +33,6 @@ public class IssueCaseAdditionalDocument implements CcdPageConfiguration {
         CaseDetails<CaseData, State> detailsBefore
     ) {
         var caseData = details.getData();
-        var caseIssue = caseData.getCaseIssue();
 
         DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, true);
         caseData.getCaseIssue().setDocumentList(documentList);
