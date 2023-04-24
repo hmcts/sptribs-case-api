@@ -95,12 +95,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildFlagsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("flags", "Flags")
-            .forRoles(COURT_ADMIN_CIC, SUPER_USER, DISTRICT_JUDGE_CIC)
-            .label("partyLevel", "caseFlagPartyLevelFlags!=\"\"", "Party level flags")
-            .field("caseFlagPartyLevelFlags")
-            .label("caseLevel", "caseFlagCaseLevelFlags!=\"\"", "Case level flags")
-            .field("caseFlagCaseLevelFlags");
+
     }
 
     private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
