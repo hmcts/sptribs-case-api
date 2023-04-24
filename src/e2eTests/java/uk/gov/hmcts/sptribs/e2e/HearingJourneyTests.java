@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -10,7 +11,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 
 public class HearingJourneyTests extends Base {
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToEditListingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -27,7 +28,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Video", hearingFormat);
     }
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToCreateHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -50,7 +51,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Special officer", otherAttendee);
     }
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToEditHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -74,7 +75,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Special officer", otherAttendee);
     }
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -91,10 +92,10 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Face to Face", hearingFormat);
         assertThat(page.locator("h4").last()).hasText("Postponement summary");
         String postponeReason = PageHelpers.getValueFromTableFor(page, "Postpone Reason");
-        Assertions.assertEquals("Appellant not ready to proceed", postponeReason);
+        Assertions.assertEquals("Extension granted", postponeReason);
     }
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);

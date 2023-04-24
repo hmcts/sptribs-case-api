@@ -153,11 +153,6 @@ task e2eTests(type: Test) {
   environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
-
-  retry {
-    maxRetries = 2
-    maxParallelForks = 1
-  }
 }
 
 // Invoked from CftLibConfig when booting with CCD.
@@ -399,6 +394,8 @@ dependencies {
 
   e2eTestsImplementation sourceSets.main.runtimeClasspath
   e2eTestsImplementation sourceSets.test.runtimeClasspath
+
+  e2eTestsImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.0.0'

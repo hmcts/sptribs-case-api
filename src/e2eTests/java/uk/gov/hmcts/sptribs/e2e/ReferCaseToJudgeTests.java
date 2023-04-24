@@ -1,9 +1,11 @@
 package uk.gov.hmcts.sptribs.e2e;
 
+import io.github.artsok.RepeatedIfExceptionsTest;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -14,8 +16,8 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 
-public class ReferCaseToJudge extends Base {
-    @Test
+public class ReferCaseToJudgeTests extends Base {
+    @RepeatedIfExceptionsTest
     public void caseworkerShouldAbleToReferCaseToJudge() {
         Page page = getPage();
         Login login = new Login(page);
@@ -42,7 +44,7 @@ public class ReferCaseToJudge extends Base {
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void errorInvalidCaseStatusReferCaseToJudge() {
         Page page = getPage();
         Login login = new Login(page);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.e2e;
 
+import io.github.artsok.RepeatedIfExceptionsTest;
 import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC8MEJointInstr
 
 public class CreateDraftOrderTests extends Base {
 
-    @Test
+    @RepeatedIfExceptionsTest
     void createDraftOrder() {
         Page page = getPage();
         Login login = new Login(page);

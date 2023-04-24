@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
@@ -16,7 +17,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class IssueADecisionTests extends Base {
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldIssueADecision() {
         Page page = getPage();
         Login login = new Login(page);
