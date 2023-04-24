@@ -22,7 +22,7 @@ public class FlagParties implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
-        map.put("selectFlagParties", "caseFlagFlagLevel = \"PartyLevel\"");
+        map.put("caseworkerCaseFlagSelectFlagParties", "cicCaseFlagLevel = \"PartyLevel\"");
 
         pageBuilder.page("caseworkerCaseFlagSelectFlagParties", this::midEvent)
             .label("caseworkerCaseFlagSelectFlagParties", "<h2>Where should this flag be added?\n Party Flag applied to:</h2>")
@@ -37,6 +37,9 @@ public class FlagParties implements CcdPageConfiguration {
             .readonlyWithLabel(CicCase::getApplicantFullName, " ")
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
                 "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
+            .readonly(CicCase::getRespondentName)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 
