@@ -42,7 +42,6 @@ public class CaseTypeTabTest {
         Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> cicaDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> flagBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
 
         when(configBuilder.tab("summary", "Summary")).thenReturn(summaryTabBuilder);
         when(configBuilder.tab("state", "State")).thenReturn(stateTabBuilder);
@@ -54,7 +53,6 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
         when(configBuilder.tab("cicaDetails", "CICA Details")).thenReturn(cicaDetailsTabBuilder);
         when(configBuilder.tab("caseFileView", "Case file view")).thenReturn(caseCategoryTabBuilder);
-        when(configBuilder.tab("flags", "Flags")).thenReturn(flagBuilder);
 
         //When
         caseTypeTab.configure(configBuilder);
@@ -66,7 +64,6 @@ public class CaseTypeTabTest {
         Tab<CaseData, UserRole> hearingsTab = hearingsTabBuilder.build();
         Tab<CaseData, UserRole> cicaDetailsTab = cicaDetailsTabBuilder.build();
         Tab<CaseData, UserRole> caseCategoryTab = caseCategoryTabBuilder.build();
-        Tab<CaseData, UserRole> caseFlagTab = flagBuilder.build();
 
         //Then
         assertThat(summaryTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
