@@ -14,13 +14,13 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class AdjournedReasonsPage implements CcdPageConfiguration {
+public class AdjournentReasonsPage implements CcdPageConfiguration {
 
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
-        map.put("adjournmentReason","outcome = \"Adjourned\"");
+        map.put("adjournmentReason","outcomeCONTAINS \"Adjourned\"");
         pageBuilder.page("adjournmentReason")
             .pageShowConditions(map)
             .pageLabel("Adjournment reasons")

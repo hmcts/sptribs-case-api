@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -70,9 +73,11 @@ public class HearingSummary {
 
     @CCD(
         label = "What type of decision was given at the hearing?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingOutcome",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private HearingOutcome outcome;
+    private Set<HearingOutcome> outcome;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
