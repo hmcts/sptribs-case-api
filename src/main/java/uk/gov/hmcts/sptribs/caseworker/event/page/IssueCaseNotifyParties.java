@@ -7,7 +7,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class IssueCaseNotifyParties implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "issueCaseAdditionalDocument = \"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "issueCaseDocumentList= \"ALWAYS_HIDE\"";
     private static final String RECIPIENT_LABEL = "Issue Case information recipient";
 
     @Override
