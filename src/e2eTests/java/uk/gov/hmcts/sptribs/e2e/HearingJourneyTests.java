@@ -1,9 +1,8 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import io.github.artsok.RepeatedIfExceptionsTest;
+import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;

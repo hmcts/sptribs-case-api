@@ -1,8 +1,7 @@
 package uk.gov.hmcts.sptribs.e2e;
 
-import io.github.artsok.RepeatedIfExceptionsTest;
 import com.microsoft.playwright.Page;
-import org.junit.jupiter.api.Test;
+import io.github.artsok.RepeatedIfExceptionsTest;
 
 import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC10StrikeOutWarning;
 import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC13ProFormaSummons;
