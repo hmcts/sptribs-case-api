@@ -16,16 +16,17 @@ import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RECORD_NOTIFY_PARTIES_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-properties = {"server.port=4013"})
+@SpringBootTest
 public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
 
     private static final String REQUEST_START = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-about-to-start.json";
     private static final String REQUEST_SUBMIT = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-about-to-submit.json";
     private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-submitted.json";
+    private static final String REQUEST_MID_EVENT = "classpath:request/casedata/ccd-callback-casedata.json";
 
     @Test
     public void shouldGetHearingListWhenAboutToStartCallbackIsInvoked() throws Exception {
@@ -72,6 +73,21 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(
                 "classpath:responses/response-caseworker-cancel-hearing-submitted.json"
+            )));
+    }
+
+    @Test
+    public void shouldRaiseErrorIfSubjectRepresentativeRespondentNotifyPartiesAllNull() throws Exception {
+        Map<String, Object> caseData = caseData(REQUEST_MID_EVENT);
+
+        Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(
+                "classpath:responses/response-caseworker-cancel-hearing-record-notify-parties-mid-event.json"
             )));
     }
 }
