@@ -9,7 +9,14 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.*;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CreateHearingSummary;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingAttendees;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingAttendeesRolePage;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingOutcomePage;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingRecordingUploadPage;
+import uk.gov.hmcts.sptribs.caseworker.event.page.AdjournedReasonsPage;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
@@ -19,6 +26,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
@@ -46,7 +56,9 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration adjournedReasons= new AdjournedReasonsPage();
+
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
+    Map<String, String> map = new HashMap<>();
 
     @Autowired
     private RecordListHelper recordListHelper;
@@ -81,6 +93,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         hearingRecordingUploadPage.addTo(pageBuilder);
 
     }
+
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();

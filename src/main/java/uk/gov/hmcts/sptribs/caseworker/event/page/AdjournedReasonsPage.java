@@ -20,8 +20,8 @@ public class AdjournedReasonsPage implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
-        map.put("adjournmentReasons","outcome= \"Adjourned\"");
-        pageBuilder.page("adjournmentReasons")
+        map.put("adjournmentReason","outcome = \"Adjourned\"");
+        pageBuilder.page("adjournmentReason")
             .pageShowConditions(map)
             .pageLabel("Adjournment reasons")
             .complex(CaseData::getCicCase)

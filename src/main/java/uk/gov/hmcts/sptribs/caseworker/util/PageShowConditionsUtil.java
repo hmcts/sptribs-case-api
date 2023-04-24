@@ -13,6 +13,7 @@ public final class PageShowConditionsUtil {
 
     private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " hearingSummaryExists != \"YES\"";
     private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  hearingSummaryExists = \"YES\"";
+    private static final String CREATE_SUMMARY = "outcome = \"Adjourned\"";
 
     private PageShowConditionsUtil() {
     }
@@ -48,4 +49,5 @@ public final class PageShowConditionsUtil {
         map.put("editHearingSummary", EDIT_SUMMARY_SHOW_WARNING_PAGE);
         return map;
     }
+
 }
