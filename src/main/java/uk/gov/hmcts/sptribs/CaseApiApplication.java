@@ -27,7 +27,8 @@ import javax.annotation.PostConstruct;
 
 @SpringBootApplication(
     exclude = {CoreCaseDataClientAutoConfiguration.class},
-    scanBasePackages = {"uk.gov.hmcts.ccd.sdk", "uk.gov.hmcts.sptribs"}
+    scanBasePackages = {"uk.gov.hmcts.ccd.sdk", "uk.gov.hmcts.sptribs", "uk.gov.hmcts.reform.ccd.document"}
+
 )
 @EnableFeignClients(
     clients = {

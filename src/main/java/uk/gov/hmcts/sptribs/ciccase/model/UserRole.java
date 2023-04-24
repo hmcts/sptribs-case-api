@@ -13,7 +13,6 @@ public enum UserRole implements HasRole {
     // Common User roles
     //TODO: update : SUPER_USER, SOLICITOR before prod deploy
     CITIZEN(UserRoleConstant.CITIZEN, UserRoleConstant.CASE_TYPE_PERMISSIONS_CRU),
-    ST_CIC_GENERIC(UserRoleConstant.ST_CIC_GENERIC, UserRoleConstant.CASE_TYPE_PERMISSIONS_CRU),
     SUPER_USER("caseworker-sptribs-superuser", "CRU"),
     SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     SOLICITOR("caseworker", "CRU"),
