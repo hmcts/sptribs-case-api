@@ -31,17 +31,10 @@ public final class CheckRequiredUtil {
             || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
             || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent()))
             || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
-            && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
+            && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
             || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent()))
             || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent()))
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())
-            && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative()));
+            && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent()));
     }
 
 }

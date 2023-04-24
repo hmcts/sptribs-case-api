@@ -224,5 +224,21 @@ public class CheckRequiredUtilTest {
         assertThat(result).isFalse();
     }
 
+    @Test
+    void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithRepRes() {
+        //Given
+        final CaseData caseData = new CaseData();
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        boolean result = CheckRequiredUtil.checkMultiSubjectRepresentativeApplicant(caseData);
+
+        //Then
+        assertThat(result).isTrue();
+    }
 
 }
