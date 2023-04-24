@@ -18,10 +18,8 @@ import java.time.LocalDate;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.TEST_CHANGE_STATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
@@ -38,8 +36,7 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
             .description("Test change state")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::changed)
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER)
-            .grantHistoryOnly(SOLICITOR))
+            .grant(CREATE_READ_UPDATE,SUPER_USER))
             .page("testChangeState")
             .label("testChangeState", "<H2>Test change state</H2>")
             .complex(CaseData::getCicCase)

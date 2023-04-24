@@ -13,11 +13,8 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseAdditionalDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
-import uk.gov.hmcts.sptribs.caseworker.model.AdditionalDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.caseworker.model.TribunalDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -56,9 +53,6 @@ class CaseworkerIssueCaseTest {
     private CaseworkerIssueCase caseworkerIssueCase;
 
     @InjectMocks
-    private IssueCaseAdditionalDocument issueCaseAdditionalDocument;
-
-    @InjectMocks
     private IssueCaseSelectDocument issueCaseSelectDocument;
 
     @Mock
@@ -95,7 +89,6 @@ class CaseworkerIssueCaseTest {
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
-        caseIssue.setAdditionalDocument(Set.of(AdditionalDocument.APPLICANT_EVIDENCE));
         caseData.setCaseIssue(caseIssue);
         caseData.setHyphenatedCaseRef("1234-5678-3456");
 
@@ -117,7 +110,6 @@ class CaseworkerIssueCaseTest {
         SubmittedCallbackResponse issuedResponse = caseworkerIssueCase.issued(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCaseIssue().getAdditionalDocument()).doesNotContain(AdditionalDocument.TRIBUNAL_FORM);
         assertThat(response.getData().getCicCase().getNotifyPartyApplicant()).isNotNull();
         assertThat(issuedResponse).isNotNull();
     }
@@ -139,7 +131,6 @@ class CaseworkerIssueCaseTest {
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
-        caseIssue.setAdditionalDocument(Set.of(AdditionalDocument.APPLICANT_EVIDENCE));
         caseIssue.setDocumentList(getDynamicMultiSelectDocumentListWith6Elements());
         caseData.setCaseIssue(caseIssue);
 
@@ -186,11 +177,6 @@ class CaseworkerIssueCaseTest {
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
-        final CaseIssue caseIssue = new CaseIssue();
-        caseIssue.setAdditionalDocument(Set.of(AdditionalDocument.APPLICANT_EVIDENCE));
-        caseIssue.setTribunalDocuments(Set.of(TribunalDocuments.APPLICATION_FORM));
-        caseData.setCaseIssue(caseIssue);
-
         caseData.setHyphenatedCaseRef("1234-5678-3456");
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -198,11 +184,10 @@ class CaseworkerIssueCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            issueCaseAdditionalDocument.midEvent(updatedCaseDetails, beforeDetails);
+            caseworkerIssueCase.aboutToStart(updatedCaseDetails);
 
 
         //Then

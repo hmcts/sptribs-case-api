@@ -320,7 +320,7 @@ def setFeatureFlags(environment) {
   } else if (environment =~ /aat|prod/) {
     env.CONTACT_PARTIES_FEATURE = false
     env.LINK_CASE_FEATURE = false
-    env.CASE_FLAGS_FEATURE = false
+    env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
   }
 }
