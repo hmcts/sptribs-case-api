@@ -24,7 +24,7 @@ public class ReferCaseToJudge extends Base {
     void startReferCaseToJudgeJourney() {
         page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsHearingCentreTL();
         newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
