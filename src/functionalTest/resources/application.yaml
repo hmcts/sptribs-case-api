@@ -15,8 +15,11 @@ uk:
   gov:
     notify:
       api:
-        sptribskey: dummy
+        sptribskey: ${UK_GOV_NOTIFY_API_KEY_1:dummy}
         baseUrl: https://api.notifications.service.gov.uk
+      email:
+        templatesCIC:
+          CASE_CANCEL_HEARING_EMAIL: '56ea62fa-99d0-4341-ac03-4c69732035cc'
 
 s2s:
   name: ccd_data
