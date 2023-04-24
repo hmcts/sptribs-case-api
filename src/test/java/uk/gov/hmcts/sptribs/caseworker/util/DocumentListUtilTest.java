@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public class DocumentListUtilTest {
 
-
     @Test
     void shouldGenerateDocList() {
         //Given
@@ -51,7 +50,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -78,7 +77,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -102,7 +101,7 @@ public class DocumentListUtilTest {
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -127,7 +126,7 @@ public class DocumentListUtilTest {
         caseData.setDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -151,7 +150,7 @@ public class DocumentListUtilTest {
         caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
         details.setData(caseData);
         //When
-        DynamicList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -209,6 +208,5 @@ public class DocumentListUtilTest {
         //Then
         assertThat(result).isNotNull();
     }
-
 
 }

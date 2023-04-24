@@ -4,10 +4,11 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCasetoJudge;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -15,16 +16,24 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 
 public class ReferCaseToJudgeTests extends Base {
-    @RepeatedIfExceptionsTest
-    public void caseworkerShouldAbleToReferCaseToJudge() {
-        Page page = getPage();
+
+    private Page page;
+    private Case newCase;
+
+    @BeforeEach
+    void startReferCaseToJudgeJourney() {
+        page = getPage();
         Login login = new Login(page);
         login.loginAsStTest1User();
-        Case newCase = new Case(page);
+        newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.startNextStepAction(ReferCasetoJudge);
-        assertThat(page.locator("h1")).hasText("Refer case to judge", textOptionsWithTimeout(60000));
+        newCase.startNextStepAction(Actions.ReferCaseToJudge);
+        assertThat(page.locator("h1")).hasText(Actions.ReferCaseToJudge.label, textOptionsWithTimeout(60000));
+    }
+
+    @RepeatedIfExceptionsTest
+    public void caseworkerShouldAbleToReferCaseToJudge() {
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Time extension request"));
         PageHelpers.clickButton(page, "Continue");
@@ -44,20 +53,11 @@ public class ReferCaseToJudgeTests extends Base {
 
     @RepeatedIfExceptionsTest
     public void errorInvalidCaseStatusReferCaseToJudge() {
-        Page page = getPage();
-        Login login = new Login(page);
-        login.loginAsStTest1User();
-        Case newCase = new Case(page);
-        newCase.createCase();
-        newCase.buildCase();
-        newCase.startNextStepAction(ReferCasetoJudge);
-        assertThat(page.locator("h1")).hasText("Refer case to judge", textOptionsWithTimeout(60000));
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Reinstatement request"));
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("#errors li"))
             .hasText("The case state is incompatible with the selected referral reason", textOptionsWithTimeout(30000));
-
     }
 }
 

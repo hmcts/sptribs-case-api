@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -11,13 +11,12 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
-
 
 public final class DocumentListUtil {
     private DocumentListUtil() {
@@ -37,21 +36,23 @@ public final class DocumentListUtil {
         return docList;
     }
 
-
-    public static DynamicList prepareDocumentList(final CaseData data) {
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data) {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .sorted()
-            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()).code(UUID.randomUUID()).build())
+            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
+                + "--" + doc.getDocumentLink().getUrl()
+                + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
-        return DynamicList
+        return DynamicMultiSelectList
             .builder()
             .listItems(dynamicListElements)
+            .value(new ArrayList<>())
             .build();
     }
+
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
@@ -63,7 +64,7 @@ public final class DocumentListUtil {
         return reinstateDocList;
     }
 
-    private  static List<CaseworkerCICDocument> getCaseDocs(CicCase cicCase) {
+    private static List<CaseworkerCICDocument> getCaseDocs(CicCase cicCase) {
         List<CaseworkerCICDocument> caseDocs = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getApplicantDocumentsUploaded())) {
             for (ListValue<CaseworkerCICDocument> document : cicCase.getApplicantDocumentsUploaded()) {
@@ -108,7 +109,7 @@ public final class DocumentListUtil {
         return buildListValues(getDecisionDocs(caseData));
     }
 
-    public  static List<ListValue<CaseworkerCICDocument>> getAllFinalDecisionDocuments(CaseData caseData) {
+    public static List<ListValue<CaseworkerCICDocument>> getAllFinalDecisionDocuments(CaseData caseData) {
         return buildListValues(getFinalDecisionDocs(caseData));
     }
 
@@ -116,19 +117,5 @@ public final class DocumentListUtil {
         return buildListValues(getOrderDocuments(cicCase));
     }
 
-    private static List<ListValue<CaseworkerCICDocument>> buildListValues(List<CaseworkerCICDocument> docList) {
-        List<ListValue<CaseworkerCICDocument>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (CaseworkerCICDocument doc : docList) {
-            var listValue = ListValue
-                .<CaseworkerCICDocument>builder()
-                .value(doc)
-                .build();
 
-            newList.add(0, listValue);
-            newList.forEach(
-                document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-        return newList;
-    }
 }

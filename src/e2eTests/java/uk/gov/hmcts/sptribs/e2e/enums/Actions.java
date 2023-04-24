@@ -26,8 +26,9 @@ public enum Actions {
     IssueCaseToRespondent("Case: Issue to respondent"),
     RemoveStay("Stays: Remove stay"),
     TestChangeState("Test change state"),
-    UploadDocuments("Document Management: Upload"),
-    ReferCasetoJudge("Refer case to judge");
+    ReferCaseToJudge("Refer case to judge"),
+    ReferCaseToLegalOfficer("Refer case to legal officer"),
+    UploadDocuments("Document Management: Upload");
 
     public final String label;
 
