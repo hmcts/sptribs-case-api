@@ -22,9 +22,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
@@ -48,8 +47,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
             .name("Document management: Upload")
             .description("Document management: Upload")
             .showSummary()
-            .grant(CREATE_READ_UPDATE_DELETE, ST_CIC_RESPONDENT)
-            .grantHistoryOnly(SOLICITOR)
+            .grant(CREATE_READ_UPDATE, ST_CIC_RESPONDENT)
             .submittedCallback(this::submitted));
 
         uploadCaseDocuments.addTo(pageBuilder);
