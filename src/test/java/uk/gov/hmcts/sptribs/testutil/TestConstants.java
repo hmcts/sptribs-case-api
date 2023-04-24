@@ -19,6 +19,7 @@ public final class TestConstants {
     public static final String ABOUT_TO_START_URL = "/callbacks/about-to-start";
     public static final String ABOUT_TO_SUBMIT_URL = "/callbacks/about-to-submit";
     public static final String SUBMITTED_URL = "/callbacks/submitted";
+    public static final String RECORD_NOTIFY_PARTIES_MID_EVENT_URL = "/callbacks/mid-event?page=recordListingNotifyPage";
 
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
