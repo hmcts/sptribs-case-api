@@ -31,6 +31,6 @@ public class BundleFolder {
     @JsonUnwrapped(prefix = "folders")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<BundleFolder>> folders = new ArrayList<>();
+    private List<ListValue<BundleSubFolder>> folders = new ArrayList<>();
     private int sortIndex;
 }
