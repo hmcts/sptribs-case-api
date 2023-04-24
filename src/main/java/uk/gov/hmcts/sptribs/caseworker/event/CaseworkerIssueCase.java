@@ -35,7 +35,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration issueCaseAdditionalDocument = new IssueCaseAdditionalDocument();
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
 
@@ -56,7 +55,6 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
-        issueCaseAdditionalDocument.addTo(pageBuilder);
         issueCaseSelectDocument.addTo(pageBuilder);
         issueCaseNotifyParties.addTo(pageBuilder);
     }
