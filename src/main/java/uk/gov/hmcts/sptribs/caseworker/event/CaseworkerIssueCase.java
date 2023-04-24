@@ -8,10 +8,11 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseAdditionalDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -49,6 +50,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .name("Case: Issue to respondent")
             .description("Case: Issue to respondent")
             .showSummary()
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::issued)
             .grant(CREATE_READ_UPDATE,
@@ -57,6 +59,17 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         issueCaseAdditionalDocument.addTo(pageBuilder);
         issueCaseSelectDocument.addTo(pageBuilder);
         issueCaseNotifyParties.addTo(pageBuilder);
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
+        caseData.getCaseIssue().setDocumentList(documentList);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(

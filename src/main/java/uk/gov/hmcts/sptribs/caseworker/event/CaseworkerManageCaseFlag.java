@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -45,10 +44,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER))
             .page("manageCaseFlags")
-            .label("manageCaseFlags", "Manage case Flags")
-            .complex(CaseData::getCaseFlag)
-            .label("error", "<h2>There are no flags on case to manage</h2>", "caseFlagCaseFlags =\"\"")
-            .optional(CaseFlag::getCaseFlags, "caseFlagError = \"\" ");
+            .label("manageCaseFlags", "Manage case Flags");
     }
 
 
