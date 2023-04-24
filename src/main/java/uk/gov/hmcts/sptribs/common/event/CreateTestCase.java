@@ -52,7 +52,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCasewor
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ENVIRONMENT_PROD = "prod";
-    private static final String TEST_CREATE = "caseworker-create-case";
+    public static final String TEST_CREATE = "caseworker-create-case";
     private final FeatureToggleService featureToggleService;
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();

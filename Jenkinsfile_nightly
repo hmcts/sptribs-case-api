@@ -15,11 +15,34 @@ def type = "java"
 def product = "sptribs"
 def component = "case-api"
 
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   envVariable: envVariable
+  ]
+}
+
+def secrets = [
+  'sptribs-${env}'    :[
+    secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
+    secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD')
+  ]
+]
+
 withNightlyPipeline(type, product, component) {
-  env.TEST_URL = "http://sptribs-case-api-aatservice.core-compute-aat.internal"
+  env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
+  loadVaultSecrets(secrets)
   enableSlackNotifications('#special-tribunals-builds')
   enableFortifyScan()
+  enableFullFunctionalTest()
+
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
+
+  afterAlways('fullFunctionalTest') {
+    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }
