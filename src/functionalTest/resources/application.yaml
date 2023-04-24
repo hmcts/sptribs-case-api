@@ -15,8 +15,11 @@ uk:
   gov:
     notify:
       api:
-        sptribskey: dummy
+        sptribskey: ${UK_GOV_NOTIFY_API_KEY_1:dummy}
         baseUrl: https://api.notifications.service.gov.uk
+      email:
+        templatesCIC:
+          CASE_CANCEL_HEARING_EMAIL: '56ea62fa-99d0-4341-ac03-4c69732035cc'
 
 s2s:
   name: ccd_data
@@ -37,6 +40,10 @@ idam:
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
+  client:
+    id: 'sptribs-case-api'
+    secret: ${OAUTH2_CLIENT_SECRET:dummy}
+    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
 
 s2s-authorised:
   services: ccd_data

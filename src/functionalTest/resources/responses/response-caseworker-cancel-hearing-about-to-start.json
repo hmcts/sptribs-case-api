@@ -1,0 +1,13 @@
+{
+  "data": {
+    "hyphenatedCaseRef": "1234-5678-9012-3456",
+    "cicCaseHearingList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label":"Case management - 21 Apr 2023 09:00"
+        }
+      ]
+    }
+  }
+}

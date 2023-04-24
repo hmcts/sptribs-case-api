@@ -27,7 +27,7 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .label("LabelPartiesToContact", "")
             .complex(CaseData::getContactParties)
             .optional(ContactParties::getSubjectContactParties)
-            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ")
+            .optional(ContactParties::getRepresentativeContactParties)
             .optional(ContactParties::getTribunal)
             .mandatory(ContactParties::getMessage)
             .done();
@@ -37,7 +37,6 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-
 
         if (null != data.getContactParties() && CollectionUtils.isEmpty(data.getContactParties().getRepresentativeContactParties())
             && CollectionUtils.isEmpty(data.getContactParties().getSubjectContactParties())
