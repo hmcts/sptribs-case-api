@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.edgecase.model;
+package uk.gov.hmcts.sptribs.common;
 
 public final class UserRoleConstant {
 

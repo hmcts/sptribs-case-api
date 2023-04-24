@@ -5,15 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
-import uk.gov.hmcts.sptribs.edgecase.model.State;
-import uk.gov.hmcts.sptribs.edgecase.model.UserRole;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import static uk.gov.hmcts.sptribs.edgecase.model.UserRole.CITIZEN;
-import static uk.gov.hmcts.sptribs.edgecase.model.UserRole.CREATOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.edgecase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -28,7 +28,7 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                        .getUpdateEvent())
-            .forStates(State.DRAFT, State.SUBMITTED)
+            .forStates(State.Draft, State.Submitted)
             .name("Edge case (cic)")
             .description("Application update (cic)")
             .retries(120, 120)

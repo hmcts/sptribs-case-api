@@ -52,6 +52,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
+    @CCD(
+        label = "caseTypeOfApplication",
+        access = {CaseworkerAccess.class}
+    )
+    private String caseTypeOfApplication;
+
     @JsonUnwrapped
     @Builder.Default
     @CCD(

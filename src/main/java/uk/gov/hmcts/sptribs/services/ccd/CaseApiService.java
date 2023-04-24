@@ -8,9 +8,9 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
-import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
 import uk.gov.hmcts.sptribs.services.SystemUserService;
 
 import static java.util.Objects.nonNull;

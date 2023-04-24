@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.edgecase.task;
 
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
-import uk.gov.hmcts.sptribs.edgecase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.util.function.Function;
 

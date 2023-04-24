@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.util;
 
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
 
 @NoArgsConstructor
 @SuppressWarnings("HideUtilityClassConstructor")

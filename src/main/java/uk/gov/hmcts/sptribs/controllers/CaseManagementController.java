@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
-import uk.gov.hmcts.sptribs.edgecase.model.CaseData;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.services.CaseManagementService;
 
@@ -35,8 +36,9 @@ public class CaseManagementController {
         @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public ResponseEntity<?> createCase(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                        @RequestBody final CaseData caseData) {
-
+                                        @RequestBody final DssCaseData dssCaseData) {
+        CaseData caseData = new CaseData();
+        caseData.setDssCaseData(dssCaseData);
         CaseResponse createdCase = caseManagementService.createCase(authorisation, caseData);
         return ResponseEntity.ok(createdCase);
     }
