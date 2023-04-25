@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
-import uk.gov.hmcts.sptribs.common.UserRoleConstant;
 
 @AllArgsConstructor
 @Getter
@@ -12,7 +11,6 @@ public enum UserRole implements HasRole {
 
     // Common User roles
     //TODO: update : SUPER_USER, SOLICITOR before prod deploy
-    CITIZEN(UserRoleConstant.CITIZEN, UserRoleConstant.CASE_TYPE_PERMISSIONS_CRU),
     SUPER_USER("caseworker-sptribs-superuser", "CRU"),
     SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     SOLICITOR("caseworker", "CRU"),

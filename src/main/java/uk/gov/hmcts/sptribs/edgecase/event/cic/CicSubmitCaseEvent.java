@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.edgecase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -34,7 +34,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .name("Submit case (cic)")
             .description("Applicant confirms SOT (cic)")
             .retries(120, 120)
-            .grant(CREATE_READ_UPDATE, CITIZEN)
+            .grant(CREATE_READ_UPDATE, CITIZEN_CIC)
             .aboutToSubmitCallback(this::aboutToSubmit);
     }
 
