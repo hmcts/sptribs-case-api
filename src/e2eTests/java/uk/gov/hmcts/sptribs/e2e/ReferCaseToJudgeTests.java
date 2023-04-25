@@ -2,9 +2,9 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
@@ -15,7 +15,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 
-public class ReferCaseToJudge extends Base {
+public class ReferCaseToJudgeTests extends Base {
 
     private Page page;
     private Case newCase;
@@ -32,7 +32,7 @@ public class ReferCaseToJudge extends Base {
         assertThat(page.locator("h1")).hasText(Actions.ReferCaseToJudge.label, textOptionsWithTimeout(60000));
     }
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseworkerShouldAbleToReferCaseToJudge() {
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Time extension request"));
@@ -51,7 +51,7 @@ public class ReferCaseToJudge extends Base {
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void errorInvalidCaseStatusReferCaseToJudge() {
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Reinstatement request"));

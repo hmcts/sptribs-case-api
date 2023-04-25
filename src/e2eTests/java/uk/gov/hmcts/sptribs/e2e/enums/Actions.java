@@ -27,7 +27,8 @@ public enum Actions {
     RemoveStay("Stays: Remove stay"),
     TestChangeState("Test change state"),
     ReferCaseToJudge("Refer case to judge"),
-    ReferCaseToLegalOfficer("Refer case to legal officer");
+    ReferCaseToLegalOfficer("Refer case to legal officer"),
+    UploadDocuments("Document Management: Upload");
 
     public final String label;
 
