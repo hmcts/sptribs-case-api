@@ -110,7 +110,7 @@ public class CaseIssuedNotification implements PartiesNotification {
         if (!ObjectUtils.isEmpty(caseData.getCaseIssue().getDocumentList())) {
 
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
+            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
                 uploadedDocuments,
                 TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
