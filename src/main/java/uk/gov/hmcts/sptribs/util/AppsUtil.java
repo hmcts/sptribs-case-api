@@ -9,13 +9,13 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 public class AppsUtil {
 
     public static boolean isValidCaseTypeOfApplication(AppsConfig appsConfig, CaseData caseData) {
-        return caseData.getCaseTypeOfApplication() != null && appsConfig.getApps().stream()
-            .anyMatch(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getCaseTypeOfApplication()));
+        return caseData.getDssCaseData().getCaseTypeOfApplication() != null && appsConfig.getApps().stream()
+            .anyMatch(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getDssCaseData().getCaseTypeOfApplication()));
     }
 
     public static AppsConfig.AppsDetails getExactAppsDetails(AppsConfig appsConfig, CaseData caseData) {
         return appsConfig.getApps().stream()
-            .filter(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getCaseTypeOfApplication()))
+            .filter(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getDssCaseData().getCaseTypeOfApplication()))
             .findFirst().orElse(null);
     }
 

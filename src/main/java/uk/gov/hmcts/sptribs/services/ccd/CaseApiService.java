@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
-import uk.gov.hmcts.sptribs.services.SystemUserService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import static java.util.Objects.nonNull;
 
@@ -27,12 +27,12 @@ public class CaseApiService {
     AuthTokenGenerator authTokenGenerator;
 
     @Autowired
-    SystemUserService systemUserService;
+    IdamService idamService;
 
     public CaseDetails createCase(String authorization, CaseData caseData,
                                   AppsConfig.AppsDetails appsDetails) {
 
-        String userId = systemUserService.getUserId(authorization);
+        String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
 
         return coreCaseDataApi.submitForCitizen(
             authorization,
@@ -48,7 +48,7 @@ public class CaseApiService {
     public CaseDetails updateCase(String authorization, Event eventEnum, Long caseId,
                                   CaseData caseData, AppsConfig.AppsDetails appsDetails) {
 
-        String userId = systemUserService.getUserId(authorization);
+        String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
 
         return coreCaseDataApi.submitEventForCitizen(
             authorization,
