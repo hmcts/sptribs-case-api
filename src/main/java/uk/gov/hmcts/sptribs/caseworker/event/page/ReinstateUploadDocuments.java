@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 public class ReinstateUploadDocuments implements CcdPageConfiguration {
@@ -50,7 +49,6 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
 
         if (null != documents) {
             errors.addAll(validateCaseworkerCICDocumentFormat(documents));
-            updateCategoryToCaseworkerDocument(documents);
             for (ListValue<CaseworkerCICDocument> documentListValue : data.getCicCase().getReinstateDocuments()) {
                 if (null != documentListValue.getValue().getDocumentLink()
                     && StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
