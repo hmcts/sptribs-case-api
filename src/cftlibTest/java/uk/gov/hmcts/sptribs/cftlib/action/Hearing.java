@@ -62,7 +62,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
+                new SelectOption().setLabel("East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -140,7 +140,7 @@ public class Hearing {
                 .fill("Hendon Magistrates Court, The Court House, The Hyde");
         } else {
             page.selectOption("#hearingVenues",
-                new SelectOption().setLabel("Croydon Magistrates Court-Barclay Road"));
+                new SelectOption().setLabel("East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"));
         }
         getTextBoxByLabel(page, "Room at venue (Optional)").fill("The Court Room 2");
         getTextBoxByLabel(page, "Additional instructions and directions (Optional)")
@@ -375,7 +375,7 @@ public class Hearing {
         // Fill Reasons for postponement form
         assertThat(page.locator("h1"))
             .hasText("Reasons for postponement", textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, "Appellant not ready to proceed").click();
+        getRadioButtonByLabel(page, "Extension granted").click();
         getTextBoxByLabel(page, "Enter any other important information about this postponement (Optional)")
             .fill("Lorem Ipsum is simply dummy text of the printing and typesetting industry");
         clickButton(page, "Continue");
@@ -387,7 +387,7 @@ public class Hearing {
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
         String postponeReason = getValueFromTableFor(page, "Why was the hearing postponed?");
-        Assertions.assertEquals("Appellant not ready to proceed", postponeReason);
+        Assertions.assertEquals("Extension granted", postponeReason);
         clickButton(page, "Save and continue");
 
         // Hearing postponed confirmation screen
