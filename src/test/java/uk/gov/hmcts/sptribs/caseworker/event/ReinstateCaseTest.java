@@ -77,6 +77,7 @@ class ReinstateCaseTest {
         final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
+            .documentCategory(DocumentType.APPLICATION_FORM)
             .build();
         ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
@@ -126,6 +127,7 @@ class ReinstateCaseTest {
         final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
+            .documentCategory(DocumentType.LINKED_DOCS)
             .build();
         ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);

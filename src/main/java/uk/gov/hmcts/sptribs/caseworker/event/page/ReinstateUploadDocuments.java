@@ -50,7 +50,6 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
 
         if (null != documents) {
             errors.addAll(validateCaseworkerCICDocumentFormat(documents));
-            updateCategoryToCaseworkerDocument(documents);
             for (ListValue<CaseworkerCICDocument> documentListValue : data.getCicCase().getReinstateDocuments()) {
                 if (null != documentListValue.getValue().getDocumentLink()
                     && StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
