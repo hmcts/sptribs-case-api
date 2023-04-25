@@ -18,7 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.FlagParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagTypePage;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -36,11 +36,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
@@ -79,8 +79,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .description("Create a flag")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
-            .grant(CREATE_READ_UPDATE_DELETE, COURT_ADMIN_CIC, SUPER_USER, ST_CIC_CASEWORKER)
-            .grantHistoryOnly(SOLICITOR));
+            .grant(CREATE_READ_UPDATE,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -90,31 +91,34 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-        var caseFlag = caseData.getCaseFlag();
+        var cicCase = caseData.getCicCase();
         var flag = new Flags();
         var flagDetail = new FlagDetail();
-        flagDetail.setName(caseFlag.getFlagType().getLabel());
-        flagDetail.setFlagCode(caseFlag.getFlagType().getFlagCode());
-        flagDetail.setFlagComment(caseFlag.getAdditionalDetail());
-        flagDetail.setOtherDescription(caseFlag.getOtherDescription());
+        boolean isRespondent = false;
+        flagDetail.setName(cicCase.getFlagType().getLabel());
+        flagDetail.setFlagCode(cicCase.getFlagType().getFlagCode());
+        flagDetail.setFlagComment(cicCase.getFlagAdditionalDetail());
+        flagDetail.setOtherDescription(cicCase.getFlagOtherDescription());
         flagDetail.setStatus(Status.ACTIVE.getLabel());
-        if (caseFlag.getFlagLevel().isPartyLevel()) {
+        if (cicCase.getFlagLevel().isPartyLevel()) {
             if (null != caseData.getCicCase().getNotifyPartyApplicant()
                 && !isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
                 flag.setPartyName(caseData.getCicCase().getApplicantFullName());
-                flag.setRoleOnCase(PartiesCIC.APPLICANT.getLabel());
+                flag.setRoleOnCase(NotificationParties.APPLICANT.getLabel());
             } else if (null != caseData.getCicCase().getNotifyPartySubject()
                 && !isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
                 flag.setPartyName(caseData.getCicCase().getFullName());
-                flag.setRoleOnCase(PartiesCIC.SUBJECT.getLabel());
+                flag.setRoleOnCase(NotificationParties.SUBJECT.getLabel());
             } else if (null != caseData.getCicCase().getNotifyPartyRepresentative()
                 && !isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
                 flag.setPartyName(caseData.getCicCase().getRepresentativeFullName());
-                flag.setRoleOnCase(PartiesCIC.REPRESENTATIVE.getLabel());
+                flag.setRoleOnCase(NotificationParties.REPRESENTATIVE.getLabel());
+            } else if (!isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+                flag.setPartyName(caseData.getCicCase().getRespondentName());
+                flag.setRoleOnCase(NotificationParties.RESPONDENT.getLabel());
+                isRespondent = true;
             }
         }
-        var flagDetails = new ArrayList<FlagDetail>();
-        flagDetails.add(flagDetail);
         if (isEmpty(flag.getDetails())) {
             List<ListValue<FlagDetail>> listValues = new ArrayList<>();
 
@@ -137,34 +141,16 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             flag.getDetails().add(0, listValue);
             flag.getDetails().forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
-        if (isEmpty(caseData.getCaseFlag().getCaseFlags())) {
-            List<ListValue<Flags>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<Flags>builder()
-                .id("1")
-                .value(flag)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.getCaseFlag().setCaseFlags(listValues);
+        if (cicCase.getFlagLevel().isPartyLevel()) {
+            if (isRespondent) {
+                addRespondent(caseData, flag);
+            } else {
+                addAppellantFlag(caseData, flag);
+            }
         } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<Flags>builder()
-                .value(flag)
-                .build();
-
-            caseData.getCaseFlag().getCaseFlags().add(0, listValue);
-            caseData.getCaseFlag().getCaseFlags()
-                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+            addCaseLevel(caseData, flag);
         }
 
-        caseData.getCaseFlag().setFlagLevel(null);
-        caseData.getCaseFlag().setFlagType(null);
-        caseData.getCaseFlag().setAdditionalDetail(null);
-        caseData.getCaseFlag().setOtherDescription(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -177,5 +163,83 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .confirmationHeader(format("# Case Flag created %n## This Flag has been added to case %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
+    }
+
+    private void addCaseLevel(CaseData caseData, Flags flag) {
+        if (isEmpty(caseData.getCicCase().getCaseFlags())) {
+            List<ListValue<Flags>> listValues = new ArrayList<>();
+
+            var listValue = ListValue
+                .<Flags>builder()
+                .id("1")
+                .value(flag)
+                .build();
+
+            listValues.add(listValue);
+
+            caseData.getCicCase().setCaseFlags(listValues);
+        } else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            var listValue = ListValue
+                .<Flags>builder()
+                .value(flag)
+                .build();
+
+            caseData.getCicCase().getCaseFlags().add(0, listValue);
+            caseData.getCicCase().getCaseFlags()
+                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+        }
+    }
+
+    private void addAppellantFlag(CaseData caseData, Flags flag) {
+        if (isEmpty(caseData.getCicCase().getAppellantFlags())) {
+            List<ListValue<Flags>> listValues = new ArrayList<>();
+
+            var listValue = ListValue
+                .<Flags>builder()
+                .id("1")
+                .value(flag)
+                .build();
+
+            listValues.add(listValue);
+
+            caseData.getCicCase().setAppellantFlags(listValues);
+        } else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            var listValue = ListValue
+                .<Flags>builder()
+                .value(flag)
+                .build();
+
+            caseData.getCicCase().getAppellantFlags().add(0, listValue);
+            caseData.getCicCase().getAppellantFlags()
+                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+        }
+    }
+
+    private void addRespondent(CaseData caseData, Flags flag) {
+        if (isEmpty(caseData.getCicCase().getRespondentFlags())) {
+            List<ListValue<Flags>> listValues = new ArrayList<>();
+
+            var listValue = ListValue
+                .<Flags>builder()
+                .id("1")
+                .value(flag)
+                .build();
+
+            listValues.add(listValue);
+
+            caseData.getCicCase().setRespondentFlags(listValues);
+        } else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            var listValue = ListValue
+                .<Flags>builder()
+                .value(flag)
+                .build();
+
+            caseData.getCicCase().getRespondentFlags().add(0, listValue);
+            caseData.getCicCase().getRespondentFlags()
+                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+        }
     }
 }
