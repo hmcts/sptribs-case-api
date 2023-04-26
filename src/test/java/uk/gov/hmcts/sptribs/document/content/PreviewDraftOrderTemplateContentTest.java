@@ -39,7 +39,7 @@ public class PreviewDraftOrderTemplateContentTest {
     }
 
     private CaseData buildCaseData() {
-        final CicCase cicCase = CicCase.builder().fullName("John Smith").schemeCic(SchemeCic.Year1996).build();
+        final CicCase cicCase = CicCase.builder().schemeCic(SchemeCic.Year1996).build();
 
         return CaseData.builder()
             .cicCase(cicCase)
