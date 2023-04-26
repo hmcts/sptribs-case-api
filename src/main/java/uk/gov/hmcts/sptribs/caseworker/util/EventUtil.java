@@ -104,6 +104,8 @@ public final class EventUtil {
             mainContent = DocmosisTemplateConstants.STRIKE_OUT_WARNING_MAIN_CONTENT;
         } else if (order == OrderTemplate.CIC13_PRO_FORMA_SUMMONS) {
             mainContent = DocmosisTemplateConstants.PRO_FORMA_MAIN_CONTENT;
+        } else if (order == OrderTemplate.CIC3_RULE_27) {
+            mainContent = DocmosisTemplateConstants.RULE27_MAIN_CONTENT;
         }
         return mainContent;
     }
