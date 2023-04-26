@@ -230,18 +230,6 @@ public class EventUtilTest {
 
     }
 
-    @Test
-    void shouldSuccessfullyGetOrderMainContentRule27() {
-        //Given
-        final OrderTemplate orderTemplate = OrderTemplate.CIC3_RULE_27;
-
-        //When
-        String result = EventUtil.getOrderMainContent(orderTemplate);
-
-        //Then
-        assertThat(result).isEqualTo(RULE27_MAIN_CONTENT);
-
-    }
 
     @Test
     void shouldSuccessfullyGetOrderMainContentMedicalDmiReports() {
