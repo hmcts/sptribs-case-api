@@ -9,6 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -36,6 +39,7 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
+        caseworkerDocumentManagementAmend.setCaseFileViewAndDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -71,6 +75,48 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         assertThat(midResponse).isNotNull();
+        assertThat(documentMgmtResponse).isNotNull();
+    }
+
+    @Test
+    void shouldNotConfigureMaintainLinkCaseIfFeatureFlagFalse() {
+        //Given
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        //When
+        caseworkerDocumentManagementAmend.configure(configBuilder);
+
+        //Then
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .doesNotContain(CASEWORKER_DOCUMENT_MANAGEMENT_AMEND);
+    }
+
+    @Test
+    void shouldSuccessfullyAddDocument() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .caseworkerCICDocument(getCaseworkerCICDocumentList())
+            .build();
+        caseData.setDocManagement(documentManagement);
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response).isNotNull();
         assertThat(documentMgmtResponse).isNotNull();
     }
 
