@@ -41,6 +41,7 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
+            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
             .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
                 + "--" + doc.getDocumentLink().getUrl()
                 + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
@@ -76,8 +77,8 @@ public final class DocumentListUtil {
 
     private static List<CaseworkerCICDocument> getDocumentManagementDocs(CaseData caseData) {
         List<CaseworkerCICDocument> docManagementDocs = new ArrayList<>();
-        if (null != caseData.getDocManagement() && !CollectionUtils.isEmpty(caseData.getDocManagement().getCaseworkerCICDocument())) {
-            for (ListValue<CaseworkerCICDocument> document : caseData.getDocManagement().getCaseworkerCICDocument()) {
+        if (null != caseData.getAllDocManagement() && !CollectionUtils.isEmpty(caseData.getAllDocManagement().getCaseworkerCICDocument())) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getAllDocManagement().getCaseworkerCICDocument()) {
                 docManagementDocs.add(document.getValue());
             }
         }

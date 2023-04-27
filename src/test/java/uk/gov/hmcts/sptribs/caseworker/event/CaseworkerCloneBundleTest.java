@@ -29,6 +29,7 @@ class CaseworkerCloneBundleTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
         //Given
+        caseworkerCloneBundle.setBundlingEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -38,6 +39,20 @@ class CaseworkerCloneBundleTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CLONE_BUNDLE);
+    }
+
+    @Test
+    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() throws Exception {
+        //Given
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        //When
+        caseworkerCloneBundle.configure(configBuilder);
+
+        //Then
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .doesNotContain(CLONE_BUNDLE);
     }
 
     @Test
