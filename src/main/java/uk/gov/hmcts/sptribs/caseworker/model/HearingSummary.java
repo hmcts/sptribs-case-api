@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;

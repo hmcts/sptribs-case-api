@@ -8,16 +8,14 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-
-import uk.gov.hmcts.sptribs.caseworker.event.page.AdjournentReasonsPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
+import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingAttendees;
-import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
-import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingAttendeesRolePage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingOutcomePage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingRecordingUploadPage;
-import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
+import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
@@ -47,7 +45,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration editHearingLoadingPage = new EditHearingLoadingPage();
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
-    private static final CcdPageConfiguration editAdjournedReasons= new AdjournentReasonsPage();
     private static final EditHearingSummarySelect hearingSummarySelect = new EditHearingSummarySelect();
 
     @Autowired
@@ -77,7 +74,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         hearingAttendees.addTo(pageBuilder);
         hearingAttendeesRole.addTo(pageBuilder);
         HearingOutcome.addTo(pageBuilder);
-        editAdjournedReasons.addTo(pageBuilder);
         hearingRecordingUploadPage.addTo(pageBuilder);
 
     }
