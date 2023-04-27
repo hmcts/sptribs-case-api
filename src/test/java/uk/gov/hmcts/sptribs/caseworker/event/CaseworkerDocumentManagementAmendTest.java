@@ -67,7 +67,7 @@ class CaseworkerDocumentManagementAmendTest {
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocument(getCaseworkerCICDocumentList())
             .build();
-        caseData.setDocManagement(documentManagement);
+        caseData.setAllDocManagement(documentManagement);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
