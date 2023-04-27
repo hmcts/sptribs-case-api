@@ -19,12 +19,12 @@ public final class DocumentRemoveListUtil {
         removeFinalDecisionDoc(caseData, oldData);
         var cic = caseData.getCicCase();
         removeOrderDoc(cic, oldData.getCicCase());
-        if (!CollectionUtils.isEmpty(oldData.getDocManagement().getCaseworkerCICDocument())
-            && (CollectionUtils.isEmpty(caseData.getDocManagement().getCaseworkerCICDocument())
-            || caseData.getDocManagement().getCaseworkerCICDocument().size()
-            < oldData.getDocManagement().getCaseworkerCICDocument().size())) {
-            checkLists(caseData, oldData.getDocManagement().getCaseworkerCICDocument(),
-                caseData.getDocManagement().getCaseworkerCICDocument());
+        if (!CollectionUtils.isEmpty(oldData.getAllDocManagement().getCaseworkerCICDocument())
+            && (CollectionUtils.isEmpty(caseData.getAllDocManagement().getCaseworkerCICDocument())
+            || caseData.getAllDocManagement().getCaseworkerCICDocument().size()
+            < oldData.getAllDocManagement().getCaseworkerCICDocument().size())) {
+            checkLists(caseData, oldData.getAllDocManagement().getCaseworkerCICDocument(),
+                caseData.getAllDocManagement().getCaseworkerCICDocument());
         }
         if (!CollectionUtils.isEmpty(oldData.getCloseCase().getDocuments())
             && (CollectionUtils.isEmpty(caseData.getCloseCase().getDocuments())
