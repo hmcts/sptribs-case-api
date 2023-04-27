@@ -10,8 +10,9 @@ public class FlagAdditionalInfo implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("flagAdditionalInfo")
-            .label("flagAdditionalInfo", "<h2>Add comments for this flag (Optional)\n</h2>")
+        pageBuilder.page("caseWorkerFlagAdditionalInfo")
+            .pageLabel("Add comments for this flag (Optional)")
+            .label("LabelCaseWorkerFlagAdditionalInfo", "")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getFlagAdditionalDetail)
             .done();

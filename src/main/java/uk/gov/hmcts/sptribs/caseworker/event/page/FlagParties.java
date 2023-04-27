@@ -25,21 +25,23 @@ public class FlagParties implements CcdPageConfiguration {
         map.put("caseworkerCaseFlagSelectFlagParties", "cicCaseFlagLevel = \"PartyLevel\"");
 
         pageBuilder.page("caseworkerCaseFlagSelectFlagParties", this::midEvent)
-            .label("caseworkerCaseFlagSelectFlagParties", "<h2>Where should this flag be added?\n Party Flag applied to:</h2>")
+            .pageLabel("Where should this flag be added?")
+            .label("LabelCaseworkerCaseFlagSelectFlagParties","")
             .pageShowConditions(map)
             .complex(CaseData::getCicCase)
             .readonlyWithLabel(CicCase::getFullName, " ")
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
                 "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+
+            .label("LabelCaseworkerCaseFlagSelectFlagPartiesSubject","")
             .readonlyWithLabel(CicCase::getRepresentativeFullName, " ")
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+
+            .label("LabelCaseworkerCaseFlagSelectFlagPartiesApplicant","")
             .readonlyWithLabel(CicCase::getApplicantFullName, " ")
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
                 "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
-            .readonly(CicCase::getRespondentName)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .done();
     }
 
