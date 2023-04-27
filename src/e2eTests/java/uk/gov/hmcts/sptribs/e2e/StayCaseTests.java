@@ -3,8 +3,8 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -13,10 +13,11 @@ import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseStayed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
-public class StayCase extends Base {
+public class StayCaseTests extends Base {
 
-    @Test
+
     @Order(1)
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToAddStayToCase() {
         Page page = getPage();
         Login login = new Login(page);
@@ -28,7 +29,7 @@ public class StayCase extends Base {
     }
 
     @Order(2)
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleEditStayToCase() {
         Page page = getPage();
         Login login = new Login(page);
@@ -59,7 +60,7 @@ public class StayCase extends Base {
     }
 
     @Order(3)
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseworkerShouldBeAbleToRemoveStayCase() {
         Page page = getPage();
         Login login = new Login(page);
@@ -75,6 +76,8 @@ public class StayCase extends Base {
         clickButton(page, "Save and continue");
         assertThat(page.locator("h1"))
             .hasText("Stays: Remove stay",textOptionsWithTimeout(60000));
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Stay Removed from Case", textOptionsWithTimeout(60000));
         assertThat(page.locator("h1:has-text('Stay Removed from Case')")).isVisible();
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
     }
