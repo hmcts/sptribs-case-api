@@ -5,7 +5,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-public class AmendCaseDocuments implements CcdPageConfiguration {
+public class DocumentManagementAmendDocuments implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -15,7 +15,7 @@ public class AmendCaseDocuments implements CcdPageConfiguration {
             .label("LabelAmendCaseDocuments", "")
             .label("LabelAmendCaseDocumentsMessage", "Amend the document details below")
             .complex(CaseData::getDocManagement)
-            .optional(DocumentManagement::getDocumentList)
+            .optional(DocumentManagement::getSelectedDocuments)
             .done();
     }
 }

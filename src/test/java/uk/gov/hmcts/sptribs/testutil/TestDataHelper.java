@@ -312,6 +312,19 @@ public class TestDataHelper {
             .build();
     }
 
+    public static DynamicMultiSelectList getDynamicMultiSelectDocumentListWithUUID(UUID value) {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("0--0")
+            .code(value)
+            .build();
+        return DynamicMultiSelectList
+            .builder()
+            .value(List.of(listItem))
+            .listItems(List.of(listItem))
+            .build();
+    }
+
     public static  List<ListValue<CaseworkerCICDocument>> getDocument() {
         List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
         ListValue<CaseworkerCICDocument> last = listValueList.get(1);
@@ -397,7 +410,27 @@ public class TestDataHelper {
 
     public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList() {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename("test.pdf").build())
+            .documentLink(Document.builder()
+                .filename("test.pdf")
+                .binaryUrl("http://url/")
+                .build())
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithUUID(UUID uuid) {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder()
+                .filename("test.pdf")
+                .binaryUrl("http://url/" + uuid)
+                .url("http://url/" + uuid)
+                .build())
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();

@@ -9,14 +9,14 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SelectCaseDocuments;
+import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
+import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
@@ -26,6 +26,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithUUID;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWithUUID;
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerDocumentManagementAmendTest {
@@ -34,7 +36,10 @@ class CaseworkerDocumentManagementAmendTest {
     private CaseworkerDocumentManagementAmend caseworkerDocumentManagementAmend;
 
     @InjectMocks
-    private SelectCaseDocuments selectCaseDocuments;
+    private DocumentManagementSelectDocuments selectCaseDocuments;
+
+    @InjectMocks
+    private DocumentManagementAmendDocuments amendCaseDocuments;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -57,8 +62,10 @@ class CaseworkerDocumentManagementAmendTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        UUID uuid = UUID.randomUUID();
         DocumentManagement documentManagement = DocumentManagement.builder()
-            .caseworkerCICDocument(getCaseworkerCICDocumentList())
+            .caseworkerCICDocument(getCaseworkerCICDocumentListWithUUID(uuid))
+            .documentList(getDynamicMultiSelectDocumentListWithUUID(uuid))
             .build();
         caseData.setDocManagement(documentManagement);
         beforeDetails.setData(caseData);
@@ -75,6 +82,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         assertThat(midResponse).isNotNull();
+        assertThat(midResponse.getData().getDocManagement().getSelectedDocuments()).isNotEmpty();
         assertThat(documentMgmtResponse).isNotNull();
     }
 

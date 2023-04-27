@@ -8,9 +8,11 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.AmendCaseDocuments;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SelectCaseDocuments;
+import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
+import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -28,8 +30,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
@@ -40,8 +45,9 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
 
     @Value("${feature.case-file-view-and-document-management.enabled}")
     private boolean caseFileViewAndDocumentManagementEnabled;
-    private static final CcdPageConfiguration selectCaseDocuments = new SelectCaseDocuments();
-    private static final CcdPageConfiguration amendCaseDocuments = new AmendCaseDocuments();
+
+    private static final CcdPageConfiguration selectDocuments = new DocumentManagementSelectDocuments();
+    private static final CcdPageConfiguration amendDocuments = new DocumentManagementAmendDocuments();
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (caseFileViewAndDocumentManagementEnabled) {
@@ -64,13 +70,16 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .name("Document management: Amend")
             .description("Document management: Amend")
             .showSummary()
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_SENIOR_JUDGE)
+            .aboutToStartCallback(this::aboutToStart)
+            .grant(CREATE_READ_UPDATE,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(SOLICITOR)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
-        selectCaseDocuments.addTo(pageBuilder);
-        amendCaseDocuments.addTo(pageBuilder);
+        selectDocuments.addTo(pageBuilder);
+        amendDocuments.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -85,6 +94,18 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .data(caseData)
             .build();
 
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+        var documentManagement = caseData.getDocManagement();
+
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
+        documentManagement.setDocumentList(documentList);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -53,20 +52,6 @@ public final class DocumentListUtil {
             .value(new ArrayList<>())
             .build();
     }
-
-    public static List<ListValue<CaseworkerCICDocument>> prepareSelectedDocumentList(final CaseData data,
-                                                                                     boolean withCaseIssueFilters,
-                                                                                     Set<TribunalDocuments> tribunalDocuments,
-                                                                                     Set<ApplicationEvidence> applicationEvidences) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
-        if (withCaseIssueFilters) {
-            docList = filterCaseIssue(docList, tribunalDocuments, applicationEvidences);
-        }
-
-        return buildListValues(docList);
-    }
-
-
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
