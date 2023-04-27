@@ -104,3 +104,5 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
+  bundling:
+    enabled: ${BUNDLING_FEATURE:false}

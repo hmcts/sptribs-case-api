@@ -174,7 +174,6 @@ feature:
     enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
-
 caseinfo:
   apps:
     - caseType: CriminalInjuriesCompensation
@@ -185,3 +184,5 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
+  bundling:
+    enabled: ${BUNDLING_FEATURE:false}
