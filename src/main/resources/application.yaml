@@ -121,7 +121,7 @@ docmosis:
       ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice: ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice.docx
       ST-CIC-DEC-ENG-CIC12_Decision_Annex: ST-CIC-DEC-ENG-CIC12_Decision_Annex.docx
       ST-CIC-DEC-ENG-CIC6_General_Directions: ST-CIC-DEC-ENG-CIC6_General_Directions.docx
-      ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports": ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports.docx
+      ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports: ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports.docx
       ST-CIC-DEC-ENG-CIC8_ME_Joint_Instruction: ST-CIC-DEC-ENG-CIC8_ME_Joint_Instruction.docx
       ST-CIC-DEC-ENG-CIC10_Strike_Out_Warning: ST-CIC-DEC-ENG-CIC10_Strike_Out_Warning.docx
       ST-CIC-DEC-ENG-CIC13_Pro_Forma_Summons: ST-CIC-DEC-ENG-CIC13_Pro_Forma_Summons.docx
@@ -130,6 +130,7 @@ docmosis:
       CIC8_ME_Joint_Instruction: ST-CIC-STD-ENG-CIC8_ME_Joint_Instruction.docx
       CIC10_Strike_Out_Warning: ST-CIC-STD-ENG-CIC10_Strike_Out_Warning.docx
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
+      CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
 
 doc_assembly:
