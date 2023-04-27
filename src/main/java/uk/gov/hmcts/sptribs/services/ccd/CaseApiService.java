@@ -100,7 +100,7 @@ public class CaseApiService {
         //This has to be removed
         log.info("Response of create event token: " + res.getToken());
 
-        return nonNull(res) ? res.getToken() : null;
+        return res.getToken();
     }
 
     public String getEventTokenForUpdate(String authorization, String userId, String eventId, String caseId,

@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.testutil;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 public final class TestConstants {
     public static final String TEST_SUBJECT_EMAIL = "subject2@test.com";
@@ -45,6 +47,27 @@ public final class TestConstants {
     public static final String WELSH_TEMPLATE_ID = "FL-SPTRIBS-GNO-WEL-00256.docx";
     public static final String BEARER = "Bearer ";
     public static final String FILENAME = "file-1616591401473378.pdf";
+    public static final LocalDateTime LOCAL_DATE_TIME =
+        LocalDateTime.of(2022, 2, 22, 16, 21);
+    public static final String CASE_DATA_CIC_ID = "CIC";
+    public static final String CASE_DATA_FILE_CIC = "CICCaseData.json";
+    public static final String CASE_TEST_AUTHORIZATION = "testAuth";
+    public static final String CASE_CREATE_FAILURE_MSG = "Failing while creating the case ";
+    public static final String CASE_UPDATE_FAILURE_MSG = "Failing while updating the case ";
+    public static final String CASE_FETCH_FAILURE_MSG = "Failing while fetching the case details ";
+    public static final String DOCUMENT_DELETE_FAILURE_MSG =
+        "Failing while deleting the document. The error message is ";
+    public static final String DOCUMENT_UPLOAD_FAILURE_MSG =
+        "Failing while uploading the document. The error message is ";
+    public static final String JSON_CONTENT_TYPE = "application/json";
+    public static final String JSON_FILE_TYPE = "json";
+    public static final String RESPONSE_STATUS_SUCCESS = "Success";
+    public static final String TEST_CASE_EMAIL_ADDRESS = "test1@test.com";
+    public static final String TEST_RESOURCE_NOT_FOUND = "Could not find resource in path";
+    public static final String TEST_UPDATE_CASE_EMAIL_ADDRESS = "testUpdate@test.com";
+    public static final String TEST_URL = "TestUrl";
+    public static final String TEST_USER = "TestUser";
+    public static final UUID TEST_CASE_DATA_FILE_UUID = UUID.randomUUID();
 
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")

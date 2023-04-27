@@ -1,21 +1,21 @@
 package uk.gov.hmcts.sptribs.util;
 
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 
 @NoArgsConstructor
 @SuppressWarnings("HideUtilityClassConstructor")
 public class AppsUtil {
 
-    public static boolean isValidCaseTypeOfApplication(AppsConfig appsConfig, CaseData caseData) {
-        return caseData.getDssCaseData().getCaseTypeOfApplication() != null && appsConfig.getApps().stream()
-            .anyMatch(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getDssCaseData().getCaseTypeOfApplication()));
+    public static boolean isValidCaseTypeOfApplication(AppsConfig appsConfig, DssCaseData caseData) {
+        return caseData.getCaseTypeOfApplication() != null && appsConfig.getApps().stream()
+            .anyMatch(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getCaseTypeOfApplication()));
     }
 
-    public static AppsConfig.AppsDetails getExactAppsDetails(AppsConfig appsConfig, CaseData caseData) {
+    public static AppsConfig.AppsDetails getExactAppsDetails(AppsConfig appsConfig, DssCaseData caseData) {
         return appsConfig.getApps().stream()
-            .filter(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getDssCaseData().getCaseTypeOfApplication()))
+            .filter(eachApps -> eachApps.getCaseTypeOfApplication().contains(caseData.getCaseTypeOfApplication()))
             .findFirst().orElse(null);
     }
 

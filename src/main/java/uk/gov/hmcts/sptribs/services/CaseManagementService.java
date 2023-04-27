@@ -26,13 +26,13 @@ public class CaseManagementService {
         try {
             // Validate Case Data (CHECKING CASE TYPE ALONE)
             log.info("Case data received from UI: " + caseData.toString());
-            if (!AppsUtil.isValidCaseTypeOfApplication(appsConfig, caseData)) {
+            if (!AppsUtil.isValidCaseTypeOfApplication(appsConfig, caseData.getDssCaseData())) {
                 throw new CaseCreateOrUpdateException("Invalid Case type application. Please check the request.");
             }
 
             // creating case to CCD.
             CaseDetails caseDetails = caseApiService.createCase(authorization, caseData,
-                                                                AppsUtil.getExactAppsDetails(appsConfig, caseData));
+                                                                AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData()));
             log.info("Created case details: " + caseDetails.toString());
             return CaseResponse.builder().caseData(caseDetails.getData())
                 .id(caseDetails.getId()).status("Success").build();
@@ -47,13 +47,13 @@ public class CaseManagementService {
     public CaseResponse updateCase(String authorization, Event event, CaseData caseData, Long caseId) {
         try {
             // Validate Case Type of application
-            if (!AppsUtil.isValidCaseTypeOfApplication(appsConfig, caseData)) {
+            if (!AppsUtil.isValidCaseTypeOfApplication(appsConfig, caseData.getDssCaseData())) {
                 throw new CaseCreateOrUpdateException("Invalid Case type application. Please check the request.");
             }
 
             // Updating or Submitting case to CCD..
             CaseDetails caseDetails = caseApiService.updateCase(authorization, event, caseId, caseData,
-                                                                AppsUtil.getExactAppsDetails(appsConfig, caseData));
+                                                                AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData()));
             log.info("Updated case details: " + caseDetails.toString());
             return CaseResponse.builder().caseData(caseDetails.getData())
                 .id(caseDetails.getId()).status("Success").build();
