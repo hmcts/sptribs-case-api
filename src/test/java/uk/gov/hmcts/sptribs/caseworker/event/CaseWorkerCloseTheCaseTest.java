@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.closedCaseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithInvalidFileFormat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_THE_CASE;
 
 @ExtendWith(MockitoExtension.class)
@@ -150,7 +150,7 @@ class CaseWorkerCloseTheCaseTest {
     void shouldValidateUploadedDocument() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentListWithInvalidFileFormat()).build();
+        CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentListWithFileFormat("xml")).build();
         final CaseData caseData = CaseData.builder()
             .closeCase(closeCase)
             .build();

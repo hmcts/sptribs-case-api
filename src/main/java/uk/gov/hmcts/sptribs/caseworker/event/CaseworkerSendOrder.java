@@ -189,7 +189,13 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         var cicCase = details.getData().getCicCase();
-        sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        try {
+            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Order sent %n## %s",
@@ -213,11 +219,11 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
+            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
+            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
         }
 
         //Once Notification is sent, nullify the last selected order
