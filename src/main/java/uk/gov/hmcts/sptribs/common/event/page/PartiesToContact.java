@@ -18,6 +18,7 @@ import java.util.List;
 @Component
 public class PartiesToContact implements CcdPageConfiguration {
 
+    private static final String RECIPIENT_LABEL = "Contact parties recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -26,10 +27,12 @@ public class PartiesToContact implements CcdPageConfiguration {
             .pageLabel("Which parties do you want to contact?")
             .label("LabelPartiesToContact", "")
             .complex(CaseData::getContactParties)
-            .optional(ContactParties::getSubjectContactParties)
-            .optional(ContactParties::getApplicantContactParties, "cicCaseApplicantFullName!=\"\" ")
-            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ")
-            .optional(ContactParties::getRespondent)
+            .optional(ContactParties::getSubjectContactParties, RECIPIENT_LABEL)
+            .optional(ContactParties::getApplicantContactParties,
+                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(ContactParties::getRepresentativeContactParties,
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(ContactParties::getRespondent, RECIPIENT_LABEL)
             .mandatory(ContactParties::getMessage)
             .done();
     }
