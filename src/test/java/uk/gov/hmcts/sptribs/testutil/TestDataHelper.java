@@ -10,6 +10,8 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -312,14 +314,14 @@ public class TestDataHelper {
             .build();
     }
 
-    public static  List<ListValue<CaseworkerCICDocument>> getDocument() {
+    public static List<ListValue<CaseworkerCICDocument>> getDocument() {
         List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
         ListValue<CaseworkerCICDocument> last = listValueList.get(1);
         listValueList.remove(last);
         return listValueList;
     }
 
-    public static  List<ListValue<CaseworkerCICDocument>> get2Document() {
+    public static List<ListValue<CaseworkerCICDocument>> get2Document() {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -338,7 +340,7 @@ public class TestDataHelper {
         return listValueList;
     }
 
-    public static  List<ListValue<CICDocument>> get2DocumentCiC() {
+    public static List<ListValue<CICDocument>> get2DocumentCiC() {
         List<ListValue<CICDocument>> listValueList = new ArrayList<>();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
@@ -431,5 +433,42 @@ public class TestDataHelper {
         documentListValue.setValue(document);
         documentList.add(documentListValue);
         return documentList;
+    }
+
+    public static List<ListValue<Flags>> getAppellantFlags() {
+
+        Flags appellantFlag = Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
+        ListValue<Flags> appellantFlagListValue = new ListValue<>();
+        appellantFlagListValue.setValue(appellantFlag);
+        List<ListValue<Flags>> appellantFlagList = new ArrayList<>();
+        appellantFlagList.add(appellantFlagListValue);
+        return appellantFlagList;
+    }
+
+    public static List<ListValue<Flags>> getRespondentFlags() {
+        Flags respondentFlag = Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
+        ListValue<Flags> respondentFlagListValue = new ListValue<>();
+        respondentFlagListValue.setValue(respondentFlag);
+        List<ListValue<Flags>> respondentFlagList = new ArrayList<>();
+        respondentFlagList.add(respondentFlagListValue);
+        return respondentFlagList;
+    }
+
+    public static List<ListValue<Flags>> getCaseFlags() {
+        Flags caseFlag = Flags.builder().details(getFlagDetails()).build();
+        ListValue<Flags> caseFlagListValue = new ListValue<>();
+        caseFlagListValue.setValue(caseFlag);
+        List<ListValue<Flags>> caseFlagList = new ArrayList<>();
+        caseFlagList.add(caseFlagListValue);
+        return caseFlagList;
+    }
+
+    public static List<ListValue<FlagDetail>> getFlagDetails() {
+        FlagDetail flagDetail = FlagDetail.builder().flagCode("1").build();
+        ListValue<FlagDetail> flagDetailListValue = new ListValue<>();
+        flagDetailListValue.setValue(flagDetail);
+        List<ListValue<FlagDetail>> flagDetailList = new ArrayList<>();
+        flagDetailList.add(flagDetailListValue);
+        return flagDetailList;
     }
 }
