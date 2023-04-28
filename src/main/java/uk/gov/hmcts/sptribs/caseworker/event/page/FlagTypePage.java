@@ -10,8 +10,9 @@ public class FlagTypePage implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("selectFlagType")
-            .label("selectFlagType", "<h2>Select flag type\n</h2>")
+        pageBuilder.page("caseWorkerCaseFLagSelectFlagType")
+            .pageLabel("Select flag type")
+            .label("LabelCaseWorkerCaseFLagSelectFlagType", "")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getFlagType)
             .mandatory(CicCase::getFlagOtherDescription, "cicCaseFlagType = \"Other\"")
