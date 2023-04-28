@@ -13,8 +13,6 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
-import static java.util.Objects.nonNull;
-
 @Service
 @Slf4j
 @SuppressWarnings("PMD")
@@ -28,6 +26,7 @@ public class CaseApiService {
 
     @Autowired
     IdamService idamService;
+
 
     public CaseDetails createCase(String authorization, CaseData caseData,
                                   AppsConfig.AppsDetails appsDetails) {
@@ -116,7 +115,7 @@ public class CaseApiService {
         //This has to be removed
         log.info("Response of update event token: " + res.getToken());
 
-        return nonNull(res) ? res.getToken() : null;
+        return res.getToken();
     }
 
     public CaseDetails getCaseDetails(String authorization, Long caseId) {
