@@ -163,6 +163,12 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
+        label = "",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList flagDynamicList;
+
+    @CCD(
         label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
