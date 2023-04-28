@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithInvalidFileFormat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentUtilTest {
@@ -56,9 +56,19 @@ class DocumentUtilTest {
     }
 
     @Test
-    void shouldValidateCaseworkerCICDocumentFormat() {
+    void shouldValidateCaseworkerCICDocumentFormatValid() {
         //When
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithInvalidFileFormat();
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("docx");
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldValidateCaseworkerCICDocumentFormatInvalid() {
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("xml");
         List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
 
         //Then
