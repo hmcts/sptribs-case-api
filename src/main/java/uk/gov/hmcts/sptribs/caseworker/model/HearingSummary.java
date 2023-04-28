@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -70,9 +71,11 @@ public class HearingSummary {
 
     @CCD(
         label = "What type of decision was given at the hearing?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingOutcome",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private HearingOutcome outcome;
+    private Set<HearingOutcome> outcome;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
