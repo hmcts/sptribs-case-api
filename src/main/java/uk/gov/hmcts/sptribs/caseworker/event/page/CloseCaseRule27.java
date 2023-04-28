@@ -8,8 +8,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloseCaseConcessionDetails implements CcdPageConfiguration {
-
+public class CloseCaseRule27 implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
@@ -19,11 +18,11 @@ public class CloseCaseConcessionDetails implements CcdPageConfiguration {
         map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConcession\"");
         map.put("closeCaseConsentOrder", "closeCloseCaseReason = \"consentOrder\"");
         map.put("closeCaseRule27", "closeCloseCaseReason = \"rule27\"");
-        pageBuilder.page("closeCaseConcessionDetails")
-            .pageLabel("Concession details")
+        pageBuilder.page("closeCaseRule27")
+            .pageLabel("Rule 27 details")
             .pageShowConditions(map)
             .complex(CaseData::getCloseCase)
-            .mandatory(CloseCase::getConcessionDate)
+            .mandatory(CloseCase::getRule27DecisionDate)
             .done();
     }
 }
