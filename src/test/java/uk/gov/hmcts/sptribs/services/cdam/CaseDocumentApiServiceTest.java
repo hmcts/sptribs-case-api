@@ -13,9 +13,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.cdam.model.Classification;
-import uk.gov.hmcts.sptribs.cdam.model.Document;
-import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 
@@ -43,7 +44,7 @@ class CaseDocumentApiServiceTest {
     CaseDocumentApiService caseDocumentApiService;
 
     @Mock
-    DssCaseDocumentClient caseDocumentClient;
+    CaseDocumentClient caseDocumentClient;
 
     @Mock
     AuthTokenGenerator authTokenGenerator;
@@ -54,7 +55,7 @@ class CaseDocumentApiServiceTest {
     }
 
     @Test
-    void testUploadDocuments() throws Exception {
+    void testFgmUpdateCaseDocumentService() throws Exception {
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
         MockMultipartFile multipartFile = new MockMultipartFile(
@@ -71,17 +72,18 @@ class CaseDocumentApiServiceTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
         Document.Links links = new Document.Links();
-        links.binary = new Document.DocumentLink();
-        links.self = new Document.DocumentLink();
+        links.binary = new Document.Link();
+        links.self = new Document.Link();
         links.binary.href = "binaryUrl";
         links.self.href = "selfURL";
 
-        Document document = new Document();
-        document.setClassification(Classification.RESTRICTED);
-        document.setOriginalDocumentName(CASE_DATA_FILE_CIC);
-        document.setHashToken("SomeToken");
-        document.setSize(caseDataJson.getBytes().length);
-        document.setMimeType(JSON_CONTENT_TYPE);
+        Document document = Document.builder()
+            .classification(Classification.RESTRICTED)
+            .originalDocumentName(CASE_DATA_FILE_CIC)
+            .hashToken("SomeToken")
+            .size(caseDataJson.getBytes().length)
+            .mimeType(JSON_CONTENT_TYPE)
+            .build();
 
         document.links = links;
 
@@ -98,8 +100,7 @@ class CaseDocumentApiServiceTest {
         eventsConfig.setUpdateEvent("citizen-prl-update-dss-application");
         appsDetails.setEventIds(eventsConfig);
 
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setDocuments(documents);
+        UploadResponse uploadResponse = new UploadResponse(documents);
 
         when(caseDocumentClient.uploadDocuments(
             CASE_TEST_AUTHORIZATION,

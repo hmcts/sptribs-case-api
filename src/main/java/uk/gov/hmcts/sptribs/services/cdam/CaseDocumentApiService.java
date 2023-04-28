@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.cdam.model.Document;
-import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClient;
+import uk.gov.hmcts.reform.ccd.document.am.model.Document;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 
@@ -20,14 +21,14 @@ public class CaseDocumentApiService {
     AuthTokenGenerator authTokenGenerator;
 
     @Autowired
-    DssCaseDocumentClient dssCaseDocumentClient;
+    CaseDocumentClient caseDocumentClient;
 
     public DocumentInfo uploadDocument(String authorizationToken, MultipartFile file,
                                        AppsConfig.AppsDetails appsDetails) {
 
         String serviceAuthToken = authTokenGenerator.generate();
 
-        UploadResponse uploadResponse = dssCaseDocumentClient.uploadDocuments(
+        UploadResponse uploadResponse = caseDocumentClient.uploadDocuments(
             authorizationToken,
             serviceAuthToken,
             appsDetails.getCaseType(),
@@ -48,7 +49,7 @@ public class CaseDocumentApiService {
     }
 
     public void deleteDocument(String authorizationToken, String documentId) {
-        dssCaseDocumentClient.deleteDocument(
+        caseDocumentClient.deleteDocument(
             authorizationToken,
             authTokenGenerator.generate(),
             UUID.fromString(documentId),
