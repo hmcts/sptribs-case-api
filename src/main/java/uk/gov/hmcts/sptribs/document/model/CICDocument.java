@@ -39,7 +39,7 @@ public class CICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        String regex = ".pdf,.tif,.tiff,.jpg,.jpeg,.png,.mp3";
+        String regex = ".pdf,.tif,.tiff,.jpg,.jpeg,.png,.mp3,.mp4";
         String fileName = this.documentLink.getFilename();
         String fileExtension = StringUtils.substringAfter(fileName, ".");
 
