@@ -10,8 +10,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -92,12 +94,14 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                       CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
+        final CaseData caseData = details.getData();
         final List<String> errors = new ArrayList<>();
 
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
+        caseData.getContactParties().setDocumentList(documentList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
+            .data(caseData)
             .errors(errors)
             .build();
     }

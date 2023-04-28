@@ -4,6 +4,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -24,8 +25,8 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             .label("LabelContactPartiesSelectDocument", "Select a case document to include with this message(Optional)")
             .label("LabelContactPartiesSelectDocumentNote",
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf and MS Word Document file")
-            .complex(CaseData::getCaseIssue)
-            .optional(CaseIssue::getDocumentList)
+            .complex(CaseData::getContactParties)
+            .optional(ContactParties::getDocumentList)
             .done();
     }
 
