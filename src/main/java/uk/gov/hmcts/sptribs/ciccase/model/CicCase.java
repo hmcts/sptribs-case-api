@@ -120,6 +120,7 @@ public class CicCase {
     private ComponentLauncher flagLauncher;
 
     @CCD(
+        label = "Flag Type",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private FlagType flagType;
