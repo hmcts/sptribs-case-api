@@ -93,6 +93,8 @@ feature:
     enabled: ${CASE_FLAGS_FEATURE:false}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
+  bundling:
+    enabled: ${BUNDLING_FEATURE:false}
 
 caseinfo:
   apps:
@@ -104,5 +106,4 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
-  bundling:
-    enabled: ${BUNDLING_FEATURE:false}
+
