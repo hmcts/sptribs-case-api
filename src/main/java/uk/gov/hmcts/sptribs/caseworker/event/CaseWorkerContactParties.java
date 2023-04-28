@@ -84,6 +84,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                 .name("Case: Contact parties")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
+                .aboutToStartCallback(this::aboutToStart)
                 .submittedCallback(this::partiesContacted)
                 .grant(CREATE_READ_UPDATE,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -92,13 +93,21 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         contactPartiesSelectDocument.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                      CaseDetails<CaseData, State> detailsBefore) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        final List<String> errors = new ArrayList<>();
 
         DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
-        caseData.getContactParties().setDocumentList(documentList);
+        caseData.getContactPartiesDocuments().setDocumentList(documentList);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData caseData = details.getData();
+        final List<String> errors = new ArrayList<>();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

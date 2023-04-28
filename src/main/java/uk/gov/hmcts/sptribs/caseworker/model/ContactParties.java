@@ -1,12 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
@@ -17,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.Set;
 
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.DynamicMultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -70,11 +67,4 @@ public class ContactParties {
     )
     private String message;
 
-
-    @CCD(typeOverride = DynamicMultiSelectList,
-        typeParameterOverride = "DynamicList",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private DynamicMultiSelectList documentList;
 }

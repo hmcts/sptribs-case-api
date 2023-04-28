@@ -3,7 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -24,8 +24,8 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             .label("LabelContactPartiesSelectDocument", "Select a case document to include with this message(Optional)")
             .label("LabelContactPartiesSelectDocumentNote",
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf and MS Word Document file")
-            .complex(CaseData::getContactParties)
-            .optional(ContactParties::getDocumentList)
+            .complex(CaseData::getContactPartiesDocuments)
+            .optional(ContactPartiesDocuments::getDocumentList)
             .done();
     }
 
@@ -34,7 +34,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        DynamicMultiSelectList list = data.getCaseIssue().getDocumentList();
+        DynamicMultiSelectList list = data.getContactPartiesDocuments().getDocumentList();
         if (list.getValue().size() > MAX_DOCUMENT_COUNT) {
             errors.add("Select up to 10 documents");
         }
