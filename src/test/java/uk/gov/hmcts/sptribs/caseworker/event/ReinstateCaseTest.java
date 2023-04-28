@@ -176,7 +176,7 @@ class ReinstateCaseTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CaseworkerCICDocument document = new CaseworkerCICDocument();
         document.setDocumentCategory(DocumentType.CARE_PLAN);
-        document.setDocumentLink(Document.builder().binaryUrl("url").filename("file.txt").build());
+        document.setDocumentLink(Document.builder().binaryUrl("url").filename("file.xml").build());
         ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
