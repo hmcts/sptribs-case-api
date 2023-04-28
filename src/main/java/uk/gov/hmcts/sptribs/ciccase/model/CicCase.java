@@ -142,6 +142,7 @@ public class CicCase {
     private ComponentLauncher flagLauncher;
 
     @CCD(
+        label = "Flag Type",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private FlagType flagType;
@@ -182,6 +183,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList draftOrderDynamicList;
+
+    @CCD(
+        label = "",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList flagDynamicList;
 
     @CCD(
         label = "Template",

@@ -5,15 +5,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-public class FlagAdditionalInfo implements CcdPageConfiguration {
+
+public class ManageFlagShowList implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("flagAdditionalInfo")
-            .pageLabel("Add comments for this flag (Optional)")
+        pageBuilder.page("caseworkerManageFlagSelect")
+            .pageLabel("Select case flag")
+            .label("LabelCaseworkerManageFlagSelect", "")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getFlagAdditionalDetail)
+            .mandatory(CicCase::getFlagDynamicList)
+            .label("error", "<h2>There are no flags on case to manage</h2>", "cicCaseFlagDynamicList =\"\"")
             .done();
+
     }
 }
