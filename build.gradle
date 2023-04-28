@@ -536,7 +536,7 @@ cftlibTest {
 }
 
 // exclude the logback binding is coming in via cftlib
-configurations.cftlibTestImplementation {
+configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
