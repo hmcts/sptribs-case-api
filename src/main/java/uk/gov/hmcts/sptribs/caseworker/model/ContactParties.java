@@ -76,5 +76,5 @@ public class ContactParties {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList documentList;
+    private DynamicMultiSelectList documentList;
 }
