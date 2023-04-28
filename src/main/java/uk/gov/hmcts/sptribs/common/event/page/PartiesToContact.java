@@ -27,12 +27,12 @@ public class PartiesToContact implements CcdPageConfiguration {
             .pageLabel("Which parties do you want to contact?")
             .label("LabelPartiesToContact", "")
             .complex(CaseData::getContactParties)
-            .optional(ContactParties::getSubjectContactParties, RECIPIENT_LABEL)
-            .optional(ContactParties::getApplicantContactParties,
+            .optionalWithLabel(ContactParties::getSubjectContactParties, RECIPIENT_LABEL)
+            .optionalWithoutDefaultValue(ContactParties::getApplicantContactParties,
                 "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
-            .optional(ContactParties::getRepresentativeContactParties,
+            .optionalWithoutDefaultValue(ContactParties::getRepresentativeContactParties,
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
-            .optional(ContactParties::getRespondent, RECIPIENT_LABEL)
+            .optionalWithLabel(ContactParties::getRespondent, RECIPIENT_LABEL)
             .mandatory(ContactParties::getMessage)
             .done();
     }
