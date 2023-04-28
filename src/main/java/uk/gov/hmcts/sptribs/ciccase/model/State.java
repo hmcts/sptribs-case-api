@@ -118,7 +118,15 @@ public enum State {
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
-    ConsentOrder("ConsentOrder");
+    ConsentOrder("ConsentOrder"),
+
+    @CCD(
+        label = "Rule 27",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    Rule27("Rule27");
+
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
