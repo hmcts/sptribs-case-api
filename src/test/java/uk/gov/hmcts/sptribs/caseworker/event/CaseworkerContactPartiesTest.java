@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -10,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
@@ -19,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
+import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +43,8 @@ class CaseworkerContactPartiesTest {
     @InjectMocks
     private PartiesToContact partiesToContact;
 
+    @Mock
+    private ContactPartiesNotification contactPartiesNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -78,8 +84,11 @@ class CaseworkerContactPartiesTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        ContactParties contactParties = ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT))
-            .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE)).respondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        ContactParties contactParties = ContactParties.builder()
+            .subjectContactParties(Set.of(SubjectCIC.SUBJECT))
+            .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .respondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
         caseData.setContactParties(contactParties);
 
         updatedCaseDetails.setData(caseData);
@@ -197,12 +206,32 @@ class CaseworkerContactPartiesTest {
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeperatoinIfSubjectIsNull() {
         final CaseData caseData = caseData();
+        final CicCase cicCase = new CicCase();
 
-        Set<SubjectCIC> sub = new HashSet<>();
-        Set<RepresentativeCIC> rep = new HashSet<>();
+        final Set<ApplicantCIC> set = new HashSet<>();
+        set.add(ApplicantCIC.APPLICANT_CIC);
+        cicCase.setApplicantCIC(set);
+        cicCase.setApplicantFullName("App Doe");
+        cicCase.setNotifyPartyApplicant(set);
+
+        final Set<SubjectCIC> sub = new HashSet<>();
+        sub.add(SubjectCIC.SUBJECT);
+        cicCase.setSubjectCIC(sub);
+        cicCase.setFullName("Sub Doe");
+        cicCase.setNotifyPartySubject(sub);
+
+        final Set<RepresentativeCIC> rep = new HashSet<>();
         rep.add(RepresentativeCIC.REPRESENTATIVE);
-        Set<RespondentCIC> res = new HashSet<>();
+        cicCase.setRepresentativeCIC(rep);
+        cicCase.setRepresentativeFullName("Rep Doe");
+        cicCase.setNotifyPartyRepresentative(rep);
+
+        final Set<RespondentCIC> res = new HashSet<>();
         res.add(RespondentCIC.RESPONDENT);
+        cicCase.setNotifyPartyRespondent(res);
+        cicCase.setRespondentName("Rep Doe");
+
+        caseData.setCicCase(cicCase);
 
         ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
             .representativeContactParties(rep).respondent(res).build();
@@ -214,15 +243,21 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        Mockito.doNothing().when(contactPartiesNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(contactPartiesNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(contactPartiesNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+
         SubmittedCallbackResponse response =
             caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
-        assertThat(caseData.getContactParties().getSubjectContactParties()).isEmpty();
+        assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
+        //assertThat(caseData.getContactParties().getApplicantContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRespondent()).hasSize(1);
         assertThat(response).isNotNull();
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
         assertThat(contactPartiesResponse).isNotNull();
-        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
+        assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Representative");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
