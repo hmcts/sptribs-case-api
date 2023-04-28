@@ -20,21 +20,16 @@ public final class CheckRequiredUtil {
         return null != data.getCicCase()
             && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
             && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent());
+            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant());
 
     }
 
     public static boolean checkMultiSubjectRepresentativeApplicant(CaseData data) {
         return !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
             && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent()))
+            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative()))
             || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
-            && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent()))
-            || !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent()));
+            &&  !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative());
     }
 
 }
