@@ -366,6 +366,7 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
   }
 
+  implementation 'io.swagger:swagger-annotations:1.5.0'
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
   implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.17'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.2'
@@ -571,7 +572,7 @@ cftlibTest {
 }
 
 // exclude the logback binding is coming in via cftlib
-configurations.cftlibTestImplementation {
+configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
