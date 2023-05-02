@@ -150,7 +150,7 @@ task e2eTests(type: Test) {
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
-  environment 'BROWSER', 'msedge'
+  environment 'BROWSER', 'firefox'
   environment 'CI', 'true'
 }
 
