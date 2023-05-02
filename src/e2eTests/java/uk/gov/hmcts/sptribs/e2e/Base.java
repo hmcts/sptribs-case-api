@@ -42,7 +42,7 @@ public abstract class Base {
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
 
         switch (browserType) {
-            case "msedge", "chrome" -> browser = playwright.chromium().launch(launchOptions.setChannel(browserType));
+            case "msedge-dev", "chrome" -> browser = playwright.chromium().launch(launchOptions.setChannel(browserType));
             case "firefox" -> browser = playwright.firefox().launch(launchOptions);
             case "webkit" -> browser = playwright.webkit().launch(launchOptions);
             default -> browser = playwright.chromium().launch(launchOptions);
