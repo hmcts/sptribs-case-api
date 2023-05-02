@@ -27,7 +27,7 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
             .pageLabel("Select documents")
             .label("LabelSelectCaseDocuments", "")
             .label("LabelSelectCaseDocumentsWarning", "")
-            .complex(CaseData::getDocManagement)
+            .complex(CaseData::getNewDocManagement)
             .optional(DocumentManagement::getDocumentList)
             .done();
     }
@@ -46,15 +46,15 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
     }
 
     private void updateSelectedDocuments(CaseData data) {
-        DynamicMultiSelectList documentList = data.getDocManagement().getDocumentList();
+        DynamicMultiSelectList documentList = data.getNewDocManagement().getDocumentList();
         if (!ObjectUtils.isEmpty(documentList.getValue()) && documentList.getValue().size() > 0) {
             List<DynamicListElement> documents = documentList.getValue();
             List<String> selectedDocumentUUIds = documents.stream().map(e -> e.getCode().toString()).collect(Collectors.toList());
-            List<ListValue<CaseworkerCICDocument>> caseDocuments = data.getDocManagement().getCaseworkerCICDocument();
+            List<ListValue<CaseworkerCICDocument>> caseDocuments = data.getNewDocManagement().getCaseworkerCICDocument();
 
             List<ListValue<CaseworkerCICDocument>> selectedDocumentList =
                 getSelectedCaseworkerCICDocumentList(caseDocuments, selectedDocumentUUIds);
-            data.getDocManagement().setSelectedDocuments(selectedDocumentList);
+            data.getNewDocManagement().setSelectedDocuments(selectedDocumentList);
 
         }
     }

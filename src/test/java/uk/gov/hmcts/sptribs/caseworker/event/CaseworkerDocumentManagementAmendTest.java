@@ -67,7 +67,7 @@ class CaseworkerDocumentManagementAmendTest {
             .caseworkerCICDocument(getCaseworkerCICDocumentListWithUUID(uuid))
             .documentList(getDynamicMultiSelectDocumentListWithUUID(uuid))
             .build();
-        caseData.setDocManagement(documentManagement);
+        caseData.setNewDocManagement(documentManagement);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -82,7 +82,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         assertThat(midResponse).isNotNull();
-        assertThat(midResponse.getData().getDocManagement().getSelectedDocuments()).isNotEmpty();
+        assertThat(midResponse.getData().getNewDocManagement().getSelectedDocuments()).isNotEmpty();
         assertThat(documentMgmtResponse).isNotNull();
     }
 
@@ -109,7 +109,7 @@ class CaseworkerDocumentManagementAmendTest {
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocument(getCaseworkerCICDocumentList())
             .build();
-        caseData.setDocManagement(documentManagement);
+        caseData.setAllDocManagement(documentManagement);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);

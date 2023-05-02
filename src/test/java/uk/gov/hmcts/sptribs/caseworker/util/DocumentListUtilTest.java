@@ -76,7 +76,7 @@ public class DocumentListUtilTest {
         DocumentManagement documentManagement = DocumentManagement.builder()
             .build();
         final CaseData caseData = CaseData.builder()
-            .docManagement(documentManagement)
+            .newDocManagement(documentManagement)
             .build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
@@ -153,7 +153,7 @@ public class DocumentListUtilTest {
         list.setValue(doc);
         listValueList.add(list);
         final CaseData caseData = CaseData.builder().build();
-        caseData.setDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
+        caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
         //When
         DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
