@@ -117,7 +117,12 @@ public class CicCase {
 
     @JsonUnwrapped(prefix = "flagLauncher")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+
     private ComponentLauncher flagLauncher;
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Flags selectedFlag;
 
     @CCD(
         label = "Flag Type",

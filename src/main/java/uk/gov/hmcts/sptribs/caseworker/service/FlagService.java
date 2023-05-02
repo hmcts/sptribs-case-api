@@ -14,14 +14,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.APPELLANT_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASE_FLAG;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_FLAG;
 
 @Service
 @Slf4j
 public class FlagService {
-    private static final String CASE_FLAG = "CASE LEVEL FLAG";
-    private static final String APPELLANT_FLAG = "APPELLANT FLAG";
-    private static final String RESPONDENT_FLAG = "RESPONDENT FLAG";
+
 
     public DynamicList populateFlagList(CicCase cicCase) {
         List<String> flagsList = getFLags(cicCase);
