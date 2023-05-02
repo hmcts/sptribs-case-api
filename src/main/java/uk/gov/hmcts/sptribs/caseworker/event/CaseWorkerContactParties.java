@@ -89,8 +89,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                 .grant(CREATE_READ_UPDATE,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
-        partiesToContact.addTo(pageBuilder);
         contactPartiesSelectDocument.addTo(pageBuilder);
+        partiesToContact.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -131,11 +131,12 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
             contactPartiesNotification.sendToApplicant(details.getData(), caseNumber);
         }
-        contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
-
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Message sent %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getContactParties())
+                MessageUtil.generateSimpleMessage(data.getCicCase())
             ))
             .build();
 
