@@ -440,6 +440,7 @@ public class TestDataHelper {
         Flags appellantFlag = Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
         ListValue<Flags> appellantFlagListValue = new ListValue<>();
         appellantFlagListValue.setValue(appellantFlag);
+        appellantFlagListValue.setId("0");
         List<ListValue<Flags>> appellantFlagList = new ArrayList<>();
         appellantFlagList.add(appellantFlagListValue);
         return appellantFlagList;
@@ -449,6 +450,7 @@ public class TestDataHelper {
         Flags respondentFlag = Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
         ListValue<Flags> respondentFlagListValue = new ListValue<>();
         respondentFlagListValue.setValue(respondentFlag);
+        respondentFlagListValue.setId("0");
         List<ListValue<Flags>> respondentFlagList = new ArrayList<>();
         respondentFlagList.add(respondentFlagListValue);
         return respondentFlagList;
@@ -458,6 +460,7 @@ public class TestDataHelper {
         Flags caseFlag = Flags.builder().details(getFlagDetails()).build();
         ListValue<Flags> caseFlagListValue = new ListValue<>();
         caseFlagListValue.setValue(caseFlag);
+        caseFlagListValue.setId("0");
         List<ListValue<Flags>> caseFlagList = new ArrayList<>();
         caseFlagList.add(caseFlagListValue);
         return caseFlagList;
