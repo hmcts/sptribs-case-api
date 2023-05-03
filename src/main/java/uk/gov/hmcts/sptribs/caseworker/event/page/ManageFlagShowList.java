@@ -32,12 +32,13 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             .pageLabel("Select case flag")
             .label("LabelCaseworkerManageFlagSelect", "")
             .complex(CaseData::getCicCase)
-            .readonly(CicCase::getAppellantFlags,ALWAYS_HIDE)
-            .readonly(CicCase::getCaseFlags,ALWAYS_HIDE)
-            .readonly(CicCase::getRespondentFlags,ALWAYS_HIDE)
             .mandatory(CicCase::getFlagDynamicList)
-            .label("error", "<h2>There are no flags on case to manage</h2>",
-                "cicCaseCaseFlags =\"\" AND cicCaseAppellantFlags =\"\" AND cicCaseRespondentFlags =\"\"")
+            .done()
+            .readonly(CaseData::getAppellantFlags,ALWAYS_HIDE)
+            .readonly(CaseData::getCaseLevelFlags,ALWAYS_HIDE)
+            .readonly(CaseData::getRespondentFlags,ALWAYS_HIDE)
+           // .label("error", "<h2>There are no flags on case to manage</h2>",
+           //     "cicCaseCaseFlags =\"\" AND cicCaseAppellantFlags =\"\" AND cicCaseRespondentFlags =\"\"")
             .done();
 
     }
@@ -51,7 +52,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
         String selectedFlag = data.getCicCase().getFlagDynamicList().getValue().getLabel();
         String[] selectedList = selectedFlag.split(HYPHEN);
         if (selectedList[0].equals(CASE_FLAG)) {
-            for (ListValue<Flags> listValueFlag : cicCase.getCaseFlags()) {
+            for (ListValue<Flags> listValueFlag : data.getCaseLevelFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getDetails().get(0).getValue().getFlagComment());
                     cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getDetails().get(0).getValue().getStatus()));
@@ -59,7 +60,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
                 }
             }
         } else if (selectedList[0].equals(APPELLANT_FLAG)) {
-            for (ListValue<Flags> listValueFlag : cicCase.getAppellantFlags()) {
+            for (ListValue<Flags> listValueFlag : data.getAppellantFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getDetails().get(0).getValue().getFlagComment());
                     cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getDetails().get(0).getValue().getStatus()));
@@ -67,7 +68,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
                 }
             }
         } else if (selectedList[0].equals(RESPONDENT_FLAG)) {
-            for (ListValue<Flags> listValueFlag : cicCase.getRespondentFlags()) {
+            for (ListValue<Flags> listValueFlag : data.getRespondentFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getDetails().get(0).getValue().getFlagComment());
                     cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getDetails().get(0).getValue().getStatus()));

@@ -76,7 +76,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList flagList = flagService.populateFlagList(caseData.getCicCase());
+        DynamicList flagList = flagService.populateFlagList(caseData);
         caseData.getCicCase().setFlagDynamicList(flagList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -93,7 +93,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
         String selectedFlag = caseData.getCicCase().getFlagDynamicList().getValue().getLabel();
         String[] selectedList = selectedFlag.split(HYPHEN);
         if (selectedList[0].equals(CASE_FLAG)) {
-            for (ListValue<Flags> listValueFlag : cicCase.getCaseFlags()) {
+            for (ListValue<Flags> listValueFlag : caseData.getCaseLevelFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().getDetails().get(0).getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
                     listValueFlag.getValue().getDetails().get(0).getValue().setStatus(cicCase.getFlagStatus().getLabel());
@@ -101,7 +101,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
                 }
             }
         } else if (selectedList[0].equals(APPELLANT_FLAG)) {
-            for (ListValue<Flags> listValueFlag : cicCase.getAppellantFlags()) {
+            for (ListValue<Flags> listValueFlag : caseData.getAppellantFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().getDetails().get(0).getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
                     listValueFlag.getValue().getDetails().get(0).getValue().setStatus(cicCase.getFlagStatus().getLabel());
@@ -109,7 +109,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
                 }
             }
         } else if (selectedList[0].equals(RESPONDENT_FLAG)) {
-            for (ListValue<Flags> listValueFlag : cicCase.getRespondentFlags()) {
+            for (ListValue<Flags> listValueFlag : caseData.getRespondentFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().getDetails().get(0).getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
                     listValueFlag.getValue().getDetails().get(0).getValue().setStatus(cicCase.getFlagStatus().getLabel());

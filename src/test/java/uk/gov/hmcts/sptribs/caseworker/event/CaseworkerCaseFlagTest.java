@@ -95,13 +95,13 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getCicCase().getAppellantFlags()).isNotNull();
+        assertThat(response.getData().getAppellantFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getCicCase().getAppellantFlags()).isNotNull();
+        assertThat(response2.getData().getAppellantFlags()).isNotNull();
     }
 
     @Test
@@ -132,13 +132,13 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getCicCase().getAppellantFlags()).isNotNull();
+        assertThat(response.getData().getAppellantFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getCicCase().getAppellantFlags()).isNotNull();
+        assertThat(response2.getData().getAppellantFlags()).isNotNull();
     }
 
     @Test
@@ -168,13 +168,13 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getCicCase().getAppellantFlags()).isNotNull();
+        assertThat(response.getData().getAppellantFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getCicCase().getAppellantFlags()).isNotNull();
+        assertThat(response2.getData().getAppellantFlags()).isNotNull();
     }
 
     @Test
@@ -204,13 +204,13 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getCicCase().getRespondentFlags()).isNotNull();
+        assertThat(response.getData().getRespondentFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getCicCase().getRespondentFlags()).isNotNull();
+        assertThat(response2.getData().getRespondentFlags()).isNotNull();
     }
 
     @Test
@@ -236,12 +236,12 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getCicCase().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getCaseLevelFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getCicCase().getCaseFlags()).isNotNull();
+        assertThat(response2.getData().getCaseLevelFlags()).isNotNull();
     }
 
 }

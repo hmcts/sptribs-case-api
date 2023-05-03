@@ -14,11 +14,10 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
-import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
@@ -121,27 +120,8 @@ public class CicCase {
 
     @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher linkedCasesComponentLauncher;
+    private FlagLauncher linkedCasesComponentLauncher;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> appellantFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> caseFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> respondentFlags;
-
-    @JsonUnwrapped(prefix = "flagLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-
-    private ComponentLauncher flagLauncher;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

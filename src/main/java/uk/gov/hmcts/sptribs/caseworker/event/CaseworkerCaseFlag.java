@@ -166,7 +166,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private void addCaseLevel(CaseData caseData, Flags flag) {
-        if (isEmpty(caseData.getCicCase().getCaseFlags())) {
+        if (isEmpty(caseData.getCaseLevelFlags())) {
             List<ListValue<Flags>> listValues = new ArrayList<>();
 
             var listValue = ListValue
@@ -177,7 +177,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
             listValues.add(listValue);
 
-            caseData.getCicCase().setCaseFlags(listValues);
+            caseData.setCaseLevelFlags(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
@@ -185,14 +185,14 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 .value(flag)
                 .build();
 
-            caseData.getCicCase().getCaseFlags().add(0, listValue);
-            caseData.getCicCase().getCaseFlags()
+            caseData.getCaseLevelFlags().add(0, listValue);
+            caseData.getCaseLevelFlags()
                 .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
     }
 
     private void addAppellantFlag(CaseData caseData, Flags flag) {
-        if (isEmpty(caseData.getCicCase().getAppellantFlags())) {
+        if (isEmpty(caseData.getAppellantFlags())) {
             List<ListValue<Flags>> listValues = new ArrayList<>();
 
             var listValue = ListValue
@@ -203,7 +203,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
             listValues.add(listValue);
 
-            caseData.getCicCase().setAppellantFlags(listValues);
+            caseData.setAppellantFlags(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
@@ -211,14 +211,14 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 .value(flag)
                 .build();
 
-            caseData.getCicCase().getAppellantFlags().add(0, listValue);
-            caseData.getCicCase().getAppellantFlags()
+            caseData.getAppellantFlags().add(0, listValue);
+            caseData.getAppellantFlags()
                 .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
     }
 
     private void addRespondent(CaseData caseData, Flags flag) {
-        if (isEmpty(caseData.getCicCase().getRespondentFlags())) {
+        if (isEmpty(caseData.getRespondentFlags())) {
             List<ListValue<Flags>> listValues = new ArrayList<>();
 
             var listValue = ListValue
@@ -229,7 +229,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
             listValues.add(listValue);
 
-            caseData.getCicCase().setRespondentFlags(listValues);
+            caseData.setRespondentFlags(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
@@ -237,8 +237,8 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 .value(flag)
                 .build();
 
-            caseData.getCicCase().getRespondentFlags().add(0, listValue);
-            caseData.getCicCase().getRespondentFlags()
+            caseData.getRespondentFlags().add(0, listValue);
+            caseData.getRespondentFlags()
                 .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
     }
