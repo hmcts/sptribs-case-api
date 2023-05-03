@@ -22,6 +22,8 @@ public class CaseManagementService {
     @Autowired
     AppsConfig appsConfig;
 
+    private static final String SUCCESS = "Success";
+
     public CaseResponse createCase(String authorization, CaseData caseData) {
         try {
             // Validate Case Data (CHECKING CASE TYPE ALONE)
@@ -35,7 +37,7 @@ public class CaseManagementService {
                                                                 AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData()));
             log.info("Created case details: " + caseDetails.toString());
             return CaseResponse.builder().caseData(caseDetails.getData())
-                .id(caseDetails.getId()).status("Success").build();
+                .id(caseDetails.getId()).status(SUCCESS).build();
 
 
         } catch (Exception e) {
@@ -56,7 +58,7 @@ public class CaseManagementService {
                                                                 AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData()));
             log.info("Updated case details: " + caseDetails.toString());
             return CaseResponse.builder().caseData(caseDetails.getData())
-                .id(caseDetails.getId()).status("Success").build();
+                .id(caseDetails.getId()).status(SUCCESS).build();
         } catch (Exception e) {
             //This has to be corrected
             log.error("Error while updating case." + e);
@@ -71,10 +73,10 @@ public class CaseManagementService {
                                                                     caseId);
             log.info("Case Details for CaseID :{} and CaseDetails:{}", caseId, caseDetails);
             return CaseResponse.builder().caseData(caseDetails.getData())
-                .id(caseDetails.getId()).status("Success").build();
+                .id(caseDetails.getId()).status(SUCCESS).build();
         } catch (Exception e) {
             log.error("Error while fetching Case Details" + e);
-            throw new CaseCreateOrUpdateException("Failing while fetcing the case details" + e.getMessage(), e);
+            throw new CaseCreateOrUpdateException("Failing while fetching the case details" + e.getMessage(), e);
         }
 
     }
