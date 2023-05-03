@@ -26,9 +26,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Complete;
@@ -51,8 +48,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration hearingAttendees = new HearingAttendees();
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
+
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
-    Map<String, String> map = new HashMap<>();
 
     @Autowired
     private RecordListHelper recordListHelper;
@@ -84,13 +81,12 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         hearingAttendeesRole.addTo(pageBuilder);
         HearingOutcome.addTo(pageBuilder);
         hearingRecordingUploadPage.addTo(pageBuilder);
-
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CREATE_HEARING_SUMMARY);
+
         DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
