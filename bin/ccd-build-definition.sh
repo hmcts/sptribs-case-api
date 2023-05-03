@@ -8,7 +8,7 @@ echo "Script Path ${scriptPath}"
 root_dir=$(realpath $(dirname ${0})/..)
 build_dir=${root_dir}/build/ccd-config
 
-mkdir -p ${build_dir}
+sudo mkdir -p ${build_dir}
 
 docker logout hmctspublic.azurecr.io
 

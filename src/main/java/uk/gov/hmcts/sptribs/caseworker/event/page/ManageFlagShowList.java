@@ -37,8 +37,6 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             .readonly(CaseData::getAppellantFlags,ALWAYS_HIDE)
             .readonly(CaseData::getCaseLevelFlags,ALWAYS_HIDE)
             .readonly(CaseData::getRespondentFlags,ALWAYS_HIDE)
-           // .label("error", "<h2>There are no flags on case to manage</h2>",
-           //     "cicCaseCaseFlags =\"\" AND cicCaseAppellantFlags =\"\" AND cicCaseRespondentFlags =\"\"")
             .done();
 
     }
