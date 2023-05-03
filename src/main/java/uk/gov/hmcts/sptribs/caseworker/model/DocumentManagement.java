@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,7 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.DynamicMultiSelectList;
 
 @Data
 @NoArgsConstructor
@@ -35,20 +35,11 @@ public class DocumentManagement {
     )
     @Builder.Default
     private List<ListValue<CaseworkerCICDocument>> caseworkerCICDocument = new ArrayList<>();
-    //private List<ListValue<CaseworkerCICDocument>> caseworkerCICDocument;
 
-    @CCD(typeOverride = DynamicMultiSelectList,
-        typeParameterOverride = "DynamicList",
+    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private DynamicMultiSelectList documentList;
+    private DynamicList documentList;
 
-    @CCD(
-        label = "Documents",
-        typeOverride = Collection,
-        typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
-    )
-    private List<ListValue<CaseworkerCICDocument>> selectedDocuments;
 }

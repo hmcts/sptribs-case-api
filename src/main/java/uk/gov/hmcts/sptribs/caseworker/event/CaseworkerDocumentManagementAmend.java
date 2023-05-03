@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
@@ -18,6 +18,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -36,7 +39,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 
 @Component
 @Slf4j
@@ -88,7 +91,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
     ) {
         var caseData = details.getData();
 
-        updateCategoryToCaseworkerDocument(caseData.getAllDocManagement().getCaseworkerCICDocument());
+        //updateCategoryToCaseworkerDocument(caseData.getDocManagement().getCaseworkerCICDocument());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -98,10 +101,13 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        var documentManagement = caseData.getNewDocManagement();
+        var cicCase = caseData.getCicCase();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
-        documentManagement.setDocumentList(documentList);
+        List<CaseworkerCICDocument> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
+        cicCase.setAllDocumentList(buildListValues(allCaseDocuments));
+
+        DynamicList documentList = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
+        cicCase.setAmendDocumentList(documentList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

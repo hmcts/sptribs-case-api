@@ -2,7 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -28,9 +30,13 @@ public final class OrderDocumentListUtil {
                 if (null != orderListValue.getValue().getDraftOrder()
                     && null != orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
                     && !ObjectUtils.isEmpty(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
+                    Document templateGeneratedDoc = orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument();
+                    DocumentType documentCategory = (null != templateGeneratedDoc.getCategoryId())
+                        ? DocumentType.fromCategory(templateGeneratedDoc.getCategoryId()).get()
+                        : DocumentType.TRIBUNAL_DIRECTION;
                     CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                        .documentLink(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())
-                        .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                        .documentLink(templateGeneratedDoc)
+                        .documentCategory(documentCategory)
                         .build();
                     orderList.add(doc);
                 } else if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
@@ -46,10 +52,14 @@ public final class OrderDocumentListUtil {
         List<CaseworkerCICDocument> orderUploadList = new ArrayList<>();
         for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
             if (null != document.getValue().getDocumentLink()) {
+                Document documentLink = document.getValue().getDocumentLink();
+                DocumentType documentCategory = (null != documentLink.getCategoryId())
+                    ? DocumentType.fromCategory(documentLink.getCategoryId()).get()
+                    : DocumentType.TRIBUNAL_DIRECTION;
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentLink(document.getValue().getDocumentLink())
                     .documentEmailContent(document.getValue().getDocumentEmailContent())
-                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .documentCategory(documentCategory)
                     .build();
                 orderUploadList.add(doc);
             }
@@ -88,6 +98,29 @@ public final class OrderDocumentListUtil {
                     .equals(cicDocumentListValue.getValue().getDocumentLink())) {
                     orderListValue.getValue().getUploadedFile().get(i).setValue(EMPTY_DOCUMENT);
 
+                }
+            }
+        }
+    }
+
+    public static void updateOrderTypeDocumentList(CicCase cicCase, CaseworkerCICDocument selectedDocument) {
+        for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
+            DraftOrderCIC draftOrderCIC = orderListValue.getValue().getDraftOrder();
+            if (null != draftOrderCIC
+                && selectedDocument.getDocumentLink().getUrl().equals(draftOrderCIC.getTemplateGeneratedDocument().getUrl())) {
+                draftOrderCIC.getTemplateGeneratedDocument().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+            } else {
+                amendUploadedFile(orderListValue, selectedDocument);
+            }
+        }
+    }
+
+    private static void amendUploadedFile(ListValue<Order> orderListValue, CaseworkerCICDocument selectedDocument) {
+        if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
+            for (ListValue<CICDocument> file : orderListValue.getValue().getUploadedFile()) {
+                if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
+                    .equals(selectedDocument.getDocumentLink())) {
+                    file.getValue().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
                 }
             }
         }

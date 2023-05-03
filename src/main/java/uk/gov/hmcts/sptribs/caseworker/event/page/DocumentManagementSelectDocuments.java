@@ -1,14 +1,13 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -16,19 +15,21 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
+
+    private static final String ALWAYS_HIDE = "cicCaseAmendDocumentList=\"NEVER_SHOW\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("selectCaseDocuments")
+        pageBuilder.page("selectCaseDocuments", this::midEvent)
             .pageLabel("Select documents")
             .label("LabelSelectCaseDocuments", "")
             .label("LabelSelectCaseDocumentsWarning", "")
-            .complex(CaseData::getNewDocManagement)
-            .optional(DocumentManagement::getDocumentList)
+            .complex(CaseData::getCicCase)
+            .optional(CicCase::getAmendDocumentList)
+            .readonly(CicCase::getAllDocumentList, ALWAYS_HIDE)
             .done();
     }
 
@@ -37,7 +38,7 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        updateSelectedDocuments(data);
+        setSelectedDocuments(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -45,33 +46,28 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
             .build();
     }
 
-    private void updateSelectedDocuments(CaseData data) {
-        DynamicMultiSelectList documentList = data.getNewDocManagement().getDocumentList();
-        if (!ObjectUtils.isEmpty(documentList.getValue()) && documentList.getValue().size() > 0) {
-            List<DynamicListElement> documents = documentList.getValue();
-            List<String> selectedDocumentUUIds = documents.stream().map(e -> e.getCode().toString()).collect(Collectors.toList());
-            List<ListValue<CaseworkerCICDocument>> caseDocuments = data.getNewDocManagement().getCaseworkerCICDocument();
+    private void setSelectedDocuments(CaseData data) {
+        var cicCase = data.getCicCase();
+        DynamicList documentList = cicCase.getAmendDocumentList();
+        List<ListValue<CaseworkerCICDocument>> allCaseDocuments = data.getCicCase().getAllDocumentList();
+        CaseworkerCICDocument selectedDocument = null;
+        String selectedDocumentType = null;
 
-            List<ListValue<CaseworkerCICDocument>> selectedDocumentList =
-                getSelectedCaseworkerCICDocumentList(caseDocuments, selectedDocumentUUIds);
-            data.getNewDocManagement().setSelectedDocuments(selectedDocumentList);
+        if (!ObjectUtils.isEmpty(documentList.getValue())) {
+            String selectedDocumentURL = documentList.getValue().getLabel();
 
-        }
-    }
-
-    private List<ListValue<CaseworkerCICDocument>> getSelectedCaseworkerCICDocumentList(
-        List<ListValue<CaseworkerCICDocument>> allCaseDocuments,
-        List<String> selectedDocumentUUIds) {
-
-        List<ListValue<CaseworkerCICDocument>> selectedDocumentList = new ArrayList<>();
-
-        for (ListValue<CaseworkerCICDocument> documentListValue : allCaseDocuments) {
-            String binaryUrl = documentListValue.getValue().getDocumentLink().getBinaryUrl();
-            if (selectedDocumentUUIds.contains(StringUtils.substringAfterLast(binaryUrl, "/"))) {
-                selectedDocumentList.add(documentListValue);
+            for (ListValue<CaseworkerCICDocument> documentListValue : allCaseDocuments) {
+                String[] labels = selectedDocumentURL.split("--");
+                String url = documentListValue.getValue().getDocumentLink().getUrl();
+                if (ArrayUtils.isNotEmpty(labels) && labels[2].equals(url)) {
+                    selectedDocument = documentListValue.getValue();
+                    selectedDocumentType = labels[0];
+                }
             }
-        }
 
-        return selectedDocumentList;
+            cicCase.setSelectedDocument(selectedDocument);
+            cicCase.setSelectedDocumentType(selectedDocumentType);
+        }
     }
+
 }

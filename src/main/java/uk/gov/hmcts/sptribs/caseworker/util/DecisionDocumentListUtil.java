@@ -1,8 +1,15 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
@@ -101,6 +108,32 @@ public  final class DecisionDocumentListUtil {
             addToRemovedDocuments(caseData.getCicCase(), cicDocumentListValue.getValue());
         }
 
+    }
+
+    public static void updateDecisionTypeDocumentList(CaseData caseData, CaseworkerCICDocument selectedDocument) {
+        CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
+        if (null != caseIssueDecision.getDecisionDocument()
+            && null != caseIssueDecision.getDecisionDocument().getDocumentLink()
+            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueDecision.getDecisionDocument().getDocumentLink().getUrl())) {
+            caseIssueDecision.getDecisionDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+            caseIssueDecision.getDecisionDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+        } else if (null != caseIssueDecision.getIssueDecisionDraft()
+            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueDecision.getIssueDecisionDraft().getUrl())) {
+            caseIssueDecision.getIssueDecisionDraft().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+        }
+    }
+
+    public static void updateFinalDecisionTypeDocumentList(CaseData caseData, CaseworkerCICDocument selectedDocument) {
+        CaseIssueFinalDecision caseIssueFinalDecision = caseData.getCaseIssueFinalDecision();
+        if (null != caseIssueFinalDecision.getDocument()
+            && null != caseIssueFinalDecision.getDocument().getDocumentLink()
+            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueFinalDecision.getDocument().getDocumentLink().getUrl())) {
+            caseIssueFinalDecision.getDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+            caseIssueFinalDecision.getDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+        } else if (null != caseIssueFinalDecision.getFinalDecisionDraft()
+            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueFinalDecision.getFinalDecisionDraft().getUrl())) {
+            caseIssueFinalDecision.getFinalDecisionDraft().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+        }
     }
 
 }

@@ -271,11 +271,32 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
     @CCD(
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private DynamicList amendDocumentList;
+
+    @CCD(
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> allDocumentList;
+
+    @CCD(
+        label = "Documents",
+        typeParameterOverride = "CaseworkerCICDocument",
+        access = {DefaultAccess.class}
+    )
+    private CaseworkerCICDocument selectedDocument;
+
+    @CCD(
         label = "Notified Parties",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<NotificationParties> hearingNotificationParties;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String SelectedDocumentType;
 
     @CCD(
         label = "Upload a file to the system",
