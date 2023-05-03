@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.common.model.Status;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
@@ -119,10 +120,12 @@ public class CicCase {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
 
     private ComponentLauncher flagLauncher;
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Flags selectedFlag;
+    private Status flagStatus;
+
 
     @CCD(
         label = "Flag Type",

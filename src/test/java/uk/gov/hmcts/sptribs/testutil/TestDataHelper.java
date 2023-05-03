@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
+import uk.gov.hmcts.sptribs.common.model.Status;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -467,7 +468,7 @@ public class TestDataHelper {
     }
 
     public static List<ListValue<FlagDetail>> getFlagDetails() {
-        FlagDetail flagDetail = FlagDetail.builder().flagCode("1").build();
+        FlagDetail flagDetail = FlagDetail.builder().status(Status.ACTIVE.getLabel()).flagCode("1").build();
         ListValue<FlagDetail> flagDetailListValue = new ListValue<>();
         flagDetailListValue.setValue(flagDetail);
         List<ListValue<FlagDetail>> flagDetailList = new ArrayList<>();
