@@ -53,16 +53,30 @@ withNightlyPipeline(type, product, component) {
   afterSuccess('fullFunctionalTest') {
 
     try {
-      builder.gradle('e2eTestsNightly')
+      builder.gradle('e2eTestsNightlyFirefox')
     } finally {
 
       publishHTML target: [
         allowMissing         : true,
         alwaysLinkToLastBuild: true,
         keepAll              : true,
-        reportDir            : "build/reports/tests/e2eTests",
+        reportDir            : "build/reports/tests/e2eTestsFirefox",
         reportFiles          : "index.html",
-        reportName           : "E2E Tests Report"
+        reportName           : "E2E Tests Report Firefox"
+      ]
+    }
+
+    try {
+      builder.gradle('e2eTestsNightlyMsEdge')
+    } finally {
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/e2eTestsMsEdge",
+        reportFiles          : "index.html",
+        reportName           : "E2E Tests Report MS Edge"
       ]
     }
   }
