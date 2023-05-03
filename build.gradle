@@ -150,7 +150,7 @@ task e2eTests(type: Test) {
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
-  environment 'BROWSER', 'msedge'
+  environment 'BROWSER', 'chrome'
   environment 'CI', 'true'
 }
 
@@ -570,7 +570,7 @@ tasks.cftlibTest.dependsOn(installChromium)
 task installBrowser(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
   main = 'com.microsoft.playwright.CLI'
-  args = ['install', 'chrome']
+  args = ['install', 'chromium']
 }
 
 task installFirefox(type: JavaExec) {
