@@ -11,9 +11,13 @@ properties([
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.GradleBuilder
+
 def type = "java"
 def product = "sptribs"
 def component = "case-api"
+
+GradleBuilder builder = new GradleBuilder(this, product)
 
 static Map<String, Object> secret(String secretName, String envVariable) {
   [$class     : 'AzureKeyVaultSecret',
@@ -44,5 +48,22 @@ withNightlyPipeline(type, product, component) {
 
   afterAlways('fullFunctionalTest') {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  afterSuccess('fullFunctionalTest') {
+
+    try {
+      builder.gradle('e2eTestsNightly')
+    } finally {
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/e2eTests",
+        reportFiles          : "index.html",
+        reportName           : "E2E Tests Report"
+      ]
+    }
   }
 }
