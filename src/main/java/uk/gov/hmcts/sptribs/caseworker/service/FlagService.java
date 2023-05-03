@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +24,8 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_FLA
 public class FlagService {
 
 
-    public DynamicList populateFlagList( CaseData caseData) {
+    public DynamicList populateFlagList(CaseData caseData) {
         List<String> flagsList = getFLags(caseData);
-
 
         List<DynamicListElement> dynamicFlagElements = flagsList
             .stream()
