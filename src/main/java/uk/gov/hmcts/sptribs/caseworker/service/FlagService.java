@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_FLA
 public class FlagService {
 
 
-    public DynamicList populateFlagList(CicCase cicCase) {
-        List<String> flagsList = getFLags(cicCase);
+    public DynamicList populateFlagList( CaseData caseData) {
+        List<String> flagsList = getFLags(caseData);
 
 
         List<DynamicListElement> dynamicFlagElements = flagsList
@@ -40,20 +41,20 @@ public class FlagService {
             .build();
     }
 
-    private List<String> getFLags(CicCase cicCase) {
+    private List<String> getFLags(CaseData caseData) {
         List<String> flagsList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(cicCase.getCaseFlags())) {
-            for (ListValue<Flags> flagsListValue : cicCase.getCaseFlags()) {
+        if (!CollectionUtils.isEmpty(caseData.getCaseLevelFlags())) {
+            for (ListValue<Flags> flagsListValue : caseData.getCaseLevelFlags()) {
                 flagsList.add(CASE_FLAG + HYPHEN + flagsListValue.getId() + HYPHEN + " ");
             }
         }
-        if (!CollectionUtils.isEmpty(cicCase.getAppellantFlags())) {
-            for (ListValue<Flags> flagsListValue : cicCase.getAppellantFlags()) {
+        if (!CollectionUtils.isEmpty(caseData.getAppellantFlags())) {
+            for (ListValue<Flags> flagsListValue : caseData.getAppellantFlags()) {
                 flagsList.add(APPELLANT_FLAG + HYPHEN + flagsListValue.getId() + HYPHEN + flagsListValue.getValue().getPartyName());
             }
         }
-        if (!CollectionUtils.isEmpty(cicCase.getRespondentFlags())) {
-            for (ListValue<Flags> flagsListValue : cicCase.getRespondentFlags()) {
+        if (!CollectionUtils.isEmpty(caseData.getRespondentFlags())) {
+            for (ListValue<Flags> flagsListValue : caseData.getRespondentFlags()) {
                 flagsList.add(RESPONDENT_FLAG + HYPHEN + flagsListValue.getId() + HYPHEN + flagsListValue.getValue().getPartyName());
             }
         }
