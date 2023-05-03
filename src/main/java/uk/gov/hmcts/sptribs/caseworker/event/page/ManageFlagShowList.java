@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.model.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,21 +53,24 @@ public class ManageFlagShowList implements CcdPageConfiguration {
         if (selectedList[0].equals(CASE_FLAG)) {
             for (ListValue<Flags> listValueFlag : cicCase.getCaseFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    cicCase.setSelectedFlag(listValueFlag.getValue());
+                    cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getDetails().get(0).getValue().getFlagComment());
+                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getDetails().get(0).getValue().getStatus()));
                     break;
                 }
             }
         } else if (selectedList[0].equals(APPELLANT_FLAG)) {
             for (ListValue<Flags> listValueFlag : cicCase.getAppellantFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    cicCase.setSelectedFlag(listValueFlag.getValue());
+                    cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getDetails().get(0).getValue().getFlagComment());
+                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getDetails().get(0).getValue().getStatus()));
                     break;
                 }
             }
         } else if (selectedList[0].equals(RESPONDENT_FLAG)) {
             for (ListValue<Flags> listValueFlag : cicCase.getRespondentFlags()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    cicCase.setSelectedFlag(listValueFlag.getValue());
+                    cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getDetails().get(0).getValue().getFlagComment());
+                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getDetails().get(0).getValue().getStatus()));
                     break;
                 }
             }
