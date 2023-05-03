@@ -27,6 +27,9 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-file-view-and-document-management.enabled}")
     private boolean caseFileViewAndDocumentManagementEnabled;
 
+    @Value("${feature.case-flags.enabled}")
+    private boolean caseFlagsEnabled;
+
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
 
     @Override
@@ -42,6 +45,23 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildHearing(configBuilder);
         buildCicaDetails(configBuilder);
         buildCaseFileViewTab(configBuilder);
+        buildCaseFlagTab(configBuilder);
+    }
+
+    private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (caseFlagsEnabled) {
+            doBuildCaseFlagTab(configBuilder);
+        }
+    }
+
+    private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseFlagView", "Case  flags")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
+            .field(CaseData::getCaseLevelFlags, null, "#ARGUMENT(READ)")
+            .field(CaseData::getAppellantFlags, null, "#ARGUMENT(READ)")
+            .field(CaseData::getRespondentFlags, null, "#ARGUMENT(READ)");
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

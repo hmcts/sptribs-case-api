@@ -11,25 +11,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
-import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
-import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
-import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
-import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.model.*;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -56,6 +41,27 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
+
+    @CCD(
+        label = "Case flags",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLauncher flagLauncher;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> appellantFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> caseLevelFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> respondentFlags;
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default

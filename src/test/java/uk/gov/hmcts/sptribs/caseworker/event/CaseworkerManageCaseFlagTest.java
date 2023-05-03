@@ -84,12 +84,12 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
 
         CicCase cicCase = CicCase.builder()
-            .appellantFlags(getAppellantFlags())
-            .respondentFlags(getRespondentFlags())
-            .caseFlags(getCaseFlags())
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
+            .appellantFlags(getAppellantFlags())
+            .respondentFlags(getRespondentFlags())
+            .caseLevelFlags(getCaseFlags())
             .build();
         updatedCaseDetails.setData(caseData);
         //When
@@ -105,9 +105,8 @@ class CaseworkerManageCaseFlagTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        caseData.setCaseLevelFlags(getCaseFlags());
         final CicCase cicCase = CicCase.builder()
-            .caseFlags(getCaseFlags())
             .flagDynamicList(getCaseFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
@@ -130,9 +129,8 @@ class CaseworkerManageCaseFlagTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        caseData.setAppellantFlags(getAppellantFlags());
         final CicCase cicCase = CicCase.builder()
-            .appellantFlags(getAppellantFlags())
             .flagDynamicList(getAppellanFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
@@ -155,9 +153,8 @@ class CaseworkerManageCaseFlagTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        caseData.setRespondentFlags(getRespondentFlags());
         final CicCase cicCase = CicCase.builder()
-            .respondentFlags(getRespondentFlags())
             .flagDynamicList(getRespondentFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
@@ -174,28 +171,14 @@ class CaseworkerManageCaseFlagTest {
 
     }
 
-    private DynamicList getCaseFlagDynamicList() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label(CASE_FLAG + "-0-0")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
-
     @Test
     void shouldSuccessfullySelectCaseFlagSubmit() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        caseData.setCaseLevelFlags(getCaseFlags());
         final CicCase cicCase = CicCase.builder()
-            .caseFlags(getCaseFlags())
             .flagDynamicList(getCaseFlagDynamicList())
             .flagAdditionalDetail("update")
             .build();
@@ -218,7 +201,7 @@ class CaseworkerManageCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(submittedResponse).isNotNull();
-        assertThat(response.getData().getCicCase().getCaseFlags().get(0).getValue().getDetails().get(0).getValue().getStatus())
+        assertThat(response.getData().getCaseLevelFlags().get(0).getValue().getDetails().get(0).getValue().getStatus())
             .isEqualTo(Status.INACTIVE.getLabel());
 
     }
@@ -229,9 +212,8 @@ class CaseworkerManageCaseFlagTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        caseData.setAppellantFlags(getAppellantFlags());
         final CicCase cicCase = CicCase.builder()
-            .appellantFlags(getAppellantFlags())
             .flagDynamicList(getAppellanFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
@@ -256,9 +238,8 @@ class CaseworkerManageCaseFlagTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
+        caseData.setRespondentFlags(getRespondentFlags());
         final CicCase cicCase = CicCase.builder()
-            .respondentFlags(getRespondentFlags())
             .flagDynamicList(getRespondentFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
@@ -276,6 +257,18 @@ class CaseworkerManageCaseFlagTest {
 
     }
 
+    private DynamicList getCaseFlagDynamicList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(CASE_FLAG + "-0-0")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
 
     private DynamicList getRespondentFlagDynamicList() {
         final DynamicListElement listItem = DynamicListElement
