@@ -52,25 +52,11 @@ withNightlyPipeline(type, product, component) {
 
   afterSuccess('fullFunctionalTest') {
 
-    try {
-      builder.gradle('e2eTestsNightlyMsEdge')
-    } finally {
-
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/e2eTestsNightlyMsEdge",
-        reportFiles          : "index.html",
-        reportName           : "E2E Tests Report MS Edge"
-      ]
-    }
-  }
-
-  afterSuccess('fullFunctionalTest') {
-
+    Exception ex = null;
     try {
       builder.gradle('e2eTestsNightlyFirefox')
+    } catch (Exception caught) {
+      ex = caught;
     } finally {
 
       publishHTML target: [
@@ -81,6 +67,22 @@ withNightlyPipeline(type, product, component) {
         reportFiles          : "index.html",
         reportName           : "E2E Tests Report Firefox"
       ]
+      try {
+        builder.gradle('e2eTestsNightlyMsEdge')
+      } finally {
+
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports/tests/e2eTestsNightlyMsEdge",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report MS Edge"
+        ]
+        if (ex != null) {
+          throw ex;
+        }
+      }
     }
   }
 }
