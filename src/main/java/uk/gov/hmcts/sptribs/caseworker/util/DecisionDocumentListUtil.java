@@ -116,7 +116,7 @@ public  final class DecisionDocumentListUtil {
             && null != caseIssueDecision.getDecisionDocument().getDocumentLink()
             && selectedDocument.getDocumentLink().getUrl().equals(caseIssueDecision.getDecisionDocument().getDocumentLink().getUrl())) {
             caseIssueDecision.getDecisionDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
-            caseIssueDecision.getDecisionDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+            caseIssueDecision.getDecisionDocument().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
         } else if (null != caseIssueDecision.getIssueDecisionDraft()
             && selectedDocument.getDocumentLink().getUrl().equals(caseIssueDecision.getIssueDecisionDraft().getUrl())) {
             caseIssueDecision.getIssueDecisionDraft().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
@@ -129,7 +129,7 @@ public  final class DecisionDocumentListUtil {
             && null != caseIssueFinalDecision.getDocument().getDocumentLink()
             && selectedDocument.getDocumentLink().getUrl().equals(caseIssueFinalDecision.getDocument().getDocumentLink().getUrl())) {
             caseIssueFinalDecision.getDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
-            caseIssueFinalDecision.getDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+            caseIssueFinalDecision.getDocument().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
         } else if (null != caseIssueFinalDecision.getFinalDecisionDraft()
             && selectedDocument.getDocumentLink().getUrl().equals(caseIssueFinalDecision.getFinalDecisionDraft().getUrl())) {
             caseIssueFinalDecision.getFinalDecisionDraft().setCategoryId(selectedDocument.getDocumentCategory().getCategory());

@@ -22,7 +22,11 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.updateDecisionTypeDocumentList;
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.updateFinalDecisionTypeDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
+import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.updateOrderTypeDocumentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -40,6 +44,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.DECISION_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.ORDER_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 
 @Component
 @Slf4j
@@ -89,12 +101,41 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        var data = details.getData();
+        var cicCase = data.getCicCase();
 
-        //updateCategoryToCaseworkerDocument(caseData.getDocManagement().getCaseworkerCICDocument());
+        CaseworkerCICDocument selectedDocument = cicCase.getSelectedDocument();
+        String selectedDocumentType = cicCase.getSelectedDocumentType();
+
+        switch (selectedDocumentType) {
+            case ORDER_TYPE:
+                updateOrderTypeDocumentList(cicCase, selectedDocument);
+                break;
+            case CASE_TYPE:
+                updateCaseDocumentList(cicCase.getApplicantDocumentsUploaded(), selectedDocument);
+                break;
+            case REINSTATE_TYPE:
+                updateCaseDocumentList(cicCase.getReinstateDocuments(), selectedDocument);
+                break;
+            case DECISION_TYPE:
+                updateDecisionTypeDocumentList(data, selectedDocument);
+                break;
+            case FINAL_DECISION_TYPE:
+                updateFinalDecisionTypeDocumentList(data, selectedDocument);
+                break;
+            case DOC_MGMT_TYPE:
+                updateCaseDocumentList(data.getAllDocManagement().getCaseworkerCICDocument(), selectedDocument);
+                break;
+            case CLOSE_CASE_TYPE:
+                updateCaseDocumentList(data.getCloseCase().getDocuments(), selectedDocument);
+                break;
+            case HEARING_SUMMARY_TYPE:
+                updateCaseDocumentList(data.getListing().getSummary().getRecFile(), selectedDocument);
+                break;
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
+            .data(data)
             .build();
 
     }
@@ -103,8 +144,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
 
-        List<CaseworkerCICDocument> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
-        cicCase.setAllDocumentList(buildListValues(allCaseDocuments));
+        /*List<CaseworkerCICDocument> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
+        cicCase.setAllDocumentList(buildListValues(allCaseDocuments));*/
 
         DynamicList documentList = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
         cicCase.setAmendDocumentList(documentList);

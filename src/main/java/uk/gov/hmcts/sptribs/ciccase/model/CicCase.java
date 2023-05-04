@@ -276,11 +276,6 @@ public class CicCase {
     private DynamicList amendDocumentList;
 
     @CCD(
-        access = {CaseworkerAndSuperUserAccess.class}
-    )
-    private List<ListValue<CaseworkerCICDocument>> allDocumentList;
-
-    @CCD(
         label = "Documents",
         typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}

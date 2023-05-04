@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -16,9 +17,9 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 
-    private static final String ALWAYS_HIDE = "cicCaseAmendDocumentList=\"NEVER_SHOW\"";
+public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -29,7 +30,6 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
             .label("LabelSelectCaseDocumentsWarning", "")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getAmendDocumentList)
-            .readonly(CicCase::getAllDocumentList, ALWAYS_HIDE)
             .done();
     }
 
@@ -49,7 +49,8 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
     private void setSelectedDocuments(CaseData data) {
         var cicCase = data.getCicCase();
         DynamicList documentList = cicCase.getAmendDocumentList();
-        List<ListValue<CaseworkerCICDocument>> allCaseDocuments = data.getCicCase().getAllDocumentList();
+        List<CaseworkerCICDocument> allCaseDocumentsList = DocumentListUtil.getAllCaseDocuments(data);
+        List<ListValue<CaseworkerCICDocument>> allCaseDocuments = buildListValues(allCaseDocumentsList);
         CaseworkerCICDocument selectedDocument = null;
         String selectedDocumentType = null;
 
