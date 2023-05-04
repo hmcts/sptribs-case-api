@@ -216,6 +216,40 @@ withPipeline(type, product, component) {
         setFeatureFlags(env.ENVIRONMENT)
     }
 
+  afterSuccess('functionalTest:preview') {
+
+    try {
+      builder.gradle('e2eTestsNightlyFirefox')
+    } finally {
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/e2eTestsNightlyFirefox",
+        reportFiles          : "index.html",
+        reportName           : "E2E Tests Report"
+      ]
+    }
+  }
+
+  afterSuccess('functionalTest:preview') {
+
+    try {
+      builder.gradle('e2eTestsNightlyMsEdge')
+    } finally {
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/e2eTestsNightlyMsEdge",
+        reportFiles          : "index.html",
+        reportName           : "E2E Tests Report"
+      ]
+    }
+  }
+
     afterSuccess('functionalTest:aat') {
 
         try {
