@@ -32,7 +32,7 @@ public class CaseManagementController {
     @ApiOperation("Call CCD to create case")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = "created"),
-        @ApiResponse(code = 401, message = "Provided Authroization token is missing or invalid"),
+        @ApiResponse(code = 401, message = "Provided Authorization token is missing or invalid"),
         @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public ResponseEntity<?> createCase(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
@@ -47,7 +47,7 @@ public class CaseManagementController {
     @ApiOperation("Call CCD to create case")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "updated"),
-        @ApiResponse(code = 401, message = "Provided Authroization token is missing or invalid"),
+        @ApiResponse(code = 401, message = "Provided Authorization token is missing or invalid"),
         @ApiResponse(code = 500, message = "Internal Server Error"),
         @ApiResponse(code = 404, message = "Case Not found")
     })
@@ -64,7 +64,7 @@ public class CaseManagementController {
     @ApiOperation("Call CCD to fetch the citizen case details")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "updated"),
-        @ApiResponse(code = 401, message = "Provided Authroization token is missing or invalid"),
+        @ApiResponse(code = 401, message = "Provided Authorization token is missing or invalid"),
         @ApiResponse(code = 500, message = "Internal Server Error"),
         @ApiResponse(code = 404, message = "Case Not found")
     })
