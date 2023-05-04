@@ -44,7 +44,7 @@ public class CaseManagementController {
     }
 
     @PutMapping("/{caseId}/update")
-    @ApiOperation("Call CCD to create case")
+    @ApiOperation("Call CCD to update case")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "updated"),
         @ApiResponse(code = 401, message = "Provided Authorization token is missing or invalid"),
