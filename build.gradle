@@ -154,6 +154,42 @@ task e2eTests(type: Test) {
   environment 'CI', 'true'
 }
 
+task e2eTestsNightlyFirefox(type: Test) {
+  description = "Runs e2e tests nightly using firefox"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
+  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'BROWSER', 'firefox'
+  environment 'CI', 'true'
+}
+
+task e2eTestsNightlyMsEdge(type: Test) {
+  description = "Runs e2e tests nightly using MS Edge"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
+  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'BROWSER', 'msedge'
+  environment 'CI', 'true'
+}
+
 // Invoked from CftLibConfig when booting with CCD.
 task buildCCDXlsx(type: Exec) {
   group 'ccd tasks'
@@ -556,7 +592,21 @@ task installBrowser(type: JavaExec) {
   args = ['install', 'chromium']
 }
 
+task installFirefox(type: JavaExec) {
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  main = 'com.microsoft.playwright.CLI'
+  args = ['install', 'firefox']
+}
+
+task installMsEdge(type: JavaExec) {
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  main = 'com.microsoft.playwright.CLI'
+  args = ['install', 'msedge']
+}
+
 tasks.e2eTests.dependsOn(installBrowser)
+tasks.e2eTestsNightlyFirefox.dependsOn(installFirefox)
+tasks.e2eTestsNightlyMsEdge.dependsOn(installMsEdge)
 
 def E2E_MAX_PARALLEL_FORKS = 2
 def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
