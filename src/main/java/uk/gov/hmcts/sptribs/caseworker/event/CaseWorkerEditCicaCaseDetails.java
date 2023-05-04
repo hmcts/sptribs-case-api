@@ -21,6 +21,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 
@@ -42,7 +43,7 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::detailsUpdated)
-                .grant(CREATE_READ_UPDATE, ST_CIC_RESPONDENT));
+                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT));
         editCicaCaseDetailsPage.addTo(pageBuilder);
 
 
