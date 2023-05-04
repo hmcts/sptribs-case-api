@@ -7,6 +7,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum CaseType {
     CIC("CriminalInjuriesCompensation");
-
     private final String name;
 }
