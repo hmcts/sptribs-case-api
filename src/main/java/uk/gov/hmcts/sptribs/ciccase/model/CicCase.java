@@ -58,28 +58,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
 
-    @CCD(
-        label = "Enter any other important information about this adjournment",
-        typeOverride = TextArea
-    )
-    private String otherDetailsOfAdjournment;
-
-    @CCD(
-        label = "What type of decision was given at the hearing?",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "HearingOutcome",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private HearingOutcome hearingOutcome;
-
-    @CCD(
-        label = "Why was the hearing adjourned?",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "AdjournmentReasons",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private AdjournmentReasons adjournmentReasons;
-
 
     @CCD(
         label = "Enter any other important information about this cancellation",
