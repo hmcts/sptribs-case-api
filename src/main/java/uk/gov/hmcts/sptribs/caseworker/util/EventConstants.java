@@ -2,8 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 public final class EventConstants {
     public static final String CASE_FLAG = "CASE LEVEL FLAG";
-    public static final String APPELLANT_FLAG = "APPELLANT FLAG";
-    public static final String RESPONDENT_FLAG = "RESPONDENT FLAG";
+    public static final String SUBJECT_FLAG = "SUBJECT FLAG";
+    public static final String REPRESENTATIVE_FLAG = "REPRESENTATIVE FLAG";
+    public static final String APPLICANT_FLAG = "APPLICANT FLAG";
     public static final String HYPHEN = "-";
     public static final String SPACE = " ";
     public static final String CURRENT_EVENT = "currentEvent = \"";

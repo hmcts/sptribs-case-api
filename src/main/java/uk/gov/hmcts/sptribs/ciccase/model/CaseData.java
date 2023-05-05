@@ -76,6 +76,24 @@ public class CaseData {
         typeParameterOverride = "Flags")
     private List<ListValue<Flags>> respondentFlags;
 
+    @CCD(
+        label = "Case flags",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLauncher flagLauncher1;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags caseFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags subjectFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags representativeFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags applicantFlags;
+
     @JsonUnwrapped(prefix = "all")
     @Builder.Default
     @CCD(

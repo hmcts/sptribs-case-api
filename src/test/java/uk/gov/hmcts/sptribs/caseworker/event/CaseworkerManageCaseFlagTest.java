@@ -24,17 +24,19 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.APPELLANT_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.APPLICANT_FLAG;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASE_FLAG;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.REPRESENTATIVE_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SUBJECT_FLAG;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAppellantFlags;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApplicantFlags;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseFlags;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRespondentFlags;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRepresentativeFlags;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getSubjectFlags;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_MANAGE_CASE_FLAG;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,9 +89,10 @@ class CaseworkerManageCaseFlagTest {
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-            .appellantFlags(getAppellantFlags())
-            .respondentFlags(getRespondentFlags())
-            .caseLevelFlags(getCaseFlags())
+            .subjectFlags(getSubjectFlags())
+            .representativeFlags(getRepresentativeFlags())
+            .applicantFlags(getApplicantFlags())
+            .caseFlags(getCaseFlags())
             .build();
         updatedCaseDetails.setData(caseData);
         //When
@@ -105,7 +108,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setCaseLevelFlags(getCaseFlags());
+        caseData.setCaseFlags(getCaseFlags());
         final CicCase cicCase = CicCase.builder()
             .flagDynamicList(getCaseFlagDynamicList())
             .build();
@@ -124,14 +127,14 @@ class CaseworkerManageCaseFlagTest {
     }
 
     @Test
-    void shouldSuccessfullySelectAppellantFlag() {
+    void shouldSuccessfullySelectApplicantFlag() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setAppellantFlags(getAppellantFlags());
+        caseData.setApplicantFlags(getApplicantFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getAppellanFlagDynamicList())
+            .flagDynamicList(getApplicantFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -148,14 +151,14 @@ class CaseworkerManageCaseFlagTest {
     }
 
     @Test
-    void shouldSuccessfullySelectRespondentFlag() {
+    void shouldSuccessfullySelectRepresentativeFlag() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setRespondentFlags(getRespondentFlags());
+        caseData.setRepresentativeFlags(getRepresentativeFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getRespondentFlagDynamicList())
+            .flagDynamicList(getRepresentativeFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -169,6 +172,29 @@ class CaseworkerManageCaseFlagTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
 
+    }
+
+    @Test
+    void shouldSuccessfullySelectSubjectFlag() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        caseData.setSubjectFlags(getSubjectFlags());
+        final CicCase cicCase = CicCase.builder()
+            .flagDynamicList(getSubjectFlagDynamicList())
+            .build();
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = manageFlagShowList.midEvent(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
     }
 
     @Test
@@ -177,7 +203,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setCaseLevelFlags(getCaseFlags());
+        caseData.setCaseFlags(getCaseFlags());
         final CicCase cicCase = CicCase.builder()
             .flagDynamicList(getCaseFlagDynamicList())
             .flagAdditionalDetail("update")
@@ -201,20 +227,20 @@ class CaseworkerManageCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(submittedResponse).isNotNull();
-        assertThat(response.getData().getCaseLevelFlags().get(0).getValue().getDetails().get(0).getValue().getStatus())
+        assertThat(response.getData().getCaseFlags().getDetails().get(0).getValue().getStatus())
             .isEqualTo(Status.INACTIVE.getLabel());
 
     }
 
     @Test
-    void shouldSuccessfullySelectAppellantFlagSubmit() {
+    void shouldSuccessfullySelectApplicantFlagSubmit() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setAppellantFlags(getAppellantFlags());
+        caseData.setApplicantFlags(getApplicantFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getAppellanFlagDynamicList())
+            .flagDynamicList(getApplicantFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -231,16 +257,40 @@ class CaseworkerManageCaseFlagTest {
 
     }
 
-
     @Test
-    void shouldSuccessfullySelectRespondentFlagSubmit() {
+    void shouldSuccessfullySelectRepresentativeFlagSubmit() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        caseData.setRespondentFlags(getRespondentFlags());
+        caseData.setRepresentativeFlags(getRepresentativeFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getRespondentFlagDynamicList())
+            .flagDynamicList(getRepresentativeFlagDynamicList())
+            .build();
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> midResponse = manageFlagShowList.midEvent(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerManageCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+
+    }
+
+    @Test
+    void shouldSuccessfullySelectSubjectFlagSubmit() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        caseData.setSubjectFlags(getSubjectFlags());
+        final CicCase cicCase = CicCase.builder()
+            .flagDynamicList(getSubjectFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -270,10 +320,10 @@ class CaseworkerManageCaseFlagTest {
             .build();
     }
 
-    private DynamicList getRespondentFlagDynamicList() {
+    private DynamicList getRepresentativeFlagDynamicList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
-            .label(RESPONDENT_FLAG + "-0-0")
+            .label(REPRESENTATIVE_FLAG + "-0-0")
             .code(UUID.randomUUID())
             .build();
         return DynamicList
@@ -283,10 +333,23 @@ class CaseworkerManageCaseFlagTest {
             .build();
     }
 
-    private DynamicList getAppellanFlagDynamicList() {
+    private DynamicList getSubjectFlagDynamicList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
-            .label(APPELLANT_FLAG + "-0-0")
+            .label(SUBJECT_FLAG + "-0-0")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+    }
+
+    private DynamicList getApplicantFlagDynamicList() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(APPLICANT_FLAG + "-0-0")
             .code(UUID.randomUUID())
             .build();
         return DynamicList
