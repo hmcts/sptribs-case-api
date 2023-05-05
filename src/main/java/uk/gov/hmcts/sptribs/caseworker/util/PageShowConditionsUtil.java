@@ -48,5 +48,4 @@ public final class PageShowConditionsUtil {
         map.put("editHearingSummary", EDIT_SUMMARY_SHOW_WARNING_PAGE);
         return map;
     }
-
 }

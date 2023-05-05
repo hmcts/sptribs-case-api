@@ -189,7 +189,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
-        var cicCase = details.getData().getCicCase();
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
@@ -200,7 +199,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Order sent %n## %s",
-                MessageUtil.generateSimpleMessage(cicCase)))
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 
