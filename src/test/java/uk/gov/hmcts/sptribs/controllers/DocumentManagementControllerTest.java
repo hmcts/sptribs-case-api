@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.cosapi.controllers;
+package uk.gov.hmcts.sptribs.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,25 +12,27 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.cosapi.exception.DocumentUploadOrDeleteException;
-import uk.gov.hmcts.reform.cosapi.model.DocumentInfo;
-import uk.gov.hmcts.reform.cosapi.model.DocumentResponse;
-import uk.gov.hmcts.reform.cosapi.services.DocumentManagementService;
+import uk.gov.hmcts.sptribs.controllers.DocumentManagementController;
+import uk.gov.hmcts.sptribs.exception.DocumentUploadOrDeleteException;
+import uk.gov.hmcts.sptribs.model.DocumentInfo;
+import uk.gov.hmcts.sptribs.model.DocumentResponse;
+import uk.gov.hmcts.sptribs.services.DocumentManagementService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.CASE_DATA_CIC_ID;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.CASE_DATA_FILE_CIC;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.CASE_TEST_AUTHORIZATION;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.DOCUMENT_DELETE_FAILURE_MSG;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.JSON_CONTENT_TYPE;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.JSON_FILE_TYPE;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.RESPONSE_STATUS_SUCCESS;
-import static uk.gov.hmcts.reform.cosapi.util.TestConstant.TEST_URL;
-import static uk.gov.hmcts.reform.cosapi.util.TestFileUtil.loadJson;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_TEST_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.DOCUMENT_DELETE_FAILURE_MSG;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_CONTENT_TYPE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_FILE_TYPE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
