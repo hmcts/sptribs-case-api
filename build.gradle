@@ -8,7 +8,6 @@ buildscript {
         excludeGroup "com.github.ben-manes.versions"
       }
     }
-
   }
   dependencies {
     classpath group: 'cz.habarta.typescript-generator', name: 'typescript-generator-gradle-plugin', version: '3.2.1263'
