@@ -414,7 +414,7 @@ public class TestDataHelper {
     public static List<ListValue<CICDocument>> getCICDocumentListWithInvalidFileFormat() {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename("file.txt").build())
+            .documentLink(Document.builder().filename("file.png").build())
             .documentEmailContent("some email content")
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
