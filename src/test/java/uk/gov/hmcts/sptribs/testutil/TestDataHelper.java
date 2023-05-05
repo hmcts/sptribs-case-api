@@ -415,41 +415,28 @@ public class TestDataHelper {
         return documentList;
     }
 
-    public static List<ListValue<Flags>> getAppellantFlags() {
+    public static Flags getSubjectFlags() {
 
-        Flags appellantFlag = Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
-        ListValue<Flags> appellantFlagListValue = new ListValue<>();
-        appellantFlagListValue.setValue(appellantFlag);
-        appellantFlagListValue.setId("0");
-        List<ListValue<Flags>> appellantFlagList = new ArrayList<>();
-        appellantFlagList.add(appellantFlagListValue);
-        return appellantFlagList;
+        return Flags.builder().partyName(TestConstants.TEST_FIRST_NAME).details(getFlagDetails()).build();
     }
 
-    public static List<ListValue<Flags>> getRespondentFlags() {
-        Flags respondentFlag = Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
-        ListValue<Flags> respondentFlagListValue = new ListValue<>();
-        respondentFlagListValue.setValue(respondentFlag);
-        respondentFlagListValue.setId("0");
-        List<ListValue<Flags>> respondentFlagList = new ArrayList<>();
-        respondentFlagList.add(respondentFlagListValue);
-        return respondentFlagList;
+    public static Flags getApplicantFlags() {
+        return Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
     }
 
-    public static List<ListValue<Flags>> getCaseFlags() {
-        Flags caseFlag = Flags.builder().details(getFlagDetails()).build();
-        ListValue<Flags> caseFlagListValue = new ListValue<>();
-        caseFlagListValue.setValue(caseFlag);
-        caseFlagListValue.setId("0");
-        List<ListValue<Flags>> caseFlagList = new ArrayList<>();
-        caseFlagList.add(caseFlagListValue);
-        return caseFlagList;
+    public static Flags getRepresentativeFlags() {
+        return Flags.builder().partyName(TestConstants.TEST_SOLICITOR_NAME).details(getFlagDetails()).build();
+    }
+
+    public static Flags getCaseFlags() {
+        return Flags.builder().details(getFlagDetails()).build();
     }
 
     public static List<ListValue<FlagDetail>> getFlagDetails() {
         FlagDetail flagDetail = FlagDetail.builder().status(Status.ACTIVE.getLabel()).flagCode("1").build();
         ListValue<FlagDetail> flagDetailListValue = new ListValue<>();
         flagDetailListValue.setValue(flagDetail);
+        flagDetailListValue.setId("0");
         List<ListValue<FlagDetail>> flagDetailList = new ArrayList<>();
         flagDetailList.add(flagDetailListValue);
         return flagDetailList;

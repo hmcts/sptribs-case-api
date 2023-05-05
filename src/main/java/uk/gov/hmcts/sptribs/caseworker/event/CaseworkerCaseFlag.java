@@ -103,33 +103,14 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
-        var flag = new Flags();
+
         var flagDetail = new FlagDetail();
-        boolean isRespondent = false;
         flagDetail.setName(cicCase.getFlagType().getLabel());
         flagDetail.setFlagCode(cicCase.getFlagType().getFlagCode());
         flagDetail.setFlagComment(cicCase.getFlagAdditionalDetail());
         flagDetail.setOtherDescription(cicCase.getFlagOtherDescription());
         flagDetail.setStatus(Status.ACTIVE.getLabel());
-        if (cicCase.getFlagLevel().isPartyLevel()) {
-            if (null != caseData.getCicCase().getNotifyPartyApplicant()
-                && !isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
-                flag.setPartyName(caseData.getCicCase().getApplicantFullName());
-                flag.setRoleOnCase(NotificationParties.APPLICANT.getLabel());
-            } else if (null != caseData.getCicCase().getNotifyPartySubject()
-                && !isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-                flag.setPartyName(caseData.getCicCase().getFullName());
-                flag.setRoleOnCase(NotificationParties.SUBJECT.getLabel());
-            } else if (null != caseData.getCicCase().getNotifyPartyRepresentative()
-                && !isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-                flag.setPartyName(caseData.getCicCase().getRepresentativeFullName());
-                flag.setRoleOnCase(NotificationParties.REPRESENTATIVE.getLabel());
-            } else if (!isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-                flag.setPartyName(caseData.getCicCase().getRespondentName());
-                flag.setRoleOnCase(NotificationParties.RESPONDENT.getLabel());
-                isRespondent = true;
-            }
-        }
+        var flag = new Flags();
         if (isEmpty(flag.getDetails())) {
             List<ListValue<FlagDetail>> listValues = new ArrayList<>();
 
@@ -153,13 +134,24 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             flag.getDetails().forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
         if (cicCase.getFlagLevel().isPartyLevel()) {
-            if (isRespondent) {
-                addRespondent(caseData, flag);
-            } else {
-                addAppellantFlag(caseData, flag);
+            if (null != caseData.getCicCase().getNotifyPartyApplicant()
+                && !isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+                flag.setPartyName(caseData.getCicCase().getApplicantFullName());
+                flag.setRoleOnCase(NotificationParties.APPLICANT.getLabel());
+                caseData.setApplicantFlags(flag);
+            } else if (null != caseData.getCicCase().getNotifyPartySubject()
+                && !isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+                flag.setPartyName(caseData.getCicCase().getFullName());
+                flag.setRoleOnCase(NotificationParties.SUBJECT.getLabel());
+                caseData.setSubjectFlags(flag);
+            } else if (null != caseData.getCicCase().getNotifyPartyRepresentative()
+                && !isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+                flag.setPartyName(caseData.getCicCase().getRepresentativeFullName());
+                flag.setRoleOnCase(NotificationParties.REPRESENTATIVE.getLabel());
+                caseData.setRepresentativeFlags(flag);
             }
         } else {
-            addCaseLevel(caseData, flag);
+            caseData.setCaseFlags(flag);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -176,81 +168,5 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .build();
     }
 
-    private void addCaseLevel(CaseData caseData, Flags flag) {
-        if (isEmpty(caseData.getCaseLevelFlags())) {
-            List<ListValue<Flags>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
-                .<Flags>builder()
-                .id("1")
-                .value(flag)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.setCaseLevelFlags(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<Flags>builder()
-                .value(flag)
-                .build();
-
-            caseData.getCaseLevelFlags().add(0, listValue);
-            caseData.getCaseLevelFlags()
-                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-    }
-
-    private void addAppellantFlag(CaseData caseData, Flags flag) {
-        if (isEmpty(caseData.getAppellantFlags())) {
-            List<ListValue<Flags>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<Flags>builder()
-                .id("1")
-                .value(flag)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.setAppellantFlags(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<Flags>builder()
-                .value(flag)
-                .build();
-
-            caseData.getAppellantFlags().add(0, listValue);
-            caseData.getAppellantFlags()
-                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-    }
-
-    private void addRespondent(CaseData caseData, Flags flag) {
-        if (isEmpty(caseData.getRespondentFlags())) {
-            List<ListValue<Flags>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<Flags>builder()
-                .id("1")
-                .value(flag)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.setRespondentFlags(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<Flags>builder()
-                .value(flag)
-                .build();
-
-            caseData.getRespondentFlags().add(0, listValue);
-            caseData.getRespondentFlags()
-                .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-    }
 }

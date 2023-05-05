@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -67,7 +66,7 @@ class CaseworkerCaseFlagTest {
     }
 
     @Test
-    void shouldSuccessfullyAppellantAddFlagRepresentative() {
+    void shouldSuccessfullyAddFlagRepresentative() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
@@ -95,17 +94,17 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getAppellantFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getAppellantFlags()).isNotNull();
+        assertThat(response2.getData().getRepresentativeFlags()).isNotNull();
     }
 
     @Test
-    void shouldSuccessfullyAppellantAddFlag() {
+    void shouldSuccessfullyApplicantAddFlag() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
@@ -132,17 +131,17 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getAppellantFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getAppellantFlags()).isNotNull();
+        assertThat(response2.getData().getApplicantFlags()).isNotNull();
     }
 
     @Test
-    void shouldSuccessfullyAppellantAddFlagSubject() {
+    void shouldSuccessfullyAddFlagSubject() {
         //Given
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
@@ -166,51 +165,14 @@ class CaseworkerCaseFlagTest {
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
-
         //Then
-        assertThat(response.getData().getAppellantFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getAppellantFlags()).isNotNull();
-    }
-
-    @Test
-    void shouldSuccessfullyRespondentAddFlag() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setNote("This is a test note");
-        final CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detail");
-        cicCase.setFlagLevel(FlagLevel.PARTY_LEVEL);
-        final Set<RespondentCIC> set = new HashSet<>();
-        set.add(RespondentCIC.RESPONDENT);
-        cicCase.setRespondentName("Jane Doe");
-        cicCase.setNotifyPartyRespondent(set);
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
-
-
-        //Then
-        assertThat(response.getData().getRespondentFlags()).isNotNull();
-        assertThat(submittedCallbackResponse).isNotNull();
-
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getRespondentFlags()).isNotNull();
+        assertThat(response2.getData().getSubjectFlags()).isNotNull();
     }
 
     @Test
@@ -236,12 +198,12 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getCaseLevelFlags()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getCaseLevelFlags()).isNotNull();
+        assertThat(response2.getData().getCaseFlags()).isNotNull();
     }
 
 }
