@@ -41,7 +41,6 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
             .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
                 + "--" + doc.getDocumentLink().getUrl()
                 + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
