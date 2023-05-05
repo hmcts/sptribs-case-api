@@ -33,6 +33,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 
@@ -62,7 +63,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::partiesContacted)
-                .grant(CREATE_READ_UPDATE, ST_CIC_RESPONDENT));
+                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT));
         resPartiesToContact.addTo(pageBuilder);
     }
 
