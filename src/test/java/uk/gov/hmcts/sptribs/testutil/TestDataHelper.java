@@ -442,10 +442,10 @@ public class TestDataHelper {
                 elements.add(listItem);
             }
         }
-            return DynamicMultiSelectList
-                .builder()
-                .value(elements)
-                .listItems(elements)
-                .build();
+        return DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build();
     }
 }
