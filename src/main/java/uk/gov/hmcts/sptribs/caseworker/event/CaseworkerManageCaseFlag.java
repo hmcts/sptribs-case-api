@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageFlagShowList;
@@ -24,11 +24,12 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.APPELLANT_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.APPLICANT_FLAG;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MANAGE_CASE_FLAG;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASE_FLAG;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.REPRESENTATIVE_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SUBJECT_FLAG;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -104,26 +105,34 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
         String selectedFlag = caseData.getCicCase().getFlagDynamicList().getValue().getLabel();
         String[] selectedList = selectedFlag.split(HYPHEN);
         if (selectedList[0].equals(CASE_FLAG)) {
-            for (ListValue<Flags> listValueFlag : caseData.getCaseLevelFlags()) {
+            for (ListValue<FlagDetail> listValueFlag : caseData.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().getDetails().get(0).getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().getDetails().get(0).getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
                     break;
                 }
             }
-        } else if (selectedList[0].equals(APPELLANT_FLAG)) {
-            for (ListValue<Flags> listValueFlag : caseData.getAppellantFlags()) {
+        } else if (selectedList[0].equals(SUBJECT_FLAG)) {
+            for (ListValue<FlagDetail> listValueFlag : caseData.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().getDetails().get(0).getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().getDetails().get(0).getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
                     break;
                 }
             }
-        } else if (selectedList[0].equals(RESPONDENT_FLAG)) {
-            for (ListValue<Flags> listValueFlag : caseData.getRespondentFlags()) {
+        }  else if (selectedList[0].equals(REPRESENTATIVE_FLAG)) {
+            for (ListValue<FlagDetail> listValueFlag : caseData.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().getDetails().get(0).getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().getDetails().get(0).getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    break;
+                }
+            }
+        } else if (selectedList[0].equals(APPLICANT_FLAG)) {
+            for (ListValue<FlagDetail> listValueFlag : caseData.getApplicantFlags().getDetails()) {
+                if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
                     break;
                 }
             }
