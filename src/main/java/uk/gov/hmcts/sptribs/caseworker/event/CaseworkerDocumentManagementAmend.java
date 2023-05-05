@@ -24,7 +24,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
@@ -59,8 +60,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .name("Document management: Amend")
             .description("Document management: Amend")
             .showSummary()
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_SENIOR_JUDGE)
-            .grantHistoryOnly(SOLICITOR)
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 

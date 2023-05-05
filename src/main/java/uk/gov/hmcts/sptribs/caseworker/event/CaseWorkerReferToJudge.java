@@ -22,6 +22,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -46,7 +47,8 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::referred)
-            .grant(CREATE_READ_UPDATE, ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER));
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER));
         referToJudgeReason.addTo(pageBuilder);
         referToJudgeAdditionalInfo.addTo(pageBuilder);
     }
