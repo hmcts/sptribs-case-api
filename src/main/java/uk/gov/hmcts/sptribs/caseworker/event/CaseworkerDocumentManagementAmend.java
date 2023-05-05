@@ -144,9 +144,6 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
 
-        /*List<CaseworkerCICDocument> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
-        cicCase.setAllDocumentList(buildListValues(allCaseDocuments));*/
-
         DynamicList documentList = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
         cicCase.setAmendDocumentList(documentList);
 

@@ -96,28 +96,6 @@ public final class DocumentListUtil {
             .build();
     }
 
-    /*public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
-
-        List<DynamicListElement> dynamicListElements = docList
-            .stream()
-            .map(doc -> {
-                //UUID uuid = UUID.fromString(StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(), "/"));
-                return DynamicListElement.builder()
-                    .label(doc.getDocumentLink().getFilename()
-                    + "--" + doc.getDocumentLink().getUrl()
-                    + "-- " + doc.getDocumentCategory().getLabel())
-                    .code(UUID.randomUUID()).build();
-            })
-            .collect(Collectors.toList());
-
-        return DynamicList
-            .builder()
-            .listItems(dynamicListElements)
-            .build();
-
-    }*/
-
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getReinstateDocuments())) {

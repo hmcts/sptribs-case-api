@@ -399,7 +399,11 @@ public class TestDataHelper {
     public static List<ListValue<CICDocument>> getCICDocumentList() {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().build())
+            .documentLink(Document.builder()
+                .filename("test.pdf")
+                .binaryUrl("http://url/")
+                .url("http://url/")
+                .build())
             .documentEmailContent("some email content")
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
@@ -413,6 +417,7 @@ public class TestDataHelper {
             .documentLink(Document.builder()
                 .filename("test.pdf")
                 .binaryUrl("http://url/")
+                .url("http://url/")
                 .build())
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
