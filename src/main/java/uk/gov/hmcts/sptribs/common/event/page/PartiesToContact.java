@@ -25,13 +25,13 @@ public class PartiesToContact implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("partiesToContact", this::midEvent)
-            .pageLabel("Contact Parties")
+            .pageLabel("Contact  Parties")
             .label("LabelPartiesToContactMessage", "Which parties do you want to contact?")
             .complex(CaseData::getCicCase)
             .optionalWithLabel(CicCase::getNotifyPartySubject, RECIPIENT_LABEL)
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL )
+                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
