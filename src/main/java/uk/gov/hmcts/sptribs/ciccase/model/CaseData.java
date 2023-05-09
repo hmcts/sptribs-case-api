@@ -52,12 +52,19 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "all")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DocumentManagement docManagement = new DocumentManagement();
+    private DocumentManagement allDocManagement = new DocumentManagement();
+
+    @JsonUnwrapped(prefix = "new")
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DocumentManagement newDocManagement = new DocumentManagement();
 
     @Builder.Default
     @CCD(
