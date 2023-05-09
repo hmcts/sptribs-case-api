@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConcessionDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConsentOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRejectionDetails;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRule27;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseStrikeOutDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
@@ -39,8 +40,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
@@ -56,6 +59,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private static final CcdPageConfiguration closeCaseConcessionDetails = new CloseCaseConcessionDetails();
     private static final CcdPageConfiguration closeCaseStrikeOutDetails = new CloseCaseStrikeOutDetails();
     private static final CcdPageConfiguration closeCaseConsentOrder = new CloseCaseConsentOrder();
+    private static final CcdPageConfiguration closeCaseRule27 = new CloseCaseRule27();
     private static final CcdPageConfiguration closeCaseSelectRecipients = new CloseCaseSelectRecipients();
 
     @Autowired
@@ -75,6 +79,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         closeCaseConcessionDetails.addTo(pageBuilder);
         closeCaseStrikeOutDetails.addTo(pageBuilder);
         closeCaseConsentOrder.addTo(pageBuilder);
+        closeCaseRule27.addTo(pageBuilder);
         uploadDocuments(pageBuilder);
         closeCaseSelectRecipients.addTo(pageBuilder);
     }
@@ -89,9 +94,17 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::closed)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

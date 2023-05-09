@@ -70,7 +70,7 @@ public final class DocumentListUtil {
     private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
         return docList
             .stream()
-            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
+            .filter(CaseworkerCICDocument::isDocumentValid)
             .map(doc -> DynamicListElement.builder()
                 .label(fileType + "--" + doc.getDocumentLink().getFilename()
                 + "--" + doc.getDocumentLink().getUrl()
@@ -83,7 +83,6 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
             .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
                 + "--" + doc.getDocumentLink().getUrl()
                 + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
