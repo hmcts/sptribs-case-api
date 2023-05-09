@@ -27,7 +27,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.DELETE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
 @Component
@@ -59,7 +59,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .name("Document management: Amend")
             .description("Document management: Amend")
             .showSummary()
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_SENIOR_JUDGE)
+            .grant(DELETE, SUPER_USER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(SOLICITOR)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));

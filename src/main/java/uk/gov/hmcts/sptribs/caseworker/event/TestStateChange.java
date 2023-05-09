@@ -19,7 +19,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.TEST_CHANGE_ST
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.DELETE;
 
 @Component
 @Slf4j
@@ -36,7 +36,7 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
             .description("Test change state")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::changed)
-            .grant(CREATE_READ_UPDATE,SUPER_USER))
+            .grant(DELETE,SUPER_USER))
             .page("testChangeState")
             .label("testChangeState", "<H2>Test change state</H2>")
             .complex(CaseData::getCicCase)
