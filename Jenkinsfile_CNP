@@ -54,15 +54,10 @@ def secrets = [
 def pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
 
-def vaultOverrides = [
-  'preview': 'aat',
-  'prod': 'aat'
-]
 
 withPipeline(type, product, component) {
     enableAksStagingDeployment()
     disableLegacyDeployment()
-    overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     enableSlackNotifications('#special-tribunals-builds')
@@ -317,10 +312,12 @@ def setFeatureFlags(environment) {
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
+    env.BUNDLING_FEATURE = true
   } else if (environment =~ /aat|prod/) {
     env.CONTACT_PARTIES_FEATURE = false
     env.LINK_CASE_FEATURE = false
-    env.CASE_FLAGS_FEATURE = true
+    env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
+    env.BUNDLING_FEATURE = false
   }
 }
