@@ -48,7 +48,7 @@ class WorkBasketResultFieldsTest {
                     "Case Status",
                     null,
                     null),
-                tuple("hearingDate",
+                tuple("firstHearingDate",
                     "Hearing Date",
                     null,
                     null),
@@ -56,7 +56,7 @@ class WorkBasketResultFieldsTest {
                     "Applicant Name",
                     null,
                     null),
-                tuple("dueDate",
+                tuple("cicCaseFirstDueDate",
                     "Due Date",
                     null,
                     null)
