@@ -11,9 +11,13 @@ properties([
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.GradleBuilder
+
 def type = "java"
 def product = "sptribs"
 def component = "case-api"
+
+GradleBuilder builder = new GradleBuilder(this, product)
 
 static Map<String, Object> secret(String secretName, String envVariable) {
   [$class     : 'AzureKeyVaultSecret',
@@ -44,5 +48,41 @@ withNightlyPipeline(type, product, component) {
 
   afterAlways('fullFunctionalTest') {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  afterSuccess('fullFunctionalTest') {
+
+    Exception ex = null;
+    try {
+      builder.gradle('e2eTestsNightlyFirefox')
+    } catch (Exception caught) {
+      ex = caught;
+    } finally {
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/e2eTestsNightlyFirefox",
+        reportFiles          : "index.html",
+        reportName           : "E2E Tests Report Firefox"
+      ]
+      try {
+        builder.gradle('e2eTestsNightlyMsEdge')
+      } finally {
+
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports/tests/e2eTestsNightlyMsEdge",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report MS Edge"
+        ]
+        if (ex != null) {
+          throw ex;
+        }
+      }
+    }
   }
 }

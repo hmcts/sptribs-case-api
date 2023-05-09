@@ -159,7 +159,7 @@ class CaseworkerIssueCaseTest {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.APPLICATION_FORM)
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);

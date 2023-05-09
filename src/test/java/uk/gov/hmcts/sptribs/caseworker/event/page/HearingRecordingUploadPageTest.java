@@ -17,7 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithInvalidFileFormat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,7 +31,7 @@ public class HearingRecordingUploadPageTest {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final Listing listing = getRecordListing();
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithInvalidFileFormat();
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("xml");
         HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
         listing.setSummary(hearingSummary);
 

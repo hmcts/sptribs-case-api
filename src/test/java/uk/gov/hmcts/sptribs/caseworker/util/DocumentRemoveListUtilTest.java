@@ -55,7 +55,7 @@ public class DocumentRemoveListUtilTest {
             .build();
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
-        caseData.setDocManagement(documentManagement);
+        caseData.setAllDocManagement(documentManagement);
         caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(getDocument()).build()).build());
         CloseCase closeCase = CloseCase.builder()
             .documents(getDocument())
@@ -72,7 +72,7 @@ public class DocumentRemoveListUtilTest {
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
 
         DocumentManagement documentManagementOld = DocumentManagement.builder().caseworkerCICDocument(get2Document()).build();
-        oldData.setDocManagement(documentManagementOld);
+        oldData.setAllDocManagement(documentManagementOld);
         CicCase cicCaseOld = CicCase.builder()
             .decisionDocumentList(get2Document())
             .finalDecisionDocumentList(get2Document())
@@ -118,7 +118,7 @@ public class DocumentRemoveListUtilTest {
         caseData.setCicCase(cicCase);
         caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(getDocument()).build()).build());
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
-        caseData.setDocManagement(documentManagement);
+        caseData.setAllDocManagement(documentManagement);
         CloseCase closeCase = CloseCase.builder()
             .documents(new ArrayList<>())
             .build();
@@ -134,7 +134,7 @@ public class DocumentRemoveListUtilTest {
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
 
         DocumentManagement documentManagementOld = DocumentManagement.builder().caseworkerCICDocument(get2Document()).build();
-        oldData.setDocManagement(documentManagementOld);
+        oldData.setAllDocManagement(documentManagementOld);
         CicCase cicCaseOld = CicCase.builder()
             .decisionDocumentList(get2Document())
             .finalDecisionDocumentList(get2Document())
