@@ -31,7 +31,7 @@ public class PartiesToContact implements CcdPageConfiguration {
             .optionalWithLabel(CicCase::getNotifyPartySubject, RECIPIENT_LABEL)
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL )
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
