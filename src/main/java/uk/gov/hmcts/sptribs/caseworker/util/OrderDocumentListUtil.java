@@ -118,9 +118,10 @@ public final class OrderDocumentListUtil {
     private static void amendUploadedFile(ListValue<Order> orderListValue, CaseworkerCICDocument selectedDocument) {
         if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
             for (ListValue<CICDocument> file : orderListValue.getValue().getUploadedFile()) {
-                if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
-                    .equals(selectedDocument.getDocumentLink())) {
+                if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink().getUrl()
+                    .equals(selectedDocument.getDocumentLink().getUrl())) {
                     file.getValue().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
+                    file.getValue().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
                 }
             }
         }

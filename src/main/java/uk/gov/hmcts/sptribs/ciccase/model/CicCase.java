@@ -291,7 +291,12 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String SelectedDocumentType;
+    private String selectedDocumentType;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isDocumentCreatedFromTemplate;
 
     @CCD(
         label = "Upload a file to the system",
