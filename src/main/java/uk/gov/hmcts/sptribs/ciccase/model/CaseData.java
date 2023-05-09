@@ -63,27 +63,6 @@ public class CaseData {
         label = "Case flags",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private FlagLauncher flagLauncher;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> appellantFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> caseLevelFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> respondentFlags;
-
-    @CCD(
-        label = "Case flags",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
     private FlagLauncher flagLauncher1;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
