@@ -21,10 +21,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
-import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.updateDecisionTypeDocumentList;
-import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.updateFinalDecisionTypeDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
-import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.updateOrderTypeDocumentList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -44,11 +41,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.DECISION_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.ORDER_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 
 @Component
@@ -112,20 +106,11 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         String selectedDocumentType = cicCase.getSelectedDocumentType();
 
         switch (selectedDocumentType) {
-            case ORDER_TYPE:
-                updateOrderTypeDocumentList(cicCase, selectedDocument);
-                break;
             case CASE_TYPE:
                 updateCaseDocumentList(cicCase.getApplicantDocumentsUploaded(), selectedDocument);
                 break;
             case REINSTATE_TYPE:
                 updateCaseDocumentList(cicCase.getReinstateDocuments(), selectedDocument);
-                break;
-            case DECISION_TYPE:
-                updateDecisionTypeDocumentList(data, selectedDocument);
-                break;
-            case FINAL_DECISION_TYPE:
-                updateFinalDecisionTypeDocumentList(data, selectedDocument);
                 break;
             case DOC_MGMT_TYPE:
                 updateCaseDocumentList(data.getAllDocManagement().getCaseworkerCICDocument(), selectedDocument);
@@ -135,6 +120,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 break;
             case HEARING_SUMMARY_TYPE:
                 updateCaseDocumentList(data.getListing().getSummary().getRecFile(), selectedDocument);
+                break;
+            default:
                 break;
         }
 

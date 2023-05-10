@@ -22,7 +22,7 @@ public class DocumentManagementAmendDocuments implements CcdPageConfiguration {
             .readonly(CicCase::getIsDocumentCreatedFromTemplate, ALWAYS_HIDE)
             .complex(CicCase::getSelectedDocument)
             .mandatory(CaseworkerCICDocument::getDocumentCategory)
-            .mandatory(CaseworkerCICDocument::getDocumentEmailContent, "cicCaseIsDocumentCreatedFromTemplate=\"No\"")
+            .mandatory(CaseworkerCICDocument::getDocumentEmailContent)
             .done();
     }
 

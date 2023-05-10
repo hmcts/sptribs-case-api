@@ -1,26 +1,21 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 
@@ -73,47 +68,7 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
 
             cicCase.setSelectedDocument(selectedDocument);
             cicCase.setSelectedDocumentType(selectedDocumentType);
-            cicCase.setIsDocumentCreatedFromTemplate(isDocumentCreatedFromTemplate(data, selectedDocument, selectedDocumentType));
         }
-    }
-
-    private YesOrNo isDocumentCreatedFromTemplate(CaseData caseData, CaseworkerCICDocument selectedDocument, String selectedDocumentType) {
-        YesOrNo isDocumentCreatedFromTemplate = YesOrNo.NO;
-        switch (selectedDocumentType) {
-            case DocumentConstants.DECISION_TYPE:
-                if (null != caseData.getCaseIssueDecision().getIssueDecisionDraft()
-                    && !ObjectUtils.isEmpty(caseData.getCaseIssueDecision().getIssueDecisionDraft().getFilename())
-                    && caseData.getCaseIssueDecision().getIssueDecisionDraft().getUrl().equals(selectedDocument.getDocumentLink().getUrl())) {
-                    isDocumentCreatedFromTemplate = YesOrNo.YES;
-                }
-                break;
-            case DocumentConstants.FINAL_DECISION_TYPE:
-                if (null != caseData.getCaseIssueFinalDecision().getFinalDecisionDraft()
-                    && !ObjectUtils.isEmpty(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft().getFilename())
-                    && caseData.getCaseIssueFinalDecision().getFinalDecisionDraft().getUrl().equals(selectedDocument.getDocumentLink().getUrl())) {
-                    isDocumentCreatedFromTemplate = YesOrNo.YES;
-                }
-                break;
-            case DocumentConstants.ORDER_TYPE:
-                if (!CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
-                    Optional<ListValue<Order>> orderListValue =
-                        caseData.getCicCase().getOrderList()
-                            .stream().filter(e -> null != e.getValue().getDraftOrder()
-                                && e.getValue().getDraftOrder().getTemplateGeneratedDocument().getUrl()
-                                .equals(selectedDocument.getDocumentLink().getUrl())).findFirst();
-                    if (orderListValue.isPresent()) {
-                        ListValue<Order> orderValue = orderListValue.get();
-                        if (null != orderValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
-                            && !ObjectUtils.isEmpty(orderValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
-                            isDocumentCreatedFromTemplate = YesOrNo.YES;
-                        }
-                    }
-
-                }
-                break;
-        }
-
-        return isDocumentCreatedFromTemplate;
     }
 
 }

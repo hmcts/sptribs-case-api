@@ -1,12 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.ObjectUtils;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
@@ -27,27 +23,19 @@ public  final class DecisionDocumentListUtil {
         if (null != caseData.getCaseIssueDecision()) {
             if (null != caseData.getCaseIssueDecision().getDecisionDocument()
                 && null != caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink()) {
-                CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
-                DocumentType documentCategory = (null != decisionDocument.getDocumentLink().getCategoryId())
-                    ? DocumentType.fromCategory(decisionDocument.getDocumentLink().getCategoryId()).get()
-                    : DocumentType.TRIBUNAL_DIRECTION;
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentEmailContent(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentEmailContent())
                     .documentLink(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())
-                    .documentCategory(documentCategory)
+                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
                     .build();
                 decisionDocs.add(doc);
             }
 
             if (null != caseData.getCaseIssueDecision().getIssueDecisionDraft()
                 && !ObjectUtils.isEmpty(caseData.getCaseIssueDecision().getIssueDecisionDraft().getFilename())) {
-                Document decisionDraft = caseData.getCaseIssueDecision().getIssueDecisionDraft();
-                DocumentType documentCategory = (null != decisionDraft.getCategoryId())
-                    ? DocumentType.fromCategory(decisionDraft.getCategoryId()).get()
-                    : DocumentType.TRIBUNAL_DIRECTION;
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentLink(caseData.getCaseIssueDecision().getIssueDecisionDraft())
-                    .documentCategory(documentCategory)
+                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
                     .build();
                 decisionDocs.add(doc);
             }
@@ -60,27 +48,19 @@ public  final class DecisionDocumentListUtil {
         if (null != caseData.getCaseIssueFinalDecision()) {
             if (null != caseData.getCaseIssueFinalDecision().getDocument()
                 && null != caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink()) {
-                Document finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink();
-                DocumentType documentCategory = (null != finalDecisionDocument.getCategoryId())
-                    ? DocumentType.fromCategory(finalDecisionDocument.getCategoryId()).get()
-                    : DocumentType.TRIBUNAL_DIRECTION;
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentEmailContent(caseData.getCaseIssueFinalDecision().getDocument().getDocumentEmailContent())
                     .documentLink(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())
-                    .documentCategory(documentCategory)
+                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
                     .build();
                 finalDecisionDocs.add(doc);
             }
 
             if (null != caseData.getCaseIssueFinalDecision().getFinalDecisionDraft()
                 && !ObjectUtils.isEmpty(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft().getFilename())) {
-                Document finalDecisionDocument = caseData.getCaseIssueFinalDecision().getFinalDecisionDraft();
-                DocumentType documentCategory = (null != finalDecisionDocument.getCategoryId())
-                    ? DocumentType.fromCategory(finalDecisionDocument.getCategoryId()).get()
-                    : DocumentType.TRIBUNAL_DIRECTION;
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentLink(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())
-                    .documentCategory(documentCategory)
+                    .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
                     .build();
                 finalDecisionDocs.add(doc);
             }
@@ -127,32 +107,6 @@ public  final class DecisionDocumentListUtil {
             addToRemovedDocuments(caseData.getCicCase(), cicDocumentListValue.getValue());
         }
 
-    }
-
-    public static void updateDecisionTypeDocumentList(CaseData caseData, CaseworkerCICDocument selectedDocument) {
-        CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
-        if (null != caseIssueDecision.getDecisionDocument()
-            && null != caseIssueDecision.getDecisionDocument().getDocumentLink()
-            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueDecision.getDecisionDocument().getDocumentLink().getUrl())) {
-            caseIssueDecision.getDecisionDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
-            caseIssueDecision.getDecisionDocument().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
-        } else if (null != caseIssueDecision.getIssueDecisionDraft()
-            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueDecision.getIssueDecisionDraft().getUrl())) {
-            caseIssueDecision.getIssueDecisionDraft().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
-        }
-    }
-
-    public static void updateFinalDecisionTypeDocumentList(CaseData caseData, CaseworkerCICDocument selectedDocument) {
-        CaseIssueFinalDecision caseIssueFinalDecision = caseData.getCaseIssueFinalDecision();
-        if (null != caseIssueFinalDecision.getDocument()
-            && null != caseIssueFinalDecision.getDocument().getDocumentLink()
-            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueFinalDecision.getDocument().getDocumentLink().getUrl())) {
-            caseIssueFinalDecision.getDocument().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
-            caseIssueFinalDecision.getDocument().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
-        } else if (null != caseIssueFinalDecision.getFinalDecisionDraft()
-            && selectedDocument.getDocumentLink().getUrl().equals(caseIssueFinalDecision.getFinalDecisionDraft().getUrl())) {
-            caseIssueFinalDecision.getFinalDecisionDraft().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
-        }
     }
 
 }

@@ -20,11 +20,8 @@ import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildL
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.DECISION_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.ORDER_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 
 public final class DocumentListUtil {
@@ -46,17 +43,14 @@ public final class DocumentListUtil {
     }
 
     public static List<CaseworkerCICDocument> getAllCaseDocuments(final CaseData data) {
-       return prepareList(data);
+        return prepareList(data);
     }
 
     public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
 
-        dynamicListElements.addAll(getDynamicListElements(getOrderDocuments(data.getCicCase()), ORDER_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getCaseDocs(data.getCicCase()), CASE_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getReinstateDocuments(data.getCicCase()), REINSTATE_TYPE));
-        dynamicListElements.addAll(getDynamicListElements(getDecisionDocs(data), DECISION_TYPE));
-        dynamicListElements.addAll(getDynamicListElements(getFinalDecisionDocs(data), FINAL_DECISION_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getDocumentManagementDocs(data), DOC_MGMT_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getCloseCaseDocuments(data), CLOSE_CASE_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getHearingSummaryDocuments(data), HEARING_SUMMARY_TYPE));

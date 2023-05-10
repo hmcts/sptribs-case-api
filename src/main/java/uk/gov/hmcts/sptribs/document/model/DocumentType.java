@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 @Getter
 @AllArgsConstructor
 public enum DocumentType implements HasLabel {
@@ -141,9 +138,4 @@ public enum DocumentType implements HasLabel {
     private final String type;
     private final String category;
 
-    public static Optional<DocumentType> fromCategory(String category) {
-        return Arrays.stream(values())
-            .filter(v -> v.category.equalsIgnoreCase(category))
-            .findFirst();
-    }
 }
