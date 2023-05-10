@@ -29,6 +29,7 @@ public class IssueDecisionUploadNotice implements CcdPageConfiguration {
             .complex(CaseData::getCaseIssueDecision)
             .mandatoryWithLabel(CaseIssueDecision::getDecisionDocument, "Add a file")
             .done();
+
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
