@@ -46,7 +46,6 @@ class CaseCreateOrUpdateExceptionTest {
     void testCreateCaseDataCaseCreateUpdateException() throws Exception {
         String createCaseTestAuth = CASE_TEST_AUTHORIZATION;
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
         DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
 
         when(caseManagementController.createCase(createCaseTestAuth, dssCaseData))
@@ -64,7 +63,6 @@ class CaseCreateOrUpdateExceptionTest {
         String updateCaseTestAuth = CASE_TEST_AUTHORIZATION;
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-        DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
 
         when(caseManagementService.createCase(updateCaseTestAuth, caseData))
             .thenThrow(new CaseCreateOrUpdateException(CASE_UPDATE_FAILURE_MSG, new Throwable()));
