@@ -82,6 +82,7 @@ class CaseManagementServiceTest {
     void testCicCreateCaseData() throws Exception {
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        DssCaseData dssCaseData =  mapper.readValue(caseDataJson, DssCaseData.class);
 
         Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         caseDataMap.put(CASE_DATA_CIC_ID, caseData);
@@ -105,7 +106,7 @@ class CaseManagementServiceTest {
         when(caseApiService.createCase(CASE_TEST_AUTHORIZATION, caseData, cicAppDetail)).thenReturn(caseDetail);
 
         CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
-        DssCaseData dssCaseData =  mapper.readValue(caseDataJson, DssCaseData.class);
+
         caseData.setDssCaseData(dssCaseData);
         CaseResponse createCaseResponse = caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData);
         assertEquals(createCaseResponse.getCaseData(), caseResponse.getCaseData());
