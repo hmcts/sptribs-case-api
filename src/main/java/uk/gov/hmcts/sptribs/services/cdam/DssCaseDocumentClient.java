@@ -13,10 +13,7 @@ import java.util.UUID;
 @Service
 public class DssCaseDocumentClient {
 
-    private static final int DOC_UUID_LENGTH = 36;
-    private static final String BINARY_SUFFIX = "/binary";
-
-    private CaseDocumentClientApi caseDocumentClientApi;
+    private final CaseDocumentClientApi caseDocumentClientApi;
 
     @Autowired
     public DssCaseDocumentClient(CaseDocumentClientApi caseDocumentClientApi) {
