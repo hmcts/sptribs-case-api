@@ -136,8 +136,8 @@ task integration(type: Test) {
   failFast = true
 }
 
-task e2eTestsInPrev(type: Test) {
-  description = "Runs e2e tests in Preview Env"
+task e2eTestInPrev(type: Test) {
+  description = "Runs e2e tests in Preview Environment"
   group = "Verification"
   testClassesDirs = sourceSets.e2eTests.output.classesDirs
   classpath = sourceSets.e2eTests.runtimeClasspath
