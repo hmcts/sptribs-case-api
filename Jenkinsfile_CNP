@@ -137,6 +137,8 @@ withPipeline(type, product, component) {
     ]
   }
 
+
+
   afterAlways('functionalTest:aat') {
     publishHTML target: [
       allowMissing         : true,
@@ -275,6 +277,24 @@ withPipeline(type, product, component) {
   }
 
     before('functionalTest:preview') {
+//      if(${}) the branch id is equal to 880 then run this test
+  if ( "880" == ${CHANGE_ID} ) {
+
+    try {
+      builder.gradle('e2eTestsInPrev')
+    } finally {
+
+      publishHTML target: [
+        allowMissing         : true,
+        alwaysLinkToLastBuild: true,
+        keepAll              : true,
+        reportDir            : "build/reports/tests/e2eTests",
+        reportFiles          : "index.html",
+        reportName           : "E2E Tests Report"
+      ]
+    }
+  }
+
       // Only for preview upload the definitions via script as high level data set up relies on an existing environment
       uploadCoreCaseDataDefinitions()
     }
