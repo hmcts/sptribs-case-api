@@ -2,11 +2,13 @@ package uk.gov.hmcts.sptribs.cdam.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Setter
 public class Document {
 
     public Classification classification;
