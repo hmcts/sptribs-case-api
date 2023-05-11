@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -17,6 +18,11 @@ import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getD
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 
 public final class DocumentListUtil {
     private DocumentListUtil() {
@@ -36,12 +42,41 @@ public final class DocumentListUtil {
         return docList;
     }
 
+    public static List<CaseworkerCICDocument> getAllCaseDocuments(final CaseData data) {
+        return prepareList(data);
+    }
+
+    public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+
+        dynamicListElements.addAll(getDynamicListElements(getCaseDocs(data.getCicCase()), CASE_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getReinstateDocuments(data.getCicCase()), REINSTATE_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getDocumentManagementDocs(data), DOC_MGMT_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getCloseCaseDocuments(data), CLOSE_CASE_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getHearingSummaryDocuments(data), HEARING_SUMMARY_TYPE));
+
+        return DynamicList
+            .builder()
+            .listItems(dynamicListElements)
+            .build();
+    }
+
+    private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
+        return docList
+            .stream()
+            .filter(CaseworkerCICDocument::isDocumentValid)
+            .map(doc -> DynamicListElement.builder()
+                .label(fileType + "--" + doc.getDocumentLink().getFilename()
+                + "--" + doc.getDocumentLink().getUrl()
+                + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
+    }
+
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data) {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
             .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
                 + "--" + doc.getDocumentLink().getUrl()
                 + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
@@ -53,7 +88,6 @@ public final class DocumentListUtil {
             .value(new ArrayList<>())
             .build();
     }
-
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();

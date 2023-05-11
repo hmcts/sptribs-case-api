@@ -11,6 +11,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -35,6 +37,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWithXElements;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CONTACT_PARTIES;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +50,9 @@ class CaseworkerContactPartiesTest {
 
     @Mock
     private ContactPartiesNotification contactPartiesNotification;
+
+    @InjectMocks
+    private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -265,6 +271,44 @@ class CaseworkerContactPartiesTest {
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldSendErrorOnTooManyDocuments() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        caseData.setCicCase(cicCase);
+
+        final ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        contactPartiesDocuments.setDocumentList(getDynamicMultiSelectDocumentListWithXElements(11));
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
+
+        caseData.setHyphenatedCaseRef("1234-5678-3456");
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
+
+
+        //Then
+        assertThat(response.getErrors()).hasSize(1);
     }
 }
 

@@ -1,5 +1,5 @@
 {
-  "caseTypeOfApplication": "CIC",
+  "CaseTypeOfApplication": "CIC",
   "subjectFullName": "test Full Name",
   "subjectDateOfBirth": "2023-01-01",
   "subjectEmailAddress": "test1@test.com",
