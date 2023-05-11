@@ -9,18 +9,15 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-
-import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -58,7 +55,9 @@ class CaseWorkerCreateDraftOrderTest {
     void shouldSuccessfullySaveDraftOrder() {
 
         //Given
+        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
         final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
@@ -72,19 +71,19 @@ class CaseWorkerCreateDraftOrderTest {
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
 
-
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
 
     }
 
-
     @Test
     void shouldSuccessfullySaveDraftOrderWithCurrentDateAndTime() {
 
         //Given
+        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
         final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
@@ -105,12 +104,14 @@ class CaseWorkerCreateDraftOrderTest {
     @Test
     void shouldSuccessfullyShowPreviewOrderWithTemplate() {
 
+        //Given
         DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
 
-        //Given
+        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
         final CaseData caseData = CaseData.builder()
             .draftOrderContentCIC(orderContentCIC)
             .build();
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
 
@@ -127,7 +128,9 @@ class CaseWorkerCreateDraftOrderTest {
     void shouldSuccessfullySave2DraftOrder() {
 
         //Given
+        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
         final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
@@ -136,33 +139,24 @@ class CaseWorkerCreateDraftOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        //when(orderService.getDraftOrderTemplatesDynamicList(any(), any())).thenReturn(getOrderDynamicList());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
+        assertThat(draftCreatedResponse).isNotNull();
 
+        final CicCase cicCase2 = CicCase.builder(). orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
+        caseData.setCicCase(cicCase2);
+        updatedCaseDetails.setData(caseData);
         caseData.setDraftOrderContentCIC(orderContentCIC);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         //  Then
-        assertThat(draftCreatedResponse).isNotNull();
         assertThat(response2).isNotNull();
 
     }
 
-    private DynamicList getOrderDynamicList() {
-        final DynamicListElement listItem = DynamicListElement
-            .builder()
-            .label("General")
-            .code(UUID.randomUUID())
-            .build();
-        return DynamicList
-            .builder()
-            .value(listItem)
-            .listItems(List.of(listItem))
-            .build();
-    }
 }
 
