@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.edgecase.event.cic;
+package uk.gov.hmcts.sptribs.citizen.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
-import static uk.gov.hmcts.sptribs.edgecase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
@@ -32,7 +32,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                        .getSubmitEvent())
             .forStates(State.Draft)
             .name("Submit case (cic)")
-            .description("Applicant confirms SOT (cic)")
+            .description("Application submit (cic)")
             .retries(120, 120)
             .grant(CREATE_READ_UPDATE, CITIZEN_CIC)
             .aboutToSubmitCallback(this::aboutToSubmit);
