@@ -135,6 +135,21 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "Functional Tests Report"
     ]
+    if( "880" == "${CHANGE_ID}" ) {
+      try {
+        builder.gradle('e2eTestInPrev')
+      } finally {
+
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports/tests/e2eTests",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report"
+        ]
+      }
+     }
   }
 
   afterAlways('functionalTest:aat') {
@@ -186,6 +201,7 @@ withPipeline(type, product, component) {
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
 
 
 
