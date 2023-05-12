@@ -135,7 +135,7 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "Functional Tests Report"
     ]
-    if( "931" == ${CHANGE_ID} ) {
+    if( "931" == "${CHANGE_ID}" ) {
       try {
         builder.gradle('e2eTestInPrev')
       } finally {
