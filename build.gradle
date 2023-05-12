@@ -149,7 +149,7 @@ task e2eTestInPrev(type: Test) {
     'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
-  environment 'BASE_URL', 'https://xui-sptribs-case-api-pr-931.preview.platform.hmcts.net/cases'
+  environment 'BASE_URL', 'https://xui-sptribs-case-api-pr-931.preview.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
 }
