@@ -6,8 +6,8 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    CASE_DATA_STORE_BASEURL: http://${SERVICE_NAME}-ccd-data-store-api
-    CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
+    CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
+    CASE_DOCUMENT_AM_BASEURL: http://{{ .Release.Name }}-ccd-case-document-am-api
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
   keyVaults:
     sptribs:
@@ -172,7 +172,7 @@ ccd:
         value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
-   
+
   logstash:
     image: hmctspublic.azurecr.io/imported/logstash/logstash
     imageTag: 8.5.1
