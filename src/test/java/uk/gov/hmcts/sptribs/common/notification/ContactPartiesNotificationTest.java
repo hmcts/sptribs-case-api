@@ -39,7 +39,8 @@ class ContactPartiesNotificationTest {
     void shouldNotifySubjectOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
-        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(getDynamicMultiSelectDocumentList()).build();
         data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
 
@@ -72,7 +73,8 @@ class ContactPartiesNotificationTest {
     void shouldNotifyApplicantOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
-        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(getDynamicMultiSelectDocumentList()).build();
         data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -107,7 +109,8 @@ class ContactPartiesNotificationTest {
     void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
-        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(getDynamicMultiSelectDocumentList()).build();
         data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -157,7 +160,8 @@ class ContactPartiesNotificationTest {
     void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
-        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(getDynamicMultiSelectDocumentList()).build();
         data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setRepresentativeFullName("respFullName");
 
