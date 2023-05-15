@@ -54,8 +54,9 @@ public class CaseManagementController {
     public ResponseEntity<?> updateCase(@PathVariable final Long caseId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                         @RequestParam final Event event,
-                                        @RequestBody final CaseData caseData) {
-
+                                        @RequestBody final DssCaseData dssCaseData) {
+        CaseData caseData = new CaseData();
+        caseData.setDssCaseData(dssCaseData);
         CaseResponse updatedCase = caseManagementService.updateCase(authorisation, event, caseData, caseId);
         return ResponseEntity.ok(updatedCase);
     }
