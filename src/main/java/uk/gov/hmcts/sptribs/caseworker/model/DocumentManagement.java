@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
@@ -20,7 +17,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class DocumentManagement {
 
     @CCD(
@@ -29,6 +25,5 @@ public class DocumentManagement {
         typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}
     )
-    @Builder.Default
-    private List<ListValue<CaseworkerCICDocument>> caseworkerCICDocument = new ArrayList<>();
+    private List<ListValue<CaseworkerCICDocument>> caseworkerCICDocument;
 }

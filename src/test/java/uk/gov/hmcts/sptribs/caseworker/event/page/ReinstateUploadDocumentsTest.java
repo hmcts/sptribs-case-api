@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithInvalidFileFormat;
 
 @ExtendWith(MockitoExtension.class)
 public class ReinstateUploadDocumentsTest {
@@ -25,7 +25,7 @@ public class ReinstateUploadDocumentsTest {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(getCaseworkerCICDocumentListWithFileFormat("xml"))
+            .reinstateDocuments(getCaseworkerCICDocumentListWithInvalidFileFormat())
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)

@@ -7,6 +7,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.ApplicationEvidence;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
@@ -15,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.TribunalDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -24,6 +27,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +54,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -77,7 +81,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -101,7 +105,7 @@ public class DocumentListUtilTest {
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -123,10 +127,10 @@ public class DocumentListUtilTest {
         list.setValue(doc);
         listValueList.add(list);
         final CaseData caseData = CaseData.builder().build();
-        caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
+        caseData.setDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -150,7 +154,7 @@ public class DocumentListUtilTest {
         caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, false);
 
         //Then
         assertThat(result).isNotNull();
@@ -208,5 +212,38 @@ public class DocumentListUtilTest {
         //Then
         assertThat(result).isNotNull();
     }
+
+
+    @Test
+    void shouldGenerateDocListWithCaseIssue() {
+        //Given
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CicCase cicCase = CicCase.builder()
+            .applicantDocumentsUploaded(listValueList)
+            .build();
+        final CaseData caseData = CaseData.builder().build();
+        caseData.setCicCase(cicCase);
+        CaseIssue caseIssue = CaseIssue.builder()
+            .tribunalDocuments(Set.of(TribunalDocuments.APPLICATION_FORM))
+            .applicationEvidences(Set.of(ApplicationEvidence.APPLICATION_FOR_A_POSTPONEMENT))
+            .build();
+        caseData.setCaseIssue(caseIssue);
+        details.setData(caseData);
+        //When
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, true);
+
+        //Then
+        assertThat(result).isNotNull();
+    }
+
 
 }

@@ -46,7 +46,6 @@ public class CaseIssuedNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
-        templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
@@ -110,10 +109,10 @@ public class CaseIssuedNotification implements PartiesNotification {
         if (!ObjectUtils.isEmpty(caseData.getCaseIssue().getDocumentList())) {
 
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
+            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
                 templateVarsRespondent,
                 uploadedDocuments,
-                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+                TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,

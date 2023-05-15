@@ -60,10 +60,6 @@ public class Login {
         loginAs("st-test1@mailinator.com");
     }
 
-    public void loginAsHearingCentreTL() {
-        loginAs("st-hearingcentretl@mailinator.com");
-    }
-
     public void loginAsStJudge2User() {
         loginAs("st-judge2@mailinator.com");
     }

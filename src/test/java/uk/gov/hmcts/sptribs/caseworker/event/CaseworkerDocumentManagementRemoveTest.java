@@ -35,6 +35,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2DocumentCiC;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
@@ -133,7 +134,7 @@ public class CaseworkerDocumentManagementRemoveTest {
             .build();
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
-        caseData.setAllDocManagement(documentManagement);
+        caseData.setDocManagement(documentManagement);
         updatedCaseDetails.setData(caseData);
         final CaseData oldData = caseData();
 
@@ -143,7 +144,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
 
         DocumentManagement documentManagementOld = DocumentManagement.builder().caseworkerCICDocument(get2Document()).build();
-        oldData.setAllDocManagement(documentManagementOld);
+        oldData.setDocManagement(documentManagementOld);
         Order orderOld = Order.builder().uploadedFile(get2DocumentCiC()).build();
         Order orderOld2 = Order.builder().uploadedFile(get2DocumentCiC()).build();
         ListValue<Order> orderListValueOld = new ListValue<>();
@@ -210,7 +211,7 @@ public class CaseworkerDocumentManagementRemoveTest {
             .build();
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
-        caseData.setAllDocManagement(documentManagement);
+        caseData.setDocManagement(documentManagement);
         updatedCaseDetails.setData(caseData);
         final CaseData oldData = caseData();
 
@@ -220,7 +221,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
 
         DocumentManagement documentManagementOld = DocumentManagement.builder().caseworkerCICDocument(get2Document()).build();
-        oldData.setAllDocManagement(documentManagementOld);
+        oldData.setDocManagement(documentManagementOld);
         CicCase cicCaseOld = CicCase.builder()
             .decisionDocumentList(get2Document())
             .finalDecisionDocumentList(get2Document())

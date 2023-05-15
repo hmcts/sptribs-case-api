@@ -16,8 +16,6 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDo
 
 public class UploadCaseDocuments implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "newCaseworkerCICDocument=\"NEVER_SHOW\"";
-
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
@@ -32,11 +30,8 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf
                  """
             )
-            .complex(CaseData::getNewDocManagement)
+            .complex(CaseData::getDocManagement)
             .mandatory(DocumentManagement::getCaseworkerCICDocument)
-            .done()
-            .complex(CaseData::getAllDocManagement)
-            .readonly(DocumentManagement::getCaseworkerCICDocument, ALWAYS_HIDE)
             .done();
     }
 
@@ -44,7 +39,7 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
 
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocument();
+        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getDocManagement().getCaseworkerCICDocument();
         List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

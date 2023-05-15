@@ -30,7 +30,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             .page("showCaseDocuments", this::midEvent)
             .pageLabel("Show case documents")
             .label("LabelShowCaseDocuments", "")
-            .complex(CaseData::getAllDocManagement)
+            .complex(CaseData::getDocManagement)
             .readonlyWithLabel(DocumentManagement::getCaseworkerCICDocument, "Document Management Files")
             .done()
             .complex(CaseData::getCloseCase)

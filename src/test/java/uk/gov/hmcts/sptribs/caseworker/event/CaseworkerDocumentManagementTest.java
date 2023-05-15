@@ -71,7 +71,7 @@ public class CaseworkerDocumentManagementTest {
         DocumentManagement documentManagement = DocumentManagement.builder()
             .caseworkerCICDocument(getCaseworkerCICDocumentList())
             .build();
-        caseData.setAllDocManagement(documentManagement);
+        caseData.setDocManagement(documentManagement);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -90,8 +90,5 @@ public class CaseworkerDocumentManagementTest {
         assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();
         assertThat(documentMgmtResponse).isNotNull();
-
-        assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocument()).isEmpty();
-        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument()).hasSize(1);
     }
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -21,7 +20,7 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("issueCaseSelectDocument", this::midEvent)
-            .pageLabel("Select additional documents")
+            .pageLabel("Select documents")
             .label("LabelIssueCaseSelectDocument", "")
             .label("LabelIssueCaseSelectDocumentWarning", "")
             .complex(CaseData::getCaseIssue)
@@ -37,9 +36,6 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
         DynamicMultiSelectList list = data.getCaseIssue().getDocumentList();
         if (list.getValue().size() > MAX_DOCUMENT_COUNT) {
             errors.add("Select up to 5 documents");
-        }
-        if (CollectionUtils.isEmpty(list.getValue())) {
-            errors.add("Select at least one document");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

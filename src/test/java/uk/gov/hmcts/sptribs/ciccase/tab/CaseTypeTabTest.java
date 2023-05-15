@@ -33,6 +33,7 @@ public class CaseTypeTabTest {
         //Given
         caseTypeTab.setCaseFileViewAndDocumentManagementEnabled(true);
         Tab.TabBuilder<CaseData, UserRole> summaryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        Tab.TabBuilder<CaseData, UserRole> flagsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> stateTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> notesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> caseDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
@@ -44,6 +45,7 @@ public class CaseTypeTabTest {
         Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
 
         when(configBuilder.tab("summary", "Summary")).thenReturn(summaryTabBuilder);
+        when(configBuilder.tab("flags", "Flags")).thenReturn(flagsTabBuilder);
         when(configBuilder.tab("state", "State")).thenReturn(stateTabBuilder);
         when(configBuilder.tab("notes", "Notes")).thenReturn(notesTabBuilder);
         when(configBuilder.tab("caseDetails", "Case Details")).thenReturn(caseDetailsTabBuilder);
@@ -57,6 +59,7 @@ public class CaseTypeTabTest {
         //When
         caseTypeTab.configure(configBuilder);
         Tab<CaseData, UserRole> summaryTab = summaryTabBuilder.build();
+        Tab<CaseData, UserRole> flagsTab = flagsTabBuilder.build();
         Tab<CaseData, UserRole> caseDetailsTab = caseDetailsTabBuilder.build();
         Tab<CaseData, UserRole> casePartiesTab = casePartiesTabBuilder.build();
         Tab<CaseData, UserRole> ordersTab = ordersTabBuilder.build();
@@ -67,6 +70,7 @@ public class CaseTypeTabTest {
 
         //Then
         assertThat(summaryTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
+        assertThat(flagsTab.getFields()).extracting(TabField::getId).contains("caseFlagPartyLevelFlags");
         assertThat(caseDetailsTab.getFields()).extracting(TabField::getId).contains("cicCaseCaseCategory");
         assertThat(casePartiesTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
         assertThat(ordersTab.getFields()).extracting(TabField::getId).contains("cicCaseOrderList");

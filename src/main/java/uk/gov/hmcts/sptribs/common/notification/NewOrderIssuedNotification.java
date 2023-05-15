@@ -40,6 +40,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
                 uploadedDocuments, templateVars);
+            cicCase.setSubjectNotifyList(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars);
@@ -58,6 +59,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
             Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
                 uploadedDocuments, templateVars);
+            cicCase.setRepNotificationResponse(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars);

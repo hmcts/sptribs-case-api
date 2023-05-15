@@ -1,12 +1,17 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.ApplicationEvidence;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.model.TribunalDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +41,15 @@ public final class DocumentListUtil {
         return docList;
     }
 
-    public static DynamicMultiSelectList prepareDocumentList(final CaseData data) {
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data, boolean withCaseIssueFilters) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-
+        if (withCaseIssueFilters) {
+            docList = filterCaseIssue(docList, data.getCaseIssue());
+        }
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
             .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
-                + "--" + doc.getDocumentLink().getUrl()
-                + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+                + "--" + doc.getDocumentLink().getUrl()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
         return DynamicMultiSelectList
@@ -54,6 +59,27 @@ public final class DocumentListUtil {
             .build();
     }
 
+    private static List<CaseworkerCICDocument> filterCaseIssue(List<CaseworkerCICDocument> docList, CaseIssue caseIssue) {
+        List<CaseworkerCICDocument> filteredList = new ArrayList<>();
+        List<DocumentType> documentTypes = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(caseIssue.getTribunalDocuments())) {
+            for (TribunalDocuments tribunalDocuments : caseIssue.getTribunalDocuments()) {
+                documentTypes.add(tribunalDocuments.getDocumentType());
+            }
+        }
+        if (!CollectionUtils.isEmpty(caseIssue.getApplicationEvidences())) {
+            for (ApplicationEvidence applicationEvidence : caseIssue.getApplicationEvidences()) {
+                documentTypes.add(applicationEvidence.getDocumentType());
+            }
+        }
+        for (CaseworkerCICDocument caseworkerCICDocument : docList) {
+            if (!ObjectUtils.isEmpty(caseworkerCICDocument.getDocumentCategory())
+                && documentTypes.contains(caseworkerCICDocument.getDocumentCategory())) {
+                filteredList.add(caseworkerCICDocument);
+            }
+        }
+        return filteredList;
+    }
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
@@ -77,8 +103,8 @@ public final class DocumentListUtil {
 
     private static List<CaseworkerCICDocument> getDocumentManagementDocs(CaseData caseData) {
         List<CaseworkerCICDocument> docManagementDocs = new ArrayList<>();
-        if (null != caseData.getAllDocManagement() && !CollectionUtils.isEmpty(caseData.getAllDocManagement().getCaseworkerCICDocument())) {
-            for (ListValue<CaseworkerCICDocument> document : caseData.getAllDocManagement().getCaseworkerCICDocument()) {
+        if (null != caseData.getDocManagement() && !CollectionUtils.isEmpty(caseData.getDocManagement().getCaseworkerCICDocument())) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getDocManagement().getCaseworkerCICDocument()) {
                 docManagementDocs.add(document.getValue());
             }
         }

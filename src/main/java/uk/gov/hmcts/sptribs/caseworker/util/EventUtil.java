@@ -23,6 +23,7 @@ public final class EventUtil {
     private EventUtil() {
     }
 
+
     public static String getId(String selectedDraft) {
         String[] values = (selectedDraft != null) ? Arrays.stream(selectedDraft.split(HYPHEN))
             .map(String::trim)

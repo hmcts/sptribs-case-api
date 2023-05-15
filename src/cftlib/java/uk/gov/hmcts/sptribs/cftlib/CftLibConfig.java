@@ -32,8 +32,17 @@ public class CftLibConfig implements CFTLibConfigurer {
     public void configure(CFTLib lib) throws Exception {
 
         var roleList = List.of("caseworker",
-            "caseworker-st_cic-caseworker",
+            "caseworker-st_cic",
+            "caseworker-st_send",
+            "caseworker-st_phl",
+            "caseworker-st_cs",
+            "caseworker-st_mh",
+            "caseworker-sptribs",
+            "caseworker-sptribs-superuser",
             "pui-case-manager",
+            "pui-finance-manager",
+            "pui-organisation-manager",
+            "pui-user-manager",
             "jrd-system-user",
             "jrd-admin");
 

@@ -63,7 +63,7 @@ public class DocumentManagementUtilTest {
             .build();
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
-        caseData.setAllDocManagement(documentManagement);
+        caseData.setDocManagement(documentManagement);
 
         //When
         DocumentManagementUtil.checkLists(caseData, get2Document(), getDocument());
@@ -84,7 +84,7 @@ public class DocumentManagementUtilTest {
             .build();
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
-        caseData.setAllDocManagement(documentManagement);
+        caseData.setDocManagement(documentManagement);
 
         //When
         DocumentManagementUtil.checkLists(caseData, get2Document(), new ArrayList<>());

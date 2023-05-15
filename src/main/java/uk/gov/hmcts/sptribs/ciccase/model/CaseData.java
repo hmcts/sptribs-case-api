@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseFlag;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
@@ -52,19 +54,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @JsonUnwrapped(prefix = "all")
+    @JsonUnwrapped
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DocumentManagement allDocManagement = new DocumentManagement();
-
-    @JsonUnwrapped(prefix = "new")
-    @Builder.Default
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DocumentManagement newDocManagement = new DocumentManagement();
+    private DocumentManagement docManagement = new DocumentManagement();
 
     @Builder.Default
     @CCD(
@@ -105,6 +100,12 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class})
     private Notifications notifications = new Notifications();
+
+    @CCD(
+        label = "Flag Location",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLevel flagLevel;
 
     @CCD(
         label = "Case Status",
@@ -156,6 +157,10 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private Listing listing = new Listing();
+
+    @JsonUnwrapped(prefix = "caseFlag")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private CaseFlag caseFlag;
 
     @JsonUnwrapped(prefix = "removeStay")
     @Builder.Default

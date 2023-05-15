@@ -420,10 +420,10 @@ public class TestDataHelper {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithFileFormat(String format) {
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithInvalidFileFormat() {
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename("file." + format).build())
+            .documentLink(Document.builder().filename("file.txt").build())
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();

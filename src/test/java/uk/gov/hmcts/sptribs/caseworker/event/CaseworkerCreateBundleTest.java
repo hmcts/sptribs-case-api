@@ -29,7 +29,6 @@ class CaseworkerCreateBundleTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
         //Given
-        caseworkerCreateBundle.setBundlingEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -39,20 +38,6 @@ class CaseworkerCreateBundleTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CREATE_BUNDLE);
-    }
-
-    @Test
-    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() throws Exception {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        //When
-        caseworkerCreateBundle.configure(configBuilder);
-
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(CREATE_BUNDLE);
     }
 
     @Test

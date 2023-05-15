@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -99,11 +100,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .initialState(Draft)
                 .name("Create Case")
                 .showSummary()
+                .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
-                .grant(CREATE_READ_UPDATE,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                .grantHistoryOnly(SUPER_USER, COURT_ADMIN_CIC, SOLICITOR, CITIZEN_CIC));
 
             categorisationDetails.addTo(pageBuilder);
             dateOfReceipt.addTo(pageBuilder);

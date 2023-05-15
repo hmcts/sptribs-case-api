@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 
@@ -17,11 +17,10 @@ import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTim
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
-public class CloseCaseTests extends Base {
+public class CloseCase extends Base {
 
-
+    @Test
     @Order(1)
-    @RepeatedIfExceptionsTest
     public void caseworkerShouldAbleToCloseTheCase() {
         Page page = getPage();
         Login login = new Login(page);
@@ -58,7 +57,7 @@ public class CloseCaseTests extends Base {
         Assertions.assertEquals(CaseClosed.label, newCase.getCaseStatus());
     }
 
-    @RepeatedIfExceptionsTest
+    @Test
     public void caseworkerShouldAbleToReinstateCase() {
         Page page = getPage();
         Login login = new Login(page);

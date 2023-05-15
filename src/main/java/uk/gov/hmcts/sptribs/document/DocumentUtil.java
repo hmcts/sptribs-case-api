@@ -45,11 +45,8 @@ public final class DocumentUtil {
 
     public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocument>> documentList) {
         final List<String> errors = new ArrayList<>();
-        if (documentList != null) {
-            documentList.stream()
-                .filter(value -> !value.getValue().isDocumentValid())
-                .findFirst()
-                .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
+        if (!documentList.isEmpty() && !documentList.get(0).getValue().isDocumentValid()) {
+            errors.add(DOCUMENT_VALIDATION_MESSAGE);
         }
 
         return errors;
