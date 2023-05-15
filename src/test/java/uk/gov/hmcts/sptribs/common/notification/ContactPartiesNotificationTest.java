@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -39,10 +39,12 @@ class ContactPartiesNotificationTest {
     void shouldNotifySubjectOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
+        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         contactPartiesNotification.sendToSubject(data, "CN1");
 
@@ -70,11 +72,13 @@ class ContactPartiesNotificationTest {
     void shouldNotifyApplicantOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
+        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         contactPartiesNotification.sendToApplicant(data, "CN1");
 
@@ -103,11 +107,13 @@ class ContactPartiesNotificationTest {
     void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
+        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         contactPartiesNotification.sendToRepresentative(data, "CN1");
 
@@ -151,8 +157,8 @@ class ContactPartiesNotificationTest {
     void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
-        CaseIssue caseIssue = CaseIssue.builder().documentList(getDynamicMultiSelectDocumentList()).build();
-        data.setCaseIssue(caseIssue);
+        ContactPartiesDocuments contactPartiesDocuments= ContactPartiesDocuments.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setContactPartiesDocuments(contactPartiesDocuments);
         data.getCicCase().setRepresentativeFullName("respFullName");
 
         //When
