@@ -136,6 +136,24 @@ task integration(type: Test) {
   failFast = true
 }
 
+task e2eTestInPrev(type: Test) {
+  description = "Runs e2e tests in Preview Environment"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
+  environment 'BASE_URL', System.env.TEST_E2E_URL
+  environment 'BROWSER', 'chromium'
+  environment 'CI', 'true'
+}
+
 task e2eTests(type: Test) {
   description = "Runs e2e tests"
   group = "Verification"
@@ -150,12 +168,12 @@ task e2eTests(type: Test) {
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
-  environment 'BROWSER', 'chrome'
+  environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
 }
 
-task e2eTestsNightly(type: Test) {
-  description = "Runs e2e tests nightly"
+task e2eTestsNightlyFirefox(type: Test) {
+  description = "Runs e2e tests nightly using firefox"
   group = "Verification"
   testClassesDirs = sourceSets.e2eTests.output.classesDirs
   classpath = sourceSets.e2eTests.runtimeClasspath
@@ -169,6 +187,24 @@ task e2eTestsNightly(type: Test) {
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
   environment 'BROWSER', 'firefox'
+  environment 'CI', 'true'
+}
+
+task e2eTestsNightlyMsEdge(type: Test) {
+  description = "Runs e2e tests nightly using MS Edge"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
+  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'BROWSER', 'msedge'
   environment 'CI', 'true'
 }
 
@@ -554,7 +590,7 @@ cftlibTest {
 }
 
 // exclude the logback binding is coming in via cftlib
-configurations.testImplementation {
+configurations.cftlibTestImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
@@ -580,8 +616,15 @@ task installFirefox(type: JavaExec) {
   args = ['install', 'firefox']
 }
 
+task installMsEdge(type: JavaExec) {
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  main = 'com.microsoft.playwright.CLI'
+  args = ['install', 'msedge']
+}
+
 tasks.e2eTests.dependsOn(installBrowser)
-tasks.e2eTestsNightly.dependsOn(installFirefox)
+tasks.e2eTestsNightlyFirefox.dependsOn(installFirefox)
+tasks.e2eTestsNightlyMsEdge.dependsOn(installMsEdge)
 
 def E2E_MAX_PARALLEL_FORKS = 2
 def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
@@ -591,6 +634,6 @@ tasks.withType(Test).configureEach {
 }
 
 // exclude the logback binding is coming in via cftlib
-configurations.cftlibTestImplementation {
+configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }

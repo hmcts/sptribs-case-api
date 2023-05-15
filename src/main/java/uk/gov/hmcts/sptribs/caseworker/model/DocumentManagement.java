@@ -31,4 +31,5 @@ public class DocumentManagement {
     )
     @Builder.Default
     private List<ListValue<CaseworkerCICDocument>> caseworkerCICDocument = new ArrayList<>();
+
 }

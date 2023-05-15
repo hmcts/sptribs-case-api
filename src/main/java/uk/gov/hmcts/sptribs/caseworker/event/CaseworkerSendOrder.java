@@ -38,6 +38,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -49,6 +52,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
@@ -85,7 +89,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::sent)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
     }
@@ -110,10 +114,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
+            String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_HYPHEN);
             for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
+                String[] draftOrderFile = draftOrderCICListValue.getValue()
+                    .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
                 if (selectedDynamicDraft
-                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
+                    && selectedDraft[1].equals(draftOrderFile[2])) {
                     selectedDraftOrder = draftOrderCICListValue.getValue();
+                    String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(SEMICOLON);
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileName[1]);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }

@@ -41,8 +41,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 
@@ -86,9 +88,17 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .aboutToStartCallback(this::aboutToStart)
                 .submittedCallback(this::partiesContacted)
-                .grant(CREATE_READ_UPDATE,
+                .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE));
         contactPartiesSelectDocument.addTo(pageBuilder);
         partiesToContact.addTo(pageBuilder);
     }

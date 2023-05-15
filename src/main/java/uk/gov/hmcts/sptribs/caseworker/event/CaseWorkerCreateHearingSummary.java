@@ -26,9 +26,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Complete;
@@ -37,8 +34,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
@@ -51,8 +50,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration hearingAttendees = new HearingAttendees();
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
+
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
-    Map<String, String> map = new HashMap<>();
 
     @Autowired
     private RecordListHelper recordListHelper;
@@ -74,9 +73,17 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::summaryEdited)
-                .grant(CREATE_READ_UPDATE,
+                .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE));
         createHearingSummary.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
@@ -84,13 +91,12 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         hearingAttendeesRole.addTo(pageBuilder);
         HearingOutcome.addTo(pageBuilder);
         hearingRecordingUploadPage.addTo(pageBuilder);
-
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CREATE_HEARING_SUMMARY);
+
         DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 

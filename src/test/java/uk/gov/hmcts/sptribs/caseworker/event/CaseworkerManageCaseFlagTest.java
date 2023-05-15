@@ -11,12 +11,14 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageFlagShowList;
 import uk.gov.hmcts.sptribs.caseworker.service.FlagService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.model.Status;
 
 import java.util.List;
 import java.util.UUID;
@@ -118,7 +120,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getSelectedFlag()).isNotNull();
+        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
 
     }
 
@@ -143,7 +145,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getSelectedFlag()).isNotNull();
+        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
 
     }
 
@@ -168,7 +170,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getSelectedFlag()).isNotNull();
+        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
 
     }
 
@@ -184,6 +186,96 @@ class CaseworkerManageCaseFlagTest {
             .listItems(List.of(listItem))
             .build();
     }
+
+    @Test
+    void shouldSuccessfullySelectCaseFlagSubmit() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CicCase cicCase = CicCase.builder()
+            .caseFlags(getCaseFlags())
+            .flagDynamicList(getCaseFlagDynamicList())
+            .flagAdditionalDetail("update")
+            .build();
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> midResponse = manageFlagShowList.midEvent(updatedCaseDetails, beforeDetails);
+        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+
+        cicCase.setFlagStatus(Status.INACTIVE);
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerManageCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse submittedResponse =
+            caseworkerManageCaseFlag.submitted(updatedCaseDetails, beforeDetails);
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(submittedResponse).isNotNull();
+        assertThat(response.getData().getCicCase().getCaseFlags().get(0).getValue().getDetails().get(0).getValue().getStatus())
+            .isEqualTo(Status.INACTIVE.getLabel());
+
+    }
+
+    @Test
+    void shouldSuccessfullySelectAppellantFlagSubmit() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CicCase cicCase = CicCase.builder()
+            .appellantFlags(getAppellantFlags())
+            .flagDynamicList(getAppellanFlagDynamicList())
+            .build();
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> midEventResponse = manageFlagShowList.midEvent(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerManageCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(midEventResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+
+    }
+
+
+    @Test
+    void shouldSuccessfullySelectRespondentFlagSubmit() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CicCase cicCase = CicCase.builder()
+            .respondentFlags(getRespondentFlags())
+            .flagDynamicList(getRespondentFlagDynamicList())
+            .build();
+        caseData.setCicCase(cicCase);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> midResponse = manageFlagShowList.midEvent(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerManageCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+
+    }
+
 
     private DynamicList getRespondentFlagDynamicList() {
         final DynamicListElement listItem = DynamicListElement
