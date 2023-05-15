@@ -30,9 +30,6 @@ public class CaseIssuedNotification implements PartiesNotification {
     private NotificationHelper notificationHelper;
 
     private static final int DOC_ATTACH_LIMIT = 5;
-    private static final String YES = "yes";
-    private static final String NO = "no";
-
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
