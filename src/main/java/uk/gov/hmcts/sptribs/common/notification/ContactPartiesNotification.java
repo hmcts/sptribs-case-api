@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -16,6 +17,8 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -36,10 +39,12 @@ public class ContactPartiesNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
+        templateVarsSubject.put(CommonConstants.CONTACT_PARTY_INFO, getContactPartyInfo(cicCase));
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+
             NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
                 cicCase.getEmail(),
                 templateVarsSubject,
@@ -59,6 +64,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsApplicant = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_APPLICANT_NAME, cicCase.getApplicantFullName());
+        templateVarsApplicant.put(CommonConstants.CONTACT_PARTY_INFO, getContactPartyInfo(cicCase));
 
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
@@ -82,6 +88,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
+        templateVarsRepresentative.put(CommonConstants.CONTACT_PARTY_INFO, getContactPartyInfo(cicCase));
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
@@ -105,6 +112,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
+        templateVarsRespondent.put(CommonConstants.CONTACT_PARTY_INFO, getContactPartyInfo(cicCase));
 
         // Send Email
         if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
@@ -120,6 +128,25 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
             cicCase.setResNotificationResponse(notificationResponse);
         }
+    }
+
+    private String getContactPartyInfo(CicCase cicCase) {
+        List<String> contactPartyList = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            contactPartyList.add("Subject");
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            contactPartyList.add("Representative");
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            contactPartyList.add("Applicant");
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            contactPartyList.add("Respondent");
+        }
+
+        return String.join(",", contactPartyList);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
