@@ -36,18 +36,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.common.model.Status;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -62,6 +58,28 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+
+    @CCD(
+        label = "Enter any other important information about this adjournment",
+        typeOverride = TextArea
+    )
+    private String otherDetailsOfAdjournment;
+
+    @CCD(
+        label = "What type of decision was given at the hearing?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingOutcome",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingOutcome hearingOutcome;
+
+    @CCD(
+        label = "Why was the hearing adjourned?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "AdjournmentReasons",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private AdjournmentReasons adjournmentReasons;
 
 
     @CCD(
