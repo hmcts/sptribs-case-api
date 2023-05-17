@@ -11,11 +11,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
 import uk.gov.hmcts.sptribs.recordlisting.model.Region;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,20 +52,13 @@ public class LocationService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 REGION_ALL);
-            if (CollectionUtils.isEmpty(list)) {
-                return null;
-            }
-            Region[] regions = new Region[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                regions[i] = list.get(i);
-            }
-            return regions;
+            return list.toArray(new Region[list.size()]);
         } catch (FeignException exception) {
             log.error("Unable to get Region data from reference data with exception {}",
                 exception.getMessage());
         }
 
-        return null;
+        return new Region[0];
     }
 
     private HearingVenue[] getCourtVenues(String regionId) {
@@ -80,32 +69,25 @@ public class LocationService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 regionId,
                 "Y");
-            if (CollectionUtils.isEmpty(list)) {
-                return null;
-            }
-            HearingVenue[] hearingVenues = new HearingVenue[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                hearingVenues[i] = list.get(i);
-            }
-            return hearingVenues;
+            return list.toArray(new HearingVenue[list.size()]);
         } catch (FeignException exception) {
             log.error("Unable to get Hearing venue data from reference data with exception {}",
                 exception.getMessage());
         }
 
-        return null;
+        return new HearingVenue[0];
     }
 
     private DynamicList populateRegionDynamicList(Region... regions) {
         List<String> regionList = Objects.nonNull(regions)
-            ? Arrays.asList(regions).stream().map(v -> v.getRegionId() + HYPHEN + v.getDescription()).collect(Collectors.toList())
+            ? Arrays.asList(regions).stream().map(v -> v.getRegionId() + HYPHEN + v.getDescription()).toList()
             : new ArrayList<>();
 
         List<DynamicListElement> regionDynamicList = regionList
             .stream()
             .sorted()
             .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
+            .toList();
 
         return DynamicList
             .builder()
@@ -115,14 +97,14 @@ public class LocationService {
 
     private DynamicList populateVenueDynamicList(HearingVenue... hearingVenues) {
         List<String> venueList = Objects.nonNull(hearingVenues)
-            ? Arrays.asList(hearingVenues).stream().map(v -> v.getCourtName() + HYPHEN + v.getCourtAddress()).collect(Collectors.toList())
+            ? Arrays.asList(hearingVenues).stream().map(v -> v.getCourtName() + HYPHEN + v.getCourtAddress()).toList()
             : new ArrayList<>();
 
         List<DynamicListElement> hearingVenueList = venueList
             .stream()
             .sorted()
             .map(venue -> DynamicListElement.builder().label(venue).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
+            .toList();
 
         return DynamicList
             .builder()
