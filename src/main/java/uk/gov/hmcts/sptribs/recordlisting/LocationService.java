@@ -4,6 +4,7 @@ import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -54,6 +55,9 @@ public class LocationService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 REGION_ALL);
+            if (CollectionUtils.isEmpty(list)) {
+                return new Region[0];
+            }
             return list.toArray(new Region[list.size()]);
         } catch (FeignException exception) {
             log.error("Unable to get Region data from reference data with exception {}",
@@ -71,6 +75,9 @@ public class LocationService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 regionId,
                 "Y");
+            if (CollectionUtils.isEmpty(list)) {
+                return new HearingVenue[0];
+            }
             return list.toArray(new HearingVenue[list.size()]);
         } catch (FeignException exception) {
             log.error("Unable to get Hearing venue data from reference data with exception {}",
