@@ -35,7 +35,7 @@ public class CaseManagementController {
         @ApiResponse(code = 401, message = "Provided Authorization token is missing or invalid"),
         @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public ResponseEntity<?> createCase(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+    public ResponseEntity<CaseResponse> createCase(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                         @RequestBody final DssCaseData dssCaseData) {
         CaseData caseData = new CaseData();
         caseData.setDssCaseData(dssCaseData);
@@ -51,7 +51,7 @@ public class CaseManagementController {
         @ApiResponse(code = 500, message = "Internal Server Error"),
         @ApiResponse(code = 404, message = "Case Not found")
     })
-    public ResponseEntity<?> updateCase(@PathVariable final Long caseId,
+    public ResponseEntity<CaseResponse> updateCase(@PathVariable final Long caseId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                         @RequestParam final Event event,
                                         @RequestBody final DssCaseData dssCaseData) {
@@ -69,7 +69,7 @@ public class CaseManagementController {
         @ApiResponse(code = 500, message = "Internal Server Error"),
         @ApiResponse(code = 404, message = "Case Not found")
     })
-    public ResponseEntity<?> fetchCaseDetails(@PathVariable final Long caseId,
+    public ResponseEntity<CaseResponse> fetchCaseDetails(@PathVariable final Long caseId,
                                               @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         CaseResponse caseResponse = caseManagementService.fetchCaseDetails(authorization,caseId);
         return ResponseEntity.ok(caseResponse);
