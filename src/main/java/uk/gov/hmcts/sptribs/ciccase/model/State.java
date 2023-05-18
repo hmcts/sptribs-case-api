@@ -153,10 +153,10 @@ public enum State {
     ));
 
 
-    public static final EnumSet<State> BUNDLE_STATES = EnumSet.complementOf(EnumSet.of(
+    public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
         CaseManagement,
         AwaitingHearing
-    ));
+    );
     private final String name;
 }
 
