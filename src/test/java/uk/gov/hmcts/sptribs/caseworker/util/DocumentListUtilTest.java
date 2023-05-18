@@ -28,7 +28,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class DocumentListUtilTest {
+class DocumentListUtilTest {
 
     @Test
     void shouldGenerateDocList() {
@@ -81,9 +81,9 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
         //Then
-        //assertThat(result).isNotNull();
+        assertThat(result).isNotNull();
 
     }
 
