@@ -38,8 +38,8 @@ public class LocationService {
 
     public DynamicList getHearingVenuesByRegion(String regionId) {
         final HearingVenue[] hearingVenues = getCourtVenues(regionId);
-        HearingVenue[] filteredHearingVenues = hearingVenues == null ? null : Arrays.stream(hearingVenues)
-            .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId())).toArray(HearingVenue[]::new);
+        HearingVenue[] filteredHearingVenues = Arrays.stream(hearingVenues)
+                    .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId())).toArray(HearingVenue[]::new);
         return populateVenueDynamicList(filteredHearingVenues);
     }
 
@@ -58,7 +58,7 @@ public class LocationService {
             if (CollectionUtils.isEmpty(list)) {
                 return new Region[0];
             }
-            return list.toArray(new Region[list.size()]);
+            return list.toArray(new Region[0]);
         } catch (FeignException exception) {
             log.error("Unable to get Region data from reference data with exception {}",
                 exception.getMessage());
@@ -78,7 +78,7 @@ public class LocationService {
             if (CollectionUtils.isEmpty(list)) {
                 return new HearingVenue[0];
             }
-            return list.toArray(new HearingVenue[list.size()]);
+            return list.toArray(new HearingVenue[0]);
         } catch (FeignException exception) {
             log.error("Unable to get Hearing venue data from reference data with exception {}",
                 exception.getMessage());
@@ -89,7 +89,7 @@ public class LocationService {
 
     private DynamicList populateRegionDynamicList(Region... regions) {
         List<String> regionList = Objects.nonNull(regions)
-            ? Arrays.asList(regions).stream().map(v -> v.getRegionId() + HYPHEN + v.getDescription()).toList()
+            ? Arrays.stream(regions).map(v -> v.getRegionId() + HYPHEN + v.getDescription()).toList()
             : new ArrayList<>();
 
         List<DynamicListElement> regionDynamicList = regionList
@@ -106,7 +106,7 @@ public class LocationService {
 
     private DynamicList populateVenueDynamicList(HearingVenue... hearingVenues) {
         List<String> venueList = Objects.nonNull(hearingVenues)
-            ? Arrays.asList(hearingVenues).stream().map(v -> v.getCourtName() + HYPHEN + v.getCourtAddress()).toList()
+            ? Arrays.stream(hearingVenues).map(v -> v.getCourtName() + HYPHEN + v.getCourtAddress()).toList()
             : new ArrayList<>();
 
         List<DynamicListElement> hearingVenueList = venueList

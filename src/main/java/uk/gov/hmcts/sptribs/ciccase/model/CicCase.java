@@ -61,7 +61,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
-@SuppressWarnings("PMD.CognitiveComplexity")
 public class CicCase {
 
     @CCD(
@@ -752,6 +751,17 @@ public class CicCase {
     )
     private String firstDueDate;
 
+    private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
+        for (ListValue<DateModel> dateModelListValue : dueDateList) {
+            if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
+                || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
+                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
+                compare = dateModelListValue.getValue().getDueDate();
+            }
+        }
+        return compare;
+    }
+
     public String getFirstDueDate() {
 
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
@@ -759,13 +769,7 @@ public class CicCase {
         if (!CollectionUtils.isEmpty(orderList)) {
             for (ListValue<Order> orderListValue : orderList) {
                 if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
-                    for (ListValue<DateModel> dateModelListValue : orderListValue.getValue().getDueDateList()) {
-                        if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
-                            || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
-                            && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
-                            compare = dateModelListValue.getValue().getDueDate();
-                        }
-                    }
+                    compare = findEarliestDate(orderListValue.getValue().getDueDateList(), compare);
                 }
             }
             return dateFormatter.format(compare);
@@ -790,9 +794,9 @@ public class CicCase {
         }
         if (null != contactPartiesCIC) {
             Set<ContactPartiesCIC> temp = new HashSet<>();
-            for (ContactPartiesCIC partiesCIC : contactPartiesCIC) {
-                if (partiesCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
-                    temp.add(partiesCIC);
+            for (ContactPartiesCIC partyCIC : contactPartiesCIC) {
+                if (partyCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
+                    temp.add(partyCIC);
                 }
             }
             contactPartiesCIC = temp;
