@@ -61,6 +61,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
+@SuppressWarnings("PMD.CognitiveComplexity")
 public class CicCase {
 
     @CCD(
