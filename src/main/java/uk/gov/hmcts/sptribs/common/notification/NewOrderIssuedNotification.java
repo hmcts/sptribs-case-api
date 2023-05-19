@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.REINSTATE_REASON;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_ORDER;
 
 @Component
@@ -37,7 +38,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
-
+            sendNotificationToParties(cicCase,templateVars);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
                 uploadedDocuments, templateVars);
         } else {
@@ -56,6 +57,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
+            sendNotificationToParties(cicCase,templateVars);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
                 uploadedDocuments, templateVars);
         } else {
@@ -72,7 +74,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
         Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
-
+        sendNotificationToParties(cicCase,respondentTemplateVars);
         NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
             uploadedDocuments, respondentTemplateVars);
         cicCase.setResNotificationResponse(notificationResponse);
@@ -105,5 +107,10 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         }
 
         return uploadedDocuments;
+    }
+
+    private void sendNotificationToParties(CicCase cicCase, Map<String, Object> templateVars) {
+        templateVars.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getLastSelectedOrder().getUrl(), "/"));
+
     }
 }
