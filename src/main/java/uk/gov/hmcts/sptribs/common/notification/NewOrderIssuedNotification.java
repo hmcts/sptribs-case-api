@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.common.CommonConstants.REINSTATE_REASON;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_ORDER;
 
 @Component
