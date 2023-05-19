@@ -41,8 +41,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
 
-
-
 @Component
 public class NotificationHelper {
 
@@ -51,8 +49,6 @@ public class NotificationHelper {
         templateVars.put(TRIBUNAL_NAME, CIC);
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        // templateVars.put(TRIBUNAL_ORDER, cicCase.getTrib);
-
         return templateVars;
     }
 
