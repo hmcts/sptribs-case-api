@@ -343,10 +343,8 @@ public class CaseData {
 
     public String getFirstHearingDate() {
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        if (!ObjectUtils.isEmpty(listing)) {
-            if (!ObjectUtils.isEmpty(listing.getDate())) {
-                return dateFormatter.format(listing.getDate());
-            }
+        if (!ObjectUtils.isEmpty(listing) && !ObjectUtils.isEmpty(listing.getDate())) {
+            return dateFormatter.format(listing.getDate());
         }
         return "";
     }
