@@ -28,7 +28,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CASE_DOCUMENT;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
@@ -39,6 +38,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
+import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
 
 @Component
@@ -127,15 +127,13 @@ public class NotificationHelper {
 
         if (isVideoFormat(listing) || isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
-        } else
-            if (null != listing.getSelectedVenue()) {
-                templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getSelectedVenue());
-            } else
-                if (null != listing.getHearingVenueNameAndAddress()) {
-                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getHearingVenueNameAndAddress());
-                } else {
-                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
-                }
+        } else if (null != listing.getSelectedVenue()) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getSelectedVenue());
+        } else if (null != listing.getHearingVenueNameAndAddress()) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getHearingVenueNameAndAddress());
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
+        }
 
         if (null != listing.getAddlInstr()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, listing.getAddlInstr());
