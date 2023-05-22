@@ -691,7 +691,7 @@ public class CicCase {
     public String getFirstDueDate() {
 
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        LocalDate compare = LocalDate.now().plusDays(10000L);
+        LocalDate compare = LocalDate.MAX;
         if (!CollectionUtils.isEmpty(orderList)) {
             for (ListValue<Order> orderListValue : orderList) {
                 if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
@@ -704,7 +704,9 @@ public class CicCase {
                     }
                 }
             }
-            return dateFormatter.format(compare);
+            if (compare.isBefore(LocalDate.MAX)) {
+                return dateFormatter.format(compare);
+            }
         }
         return "";
     }
