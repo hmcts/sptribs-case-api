@@ -752,15 +752,15 @@ public class CicCase {
     private String firstDueDate;
 
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
-
+        LocalDate earliestDate = LocalDate.now();
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
             if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
                 || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
                 && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
-                compare = dateModelListValue.getValue().getDueDate();
+                earliestDate = dateModelListValue.getValue().getDueDate();
             }
         }
-        return compare;
+        return earliestDate;
     }
 
     public String getFirstDueDate() {
