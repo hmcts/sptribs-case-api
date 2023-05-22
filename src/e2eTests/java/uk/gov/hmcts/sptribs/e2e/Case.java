@@ -55,7 +55,7 @@ public class Case {
     /*
     createCase() method accepts String arguments. By default, this method creates
     case with Subject and email as contact preference. To create case with
-    applicant and/or representative you specify the party and/or contact preference
+    applicant and/or representative specify the party and/or contact preference
     as the arguments. Examples below:
 
     createCase("applicant") --> to add applicant to the case
