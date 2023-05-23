@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -132,6 +133,23 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         var cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
+        try {
+            sendContactPartiesNotification(details, cicCase, caseNumber);
+        } catch (Exception notificationException) {
+            log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the order"))
+                .build();
+        }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Message sent %n## %s",
+                MessageUtil.generateSimpleMessage(data.getCicCase())
+            ))
+            .build();
+    }
+
+    private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             contactPartiesNotification.sendToSubject(details.getData(), caseNumber);
         }
@@ -144,12 +162,6 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
         }
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent %n## %s",
-                MessageUtil.generateSimpleMessage(data.getCicCase())
-            ))
-            .build();
-
     }
 
 }
