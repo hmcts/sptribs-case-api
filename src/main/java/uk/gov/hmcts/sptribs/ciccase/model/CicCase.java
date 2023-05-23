@@ -262,7 +262,6 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
     private Document lastSelectedOrder;
 
     @CCD(
