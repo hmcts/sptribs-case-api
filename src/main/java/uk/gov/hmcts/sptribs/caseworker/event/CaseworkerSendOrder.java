@@ -191,6 +191,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
+            log.error("Send order notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
                 .build();
