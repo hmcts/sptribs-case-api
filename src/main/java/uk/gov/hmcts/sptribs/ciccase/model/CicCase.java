@@ -688,6 +688,19 @@ public class CicCase {
     )
     private String firstDueDate;
 
+    private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
+        LocalDate earliestDate = compare;
+        for (ListValue<DateModel> dateModelListValue : dueDateList) {
+            if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
+                || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
+                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
+                earliestDate = dateModelListValue.getValue().getDueDate();
+            }
+        }
+        return earliestDate;
+
+    }
+
     public String getFirstDueDate() {
 
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
