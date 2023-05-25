@@ -136,7 +136,7 @@ withPipeline(type, product, component) {
       reportName           : "Functional Tests Report"
     ]
   }
-  
+
   afterSuccess('functionalTest:preview') {
     if( "8800" == "${CHANGE_ID}" ) {
       try {
@@ -152,7 +152,7 @@ withPipeline(type, product, component) {
           reportName           : "E2E Tests Report"
         ]
       }
-     } 
+     }
   }
 
   afterAlways('functionalTest:aat') {
@@ -325,15 +325,17 @@ def generateDefinitions() {
 def setFeatureFlags(environment) {
   if (environment =~ /preview|demo|perftest/) {
     env.CONTACT_PARTIES_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
+    env.LINK_CASE_FEATURE = false
+    env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
+    env.BUNDLING_FEATURE = false
+    env.SECURITY_CLASSIFICATION = false
   } else if (environment =~ /aat|prod/) {
     env.CONTACT_PARTIES_FEATURE = false
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
+    env.BUNDLING_FEATURE = false
+    env.SECURITY_CLASSIFICATION = false
   }
 }
