@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -17,11 +19,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CHANGE_SECURITY_CLASS;
@@ -36,7 +38,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@Setter
 public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseData, State, UserRole> {
+
+    @Value("${feature.security-classification.enabled}")
+    private boolean securityClassificationEnabled;
 
     @Autowired
     private HttpServletRequest request;
@@ -50,6 +56,12 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (securityClassificationEnabled) {
+            doConfigure(configBuilder);
+        }
+    }
+
+    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CHANGE_SECURITY_CLASS)
             .forAllStates()
