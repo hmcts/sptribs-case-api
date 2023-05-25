@@ -43,7 +43,7 @@ public enum AdjournmentReasons implements HasLabel {
     FURTHER_EVIDENCE_RECEIVED_AT_COURT("Further evidence received at hearing"),
 
     @JsonProperty("  Further evidence supplied but not before Tribunal at hearing")
-    FURTHER_EVIDENCE_SUPPLIED_BUT_NOT_BEFORE_HEARING("urther evidence supplied but not before Tribunal at hearing"),
+    FURTHER_EVIDENCE_SUPPLIED_BUT_NOT_BEFORE_HEARING("Further evidence supplied but not before Tribunal at hearing"),
 
     @JsonProperty("Further Loss of Earnings information required - Appellant")
     FURTHER_LOSS_OF_EARNINGS_INFORMATION_REQUIRED_APPELLANT("Further Loss of Earnings information required - Appellant"),
