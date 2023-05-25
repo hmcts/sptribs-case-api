@@ -35,7 +35,6 @@ public abstract class Base {
     public static String CASE_API_BASE_URL;
 
     public static String DSS_BASE_URL;
-    
 
     @BeforeAll
     public void setUp() {
