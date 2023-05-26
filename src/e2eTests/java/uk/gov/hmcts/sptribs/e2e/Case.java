@@ -496,7 +496,7 @@ public class Case {
         getTextBoxByLabel(page, "Order signature").fill("Tribunal Judge Farrelly");
         clickButton(page, "Continue");
         assertThat(page.locator("a.ng-star-inserted").last())
-            .containsText(" Order-[Subject", containsTextOptionsWithTimeout(60000));
+            .containsText(" Order--[Subject", containsTextOptionsWithTimeout(60000));
         assertThat(page.locator("a.ng-star-inserted").last())
             .containsText(".pdf", containsTextOptionsWithTimeout(60000));
         clickButton(page, "Continue");
