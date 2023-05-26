@@ -6,12 +6,13 @@ import org.junit.jupiter.api.Disabled;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueCaseToRespondent;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 
-public class IssueToRespondent extends Base {
+public class IssueToRespondentTests extends Base {
 
     @Disabled
     public void caseWorkerShouldAbleToManageIssueToRespondent() {
@@ -21,10 +22,12 @@ public class IssueToRespondent extends Base {
         Case newCase = new Case(page);
         newCase.createCase("representative");
         newCase.buildCase();
+        newCase.startNextStepAction(UploadDocuments);
+        DocumentManagement docManagement = new DocumentManagement(page);
+        docManagement.uploadDocuments();
         newCase.startNextStepAction(IssueCaseToRespondent);
-        assertThat(page.locator("h1")).hasText("Select additional documentation", textOptionsWithTimeout(60000));
-        getCheckBoxByLabel(page, "Tribunal form").first().check();
-        getCheckBoxByLabel(page, "Application form").check();
+        assertThat(page.locator("h1")).hasText("Select additional documents", textOptionsWithTimeout(60000));
+        getCheckBoxByLabel(page, "sample_file.pdf").check();
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Notify other parties", textOptionsWithTimeout(60000));
         page.getByLabel("Subject").check();
