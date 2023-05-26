@@ -239,7 +239,7 @@ public class Hearing {
 
         // Fill Hearing outcome form
         assertThat(page.locator("h1"))
-            .hasText("Hearings:Create summary", textOptionsWithTimeout(30000));
+            .hasText("Hearing outcome", textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Adjourned").click();
         getRadioButtonByLabel(page, "Appellant did not attend").click();
         PageHelpers.clickButton(page, "Continue");
@@ -310,7 +310,7 @@ public class Hearing {
 
         // Fill Hearing outcome form
         assertThat(page.locator("h1"))
-            .hasText("Hearings: Edit summary", textOptionsWithTimeout(30000));
+            .hasText("Hearing outcome", textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Refused").click();
         PageHelpers.clickButton(page, "Continue");
 
