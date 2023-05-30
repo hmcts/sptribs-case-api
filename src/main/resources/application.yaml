@@ -83,7 +83,7 @@ uk:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
 
 s2s-authorised:
-  services: ${S2S_AUTHORISED_SERVICES:ccd_data}
+  services: ${S2S_AUTHORISED_SERVICES:ccd_data,sptribs_frontend}
 
 idam:
   s2s-auth:
