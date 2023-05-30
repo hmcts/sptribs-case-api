@@ -20,8 +20,8 @@ spring:
     allow-bean-definition-overriding: true
   servlet:
     multipart:
-      max-file-size: 42MB
-      max-request-size: 42MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
