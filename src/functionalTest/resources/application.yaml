@@ -46,7 +46,7 @@ idam:
     redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
 
 s2s-authorised:
-  services: ccd_data
+  services: ccd_data,sptribs_frontend
 
 location:
   api:
