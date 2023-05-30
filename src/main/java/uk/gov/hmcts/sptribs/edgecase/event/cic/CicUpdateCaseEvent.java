@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.util.AppsUtil;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
@@ -79,8 +80,8 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
-        caseData.getCicCase().getPartiesCIC().add(PartiesCIC.SUBJECT);
-        caseData.getCicCase().getSubjectCIC().add(SubjectCIC.SUBJECT);
+        caseData.getCicCase().setPartiesCIC(Set.of(PartiesCIC.SUBJECT));
+        caseData.getCicCase().setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
         caseData.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         if (!ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
             caseData.getCicCase().setRepresentativeFullName(dssCaseData.getRepresentativeFullName());
