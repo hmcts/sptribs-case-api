@@ -104,7 +104,7 @@ class CicUpdateCaseEventTest {
             .subjectFullName(TEST_FIRST_NAME)
             .build();
 
-        CicCase cicCase = CicCase.builder().partiesCIC(new HashSet<>()).build();
+        CicCase cicCase = CicCase.builder().subjectCIC(new HashSet<>()).partiesCIC(new HashSet<>()).build();
         CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);

@@ -13,9 +13,12 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
@@ -71,11 +74,14 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
+        caseData.getCicCase().setSchemeCic(SchemeCic.Year2012);
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
         caseData.getCicCase().getPartiesCIC().add(PartiesCIC.SUBJECT);
+        caseData.getCicCase().getSubjectCIC().add(SubjectCIC.SUBJECT);
+        caseData.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         if (!ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
             caseData.getCicCase().setRepresentativeFullName(dssCaseData.getRepresentativeFullName());
             caseData.getCicCase().setRepresentativeOrgName(dssCaseData.getRepresentativeOrganisationName());
