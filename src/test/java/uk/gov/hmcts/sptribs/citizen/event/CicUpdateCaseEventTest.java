@@ -27,7 +27,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,7 +103,7 @@ class CicUpdateCaseEventTest {
             .subjectFullName(TEST_FIRST_NAME)
             .build();
 
-        CicCase cicCase = CicCase.builder().subjectCIC(new HashSet<>()).partiesCIC(new HashSet<>()).build();
+        CicCase cicCase = CicCase.builder().build();
         CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
