@@ -16,9 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
-import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
-import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
+import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -41,9 +39,9 @@ class CicCreateCaseEventTest {
 
         SetMultimap<UserRole, Permission> expectedRolesAndPermissions =
             ImmutableSetMultimap.<UserRole, Permission>builder()
-                .put(CITIZEN_CIC, C)
-                .put(CITIZEN_CIC, R)
-                .put(CITIZEN_CIC, U)
+                .put(CITIZEN_CIC, D)
+                //.put(CITIZEN_CIC, R)
+                //.put(CITIZEN_CIC, U)
                 .build();
 
         assertThat(getEventsFrom(configBuilder).values())
