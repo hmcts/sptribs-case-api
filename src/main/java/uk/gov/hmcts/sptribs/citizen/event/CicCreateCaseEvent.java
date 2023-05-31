@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import java.util.ArrayList;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.DELETE;
 
 @Component
 @Slf4j
@@ -30,7 +30,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .initialState(State.Draft)
             .name("Create draft case (cic)")
             .description("Apply for edge case (cic)")
-            .grant(CREATE_READ_UPDATE, updatedRoles.toArray(UserRole[]::new))
+            .grant(DELETE, updatedRoles.toArray(UserRole[]::new))
             .aboutToSubmitCallback(this::aboutToSubmit)
             .retries(120, 120);
     }
