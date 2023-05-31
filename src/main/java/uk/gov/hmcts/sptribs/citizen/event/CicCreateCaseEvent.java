@@ -40,7 +40,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(State.Submitted)
+            .state(State.DSS_Submitted)
             .build();
     }
 

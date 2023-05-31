@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -28,7 +27,6 @@ import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.services.CaseManagementService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,11 +34,11 @@ import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.edgecase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
-public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole>  {
+public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     AppsConfig appsConfig;
@@ -52,9 +50,9 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
-                       .getUpdateEvent())
-            .forStates(State.Draft, State.Submitted)
-            .name("Edge case (cic)")
+                .getUpdateEvent())
+            .forStates(State.Draft, State.Submitted, State.DSS_Submitted)
+            .name("Update case (cic)")
             .description("Application update (cic)")
             .retries(120, 120)
             .grant(CREATE_READ_UPDATE, CITIZEN_CIC)
@@ -76,7 +74,6 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
-        caseData.getCicCase().setSchemeCic(SchemeCic.Year2012);
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
@@ -96,7 +93,6 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setIsRepresentativeQualified(dssCaseData.getRepresentationQualified());
             caseData.getCicCase().getPartiesCIC().add(PartiesCIC.REPRESENTATIVE);
         }
-        caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
         List<CaseworkerCICDocument> docList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {

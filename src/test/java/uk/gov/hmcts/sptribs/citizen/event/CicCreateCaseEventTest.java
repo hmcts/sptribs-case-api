@@ -64,6 +64,6 @@ class CicCreateCaseEventTest {
         );
 
         // Then
-        assertThat(response.getState()).isEqualTo(State.Submitted);
+        assertThat(response.getState()).isEqualTo(State.DSS_Submitted);
     }
 }
