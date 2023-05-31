@@ -65,6 +65,29 @@ class CaseworkerEditCaseTest {
     }
 
     @Test
+    void shouldSuccessfullyEditDssCase() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.DSS_Submitted);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getState()).isEqualTo(State.Submitted);
+    }
+
+    @Test
     void shouldSuccessfullyEditCase() {
         //Given
         final CaseData caseData = caseData();
