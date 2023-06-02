@@ -172,7 +172,7 @@ ccd:
         value: .security*,.watches,.triggered_watches,.watcher-history-*,.logstash_dead_letter,.ml*
     persistence:
       enabled: false
-   
+
   logstash:
     image: hmctspublic.azurecr.io/imported/logstash/logstash
     imageTag: 8.5.1
@@ -226,7 +226,7 @@ xui-webapp:
       SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
-      JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
+      JURISDICTIONS: CriminalInjuriesCompensation,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
       FEATURE_REDIS_ENABLED: false
       NODE_OPTIONS: --max-old-space-size=900
@@ -243,7 +243,7 @@ xui-mo-webapp:
       MANAGE_ORG_LINK: https://xui-mo-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
-      JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
+      JURISDICTIONS: CriminalInjuriesCompensation,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
 
 sptribs-frontend:
