@@ -55,6 +55,13 @@ public enum State {
     Submitted("Submitted"),
 
     @CCD(
+        label = "DSS-Submitted",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Submitted("DSS-Submitted"),
+
+    @CCD(
         label = "New case received",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}

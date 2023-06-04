@@ -27,6 +27,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDI
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -72,9 +73,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
-            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
-            .description("")
+            .description("Case: Edit case")
             .showSummary()
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -107,9 +108,14 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
+        var state = details.getState();
+        if (state == DSS_Submitted) {
+            state = Submitted;
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
+            .state(state)
             .build();
     }
 

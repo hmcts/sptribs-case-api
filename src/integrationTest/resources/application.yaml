@@ -35,7 +35,7 @@ idam:
     password: dummy
 
 s2s-authorised:
-  services: ccd_data
+  services: ccd_data,sptribs_frontend
 
 location:
   api:
@@ -101,6 +101,8 @@ feature:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
     enabled: ${BUNDLING_FEATURE:true}
+  security-classification:
+    enabled: ${SECURITY_CLASSIFICATION:false}
 
 caseinfo:
   apps:
