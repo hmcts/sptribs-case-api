@@ -1,5 +1,6 @@
-package uk.gov.hmcts.sptribs.document.bundling;
+package uk.gov.hmcts.sptribs.document.bundling.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -13,10 +14,9 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
-import java.util.LinkedList;
 import java.util.List;
 import javax.validation.constraints.Size;
 
@@ -32,15 +32,13 @@ public class Bundle {
     private String title;
     @Size(max = 255, message = CommonConstants.BUNDLE_DESCRIPTION_FIELD_LENGTH_ERROR_MSG)
     private String description;
-    private CICDocument stitchedDocument;
+    private CaseworkerCICDocument stitchedDocument;
     @JsonUnwrapped(prefix = "documents")
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<BundleDocument>> documents = new LinkedList<>();
+    private List<ListValue<BundleDocument>> documents;
     @JsonUnwrapped(prefix = "folders")
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<BundleFolder>> folders = new LinkedList<>();
+    private List<ListValue<BundleFolder>> folders;
     @Builder.Default
     private BundlePaginationStyle paginationStyle = BundlePaginationStyle.off;
     @Builder.Default
@@ -49,4 +47,6 @@ public class Bundle {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private DocumentImage documentImage;
+    @JsonIgnore
+    private String stitchingStatus;
 }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document.bundling;
+package uk.gov.hmcts.sptribs.document.bundling.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,12 +20,14 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class BundleSubFolder2 {
+public class BundleFolder {
 
     private String name;
     @JsonUnwrapped(prefix = "documents")
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<BundleDocument>> documents = new ArrayList<>();
+    private List<ListValue<BundleDocument>> documents;
+    @JsonUnwrapped(prefix = "folders")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private List<ListValue<BundleSubFolder>> folders;
     private int sortIndex;
 }
