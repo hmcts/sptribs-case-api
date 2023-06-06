@@ -119,7 +119,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
                 if (selectedDynamicDraft
                     .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
-                    && selectedDraft[1].equals(draftOrderFile[2])) {
+                    && draftOrderFile[2].contains(selectedDraft[1])) {
                     selectedDraftOrder = draftOrderCICListValue.getValue();
                     String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(SEMICOLON);
                     selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileName[1]);
