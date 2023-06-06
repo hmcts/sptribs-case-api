@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.document.bundling.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,15 +24,16 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 public class BundleFolder {
 
     private String name;
-    @JsonUnwrapped(prefix = "documents")
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         typeParameterOverride = "BundleDocument")
     private List<ListValue<BundleDocument>> documents;
-    @JsonUnwrapped(prefix = "folders")
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         typeParameterOverride = "BundleSubFolder")
     private List<ListValue<BundleSubFolder>> folders;
+
     private int sortIndex;
 }
