@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -18,7 +19,6 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class BundlingServiceTest {
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
-        bundleMap.put("stitchedDocument", new CaseworkerCICDocument());
+        bundleMap.put("stitchedDocument", new Document());
         bundleMap.put("paginationStyle", BundlePaginationStyle.off);
         bundleMap.put("pageNumberFormat", PageNumberFormat.numberOfPages);
         bundleMap.put("stitchingFailureMessage", "1");
@@ -140,7 +140,7 @@ public class BundlingServiceTest {
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
-        bundleMap.put("stitchedDocument", new CaseworkerCICDocument());
+        bundleMap.put("stitchedDocument", new Document());
         bundleMap.put("paginationStyle", BundlePaginationStyle.off);
         bundleMap.put("pageNumberFormat", PageNumberFormat.numberOfPages);
         bundleMap.put("stitchingFailureMessage", "1");

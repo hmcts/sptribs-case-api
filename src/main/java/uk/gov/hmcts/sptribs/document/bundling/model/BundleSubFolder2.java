@@ -16,6 +16,8 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,7 +29,9 @@ public class BundleSubFolder2 {
     private String name;
     @JsonUnwrapped(prefix = "documents")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "BundleDocument")
     private List<ListValue<BundleDocument>> documents = new ArrayList<>();
     private int sortIndex;
 }

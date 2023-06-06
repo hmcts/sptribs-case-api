@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
@@ -13,7 +14,6 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
 import java.util.ArrayList;
@@ -71,14 +71,14 @@ public class BundlingService {
                 .id(null != objectLinkedHashMap.get("id") ? objectLinkedHashMap.get("id").toString() : "")
                 .title(null != objectLinkedHashMap.get("title") ? objectLinkedHashMap.get("title").toString() : "")
                 .stitchedDocument(null != objectLinkedHashMap.get("stitchedDocument")
-                    ? (CaseworkerCICDocument) objectLinkedHashMap.get("stitchedDocument") : null)
+                    ? (Document) objectLinkedHashMap.get("stitchedDocument") : null)
                 .paginationStyle(null != objectLinkedHashMap.get("paginationStyle")
                     ? BundlePaginationStyle.valueOf(objectLinkedHashMap.get("paginationStyle").toString()) : null)
                 .pageNumberFormat(null != objectLinkedHashMap.get("pageNumberFormat")
                     ? PageNumberFormat.valueOf(objectLinkedHashMap.get("pageNumberFormat").toString()) : null)
                 .stitchingFailureMessage(null != objectLinkedHashMap.get("stitchingFailureMessage")
                     ? objectLinkedHashMap.get("stitchingFailureMessage").toString() : "")
-                .stitchingStatus(null != objectLinkedHashMap.get("stitchingStatus")
+                .stitchStatus(null != objectLinkedHashMap.get("stitchingStatus")
                     ? objectLinkedHashMap.get("stitchingStatus").toString() : "")
                 .build();
 

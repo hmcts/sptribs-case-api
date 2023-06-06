@@ -45,6 +45,7 @@ class BundleTest {
         assertThat(bundleDTO.getValue().getPageNumberFormat()).isNotNull();
         assertThat(bundleDTO.getValue().getPaginationStyle()).isNotNull();
         assertThat(bundleDTO.getValue().getStitchedDocument()).isNull();
+        assertThat(bundleDTO.getValue().getEligibleForCloning()).isNull();
 
         ListValue<BundleDocument> bundleDocumentDTO = bundleDTO.getValue().getDocuments().get(0);
         assertDocument(bundleDocumentDTO);
