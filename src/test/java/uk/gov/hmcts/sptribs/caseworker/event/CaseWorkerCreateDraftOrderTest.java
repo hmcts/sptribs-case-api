@@ -55,7 +55,8 @@ class CaseWorkerCreateDraftOrderTest {
     void shouldSuccessfullySaveDraftOrder() {
 
         //Given
-        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
+        final CicCase cicCase = CicCase.builder()
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -64,7 +65,8 @@ class CaseWorkerCreateDraftOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -81,7 +83,8 @@ class CaseWorkerCreateDraftOrderTest {
     void shouldSuccessfullySaveDraftOrderWithCurrentDateAndTime() {
 
         //Given
-        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
+        final CicCase cicCase = CicCase.builder()
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -105,9 +108,11 @@ class CaseWorkerCreateDraftOrderTest {
     void shouldSuccessfullyShowPreviewOrderWithTemplate() {
 
         //Given
-        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
 
-        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
+        final CicCase cicCase = CicCase.builder()
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = CaseData.builder()
             .draftOrderContentCIC(orderContentCIC)
             .build();
@@ -128,7 +133,8 @@ class CaseWorkerCreateDraftOrderTest {
     void shouldSuccessfullySave2DraftOrder() {
 
         //Given
-        final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
+        final CicCase cicCase = CicCase.builder()
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -147,7 +153,8 @@ class CaseWorkerCreateDraftOrderTest {
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
         assertThat(draftCreatedResponse).isNotNull();
 
-        final CicCase cicCase2 = CicCase.builder(). orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
+        final CicCase cicCase2 = CicCase.builder()
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         caseData.setCicCase(cicCase2);
         updatedCaseDetails.setData(caseData);
         caseData.setDraftOrderContentCIC(orderContentCIC);
