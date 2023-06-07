@@ -67,8 +67,8 @@ public final class DocumentListUtil {
             .filter(CaseworkerCICDocument::isDocumentValid)
             .map(doc -> DynamicListElement.builder()
                 .label(fileType + "--" + doc.getDocumentLink().getFilename()
-                + "--" + doc.getDocumentLink().getUrl()
-                + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+                    + "--" + doc.getDocumentLink().getUrl()
+                    + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
     }
 
@@ -77,9 +77,9 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .map(doc -> DynamicListElement.builder().label("["+doc.getDocumentLink().getFilename()
-                + " "+doc.getDocumentCategory().getLabel()
-                + "] (" + doc.getDocumentLink().getUrl()+")").code(UUID.randomUUID()).build())
+            .map(doc -> DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "] (" + doc.getDocumentLink().getUrl() + ")").code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
         return DynamicMultiSelectList
