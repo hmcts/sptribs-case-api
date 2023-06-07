@@ -79,7 +79,7 @@ public final class DocumentListUtil {
             .stream()
             .map(doc -> DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
                 + " " + doc.getDocumentCategory().getLabel()
-                + "] (" + doc.getDocumentLink().getUrl() + ")").code(UUID.randomUUID()).build())
+                + "](" + doc.getDocumentLink().getUrl() + ")").code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
         return DynamicMultiSelectList

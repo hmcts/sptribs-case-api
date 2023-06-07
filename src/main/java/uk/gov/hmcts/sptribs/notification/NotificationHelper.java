@@ -175,10 +175,10 @@ public class NotificationHelper {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
-                String[] labels = element.getLabel().split("--");
+                String[] labels = element.getLabel().split("()");
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(CASE_DOCUMENT + count,
-                    StringUtils.substringAfterLast(labels[2],
+                    StringUtils.substringAfterLast(labels[1].substring(0, labels[1].length() - 1),
                         "/"));
             }
         }
