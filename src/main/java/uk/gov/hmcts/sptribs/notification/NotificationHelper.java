@@ -178,7 +178,7 @@ public class NotificationHelper {
                 String[] labels = element.getLabel().split("--");
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(CASE_DOCUMENT + count,
-                    StringUtils.substringAfterLast(labels[1],
+                    StringUtils.substringAfterLast(labels[2],
                         "/"));
             }
         }
