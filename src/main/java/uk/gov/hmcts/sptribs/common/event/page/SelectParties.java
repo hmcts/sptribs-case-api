@@ -23,7 +23,7 @@ public class SelectParties implements CcdPageConfiguration {
         pageBuilder
             .page("objectSubjects", this::midEvent)
             .pageLabel("Who are the parties in this case?")
-            .label("LabelSelectParties", "")
+            .label("LabelObjectSubjects", "")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getPartiesCIC, "")
             .done();
