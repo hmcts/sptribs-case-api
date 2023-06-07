@@ -67,6 +67,7 @@ public class BundlingService {
         for (int i = 0; i < response.size(); i++) {
             LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) response.get(i).get("value");
             Bundle bundle = Bundle.builder()
+                .stitchStatus("New")
                 .description(null != objectLinkedHashMap.get("description") ? objectLinkedHashMap.get("description").toString() : "")
                 .id(null != objectLinkedHashMap.get("id") ? objectLinkedHashMap.get("id").toString() : "")
                 .title(null != objectLinkedHashMap.get("title") ? objectLinkedHashMap.get("title").toString() : "")

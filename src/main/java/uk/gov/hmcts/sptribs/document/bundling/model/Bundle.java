@@ -47,12 +47,14 @@ public class Bundle {
     private List<ListValue<BundleFolder>> folders;
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedList
+        typeOverride = FixedList,
+        typeParameterOverride = "BundlePaginationStyle"
     )
     private BundlePaginationStyle paginationStyle = BundlePaginationStyle.off;
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedList
+        typeOverride = FixedList,
+        typeParameterOverride = "PageNumberFormat"
     )
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
     private String stitchingFailureMessage;
