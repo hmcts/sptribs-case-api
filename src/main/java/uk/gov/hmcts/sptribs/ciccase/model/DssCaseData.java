@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -126,5 +127,29 @@ public class DssCaseData implements MappableObject {
         access = {DefaultAccess.class, CitizenAccess.class}
     )
     private List<ListValue<EdgeCaseDocument>> otherInfoDocuments;
+
+
+    @CCD(
+        label = "Message",
+        typeOverride = TextArea
+    )
+    private String notifyPartyMessage;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse subjectNotifyList;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse appNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse repNotificationResponse;
 
 }
