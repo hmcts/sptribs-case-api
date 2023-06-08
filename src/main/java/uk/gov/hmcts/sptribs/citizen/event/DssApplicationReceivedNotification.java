@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class DssPartiesNotification implements PartiesNotification {
+public class DssApplicationReceivedNotification implements PartiesNotification {
 
     @Autowired
     private NotificationServiceCIC notificationService;
@@ -26,7 +26,6 @@ public class DssPartiesNotification implements PartiesNotification {
     @Autowired
     private DssNotificationHelper dssNotificationHelper;
 
-    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -75,7 +74,8 @@ public class DssPartiesNotification implements PartiesNotification {
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
                                                        TemplateName emailTemplateName) {
-        NotificationRequest request = dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, emailTemplateName);
+        NotificationRequest request = dssNotificationHelper.buildEmailNotificationRequest(
+            toEmail, templateVars, emailTemplateName);
         return notificationService.sendEmail(request);
     }
 
