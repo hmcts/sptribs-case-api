@@ -2,16 +2,21 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
@@ -28,6 +33,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
+
+    @Autowired
+    BundlingService bundlingService;
 
     @Value("${feature.bundling.enabled}")
     private boolean bundlingEnabled;
@@ -69,8 +77,15 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
+        caseData.setCaseDocuments(DocumentListUtil.getAllCaseDocuments(caseData));
+        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfig());
+        Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
+        BundleCallback bundleCallback = new BundleCallback(callback);
 
+        caseData.setCaseBundles(bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback)));
 
+        caseData.setMultiBundleConfiguration(null);
+        caseData.setCaseDocuments(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

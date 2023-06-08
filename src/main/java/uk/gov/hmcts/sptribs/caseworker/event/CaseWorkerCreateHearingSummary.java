@@ -49,8 +49,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration hearingAttendees = new HearingAttendees();
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
-    private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
-
+    private static final CcdPageConfiguration hearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
 
     @Autowired
@@ -89,7 +88,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         hearingVenues.addTo(pageBuilder);
         hearingAttendees.addTo(pageBuilder);
         hearingAttendeesRole.addTo(pageBuilder);
-        HearingOutcome.addTo(pageBuilder);
+        hearingOutcome.addTo(pageBuilder);
         hearingRecordingUploadPage.addTo(pageBuilder);
     }
 

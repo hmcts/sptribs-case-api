@@ -21,6 +21,6 @@ public class CategoriesMHtest {
         new CategoriesMH().configure(configBuilder);
 
         //Then
-        assertThat(getCategories(configBuilder)).hasSize(9);
+        assertThat(getCategories(configBuilder)).hasSize(10);
     }
 }
