@@ -152,4 +152,10 @@ public class DssCaseData implements MappableObject {
     )
     private NotificationResponse repNotificationResponse;
 
+    @CCD(
+        label = "Is there a representative?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isRepresentativePresent;
+
 }
