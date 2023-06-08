@@ -38,6 +38,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -110,10 +113,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
+            String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_HYPHEN);
             for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
+                String[] draftOrderFile = draftOrderCICListValue.getValue()
+                    .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
                 if (selectedDynamicDraft
-                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
+                    && draftOrderFile[2].contains(selectedDraft[1])) {
                     selectedDraftOrder = draftOrderCICListValue.getValue();
+                    String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(SEMICOLON);
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileName[1]);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }
