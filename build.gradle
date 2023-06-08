@@ -435,6 +435,8 @@ dependencies {
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.19.1-RELEASE'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.1.0'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+  implementation group: 'com.azure', name: 'azure-core', version: '1.39.0'
+  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.13.4'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation 'com.github.hmcts:fortify-client:1.3.0:all'
@@ -491,7 +493,7 @@ task loadEnvSecrets() {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env','wa-aat',"AZURE_SERVICE_BUS_CONNECTION_STRING","sscs-aat","sscs-servicebus-connection-string-tf"
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
@@ -582,6 +584,12 @@ bootWithCCD {
         }
         //environment 'CITIZEN_UPDATE_CASE_STATE_ENABLED', 'true'
     }
+  environment 'ADDITIONAL_COMPOSE_FILES_WA', 'cft-lib-work-allocation.yml'
+  environment 'ENABLE_WORK_ALLOCATION', 'true'
+  environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch,ccd_data,camunda,cft_task_db,sscsjobscheduler,evidence,wa_case_event_messages_db,wa_workflow_api'
+  environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,sscs,wa_task_management_api,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler,em_stitching_api'
+  environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,payment-api,xui_webapp,sscs,ccd_case_document_am_api,am_role_assignment_service,em_ccd_orchestrator,em_stitching_api,wa_task_management_api,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler'
+ // environment 'AZURE_SERVICE_BUS_CONNECTION_STRING', 'Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndRecieveCCDMessage;SharedAccessKey=B4PezUTfHcKpRPZdIpWd9BUHp47l28NEClBnuIN2S9w='
 }
 
 
