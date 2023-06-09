@@ -474,7 +474,7 @@ task loadEnvSecrets() {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env','wa-aat',"AZURE_SERVICE_BUS_CONNECTION_STRING","sscs-aat","sscs-servicebus-connection-string-tf"
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
@@ -565,6 +565,7 @@ bootWithCCD {
         }
 
     }
+
     environment 'ADDITIONAL_COMPOSE_FILES_WA', 'cft-lib-work-allocation.yml'
     environment 'ENABLE_WORK_ALLOCATION', 'true'
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch,ccd_data,camunda,cft_task_db,sscsjobscheduler,evidence,wa_case_event_messages_db,wa_workflow_api'
@@ -576,6 +577,7 @@ bootWithCCD {
     environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'sptribs-subscription-wa'
     environment 'AZURE_SERVICE_BUS_MESSAGE_AUTHOR', 'shweta'
     environment 'IDAM_API_BASEURL_WA', 'https://idam-web-public.aat.platform.hmcts.net'
+
 }
 
 
