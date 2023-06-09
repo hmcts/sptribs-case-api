@@ -35,8 +35,9 @@ services:
       DATA_STORE_DB_OPTIONS: ?stringtype=unspecified&ssl=false
       DATA_STORE_DB_USERNAME: postgres
       DATA_STORE_DB_PASSWORD: admin
-      SERVICE_BUS_CONNECTION_STRING: ${AZURE_SERVICE_BUS_CONNECTION_STRING:-Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndRecieveCCDMessage;SharedAccessKey=B4PezUTfHcKpRPZdIpWd9BUHp47l28NEClBnuIN2S9w=}
-      CCD_CASE_EVENTS_DESTINATION: ${AZURE_SERVICE_BUS_TOPIC_NAME:-wa-case-event-handler-topic-sessions-ft}
+
+      SERVICE_BUS_CONNECTION_STRING: "${AZURE_SERVICE_BUS_CONNECTION_STRING}"
+      CCD_CASE_EVENTS_DESTINATION: "${AZURE_SERVICE_BUS_TOPIC_NAME}"
     ports:
       - 4456:4456
     networks:
@@ -71,9 +72,10 @@ services:
       environment:
         CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
         S2S_URL: http://host.docker.internal:4502/
-        IDAM_URL: http://rse-idam-simulator:5000
+
+        IDAM_URL: "${IDAM_API_BASEURL}"
         CCD_URL: http://host.docker.internal:4452
-        OPEN_ID_IDAM_URL: http://rse-idam-simulator:5000
+        OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL}"
         ROLE_ASSIGNMENT_URL: http://host.docker.internal:4096
         POSTGRES_HOST: shared-database-pg12
         POSTGRES_PORT: 5432
@@ -101,16 +103,18 @@ services:
         POSTGRES_USERNAME: postgres
         POSTGRES_PASSWORD: admin
         POSTGRES_CONNECTION_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
-        AZURE_SERVICE_BUS_CONNECTION_STRING: ${AZURE_SERVICE_BUS_CONNECTION_STRING:-Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndRecieveCCDMessage;SharedAccessKey=B4PezUTfHcKpRPZdIpWd9BUHp47l28NEClBnuIN2S9w=}
-        AZURE_SERVICE_BUS_TOPIC_NAME: "ccd-case-events"
-        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: "ccd-case-events"
-        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: "ccd-case-events"
+
+        AZURE_SERVICE_BUS_CONNECTION_STRING: "${AZURE_SERVICE_BUS_CONNECTION_STRING}"
+        AZURE_SERVICE_BUS_TOPIC_NAME: "${AZURE_SERVICE_BUS_TOPIC_NAME}"
+        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: "${AZURE_SERVICE_BUS_SUBSCRIPTION_NAME}"
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: "${AZURE_SERVICE_BUS_SUBSCRIPTION_NAME}"
         APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=00000000-0000-0000-0000-000000000000"
         ENVIRONMENT: "local"
         S2S_URL: http://host.docker.internal:4502/
         WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
-        OPEN_ID_IDAM_URL: http://rse-idam-simulator:5000
-        IDAM_URL: http://rse-idam-simulator:5000
+
+        OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
+        IDAM_URL: "${IDAM_API_BASEURL_WA}"
         ROLE_ASSIGNMENT_URL: http://host.docker.internal:4096
         CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
         CCD_URL: http://host.docker.internal:4452
@@ -140,8 +144,9 @@ services:
     environment:
       S2S_URL: http://host.docker.internal:4502/
       WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
-      OPEN_ID_IDAM_URL: http://rse-idam-simulator:5000
-      IDAM_URL: http://rse-idam-simulator:5000
+
+      OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
+      IDAM_URL: "${IDAM_API_BASEURL_WA}"
       ROLE_ASSIGNMENT_URL: http://host.docker.internal:4096
       CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
       CCD_URL: http://host.docker.internal:4452
