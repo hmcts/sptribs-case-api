@@ -35,6 +35,7 @@ services:
       DATA_STORE_DB_OPTIONS: ?stringtype=unspecified&ssl=false
       DATA_STORE_DB_USERNAME: postgres
       DATA_STORE_DB_PASSWORD: admin
+
       SERVICE_BUS_CONNECTION_STRING: "${AZURE_SERVICE_BUS_CONNECTION_STRING}"
       CCD_CASE_EVENTS_DESTINATION: "${AZURE_SERVICE_BUS_TOPIC_NAME}"
     ports:
@@ -71,6 +72,7 @@ services:
       environment:
         CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
         S2S_URL: http://host.docker.internal:4502/
+
         IDAM_URL: "${IDAM_API_BASEURL}"
         CCD_URL: http://host.docker.internal:4452
         OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL}"
@@ -101,6 +103,7 @@ services:
         POSTGRES_USERNAME: postgres
         POSTGRES_PASSWORD: admin
         POSTGRES_CONNECTION_OPTIONS: "?stringtype=unspecified&gssEncMode=disable"
+
         AZURE_SERVICE_BUS_CONNECTION_STRING: "${AZURE_SERVICE_BUS_CONNECTION_STRING}"
         AZURE_SERVICE_BUS_TOPIC_NAME: "${AZURE_SERVICE_BUS_TOPIC_NAME}"
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: "${AZURE_SERVICE_BUS_SUBSCRIPTION_NAME}"
