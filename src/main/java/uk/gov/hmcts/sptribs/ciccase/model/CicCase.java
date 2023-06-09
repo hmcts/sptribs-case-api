@@ -507,6 +507,14 @@ public class CicCase {
     private SchemeCic schemeCic;
 
     @CCD(
+        label = "Case Region",
+        typeOverride = FixedList,
+        typeParameterOverride = "RegionCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private RegionCIC regionCIC;
+
+    @CCD(
         label = "CICA reference number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
