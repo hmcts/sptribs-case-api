@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
@@ -15,7 +17,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,4 +102,19 @@ class DocumentUtilTest {
         );
     }
 
+    @Test
+    void shouldSuccessfullyAddDocument() {
+        //Given
+        final CaseData caseData = caseData();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .caseworkerCICDocument(getCaseworkerCICDocumentList())
+            .build();
+        caseData.setAllDocManagement(documentManagement);
+
+        //When
+        DocumentUtil.uploadDocument(caseData);
+
+        //Then
+        assertThat(caseData.getAllDocManagement().getCaseworkerCICDocument()).hasSize(1);
+    }
 }
