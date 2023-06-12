@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.document;
 
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
@@ -64,4 +65,9 @@ public final class DocumentUtil {
         return errors;
     }
 
+    public static void uploadDocument(CaseData data) {
+        updateCategoryToCaseworkerDocument(data.getNewDocManagement().getCaseworkerCICDocument());
+        data.getAllDocManagement().getCaseworkerCICDocument().addAll(data.getNewDocManagement().getCaseworkerCICDocument());
+        data.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());
+    }
 }
