@@ -590,13 +590,15 @@ bootWithCCD {
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch,ccd_data,camunda,cft_task_db,sscsjobscheduler,evidence,wa_case_event_messages_db,wa_workflow_api'
     environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,sscs,wa_task_management_api,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler,em_stitching_api'
     environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,payment-api,xui_webapp,sscs,ccd_case_document_am_api,am_role_assignment_service,em_ccd_orchestrator,em_stitching_api,wa_task_management_api,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler'
+    environment 'AZURE_SERVICE_BUS_CONNECTION_STRING','Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndRecieveCCDMessage;SharedAccessKey=zUh9Z0KBYaIjPwqDHqBo2lcwikImIu4blRfld+RaFB0=;EntityPath=wa-case-event-handler-topic-sessions-ft'
+
     environment 'AZURE_SERVICE_BUS_CONNECTION_STRING', 'Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndRecieveCCDMessage;SharedAccessKey=B4PezUTfHcKpRPZdIpWd9BUHp47l28NEClBnuIN2S9w='
+
     environment 'AZURE_SERVICE_BUS_TOPIC_NAME', 'wa-case-event-handler-topic-sessions-ft'
     environment 'AZURE_SERVICE_BUS_SUBSCRIPTION_NAME', 'sptribs-subscription-wa'
     environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'sptribs-subscription-wa'
     environment 'AZURE_SERVICE_BUS_MESSAGE_AUTHOR', 'shweta'
     environment 'IDAM_API_BASEURL_WA', 'https://idam-web-public.aat.platform.hmcts.net'
-
 }
 
 
