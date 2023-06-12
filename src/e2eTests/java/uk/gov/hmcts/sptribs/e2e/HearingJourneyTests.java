@@ -8,7 +8,9 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.DssSubmitted;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.visibleOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.*;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 
 public class HearingJourneyTests extends Base {
 
