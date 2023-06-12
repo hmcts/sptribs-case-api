@@ -49,7 +49,7 @@ public class HearingJourneyTests extends Base {
         String judge = PageHelpers.getValueFromTableFor(page, "Which judge heard the case?");
         Assertions.assertEquals("Chetan Lad", judge);
         String panelMember = PageHelpers.getValueFromTableFor(page, "Name of the panel member");
-        Assertions.assertEquals("Miss Ivy-Rose Rayner", panelMember);
+        Assertions.assertEquals("Ivy-Rose Rayner", panelMember);
         String otherAttendee = PageHelpers.getValueFromTableFor(page, "Who was this other attendee?");
         Assertions.assertEquals("Special officer", otherAttendee);
     }
@@ -103,9 +103,9 @@ public class HearingJourneyTests extends Base {
 
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
-
         Page page = getPage();
         createAndBuildCase(page);
+
         Hearing hearing = createListing(page);
         hearing.postponeHearing();
         getTabByText(page, "Hearings").click();
@@ -122,7 +122,6 @@ public class HearingJourneyTests extends Base {
     }
 
     @RepeatedIfExceptionsTest
-
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -157,7 +156,7 @@ public class HearingJourneyTests extends Base {
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));
         Assertions.assertEquals(DssSubmitted.label, dssCase.getCaseStatus());
-        //dssCase.editDssCase("representative","applicant"); // TODO: to fix - Santoshini
+        dssCase.editDssCase("representative","applicant");
         dssCase.buildCase();
     }
 
