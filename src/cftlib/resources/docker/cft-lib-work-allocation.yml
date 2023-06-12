@@ -75,9 +75,9 @@ services:
         CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
         S2S_URL: http://host.docker.internal:4502/
 
-        IDAM_URL: "${IDAM_API_BASEURL}"
+        IDAM_URL: "${IDAM_API_BASEURL_WA}"
         CCD_URL: http://host.docker.internal:4452
-        OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL}"
+        OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
         ROLE_ASSIGNMENT_URL: http://host.docker.internal:4096
         POSTGRES_HOST: shared-database-pg12
         POSTGRES_PORT: 5432
