@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.UploadCaseDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 
 @Component
 @Slf4j
@@ -63,9 +65,23 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 ST_CIC_JUDGE,
                 ST_CIC_RESPONDENT)
             .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
         uploadCaseDocuments.addTo(pageBuilder);
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
+        var data = details.getData();
+        uploadDocument(data);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .build();
+
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
