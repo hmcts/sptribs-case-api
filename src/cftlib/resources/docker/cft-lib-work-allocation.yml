@@ -116,7 +116,6 @@ services:
         ENVIRONMENT: "local"
         S2S_URL: http://host.docker.internal:4502/
         WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
-
         OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
         IDAM_URL: "${IDAM_API_BASEURL_WA}"
         ROLE_ASSIGNMENT_URL: http://host.docker.internal:4096
@@ -148,7 +147,6 @@ services:
     environment:
       S2S_URL: http://host.docker.internal:4502/
       WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
-
       OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
       IDAM_URL: "${IDAM_API_BASEURL_WA}"
       ROLE_ASSIGNMENT_URL: http://host.docker.internal:4096
