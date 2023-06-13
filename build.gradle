@@ -465,6 +465,7 @@ dependencies {
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.32.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.0.1'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
+  implementation 'com.azure.resourcemanager:azure-resourcemanager-botservice:1.0.0-beta.5'
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
@@ -474,7 +475,7 @@ task loadEnvSecrets() {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env','wa-aat',"AZURE_SERVICE_BUS_CONNECTION_STRING","sscs-aat","sscs-servicebus-connection-string-tf"
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
@@ -577,6 +578,8 @@ bootWithCCD {
     environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'sptribs-subscription-wa'
     environment 'AZURE_SERVICE_BUS_MESSAGE_AUTHOR', 'shweta'
     environment 'IDAM_API_BASEURL_WA', 'https://idam-web-public.aat.platform.hmcts.net'
+    environment 'S2S_URL_WA', 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+    environment 'S2S_SECRET_WORKFLOW_API','MZEGJJ5JWRCYXTOI'
 }
 
 
