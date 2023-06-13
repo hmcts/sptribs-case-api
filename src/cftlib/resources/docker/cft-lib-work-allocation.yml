@@ -14,7 +14,7 @@ services:
       CAMUNDA_DB_PASSWORD: admin
       "camunda.bpm.database.schema-update": true
       CAMUNDA_API_AUTH_ENABLED: false
-      S2S_URL: http://host.docker.internal:4502/
+      S2S_URL: "${S2S_URL_WA}"
       camundaGroups.work-allocation.s2sServiceNames: wa_task_management_api,wa_workflow_api,wa_case_event_handler,wa_camunda_pipeline_upload,sscs
       WA_AUTO_CONFIGURE_TASKS_ENABLED: true
       TASK_MANAGEMENT_API_URL: ${TASK_MANAGEMENT_API_URL:-http://wa-task-management-api:8087}
@@ -37,7 +37,6 @@ services:
       DATA_STORE_DB_OPTIONS: ?stringtype=unspecified&ssl=false
       DATA_STORE_DB_USERNAME: postgres
       DATA_STORE_DB_PASSWORD: admin
-
       SERVICE_BUS_CONNECTION_STRING: "${AZURE_SERVICE_BUS_CONNECTION_STRING}"
       CCD_CASE_EVENTS_DESTINATION: "${AZURE_SERVICE_BUS_TOPIC_NAME}"
     ports:
@@ -50,8 +49,8 @@ services:
     container_name: wa-workflow-api
     environment:
       CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
-      S2S_URL: http://host.docker.internal:4502/
-      S2S_SECRET_WORKFLOW_API: "AAAAAAAAAAAAAAAA"
+      S2S_URL: "${S2S_URL_WA}"
+      S2S_SECRET_WORKFLOW_API: "${S2S_SECRET_WORKFLOW_API}"
       POSTGRES_HOST: shared-database-pg12
       POSTGRES_PORT: 5432
       POSTGRES_NAME: wa_workflow_api
@@ -73,8 +72,7 @@ services:
       container_name: wa-task-management-api
       environment:
         CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
-        S2S_URL: http://host.docker.internal:4502/
-
+        S2S_URL: "${S2S_URL_WA}"
         IDAM_URL: "${IDAM_API_BASEURL_WA}"
         CCD_URL: http://host.docker.internal:4452
         OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
@@ -114,7 +112,7 @@ services:
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: "${AZURE_SERVICE_BUS_SUBSCRIPTION_NAME}"
         APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=00000000-0000-0000-0000-000000000000"
         ENVIRONMENT: "local"
-        S2S_URL: http://host.docker.internal:4502/
+        S2S_URL: "${S2S_URL_WA}"
         WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
         OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
         IDAM_URL: "${IDAM_API_BASEURL_WA}"
@@ -145,7 +143,7 @@ services:
     image: "hmctspublic.azurecr.io/wa/task-monitor:latest"
     container_name: wa-task-monitor
     environment:
-      S2S_URL: http://host.docker.internal:4502/
+      S2S_URL: "${S2S_URL_WA}"
       WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
       OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
       IDAM_URL: "${IDAM_API_BASEURL_WA}"
