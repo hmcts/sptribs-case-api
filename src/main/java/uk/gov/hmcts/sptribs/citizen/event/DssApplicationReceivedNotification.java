@@ -42,21 +42,6 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        DssCaseData dssCaseData = caseData.getDssCaseData();
-        final Map<String, Object> templateVarsApplicant = dssNotificationHelper.getApplicantCommonVars(caseNumber, dssCaseData);
-        templateVarsApplicant.put(CommonConstants.CIC_CASE_APPLICANT_NAME, dssCaseData.getRepresentativeFullName());
-        templateVarsApplicant.put(CommonConstants.CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-
-
-            NotificationResponse notificationResponse = sendEmailNotification(
-                templateVarsApplicant,
-                dssCaseData.getRepresentativeFullName(),
-                            TemplateName.APPLICATION_RECEIVED);
-            dssCaseData.setAppNotificationResponse(notificationResponse);
-    }
-
-    @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         DssCaseData dssCaseData = caseData.getDssCaseData();
         final Map<String, Object> templateVarsRepresentative = dssNotificationHelper.getRepresentativeCommonVars(caseNumber, dssCaseData);

@@ -37,12 +37,6 @@ public class DssNotificationHelper {
         return templateVars;
     }
 
-    public Map<String, Object> getApplicantCommonVars(String caseNumber, DssCaseData dssCaseData) {
-        Map<String, Object> templateVars = commonTemplateVars(dssCaseData, caseNumber);
-        templateVars.put(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
-        return templateVars;
-    }
-
     public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
                                                              Map<String, Object> templateVars,
                                                              TemplateName emailTemplateName) {

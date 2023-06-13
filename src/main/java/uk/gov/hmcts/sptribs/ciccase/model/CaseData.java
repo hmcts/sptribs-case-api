@@ -277,6 +277,12 @@ public class CaseData {
     )
     private String pcqId;
 
+    @CCD(
+        label = "PCQ ID",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private boolean hasDssNotificationSent;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
 
