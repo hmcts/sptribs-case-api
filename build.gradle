@@ -510,7 +510,7 @@ task loadEnvSecrets() {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env','wa-aat',"AZURE_SERVICE_BUS_CONNECTION_STRING","sscs-aat","sscs-servicebus-connection-string-tf"
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
