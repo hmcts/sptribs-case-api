@@ -143,14 +143,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-    private void setDefaultLastSelectedOrderFlag(CicCase cicCase) {
-        if (!CollectionUtils.isEmpty(cicCase.getOrderList())) {
-            cicCase.getOrderList()
-                .stream()
-                .forEach(orderListValue -> orderListValue.getValue().setIsLastSelectedOrder(YesOrNo.NO));
-        }
-    }
-
     private void updateLastSelectedOrder(Order order) {
         if (null != order.getDraftOrder()) {
             order.setIsLastSelectedOrder(YesOrNo.YES);
@@ -262,7 +254,15 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         }
 
         //Once Notification is sent, nullify the last selected order
-        caseData.getCicCase().setLastSelectedOrder(null);
+        setDefaultLastSelectedOrderFlag(caseData.getCicCase());
+    }
+
+    private void setDefaultLastSelectedOrderFlag(CicCase cicCase) {
+        if (!CollectionUtils.isEmpty(cicCase.getOrderList())) {
+            cicCase.getOrderList()
+                .stream()
+                .forEach(orderListValue -> orderListValue.getValue().setIsLastSelectedOrder(YesOrNo.NO));
+        }
     }
 
 }
