@@ -158,6 +158,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             && !CollectionUtils.isEmpty(order.getUploadedFile())) {
             updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             order.setIsLastSelectedOrder(YesOrNo.YES);
+        } else {
+            order.setIsLastSelectedOrder(YesOrNo.NO);
         }
     }
 

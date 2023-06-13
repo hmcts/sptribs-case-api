@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -24,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_ORDER;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
 @Component
 @Slf4j
@@ -106,8 +104,8 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         Map<String, String> uploadedDocuments = new HashMap<>();
         Document lastSelectedOrder = getLastSelectedOrder(cicCase);
-        if (null != cicCase.getLastSelectedOrder()) {
-            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getLastSelectedOrder().getUrl(), "/"));
+        if (null != lastSelectedOrder) {
+            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(lastSelectedOrder.getUrl(), "/"));
         }
 
         return uploadedDocuments;
@@ -117,10 +115,9 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         Document lastSelectedOrder = null;
         for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
             Order order = orderListValue.getValue();
-            if (order.getIsLastSelectedOrder().equals(YesOrNo.YES)) {
+            if ((YesOrNo.YES).equals(order.getIsLastSelectedOrder())) {
                 if (null != order.getDraftOrder()) {
                     lastSelectedOrder = order.getDraftOrder().getTemplateGeneratedDocument();
-                    cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
                 } else if (null != order.getUploadedFile()
                     && !CollectionUtils.isEmpty(order.getUploadedFile())) {
                     lastSelectedOrder = order.getUploadedFile().get(0).getValue().getDocumentLink();
