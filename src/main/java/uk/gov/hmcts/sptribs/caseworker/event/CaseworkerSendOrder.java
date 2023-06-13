@@ -253,8 +253,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
         }
 
-        //Once Notification is sent, nullify the last selected order
-        setDefaultLastSelectedOrderFlag(caseData.getCicCase());
     }
 
     private void setDefaultLastSelectedOrderFlag(CicCase cicCase) {

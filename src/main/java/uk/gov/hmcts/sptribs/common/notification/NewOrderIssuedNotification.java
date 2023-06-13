@@ -115,7 +115,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         Document lastSelectedOrder = null;
         for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
             Order order = orderListValue.getValue();
-            if ((YesOrNo.YES).equals(order.getIsLastSelectedOrder())) {
+            if (YesOrNo.YES.equals(order.getIsLastSelectedOrder())) {
                 if (null != order.getDraftOrder()) {
                     lastSelectedOrder = order.getDraftOrder().getTemplateGeneratedDocument();
                 } else if (null != order.getUploadedFile()
