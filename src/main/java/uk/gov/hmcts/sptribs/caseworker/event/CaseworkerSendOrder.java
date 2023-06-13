@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
@@ -129,7 +130,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
-        updateLastSelectedOrder(caseData.getCicCase(), order);
+        setDefaultLastSelectedOrderFlag(caseData.getCicCase());
+        updateLastSelectedOrder(order);
         addToList(caseData, order);
         if (null != selectedDraftOrder) {
             rearrangeLists(caseData, selectedDynamicDraft, selectedDraftOrder);
@@ -139,6 +141,18 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .data(caseData)
             .state(details.getState())
             .build();
+    }
+
+    private void updateLastSelectedOrder(Order order) {
+        if (null != order.getDraftOrder()) {
+            order.setIsLastSelectedOrder(YesOrNo.YES);
+        } else if (null != order.getUploadedFile()
+            && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+            order.setIsLastSelectedOrder(YesOrNo.YES);
+        } else {
+            order.setIsLastSelectedOrder(YesOrNo.NO);
+        }
     }
 
     private void nullifyRelatedObjects(CaseData caseData) {
@@ -282,5 +296,15 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
         //Once Notification is sent, nullify the last selected order
         caseData.getCicCase().setLastSelectedOrder(null);
+
     }
+
+    private void setDefaultLastSelectedOrderFlag(CicCase cicCase) {
+        if (!CollectionUtils.isEmpty(cicCase.getOrderList())) {
+            cicCase.getOrderList()
+                .stream()
+                .forEach(orderListValue -> orderListValue.getValue().setIsLastSelectedOrder(YesOrNo.NO));
+        }
+    }
+
 }
