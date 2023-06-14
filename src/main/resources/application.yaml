@@ -20,8 +20,8 @@ spring:
     allow-bean-definition-overriding: true
   servlet:
     multipart:
-      max-file-size: 42MB
-      max-request-size: 42MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
@@ -83,7 +83,7 @@ uk:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
 
 s2s-authorised:
-  services: ${S2S_AUTHORISED_SERVICES:ccd_data}
+  services: ${S2S_AUTHORISED_SERVICES:ccd_data,sptribs_frontend}
 
 idam:
   s2s-auth:
@@ -109,6 +109,10 @@ flagType:
   api:
     baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
+
+bundling:
+  api:
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
 
 s2s:
   stub: false
@@ -187,6 +191,8 @@ feature:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
     enabled: ${BUNDLING_FEATURE:true}
+  security-classification:
+    enabled: ${SECURITY_CLASSIFICATION:false}
 
 caseinfo:
   apps:
