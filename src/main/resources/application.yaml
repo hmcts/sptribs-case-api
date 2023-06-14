@@ -18,6 +18,10 @@ spring:
     import: "optional:configtree:/mnt/secrets/sptribs/"
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 42MB
+      max-request-size: 42MB
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
