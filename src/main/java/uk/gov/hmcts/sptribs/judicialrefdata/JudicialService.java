@@ -3,8 +3,8 @@ package uk.gov.hmcts.sptribs.judicialrefdata;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -42,26 +41,25 @@ public class JudicialService {
     }
 
     private UserProfileRefreshResponse[] getUsers() {
-        ResponseEntity<UserProfileRefreshResponse[]> regionResponseEntity = null;
 
         try {
-            regionResponseEntity = judicialClient.getUserProfiles(
+            List<UserProfileRefreshResponse> list = judicialClient.getUserProfiles(
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 JudicialUsersRequest.builder()
                     .ccdServiceName(SERVICE_NAME)
                     .build());
+            if (CollectionUtils.isEmpty(list)) {
+                return new UserProfileRefreshResponse[0];
+            }
+
+            return list.toArray(new UserProfileRefreshResponse[0]);
         } catch (FeignException exception) {
             log.error("Unable to get user profile data from reference data with exception {}",
                 exception.getMessage());
         }
+        return new UserProfileRefreshResponse[0];
 
-        return Optional.ofNullable(regionResponseEntity)
-            .map(response ->
-                Optional.ofNullable(response.getBody())
-                    .orElseGet(() -> null)
-            )
-            .orElseGet(() -> null);
     }
 
 

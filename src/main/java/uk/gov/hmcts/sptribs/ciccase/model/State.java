@@ -55,6 +55,13 @@ public enum State {
     Submitted("Submitted"),
 
     @CCD(
+        label = "DSS-Submitted",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Submitted("DSS-Submitted"),
+
+    @CCD(
         label = "New case received",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
@@ -139,10 +146,10 @@ public enum State {
     ));
 
 
-    public static final EnumSet<State> BUNDLE_STATES = EnumSet.complementOf(EnumSet.of(
+    public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
         CaseManagement,
         AwaitingHearing
-    ));
+    );
     private final String name;
 }
 

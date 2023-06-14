@@ -83,14 +83,14 @@ class CaseManagementControllerTest {
         caseResponse.setId(TEST_CASE_ID);
         caseResponse.setStatus(null);
 
-        when(caseManagementService.updateCase(CASE_TEST_AUTHORIZATION, Event.UPDATE,
-            caseData, TEST_CASE_ID)).thenReturn(caseResponse);
+        when(caseManagementService.updateCase(eq(CASE_TEST_AUTHORIZATION), eq(Event.UPDATE),
+            any(CaseData.class), eq(TEST_CASE_ID))).thenReturn(caseResponse);
 
         ResponseEntity<?> preUpdateCaseResponse = caseManagementController.updateCase(
             TEST_CASE_ID,
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
-            caseData
+            caseData.getDssCaseData()
         );
 
 
@@ -104,7 +104,7 @@ class CaseManagementControllerTest {
             TEST_CASE_ID,
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
-            caseDataUpdate
+            caseDataUpdate.getDssCaseData()
         );
 
         CaseResponse caseDataUpdateResponse = (CaseResponse) (postUpdateCaseResponse.getBody());
