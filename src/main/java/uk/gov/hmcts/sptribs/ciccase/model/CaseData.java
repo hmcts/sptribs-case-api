@@ -59,12 +59,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @CCD(
-        label = "Case flags",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagLauncher flagLauncher1;
-
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private Flags caseFlags;
 
@@ -76,6 +70,13 @@ public class CaseData {
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private Flags applicantFlags;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeParameterOverride = "FlagLauncher"
+    )
+    private FlagLauncher flagLauncher;
+
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default

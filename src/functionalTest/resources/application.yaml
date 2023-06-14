@@ -88,13 +88,13 @@ feature:
   contact-parties:
     enabled: ${CONTACT_PARTIES_FEATURE:false}
   link-case:
-    enabled: ${LINK_CASE_FEATURE:false}
+    enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
-    enabled: ${BUNDLING_FEATURE:false}
+    enabled: ${BUNDLING_FEATURE:true}
 
 caseinfo:
   apps:
