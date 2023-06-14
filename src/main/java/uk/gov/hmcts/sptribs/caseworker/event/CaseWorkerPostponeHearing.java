@@ -119,7 +119,14 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        sendHearingPostponedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        try {
+            sendHearingPostponedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Postpone hearing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Postpone hearing notification failed %n## Please resend the notification"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Hearing Postponed %n## The hearing has been postponed, the case has been updated %n## %s",
