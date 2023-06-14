@@ -11,8 +11,20 @@ public enum CaseSubcategory implements HasLabel {
     @JsonProperty("Fatal")
     FATAL("Fatal"),
 
+    @JsonProperty("MedicalReOpening")
+    MEDICAL_REOPENING("Medical Re-opening"),
+
+    @JsonProperty("Minor")
+    MINOR("Minor"),
+
+    @JsonProperty("Paragraph26")
+    PARAGRAPH_26("Paragraph 26"),
+
     @JsonProperty("sexualAbuse")
     SEXUAL_ABUSE("Sexual Abuse"),
+
+    @JsonProperty("SpecialJurisdiction")
+    SPECIAL_JURISDICTION("Special Jurisdiction"),
 
     @JsonProperty("other")
     OTHER("Other");
