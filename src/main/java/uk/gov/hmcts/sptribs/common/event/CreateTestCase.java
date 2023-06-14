@@ -147,8 +147,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         String claimNumber = data.getHyphenatedCaseRef();
-
-        sendApplicationReceivedNotification(claimNumber, data);
+        try {
+            sendApplicationReceivedNotification(claimNumber, data);
+        } catch (Exception notificationException) {
+            log.error("Create case notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))

@@ -137,17 +137,22 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         var cicCase = data.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
         String caseNumber = data.getHyphenatedCaseRef();
-
-        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-            liistingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+        try {
+            if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+                liistingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+                liistingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+                liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+        } catch (Exception notificationException) {
+            log.error("Update listing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Update listing notification failed %n## Please resend the notification"))
+                .build();
         }
-        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-            liistingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-            liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
-        }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record updated %n##  If any changes are made to this hearing, "
                     + " remember to make those changes in this listing record. %n## %s",
