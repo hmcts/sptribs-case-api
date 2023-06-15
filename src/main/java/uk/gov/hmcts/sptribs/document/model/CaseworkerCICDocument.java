@@ -51,10 +51,10 @@ public class CaseworkerCICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls");
+        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3");
     }
 
-    private boolean isDocumentValid(String validExtensions) {
+    public boolean isDocumentValid(String validExtensions) {
         String fileName = this.documentLink.getFilename();
         String fileExtension = StringUtils.substringAfterLast(fileName, ".");
         return Arrays.asList(validExtensions.split(",")).contains(fileExtension);

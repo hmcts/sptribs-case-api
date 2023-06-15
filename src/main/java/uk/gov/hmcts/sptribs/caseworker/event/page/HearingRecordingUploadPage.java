@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -14,9 +15,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 @Slf4j
 @Component
@@ -26,7 +26,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("hearingRecordingUploadPage", this::midEvent)
             .pageLabel("Upload hearing recording")
-            .label("LabelHearingRecordingUploadPage","")
+            .label("LabelHearingRecordingUploadPage", "")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("theHearingRecordingUpload",
                 "\n<h2>Upload the recording of the hearing (Optional)</h2>\n"
@@ -44,11 +44,27 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
-        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-
+        List<String> errors = new ArrayList<>();
+        if (null != uploadedDocuments) {
+            for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
+                if (null == documentListValue.getValue().getDocumentLink()) {
+                    errors.add("Please attach the document");
+                } else {
+                    if (!documentListValue.getValue().isDocumentValid("mp3")) {
+                        errors.add("Please attach a mp3 document");
+                    }
+                    if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
+                        errors.add("Description is mandatory for each document");
+                    }
+                    if (null == documentListValue.getValue().getDocumentCategory()) {
+                        errors.add("Category is mandatory for each document");
+                    }
+                }
+            }
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
