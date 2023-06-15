@@ -56,32 +56,40 @@ public class ManageFlagShowList implements CcdPageConfiguration {
         if (selectedList[0].equals(CASE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+
                     cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
                     cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+
                     break;
                 }
             }
         } else if (selectedList[0].equals(APPLICANT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+
                     cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
                     cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+
                     break;
                 }
             }
         } else if (selectedList[0].equals(REPRESENTATIVE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+
                     cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
                     cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+
                     break;
                 }
             }
         } else if (selectedList[0].equals(SUBJECT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+
                     cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
                     cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+
                     break;
                 }
             }

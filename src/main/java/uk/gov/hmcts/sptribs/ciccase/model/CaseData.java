@@ -61,6 +61,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Case Flags")
     private Flags caseFlags;
@@ -83,7 +84,6 @@ public class CaseData {
         label = "Launch the Flags screen "
     )
     private FlagLauncher flagLauncher;
-
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default

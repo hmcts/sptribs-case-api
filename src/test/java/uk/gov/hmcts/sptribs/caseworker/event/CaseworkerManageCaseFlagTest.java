@@ -195,6 +195,7 @@ class CaseworkerManageCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getStatus()).isNotNull();
+
     }
 
     @Test
@@ -278,9 +279,11 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
+
         assertThat(midResponse.getData().getCicCase().getStatus()).isNotNull();
 
     }
+
 
     @Test
     void shouldSuccessfullySelectSubjectFlagSubmit() {

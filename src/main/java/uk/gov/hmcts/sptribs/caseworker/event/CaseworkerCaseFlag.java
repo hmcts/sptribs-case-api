@@ -102,10 +102,12 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         var cicCase = caseData.getCicCase();
 
         var flagDetail = new FlagDetail();
+
         flagDetail.setName(cicCase.getType().getLabel());
         flagDetail.setFlagCode(cicCase.getType().getFlagCode());
         flagDetail.setFlagComment(cicCase.getAdditionalDetail());
         flagDetail.setOtherDescription(cicCase.getOtherDescription());
+
         flagDetail.setStatus(Status.ACTIVE.getLabel());
         var flag = new Flags();
         if (isEmpty(flag.getDetails())) {
@@ -130,7 +132,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             flag.getDetails().add(0, listValue);
             flag.getDetails().forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
+
         if (cicCase.getLevel().isPartyLevel()) {
+
             if (null != caseData.getCicCase().getNotifyPartyApplicant()
                 && !isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
                 flag.setPartyName(caseData.getCicCase().getApplicantFullName());

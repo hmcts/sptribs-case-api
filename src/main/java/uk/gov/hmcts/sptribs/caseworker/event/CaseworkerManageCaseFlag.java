@@ -91,6 +91,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
         DynamicList flagList = flagService.populateFlagList(caseData);
         caseData.getCicCase().setManageDynamicList(flagList);
 
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -107,32 +108,40 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
         if (selectedList[0].equals(CASE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
+
+                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+
                     break;
                 }
             }
         } else if (selectedList[0].equals(SUBJECT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+
                     listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
                     listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
+
                     break;
                 }
             }
         }  else if (selectedList[0].equals(REPRESENTATIVE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+
                     listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
                     listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
+
                     break;
                 }
             }
         } else if (selectedList[0].equals(APPLICANT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
+
                     listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
                     listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
+
                     break;
                 }
             }
