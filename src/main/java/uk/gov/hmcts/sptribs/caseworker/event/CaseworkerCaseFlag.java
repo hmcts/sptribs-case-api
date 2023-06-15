@@ -32,10 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.FLAG_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -76,7 +73,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public PageBuilder caseFlag(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
-            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .forStates(FLAG_STATES)
             .name("Flags: Create flag")
             .showSummary()
             .description("Create a flag")
@@ -105,10 +102,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         var cicCase = caseData.getCicCase();
 
         var flagDetail = new FlagDetail();
-        flagDetail.setName(cicCase.getFlagType().getLabel());
-        flagDetail.setFlagCode(cicCase.getFlagType().getFlagCode());
-        flagDetail.setFlagComment(cicCase.getFlagAdditionalDetail());
-        flagDetail.setOtherDescription(cicCase.getFlagOtherDescription());
+        flagDetail.setName(cicCase.getType().getLabel());
+        flagDetail.setFlagCode(cicCase.getType().getFlagCode());
+        flagDetail.setFlagComment(cicCase.getAdditionalDetail());
+        flagDetail.setOtherDescription(cicCase.getOtherDescription());
         flagDetail.setStatus(Status.ACTIVE.getLabel());
         var flag = new Flags();
         if (isEmpty(flag.getDetails())) {
@@ -133,7 +130,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             flag.getDetails().add(0, listValue);
             flag.getDetails().forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
-        if (cicCase.getFlagLevel().isPartyLevel()) {
+        if (cicCase.getLevel().isPartyLevel()) {
             if (null != caseData.getCicCase().getNotifyPartyApplicant()
                 && !isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
                 flag.setPartyName(caseData.getCicCase().getApplicantFullName());

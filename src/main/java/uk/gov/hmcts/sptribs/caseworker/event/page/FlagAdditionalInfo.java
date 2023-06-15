@@ -14,7 +14,7 @@ public class FlagAdditionalInfo implements CcdPageConfiguration {
             .pageLabel("Add comments for this flag (Optional)")
             .label("LabelCaseWorkerFlagAdditionalInfo", "")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getFlagAdditionalDetail)
+            .optional(CicCase::getAdditionalDetail)
             .done();
     }
 }

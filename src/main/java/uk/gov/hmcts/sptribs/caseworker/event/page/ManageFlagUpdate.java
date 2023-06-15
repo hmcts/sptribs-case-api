@@ -14,9 +14,9 @@ public class ManageFlagUpdate implements CcdPageConfiguration {
             .pageLabel("Update flag")
             .label("LabelCaseworkerManageFlagUpdate", "")
             .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getFlagAdditionalDetail, "Explain why you are updating this flag.\n"
+            .mandatoryWithLabel(CicCase::getAdditionalDetail, "Explain why you are updating this flag.\n"
                 + "Do not include any sensitive information such as personal details.")
-            .mandatory(CicCase::getFlagStatus)
+            .mandatory(CicCase::getStatus)
             .done();
 
     }

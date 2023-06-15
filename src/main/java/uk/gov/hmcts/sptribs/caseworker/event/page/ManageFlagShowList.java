@@ -33,7 +33,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             .pageLabel("Select case flag")
             .label("LabelCaseworkerManageFlagSelect", "")
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getFlagDynamicList)
+            .mandatory(CicCase::getManageDynamicList)
             .done()
             .readonly(CaseData::getSubjectFlags, ALWAYS_HIDE)
             .readonly(CaseData::getRepresentativeFlags, ALWAYS_HIDE)
@@ -51,37 +51,37 @@ public class ManageFlagShowList implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
         final List<String> errors = new ArrayList<>();
-        String selectedFlag = data.getCicCase().getFlagDynamicList().getValue().getLabel();
+        String selectedFlag = data.getCicCase().getManageDynamicList().getValue().getLabel();
         String[] selectedList = selectedFlag.split(HYPHEN);
         if (selectedList[0].equals(CASE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
         } else if (selectedList[0].equals(APPLICANT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
         } else if (selectedList[0].equals(REPRESENTATIVE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
         } else if (selectedList[0].equals(SUBJECT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : data.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setAdditionalDetail(listValueFlag.getValue().getFlagComment());
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }

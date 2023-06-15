@@ -14,8 +14,8 @@ public class FlagTypePage implements CcdPageConfiguration {
             .pageLabel("Select flag type")
             .label("LabelCaseWorkerCaseFLagSelectFlagType", "")
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getFlagType)
-            .mandatory(CicCase::getFlagOtherDescription, "cicCaseFlagType = \"Other\"")
+            .mandatory(CicCase::getType)
+            .mandatory(CicCase::getOtherDescription, "cicCaseFlagType = \"Other\"")
             .done();
     }
 }

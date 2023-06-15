@@ -14,7 +14,7 @@ public class FlagLevel implements CcdPageConfiguration {
             .pageLabel("Where should this flag be added?")
             .label("LabelCaseWorkerCaseFlagSelectFlagLevel","")
             .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getFlagLevel, "Case or Party Level?")
+            .mandatoryWithLabel(CicCase::getLevel, "Case or Party Level?")
             .done();
     }
 }

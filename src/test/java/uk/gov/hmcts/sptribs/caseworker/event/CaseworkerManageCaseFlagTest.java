@@ -110,7 +110,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setCaseFlags(getCaseFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getCaseFlagDynamicList())
+            .manageDynamicList(getCaseFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -122,7 +122,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -134,7 +134,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setApplicantFlags(getApplicantFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getApplicantFlagDynamicList())
+            .manageDynamicList(getApplicantFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -146,7 +146,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -158,7 +158,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setRepresentativeFlags(getRepresentativeFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getRepresentativeFlagDynamicList())
+            .manageDynamicList(getRepresentativeFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -170,7 +170,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -182,7 +182,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setSubjectFlags(getSubjectFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getSubjectFlagDynamicList())
+            .manageDynamicList(getSubjectFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -194,7 +194,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
     }
 
     @Test
@@ -205,8 +205,8 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setCaseFlags(getCaseFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getCaseFlagDynamicList())
-            .flagAdditionalDetail("update")
+            .manageDynamicList(getCaseFlagDynamicList())
+            .additionalDetail("update")
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -215,9 +215,9 @@ class CaseworkerManageCaseFlagTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> midResponse = manageFlagShowList.midEvent(updatedCaseDetails, beforeDetails);
-        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getStatus()).isNotNull();
 
-        cicCase.setFlagStatus(Status.INACTIVE);
+        cicCase.setStatus(Status.INACTIVE);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
 
@@ -240,7 +240,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setApplicantFlags(getApplicantFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getApplicantFlagDynamicList())
+            .manageDynamicList(getApplicantFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -253,7 +253,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(midEventResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midEventResponse.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -265,7 +265,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setRepresentativeFlags(getRepresentativeFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getRepresentativeFlagDynamicList())
+            .manageDynamicList(getRepresentativeFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -278,7 +278,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -290,7 +290,7 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         caseData.setSubjectFlags(getSubjectFlags());
         final CicCase cicCase = CicCase.builder()
-            .flagDynamicList(getSubjectFlagDynamicList())
+            .manageDynamicList(getSubjectFlagDynamicList())
             .build();
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -303,7 +303,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getStatus()).isNotNull();
 
     }
 

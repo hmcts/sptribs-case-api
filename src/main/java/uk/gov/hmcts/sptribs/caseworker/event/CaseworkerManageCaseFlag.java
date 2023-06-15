@@ -89,7 +89,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         DynamicList flagList = flagService.populateFlagList(caseData);
-        caseData.getCicCase().setFlagDynamicList(flagList);
+        caseData.getCicCase().setManageDynamicList(flagList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -102,42 +102,42 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
     ) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
-        String selectedFlag = caseData.getCicCase().getFlagDynamicList().getValue().getLabel();
+        String selectedFlag = caseData.getCicCase().getManageDynamicList().getValue().getLabel();
         String[] selectedList = selectedFlag.split(HYPHEN);
         if (selectedList[0].equals(CASE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
         } else if (selectedList[0].equals(SUBJECT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
         }  else if (selectedList[0].equals(REPRESENTATIVE_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
         } else if (selectedList[0].equals(APPLICANT_FLAG)) {
             for (ListValue<FlagDetail> listValueFlag : caseData.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
-                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
         }
-        cicCase.setFlagAdditionalDetail("");
+        cicCase.setAdditionalDetail("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)

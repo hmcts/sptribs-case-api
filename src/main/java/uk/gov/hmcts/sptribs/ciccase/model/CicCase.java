@@ -130,14 +130,14 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Status flagStatus;
+    private Status status;
 
 
     @CCD(
         label = "Flag Type",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private FlagType flagType;
+    private FlagType type;
 
     @CCD(
         label = "Explain why you are creating this flag.\n"
@@ -147,20 +147,20 @@ public class CicCase {
         typeOverride = TextArea,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String flagAdditionalDetail;
+    private String additionalDetail;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Enter a flag type"
     )
-    private String flagOtherDescription;
+    private String otherDescription;
 
 
     @CCD(
         label = "Why is a stay being added to this case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private FlagLevel flagLevel;
+    private FlagLevel level;
 
     @CCD(
         label = "Preview order",
@@ -180,7 +180,7 @@ public class CicCase {
         label = "",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DynamicList flagDynamicList;
+    private DynamicList manageDynamicList;
 
     @CCD(
         label = "Template",

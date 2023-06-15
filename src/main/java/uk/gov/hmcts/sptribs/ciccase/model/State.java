@@ -150,6 +150,10 @@ public enum State {
         CaseManagement,
         AwaitingHearing
     );
+
+    public static final EnumSet<State> FLAG_STATES = EnumSet.of(
+        Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome
+    );
     private final String name;
 }
 

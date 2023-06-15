@@ -72,9 +72,9 @@ class CaseworkerCaseFlagTest {
         caseData.setNote("This is a test note");
 
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detail");
-        cicCase.setFlagLevel(FlagLevel.PARTY_LEVEL);
+        cicCase.setType(FlagType.OTHER);
+        cicCase.setAdditionalDetail("some detail");
+        cicCase.setLevel(FlagLevel.PARTY_LEVEL);
         final Set<RepresentativeCIC> set = new HashSet<>();
         set.add(RepresentativeCIC.REPRESENTATIVE);
         cicCase.setRepresentativeCIC(set);
@@ -109,9 +109,9 @@ class CaseworkerCaseFlagTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detail");
-        cicCase.setFlagLevel(FlagLevel.PARTY_LEVEL);
+        cicCase.setType(FlagType.OTHER);
+        cicCase.setAdditionalDetail("some detail");
+        cicCase.setLevel(FlagLevel.PARTY_LEVEL);
         final Set<ApplicantCIC> set = new HashSet<>();
         set.add(ApplicantCIC.APPLICANT_CIC);
         cicCase.setApplicantCIC(set);
@@ -146,8 +146,8 @@ class CaseworkerCaseFlagTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagLevel(FlagLevel.PARTY_LEVEL);
+        cicCase.setType(FlagType.OTHER);
+        cicCase.setLevel(FlagLevel.PARTY_LEVEL);
         final Set<SubjectCIC> set = new HashSet<>();
         set.add(SubjectCIC.SUBJECT);
         cicCase.setSubjectCIC(set);
@@ -181,9 +181,9 @@ class CaseworkerCaseFlagTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detail");
-        cicCase.setFlagLevel(FlagLevel.CASE_LEVEL);
+        cicCase.setType(FlagType.OTHER);
+        cicCase.setAdditionalDetail("some detail");
+        cicCase.setLevel(FlagLevel.CASE_LEVEL);
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();

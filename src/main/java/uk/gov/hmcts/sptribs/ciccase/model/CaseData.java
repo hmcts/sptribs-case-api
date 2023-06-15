@@ -61,21 +61,26 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Case Flags")
     private Flags caseFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Flags for Subject")
     private Flags subjectFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Flags for Representative")
     private Flags representativeFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Flags for Applicant")
     private Flags applicantFlags;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeParameterOverride = "FlagLauncher"
+        typeParameterOverride = "FlagLauncher",
+        label = "Launch the Flags screen "
     )
     private FlagLauncher flagLauncher;
 
