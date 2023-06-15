@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
@@ -17,23 +17,23 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 @Component
 public class DssNotificationHelper {
 
-    public Map<String, Object> commonTemplateVars(final DssCaseData dssCaseData, final String caseNumber) {
+    public Map<String, Object> commonTemplateVars(final CaseData caseData, final String caseNumber) {
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(TRIBUNAL_NAME, CIC);
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
-        templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+        templateVars.put(CIC_CASE_SUBJECT_NAME, caseData.getCicCase().getFullName());
         return templateVars;
     }
 
-    public Map<String, Object> getSubjectCommonVars(String caseNumber, DssCaseData dssCaseData) {
-        Map<String, Object> templateVars = commonTemplateVars(dssCaseData, caseNumber);
-        templateVars.put(CONTACT_NAME, dssCaseData.getSubjectFullName());
+    public Map<String, Object> getSubjectCommonVars(String caseNumber, CaseData caseData) {
+        Map<String, Object> templateVars = commonTemplateVars(caseData, caseNumber);
+        templateVars.put(CONTACT_NAME, caseData.getCicCase().getFullName());
         return templateVars;
     }
 
-    public Map<String, Object> getRepresentativeCommonVars(String caseNumber, DssCaseData dssCaseData) {
-        Map<String, Object> templateVars = commonTemplateVars(dssCaseData, caseNumber);
-        templateVars.put(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
+    public Map<String, Object> getRepresentativeCommonVars(String caseNumber, CaseData caseData) {
+        Map<String, Object> templateVars = commonTemplateVars(caseData, caseNumber);
+        templateVars.put(CONTACT_NAME, caseData.getCicCase().getRepresentativeFullName());
         return templateVars;
     }
 

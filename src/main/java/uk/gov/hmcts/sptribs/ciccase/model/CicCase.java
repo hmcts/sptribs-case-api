@@ -690,9 +690,11 @@ public class CicCase {
     )
     private String days;
 
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private NotificationResponse subjectNotifyList;
 
     @CCD(
@@ -703,6 +705,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private NotificationResponse repNotificationResponse;
 
     @CCD(
