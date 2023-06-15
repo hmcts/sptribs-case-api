@@ -55,7 +55,7 @@ services:
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: admin
       WA_S2S_AUTHORIZED_SERVICES: wa_workflow_api,wa_case_event_handler,camunda-bpm,xui_webapp
-      LAUNCH_DARKLY_SDK_KEY: "${LAUNCH_DARKLY_SDK_KEY}"
+      LAUNCH_DARKLY_SDK_KEY: "${LAUNCH_DARKLY_SDK_KEY_WA}"
     ports:
       - 8099:8099
     extra_hosts:
@@ -71,6 +71,7 @@ services:
       environment:
         CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
         S2S_URL: "${S2S_URL_WA}"
+        S2S_SECRET_TASK_MANAGEMENT_API: "${S2S_SECRET_TASK_MANAGEMENT_API}"
         IDAM_URL: "${IDAM_API_BASEURL_WA}"
         CCD_URL: http://host.docker.internal:4452
         OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
@@ -81,7 +82,7 @@ services:
         ALLOWED_JURISDICTIONS: wa,ia,sscs,civil
         ALLOWED_CASE_TYPES: asylum,wacasetype,sscs,civil,benefit
         WA_S2S_AUTHORIZED_SERVICES: ccd,ccd_data,ccd_gw,ccd_ps,iac,wa_task_management_api,xui_webapp,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler
-        LAUNCH_DARKLY_SDK_KEY: "${LAUNCH_DARKLY_SDK_KEY}"
+        LAUNCH_DARKLY_SDK_KEY: "${LAUNCH_DARKLY_SDK_KEY_WA}"
         WA_SYSTEM_USERNAME: "super-user@example.com"
         WA_SYSTEM_PASSWORD: "${WA_SYSTEM_PASSWORD}"
       ports:
@@ -108,6 +109,7 @@ services:
         APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=00000000-0000-0000-0000-000000000000"
         ENVIRONMENT: "local"
         S2S_URL: "${S2S_URL_WA}"
+        S2S_SECRET_CASE_EVENT_HANDLER : "${S2S_SECRET_CASE_EVENT_HANDLER}"
         WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
         OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
         IDAM_URL: "${IDAM_API_BASEURL_WA}"
@@ -123,7 +125,7 @@ services:
         MESSAGE_PROCESSING_THREAD_POOL_SIZE: 5
         MESSAGE_READINESS_POLL_INTERVAL_MILLISECONDS: 500
         MESSAGE_READINESS_THREAD_POOL_SIZE: 2
-        LAUNCH_DARKLY_SDK_KEY: "${LAUNCH_DARKLY_SDK_KEY}"
+        LAUNCH_DARKLY_SDK_KEY: "${LAUNCH_DARKLY_SDK_KEY_WA}"
       ports:
         - 8088:8088
       extra_hosts:
@@ -139,6 +141,7 @@ services:
     container_name: wa-task-monitor
     environment:
       S2S_URL: "${S2S_URL_WA}"
+      S2S_SECRET_TASK_MONITOR: "${S2S_SECRET_TASK_MONITOR}"
       WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
       OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
       IDAM_URL: "${IDAM_API_BASEURL_WA}"
