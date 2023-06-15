@@ -109,8 +109,8 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
 
-                    listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setFlagComment(cicCase.getAdditionalDetail());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
 
                     break;
                 }
