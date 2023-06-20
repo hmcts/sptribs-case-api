@@ -150,7 +150,7 @@ task e2eTestInPrev(type: Test) {
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
   environment 'CASE_API_BASE_URL', System.env.TEST_E2E_URL
-  environment 'DSS_BASE_URL', 'https://sptribs-frontend-pr-345.preview.platform.hmcts.net'
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend-pr-368.preview.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
 }
