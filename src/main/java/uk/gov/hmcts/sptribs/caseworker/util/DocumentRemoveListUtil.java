@@ -41,10 +41,10 @@ public final class DocumentRemoveListUtil {
             || cic.getApplicantDocumentsUploaded().size() < oldData.getCicCase().getApplicantDocumentsUploaded().size())) {
             checkLists(caseData, oldData.getCicCase().getApplicantDocumentsUploaded(), cic.getApplicantDocumentsUploaded());
         }
-        if (!CollectionUtils.isEmpty(oldData.getListing().getSummary().getRecFile())
-            && (CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())
-            || caseData.getListing().getSummary().getRecFile().size() < oldData.getListing().getSummary().getRecFile().size())) {
-            checkLists(caseData, oldData.getListing().getSummary().getRecFile(), caseData.getListing().getSummary().getRecFile());
+        if (!CollectionUtils.isEmpty(oldData.getSelectedListing().getSummary().getRecFile())
+            && (CollectionUtils.isEmpty(caseData.getSelectedListing().getSummary().getRecFile())
+            || caseData.getSelectedListing().getSummary().getRecFile().size() < oldData.getSelectedListing().getSummary().getRecFile().size())) {
+            checkLists(caseData, oldData.getSelectedListing().getSummary().getRecFile(), caseData.getSelectedListing().getSummary().getRecFile());
         }
         return caseData;
     }

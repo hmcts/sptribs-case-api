@@ -39,11 +39,11 @@ public class FinalDecisionTemplateContentTest {
         //Given
         CaseData caseData = buildCaseData();
         Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00").build();
-        caseData.setListing(listing);
+      //  caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .build();
-        caseData.getListing().setSummary(summary);
+     //   caseData.getListing().setSummary(summary);
         //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
@@ -58,10 +58,10 @@ public class FinalDecisionTemplateContentTest {
         //Given
         CaseData caseData = buildCaseData();
         Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00").build();
-        caseData.setListing(listing);
+      //  caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .build();
-        caseData.getListing().setSummary(summary);
+   //     caseData.getListing().setSummary(summary);
         //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 

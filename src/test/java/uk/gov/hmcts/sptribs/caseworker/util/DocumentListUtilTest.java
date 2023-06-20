@@ -177,7 +177,7 @@ public class DocumentListUtilTest {
         list.setValue(doc);
         listValueList.add(list);
         final CaseData caseData = CaseData.builder().build();
-        caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
+     //   caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
         details.setData(caseData);
         //When
         DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);

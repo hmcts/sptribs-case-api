@@ -56,7 +56,7 @@ public class DocumentRemoveListUtilTest {
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
         caseData.setAllDocManagement(documentManagement);
-        caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(getDocument()).build()).build());
+     //   caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(getDocument()).build()).build());
         CloseCase closeCase = CloseCase.builder()
             .documents(getDocument())
             .build();
@@ -80,7 +80,7 @@ public class DocumentRemoveListUtilTest {
             .reinstateDocuments(get2Document())
             .build();
         oldData.setCicCase(cicCaseOld);
-        oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
+     //   oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
 
         //When
@@ -116,7 +116,7 @@ public class DocumentRemoveListUtilTest {
             .reinstateDocuments(new ArrayList<>())
             .build();
         caseData.setCicCase(cicCase);
-        caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(getDocument()).build()).build());
+    //    caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(getDocument()).build()).build());
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
         caseData.setAllDocManagement(documentManagement);
         CloseCase closeCase = CloseCase.builder()
@@ -142,7 +142,7 @@ public class DocumentRemoveListUtilTest {
             .reinstateDocuments(get2Document())
             .build();
         oldData.setCicCase(cicCaseOld);
-        oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
+   //     oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
 
         //When

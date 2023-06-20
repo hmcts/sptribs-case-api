@@ -34,29 +34,29 @@ public class RecordListHelper {
     public void regionData(CaseData caseData) {
 
         DynamicList regionList = locationService.getAllRegions();
-        caseData.getListing().setRegionList(regionList);
+        caseData.getSelectedListing().setRegionList(regionList);
 
         String regionMessage = regionList == null || regionList.getListItems().isEmpty()
             ? "Unable to retrieve Region data"
             : null;
-        caseData.getListing().setRegionsMessage(regionMessage);
+        caseData.getSelectedListing().setRegionsMessage(regionMessage);
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
     }
 
 
     public void populatedVenuesData(CaseData caseData) {
 
-        String selectedRegion = caseData.getListing().getSelectedRegionVal();
+        String selectedRegion = caseData.getSelectedListing().getSelectedRegionVal();
         String regionId = getRegionId(selectedRegion);
 
         if (null != regionId) {
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
-            caseData.getListing().setHearingVenues(hearingVenueList);
+            caseData.getSelectedListing().setHearingVenues(hearingVenueList);
 
             String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
                 ? "Unable to retrieve Hearing Venues data"
                 : null;
-            caseData.getListing().setHearingVenuesMessage(hearingVenueMessage);
+            caseData.getSelectedListing().setHearingVenuesMessage(hearingVenueMessage);
 
         }
 
@@ -107,7 +107,7 @@ public class RecordListHelper {
         pageBuilder.page("remoteHearingInformation")
             .pageLabel("Remote hearing information")
             .label("LabelRemoteHearingInfo", "")
-            .complex(CaseData::getListing)
+            .complex(CaseData::getSelectedListing)
             .optional(Listing::getVideoCallLink)
             .optional(Listing::getConferenceCallNumber)
             .done();
@@ -117,7 +117,7 @@ public class RecordListHelper {
         pageBuilder.page("otherInformation")
             .pageLabel("Other information")
             .label("LabelOtherInfo", "")
-            .complex(CaseData::getListing)
+            .complex(CaseData::getSelectedListing)
             .label("labelOtherInfoDetails",
                 "\nEnter any other important information about this hearing.\n"
                     + "\nThis may include any reasonable adjustments that need to be made, or details"
@@ -147,16 +147,16 @@ public class RecordListHelper {
     }
 
     public Listing saveSummary(CaseData caseData) {
-        caseData.getListing().setHearingFormat(caseData.getListing().getHearingFormat());
-        caseData.getListing().setHearingType(caseData.getListing().getHearingType());
-        caseData.getListing().getSummary().setSubjectName(caseData.getCicCase().getFullName());
+        caseData.getSelectedListing().setHearingFormat(caseData.getSelectedListing().getHearingFormat());
+        caseData.getSelectedListing().setHearingType(caseData.getSelectedListing().getHearingType());
+        caseData.getSelectedListing().getSummary().setSubjectName(caseData.getCicCase().getFullName());
         caseData.setCurrentEvent("");
-        if (null != caseData.getListing()
-            && null != caseData.getListing().getNumberOfDays()
-            && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getListing().setAdditionalHearingDate(null);
+        if (null != caseData.getSelectedListing()
+            && null != caseData.getSelectedListing().getNumberOfDays()
+            && caseData.getSelectedListing().getNumberOfDays().equals(YesOrNo.NO)) {
+            caseData.getSelectedListing().setAdditionalHearingDate(null);
         }
 
-        return checkAndUpdateVenueInformationSummary(caseData.getListing());
+        return checkAndUpdateVenueInformationSummary(caseData.getSelectedListing());
     }
 }

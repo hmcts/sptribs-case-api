@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
@@ -176,11 +177,22 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
+    @JsonUnwrapped
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private Listing selectedListing = new Listing();
 
     @JsonUnwrapped
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Listing listing = new Listing();
+    @Builder.Default
+    private Listing nextListedHearing = new Listing();
+
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Listings",
+        typeOverride = Collection,
+        typeParameterOverride = "Listing")
+    private List<ListValue<Listing>> hearingList = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "removeStay")
     @Builder.Default
@@ -304,16 +316,36 @@ public class CaseData {
     private String hearingVenueName;
 
     public String getFirstHearingDate() {
+
+        Listing nextListing = getNextListedHearing();
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        if (!ObjectUtils.isEmpty(listing) && !ObjectUtils.isEmpty(listing.getDate())) {
-            return dateFormatter.format(listing.getDate());
+        if (!ObjectUtils.isEmpty(nextListing) && !ObjectUtils.isEmpty(nextListing.getDate())) {
+            return dateFormatter.format(nextListing.getDate());
         }
         return "";
+
+    }
+
+    public Listing getNextListedHearing() {
+        Listing nextListing = null;
+
+        LocalDate compare = LocalDate.MAX;
+        if (!CollectionUtils.isEmpty(hearingList)) {
+            for (ListValue<Listing> listingValueList : hearingList) {
+                if (listingValueList.getValue().getHearingStatus() == HearingState.Listed
+                    && listingValueList.getValue().getDate().isBefore(compare)) {
+                    compare = listingValueList.getValue().getDate();
+                    nextListing = listingValueList.getValue();
+                }
+            }
+        }
+        return nextListing;
     }
 
     public String getHearingVenueName() {
-        if (!ObjectUtils.isEmpty(listing)) {
-            return listing.getHearingVenueNameAndAddress();
+        Listing nextListing = getNextListedHearing();
+        if (!ObjectUtils.isEmpty(nextListing)) {
+            return nextListing.getHearingVenueNameAndAddress();
         }
         return "";
     }

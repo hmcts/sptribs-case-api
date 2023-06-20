@@ -26,14 +26,14 @@ public class FinalDecisionTemplateContent {
                                      final Long ccdCaseReference) {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getListing().getSummary().getSubjectName());
-        templateContent.put(HEARING_TYPE, caseData.getListing().getHearingType());
-        templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getListing().getSummary().getMemberList()));
+        templateContent.put(SUBJECT_FULL_NAME, caseData.getSelectedListing().getSummary().getSubjectName());
+        templateContent.put(HEARING_TYPE, caseData.getSelectedListing().getHearingType());
+        templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getSelectedListing().getSummary().getMemberList()));
         templateContent.put(DECISION_SIGNATURE, caseData.getDecisionSignature());
-        templateContent.put(HEARING_TIME, caseData.getListing().getHearingTime());
-        templateContent.put(HEARING_VENUE_NAME, caseData.getListing().getHearingVenueNameAndAddress());
-        templateContent.put(HEARING_DATE, caseData.getListing().getDate() != null
-            ? caseData.getListing().getDate().format(formatter) : "");
+        templateContent.put(HEARING_TIME, caseData.getSelectedListing().getHearingTime());
+        templateContent.put(HEARING_VENUE_NAME, caseData.getSelectedListing().getHearingVenueNameAndAddress());
+        templateContent.put(HEARING_DATE, caseData.getSelectedListing().getDate() != null
+            ? caseData.getSelectedListing().getDate().format(formatter) : "");
         templateContent.put(MAIN_CONTENT, caseData.getDecisionMainContent());
 
         return templateContent;

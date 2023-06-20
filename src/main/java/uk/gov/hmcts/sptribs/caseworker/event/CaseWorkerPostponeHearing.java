@@ -11,8 +11,8 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
-import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingSelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingSelectReason;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -44,7 +44,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration createHearingSummary = new PostponeHearingSelectHearing();
+    private static final CcdPageConfiguration createHearingSummary = new SelectHearing();
     private static final CcdPageConfiguration selectReason = new PostponeHearingSelectReason();
     private static final CcdPageConfiguration notifyParties = new PostponeHaringNotifyParties();
 
@@ -83,7 +83,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
+        DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
         caseData.setCurrentEvent(CASEWORKER_POSTPONE_HEARING);
 
@@ -110,7 +110,8 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         }
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
         caseData.setCurrentEvent("");
-        caseData.getListing().setHearingStatus(Postponed);
+        caseData.getSelectedListing().setHearingStatus(Postponed);
+        hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)

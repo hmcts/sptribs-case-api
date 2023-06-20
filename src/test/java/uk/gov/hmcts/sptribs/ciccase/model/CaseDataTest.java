@@ -29,7 +29,7 @@ class CaseDataTest {
         Listing listing = Listing.builder().date(now).build();
 
         final CaseData caseData = CaseData.builder()
-            .listing(listing)
+            //.listing(listing)
             .build();
 
         //When
@@ -46,7 +46,7 @@ class CaseDataTest {
         Listing listing = Listing.builder().hearingVenueNameAndAddress(someAddress).build();
 
         final CaseData caseData = CaseData.builder()
-            .listing(listing)
+          //  .listing(listing)
             .build();
 
         //When

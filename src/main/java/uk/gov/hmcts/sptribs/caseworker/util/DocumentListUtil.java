@@ -131,9 +131,9 @@ public final class DocumentListUtil {
 
     private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
-        if (null != caseData.getListing() && null != caseData.getListing().getSummary()
-            && !CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())) {
-            for (ListValue<CaseworkerCICDocument> document : caseData.getListing().getSummary().getRecFile()) {
+        if (null != caseData.getSelectedListing() && null != caseData.getSelectedListing().getSummary()
+            && !CollectionUtils.isEmpty(caseData.getSelectedListing().getSummary().getRecFile())) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getSelectedListing().getSummary().getRecFile()) {
                 hearingSummaryDocs.add(document.getValue());
             }
         }

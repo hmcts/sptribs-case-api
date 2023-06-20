@@ -119,7 +119,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 updateCaseDocumentList(data.getCloseCase().getDocuments(), selectedDocument);
                 break;
             case HEARING_SUMMARY_TYPE:
-                updateCaseDocumentList(data.getListing().getSummary().getRecFile(), selectedDocument);
+                updateCaseDocumentList(data.getSelectedListing().getSummary().getRecFile(), selectedDocument);//TODO
                 break;
             default:
                 break;

@@ -6,8 +6,14 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDatesOneDate;
@@ -22,45 +28,41 @@ class HearingServiceTest {
 
 
     @Test
-    void shouldPopulateHearingDateDynamicList() {
+    void shouldPopulateListedHearingDateDynamicList() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
-        caseData.getListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        final CaseData caseData = CaseData.builder().hearingList(listValueList).build();
         details.setData(caseData);
         //When
 
-        DynamicList hearingList = hearingService.getHearingDateDynamicList(details);
+        DynamicList hearingList = hearingService.getListedHearingDynamicList(caseData);
 
         //Then
         assertThat(hearingList).isNotNull();
     }
 
+
     @Test
-    void shouldPopulateHearingDateDynamicListWhenAdditionalHearingDatesNull() {
+    void shouldPopulateCompletedHearingDynamicList() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
+        ListValue<Listing> listingListValue = new ListValue<>();
+        Listing listing = getRecordListing();
+        listing.setHearingStatus(HearingState.Complete);
+        listingListValue.setValue(listing);
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        final CaseData caseData = CaseData.builder().hearingList(listValueList).build();
         details.setData(caseData);
         //When
 
-        DynamicList hearingList = hearingService.getHearingDateDynamicList(details);
+        DynamicList hearingList = hearingService.getCompletedHearingDynamicList(caseData);
 
         //Then
         assertThat(hearingList).isNotNull();
-    }
 
-    @Test
-    void shouldPopulateHearingSummaryDynamicList() {
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().listing(getRecordListing()).build();
-        caseData.getListing().setAdditionalHearingDate(getAdditionalHearingDatesOneDate());
-        caseData.getListing().setSummary(getHearingSummary());
-        details.setData(caseData);
-        //When
-
-        DynamicList hearingList = hearingService.getHearingSummaryDynamicList(details);
-
-        //Then
-        assertThat(hearingList).isNotNull();
     }
 
 }

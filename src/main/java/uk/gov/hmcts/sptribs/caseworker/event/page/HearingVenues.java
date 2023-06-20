@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -35,10 +36,10 @@ public class HearingVenues implements CcdPageConfiguration {
             .label("LabelListingDetails","")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
-            .complex(CaseData::getListing)
+            .complex(CaseData::getSelectedListing)
             .readonly(Listing::getHearingVenuesMessage)
             .optional(Listing::getHearingVenues,
-                            "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" 
+                            "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\""
                      + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
             .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
@@ -62,10 +63,10 @@ public class HearingVenues implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        final Listing listing = data.getListing();
+        final Listing listing = data.getSelectedListing();
 
         if (!listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
-            String selectedVenue = data.getListing().getSelectedVenue();
+            String selectedVenue = data.getSelectedListing().getSelectedVenue();
             listing.setHearingVenueNameAndAddress(selectedVenue);
         } else {
             listing.setReadOnlyHearingVenueName(null);

@@ -6,6 +6,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -19,7 +20,7 @@ public class HearingAttendees implements CcdPageConfiguration {
             .pageLabel("Hearing attendees")
             .label("LabelHearingAttendees","")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
-            .complex(CaseData::getListing)
+            .complex(CaseData::getSelectedListing)
             .complex(Listing::getSummary)
             .optional(HearingSummary::getJudge)
             .mandatory(HearingSummary::getIsFullPanel)

@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
+    private static final CcdPageConfiguration hearingDateSelect = new SelectHearing();
     private static final CcdPageConfiguration reasonSelect = new CancelHearingReasonSelect();
 
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
@@ -89,7 +89,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
+        DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -110,7 +110,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         if (null != selectedHearing) {
             state = CaseManagement;
         }
-        caseData.getListing().setHearingStatus(Cancelled);
+        caseData.getSelectedListing().setHearingStatus(Cancelled);
+        hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(state)
