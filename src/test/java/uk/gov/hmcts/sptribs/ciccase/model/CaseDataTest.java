@@ -28,7 +28,7 @@ class CaseDataTest {
         //When
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         LocalDate now = LocalDate.now();
-        Listing listing = Listing.builder().date(now).build();
+        Listing listing = Listing.builder().hearingStatus(HearingState.Listed).date(now).build();
         ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(listing);
         final CaseData caseData = CaseData.builder()
@@ -46,7 +46,11 @@ class CaseDataTest {
     void shouldGetHearingLocation() {
         //When
         String someAddress = "WC1";
-        Listing listing = Listing.builder().hearingVenueNameAndAddress(someAddress).build();
+        Listing listing = Listing.builder()
+            .hearingStatus(HearingState.Listed)
+            .date(LocalDate.now())
+            .hearingVenueNameAndAddress(someAddress)
+            .build();
         ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(listing);
         final CaseData caseData = CaseData.builder()
@@ -58,5 +62,24 @@ class CaseDataTest {
 
         //Then
         assertThat(result).isEqualTo(someAddress);
+    }
+
+    @Test
+    void shouldGetCompletedHearingDate() {
+        //When
+        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+        LocalDate now = LocalDate.now();
+        Listing listing = Listing.builder().hearingStatus(HearingState.Complete).date(now).build();
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        final CaseData caseData = CaseData.builder()
+            .hearingList(List.of(listingListValue))
+            .build();
+
+        //When
+        Listing result = caseData.getLatestCompletedHearing();
+
+        //Then
+        assertThat(result).isNotNull();
     }
 }
