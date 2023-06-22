@@ -101,8 +101,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
-        caseData.getSelectedListing().getSummary().setJudge(judicialUsersDynamicList);
-        caseData.getSelectedListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
+        caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
+        caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -114,11 +114,11 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        caseData.getSelectedListing().setHearingStatus(Complete);
-        caseData.setSelectedListing(recordListHelper.saveSummary(details.getData()));
+        caseData.getListing().setHearingStatus(Complete);
+        caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
 
-        updateCategoryToCaseworkerDocument(caseData.getSelectedListing().getSummary().getRecFile());
+        updateCategoryToCaseworkerDocument(caseData.getListing().getSummary().getRecFile());
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

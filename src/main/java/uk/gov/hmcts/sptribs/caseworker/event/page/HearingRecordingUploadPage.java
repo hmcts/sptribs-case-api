@@ -35,7 +35,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     + "\n- File must be no larger than 500 MB\n"
                     + "\n- You can only upload mp3 files\n"
                     + "\n- Give the files a meaningful name. for example, bail-hearing-John-Smith.mp3\n")
-            .complex(CaseData::getSelectedListing)
+            .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .optionalWithLabel(HearingSummary::getRecFile, "Upload file")
             .label("theHearingRecordDescription", "<h3>If you can't upload a recording of the hearing, "
@@ -47,7 +47,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getSelectedListing().getSummary().getRecFile();
+        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
         final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

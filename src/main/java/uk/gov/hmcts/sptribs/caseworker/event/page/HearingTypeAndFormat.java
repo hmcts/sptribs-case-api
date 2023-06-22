@@ -22,7 +22,7 @@ public class HearingTypeAndFormat implements CcdPageConfiguration {
             .pageLabel(" Hearing type and format ")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("LabelHearingTypeAndFormat", "")
-            .complex(CaseData::getSelectedListing)
+            .complex(CaseData::getListing)
             .mandatory(Listing::getHearingType)
             .mandatory(Listing::getHearingFormat)
             .readonly(Listing::getHearingSummaryExists,ALWAYS_HIDE)

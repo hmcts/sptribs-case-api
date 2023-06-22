@@ -180,12 +180,17 @@ public class CaseData {
     @JsonUnwrapped
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
-    private Listing selectedListing = new Listing();
+    private Listing listing = new Listing();
 
     @JsonUnwrapped
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private Listing nextListedHearing = new Listing();
+
+    @JsonUnwrapped
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private Listing latestCompletedHearing = new Listing();
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
@@ -326,8 +331,29 @@ public class CaseData {
 
     }
 
+    @JsonIgnore
+    public Listing getListing() {
+        return listing;
+    }
+
+    @JsonIgnore
+    public Listing getLatestCompletedHearing() {
+
+        Listing completedHearing = new Listing();
+        LocalDate latest = LocalDate.MIN;
+        for (ListValue<Listing> listingValueList : hearingList) {
+            if (listingValueList.getValue().getDate().isAfter(latest)) {
+                latest = listingValueList.getValue().getDate();
+                completedHearing = listingValueList.getValue();
+            }
+        }
+
+        return completedHearing;
+    }
+
+    @JsonIgnore
     public Listing getNextListedHearing() {
-        Listing nextListing = null;
+        Listing nextListing = new Listing();
 
         LocalDate compare = LocalDate.MAX;
         if (!CollectionUtils.isEmpty(hearingList)) {

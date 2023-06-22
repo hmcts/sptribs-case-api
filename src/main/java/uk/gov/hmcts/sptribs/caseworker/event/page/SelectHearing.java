@@ -16,6 +16,11 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 
 @Slf4j
@@ -43,12 +48,22 @@ public class SelectHearing implements CcdPageConfiguration {
         var hearingList = data.getHearingList();
         for (ListValue<Listing> listingListValue : hearingList) {
             if (null != id && id.equals(listingListValue.getId())) {
-                data.setSelectedListing(listingListValue.getValue());
+                data.setListing(listingListValue.getValue());
                 break;
             }
         }
         if (StringUtils.isBlank(selectedHearing)) {
-            errors.add("Please select a hearing to summarize");
+            if(data.getCurrentEvent().equals(CASEWORKER_CREATE_HEARING_SUMMARY)) {
+                errors.add("Please select a hearing to summarize");
+            }else if(data.getCurrentEvent().equals(CASEWORKER_EDIT_HEARING_SUMMARY)) {
+                errors.add("Please select a hearing summarize to edit");
+            }else if(data.getCurrentEvent().equals(CASEWORKER_CANCEL_HEARING)) {
+                errors.add("Please select a hearing to cancel");
+            }else if(data.getCurrentEvent().equals(CASEWORKER_POSTPONE_HEARING)) {
+                errors.add("Please select a hearing to postpone");
+            }else if(data.getCurrentEvent().equals(CASEWORKER_EDIT_RECORD_LISTING)) {
+                errors.add("Please select a listing to edit");
+            }
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

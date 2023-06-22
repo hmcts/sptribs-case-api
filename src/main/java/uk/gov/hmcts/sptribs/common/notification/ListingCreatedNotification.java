@@ -31,7 +31,7 @@ public class ListingCreatedNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseDataSubject, final String caseNumber) {
         CicCase cicCaseListing = caseDataSubject.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCaseListing);
-        Listing listingSubject = caseDataSubject.getNextListedHearing();
+        Listing listingSubject = caseDataSubject.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, listingSubject);
         if (cicCaseListing.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
@@ -53,7 +53,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
-        Listing listing = caseData.getNextListedHearing();
+        Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, listing);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -74,7 +74,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
-        Listing listing = caseData.getNextListedHearing();
+        Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRespondent, listing);
         // Send Email
         NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,

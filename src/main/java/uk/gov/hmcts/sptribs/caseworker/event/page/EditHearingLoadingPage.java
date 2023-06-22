@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
@@ -22,7 +21,7 @@ public class EditHearingLoadingPage implements CcdPageConfiguration {
             .pageLabel("Edit hearing summary")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("labelEditHearingSummary", "")
-            .complex(CaseData::getSelectedListing)
+            .complex(CaseData::getListing)
             .readonly(Listing::getHearingSummaryExists)
             .label("labelEditHearingSummary", "There are no Completed Hearings to edit", SHOW)
             .done();

@@ -33,14 +33,14 @@ public class HearingVenues implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("listingDetails", this::midEvent)
             .pageLabel("Listing Details")
-            .label("LabelListingDetails","")
+            .label("LabelListingDetails", "")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
-            .complex(CaseData::getSelectedListing)
+            .complex(CaseData::getListing)
             .readonly(Listing::getHearingVenuesMessage)
             .optional(Listing::getHearingVenues,
-                            "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\""
-                     + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
+                "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\""
+                    + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
             .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
             .optional(Listing::getVenueNotListedOption)
@@ -55,7 +55,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(Listing::getNumberOfDays)
             .mandatory(Listing::getAdditionalHearingDate, "numberOfDays = \"Yes\"")
             .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
-            .readonly(Listing::getHearingStatus,ALWAYS_HIDE)
+            .readonly(Listing::getHearingStatus, ALWAYS_HIDE)
             .done();
     }
 
@@ -63,10 +63,10 @@ public class HearingVenues implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        final Listing listing = data.getSelectedListing();
+        final Listing listing = data.getListing();
 
         if (!listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
-            String selectedVenue = data.getSelectedListing().getSelectedVenue();
+            String selectedVenue = data.getListing().getSelectedVenue();
             listing.setHearingVenueNameAndAddress(selectedVenue);
         } else {
             listing.setReadOnlyHearingVenueName(null);
@@ -75,7 +75,7 @@ public class HearingVenues implements CcdPageConfiguration {
             && StringUtils.isBlank(listing.getReadOnlyHearingVenueName())) {
             errors.add("Please enter valid Hearing venue");
         }
-
+        data.setListing(listing);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

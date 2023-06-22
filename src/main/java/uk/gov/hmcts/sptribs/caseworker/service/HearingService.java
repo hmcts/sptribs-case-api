@@ -3,15 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.UK;
 import static uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil.createDynamicList;
-import static uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil.createDynamicListWithOneElement;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 
@@ -106,50 +102,9 @@ public class HearingService {
             String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
             if (hearingName.contains(listingListValue.getValue().getHearingTime())
                 && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())) {
-                listingListValue.setValue(caseData.getSelectedListing());
+                listingListValue.setValue(caseData.getListing());
                 break;
             }
         }
-    }
-
-
-    public Listing getCompletedHearing(CaseData data) {
-
-        List<Listing> completedHearingList = getCompletedHearingList(data);
-        Listing latestCompletedHearing = new Listing();
-        if (null != completedHearingList) {
-            LocalDate latest = LocalDate.MIN;
-            for (Listing listing : completedHearingList) {
-                if (listing.getDate().isAfter(latest)) {
-                    latest = listing.getDate();
-                    latestCompletedHearing = listing;
-                }
-            }
-        }
-        return latestCompletedHearing;
-    }
-
-    public List<Listing> getListedHearingList(CaseData caseData) {
-        List<Listing> listedHearingList = new ArrayList<>();
-        if (null != caseData.getHearingList()) {
-            for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-                if (listingListValue.getValue().getHearingStatus() == HearingState.Listed) {
-                    listedHearingList.add(listingListValue.getValue());
-                }
-            }
-        }
-        return listedHearingList;
-    }
-
-    public List<Listing> getCompletedHearingList(CaseData caseData) {
-        List<Listing> completedHearingList = new ArrayList<>();
-        if (null != caseData.getHearingList()) {
-            for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-                if (listingListValue.getValue().getHearingStatus() == HearingState.Complete) {
-                    completedHearingList.add(listingListValue.getValue());
-                }
-            }
-        }
-        return completedHearingList;
     }
 }

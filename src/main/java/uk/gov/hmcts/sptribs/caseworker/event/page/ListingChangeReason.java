@@ -17,7 +17,7 @@ public class ListingChangeReason implements CcdPageConfiguration {
         pageBuilder
             .page("recordListingChangeReason")
             .pageLabel("Reason for listing change")
-            .complex(CaseData::getSelectedListing)
+            .complex(CaseData::getListing)
             .mandatory(Listing::getRecordListingChangeReason)
             .done();
     }

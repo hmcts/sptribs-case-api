@@ -20,7 +20,7 @@ public class HearingAttendees implements CcdPageConfiguration {
             .pageLabel("Hearing attendees")
             .label("LabelHearingAttendees","")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
-            .complex(CaseData::getSelectedListing)
+            .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .optional(HearingSummary::getJudge)
             .mandatory(HearingSummary::getIsFullPanel)
