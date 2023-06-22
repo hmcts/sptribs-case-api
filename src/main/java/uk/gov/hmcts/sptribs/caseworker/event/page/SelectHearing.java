@@ -53,15 +53,15 @@ public class SelectHearing implements CcdPageConfiguration {
             }
         }
         if (StringUtils.isBlank(selectedHearing)) {
-            if(data.getCurrentEvent().equals(CASEWORKER_CREATE_HEARING_SUMMARY)) {
+            if (data.getCurrentEvent().equals(CASEWORKER_CREATE_HEARING_SUMMARY)) {
                 errors.add("Please select a hearing to summarize");
-            }else if(data.getCurrentEvent().equals(CASEWORKER_EDIT_HEARING_SUMMARY)) {
+            } else if (data.getCurrentEvent().equals(CASEWORKER_EDIT_HEARING_SUMMARY)) {
                 errors.add("Please select a hearing summarize to edit");
-            }else if(data.getCurrentEvent().equals(CASEWORKER_CANCEL_HEARING)) {
+            } else if (data.getCurrentEvent().equals(CASEWORKER_CANCEL_HEARING)) {
                 errors.add("Please select a hearing to cancel");
-            }else if(data.getCurrentEvent().equals(CASEWORKER_POSTPONE_HEARING)) {
+            } else if (data.getCurrentEvent().equals(CASEWORKER_POSTPONE_HEARING)) {
                 errors.add("Please select a hearing to postpone");
-            }else if(data.getCurrentEvent().equals(CASEWORKER_EDIT_RECORD_LISTING)) {
+            } else if (data.getCurrentEvent().equals(CASEWORKER_EDIT_RECORD_LISTING)) {
                 errors.add("Please select a listing to edit");
             }
         }

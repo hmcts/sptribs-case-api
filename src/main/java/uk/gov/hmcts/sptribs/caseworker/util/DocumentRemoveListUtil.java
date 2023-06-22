@@ -45,8 +45,10 @@ public final class DocumentRemoveListUtil {
 
         if (!CollectionUtils.isEmpty(oldData.getLatestCompletedHearing().getSummary().getRecFile())
             && (CollectionUtils.isEmpty(caseData.getLatestCompletedHearing().getSummary().getRecFile())
-            || caseData.getLatestCompletedHearing().getSummary().getRecFile().size() < oldData.getLatestCompletedHearing().getSummary().getRecFile().size())) {
-            checkLists(caseData, oldData.getLatestCompletedHearing().getSummary().getRecFile(), caseData.getLatestCompletedHearing().getSummary().getRecFile());
+            || caseData.getLatestCompletedHearing().getSummary().getRecFile().size()
+            < oldData.getLatestCompletedHearing().getSummary().getRecFile().size())) {
+            checkLists(caseData, oldData.getLatestCompletedHearing().getSummary().getRecFile(),
+                caseData.getLatestCompletedHearing().getSummary().getRecFile());
         }
 
 
