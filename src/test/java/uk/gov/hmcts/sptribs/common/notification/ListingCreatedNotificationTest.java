@@ -61,7 +61,7 @@ public class ListingCreatedNotificationTest {
             .conferenceCallNumber("+56677778")
             .hearingFormat(HearingFormat.FACE_TO_FACE)
             .build();
-   //     data.setListing(listing);
+        data.setListing(listing);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))

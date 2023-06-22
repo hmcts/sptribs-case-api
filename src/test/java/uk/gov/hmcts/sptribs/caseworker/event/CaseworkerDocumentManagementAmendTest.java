@@ -222,7 +222,7 @@ class CaseworkerDocumentManagementAmendTest {
     void shouldSuccessfullyAmendHearingSummaryDocuments() {
         //Given
         final CaseData caseData = caseData();
-       // caseData.getListing().getSummary().setRecFile(getCaseworkerCICDocumentList());
+        caseData.getListing().getSummary().setRecFile(getCaseworkerCICDocumentList());
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
 
@@ -243,10 +243,10 @@ class CaseworkerDocumentManagementAmendTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-      //  assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0).getValue()).isNotNull();
-    //    assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0)
-     //       .getValue().getDocumentCategory())
-   //         .isEqualTo(DocumentType.APPLICATION_FORM);
+        assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0).getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0)
+            .getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.LINKED_DOCS);
         assertThat(documentMgmtResponse).isNotNull();
     }
 

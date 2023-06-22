@@ -161,7 +161,7 @@ public class CaseworkerDocumentManagementRemoveTest {
             .reinstateDocuments(get2Document())
             .build();
         oldData.setCicCase(cicCaseOld);
-      //  oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
+        oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
         beforeDetails.setData(oldData);
         //When
@@ -228,7 +228,7 @@ public class CaseworkerDocumentManagementRemoveTest {
             .reinstateDocuments(get2Document())
             .build();
         oldData.setCicCase(cicCaseOld);
-      //  oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
+        oldData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(get2Document()).build()).build());
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
         beforeDetails.setData(oldData);
 

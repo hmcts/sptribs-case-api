@@ -85,7 +85,7 @@ class CaseworkerRecordListingTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         Listing listing = getRecordListing();
-     //   caseData.setListing(listing);
+        caseData.setListing(listing);
         caseData.setCicCase(getMockCicCase());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -102,8 +102,8 @@ class CaseworkerRecordListingTest {
         SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-    //    assertThat(response.getData().getListing().getHearingType().getLabel()).isEqualTo("Final");
-    //    assertThat(response.getData().getListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
+        assertThat(response.getData().getListing().getHearingType().getLabel()).isEqualTo("Final");
+        assertThat(response.getData().getListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
         assertThat(stayedResponse).isNotNull();
     }
 
@@ -117,7 +117,7 @@ class CaseworkerRecordListingTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         Listing recordListing = getRecordListing();
-  //      caseData.setListing(recordListing);
+        caseData.setListing(recordListing);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -150,9 +150,9 @@ class CaseworkerRecordListingTest {
             = caseworkerRecordListing.aboutToStart(updatedCaseDetails);
 
         //Then
-    //    assertThat(response.getData().getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
-    //    assertThat(response.getData().getListing().getRegionList().getListItems()).hasSize(1);
-    //    assertThat(response.getData().getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+        assertThat(response.getData().getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
+        assertThat(response.getData().getListing().getRegionList().getListItems()).hasSize(1);
+        assertThat(response.getData().getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
 
     }
 
@@ -165,7 +165,7 @@ class CaseworkerRecordListingTest {
         final Listing recordListing = new Listing();
         recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         recordListing.setRegionList(getMockedRegionData());
-     //   caseData.setListing(recordListing);
+        caseData.setListing(recordListing);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -175,11 +175,11 @@ class CaseworkerRecordListingTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
-     //   assertThat(response.getData().getListing().getHearingVenues()
-    //        .getValue().getLabel()).isEqualTo("courtname-courtAddress");
-   //     assertThat(response.getData().getListing().getHearingVenues().getListItems()).hasSize(1);
-    //    assertThat(response.getData().getListing().getHearingVenues()
-    //        .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
+        assertThat(response.getData().getListing().getHearingVenues()
+            .getValue().getLabel()).isEqualTo("courtname-courtAddress");
+        assertThat(response.getData().getListing().getHearingVenues().getListItems()).hasSize(1);
+        assertThat(response.getData().getListing().getHearingVenues()
+            .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
 
     }
 
@@ -198,7 +198,7 @@ class CaseworkerRecordListingTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         Listing recordListing = getRecordListing();
-     //   caseData.setListing(recordListing);
+        caseData.setListing(recordListing);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);

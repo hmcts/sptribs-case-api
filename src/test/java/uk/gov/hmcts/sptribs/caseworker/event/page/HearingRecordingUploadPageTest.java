@@ -36,7 +36,7 @@ public class HearingRecordingUploadPageTest {
         listing.setSummary(hearingSummary);
 
         final CaseData caseData = CaseData.builder()
-          //  ...listing(listing)
+            .listing(listing)
             .build();
         caseDetails.setData(caseData);
 

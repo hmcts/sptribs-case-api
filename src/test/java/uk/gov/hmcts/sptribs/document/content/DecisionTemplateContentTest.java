@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
 
@@ -36,12 +37,19 @@ public class DecisionTemplateContentTest {
         CaseData caseData = buildCaseData();
         caseData.setDecisionSignature("John Doe");
         caseData.setDecisionMainContent("Case Closed");
-        Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00").build();
-       // caseData.setListing(listing);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .build();
-       // caseData.getListing().setSummary(summary);
+        Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+
         //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
@@ -62,8 +70,9 @@ public class DecisionTemplateContentTest {
             .date(LocalDate.now())
             .hearingTime("11::00")
             .build();
-
-     //   caseData.setListing(listing);
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
         //When
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 

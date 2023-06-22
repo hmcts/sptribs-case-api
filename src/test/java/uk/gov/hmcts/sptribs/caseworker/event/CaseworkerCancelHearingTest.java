@@ -82,7 +82,7 @@ class CaseworkerCancelHearingTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-     //   when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
+        when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCancelHearing.aboutToStart(updatedCaseDetails);
@@ -111,7 +111,7 @@ class CaseworkerCancelHearingTest {
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-   //         .listing(listing)
+            .listing(listing)
             .build();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -148,7 +148,7 @@ class CaseworkerCancelHearingTest {
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-      //      .listing(listing)
+            .listing(listing)
             .build();
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -187,7 +187,7 @@ class CaseworkerCancelHearingTest {
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
-      //      .listing(listing)
+            .listing(listing)
             .build();
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -204,7 +204,7 @@ class CaseworkerCancelHearingTest {
         assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
         assertThat(response).isNotNull();
         assert response.getState().getName().equals(State.CaseManagement.getName());
-     //   assert (response.getData().getListing().getHearingStatus().equals(HearingState.Cancelled));
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Cancelled));
 
     }
 

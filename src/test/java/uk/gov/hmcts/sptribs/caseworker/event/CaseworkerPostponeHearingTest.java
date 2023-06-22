@@ -71,7 +71,7 @@ class CaseworkerPostponeHearingTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        //when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
+        when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerPostponeHearing.aboutToStart(updatedCaseDetails);
@@ -122,6 +122,6 @@ class CaseworkerPostponeHearingTest {
 
         //Then
         assertThat(submitted.getConfirmationHeader()).contains("Hearing Postponed");
-     //   assert (response.getData().getListing().getHearingStatus().equals(HearingState.Postponed));
+        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Postponed));
     }
 }

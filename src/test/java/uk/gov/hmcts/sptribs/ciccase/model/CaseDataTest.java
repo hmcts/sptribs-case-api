@@ -1,10 +1,12 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.UK;
@@ -27,9 +29,10 @@ class CaseDataTest {
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         LocalDate now = LocalDate.now();
         Listing listing = Listing.builder().date(now).build();
-
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
         final CaseData caseData = CaseData.builder()
-            //.listing(listing)
+            .hearingList(List.of(listingListValue))
             .build();
 
         //When
@@ -44,9 +47,10 @@ class CaseDataTest {
         //When
         String someAddress = "WC1";
         Listing listing = Listing.builder().hearingVenueNameAndAddress(someAddress).build();
-
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
         final CaseData caseData = CaseData.builder()
-          //  .listing(listing)
+            .hearingList(List.of(listingListValue))
             .build();
 
         //When

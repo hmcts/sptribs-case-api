@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDatesOneDate;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getHearingSummary;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
