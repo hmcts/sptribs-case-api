@@ -125,11 +125,11 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
+            hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
         }
 
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
+            hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
         }
     }
 
