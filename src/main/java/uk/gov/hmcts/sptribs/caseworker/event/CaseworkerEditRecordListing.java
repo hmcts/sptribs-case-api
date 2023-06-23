@@ -149,15 +149,15 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
         String caseNumber = data.getHyphenatedCaseRef();
         try {
-        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-            listingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
-        }
-        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-            listingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-            listingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
-        }
+            if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+                listingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+                listingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+                listingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
         } catch (Exception notificationException) {
             log.error("Update listing notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()

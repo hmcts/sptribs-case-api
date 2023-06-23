@@ -80,4 +80,25 @@ public final class DocumentUtil {
         data.getAllDocManagement().getCaseworkerCICDocument().addAll(data.getNewDocManagement().getCaseworkerCICDocument());
         data.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());
     }
+
+    public static List<String> validateUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
+        List<String> errors = new ArrayList<>();
+        if (null != uploadedDocuments) {
+            for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
+                if (null == documentListValue.getValue().getDocumentLink()) {
+                    errors.add("Please attach the document");
+                } else {
+                    errors.addAll(validateCICDocumentFormat(documentListValue.getValue()));
+
+                    if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
+                        errors.add("Description is mandatory for each document");
+                    }
+                    if (null == documentListValue.getValue().getDocumentCategory()) {
+                        errors.add("Category is mandatory for each document");
+                    }
+                }
+            }
+        }
+        return errors;
+    }
 }
