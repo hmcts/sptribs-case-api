@@ -241,11 +241,6 @@ public class CicCase {
     private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Document lastSelectedOrder;
-
-    @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -731,7 +726,7 @@ public class CicCase {
     private String firstDueDate;
 
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
-        LocalDate earliestDate = LocalDate.now();
+        LocalDate earliestDate = compare;
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
             if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
                 || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
@@ -740,6 +735,7 @@ public class CicCase {
             }
         }
         return earliestDate;
+
     }
 
     public String getFirstDueDate() {

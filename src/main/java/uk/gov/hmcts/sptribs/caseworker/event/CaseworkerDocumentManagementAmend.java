@@ -124,7 +124,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             default:
                 break;
         }
-
+        cicCase.setSelectedDocument(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .build();
@@ -146,7 +146,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# document Updated")
+            .confirmationHeader("# Document Updated")
             .build();
     }
 
