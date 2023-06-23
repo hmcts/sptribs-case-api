@@ -140,14 +140,4 @@ public class DssCaseData implements MappableObject {
     )
     private YesOrNo isRepresentativePresent;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private YesOrNo hasNotificationSent;
-
-    @CCD(
-        access = {DefaultAccess.class, CitizenAccess.class}
-    )
-    private String eventName;
-
 }

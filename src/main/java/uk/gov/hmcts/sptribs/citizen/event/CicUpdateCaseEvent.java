@@ -49,4 +49,5 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .build();
     }
 
+
 }
