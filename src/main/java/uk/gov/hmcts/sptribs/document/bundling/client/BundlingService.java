@@ -16,11 +16,11 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.CASE_BUNDLES;
@@ -79,8 +79,8 @@ public class BundlingService {
     private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
         List<Bundle> bundleList = new ArrayList<>();
         List<BundleFolder> folders = new ArrayList<>();
-        for (int i = 0; i < response.size(); i++) {
-            LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) response.get(i).get(VALUE);
+        for (LinkedHashMap<String, Object> responseObject : response) {
+            LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) responseObject.get(VALUE);
             Bundle bundle = Bundle.builder()
                 .stitchStatus(NEW)
                 .description(null != objectLinkedHashMap.get(DESCRIPTION) ? objectLinkedHashMap.get(DESCRIPTION).toString() : "")
