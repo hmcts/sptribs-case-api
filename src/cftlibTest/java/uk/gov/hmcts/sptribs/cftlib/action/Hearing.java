@@ -218,7 +218,7 @@ public class Hearing {
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Ivy-Rose Rayner"));
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Miss Ivy-Rose Rayner"));
         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
