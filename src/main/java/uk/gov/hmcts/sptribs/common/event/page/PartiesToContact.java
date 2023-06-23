@@ -28,14 +28,18 @@ public class PartiesToContact implements CcdPageConfiguration {
             .pageLabel("Contact Parties")
             .label("LabelPartiesToContactMessage", "Which parties do you want to contact?")
             .complex(CaseData::getCicCase)
-            .optionalWithLabel(CicCase::getNotifyPartySubject, RECIPIENT_LABEL)
+            .readonly(CicCase::getFullName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
                 "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
-            .optionalWithLabel(CicCase::getNotifyPartyRespondent, RECIPIENT_LABEL)
+            .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .mandatory(CicCase::getNotifyPartyMessage)
             .done();
     }
