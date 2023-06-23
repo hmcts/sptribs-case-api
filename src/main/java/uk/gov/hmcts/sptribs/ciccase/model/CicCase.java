@@ -241,6 +241,12 @@ public class CicCase {
     private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonIgnore
+    private Document lastSelectedOrder;
+
+    @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -479,6 +485,14 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private SchemeCic schemeCic;
+
+    @CCD(
+        label = "Case Region",
+        typeOverride = FixedList,
+        typeParameterOverride = "RegionCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private RegionCIC regionCIC;
 
     @CCD(
         label = "CICA reference number",

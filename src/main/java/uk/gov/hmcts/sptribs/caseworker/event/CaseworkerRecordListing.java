@@ -142,15 +142,21 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         var cicCase = data.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
         String caseNumber = data.getHyphenatedCaseRef();
-
-        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-            listingCreatedNotification.sendToSubject(details.getData(), caseNumber);
-        }
-        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-            listingCreatedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-            listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
+        try {
+            if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+                listingCreatedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+                listingCreatedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+                listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+        } catch (Exception notificationException) {
+            log.error("Create listing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Create listing notification failed %n## Please resend the notification"))
+                .build();
         }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",

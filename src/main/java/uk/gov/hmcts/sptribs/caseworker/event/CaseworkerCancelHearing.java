@@ -120,8 +120,14 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse hearingCancelled(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-
-        sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        try {
+            sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Cancel hearing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Cancel hearing notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Hearing cancelled %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))

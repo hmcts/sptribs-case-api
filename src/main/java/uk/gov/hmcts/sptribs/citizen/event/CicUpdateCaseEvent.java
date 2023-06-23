@@ -75,7 +75,6 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
-        caseData.getCicCase().setCaseReceivedDate(java.time.LocalDate.now());
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());

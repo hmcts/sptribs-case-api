@@ -148,7 +148,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         var cicCase = data.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
         String caseNumber = data.getHyphenatedCaseRef();
-
+        try {
         if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
             listingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
         }
@@ -158,7 +158,12 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
             listingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
-
+        } catch (Exception notificationException) {
+            log.error("Update listing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Update listing notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record updated %n##  If any changes are made to this hearing, "
                     + " remember to make those changes in this listing record. %n## %s",

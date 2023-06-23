@@ -110,6 +110,10 @@ flagType:
     baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
 
+bundling:
+  api:
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
+
 s2s:
   stub: false
 
