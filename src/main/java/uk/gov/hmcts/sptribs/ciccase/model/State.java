@@ -55,6 +55,20 @@ public enum State {
     Submitted("Submitted"),
 
     @CCD(
+        label = "DSS-Submitted",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Submitted("DSS-Submitted"),
+
+    @CCD(
+        label = "DSS-Draft",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Draft("DSS-Draft"),
+
+    @CCD(
         label = "New case received",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
@@ -118,7 +132,15 @@ public enum State {
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
-    ConsentOrder("ConsentOrder");
+    ConsentOrder("ConsentOrder"),
+
+    @CCD(
+        label = "Rule 27",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    Rule27("Rule27");
+
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
@@ -131,10 +153,10 @@ public enum State {
     ));
 
 
-    public static final EnumSet<State> BUNDLE_STATES = EnumSet.complementOf(EnumSet.of(
+    public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
         CaseManagement,
         AwaitingHearing
-    ));
+    );
     private final String name;
 }
 

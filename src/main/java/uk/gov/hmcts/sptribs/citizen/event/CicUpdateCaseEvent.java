@@ -20,34 +20,33 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     AppsConfig appsConfig;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
-                .getCreateEvent())
-            .initialState(State.Draft)
-            .name("Create draft case (DSS)")
-            .description("Apply for edge case (DSS)")
-            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .retries(120, 120);
+                .getUpdateEvent())
+            .forStates(State.Draft, State.Submitted, State.DSS_Draft)
+            .name("Update case (cic)")
+            .description("Application update (cic)")
+            .retries(120, 120)
+            .grant(CREATE_READ_UPDATE, CITIZEN_CIC)
+            .grant(CREATE_READ_UPDATE, CREATOR)
+            .aboutToSubmitCallback(this::aboutToSubmit);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
-        caseData.setHyphenatedCaseRef(details.getData().formatCaseRef(details.getId()));
+
+        var data = details.getData();
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(State.DSS_Draft)
+            .data(data)
             .build();
     }
-
 
 }
