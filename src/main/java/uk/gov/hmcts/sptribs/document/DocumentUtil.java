@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document;
 
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
