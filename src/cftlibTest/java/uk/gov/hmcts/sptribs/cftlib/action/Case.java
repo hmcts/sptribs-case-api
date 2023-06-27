@@ -202,10 +202,7 @@ public class Case {
         startNextStepAction("Case: Build case");
         assertThat(page.locator("h1"))
             .hasText("Case Built", textOptionsWithTimeout(60000));
-        clickButton(page, "Continue");
-        assertThat(page.locator("h1"))
-            .hasText("Case: Build case", textOptionsWithTimeout(60000));
-        clickButton(page, "Save and continue");
+        clickButton(page, "Submit");
         assertThat(page.locator("h1").last())
             .hasText("Case built successful", textOptionsWithTimeout(60000));
         clickButton(page, "Close and Return to case details");

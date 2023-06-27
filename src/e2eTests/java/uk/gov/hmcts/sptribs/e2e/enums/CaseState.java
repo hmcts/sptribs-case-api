@@ -7,7 +7,8 @@ public enum CaseState {
     CaseClosed("Case closed"),
     CaseManagement("Case management"),
     CaseStayed("Case stayed"),
-    Submitted("Submitted");
+    Submitted("Submitted"),
+    DssSubmitted("DSS-Submitted");
 
     public final String label;
 

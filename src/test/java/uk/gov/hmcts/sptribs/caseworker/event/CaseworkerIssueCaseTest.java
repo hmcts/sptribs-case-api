@@ -42,7 +42,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWith6Elements;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWithXElements;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_CASE;
 
 
@@ -131,7 +131,7 @@ class CaseworkerIssueCaseTest {
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
-        caseIssue.setDocumentList(getDynamicMultiSelectDocumentListWith6Elements());
+        caseIssue.setDocumentList(getDynamicMultiSelectDocumentListWithXElements(6));
         caseData.setCaseIssue(caseIssue);
 
         caseData.setHyphenatedCaseRef("1234-5678-3456");
@@ -159,7 +159,7 @@ class CaseworkerIssueCaseTest {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.APPLICATION_FORM)
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);

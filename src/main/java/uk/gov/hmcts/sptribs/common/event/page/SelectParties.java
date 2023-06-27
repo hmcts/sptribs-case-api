@@ -27,6 +27,7 @@ public class SelectParties implements CcdPageConfiguration {
         pageBuilder
             .page("objectSubjects", this::midEvent)
             .pageLabel("Who are the parties in this case?")
+            .label("LabelObjectSubjects", "")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getPartiesCIC, "cicCaseCaseSubcategory!= \"Fatal\"")
             .optional(CicCase::getPartiesCICWithOutSubject,"cicCaseCaseSubcategory= \"Fatal\"")

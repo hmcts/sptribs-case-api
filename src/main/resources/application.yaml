@@ -18,6 +18,10 @@ spring:
     import: "optional:configtree:/mnt/secrets/sptribs/"
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
@@ -54,6 +58,8 @@ uk:
           CASE_UNSTAYED_POST: 'a3c51a6e-b686-4ade-af32-fd62cc0d7451'
           DECISION_ISSUED_EMAIL: 'e8edb80a-6924-4247-aa33-178c28251120'
           DECISION_ISSUED_POST: 'ae833f41-30da-48bb-8384-e832a244abb9'
+          CONTACT_PARTIES_EMAIL: '02722db0-2f62-46f8-bdcc-46e891ab9a31'
+          CONTACT_PARTIES_POST: '59ac1cb3-7c19-4993-945b-5cd331e12feb'
           TEST_TEMPLATE: '8d20e578-21cd-42b8-b27f-d13095e499d6'
           CASE_ISSUED_CITIZEN_EMAIL: '3f25663d-9f3f-4330-afdb-3302399d29cf'
           CASE_ISSUED_CITIZEN_POST: 'eedc916f-088f-4653-99ed-b954e1dbd58d'
@@ -77,7 +83,7 @@ uk:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
 
 s2s-authorised:
-  services: ${S2S_AUTHORISED_SERVICES:ccd_data}
+  services: ${S2S_AUTHORISED_SERVICES:ccd_data,sptribs_frontend}
 
 idam:
   s2s-auth:
@@ -121,7 +127,7 @@ docmosis:
       ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice: ST-CIC-DEC-ENG-CIC11_Strike_Out_Decision_Notice.docx
       ST-CIC-DEC-ENG-CIC12_Decision_Annex: ST-CIC-DEC-ENG-CIC12_Decision_Annex.docx
       ST-CIC-DEC-ENG-CIC6_General_Directions: ST-CIC-DEC-ENG-CIC6_General_Directions.docx
-      ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports": ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports.docx
+      ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports: ST-CIC-DEC-ENG-CIC7_ME_Dmi_Reports.docx
       ST-CIC-DEC-ENG-CIC8_ME_Joint_Instruction: ST-CIC-DEC-ENG-CIC8_ME_Joint_Instruction.docx
       ST-CIC-DEC-ENG-CIC10_Strike_Out_Warning: ST-CIC-DEC-ENG-CIC10_Strike_Out_Warning.docx
       ST-CIC-DEC-ENG-CIC13_Pro_Forma_Summons: ST-CIC-DEC-ENG-CIC13_Pro_Forma_Summons.docx
@@ -130,6 +136,7 @@ docmosis:
       CIC8_ME_Joint_Instruction: ST-CIC-STD-ENG-CIC8_ME_Joint_Instruction.docx
       CIC10_Strike_Out_Warning: ST-CIC-STD-ENG-CIC10_Strike_Out_Warning.docx
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
+      CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
 
 doc_assembly:
@@ -166,11 +173,26 @@ toggle:
 
 feature:
   contact-parties:
-    enabled: ${CONTACT_PARTIES_FEATURE:false}
+    enabled: ${CONTACT_PARTIES_FEATURE:true}
   link-case:
     enabled: ${LINK_CASE_FEATURE:false}
   case-flags:
-    enabled: ${CASE_FLAGS_FEATURE:true}
+    enabled: ${CASE_FLAGS_FEATURE:false}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
+  bundling:
+    enabled: ${BUNDLING_FEATURE:false}
+  security-classification:
+    enabled: ${SECURITY_CLASSIFICATION:false}
+
+caseinfo:
+  apps:
+    - caseType: CriminalInjuriesCompensation
+      jurisdiction: ST_CIC
+      eventIds:
+        createEvent: citizen-cic-create-dss-application
+        updateEvent: citizen-cic-update-dss-application
+        submitEvent: citizen-cic-submit-dss-application
+      caseTypeOfApplication:
+        - CIC
 

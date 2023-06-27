@@ -18,6 +18,7 @@ public class CloseCaseConcessionDetails implements CcdPageConfiguration {
         map.put("closeCaseStrikeOutDetails", "closeCloseCaseReason = \"caseStrikeOut\"");
         map.put("closeCaseConcessionDetails", "closeCloseCaseReason = \"caseConcession\"");
         map.put("closeCaseConsentOrder", "closeCloseCaseReason = \"consentOrder\"");
+        map.put("closeCaseRule27", "closeCloseCaseReason = \"rule27\"");
         pageBuilder.page("closeCaseConcessionDetails")
             .pageLabel("Concession details")
             .pageShowConditions(map)

@@ -114,12 +114,14 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseCaseCategory")
             .field("cicCaseCaseReceivedDate")
             .field("cicCaseCaseSubcategory")
+            .label("objectSubjects", null, "### Subject Details")
+            .field("cicCaseFullName")
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
-            .field("cicCaseFullName")
             .field("cicCasePhoneNumber")
-            .label("objectSubjects", null, "### Object Subjects")
+            .field("cicCaseAddress")
             .field("cicCaseSubjectCIC")
+            .label("applicantDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
             .field("cicCaseRepresentativeCIC")
             .field("cicCaseRepresentativeFullName")
             .field("cicCaseRepresentativeOrgName")
@@ -129,8 +131,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRepresentativeReference")
             .field("cicCaseIsRepresentativeQualified", "cicCaseRepresentativeFullName!=\"\"")
             .field("cicCaseRepresentativeContactDetailsPreference", "cicCaseRepresentativeFullName!=\"\"")
-            .field("cicCaseAddress")
-            .label("applicantDetails", null, "### Applicant Details")
+            .label("applicantDetails", "cicCaseApplicantFullName!=\"\"", "### Applicant Details")
             .field("cicCaseApplicantFullName")
             .field("cicCaseApplicantDateOfBirth", "cicCaseApplicantFullName!=\"\"")
             .field("cicCaseApplicantPhoneNumber")
@@ -197,7 +198,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .label("Case Documents", null, "#### Case Documents")
             .field("cicCaseApplicantDocumentsUploaded")
-            .field("caseworkerCICDocument");
+            .field("allCaseworkerCICDocument");
 
 
     }
@@ -235,7 +236,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("memberList")
             .field("roles")
             .field("others")
-            .field("outcome")
+            .field("cicCaseHearingOutcome")
+            .field("cicCaseAdjournmentReasons")
             .field("recFile")
             .field("recDesc")
             .label("Postponement summary", "cicCasePostponeReason!=\"\"", "#### Postponement summary")

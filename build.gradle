@@ -27,7 +27,7 @@ plugins {
   id 'org.springframework.boot' version '2.7.11'
   id 'com.github.ben-manes.versions' version '0.46.0'
   id 'hmcts.ccd.sdk'  version '5.3.9'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.663'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.666'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -136,6 +136,25 @@ task integration(type: Test) {
   failFast = true
 }
 
+task e2eTestInPrev(type: Test) {
+  description = "Runs e2e tests in Preview Environment"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
+  environment 'CASE_API_BASE_URL', System.env.TEST_E2E_URL
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend-pr-368.preview.platform.hmcts.net'
+  environment 'BROWSER', 'chromium'
+  environment 'CI', 'true'
+}
+
 task e2eTests(type: Test) {
   description = "Runs e2e tests"
   group = "Verification"
@@ -149,8 +168,47 @@ task e2eTests(type: Test) {
     'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
-  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
+  environment 'CI', 'true'
+}
+
+task e2eTestsNightlyFirefox(type: Test) {
+  description = "Runs e2e tests nightly using firefox"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
+  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
+  environment 'BROWSER', 'firefox'
+  environment 'CI', 'true'
+}
+
+task e2eTestsNightlyMsEdge(type: Test) {
+  description = "Runs e2e tests nightly using MS Edge"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
+  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
+  environment 'BROWSER', 'msedge'
   environment 'CI', 'true'
 }
 
@@ -298,8 +356,8 @@ repositories {
 
 def versions = [
   jackson           : '2.14.0-rc1',
-  junit             : '5.9.2',
-  junitPlatform     : '1.9.1',
+  junit             : '5.9.3',
+  junitPlatform     : '1.9.3',
   lombok            : '1.18.22',
   springBoot        : springBoot.class.package.implementationVersion
 ]
@@ -330,6 +388,7 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
   }
 
+  implementation 'io.swagger:swagger-annotations:1.5.0'
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
   implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.17'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.2'
@@ -403,6 +462,7 @@ dependencies {
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.32.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.0.1'
+  cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
@@ -530,7 +590,6 @@ cftlibTest {
   environment 'CASE_DATA_STORE_BASEURL', 'http://localhost:4452'
   environment 'ROLE_ASSIGNMENT_URL', 'http://localhost:4096'
   environment 'CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES', 'sptribs_case_api'
-  environment 'XUI_MANAGE_CASES_TAG', 'pr-2658'
   environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
 }
 
@@ -555,7 +614,21 @@ task installBrowser(type: JavaExec) {
   args = ['install', 'chromium']
 }
 
+task installFirefox(type: JavaExec) {
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  main = 'com.microsoft.playwright.CLI'
+  args = ['install', 'firefox']
+}
+
+task installMsEdge(type: JavaExec) {
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  main = 'com.microsoft.playwright.CLI'
+  args = ['install', 'msedge']
+}
+
 tasks.e2eTests.dependsOn(installBrowser)
+tasks.e2eTestsNightlyFirefox.dependsOn(installFirefox)
+tasks.e2eTestsNightlyMsEdge.dependsOn(installMsEdge)
 
 def E2E_MAX_PARALLEL_FORKS = 2
 def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
@@ -565,6 +638,6 @@ tasks.withType(Test).configureEach {
 }
 
 // exclude the logback binding is coming in via cftlib
-configurations.cftlibTestImplementation {
+configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }

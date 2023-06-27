@@ -26,7 +26,7 @@ public class PreviewDraftOrderTemplateContent {
                                      final Long ccdCaseReference) {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getListing().getSummary().getSubjectName());
+        templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getFullName());
         templateContent.put(HEARING_TYPE, caseData.getListing().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getListing().getSummary().getMemberList()));
         templateContent.put(ORDER_SIGNATURE, caseData.getDraftOrderContentCIC().getOrderSignature());

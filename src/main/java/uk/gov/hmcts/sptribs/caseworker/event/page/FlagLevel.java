@@ -10,8 +10,9 @@ public class FlagLevel implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
-        pageBuilder.page("selectFlagLevel")
-            .label("selectFlagLevel", "<h2>Where should this flag be added?\n</h2>")
+        pageBuilder.page("caseWorkerCaseFlagSelectFlagLevel")
+            .pageLabel("Where should this flag be added?")
+            .label("LabelCaseWorkerCaseFlagSelectFlagLevel","")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getFlagLevel, "Case or Party Level?")
             .done();

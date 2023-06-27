@@ -32,7 +32,7 @@ java:
   autoscaling:
     enabled: true
     maxReplicas: 9
-    minReplicas: 6
+    minReplicas: 2
     targetCPUUtilizationPercentage: 80 # Default is 80% target CPU utilization
   keyVaults:
     sptribs:
@@ -68,4 +68,4 @@ java:
     SERVICE_AUTH_MICROSERVICE: sptribs_case_api
     SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/cases/case-details/
-
+    S2S_AUTHORISED_SERVICES: ccd_definition,ccd_data,xui_webapp,sptribs_case_api,ccd_gw,sptribs_frontend

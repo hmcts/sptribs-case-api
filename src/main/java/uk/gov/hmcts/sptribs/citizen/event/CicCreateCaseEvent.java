@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -9,28 +10,31 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
+import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import java.util.ArrayList;
-
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
 public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
+    @Autowired
+    AppsConfig appsConfig;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var defaultRoles = new ArrayList<UserRole>();
-        defaultRoles.add(UserRole.CITIZEN_CIC);
-
-        var updatedRoles = defaultRoles;
 
         configBuilder
-            .event("citizen-cic-create-dss-application")
+            .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
+                .getCreateEvent())
             .initialState(State.Draft)
-            .name("Create draft case (cic)")
-            .description("Apply for edge case (cic)")
-            .grant(CREATE_READ_UPDATE, updatedRoles.toArray(UserRole[]::new))
+            .name("Create draft case (DSS)")
+            .description("Apply for edge case (DSS)")
+            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .retries(120, 120);
     }
@@ -38,9 +42,10 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
+        caseData.setHyphenatedCaseRef(details.getData().formatCaseRef(details.getId()));
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(State.Submitted)
+            .state(State.DSS_Draft)
             .build();
     }
 

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
@@ -36,11 +38,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -52,12 +57,19 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "all")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DocumentManagement docManagement = new DocumentManagement();
+    private DocumentManagement allDocManagement = new DocumentManagement();
+
+    @JsonUnwrapped(prefix = "new")
+    @Builder.Default
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DocumentManagement newDocManagement = new DocumentManagement();
 
     @Builder.Default
     @CCD(
@@ -217,6 +229,11 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseIssue caseIssue = new CaseIssue();
 
+    @JsonUnwrapped(prefix = "contactPartiesDocuments")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+
     @JsonUnwrapped(prefix = "caseIssueDecision")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -259,6 +276,27 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private String pcqId;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String firstHearingDate;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String hearingVenueName;
+
+    public String getFirstHearingDate() {
+        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+        if (!ObjectUtils.isEmpty(listing) && !ObjectUtils.isEmpty(listing.getDate())) {
+            return dateFormatter.format(listing.getDate());
+        }
+        return "";
+    }
+
+    public String getHearingVenueName() {
+        if (!ObjectUtils.isEmpty(listing)) {
+            return listing.getHearingVenueNameAndAddress();
+        }
+        return "";
+    }
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

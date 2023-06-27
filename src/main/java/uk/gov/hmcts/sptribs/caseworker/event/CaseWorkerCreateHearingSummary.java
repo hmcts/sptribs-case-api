@@ -34,8 +34,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
@@ -47,8 +49,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration hearingAttendees = new HearingAttendees();
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
-    private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
-
+    private static final CcdPageConfiguration hearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
 
     @Autowired
@@ -66,20 +67,28 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
             configBuilder
                 .event(CASEWORKER_CREATE_HEARING_SUMMARY)
                 .forStates(AwaitingHearing)
-                .name("Hearings: Create summary")
+                .name("Hearings:Create summary")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::summaryEdited)
-                .grant(CREATE_READ_UPDATE,
+                .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE));
         createHearingSummary.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
         hearingAttendees.addTo(pageBuilder);
         hearingAttendeesRole.addTo(pageBuilder);
-        HearingOutcome.addTo(pageBuilder);
+        hearingOutcome.addTo(pageBuilder);
         hearingRecordingUploadPage.addTo(pageBuilder);
     }
 

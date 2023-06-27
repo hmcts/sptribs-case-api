@@ -28,7 +28,6 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
-import uk.gov.hmcts.sptribs.launchdarkly.FeatureToggleService;
 
 import java.util.ArrayList;
 
@@ -53,7 +52,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ENVIRONMENT_PROD = "prod";
     public static final String TEST_CREATE = "caseworker-create-case";
-    private final FeatureToggleService featureToggleService;
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
@@ -70,11 +68,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
-
-    public CreateTestCase(FeatureToggleService featureToggleService) {
-        this.featureToggleService = featureToggleService;
-    }
-
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -93,28 +86,26 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             roles.add(DISTRICT_JUDGE_CIC);
         }
 
-        if (featureToggleService.isCicCreateCaseFeatureEnabled()) {
-            PageBuilder pageBuilder = new PageBuilder(configBuilder
-                .event(TEST_CREATE)
-                .initialState(Draft)
-                .name("Create Case")
-                .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
-                .grant(CREATE_READ_UPDATE,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+        PageBuilder pageBuilder = new PageBuilder(configBuilder
+            .event(TEST_CREATE)
+            .initialState(Draft)
+            .name("Create Case")
+            .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::submitted)
+            .grant(CREATE_READ_UPDATE,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
 
-            categorisationDetails.addTo(pageBuilder);
-            dateOfReceipt.addTo(pageBuilder);
-            selectParties.addTo(pageBuilder);
-            subjectDetails.addTo(pageBuilder);
-            applicantDetails.addTo(pageBuilder);
-            representativeDetails.addTo(pageBuilder);
-            contactPreferenceDetails.addTo(pageBuilder);
-            caseUploadDocuments.addTo(pageBuilder);
-            furtherDetails.addTo(pageBuilder);
-        }
+        categorisationDetails.addTo(pageBuilder);
+        dateOfReceipt.addTo(pageBuilder);
+        selectParties.addTo(pageBuilder);
+        subjectDetails.addTo(pageBuilder);
+        applicantDetails.addTo(pageBuilder);
+        representativeDetails.addTo(pageBuilder);
+        contactPreferenceDetails.addTo(pageBuilder);
+        caseUploadDocuments.addTo(pageBuilder);
+        furtherDetails.addTo(pageBuilder);
     }
 
 
