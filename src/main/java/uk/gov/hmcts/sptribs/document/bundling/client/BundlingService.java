@@ -79,8 +79,8 @@ public class BundlingService {
     private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
         List<Bundle> bundleList = new ArrayList<>();
         List<BundleFolder> folders = new ArrayList<>();
-        for (int i = 0; i < response.size(); i++) {
-            LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) response.get(i).get(VALUE);
+        for (LinkedHashMap<String, Object> responseObject : response) {
+            LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) responseObject.get(VALUE);
             Bundle bundle = Bundle.builder()
                 .stitchStatus(NEW)
                 .description(null != objectLinkedHashMap.get(DESCRIPTION) ? objectLinkedHashMap.get(DESCRIPTION).toString() : "")
