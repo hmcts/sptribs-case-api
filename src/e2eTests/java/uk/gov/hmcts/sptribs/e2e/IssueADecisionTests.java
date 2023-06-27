@@ -53,7 +53,7 @@ public class IssueADecisionTests extends Base {
         page.getByLabel("Representative").check();
         page.getByLabel("Respondent").check();
         PageHelpers.clickButton(page, "Continue");
-        assertThat(page.locator("h2"))
+        assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
         assertThat(page.locator("ccd-markdown markdown h1"))
