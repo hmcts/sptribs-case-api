@@ -125,11 +125,11 @@ public class BundlingService {
     }
 
     public List<ListValue<Bundle>> buildBundleListValues(List<Bundle> bundleList) {
-        List<ListValue<Bundle>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
         if (CollectionUtils.isEmpty(bundleList)) {
             return null;
         }
+        List<ListValue<Bundle>> newList = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
         for (Bundle doc : bundleList) {
             var listValue = ListValue
                 .<Bundle>builder()
@@ -144,11 +144,11 @@ public class BundlingService {
     }
 
     public List<ListValue<BundleFolder>> buildBundleFolderListValues(List<BundleFolder> bundleList) {
-        List<ListValue<BundleFolder>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
         if (CollectionUtils.isEmpty(bundleList)) {
             return null;
         }
+        List<ListValue<BundleFolder>> newList = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleFolder doc : bundleList) {
             var listValue = ListValue
                 .<BundleFolder>builder()
@@ -163,11 +163,11 @@ public class BundlingService {
     }
 
     public List<ListValue<BundleDocument>> buildBundleDocumentListValues(List<BundleDocument> bundleList) {
-        List<ListValue<BundleDocument>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
         if (CollectionUtils.isEmpty(bundleList)) {
             return null;
         }
+        List<ListValue<BundleDocument>> newList = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleDocument doc : bundleList) {
             var listValue = ListValue
                 .<BundleDocument>builder()
@@ -185,8 +185,8 @@ public class BundlingService {
         List<BundleDocument> documents = new ArrayList<>();
         if (null != response.get(DOCUMENTS)) {
             List<LinkedHashMap<String, Object>> documentsFromResponse = (List<LinkedHashMap<String, Object>>) response.get(DOCUMENTS);
-            for (int z = 0; z < documentsFromResponse.size(); z++) {
-                LinkedHashMap<String, Object> document = (LinkedHashMap<String, Object>) documentsFromResponse.get(z).get(VALUE);
+                for (LinkedHashMap<String, Object> responseObject : documentsFromResponse) {
+                LinkedHashMap<String, Object> document = (LinkedHashMap<String, Object>) responseObject.get(VALUE);
                 BundleDocument bundleDocument = BundleDocument.builder()
                     .name(null != document.get(NAME) ? document.get(NAME).toString() : "")
                     .name(null != document.get(DESCRIPTION) ? document.get(DESCRIPTION).toString() : "")
