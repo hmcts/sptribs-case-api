@@ -16,7 +16,6 @@
     <suppress>
       <notes>jackson-databind-2.13.1.jar</notes>
       <cve>CVE-2020-36518</cve>
-      <cve>CVE-2023-35116</cve>
     </suppress>
     <suppress>
       <notes>
