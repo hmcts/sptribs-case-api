@@ -39,7 +39,7 @@ public class ReferCaseToJudgeTests extends Base {
         assertThat(page.locator("h1")).hasText("Additional information", textOptionsWithTimeout(60000));
         getTextBoxByLabel(page, "Provide additional details (Optional)").fill("test additional details");
         PageHelpers.clickButton(page, "Continue");
-        assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(60000));
+        assertThat(page.locator("h2.heading-h2")).hasText("Check your answers", textOptionsWithTimeout(60000));
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("ccd-markdown markdown h1"))
             .hasText("Referral completed", textOptionsWithTimeout(30000));
