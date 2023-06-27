@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
@@ -230,10 +231,10 @@ public class Case {
         // Fill date case received form
         assertThat(page.locator("h1"))
             .hasText("When was the case received?", textOptionsWithTimeout(30000));
-        Calendar date = DateHelpers.getYesterdaysDate();
-        getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
-        getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
-        getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
+        LocalDate localDate = LocalDate.now();
+        Assert.assertTrue(page.locator("#cicCaseCaseReceivedDate-day").inputValue().contains(String.valueOf(localDate.getDayOfMonth())));
+        Assert.assertTrue(page.locator("#cicCaseCaseReceivedDate-month").inputValue().contains(String.valueOf(localDate.getMonthValue())));
+        Assert.assertTrue(page.locator("#cicCaseCaseReceivedDate-year").inputValue().contains(String.valueOf(localDate.getYear())));
         clickButton(page, "Continue");
 
         // Fill identified parties form
