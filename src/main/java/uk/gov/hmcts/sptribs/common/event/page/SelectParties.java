@@ -12,11 +12,15 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
 public class SelectParties implements CcdPageConfiguration {
+
+
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -24,7 +28,8 @@ public class SelectParties implements CcdPageConfiguration {
             .page("objectSubjects", this::midEvent)
             .pageLabel("Who are the parties in this case?")
             .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getPartiesCIC, "")
+            .optional(CicCase::getPartiesCIC, "cicCaseCaseSubcategory!= \"Fatal\"")
+            .optional(CicCase::getPartiesCICWithOutSubject,"cicCaseCaseSubcategory= \"Fatal\"")
             .done();
     }
 
@@ -33,9 +38,9 @@ public class SelectParties implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-        if (null != data.getCicCase() && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.SUBJECT)) {
-            errors.add("Subject is mandatory.");
-        }
+//        if (null != data.getCicCase() && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.SUBJECT)) {
+//            errors.add("Subject is mandatory.");
+//        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
