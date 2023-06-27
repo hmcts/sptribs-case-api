@@ -181,11 +181,12 @@ public class BundlingService {
         return newList;
     }
 
+    @SuppressWarnings("PMD")
     private List<BundleDocument> getDocuments(LinkedHashMap<String, Object> response) {
         List<BundleDocument> documents = new ArrayList<>();
         if (null != response.get(DOCUMENTS)) {
             List<LinkedHashMap<String, Object>> documentsFromResponse = (List<LinkedHashMap<String, Object>>) response.get(DOCUMENTS);
-                for (LinkedHashMap<String, Object> responseObject : documentsFromResponse) {
+            for (LinkedHashMap<String, Object> responseObject : documentsFromResponse) {
                 LinkedHashMap<String, Object> document = (LinkedHashMap<String, Object>) responseObject.get(VALUE);
                 BundleDocument bundleDocument = BundleDocument.builder()
                     .name(null != document.get(NAME) ? document.get(NAME).toString() : "")
