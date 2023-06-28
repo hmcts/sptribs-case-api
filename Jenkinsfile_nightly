@@ -1,3 +1,4 @@
+#!groovy
 properties([
   // H allow predefined but random minute see https://en.wikipedia.org/wiki/Cron#Non-standard_characters
   pipelineTriggers([cron('H 8 * * 1-5')]),
@@ -36,7 +37,7 @@ def secrets = [
 ]
 
 withNightlyPipeline(type, product, component) {
-  env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
+  env.TEST_URL = "https://xui-sptribs-case-api-pr-880.preview.platform.hmcts.net"
   loadVaultSecrets(secrets)
   enableSlackNotifications('#special-tribunals-builds')
   enableFortifyScan()
