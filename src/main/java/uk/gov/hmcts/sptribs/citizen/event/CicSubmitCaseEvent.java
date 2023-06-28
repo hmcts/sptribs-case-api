@@ -175,7 +175,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             dssApplicationReceivedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!dssCaseData.getRepresentativeFullName().isEmpty()) {
+        if (null != data.getDssCaseData().getRepresentativeFullName()) {
             dssApplicationReceivedNotification.sendToRepresentative(data, caseNumber);
         }
     }
