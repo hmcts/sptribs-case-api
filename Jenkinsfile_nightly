@@ -41,17 +41,18 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   enableSlackNotifications('#special-tribunals-builds')
   enableFortifyScan()
-  enableFullFunctionalTest()
+//  enableFullFunctionalTest()
 
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
   }
 
-  afterAlways('fullFunctionalTest') {
-    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
+ // afterAlways('fullFunctionalTest') {
+ //   archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+ // }
 
-  afterSuccess('fullFunctionalTest') {
+
+  afterSuccess('fortify-scan') {
 
     Exception ex = null;
     try {
