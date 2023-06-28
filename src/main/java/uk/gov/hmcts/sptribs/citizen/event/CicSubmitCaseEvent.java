@@ -51,6 +51,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
+    @Autowired
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
@@ -79,6 +82,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var data = details.getData();
         var dssData = details.getData().getDssCaseData();
         CaseData caseData = getCaseData(data, dssData);
+        String caseNumber = data.getHyphenatedCaseRef();
+
+        sendApplicationReceivedNotification(caseNumber, data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
@@ -159,5 +165,20 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.setDssCaseData(dssCaseData);
         return caseData;
     }
+
+
+    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
+
+        DssCaseData dssCaseData = data.getDssCaseData();
+
+        if (!dssCaseData.getSubjectFullName().isEmpty()) {
+            dssApplicationReceivedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (!dssCaseData.getRepresentativeFullName().isEmpty()) {
+            dssApplicationReceivedNotification.sendToRepresentative(data, caseNumber);
+        }
+    }
+
 
 }

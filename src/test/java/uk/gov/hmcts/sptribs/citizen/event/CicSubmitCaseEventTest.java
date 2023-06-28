@@ -64,6 +64,9 @@ class CicSubmitCaseEventTest {
     private CicSubmitCaseEvent cicSubmitCaseEvent;
 
     @Mock
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
+    @Mock
     private AddSystemUpdateRole addSystemUpdateRole;
 
     @Mock
@@ -123,10 +126,14 @@ class CicSubmitCaseEventTest {
         caseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         caseDetails.getData().getDssCaseData().setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
+        caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
+
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         cicSubmitCaseEvent.configure(configBuilder);
+
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
