@@ -15,7 +15,6 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.RECORD_NOTIFY_PARTIES_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
@@ -25,7 +24,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @Ignore
 public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
 
-    private static final String REQUEST_START = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-about-to-start.json";
     private static final String REQUEST_SUBMIT = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-about-to-submit.json";
     private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-submitted.json";
     private static final String REQUEST_MID_EVENT = "classpath:request/casedata/ccd-callback-casedata.json";
