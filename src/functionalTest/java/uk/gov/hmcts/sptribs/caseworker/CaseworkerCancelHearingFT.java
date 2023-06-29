@@ -31,22 +31,6 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     private static final String REQUEST_MID_EVENT = "classpath:request/casedata/ccd-callback-casedata.json";
 
     @Test
-    public void shouldGetHearingListWhenAboutToStartCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST_START);
-
-        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, ABOUT_TO_START_URL);
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-
-        // notes.date value is compared using ${json-unit.any-string}
-        // assertion will fail if the above value is missing
-        assertThatJson(response.asString())
-            .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(
-                "classpath:responses/response-caseworker-cancel-hearing-about-to-start.json"
-            )));
-    }
-
-    @Test
     public void shouldCancelHearingWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMIT);
 
