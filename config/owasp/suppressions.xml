@@ -96,6 +96,8 @@
   <suppress>
     <notes>pkg:maven/commons-fileupload/commons-fileupload@1.4</notes>
     <cve>CVE-2023-24998</cve>
+      <cve>CVE-2023-2976</cve>
+      <cve>CVE-2023-34981</cve>
   </suppress>
   <suppress>
     <notes>pkg:maven/org\.yaml/snakeyaml@1.32</notes>
