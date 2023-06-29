@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -117,6 +118,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         }
         List<CaseworkerCICDocument> docList = new ArrayList<>();
+        List<ListValue<DssMessage>> listValues = new ArrayList<>();
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
@@ -125,11 +127,25 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
-                if (!docList.contains(caseworkerCICDocument)) {
-                    docList.add(caseworkerCICDocument);
-                }
+                DssMessage message = DssMessage.builder()
+                    .message(dssCaseData.getAdditionalInformation())
+                    .dateReceived(LocalDate.now())
+                    .receivedFrom(dssCaseData.getAdditionalInformation())
+                    .documentRelevance(dssCaseData.getDocumentRelevance())
+                    .otherInfoDocument(caseworkerCICDocument)
+                    .build();
+
+                var listValue = ListValue
+                    .<DssMessage>builder()
+                    .id("1")
+                    .value(message)
+                    .build();
+
+                listValues.add(listValue);
+
             }
         }
+        caseData.setMessages(listValues);
 
         if (!CollectionUtils.isEmpty(dssCaseData.getSupportingDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
