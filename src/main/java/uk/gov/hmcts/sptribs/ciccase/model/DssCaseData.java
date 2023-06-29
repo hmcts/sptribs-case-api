@@ -104,6 +104,24 @@ public class DssCaseData implements MappableObject {
     private String representativeEmailAddress;
 
     @CCD(
+        label = "Document Relevance",
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String documentRelevance;
+
+    @CCD(
+        label = "Additional Information",
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String additionalInformation;
+
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String pcqId;
+
+
+    @CCD(
         label = "Tribunal form uploaded documents",
         typeOverride = Collection,
         typeParameterOverride = "EdgeCaseDocument",

@@ -30,28 +30,12 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var defaultRoles = new ArrayList<UserRole>();
-        defaultRoles.add(UserRole.CITIZEN_CIC);
-
-        var updatedRoles = defaultRoles;
-
         configBuilder
             .event("citizen-cic-create-dss-application")
             .initialState(State.Draft)
-            .name("Create draft case (cic)")
-            .description("Apply for edge case (cic)")
             .name("Create draft case (DSS)")
             .description("Apply for edge case (DSS)")
-            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR).grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE,
-                CITIZEN_CIC,
-                CREATOR)
+            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .retries(120, 120);
     }
@@ -61,7 +45,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(State.DSS_Submitted)
+            .state(State.DSS_Draft)
             .build();
     }
 
