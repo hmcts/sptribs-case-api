@@ -5,7 +5,7 @@
       "list_items": [
         {
           "code": "${json-unit.any-string}",
-          "label":"1 - Case management - 21 Apr 2023 09:00"
+          "label":"Case management - 21 Apr 2023 09:00"
         }
       ]
     }
