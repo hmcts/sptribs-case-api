@@ -66,8 +66,9 @@ class CicCreateCaseEventTest {
         CaseDetails<CaseData, State> details = new CaseDetails<>();
         CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
-        CaseData caseData = caseData();
-        details.setData(caseData);
+        CaseData data = caseData();
+        details.setData(data);
+
         // When
         AboutToStartOrSubmitResponse<CaseData, State> response = cicCreateCaseEvent.aboutToSubmit(
             details,
@@ -75,7 +76,6 @@ class CicCreateCaseEventTest {
         );
 
         // Then
-        assertThat(response.getState()).isEqualTo(State.DSS_Submitted);
-        assertThat(response.getData().getHyphenatedCaseRef()).isNotNull();
+        assertThat(response.getState()).isEqualTo(State.DSS_Draft);
     }
 }

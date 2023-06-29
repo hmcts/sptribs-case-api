@@ -289,6 +289,11 @@ public class CaseData {
     )
     private String pcqId;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private YesOrNo hasDssNotificationSent;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
 

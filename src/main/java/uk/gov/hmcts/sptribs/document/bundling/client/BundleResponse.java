@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BundleResponse {
+    @SuppressWarnings("PMD")
     private LinkedHashMap<String,Object> data;
     private List<String> errors;
     private List<String> warnings;
