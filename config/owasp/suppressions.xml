@@ -40,11 +40,11 @@
       <vulnerabilityName>CVE-2022-22976</vulnerabilityName>
     </suppress>
     <suppress>
-      <notes>guava</notes>
+      <notes>pkg:maven/com.google.guava/guava@30.1-jre</notes>
       <vulnerabilityName>CVE-2023-22976</vulnerabilityName>
     </suppress>
     <suppress>
-      <notes>tomcat</notes>
+      <notes>pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.8</notes>
       <vulnerabilityName>CVE-2022-34981</vulnerabilityName>
     </suppress>
     <suppress>
