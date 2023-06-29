@@ -40,6 +40,14 @@
       <vulnerabilityName>CVE-2022-22976</vulnerabilityName>
     </suppress>
     <suppress>
+      <notes>guava</notes>
+      <vulnerabilityName>CVE-2023-22976</vulnerabilityName>
+    </suppress>
+    <suppress>
+      <notes>tomcat</notes>
+      <vulnerabilityName>CVE-2022-34981</vulnerabilityName>
+    </suppress>
+    <suppress>
       <notes><![CDATA[ file name: spring-security-rsa-1.0.10.RELEASE.jar]]></notes>
       <cve>CVE-2022-22978</cve>
     </suppress>
