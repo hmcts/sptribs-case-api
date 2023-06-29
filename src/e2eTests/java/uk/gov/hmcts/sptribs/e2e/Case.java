@@ -460,7 +460,7 @@ public class Case {
         page.getByLabel("Subject").check();
         page.getByLabel("Respondent").check();
         clickButton(page, "Continue");
-        assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
+        assertThat(page.locator("h2.heading-h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
         assertThat(page.locator("ccd-markdown markdown h1"))
             .hasText("Case closed", textOptionsWithTimeout(60000));
