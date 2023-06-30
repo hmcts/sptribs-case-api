@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.common.model.Status;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -261,6 +262,12 @@ public class CicCase {
     private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonIgnore
+    private Document lastSelectedOrder;
+
+    @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -362,14 +369,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<PartiesCIC> partiesCIC;
-
-    @CCD(
-        label = "Named Parties",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "PartiesCICWithOutSubject",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<PartiesCICWithOutSubject> partiesCICWithOutSubject;
 
     @CCD(
         label = "Case information recipient",
@@ -507,6 +506,14 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private SchemeCic schemeCic;
+
+    @CCD(
+        label = "Case Region",
+        typeOverride = FixedList,
+        typeParameterOverride = "RegionCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private RegionCIC regionCIC;
 
     @CCD(
         label = "CICA reference number",
@@ -698,9 +705,11 @@ public class CicCase {
     )
     private String days;
 
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private NotificationResponse subjectNotifyList;
 
     @CCD(
@@ -711,6 +720,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private NotificationResponse repNotificationResponse;
 
     @CCD(
@@ -752,6 +762,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String firstDueDate;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String eventName;
 
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;

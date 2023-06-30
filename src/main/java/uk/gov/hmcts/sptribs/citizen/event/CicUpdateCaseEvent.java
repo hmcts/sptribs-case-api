@@ -25,6 +25,7 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
@@ -48,5 +49,6 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .data(data)
             .build();
     }
+
 
 }

@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -24,6 +25,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     @Autowired
     AppsConfig appsConfig;
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -43,10 +45,20 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
         caseData.setHyphenatedCaseRef(details.getData().formatCaseRef(details.getId()));
+        setIsRepresentativePresent(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Draft)
             .build();
+    }
+
+
+    private void setIsRepresentativePresent(CaseData data) {
+        if (null != data.getDssCaseData().getRepresentativeFullName()) {
+            data.getDssCaseData().setIsRepresentativePresent(YesOrNo.YES);
+        } else {
+            data.getDssCaseData().setIsRepresentativePresent(YesOrNo.NO);
+        }
     }
 
 

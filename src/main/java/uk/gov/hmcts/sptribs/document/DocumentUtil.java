@@ -57,6 +57,15 @@ public final class DocumentUtil {
         return errors;
     }
 
+    public static List<String> validateDecisionDocumentFormat(CICDocument document) {
+        final List<String> errors = new ArrayList<>();
+        if (null != document && !document.isDocumentValid()) {
+            errors.add(DOCUMENT_VALIDATION_MESSAGE);
+        }
+
+        return errors;
+    }
+
     public static List<String> validateCICDocumentFormat(CaseworkerCICDocument document) {
         final List<String> errors = new ArrayList<>();
         if (null != document && !document.isDocumentValid()) {
@@ -66,14 +75,6 @@ public final class DocumentUtil {
         return errors;
     }
 
-    public static List<String> validateDecisionDocumentFormat(CICDocument document) {
-        final List<String> errors = new ArrayList<>();
-        if (null != document && !document.isDocumentValid()) {
-            errors.add(DOCUMENT_VALIDATION_MESSAGE);
-        }
-
-        return errors;
-    }
 
     public static void uploadDocument(CaseData data) {
         updateCategoryToCaseworkerDocument(data.getNewDocManagement().getCaseworkerCICDocument());

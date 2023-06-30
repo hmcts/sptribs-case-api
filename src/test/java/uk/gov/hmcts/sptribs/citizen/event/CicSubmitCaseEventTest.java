@@ -64,6 +64,9 @@ class CicSubmitCaseEventTest {
     private CicSubmitCaseEvent cicSubmitCaseEvent;
 
     @Mock
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
+    @Mock
     private AddSystemUpdateRole addSystemUpdateRole;
 
     @Mock
@@ -123,10 +126,14 @@ class CicSubmitCaseEventTest {
         caseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         caseDetails.getData().getDssCaseData().setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
+        caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
+
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         cicSubmitCaseEvent.configure(configBuilder);
+
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
@@ -153,6 +160,8 @@ class CicSubmitCaseEventTest {
             .representationQualified(YesOrNo.YES)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
+            .documentRelevance("re")
+            .additionalInformation("message")
             .build();
 
         CicCase cicCase = CicCase.builder().build();
@@ -172,7 +181,7 @@ class CicSubmitCaseEventTest {
         //Then
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
         assertThat(response1.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
         assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
             .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);

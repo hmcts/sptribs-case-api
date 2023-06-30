@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -51,6 +52,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
+    @Autowired
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
@@ -79,6 +83,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var data = details.getData();
         var dssData = details.getData().getDssCaseData();
         CaseData caseData = getCaseData(data, dssData);
+        String caseNumber = data.getHyphenatedCaseRef();
+
+        sendApplicationReceivedNotification(caseNumber, data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
@@ -111,6 +118,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         }
         List<CaseworkerCICDocument> docList = new ArrayList<>();
+        List<ListValue<DssMessage>> listValues = new ArrayList<>();
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
@@ -119,11 +127,25 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
-                if (!docList.contains(caseworkerCICDocument)) {
-                    docList.add(caseworkerCICDocument);
-                }
+                DssMessage message = DssMessage.builder()
+                    .message(dssCaseData.getAdditionalInformation())
+                    .dateReceived(LocalDate.now())
+                    .receivedFrom(dssCaseData.getAdditionalInformation())
+                    .documentRelevance(dssCaseData.getDocumentRelevance())
+                    .otherInfoDocument(caseworkerCICDocument)
+                    .build();
+
+                var listValue = ListValue
+                    .<DssMessage>builder()
+                    .id("1")
+                    .value(message)
+                    .build();
+
+                listValues.add(listValue);
+
             }
         }
+        caseData.setMessages(listValues);
 
         if (!CollectionUtils.isEmpty(dssCaseData.getSupportingDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
@@ -159,5 +181,20 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.setDssCaseData(dssCaseData);
         return caseData;
     }
+
+
+    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
+
+        DssCaseData dssCaseData = data.getDssCaseData();
+
+        if (!dssCaseData.getSubjectFullName().isEmpty()) {
+            dssApplicationReceivedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (null != data.getDssCaseData().getRepresentativeFullName()) {
+            dssApplicationReceivedNotification.sendToRepresentative(data, caseNumber);
+        }
+    }
+
 
 }

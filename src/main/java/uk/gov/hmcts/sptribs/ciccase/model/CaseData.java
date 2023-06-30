@@ -35,7 +35,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.bundling.Bundle;
+import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
+import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -99,7 +101,7 @@ public class CaseData {
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
+    private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
@@ -117,6 +119,16 @@ public class CaseData {
     )
     private State caseStatus;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<MultiBundleConfig> multiBundleConfiguration;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonIgnore
+    private List<CaseworkerCICDocument> caseDocuments;
 
     @CCD(
         label = "Hearing Date",
@@ -224,6 +236,15 @@ public class CaseData {
     )
     private String decisionMainContent;
 
+    @CCD(
+        label = "Messages",
+        typeOverride = Collection,
+        typeParameterOverride = "DssMessage",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<DssMessage>> messages;
+
+
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -276,6 +297,11 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private String pcqId;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private YesOrNo hasDssNotificationSent;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;

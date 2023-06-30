@@ -8,7 +8,7 @@ folders:
   - name: Application Documents
     documents:
       - type: documentSet
-        property: /caseDocuments
+        property: /ciccase/casedocuments
         filters:
           - property: /documentType
               value: A

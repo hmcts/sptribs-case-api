@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
@@ -57,7 +56,7 @@ public class Case {
     /*
     createCase() method accepts String arguments. By default, this method creates
     case with Subject and email as contact preference. To create case with
-    applicant and/or representative you specify the party and/or contact preference
+    applicant and/or representative specify the party and/or contact preference
     as the arguments. Examples below:
 
     createCase("applicant") --> to add applicant to the case
@@ -231,10 +230,10 @@ public class Case {
         // Fill date case received form
         assertThat(page.locator("h1"))
             .hasText("When was the case received?", textOptionsWithTimeout(30000));
-        LocalDate localDate = LocalDate.now();
-        Assert.assertTrue(page.locator("#cicCaseCaseReceivedDate-day").inputValue().contains(String.valueOf(localDate.getDayOfMonth())));
-        Assert.assertTrue(page.locator("#cicCaseCaseReceivedDate-month").inputValue().contains(String.valueOf(localDate.getMonthValue())));
-        Assert.assertTrue(page.locator("#cicCaseCaseReceivedDate-year").inputValue().contains(String.valueOf(localDate.getYear())));
+        Calendar date = DateHelpers.getYesterdaysDate();
+        getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
+        getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
+        getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
         clickButton(page, "Continue");
 
         // Fill identified parties form
@@ -460,7 +459,7 @@ public class Case {
         page.getByLabel("Subject").check();
         page.getByLabel("Respondent").check();
         clickButton(page, "Continue");
-        assertThat(page.locator("h2.heading-h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
+        assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
         assertThat(page.locator("ccd-markdown markdown h1"))
             .hasText("Case closed", textOptionsWithTimeout(60000));

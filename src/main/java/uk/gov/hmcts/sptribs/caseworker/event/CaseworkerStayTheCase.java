@@ -103,8 +103,14 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
                                             CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         String claimNumber = data.getHyphenatedCaseRef();
-
-        sendCaseStayedNotification(claimNumber, data);
+        try {
+            sendCaseStayedNotification(claimNumber, data);
+        } catch (Exception notificationException) {
+            log.error("Case stay notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case stay notification failed %n## Please resend the notification"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Stay Added to Case %n## %s",
