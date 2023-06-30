@@ -34,6 +34,7 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -44,7 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 @Component
 @Slf4j
@@ -125,10 +126,17 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
+
         String message = MessageUtil.generateSimpleMessage(details.getData().getCicCase(), "Case closed",
             "Use 'Reinstate case' if this case needs to be reopened in the future.");
-        sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-
+        try {
+            sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Case close notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case close notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
@@ -138,8 +146,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
-        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-
+        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

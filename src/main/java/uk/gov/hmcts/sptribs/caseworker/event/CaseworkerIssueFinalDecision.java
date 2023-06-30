@@ -209,22 +209,27 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
-
-        final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append(" A notification will be sent  to: ");
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            messageLine2.append("Subject, ");
-            caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
+        try {
+            final StringBuilder messageLine2 = new StringBuilder(100);
+            messageLine2.append(" A notification will be sent  to: ");
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+                messageLine2.append("Subject, ");
+                caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+                messageLine2.append("Representative, ");
+                caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+                messageLine2.append("Respondent, ");
+                caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+        } catch (Exception notificationException) {
+            log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
+                .build();
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            messageLine2.append("Representative, ");
-            caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine2.append("Respondent, ");
-            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-        }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))

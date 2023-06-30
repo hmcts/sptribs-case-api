@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -27,13 +27,10 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -57,6 +54,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private HearingService hearingService;
 
     @Autowired
     private ListingCreatedNotification listingCreatedNotification;
@@ -86,6 +86,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
+        caseData.setListing(new Listing());
         DynamicList regionList = locationService.getAllRegions();
         caseData.getListing().setRegionList(regionList);
 
@@ -111,22 +112,14 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
             caseData.getListing().setAdditionalHearingDate(null);
         }
-        Set<NotificationParties> partiesSet = new HashSet<>();
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
-            partiesSet.add(NotificationParties.SUBJECT);
-        }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
-            partiesSet.add(NotificationParties.REPRESENTATIVE);
-        }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
-            partiesSet.add(NotificationParties.RESPONDENT);
-        }
-        caseData.getCicCase().setHearingNotificationParties(partiesSet);
+
+        recordListHelper.getNotificationParties(caseData);
 
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
 
         caseData.getListing().setHearingStatus(Listed);
+        hearingService.addListing(caseData, caseData.getListing());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -139,17 +132,22 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         var cicCase = data.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
         String caseNumber = data.getHyphenatedCaseRef();
-
-        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-            listingCreatedNotification.sendToSubject(details.getData(), caseNumber);
+        try {
+            if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+                listingCreatedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+                listingCreatedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+                listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+        } catch (Exception notificationException) {
+            log.error("Create listing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Create listing notification failed %n## Please resend the notification"))
+                .build();
         }
-        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-            listingCreatedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-            listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
-        }
-        data.getListing().setHearingStatus(Listed);
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
@@ -159,19 +157,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        String selectedRegion = caseData.getListing().getSelectedRegionVal();
-        String regionId = getRegionId(selectedRegion);
 
-        if (null != regionId) {
-            DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
-            caseData.getListing().setHearingVenues(hearingVenueList);
-
-            String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
-                ? "Unable to retrieve Hearing Venues data"
-                : null;
-            caseData.getListing().setHearingVenuesMessage(hearingVenueMessage);
-
-        }
+        recordListHelper.populatedVenuesData(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -187,12 +174,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .done();
     }
 
-    private String getRegionId(String selectedRegion) {
-        String[] values = selectedRegion != null
-            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
-            : null;
-        return values != null && values.length > 0 ? values[0] : null;
-    }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")
