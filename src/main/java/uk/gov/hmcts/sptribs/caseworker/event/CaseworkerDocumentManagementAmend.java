@@ -119,12 +119,12 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 updateCaseDocumentList(data.getCloseCase().getDocuments(), selectedDocument);
                 break;
             case HEARING_SUMMARY_TYPE:
-                updateCaseDocumentList(data.getListing().getSummary().getRecFile(), selectedDocument);
+                updateCaseDocumentList(data.getLatestCompletedHearing().getSummary().getRecFile(), selectedDocument);
                 break;
             default:
                 break;
         }
-
+        cicCase.setSelectedDocument(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .build();
@@ -146,7 +146,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# document Updated")
+            .confirmationHeader("# Document Updated")
             .build();
     }
 

@@ -105,6 +105,8 @@ class CaseworkerDocumentManagementAmendTest {
         AboutToStartOrSubmitResponse<CaseData, State> midResponse =
             selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
+        assertThat(midResponse.getData().getCicCase().getSelectedDocument()).isNotNull();
+
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
@@ -112,7 +114,6 @@ class CaseworkerDocumentManagementAmendTest {
         //Then
         assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
         assertThat(midResponse).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getSelectedDocument()).isNotNull();
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentType()).isEqualTo(DocumentConstants.CASE_TYPE);
         assertThat(aboutToSubmitResponse.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCicCase()
@@ -246,7 +247,7 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0).getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0)
             .getValue().getDocumentCategory())
-            .isEqualTo(DocumentType.APPLICATION_FORM);
+            .isEqualTo(DocumentType.LINKED_DOCS);
         assertThat(documentMgmtResponse).isNotNull();
     }
 
