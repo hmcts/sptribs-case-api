@@ -17,6 +17,7 @@ public class HearingOutcomePage implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("hearingOutcome")
             .pageLabel("Hearing outcome")
+            .label("LabelHearingOutcome","")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)

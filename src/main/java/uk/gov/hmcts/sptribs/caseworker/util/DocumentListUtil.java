@@ -4,8 +4,10 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
@@ -41,7 +43,6 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
             .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
                 + "--" + doc.getDocumentLink().getUrl()
                 + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
@@ -53,7 +54,6 @@ public final class DocumentListUtil {
             .value(new ArrayList<>())
             .build();
     }
-
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
@@ -97,10 +97,13 @@ public final class DocumentListUtil {
 
     private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
-        if (null != caseData.getListing() && null != caseData.getListing().getSummary()
-            && !CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())) {
-            for (ListValue<CaseworkerCICDocument> document : caseData.getListing().getSummary().getRecFile()) {
-                hearingSummaryDocs.add(document.getValue());
+        for (ListValue<Listing> listing : caseData.getHearingList()) {
+            if (null != listing.getValue() && null != listing.getValue().getSummary()
+                && listing.getValue().getHearingStatus() == HearingState.Complete
+                && !CollectionUtils.isEmpty(listing.getValue().getSummary().getRecFile())) {
+                for (ListValue<CaseworkerCICDocument> document : caseData.getListing().getSummary().getRecFile()) {
+                    hearingSummaryDocs.add(document.getValue());
+                }
             }
         }
         return hearingSummaryDocs;
