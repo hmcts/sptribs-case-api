@@ -75,7 +75,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .event(CASEWORKER_EDIT_CASE)
             .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
-            .description("Case: Edit case")
+            .description("")
             .showSummary()
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -108,7 +108,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
-        var state = beforeDetails.getState();
+        var state = details.getState();
         if (state == DSS_Submitted) {
             state = Submitted;
         }
