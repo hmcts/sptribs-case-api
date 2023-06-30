@@ -243,6 +243,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private Document lastSelectedOrder;
 
     @CCD(
@@ -484,6 +485,14 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private SchemeCic schemeCic;
+
+    @CCD(
+        label = "Case Region",
+        typeOverride = FixedList,
+        typeParameterOverride = "RegionCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private RegionCIC regionCIC;
 
     @CCD(
         label = "CICA reference number",
@@ -731,7 +740,7 @@ public class CicCase {
     private String firstDueDate;
 
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
-        LocalDate earliestDate = LocalDate.now();
+        LocalDate earliestDate = compare;
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
             if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
                 || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
@@ -740,6 +749,7 @@ public class CicCase {
             }
         }
         return earliestDate;
+
     }
 
     public String getFirstDueDate() {

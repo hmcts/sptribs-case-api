@@ -63,6 +63,12 @@ public final class ConfigBuilderHelper {
             .categoryLabel("General evidence (TG)")
             .displayOrder(9)
             .build();
+
+        configBuilder.categories(UserRole.SUPER_USER)
+            .categoryID("DSS")
+            .categoryLabel("Citizen generated case (DSS)")
+            .displayOrder(10)
+            .build();
     }
 
     public static void configureWithMandatoryConfig(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder) {

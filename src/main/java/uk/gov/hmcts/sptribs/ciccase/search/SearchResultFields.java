@@ -13,6 +13,7 @@ import java.util.List;
 import static java.util.List.of;
 import static uk.gov.hmcts.ccd.sdk.api.SortOrder.FIRST;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_NAME;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_REGION;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.DUE_DATE;
@@ -28,6 +29,7 @@ public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> 
         SearchField.<UserRole>builder().id(CCD_REFERENCE).label("Case Number").build(),
         SearchField.<UserRole>builder().id(SUBJECT_NAME).label("Subject Name").build(),
         SearchField.<UserRole>builder().id(CASE_STATE).label("Case Status").build(),
+        SearchField.<UserRole>builder().id(CASE_REGION).label("Case Region").build(),
         SearchField.<UserRole>builder().id(HEARING_DATE).label("Hearing Date").build(),
         SearchField.<UserRole>builder().id(APPLICANT_NAME).label("Applicant Name").build(),
         SearchField.<UserRole>builder().id(DUE_DATE).label("Due Date").build(),

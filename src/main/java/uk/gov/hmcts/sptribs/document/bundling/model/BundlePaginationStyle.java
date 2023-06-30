@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document.bundling;
+package uk.gov.hmcts.sptribs.document.bundling.model;
 
 
 @SuppressWarnings("all")

@@ -96,7 +96,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         } else {
             caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");
         }
-        caseData.getCicCase().setHearingSummaryList(hearingService.getHearingSummaryDynamicList(details));
+        caseData.getCicCase().setHearingSummaryList(hearingService.getCompletedHearingDynamicList(caseData));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -109,6 +109,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     ) {
         var caseData = details.getData();
         recordListHelper.saveSummary(details.getData());
+        hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
