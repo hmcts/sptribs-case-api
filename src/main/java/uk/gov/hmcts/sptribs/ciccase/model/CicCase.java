@@ -627,6 +627,7 @@ public class CicCase {
     )
     private String days;
 
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )

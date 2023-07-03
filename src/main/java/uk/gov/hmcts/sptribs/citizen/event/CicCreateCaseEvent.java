@@ -26,6 +26,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
