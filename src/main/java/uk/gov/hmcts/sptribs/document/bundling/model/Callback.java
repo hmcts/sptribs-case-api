@@ -18,7 +18,7 @@ public class Callback {
 
     private CaseDetails<CaseData, State> caseDetails;
     private CaseDetails<CaseData, State> caseDetailsBefore;
-    private String pageId = null;
+    private String pageId;
 
     @JsonProperty("ignore_warning")
     private boolean ignoreWarnings;

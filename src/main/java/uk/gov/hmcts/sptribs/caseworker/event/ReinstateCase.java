@@ -96,7 +96,6 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
     public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
                                                 CaseDetails<CaseData, State> beforeDetails) {
-        var cicCase = details.getData().getCicCase();
         try {
             sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
@@ -107,7 +106,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
-                + ". %n## %s ", MessageUtil.generateSimpleMessage(cicCase)))
+                + ". %n## %s ", MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 
