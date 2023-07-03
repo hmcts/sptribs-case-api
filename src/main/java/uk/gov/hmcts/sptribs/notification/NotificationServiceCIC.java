@@ -140,7 +140,7 @@ public class NotificationServiceCIC {
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        log.info("User Details: {}", user, user.getUserDetails());
+        log.info("User: {}, User Details: {}", user, user.getUserDetails());
         final String authorisation = user.getAuthToken();
         log.info("User authorization token: {}", authorisation);
         String serviceAuthorization = authTokenGenerator.generate();
