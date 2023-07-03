@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
+import uk.gov.hmcts.sptribs.common.event.page.CaseUploadDocuments;
 import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -136,9 +139,12 @@ public class NotificationServiceCIC {
 
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
 
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        final String authorisation = caseworkerUser.getAuthToken();
+        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        log.info("User Details: {}", user, user.getUserDetails());
+        final String authorisation = user.getAuthToken();
+        log.info("User authorization token: {}", authorisation);
         String serviceAuthorization = authTokenGenerator.generate();
+        log.info("Service authorization token: {}", serviceAuthorization);
 
         for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
             String docName = document.getKey();
