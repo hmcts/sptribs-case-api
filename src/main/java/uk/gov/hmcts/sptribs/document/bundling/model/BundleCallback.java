@@ -23,7 +23,7 @@ public class BundleCallback extends Callback {
         return caseTypeId;
     }
 
-    public void setCaseTypeId(String caseTypeId) {
+    private void setCaseTypeId(String caseTypeId) {
         this.caseTypeId = caseTypeId;
     }
 
@@ -31,7 +31,7 @@ public class BundleCallback extends Callback {
         return jurisdictionId;
     }
 
-    public void setJurisdictionId(String jurisdictionId) {
+    private void setJurisdictionId(String jurisdictionId) {
         this.jurisdictionId = jurisdictionId;
     }
 
