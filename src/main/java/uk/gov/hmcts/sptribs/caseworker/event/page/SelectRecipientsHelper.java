@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 
 public final class SelectRecipientsHelper {
 
@@ -53,11 +55,11 @@ public final class SelectRecipientsHelper {
         final List<String> errors = new ArrayList<>();
 
         if (checkNullSubjectRepresentativeRespondent(data)) {
-            errors.add("One recipient must be selected.");
+            errors.add(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
         } else if ((data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
             || data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
             && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
-            errors.add("Subject should not be selected for notification if the case is Fatal or Minor");
+            errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
