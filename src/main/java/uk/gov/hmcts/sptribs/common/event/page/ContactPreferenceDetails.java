@@ -26,10 +26,8 @@ public class ContactPreferenceDetails implements CcdPageConfiguration {
             .label("LabelObjectContacts", "")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getSubjectCIC, "cicCasePartiesCICCONTAINS \"SubjectCIC\"")
-            .optional(CicCase::getApplicantCIC,
-                "cicCasePartiesCICCONTAINS \"ApplicantCIC\" OR cicCasePartiesCICWithOutSubjectCONTAINS \"ApplicantCIC\"")
-            .optional(CicCase::getRepresentativeCIC,
-                "cicCasePartiesCICCONTAINS \"RepresentativeCIC\" OR cicCasePartiesCICWithOutSubjectCONTAINS \"RepresentativeCIC\"")
+            .optional(CicCase::getApplicantCIC, "cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
+            .optional(CicCase::getRepresentativeCIC, "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
             .done();
     }
 
