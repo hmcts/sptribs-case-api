@@ -68,7 +68,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
                 ST_CIC_JUDGE));
-
+        addWarning(pageBuilder);
         linkCaseSelectCase.addTo(pageBuilder);
     }
 
@@ -89,6 +89,13 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("Case Updated")
             .build();
+    }
+
+    private void addWarning(PageBuilder pageBuilder) {
+        pageBuilder.page("beforeYouStart")
+            .pageLabel("Before you start")
+            .label("beforeYouStartLabelForMaintain",
+                "If there are linked hearings for the case you need to un-link then you must unlink the hearing first");
     }
 
 }
