@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -81,7 +80,6 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         linkCaseSelectCase.addTo(pageBuilder);
     }
 
-    @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
