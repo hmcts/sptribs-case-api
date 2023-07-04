@@ -19,12 +19,8 @@ public class RepresentativeDetails implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         Map<String, String> map = new HashMap<>();
-        map.put("applicantDetailsObjects",
-            "cicCasePartiesCICCONTAINS \"ApplicantCIC\" "
-                + "OR cicCasePartiesCICWithOutSubjectCONTAINS \"ApplicantCIC\"");
-        map.put("representativeDetailsObjects",
-            "cicCasePartiesCICCONTAINS \"RepresentativeCIC\""
-                + "OR cicCasePartiesCICWithOutSubjectCONTAINS \"RepresentativeCIC\"");
+        map.put("applicantDetailsObjects", "cicCasePartiesCICCONTAINS \"ApplicantCIC\"");
+        map.put("representativeDetailsObjects", "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
         pageBuilder.page("representativeDetailsObjects", this::midEvent)
             .pageLabel("Who is the Representative for this case?")
             .label("LabelRepresentative", "")
