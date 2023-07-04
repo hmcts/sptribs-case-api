@@ -84,7 +84,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                     AwaitingOutcome,
                     CaseClosed,
                     CaseStayed)
-                .name("Case: Contact parties")
+                .name("Case: CICA Contact parties")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .aboutToStartCallback(this::aboutToStart)
