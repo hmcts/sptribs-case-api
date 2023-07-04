@@ -364,14 +364,6 @@ public class CicCase {
     private Set<PartiesCIC> partiesCIC;
 
     @CCD(
-        label = "Named Parties",
-        typeOverride = MultiSelectList,
-        typeParameterOverride = "PartiesCICWithOutSubject",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<PartiesCICWithOutSubject> partiesCICWithOutSubject;
-
-    @CCD(
         label = "Case information recipient",
         typeOverride = MultiSelectList,
         typeParameterOverride = "SubjectCIC",
