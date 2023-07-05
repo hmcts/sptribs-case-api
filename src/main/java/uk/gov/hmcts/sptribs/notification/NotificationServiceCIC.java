@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
+import uk.gov.hmcts.sptribs.document.CDAMClient;
 import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -49,6 +50,9 @@ public class NotificationServiceCIC {
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
+
+    @Autowired
+    private CDAMClient cdamClient;
 
     @Autowired
     private CaseDocumentClient caseDocumentClient;
@@ -150,17 +154,7 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                Resource uploadedDocument = StringUtils.isNotEmpty(item)
-                    ? caseDocumentClient.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody()
-                    : null;
-
-                if (uploadedDocument != null) {
-                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(docName, getJsonFileAttachment(uploadedDocumentContents));
-                } else {
-                    log.info("Document not found with uuid : {}", item);
-                    templateVars.put(docName, "");
-                }
+                Object response = cdamClient.getDocument(serviceAuthorization, authorisation, "", item);
             }
         }
     }
