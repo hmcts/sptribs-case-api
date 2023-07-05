@@ -45,7 +45,7 @@ uk:
           respondentEmail: appeals.team@cica.gov.uk
 
           tribunalName: 'First-tier Tribunal (CIC)'
-          tribunalOrganisation: 'CICA'
+          tribunalOrganisation: 'Criminal Injuries Compensation'
           tribunalEmail: CIC.enquiries@justice.gov.uk
         templatesCIC:
           APPLICATION_NEW_ORDER_ISSUED: 'e451a469-e61d-4daf-95c3-e405448ececf'

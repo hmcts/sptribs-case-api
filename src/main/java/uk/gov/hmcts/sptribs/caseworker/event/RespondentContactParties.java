@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +56,10 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration resPartiesToContact = new RespondentPartiesToContact();
     private static final CcdPageConfiguration contactPartiesSelectDocument = new ContactPartiesSelectDocument();
+
+
+    @Autowired
+    private ContactPartiesNotification contactPartiesNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -114,13 +121,37 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-
+        var data = details.getData();
+        String caseNumber = data.getHyphenatedCaseRef();
+        try {
+            sendContactPartiesNotification(details, data, caseNumber);
+        } catch (Exception notificationException) {
+            log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the order"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Message sent %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getContactParties())
             ))
             .build();
 
+    }
+
+    private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CaseData data, String caseNumber) {
+        if (!CollectionUtils.isEmpty(data.getContactParties().getSubjectContactParties())) {
+            contactPartiesNotification.sendToSubject(details.getData(), caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(data.getContactParties().getRepresentativeContactParties())) {
+            contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(data.getContactParties().getApplicantContactParties())) {
+            contactPartiesNotification.sendToApplicant(details.getData(), caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(data.getContactParties().getTribunal())) {
+            contactPartiesNotification.sendToTribunal(details.getData(), caseNumber);
+        }
     }
 
 }

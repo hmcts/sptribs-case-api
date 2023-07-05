@@ -165,6 +165,21 @@ public class NotificationHelperTest {
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("respondent name");
     }
 
+
+    @Test
+    void shouldGetTribunalCommonVars() {
+        // Given
+        CicCase cicCase = CicCase.builder()
+            .tribunalName("tribunal name")
+            .build();
+
+        // When
+        Map<String, Object> commonVars = notificationHelper.getTribunalCommonVars("case number", cicCase);
+
+        // Then
+        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("respondent name");
+    }
+
     @Test
     void shouldGetSubjectCommonVars() {
         // Given
