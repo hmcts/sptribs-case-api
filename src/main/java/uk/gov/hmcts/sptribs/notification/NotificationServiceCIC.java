@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -150,16 +149,16 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                Resource uploadedDocument = StringUtils.isNotEmpty(item)
-                    ? caseDocumentClient.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody()
-                    : null;
+                if (StringUtils.isNotEmpty(item)) {
+                    byte[] uploadedDocument = caseDocumentClient
+                        .getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody();
 
-                if (uploadedDocument != null) {
-                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(docName, getJsonFileAttachment(uploadedDocumentContents));
-                } else {
-                    log.info("Document not found with uuid : {}", item);
-                    templateVars.put(docName, "");
+                    if (uploadedDocument != null) {
+                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                    } else {
+                        log.info("Document not found with uuid : {}", item);
+                        templateVars.put(docName, "");
+                    }
                 }
             }
         }
