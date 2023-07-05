@@ -137,7 +137,7 @@ public class NotificationServiceCIC {
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         log.info("User: {}, User Details: {}", user, user.getUserDetails());
-        final String authorisation = user.getAuthToken();
+        final String authorisation = "Bearer "+user.getAuthToken();
         log.info("User authorization token: {}", authorisation);
         String serviceAuthorization = authTokenGenerator.generate();
         log.info("Service authorization token: {}", serviceAuthorization);
