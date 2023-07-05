@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.document;
 
 import org.apache.http.HttpHeaders;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,11 +10,11 @@ import uk.gov.hmcts.sptribs.common.config.ControllerConstants;
 
 import java.util.UUID;
 
-@FeignClient(name = "case-document-am-api", url = "${case_document_am.url}/cases/documents")
+@FeignClient(name = "case-document-am-api", url = "http://ccd-case-document-am-api-demo.service.core-compute-demo.internal/cases/documents")
 public interface CaseDocumentClient {
 
     @GetMapping(value = "/{documentId}/binary")
-    ResponseEntity<Resource> getDocumentBinary(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+    ResponseEntity<byte[]> getDocumentBinary(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                                @RequestHeader(ControllerConstants.SERVICE_AUTHORIZATION) String serviceAuth,
                                                @PathVariable(DocumentConstants.DOCUMENT_ID) UUID documentId);
 }
