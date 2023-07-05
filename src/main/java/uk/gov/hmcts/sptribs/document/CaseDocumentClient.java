@@ -10,7 +10,7 @@ import uk.gov.hmcts.sptribs.common.config.ControllerConstants;
 
 import java.util.UUID;
 
-@FeignClient(name = "case-document-am-api", url = "http://ccd-case-document-am-api-demo.service.core-compute-demo.internal/cases/documents")
+@FeignClient(name = "case-document-am-api", url = "${case_document_am.url}/cases/documents")
 public interface CaseDocumentClient {
 
     @GetMapping(value = "/{documentId}/binary")
