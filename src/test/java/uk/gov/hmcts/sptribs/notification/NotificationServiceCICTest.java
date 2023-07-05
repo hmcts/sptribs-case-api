@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
-import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
+import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -58,7 +58,7 @@ public class NotificationServiceCICTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private CaseDocumentClient caseDocumentClient;
+    private DocumentClient caseDocumentClient;
 
     @Mock
     private Resource resource;
