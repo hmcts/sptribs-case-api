@@ -4,14 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
-import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
+import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
 @Slf4j
@@ -51,7 +51,7 @@ public class NotificationServiceCIC {
     private AuthTokenGenerator authTokenGenerator;
 
     @Autowired
-    private CaseDocumentClient caseDocumentClient;
+    private DocumentClient caseDocumentClient;
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
         SendEmailResponse sendEmailResponse;
@@ -138,10 +138,13 @@ public class NotificationServiceCIC {
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         log.info("User: {}, User Details: {}", user, user.getUserDetails());
-        final String authorisation = user.getAuthToken();
+        final String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
+            ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
         log.info("User authorization token: {}", authorisation);
         String serviceAuthorization = authTokenGenerator.generate();
-        log.info("Service authorization token: {}", serviceAuthorization);
+        String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
+            ? serviceAuthorization.substring(7) : serviceAuthorization;
+        log.info("Service authorization token: {}", serviceAuthorizationLatest);
 
         for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
             String docName = document.getKey();
@@ -150,16 +153,16 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                Resource uploadedDocument = StringUtils.isNotEmpty(item)
-                    ? caseDocumentClient.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody()
-                    : null;
+                if (StringUtils.isNotEmpty(item)) {
+                    byte[] uploadedDocument = caseDocumentClient
+                        .getDocumentBinary(authorisation, serviceAuthorizationLatest, UUID.fromString(item)).getBody();
 
-                if (uploadedDocument != null) {
-                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(docName, getJsonFileAttachment(uploadedDocumentContents));
-                } else {
-                    log.info("Document not found with uuid : {}", item);
-                    templateVars.put(docName, "");
+                    if (uploadedDocument != null) {
+                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                    } else {
+                        log.info("Document not found with uuid : {}", item);
+                        templateVars.put(docName, "");
+                    }
                 }
             }
         }
