@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
 @Slf4j
@@ -137,7 +138,8 @@ public class NotificationServiceCIC {
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         log.info("User: {}, User Details: {}", user, user.getUserDetails());
-        final String authorisation = "Bearer " + user.getAuthToken();
+        final String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
+            ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
         log.info("User authorization token: {}", authorisation);
         String serviceAuthorization = authTokenGenerator.generate();
         log.info("Service authorization token: {}", serviceAuthorization);
