@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeApplicant;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
@@ -31,7 +31,7 @@ public final class EventUtil {
     public static List<String> checkRecipient(CaseData data) {
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullSubjectRepresentativeRespondent(data)) {
+        if (checkNullSubjectRepresentativeApplicant(data)) {
             errors.add(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
         } else if ((data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
             || data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)

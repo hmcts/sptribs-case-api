@@ -329,4 +329,22 @@ public class EventUtilTest {
         assertThat(result).isNotNull();
 
     }
+
+    @Test
+    void shouldSuccessfullyCheckRecipientsFatal() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
+        final CaseData data = new CaseData();
+        data.setCicCase(cicCase);
+
+        //When
+        List<String> result = EventUtil.checkRecipient(data);
+
+        //Then
+        assertThat(result).isNotNull();
+
+    }
 }

@@ -48,7 +48,7 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             errors.add("Which parties do you want to contact?. is required.");
         } else if ((data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
             || data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
-            && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
+            && !CollectionUtils.isEmpty(data.getContactParties().getSubjectContactParties())) {
             errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
         }
 
