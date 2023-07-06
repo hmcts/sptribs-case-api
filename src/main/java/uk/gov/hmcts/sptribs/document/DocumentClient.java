@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,9 @@ import java.util.UUID;
 public class DocumentClient {
     private final RestTemplate restTemplate;
 
+    @Value("${case_document_am.url}")
+    private String url;
+
     @Autowired
     public DocumentClient(final RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -36,10 +40,12 @@ public class DocumentClient {
             headers.set(HttpHeaders.AUTHORIZATION, authorisation);
             headers.set(ControllerConstants.SERVICE_AUTHORIZATION, serviceAuth);
             HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-            log.info(
-                String.format("${location.api.baseUrl}/cases/documents/%s/binary", documentId));
+            String apiUrl = url + "/cases/documents/%s/binary";
+            String url = String.format(apiUrl, documentId);
+            log.info(url);
+
             final ResponseEntity<byte[]> document = restTemplate.exchange(
-                String.format("${location.api.baseUrl}/cases/documents/%s/binary", documentId),
+                url,
                 HttpMethod.GET, requestEntity,
                 byte[].class
             );
