@@ -137,16 +137,14 @@ public class NotificationServiceCIC {
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         log.info("User: {}, User Details: {}", user, user.getUserDetails());
-        final String authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJaNEJjalZnZnZ1NVpleEt6QkVFbE1TbTQzTHM9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJzdC1jaWNzZW5pb3ItbGVnYWwtb2ZmaWNlckBtYWlsaW5hdG9yLmNvbSIsImN0cyI6Ik9BVVRIMl9TVEFURUxFU1NfR1JBTlQiLCJhdXRoX2xldmVsIjowLCJhdWRpdFRyYWNraW5nSWQiOiI2Zjk1ZGE1MC00MDY0LTRkNmEtYTAxNC0wYjk4MGQwYjUxNTktNDY5MjYzNTAiLCJzdWJuYW1lIjoic3QtY2ljc2VuaW9yLWxlZ2FsLW9mZmljZXJAbWFpbGluYXRvci5jb20iLCJpc3MiOiJodHRwczovL2Zvcmdlcm9jay1hbS5zZXJ2aWNlLmNvcmUtY29tcHV0ZS1pZGFtLWRlbW8uaW50ZXJuYWw6ODQ0My9vcGVuYW0vb2F1dGgyL3JlYWxtcy9yb290L3JlYWxtcy9obWN0cyIsInRva2VuTmFtZSI6ImFjY2Vzc190b2tlbiIsInRva2VuX3R5cGUiOiJCZWFyZXIiLCJhdXRoR3JhbnRJZCI6Imo3VGRpMTZkN0FqamI3V3huOGZjNWgyNzMwRSIsIm5vbmNlIjoid3lmS2Q3M1ZDWW1Wcmc0STBSUjcySjVRc085U3F6NWFkb0NYVmg0QWdlQSIsImF1ZCI6Inh1aXdlYmFwcCIsIm5iZiI6MTY4ODU4MzM0OSwiZ3JhbnRfdHlwZSI6ImF1dGhvcml6YXRpb25fY29kZSIsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJyb2xlcyIsImNyZWF0ZS11c2VyIiwibWFuYWdlLXVzZXIiLCJzZWFyY2gtdXNlciJdLCJhdXRoX3RpbWUiOjE2ODg1ODMzNDksInJlYWxtIjoiL2htY3RzIiwiZXhwIjoxNjg4NjEyMTQ5LCJpYXQiOjE2ODg1ODMzNDksImV4cGlyZXNfaW4iOjI4ODAwLCJqdGkiOiJfbGkwM2lkd294SXk0WnFWTHFBdDRvUXVZbGcifQ.qfRhq2DnsYaEocZNSX3QJGj9ZitV4CGCyx8Pp-11dTvZ3pEOBoEOZeiFe4DEV2insrKsEuhY-cy9lxsAIHhP3Hv4lWzclPd6rCbSQ4bT-TkPRHbuKFqANQFmrFL9kqEzMlBGhKCrJnnZhoyUxYEkTErlv0ccU8zjYLDicLuxRzisN6iHs3ZkRc8s3geLilMxHOKYEoW8MBbjyp5R6eFXeEizkLH1pdGsUoHBKq9-GZwWH6lh-uQtNZweFgrayczrmYncA4qRTO_I4n4AvxB7zr6Alg6Tsm5lXP_xNoZbBVWiASyw-kuVWMiEjBW34yjlaFunjGZKg6T7EKdw-7C29w";
+        final String authorisation = "Bearer " + user.getAuthToken();
         log.info("User authorization token: {}", authorisation);
-        String serviceAuthorization = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzcHRyaWJzX2Nhc2VfYXBpIiwiZXhwIjoxNjg4NTk3NzgxfQ.MtD01y02WURAY0pM9FIEu7OtiK8Ux1RNSmZ4_POvt1jeo8vI4cIFe-IqRp2sqe_-vqdut1ZH5KPjozboapFbig";
-        //serviceAuthorization = serviceAuthorization.substring(7);
-
+        String serviceAuthorization = authTokenGenerator.generate();
         log.info("Service authorization token: {}", serviceAuthorization);
 
-        //for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
-            String docName = "doc1";
-            String item = "e708ff5-4164-4303-91f6-a1984a7a3294";
+        for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
+            String docName = document.getKey();
+            String item = document.getValue();
 
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
@@ -163,7 +161,7 @@ public class NotificationServiceCIC {
                     }
                 }
             }
-        //}
+        }
     }
 
     private JSONObject getJsonFileAttachment(byte[] fileContents) {

@@ -26,10 +26,10 @@ public class DocumentClient {
         this.restTemplate = restTemplate;
     }
 
-   // @GetMapping(value = "/{documentId}/binary")
+    // @GetMapping(value = "/{documentId}/binary")
     public ResponseEntity<byte[]> getDocumentBinary(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                             @RequestHeader(ControllerConstants.SERVICE_AUTHORIZATION) String serviceAuth,
-                                             @PathVariable(DocumentConstants.DOCUMENT_ID) UUID documentId){
+                                                    @RequestHeader(ControllerConstants.SERVICE_AUTHORIZATION) String serviceAuth,
+                                                    @PathVariable(DocumentConstants.DOCUMENT_ID) UUID documentId) {
         try {
 
             HttpHeaders headers = new HttpHeaders();
@@ -46,6 +46,7 @@ public class DocumentClient {
 
             return document;
         } catch (HttpClientErrorException exception) {
+            log.error("Exception: {}", exception.getMessage());
             throw exception;
         }
     }
