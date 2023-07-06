@@ -36,8 +36,10 @@ public class DocumentClient {
             headers.set(HttpHeaders.AUTHORIZATION, authorisation);
             headers.set(ControllerConstants.SERVICE_AUTHORIZATION, serviceAuth);
             HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            log.info(
+                String.format("${location.api.baseUrl}/cases/documents/%s/binary", documentId));
             final ResponseEntity<byte[]> document = restTemplate.exchange(
-                String.format("http://ccd-case-document-am-api-demo.service.core-compute-demo.internal/cases/documents/%s/binary", documentId),
+                String.format("${location.api.baseUrl}/cases/documents/%s/binary", documentId),
                 HttpMethod.GET, requestEntity,
                 byte[].class
             );
