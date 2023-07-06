@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.sptribs.common.config.ControllerConstants;
@@ -25,7 +23,7 @@ public class DocumentClient {
     private final RestTemplate restTemplate;
 
     @Value("${case_document_am.url}")
-    private String url;
+    private String baseUrl;
 
     @Autowired
     public DocumentClient(final RestTemplate restTemplate) {
@@ -33,9 +31,9 @@ public class DocumentClient {
     }
 
     // @GetMapping(value = "/{documentId}/binary")
-    public ResponseEntity<byte[]> getDocumentBinary(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                                    @RequestHeader(ControllerConstants.SERVICE_AUTHORIZATION) String serviceAuth,
-                                                    @PathVariable(DocumentConstants.DOCUMENT_ID) UUID documentId) {
+    public ResponseEntity<byte[]> getDocumentBinary(String authorisation,
+                                                    String serviceAuth,
+                                                    UUID documentId) {
         try {
 
             HttpHeaders headers = new HttpHeaders();
@@ -43,9 +41,10 @@ public class DocumentClient {
             headers.set(ControllerConstants.SERVICE_AUTHORIZATION, serviceAuth);
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
             HttpEntity<?> requestEntity = new HttpEntity<>(requestBody, headers);
-            String apiUrl = url + "/cases/documents/%s/binary";
+            String apiUrl = baseUrl + "/cases/documents/%s/binary";
             String url = String.format(apiUrl, documentId);
             log.info(url);
+            log.info(String.valueOf(headers));
 
             final ResponseEntity<byte[]> document = restTemplate.exchange(
                 url,
