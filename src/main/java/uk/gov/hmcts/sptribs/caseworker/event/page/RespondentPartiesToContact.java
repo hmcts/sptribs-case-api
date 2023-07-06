@@ -7,12 +7,15 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 
 @Slf4j
 @Component
@@ -43,6 +46,10 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             && CollectionUtils.isEmpty(data.getContactParties().getTribunal())) {
 
             errors.add("Which parties do you want to contact?. is required.");
+        } else if ((data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
+            || data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
+            && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
+            errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
