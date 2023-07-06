@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -16,11 +18,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 
 public final class EventUtil {
 
     private EventUtil() {
+    }
+
+    public static List<String> checkRecipient(CaseData data) {
+        final List<String> errors = new ArrayList<>();
+
+        if (checkNullSubjectRepresentativeRespondent(data)) {
+            errors.add(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
+        } else if ((data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
+            || data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
+            && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
+            errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+        }
+        return errors;
     }
 
     public static String getId(String selectedDraft) {
