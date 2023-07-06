@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.HttpClientErrorException;
@@ -39,7 +41,8 @@ public class DocumentClient {
             HttpHeaders headers = new HttpHeaders();
             headers.set(HttpHeaders.AUTHORIZATION, authorisation);
             headers.set(ControllerConstants.SERVICE_AUTHORIZATION, serviceAuth);
-            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+            HttpEntity<?> requestEntity = new HttpEntity<>(requestBody, headers);
             String apiUrl = url + "/cases/documents/%s/binary";
             String url = String.format(apiUrl, documentId);
             log.info(url);
