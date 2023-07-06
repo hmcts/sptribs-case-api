@@ -44,7 +44,6 @@ public class DocumentClient {
             String apiUrl = baseUrl + "/cases/documents/%s/binary";
             String url = String.format(apiUrl, documentId);
             log.info(url);
-            log.info(String.valueOf(headers));
 
             final ResponseEntity<byte[]> document = restTemplate.exchange(
                 url,

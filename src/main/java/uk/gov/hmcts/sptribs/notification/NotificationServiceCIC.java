@@ -142,7 +142,9 @@ public class NotificationServiceCIC {
             ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
         log.info("User authorization token: {}", authorisation);
         String serviceAuthorization = authTokenGenerator.generate();
-        log.info("Service authorization token: {}", serviceAuthorization);
+        String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
+            ? serviceAuthorization.substring(7) : serviceAuthorization;
+        log.info("Service authorization token: {}", serviceAuthorizationLatest);
 
         for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
             String docName = document.getKey();
@@ -153,7 +155,7 @@ public class NotificationServiceCIC {
             } else {
                 if (StringUtils.isNotEmpty(item)) {
                     byte[] uploadedDocument = caseDocumentClient
-                        .getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody();
+                        .getDocumentBinary(authorisation, serviceAuthorizationLatest, UUID.fromString(item)).getBody();
 
                     if (uploadedDocument != null) {
                         templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
