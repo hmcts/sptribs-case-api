@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -11,8 +12,10 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationData;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Component
@@ -24,6 +27,8 @@ public class ApplicationReceivedNotification implements PartiesNotification {
 
     @Autowired
     private NotificationHelper notificationHelper;
+
+    private final NotificationData notificationData = new NotificationData();
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -67,6 +72,18 @@ public class ApplicationReceivedNotification implements PartiesNotification {
             templateVars,
             TemplateName.APPLICATION_RECEIVED);
         return notificationService.sendEmail(request);
+    }
+
+
+    public void saveNotificationData(final CaseData caseData, NotificationResponse notificationResponse) {
+        CicCase cicCase = caseData.getCicCase();
+        notificationData.setID(notificationResponse.getId());
+        notificationData.setReference(notificationResponse.getClientReference());
+        notificationData.setNotificationStatus(notificationResponse.getStatus());
+        notificationData.setNotificationType(notificationResponse.getNotificationType());
+        notificationData.setEmailAddress(cicCase.getEmail());
+        notificationData.setSentAt(DateTime.now());
+
     }
 
 }

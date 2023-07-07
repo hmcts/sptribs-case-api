@@ -51,6 +51,7 @@ import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+import uk.gov.hmcts.sptribs.notification.model.NotificationData;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -102,6 +103,10 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
+
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private List<ListValue<NotificationData>> notificationsData = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
