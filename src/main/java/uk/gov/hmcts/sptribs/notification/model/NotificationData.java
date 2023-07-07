@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
-public class NotificationData{
+public class NotificationData {
     @CCD(
         label = "Notification ID",
         access = {CaseworkerAccess.class}

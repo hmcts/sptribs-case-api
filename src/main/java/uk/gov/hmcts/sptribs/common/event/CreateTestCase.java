@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -114,6 +115,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
+
 
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
