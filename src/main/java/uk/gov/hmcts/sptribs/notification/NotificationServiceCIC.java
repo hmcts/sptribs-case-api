@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DUMMY_STRING_FOR_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
@@ -153,7 +154,7 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                if (StringUtils.isNotEmpty(item)) {
+                if (StringUtils.isNotEmpty(item) && !item.equals(DUMMY_STRING_FOR_EMPTY_PLACEHOLDER)) {
                     byte[] uploadedDocument = caseDocumentClient
                         .getDocumentBinary(authorisation, serviceAuthorizationLatest, UUID.fromString(item)).getBody();
 
