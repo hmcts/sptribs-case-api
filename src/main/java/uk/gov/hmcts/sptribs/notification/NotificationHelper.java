@@ -80,7 +80,6 @@ public class NotificationHelper {
         return templateVars;
     }
 
-
     public Map<String, Object> getTribunalCommonVars(String caseNumber, CicCase cicCase) {
         Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getTribunalName());

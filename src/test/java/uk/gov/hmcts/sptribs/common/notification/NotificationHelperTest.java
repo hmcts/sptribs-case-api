@@ -177,7 +177,7 @@ public class NotificationHelperTest {
         Map<String, Object> commonVars = notificationHelper.getTribunalCommonVars("case number", cicCase);
 
         // Then
-        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("respondent name");
+        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("tribunal name");
     }
 
     @Test
