@@ -34,7 +34,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DUMMY_STRING_FOR_EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
@@ -191,7 +191,7 @@ public class NotificationHelper {
         while (count < docAttachLimit) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
-            uploadedDocuments.put(CASE_DOCUMENT + count, DUMMY_STRING_FOR_EMPTY_PLACEHOLDER);
+            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_PLACEHOLDER);
             LOG.info("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
                 uploadedDocuments.get(CASE_DOCUMENT + count));
         }
