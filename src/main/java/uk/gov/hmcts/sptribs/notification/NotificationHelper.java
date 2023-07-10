@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.notification;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
@@ -43,6 +45,8 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
 @Component
 public class NotificationHelper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationHelper.class);
 
     public Map<String, Object> commonTemplateVars(final CicCase cicCase, final String caseNumber) {
         final Map<String, Object> templateVars = new HashMap<>();
@@ -180,12 +184,16 @@ public class NotificationHelper {
                 uploadedDocuments.put(CASE_DOCUMENT + count,
                     StringUtils.substringAfterLast(labels[1],
                         "/"));
+                LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                    uploadedDocuments.get(CASE_DOCUMENT + count));
             }
         }
         while (count < docAttachLimit) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
             uploadedDocuments.put(CASE_DOCUMENT + count, DUMMY_STRING_FOR_EMPTY_PLACEHOLDER);
+            LOG.info("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                uploadedDocuments.get(CASE_DOCUMENT + count));
         }
 
         return uploadedDocuments;
