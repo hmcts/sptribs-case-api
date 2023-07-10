@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DUMMY_STRING_FOR_EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANCE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 
@@ -144,7 +144,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     }
 
     private String getFinalDecisionNoticeDocument(CaseIssueFinalDecision caseIssueFinalDecision) {
-        String finalDecisionNotice = DUMMY_STRING_FOR_EMPTY_PLACEHOLDER;
+        String finalDecisionNotice = EMPTY_PLACEHOLDER;
         if (caseIssueFinalDecision.getFinalDecisionNotice() == NoticeOption.UPLOAD_FROM_COMPUTER
             && !ObjectUtils.isEmpty(caseIssueFinalDecision.getDocument())) {
             finalDecisionNotice = StringUtils.substringAfterLast(caseIssueFinalDecision
