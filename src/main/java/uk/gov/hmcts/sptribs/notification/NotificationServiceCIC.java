@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DUMMY_STRING_FOR_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
@@ -138,14 +137,11 @@ public class NotificationServiceCIC {
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        log.info("User: {}, User Details: {}", user, user.getUserDetails());
         final String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
             ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
-        log.info("User authorization token: {}", authorisation);
         String serviceAuthorization = authTokenGenerator.generate();
         String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
             ? serviceAuthorization.substring(7) : serviceAuthorization;
-        log.info("Service authorization token: {}", serviceAuthorizationLatest);
 
         for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
             String docName = document.getKey();
@@ -154,16 +150,19 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                if (StringUtils.isNotEmpty(item) && !item.equals(DUMMY_STRING_FOR_EMPTY_PLACEHOLDER)) {
+                if (StringUtils.isNotEmpty(item)) {
                     byte[] uploadedDocument = caseDocumentClient
                         .getDocumentBinary(authorisation, serviceAuthorizationLatest, UUID.fromString(item)).getBody();
 
                     if (uploadedDocument != null) {
+                        log.info("Document available for: {}", docName);
                         templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
                     } else {
-                        log.info("Document not found with uuid : {}", item);
                         templateVars.put(docName, "");
                     }
+                } else {
+                    log.info("Document not available for: {}", docName);
+                    templateVars.put(docName, "");
                 }
             }
         }
