@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.common;
 
 public final class CommonConstants {
 
-    public static final String DUMMY_STRING_FOR_EMPTY_PLACEHOLDER = "DUMMY_STRING_FOR_EMPTY_PLACEHOLDER";
+    public static final String EMPTY_PLACEHOLDER = "";
 
     public static final String CONTACT_NAME = "ContactName";
     public static final String TRIBUNAL_NAME = "TribunalName";
