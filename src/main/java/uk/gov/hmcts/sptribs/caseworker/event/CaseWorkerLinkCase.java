@@ -91,7 +91,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             .otherDescription(data.getCicCase().getLinkCaseOtherDescription())
             .build();
 
-        if (CollectionUtils.isEmpty(data.getCicCase().getCaseLinks())) {
+        if (CollectionUtils.isEmpty(data.getCaseLinks())) {
             List<ListValue<CaseLinks>> listValues = new ArrayList<>();
 
             var listValue = ListValue
@@ -102,7 +102,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
             listValues.add(listValue);
 
-            data.getCicCase().setCaseLinks(listValues);
+            data.setCaseLinks(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
@@ -110,9 +110,9 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 .value(caseLink)
                 .build();
 
-            data.getCicCase().getCaseLinks().add(0, listValue); // always add new note as first element so that it is displayed on top
+            data.getCaseLinks().add(0, listValue); // always add new note as first element so that it is displayed on top
 
-            data.getCicCase().getCaseLinks().forEach(
+            data.getCaseLinks().forEach(
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }

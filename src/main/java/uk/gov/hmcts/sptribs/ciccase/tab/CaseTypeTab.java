@@ -30,6 +30,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
+    @Value("${feature.link-case.enabled}")
+    private boolean caseLinkEnabled;
+
+
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
 
     @Override
@@ -47,6 +51,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCicaDetails(configBuilder);
         buildCaseFileViewTab(configBuilder);
         buildCaseFlagTab(configBuilder);
+        buildCaseLinkTab(configBuilder);
     }
 
     private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -55,8 +60,21 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         }
     }
 
+    private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (caseLinkEnabled) {
+            doBuildCaseLinkTab(configBuilder);
+        }
+    }
+
+    private void doBuildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseLinks", "Case Links")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(READ)");
+    }
+
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("caseFlagView", "Case  flags")
+        configBuilder.tab("caseFlags", "Case  flags")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .field(CaseData::getFlagLauncher1, null, "#ARGUMENT(READ)");
