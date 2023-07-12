@@ -46,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -58,6 +59,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+
+
 
     @Autowired
     private OrderService orderService;
@@ -74,14 +77,14 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
-                .publishToCamunda()
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE,ST_CIC_WA_CONFIG_USER));
         createDraftOrder.addTo(pageBuilder);
         draftOrderMainContentPage.addTo(pageBuilder);
         createDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
+
 
     }
 
@@ -101,6 +104,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+
 
         var caseData = details.getData();
         OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
@@ -137,6 +141,11 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         }
         caseData.getCicCase().setOrderTemplateIssued(null);
+        if(caseData.getReferToJudge() != null && caseData.getReferToJudge().getReferralReason() != null) {
+            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
+        }else if(caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
+            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
