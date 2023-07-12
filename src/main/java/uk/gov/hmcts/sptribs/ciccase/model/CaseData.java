@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
-import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
@@ -65,11 +65,13 @@ public class CaseData {
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
+        label = "Linked cases",
         typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLinks>> caseLinks;
+    @Builder.Default
+    private List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
 
     @CCD(
-        label = "caseLinks",
+        label = "Linked cases",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ComponentLauncher linkedCasesComponentLauncher;
@@ -262,7 +264,7 @@ public class CaseData {
     private String closedDayCount;
 
     @CCD(
-        label = "caseFlags",
+        label = "Case file view",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ComponentLauncher caseFileView1;

@@ -67,10 +67,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void doBuildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("caseLinks", "Case Links")
+        configBuilder.tab("caseLinks", "Linked cases")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(READ)");
+            .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)");
     }
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
