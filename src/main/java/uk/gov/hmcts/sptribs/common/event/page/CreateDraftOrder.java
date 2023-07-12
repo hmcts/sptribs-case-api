@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class CreateDraftOrder implements CcdPageConfiguration {
-    //private static final String ALWAYS_HIDE = "cicCaseReferralTypeForWA=\"ALWAYS_HIDE\"";
+    
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
