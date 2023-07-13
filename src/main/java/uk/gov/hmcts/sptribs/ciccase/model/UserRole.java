@@ -31,6 +31,7 @@ public enum UserRole implements HasRole {
 
     ST_CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
     ST_CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
+    ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "CRU"),
 
     CITIZEN_CIC("citizen-sptribs-cic-dss", "CRU");
 
