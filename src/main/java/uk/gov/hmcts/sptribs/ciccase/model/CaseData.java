@@ -71,6 +71,12 @@ public class CaseData {
     private List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private String caseLinkExists = "YES";
+
+
+    @CCD(
         label = "Linked cases",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
