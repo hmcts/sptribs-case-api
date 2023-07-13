@@ -61,6 +61,11 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CicCase {
 
     @CCD(
+        access = {DefaultAccess.class}
+    )
+    private String referralTypeForWA;
+
+    @CCD(
         label = "Enter any other important information about this adjournment",
         typeOverride = TextArea
     )
