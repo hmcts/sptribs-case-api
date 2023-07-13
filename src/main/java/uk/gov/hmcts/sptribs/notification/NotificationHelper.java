@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -179,7 +180,7 @@ public class NotificationHelper {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
-                String[] labels = element.getLabel().split("--");
+                String[] labels = element.getLabel().split(DOUBLE_HYPHEN);
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(CASE_DOCUMENT + count,
                     StringUtils.substringAfterLast(labels[1],
