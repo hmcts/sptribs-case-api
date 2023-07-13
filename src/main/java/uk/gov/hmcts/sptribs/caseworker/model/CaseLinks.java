@@ -7,11 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+
+import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -21,26 +23,25 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CaseLinks {
     @CCD(
+        label = "Case Reference",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private CaseLink caseReference;
 
     @CCD(
+        label = "Reason for Link",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String reason;
+    private Set<LinkCaseReason> reasonForLink;
 
     @CCD(
+        label = "createdDateTime",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String otherDescription;
+    private LocalDate createdDateTime;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DateTime createdDateTime;
-
-    @CCD(
+        label = "caseType",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String caseType;

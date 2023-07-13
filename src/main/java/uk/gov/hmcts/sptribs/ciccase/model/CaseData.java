@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
@@ -61,6 +62,19 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        label = "Linked cases",
+        typeParameterOverride = "CaseLinks")
+    @Builder.Default
+    private List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
+
+    @CCD(
+        label = "Linked cases",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ComponentLauncher linkedCasesComponentLauncher;
 
     @CCD(
         label = "Case flags",
