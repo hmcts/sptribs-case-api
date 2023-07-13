@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
@@ -66,9 +67,10 @@ public final class DocumentListUtil {
             .stream()
             .filter(CaseworkerCICDocument::isDocumentValid)
             .map(doc -> DynamicListElement.builder()
-                .label(fileType + "--" + doc.getDocumentLink().getFilename()
-                    + "--" + doc.getDocumentLink().getUrl()
-                    + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+                .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
+                + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
+                + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+
             .collect(Collectors.toList());
     }
 
@@ -77,9 +79,9 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .map(doc -> DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
-                + " " + doc.getDocumentCategory().getLabel()
-                + "](" + doc.getDocumentLink().getUrl() + ")").code(UUID.randomUUID()).build())
+            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
+                + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
+                + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
         return DynamicMultiSelectList

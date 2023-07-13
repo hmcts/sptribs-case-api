@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.sptribs.services.DocumentManagementService;
 
 @RestController
-@RequestMapping("/doc/dss-orhestration")
+@RequestMapping("/doc/dss-orchestration")
 public class DocumentManagementController {
 
     @Autowired
