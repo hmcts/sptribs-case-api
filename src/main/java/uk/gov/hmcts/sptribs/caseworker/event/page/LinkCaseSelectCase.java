@@ -24,7 +24,7 @@ public class LinkCaseSelectCase implements CcdPageConfiguration {
             .pageLabel("Select a case you want to link to this case")
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getLinkCaseNumber)
-            .mandatoryWithLabel(CicCase::getLinkCaseReason, "Select all that apply")
+            .mandatory(CicCase::getLinkCaseReason)
             .mandatory(CicCase::getLinkCaseOtherDescription, "cicCaseLinkCaseReason = \"other\"")
             .done();
     }

@@ -98,7 +98,7 @@ public class CicCase {
     private HearingCancellationReason hearingCancellationReason;
 
     @CCD(
-        label = "Enter case number",
+        label = "Case number to be linked",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private CaseLink linkCaseNumber;
