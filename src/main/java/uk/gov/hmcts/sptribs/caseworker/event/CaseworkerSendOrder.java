@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_SEMICOLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
@@ -103,22 +103,21 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
 
-
+        DraftOrderCIC selectedDraftOrder = null;
+        String selectedDynamicDraft = null;
         var order = Order.builder()
             .uploadedFile(caseData.getCicCase().getOrderFile())
             .dueDateList(caseData.getCicCase().getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
-        DraftOrderCIC selectedDraftOrder = null;
-        String selectedDynamicDraft = null;
         if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
-            String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_HYPHEN);
+            String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_SEMICOLON);
             for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
                 String[] draftOrderFile = draftOrderCICListValue.getValue()
-                    .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
+                    .getTemplateGeneratedDocument().getFilename().split(DOUBLE_SEMICOLON);
                 if (selectedDynamicDraft
                     .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
                     && draftOrderFile[2].contains(selectedDraft[1])) {

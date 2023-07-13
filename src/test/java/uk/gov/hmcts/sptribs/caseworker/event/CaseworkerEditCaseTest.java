@@ -73,8 +73,8 @@ class CaseworkerEditCaseTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
+        beforeDetails.setState(State.DSS_Submitted);
         updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setState(State.DSS_Submitted);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);

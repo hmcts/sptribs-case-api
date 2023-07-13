@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
-import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
@@ -42,7 +41,6 @@ import javax.annotation.PostConstruct;
         CoreCaseDataApi.class,
         ExtendedCaseDataApi.class,
         CaseAssignmentApi.class,
-        CaseDocumentClient.class,
         CaseDocumentClientApi.class,
         BundlingClient.class
     }

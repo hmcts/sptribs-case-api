@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
@@ -56,7 +57,7 @@ public class Case {
     /*
     createCase() method accepts String arguments. By default, this method creates
     case with Subject and email as contact preference. To create case with
-    applicant and/or representative specify the party and/or contact preference
+    applicant and/or representative you specify the party and/or contact preference
     as the arguments. Examples below:
 
     createCase("applicant") --> to add applicant to the case
@@ -456,10 +457,10 @@ public class Case {
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Select recipients", textOptionsWithTimeout(30000));
-        page.getByLabel("Subject").check();
+        page.getByLabel("Subject", new Page.GetByLabelOptions().setExact(true)).check();
         page.getByLabel("Respondent").check();
         clickButton(page, "Continue");
-        assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
+        assertThat(page.locator("h2.heading-h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
         assertThat(page.locator("ccd-markdown markdown h1"))
             .hasText("Case closed", textOptionsWithTimeout(60000));
