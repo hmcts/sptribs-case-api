@@ -115,7 +115,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .state(state)
+            .state(CaseManagement)
             .build();
     }
 

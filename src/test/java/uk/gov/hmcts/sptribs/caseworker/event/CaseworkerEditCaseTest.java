@@ -85,7 +85,7 @@ class CaseworkerEditCaseTest {
 
         //Then
         assertThat(response.getData()).isNotNull();
-        assertThat(response.getState()).isEqualTo(State.Submitted);
+        assertThat(response.getState()).isEqualTo(State.CaseManagement);
     }
 
     @Test
