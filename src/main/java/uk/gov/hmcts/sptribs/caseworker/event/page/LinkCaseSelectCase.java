@@ -20,5 +20,4 @@ public class LinkCaseSelectCase implements CcdPageConfiguration {
             .mandatory(CicCase::getLinkCaseOtherDescription, "cicCaseLinkCaseReason = \"other\"")
             .done();
     }
-
 }
