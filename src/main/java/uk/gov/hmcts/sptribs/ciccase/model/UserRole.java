@@ -32,7 +32,10 @@ public enum UserRole implements HasRole {
     ST_CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
     ST_CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
 
-    CITIZEN_CIC("citizen-sptribs-cic-dss", "CRU");
+    CITIZEN_CIC("citizen-sptribs-cic-dss", "CRU"),
+
+    // for Work Allocation user
+    WA_TASK_CONFIGURATION("caseworker-wa-task-configuration", "R");
 
     @JsonValue
     private final String role;

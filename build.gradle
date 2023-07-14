@@ -575,7 +575,7 @@ bootWithCCD {
     environment 'AZURE_SERVICE_BUS_CONNECTION_STRING','Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndReceiveCCDMessage;SharedAccessKey=BXOmN0uU5RZN7KW51soNUv7xNBcNtXqwh+ASbD8y4p4=;EntityPath=st-ccd-case-event'
     environment 'AZURE_SERVICE_BUS_TOPIC_NAME','st-ccd-case-event'
     environment 'AZURE_SERVICE_BUS_SUBSCRIPTION_NAME', 'wa-sptribs-ccd-case-event'
-    environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'wa-sptribs-ccd-case-event'
+    environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'sptribs_sabir_local'
     environment 'AZURE_SERVICE_BUS_MESSAGE_AUTHOR', 'shweta'
     environment 'IDAM_API_BASEURL_WA', 'https://idam-web-public.aat.platform.hmcts.net'
     environment 'S2S_URL_WA', 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
@@ -584,7 +584,17 @@ bootWithCCD {
     environment 'S2S_SECRET_TASK_MONITOR','KNIV46LMP5OGAAAY'
     environment 'S2S_SECRET_TASK_MANAGEMENT_API','UYIEF2FUGBFE666Y'
     environment 'LAUNCH_DARKLY_SDK_KEY_WA' ,'api-0ba8bb5e-0b11-4f84-9655-93f9f8ccca94'
+
+
+//    environment 'WA_SYSTEM_USERNAME','wa-system-user@hmcts.net'
+//    environment 'WA_SYSTEM_PASSWORD', 'System01'
+
+    environment 'WA_SYSTEM_USERNAME','wa-system-user@hmcts.net'
     environment 'WA_SYSTEM_PASSWORD', 'System01'
+
+//    environment 'WA_SYSTEM_USERNAME','st-superuser10@mailinator.com'
+//    environment 'WA_SYSTEM_PASSWORD', 'Pa55w0rd11'
+
 }
 
 
