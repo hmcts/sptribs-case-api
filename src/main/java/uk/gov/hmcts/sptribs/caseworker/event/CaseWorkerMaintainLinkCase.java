@@ -1,10 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -17,7 +17,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.maintainCaseLinks;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -39,6 +43,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
+    private static final String SHOW = "caseLinkExists != \"YES\"";
     private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
 
     @Override
@@ -55,6 +60,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
             .name("Links: Maintain Link case")
             .showSummary()
             .description("Links: Maintain Link case")
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -68,11 +74,26 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
                 ST_CIC_JUDGE));
+        addNoLinks(pageBuilder);
         addWarning(pageBuilder);
         linkCaseSelectCase.addTo(pageBuilder);
     }
 
-    @SneakyThrows
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
+        var data = details.getData();
+        if (CollectionUtils.isEmpty(data.getCaseLinks())) {
+            data.setCaseLinkExists("No links on this case");
+        } else {
+            data.setCaseLinkExists("YES");
+        }
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .state(details.getState())
+            .build();
+    }
+
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
@@ -92,10 +113,35 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     }
 
     private void addWarning(PageBuilder pageBuilder) {
-        pageBuilder.page("beforeYouStart")
+        pageBuilder.page("caseworkerMaintainLinkBeforeYouStart")
             .pageLabel("Before you start")
+            .pageShowConditions(maintainCaseLinks())
             .label("beforeYouStartLabelForMaintain",
                 "If there are linked hearings for the case you need to un-link then you must unlink the hearing first");
     }
+
+    private void addNoLinks(PageBuilder pageBuilder) {
+
+        pageBuilder.page("caseworkerCaseLinkNoLinks", this::midEvent)
+            .pageLabel("Warning")
+            .pageShowConditions(maintainCaseLinks())
+            .mandatory(CaseData::getCaseLinkExists);
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
+        CaseDetails<CaseData, State> details,
+        CaseDetails<CaseData, State> detailsBefore
+    ) {
+
+        CaseData caseData = details.getData();
+        final List<String> errors = new ArrayList<>();
+        errors.add("You can not proceed, press cancel to exit");
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .errors(errors)
+            .build();
+    }
+
 
 }

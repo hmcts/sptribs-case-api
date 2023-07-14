@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -29,10 +28,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_LINK_C
 class CaseWorkerLinkCaseTest {
     @InjectMocks
     private CaseWorkerLinkCase caseWorkerLinkCase;
-
-
-    @InjectMocks
-    private LinkCaseSelectCase linkCaseSelectCase;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -79,37 +74,14 @@ class CaseWorkerLinkCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
-            linkCaseSelectCase.midEvent(updatedCaseDetails, beforeDetails);
+            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse submitted = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            linkCaseSelectCase.midEvent(updatedCaseDetails, beforeDetails);
+            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response1).isNotNull();
         assertThat(response2).isNotNull();
-    }
-
-    @Test
-    void shouldAddLinkToCase() {
-
-        //Given
-        CicCase cicCase = CicCase.builder()
-            .linkCaseNumber(new CaseLink())
-            .linkCaseReason(LinkCaseReason.CASE_CONSOLIDATED)
-            .build();
-        CaseData caseData = caseData();
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
-            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse submitted = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response1).isNotNull();
         assertThat(submitted).isNotNull();
     }
 }
