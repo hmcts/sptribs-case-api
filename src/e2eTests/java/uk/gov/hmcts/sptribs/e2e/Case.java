@@ -189,6 +189,7 @@ public class Case {
         assertThat(page.locator("h1"))
             .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
         page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
+        page.selectOption("#cicCaseRegionCIC", new SelectOption().setLabel("London"));
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
         getTextBoxByLabel(page, "CICA reference number").fill("CICATestReference");
         page.locator("#cicCaseCompensationClaimLinkCIC_Yes").click();
