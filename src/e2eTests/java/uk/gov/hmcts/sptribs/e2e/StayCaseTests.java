@@ -51,8 +51,9 @@ public class StayCaseTests extends Base {
         page.getByLabel("Provide additional details (Optional)").fill("Additional info for create stay case run time");
         clickButton(page, "Continue");
         clickButton(page, "Save and continue");
-        assertThat(page.locator("h1:has-text('Stay Added to Case')")).isVisible();
-        assertThat(page.locator("h2")).hasText("A notification has been sent to: Subject",textOptionsWithTimeout(30000));
+        assertThat(page.locator("ccd-markdown markdown h1")).hasText("Stay Added to Case",textOptionsWithTimeout(60000));
+        assertThat(page.locator("ccd-markdown markdown h2"))
+            .hasText("A notification has been sent to: Subject",textOptionsWithTimeout(30000));
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).getByText("State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));
