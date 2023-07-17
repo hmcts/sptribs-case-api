@@ -7,7 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLink;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 
@@ -27,10 +27,10 @@ class LinkServiceTest {
     @Test
     void shouldPopulateLinkDynamicList() {
         CaseData data = caseData();
-        CaseLinks links = CaseLinks.builder().caseReference("1").build();
-        ListValue<CaseLinks> caseLinksListValue = new ListValue<>();
+        CaseLink links = CaseLink.builder().caseReference("1").build();
+        ListValue<CaseLink> caseLinksListValue = new ListValue<>();
         caseLinksListValue.setValue(links);
-        List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
+        List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
         caseLinks.add(caseLinksListValue);
         data.setCaseLinks(caseLinks);
 
@@ -44,16 +44,16 @@ class LinkServiceTest {
 
     @Test
     void shouldRemoveLink() {
-        CaseLinks links = CaseLinks.builder().caseReference("0").build();
-        ListValue<CaseLinks> caseLinksListValue = new ListValue<>();
+        CaseLink links = CaseLink.builder().caseReference("0").build();
+        ListValue<CaseLink> caseLinksListValue = new ListValue<>();
         caseLinksListValue.setValue(links);
-        CaseLinks links2 = CaseLinks.builder().caseReference("1").build();
-        ListValue<CaseLinks> caseLinksListValue2 = new ListValue<>();
+        CaseLink links2 = CaseLink.builder().caseReference("1").build();
+        ListValue<CaseLink> caseLinksListValue2 = new ListValue<>();
         caseLinksListValue2.setValue(links2);
-        CaseLinks links3 = CaseLinks.builder().caseReference("2").build();
-        ListValue<CaseLinks> caseLinksListValue3 = new ListValue<>();
+        CaseLink links3 = CaseLink.builder().caseReference("2").build();
+        ListValue<CaseLink> caseLinksListValue3 = new ListValue<>();
         caseLinksListValue3.setValue(links3);
-        List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
+        List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
         caseLinks.add(caseLinksListValue);
         caseLinks.add(caseLinksListValue2);
         caseLinks.add(caseLinksListValue3);
@@ -72,7 +72,7 @@ class LinkServiceTest {
             .build()).build();
         data.setCicCase(cicCase);
         //When
-        List<ListValue<CaseLinks>> result = linkService.removeLinks(data);
+        List<ListValue<CaseLink>> result = linkService.removeLinks(data);
 
         //Then
         assertThat(result).hasSize(2);

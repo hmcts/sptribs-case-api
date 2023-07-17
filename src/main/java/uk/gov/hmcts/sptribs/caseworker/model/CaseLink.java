@@ -20,7 +20,7 @@ import java.util.Set;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CaseLinks {
+public class CaseLink {
     @CCD(
         label = "Case Reference",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

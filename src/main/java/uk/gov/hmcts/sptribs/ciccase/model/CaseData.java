@@ -19,7 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLink;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
@@ -66,9 +66,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         label = "Linked cases",
-        typeParameterOverride = "CaseLinks")
+        typeParameterOverride = "CaseLink")
     @Builder.Default
-    private List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
+    private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})

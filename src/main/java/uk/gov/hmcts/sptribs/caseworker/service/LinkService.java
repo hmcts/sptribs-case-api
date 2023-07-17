@@ -6,7 +6,7 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLink;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class LinkService {
 
     public DynamicMultiSelectList prepareLinkList(final CaseData data) {
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
-        for (ListValue<CaseLinks> caseLinkListValue : data.getCaseLinks()) {
+        for (ListValue<CaseLink> caseLinkListValue : data.getCaseLinks()) {
             DynamicListElement element = DynamicListElement.builder()
                 .label(caseLinkListValue.getValue().getCaseReference())
                 .code(UUID.randomUUID())
@@ -35,9 +35,9 @@ public class LinkService {
             .build();
     }
 
-    public List<ListValue<CaseLinks>> removeLinks(CaseData data) {
-        List<CaseLinks> caseLinksList = new ArrayList<>();
-        for (ListValue<CaseLinks> caseLinksListValue : data.getCaseLinks()) {
+    public List<ListValue<CaseLink>> removeLinks(CaseData data) {
+        List<CaseLink> caseLinkList = new ArrayList<>();
+        for (ListValue<CaseLink> caseLinksListValue : data.getCaseLinks()) {
             boolean found = false;
             for (DynamicListElement element : data.getCicCase().getLinkDynamicList().getValue()) {
                 if (caseLinksListValue.getValue().getCaseReference().equals(element.getLabel())) {
@@ -46,17 +46,17 @@ public class LinkService {
                 }
             }
             if (!found) {
-                caseLinksList.add(caseLinksListValue.getValue());
+                caseLinkList.add(caseLinksListValue.getValue());
             }
         }
-        List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
-        List<ListValue<CaseLinks>> listValues = new ArrayList<>();
+        List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
+        List<ListValue<CaseLink>> listValues = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (CaseLinks links : caseLinksList) {
+        for (CaseLink links : caseLinkList) {
             if (CollectionUtils.isEmpty(caseLinks)) {
 
                 var listValue = ListValue
-                    .<CaseLinks>builder()
+                    .<CaseLink>builder()
                     .id("1")
                     .value(links)
                     .build();
@@ -66,7 +66,7 @@ public class LinkService {
                 caseLinks = listValues;
             } else {
                 var listValue = ListValue
-                    .<CaseLinks>builder()
+                    .<CaseLink>builder()
                     .value(links)
                     .build();
 

@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLink;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -85,7 +85,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
         var data = details.getData();
-        CaseLinks caseLink = CaseLinks.builder()
+        CaseLink caseLink = CaseLink.builder()
             .caseReference(data.getCicCase().getLinkCaseNumber().getCaseReference())
             .reasonForLink(Set.of(data.getCicCase().getLinkCaseReason()))
             .createdDateTime(null)
@@ -93,10 +93,10 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             .build();
 
         if (CollectionUtils.isEmpty(data.getCaseLinks())) {
-            List<ListValue<CaseLinks>> listValues = new ArrayList<>();
+            List<ListValue<CaseLink>> listValues = new ArrayList<>();
 
             var listValue = ListValue
-                .<CaseLinks>builder()
+                .<CaseLink>builder()
                 .id("1")
                 .value(caseLink)
                 .build();
@@ -107,7 +107,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
-                .<CaseLinks>builder()
+                .<CaseLink>builder()
                 .value(caseLink)
                 .build();
 
