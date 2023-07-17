@@ -103,15 +103,14 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
 
-
+        DraftOrderCIC selectedDraftOrder = null;
+        String selectedDynamicDraft = null;
         var order = Order.builder()
             .uploadedFile(caseData.getCicCase().getOrderFile())
             .dueDateList(caseData.getCicCase().getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
-        DraftOrderCIC selectedDraftOrder = null;
-        String selectedDynamicDraft = null;
         if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
