@@ -5,7 +5,6 @@ public final class EventConstants {
     public static final String APPELLANT_FLAG = "APPELLANT FLAG";
     public static final String RESPONDENT_FLAG = "RESPONDENT FLAG";
     public static final String HYPHEN = "-";
-    public static final String DOUBLE_SEMICOLON = "::";
     public static final String DOUBLE_HYPHEN = "--";
     public static final String SPACE = " ";
     public static final String SEMICOLON = " :";

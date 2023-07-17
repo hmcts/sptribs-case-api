@@ -30,7 +30,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_SEMICOLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -115,19 +115,19 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
         UUID code = dynamicList.getValue().getCode();
         String label = dynamicList.getValue().getLabel();
-        String[] dynamicListLabel = label.split(DOUBLE_SEMICOLON);
+        String[] dynamicListLabel = label.split(DOUBLE_HYPHEN);
         String editedFileName = caseData.getCicCase().getOrderTemplateIssued().getFilename();
-        String[] fileNameFields = editedFileName.split(DOUBLE_SEMICOLON);
+        String[] fileNameFields = editedFileName.split(DOUBLE_HYPHEN);
         String date = fileNameFields[2].substring(0, fileNameFields[2].length() - 4);
         for (DynamicListElement element : dynamicList.getListItems()) {
             if (element.getCode().equals(code)) {
-                element.setLabel(dynamicListLabel[0] + DOUBLE_SEMICOLON + date + DOUBLE_SEMICOLON + "draft.pdf");
+                element.setLabel(dynamicListLabel[0] + DOUBLE_HYPHEN + date + DOUBLE_HYPHEN + "draft.pdf");
                 break;
             }
         }
         for (ListValue<DraftOrderCIC> draftOrderCIC : caseData.getCicCase().getDraftOrderCICList()) {
             String[] draftOrderFile = draftOrderCIC.getValue()
-                .getTemplateGeneratedDocument().getFilename().split(DOUBLE_SEMICOLON);
+                .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
             if (label
                 .contains(draftOrderCIC.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
                 && draftOrderFile[2].contains(dynamicListLabel[1])) {

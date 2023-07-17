@@ -33,9 +33,6 @@ class CaseWorkerCreateDraftOrderTest {
     @InjectMocks
     private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
 
-    @Mock
-    private OrderService orderService;
-
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
@@ -56,7 +53,7 @@ class CaseWorkerCreateDraftOrderTest {
 
         //Given
         final CicCase cicCase = CicCase.builder()
-            .orderTemplateIssued(Document.builder().filename("a::b::02-02-2002 11:11:11.pdf").build()).build();
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -84,7 +81,7 @@ class CaseWorkerCreateDraftOrderTest {
 
         //Given
         final CicCase cicCase = CicCase.builder()
-            .orderTemplateIssued(Document.builder().filename("a::b::02-02-2002 11:11:11.pdf").build()).build();
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -112,7 +109,7 @@ class CaseWorkerCreateDraftOrderTest {
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
 
         final CicCase cicCase = CicCase.builder()
-            .orderTemplateIssued(Document.builder().filename("a::b::02-02-2002 11:11:11.pdf").build()).build();
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = CaseData.builder()
             .draftOrderContentCIC(orderContentCIC)
             .build();
@@ -134,7 +131,7 @@ class CaseWorkerCreateDraftOrderTest {
 
         //Given
         final CicCase cicCase = CicCase.builder()
-            .orderTemplateIssued(Document.builder().filename("a::b::02-02-2002 11:11:11.pdf").build()).build();
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -154,7 +151,7 @@ class CaseWorkerCreateDraftOrderTest {
         assertThat(draftCreatedResponse).isNotNull();
 
         final CicCase cicCase2 = CicCase.builder()
-            .orderTemplateIssued(Document.builder().filename("a::b::02-02-2002 11:11:11.pdf").build()).build();
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
         caseData.setCicCase(cicCase2);
         updatedCaseDetails.setData(caseData);
         caseData.setDraftOrderContentCIC(orderContentCIC);
