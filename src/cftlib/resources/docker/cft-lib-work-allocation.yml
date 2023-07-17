@@ -48,6 +48,7 @@ services:
     image: "hmctspublic.azurecr.io/wa/workflow-api:latest"
     container_name: wa-workflow-api
     environment:
+      ROOT_LOGGING_LEVEL: debug
       CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
       S2S_URL: "${S2S_URL_WA}"
       S2S_SECRET_WORKFLOW_API: "${S2S_SECRET_WORKFLOW_API}"
@@ -85,8 +86,10 @@ services:
         ALLOWED_CASE_TYPES: asylum,wacasetype,sscs,civil,benefit,CriminalInjuriesCompensation
         WA_S2S_AUTHORIZED_SERVICES: ccd,ccd_data,ccd_gw,ccd_ps,iac,wa_task_management_api,xui_webapp,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler,sptribs_case_api
         LAUNCH_DARKLY_SDK_KEY: "${LAUNCH_DARKLY_SDK_KEY_WA}"
-        WA_SYSTEM_USERNAME: "super-user@example.com"
+        WA_SYSTEM_USERNAME: "${WA_SYSTEM_USERNAME}"
         WA_SYSTEM_PASSWORD: "${WA_SYSTEM_PASSWORD}"
+        WA_IDAM_CLIENT_SECRET: "3CN3KBUUEKCKRMKH"
+        WA_IDAM_CLIENT_ID: "wa"
       ports:
         - 8087:8087
       extra_hosts:
@@ -111,8 +114,8 @@ services:
         APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=00000000-0000-0000-0000-000000000000"
         ENVIRONMENT: "local"
         S2S_URL: "${S2S_URL_WA}"
-        S2S_SECRET_CASE_EVENT_HANDLER : "${S2S_SECRET_CASE_EVENT_HANDLER}"
         WA_S2S_AUTHORIZED_SERVICES: wa_case_event_handler,wa_task_monitor,wa_task_management_api,wa_message_cron_service,sptribs_case_api
+        S2S_SECRET_CASE_EVENT_HANDLER : "${S2S_SECRET_CASE_EVENT_HANDLER}"
         WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
         OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
         IDAM_URL: "${IDAM_API_BASEURL_WA}"
@@ -148,13 +151,13 @@ services:
       WA_WORKFLOW_API_URL: http://wa-workflow-api:8099
       OPEN_ID_IDAM_URL: "${IDAM_API_BASEURL_WA}"
       IDAM_URL: "${IDAM_API_BASEURL_WA}"
+      WA_S2S_AUTHORIZED_SERVICES: wa_task_monitor,wa_task_management_api,sptribs_case_api
       ROLE_ASSIGNMENT_URL: http://host.docker.internal:4096
       CAMUNDA_URL: http://wa-camunda-bpm:8999/engine-rest
       CCD_URL: http://host.docker.internal:4452
       WA_TASK_MANAGEMENT_API_URL: http://wa-task-management-api:8087
       CASE_EVENT_HANDLER_SERVICE_URL: http://wa-case-event-handler:8088
       CCD_SEARCH_URL: http://host.docker.internal:9200
-      WA_S2S_AUTHORIZED_SERVICES: wa_task_monitor,wa_task_management_api,sptribs_case_api
       CONFIGURATION_CAMUNDA_MAX_RESULTS: 100
       CONFIGURATION_TIME_LIMIT_FLAG: "true"
       CONFIGURATION_TIME_LIMIT: 1440
