@@ -27,7 +27,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
 
-
 @Service
 @Slf4j
 public class OrderService {
@@ -60,7 +59,7 @@ public class OrderService {
                 .stream()
                 .sorted()
                 .map(order -> DynamicListElement.builder().label(order).code(UUID.randomUUID()).build())
-                .toList();
+                .collect(Collectors.toList());
 
             return DynamicList
                 .builder()

@@ -33,6 +33,9 @@ class CaseWorkerCreateDraftOrderTest {
     @InjectMocks
     private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
 
+    @Mock
+    private OrderService orderService;
+
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 

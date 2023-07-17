@@ -43,7 +43,6 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -65,6 +64,9 @@ class CaseworkerSendOrderTest {
 
     @InjectMocks
     private CaseworkerSendOrder caseworkerSendOrder;
+
+    @Mock
+    private NewOrderIssuedNotification newOrderIssuedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

@@ -40,6 +40,9 @@ class CaseWorkerEditDraftOrderTest {
     @InjectMocks
     private CaseWorkerEditDraftOrder caseWorkerEditDraftOrder;
 
+    @Mock
+    private OrderService orderService;
+
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
