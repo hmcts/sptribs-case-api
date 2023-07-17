@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -10,7 +11,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
+import uk.gov.hmcts.sptribs.caseworker.event.page.MaintainLinkCaseSelectCase;
+import uk.gov.hmcts.sptribs.caseworker.service.LinkService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.NO_LINKS;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.YES;
 import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.maintainCaseLinks;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -43,8 +47,11 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
+    @Autowired
+    private LinkService linkService;
+
     private static final String SHOW = "caseLinkExists != \"YES\"";
-    private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
+    private static final CcdPageConfiguration maintainLinkCaseSelectCase = new MaintainLinkCaseSelectCase();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -76,7 +83,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 ST_CIC_JUDGE));
         addNoLinks(pageBuilder);
         addWarning(pageBuilder);
-        linkCaseSelectCase.addTo(pageBuilder);
+        maintainLinkCaseSelectCase.addTo(pageBuilder);
     }
 
 
@@ -84,10 +91,12 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
         var data = details.getData();
         if (CollectionUtils.isEmpty(data.getCaseLinks())) {
-            data.setCaseLinkExists("No links on this case");
+            data.setCaseLinkExists(NO_LINKS);
         } else {
-            data.setCaseLinkExists("YES");
+            data.setCaseLinkExists(YES);
+            data.getCicCase().setLinkDynamicList(linkService.prepareLinkList(data));
         }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .state(details.getState())
@@ -98,6 +107,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
         var data = details.getData();
+        data.setCaseLinks(linkService.removeLinks(data));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
