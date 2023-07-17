@@ -120,6 +120,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
         List<ListValue<DssMessage>> listValues = new ArrayList<>();
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
+            //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
@@ -127,6 +128,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
+
                 DssMessage message = DssMessage.builder()
                     .message(dssCaseData.getAdditionalInformation())
                     .dateReceived(LocalDate.now())
