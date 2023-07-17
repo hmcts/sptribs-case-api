@@ -90,7 +90,6 @@ services:
         WA_SYSTEM_PASSWORD: "${WA_SYSTEM_PASSWORD}"
         WA_IDAM_CLIENT_SECRET: "3CN3KBUUEKCKRMKH"
         WA_IDAM_CLIENT_ID: "wa"
-
       ports:
         - 8087:8087
       extra_hosts:
