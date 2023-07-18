@@ -9,10 +9,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLink;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
@@ -86,12 +85,12 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
         var data = details.getData();
         CaseLink caseLink = CaseLink.builder()
-            .caseReference(data.getCicCase().getLinkCaseNumber().getCaseReference())
-            .reasonForLink(Set.of(data.getCicCase().getLinkCaseReason()))
+            .caseReference(data.getCicCase().getLinkCaseNumber())
             .createdDateTime(null)
             .caseType("CriminalInjuriesCompensation")
             .build();
 
+        //TODO  .reasonForLink(Set.of(data.getCicCase().getLinkCaseReason().getLabel()))
         if (CollectionUtils.isEmpty(data.getCaseLinks())) {
             List<ListValue<CaseLink>> listValues = new ArrayList<>();
 
