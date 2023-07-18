@@ -135,5 +135,52 @@
       }
     ],
     "overrideAll": true
+  },
+  {
+    "email": "st-superuser10@mailinator.com",
+    "id": "st-superuser10",
+    "roleAssignments": [
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "caseworker-st_cic-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "caseworker-st_cic",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "Regional-Centre-Admin",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
+        "authorisations": []
+      }
+
+    ],
+    "overrideAll": true
   }
 ]
