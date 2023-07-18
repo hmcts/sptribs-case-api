@@ -15,10 +15,12 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
-import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
+import uk.gov.hmcts.sptribs.notification.NotifyProxyClient;
+import uk.gov.hmcts.sptribs.notifyproxy.documents.CaseDocumentClient;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
+import uk.gov.hmcts.sptribs.notifyproxy.service.NotificationService;
 import uk.gov.hmcts.sptribs.recordlisting.LocationClient;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
@@ -43,6 +45,8 @@ import javax.annotation.PostConstruct;
         ExtendedCaseDataApi.class,
         CaseAssignmentApi.class,
         CaseDocumentClient.class,
+        NotifyProxyClient.class,
+        //ßNotificationService.class,
         CaseDocumentClientApi.class,
         BundlingClient.class
     }

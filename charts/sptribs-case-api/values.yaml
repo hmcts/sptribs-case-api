@@ -70,3 +70,8 @@ java:
     SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/cases/case-details/
     S2S_AUTHORISED_SERVICES: ccd_definition,ccd_data,xui_webapp,sptribs_case_api,ccd_gw,sptribs_frontend
+    POSTGRES_PORT: 5433
+    POSTGRES_HOST: ccpay-notifications-service-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
+    POSTGRES_NAME: notifications
+    POSTGRES_USERNAME: notifications@ccpay-notifications-service-postgres-db-v11-{{ .Values.global.environment }}
+    POSTGRES_CONNECTION_OPTIONS: ?sslmode=require

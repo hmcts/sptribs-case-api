@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.common.config;
+package uk.gov.hmcts.sptribs.notifyproxy.config;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

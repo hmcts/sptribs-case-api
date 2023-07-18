@@ -24,3 +24,15 @@ services:
       - LOGBACK_REQUIRE_ERROR_CODE=false
     ports:
       - $SERVER_PORT:$SERVER_PORT
+
+  ccpay-notifications-service-db:
+    container_name: ccpay-notifications-service-db
+    image: postgres:11-alpine
+    environment:
+      - POSTGRES_USER=notifications
+      - POSTGRES_PASSWORD=notifications
+      - POSTGRES_DB=notifications
+    ports:
+      - 5182:5433
+    volumes:
+      - ccpay-notifications-service-db-data:/var/lib/postgresql/data

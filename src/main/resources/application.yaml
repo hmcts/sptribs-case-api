@@ -22,6 +22,11 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:notifications}${POSTGRES_CONNECTION_OPTIONS:}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
@@ -156,6 +161,9 @@ document_management:
 
 case_document_am:
   url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
+
+notify_proxy:
+  url: ${NOTIFY_PROXY_BASEURL:http://}
 
 prd:
   api:

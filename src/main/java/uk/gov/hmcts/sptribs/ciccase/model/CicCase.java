@@ -16,18 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
-import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
-import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
-import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
-import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
+import uk.gov.hmcts.sptribs.caseworker.model.*;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -275,6 +264,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<NotificationParties> hearingNotificationParties;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Notification notification;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

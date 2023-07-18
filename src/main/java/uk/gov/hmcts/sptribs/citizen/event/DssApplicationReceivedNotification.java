@@ -3,13 +3,14 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.caseworker.model.Notification;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.NotifyProxyClient;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -22,11 +23,11 @@ import java.util.Map;
 public class DssApplicationReceivedNotification implements PartiesNotification {
 
     @Autowired
-    private NotificationServiceCIC notificationService;
-
-    @Autowired
     private DssNotificationHelper dssNotificationHelper;
 
+   /* @Autowired
+    private NotifyProxyClient notifyProxyClient;
+*/
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -38,11 +39,11 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
         templateVarsSubject.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
-        NotificationResponse notificationResponse = sendEmailNotification(
+        /*NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsSubject,
             cicCase.getEmail(),
             TemplateName.APPLICATION_RECEIVED);
-        cicCase.setSubjectNotifyList(notificationResponse);
+        cicCase.setSubjectNotifyList(notificationResponse);*/
     }
 
     @Override
@@ -52,20 +53,28 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
         templateVarsRepresentative.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
-        NotificationResponse notificationResponse = sendEmailNotification(
+        String notificationResponse = sendEmailNotification(
             templateVarsRepresentative,
             cicCase.getSelectedHearingToCancel(),
             TemplateName.APPLICATION_RECEIVED);
-        cicCase.setRepNotificationResponse(notificationResponse);
+        Notification notification = cicCase.getNotification();
+        Notification.DssApplicationReceived  dssApplicationReceived = notification.new DssApplicationReceived();
+        dssApplicationReceived.setRepNotificationSent(notificationResponse);
+        cicCase.setNotification(notification);
+        //cicCase.setRepNotificationResponse(notificationResponse);
     }
 
-
-    private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
-                                                       String toEmail,
-                                                       TemplateName emailTemplateName) {
+    private String sendEmailNotification(final Map<String, Object> templateVars,
+                                         String toEmail,
+                                         TemplateName emailTemplateName) {
         NotificationRequest request = dssNotificationHelper.buildEmailNotificationRequest(
             toEmail, templateVars, emailTemplateName);
-        return notificationService.sendEmail(request);
+
+//        TODO
+        //ResponseEntity<?> responseEntity = notifyProxyClient.sendEmailNotification();
+        //String isNotificationSent = (String) responseEntity.getBody();
+        //return notificationService.sendEmail(request); remove this
+        return "isNotificationSent";
     }
 
 }

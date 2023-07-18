@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document;
+package uk.gov.hmcts.sptribs.notifyproxy.documents;
 
 import org.apache.http.HttpHeaders;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.sptribs.common.config.ControllerConstants;
+import uk.gov.hmcts.sptribs.document.DocumentConstants;
 
 import java.util.UUID;
 
