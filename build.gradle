@@ -619,6 +619,7 @@ bootWithCCD {
     environment 'S2S_SECRET_TASK_MONITOR','KNIV46LMP5OGAAAY'
     environment 'S2S_SECRET_TASK_MANAGEMENT_API','UYIEF2FUGBFE666Y'
     environment 'LAUNCH_DARKLY_SDK_KEY_WA' ,'api-0ba8bb5e-0b11-4f84-9655-93f9f8ccca94'
+    environment 'WA_SYSTEM_USERNAME','wa-system-user@hmcts.net'
     environment 'WA_SYSTEM_PASSWORD', 'System01'
 }
 
