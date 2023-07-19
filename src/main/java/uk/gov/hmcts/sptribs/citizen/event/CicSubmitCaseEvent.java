@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.time.LocalDate;
@@ -33,7 +35,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -48,6 +52,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private IdamService idamService;
 
     @Autowired
     AppsConfig appsConfig;
@@ -128,11 +138,12 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
+                final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
                 DssMessage message = DssMessage.builder()
                     .message(dssCaseData.getAdditionalInformation())
                     .dateReceived(LocalDate.now())
-                    .receivedFrom(dssCaseData.getAdditionalInformation())
+                    .receivedFrom(caseworkerUser.getUserDetails().getFullName())
                     .documentRelevance(dssCaseData.getDocumentRelevance())
                     .otherInfoDocument(caseworkerCICDocument)
                     .build();
