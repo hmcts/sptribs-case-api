@@ -645,6 +645,12 @@ public class CicCase {
     @JsonIgnore
     private NotificationResponse repNotificationResponse;
 
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse tribunalNotificationResponse;
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
