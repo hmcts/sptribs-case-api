@@ -21,7 +21,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 
 @Component
 @Slf4j
@@ -129,7 +129,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         while (count < DOC_ATTACH_LIMIT) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
-            uploadedDocuments.put(DECISION_NOTICE + count, EMPTY_STRING);
+            uploadedDocuments.put(DECISION_NOTICE + count, EMPTY_PLACEHOLDER);
         }
 
         return uploadedDocuments;

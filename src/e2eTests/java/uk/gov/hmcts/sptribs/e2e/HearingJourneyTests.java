@@ -49,7 +49,7 @@ public class HearingJourneyTests extends Base {
         String judge = PageHelpers.getValueFromTableFor(page, "Which judge heard the case?");
         Assertions.assertEquals("Chetan Lad", judge);
         String panelMember = PageHelpers.getValueFromTableFor(page, "Name of the panel member");
-        Assertions.assertEquals("Ivy-Rose Rayner", panelMember);
+        Assertions.assertEquals("Miss Ivy-Rose Rayner", panelMember);
         String otherAttendee = PageHelpers.getValueFromTableFor(page, "Who was this other attendee?");
         Assertions.assertEquals("Special officer", otherAttendee);
     }
@@ -133,6 +133,7 @@ public class HearingJourneyTests extends Base {
         String hearingStatus = PageHelpers.getValueFromTableFor(page, "Hearing Status");
         Assertions.assertEquals("Cancelled", hearingStatus);
     }
+
 
     private void createAndBuildCase(Page page) {
         Login login = new Login(page);
