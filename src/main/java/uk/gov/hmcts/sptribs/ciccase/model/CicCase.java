@@ -688,6 +688,19 @@ public class CicCase {
     )
     private String firstDueDate;
 
+    private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
+        LocalDate earliestDate = compare;
+        for (ListValue<DateModel> dateModelListValue : dueDateList) {
+            if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
+                || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
+                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
+                earliestDate = dateModelListValue.getValue().getDueDate();
+            }
+        }
+        return earliestDate;
+
+    }
+
     public String getFirstDueDate() {
 
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
@@ -695,13 +708,7 @@ public class CicCase {
         if (!CollectionUtils.isEmpty(orderList)) {
             for (ListValue<Order> orderListValue : orderList) {
                 if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
-                    for (ListValue<DateModel> dateModelListValue : orderListValue.getValue().getDueDateList()) {
-                        if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
-                            || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
-                            && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
-                            compare = dateModelListValue.getValue().getDueDate();
-                        }
-                    }
+                    compare = findEarliestDate(orderListValue.getValue().getDueDateList(), compare);
                 }
             }
             if (compare.isBefore(LocalDate.MAX)) {

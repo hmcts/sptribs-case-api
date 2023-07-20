@@ -129,32 +129,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         }
 
         updateLastSelectedOrder(caseData.getCicCase(), order);
+        updateOrderList(caseData, order);
 
-        if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
-            List<ListValue<Order>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<Order>builder()
-                .id("1")
-                .value(order)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.getCicCase().setOrderList(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<Order>builder()
-                .value(order)
-                .build();
-
-            caseData.getCicCase().getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
-
-            caseData.getCicCase().getOrderList().forEach(
-                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-
-        }
         caseData.getCicCase().setOrderIssuingType(null);
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
@@ -193,6 +169,34 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .data(caseData)
             .state(details.getState())
             .build();
+    }
+
+    private void updateOrderList(CaseData caseData, Order order) {
+        if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
+            List<ListValue<Order>> listValues = new ArrayList<>();
+
+            var listValue = ListValue
+                .<Order>builder()
+                .id("1")
+                .value(order)
+                .build();
+
+            listValues.add(listValue);
+
+            caseData.getCicCase().setOrderList(listValues);
+        } else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            var listValue = ListValue
+                .<Order>builder()
+                .value(order)
+                .build();
+
+            caseData.getCicCase().getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
+
+            caseData.getCicCase().getOrderList().forEach(
+                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+
+        }
     }
 
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
