@@ -15,11 +15,11 @@ import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSu
 public final class SelectRecipientsHelper {
 
     public void addTo(PageBuilder pageBuilder,
-                             String pageId,
-                             String labelPrefix,
-                             String label,
-                             String fieldLabelPrefix,
-                             String alwaysHide) {
+                      String pageId,
+                      String labelPrefix,
+                      String label,
+                      String fieldLabelPrefix,
+                      String alwaysHide) {
         pageBuilder
             .page(pageId, this::midEvent)
             .pageLabel("Select recipients")
@@ -37,6 +37,10 @@ public final class SelectRecipientsHelper {
             .readonly(CicCase::getRespondentName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
                 "cicCaseRespondentName!=\"\" ",
+                fieldLabelPrefix + " recipient")
+            .readonly(CicCase::getApplicantFullName, alwaysHide)
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
+                "cicCaseApplicantFullName!=\"\"",
                 fieldLabelPrefix + " recipient")
             .done();
     }

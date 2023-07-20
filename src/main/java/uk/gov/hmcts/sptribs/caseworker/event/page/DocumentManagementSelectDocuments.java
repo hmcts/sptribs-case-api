@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 
 public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
 
@@ -58,7 +59,7 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
             String selectedDocumentURL = documentList.getValue().getLabel();
 
             for (ListValue<CaseworkerCICDocument> documentListValue : allCaseDocuments) {
-                String[] labels = selectedDocumentURL.split("--");
+                String[] labels = selectedDocumentURL.split(DOUBLE_HYPHEN);
                 String url = documentListValue.getValue().getDocumentLink().getUrl();
                 if (ArrayUtils.isNotEmpty(labels) && labels[2].equals(url)) {
                     selectedDocument = documentListValue.getValue();
