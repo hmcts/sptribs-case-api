@@ -293,6 +293,15 @@ public class CaseData {
     )
     private String decisionMainContent;
 
+    @CCD(
+        label = "Messages",
+        typeOverride = Collection,
+        typeParameterOverride = "DssMessage",
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DssMessage>> messages;
+
+
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
