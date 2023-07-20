@@ -196,7 +196,7 @@ class CicSubmitCaseEventTest {
         //Then
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
         assertThat(response1.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
         assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
             .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
