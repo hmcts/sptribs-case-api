@@ -31,19 +31,24 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
@@ -74,6 +79,13 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private AppsConfig.AppsDetails cicAppDetail;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private IdamService idamService;
+
 
     @BeforeEach
     public void setUp() {
@@ -129,17 +141,21 @@ class CicSubmitCaseEventTest {
         caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
         caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
 
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         cicSubmitCaseEvent.configure(configBuilder);
 
-
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
             beforeCaseDetails
         );
 
+        //Then
         Assertions.assertEquals(State.DSS_Submitted, aboutToSubmitResponse.getState());
     }
 
@@ -171,7 +187,8 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
-
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
