@@ -70,7 +70,6 @@ public final class DocumentListUtil {
                 .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
                 + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
                 + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
-
             .collect(Collectors.toList());
     }
 
