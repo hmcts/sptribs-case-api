@@ -78,9 +78,9 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
-            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
-                + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
-                + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+            .map(doc -> DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + doc.getDocumentLink().getUrl() + ")").code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
 
         return DynamicMultiSelectList
