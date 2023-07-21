@@ -50,6 +50,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildHearing(configBuilder);
         buildCicaDetails(configBuilder);
         buildCaseFileViewTab(configBuilder);
+        buildMessagesTab(configBuilder);
         buildCaseFlagTab(configBuilder);
         buildCaseLinkTab(configBuilder);
     }
@@ -78,6 +79,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .field(CaseData::getFlagLauncher1, null, "#ARGUMENT(READ)");
+        buildMessagesTab(configBuilder);
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -136,6 +138,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, SUPER_USER)
             .field(CaseData::getNotes);
+    }
+
+    private void buildMessagesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("messages", "Messages")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .field(CaseData::getMessages);
     }
 
     private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -260,8 +269,32 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .label("Listing details", null, "#### Listing details")
-            .field(CaseData::getHearingList);
+            .label("Listing details", "hearingType!=\"\"", "#### Listing details")
+            .field("hearingStatus")
+            .field("hearingType")
+            .field("hearingFormat")
+            .field("hearingVenueNameAndAddress")
+            .field("roomAtVenue")
+            .field("date")
+            .field("session")
+            .field("hearingTime")
+            .field("videoCallLink")
+            .field("importantInfoDetails")
+            .field("cicCaseHearingNotificationParties")
+
+            .label("Hearing summary", "isFullPanel!=\"\"", "#### Hearing summary")
+            .field("judge")
+            .field("isFullPanel")
+            .field("memberList")
+            .field("roles")
+            .field("others")
+            .field("cicCaseHearingOutcome")
+            .field("cicCaseAdjournmentReasons")
+            .field("recFile")
+            .field("recDesc")
+            .label("Postponement summary", "cicCasePostponeReason!=\"\"", "#### Postponement summary")
+            .field("cicCasePostponeReason")
+            .field("cicCasePostponeAdditionalInformation");
 
 
     }
