@@ -181,9 +181,10 @@ public class NotificationHelper {
             for (DynamicListElement element : documents) {
                 count++;
                 String[] labels = element.getLabel().split(DOUBLE_HYPHEN);
+
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(CASE_DOCUMENT + count,
-                    StringUtils.substringAfterLast(labels[1],
+                    StringUtils.substringAfterLast(labels[1].substring(0, labels[1].length() - 1),
                         "/"));
                 LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
                     uploadedDocuments.get(CASE_DOCUMENT + count));
