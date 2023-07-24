@@ -66,7 +66,7 @@ class CaseWorkerMaintainLinkCaseTest {
     void shouldRemoveLinkCase() {
         //Given
         CicCase cicCase = CicCase.builder()
-            .linkCaseNumber("")
+            .linkCaseNumber(TEST_CASE_ID.toString())
             .linkCaseReason(LinkCaseReason.CASE_CONSOLIDATED)
             .build();
         CaseData caseData = caseData();
