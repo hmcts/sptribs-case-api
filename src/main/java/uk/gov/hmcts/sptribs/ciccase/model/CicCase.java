@@ -98,7 +98,7 @@ public class CicCase {
     private HearingCancellationReason hearingCancellationReason;
 
     @CCD(
-        label = "Enter case number",
+        label = "Case number to be linked",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private CaseLink linkCaseNumber;
@@ -430,6 +430,27 @@ public class CicCase {
     private String respondentEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
+        label = "Tribunal name ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalName = "First-tier Tribunal (CIC)";
+
+    @CCD(
+        label = "Tribunal organisation ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalOrganisation = "Criminal Injuries Compensation";
+
+    @CCD(
+        label = "Tribunal email  ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalEmail = "CIC.enquiries@justice.gov.uk";
+
+    @CCD(
         label = "Subject's full name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -689,6 +710,12 @@ public class CicCase {
     )
     @JsonIgnore
     private NotificationResponse repNotificationResponse;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse tribunalNotificationResponse;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

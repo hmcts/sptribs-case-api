@@ -1,6 +1,6 @@
 # Special Tribunals Case API [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This API handles callbacks from CCD for the CIC (and others, in the future) case type.
+This API handles callbacks from CCD for the CIC (and other services, in the future) case type.
 
 ## Overview
 
@@ -98,3 +98,4 @@ Note that the cron will only run in the aat-00 cluster as we don't have a way to
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+

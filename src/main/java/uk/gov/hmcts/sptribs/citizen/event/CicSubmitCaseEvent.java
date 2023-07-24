@@ -11,10 +11,12 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.time.LocalDate;
@@ -32,7 +35,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -47,6 +52,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private IdamService idamService;
 
     @Autowired
     AppsConfig appsConfig;
@@ -117,7 +128,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         }
         List<CaseworkerCICDocument> docList = new ArrayList<>();
+        List<ListValue<DssMessage>> listValues = new ArrayList<>();
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
+            //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
@@ -125,11 +138,27 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
-                if (!docList.contains(caseworkerCICDocument)) {
-                    docList.add(caseworkerCICDocument);
-                }
+                final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+
+                DssMessage message = DssMessage.builder()
+                    .message(dssCaseData.getAdditionalInformation())
+                    .dateReceived(LocalDate.now())
+                    .receivedFrom(caseworkerUser.getUserDetails().getFullName())
+                    .documentRelevance(dssCaseData.getDocumentRelevance())
+                    .otherInfoDocument(caseworkerCICDocument)
+                    .build();
+
+                var listValue = ListValue
+                    .<DssMessage>builder()
+                    .id("1")
+                    .value(message)
+                    .build();
+
+                listValues.add(listValue);
+
             }
         }
+        caseData.setMessages(listValues);
 
         if (!CollectionUtils.isEmpty(dssCaseData.getSupportingDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {

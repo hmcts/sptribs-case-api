@@ -71,6 +71,12 @@ public class CaseData {
     private List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private String caseLinkExists = "YES";
+
+
+    @CCD(
         label = "Linked cases",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -290,6 +296,15 @@ public class CaseData {
         typeOverride = TextArea
     )
     private String decisionMainContent;
+
+    @CCD(
+        label = "Messages",
+        typeOverride = Collection,
+        typeParameterOverride = "DssMessage",
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DssMessage>> messages;
+
 
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
