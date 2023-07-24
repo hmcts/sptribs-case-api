@@ -85,7 +85,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
 
         var data = details.getData();
-        var caseNumber=data.getCicCase().getLinkCaseNumber().replace("-","");
+        var caseNumber = data.getCicCase().getLinkCaseNumber().replace("-", "");
         CaseLink caseLink = CaseLink.builder()
             .caseReference(caseNumber)
             .createdDateTime(null)
