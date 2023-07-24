@@ -34,7 +34,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     + "\n- File must be no larger than 500 MB\n"
                     + "\n- You can only upload mp3 files\n"
                     + "\n- Give the files a meaningful name. for example, bail-hearing-John-Smith.mp3\n\n\n\n"
-                    +"Note: If the remove button is disabled, please refresh the page to remove attachments")
+                    + "Note: If the remove button is disabled, please refresh the page to remove attachments")
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .optionalWithLabel(HearingSummary::getRecFile, "Upload file")

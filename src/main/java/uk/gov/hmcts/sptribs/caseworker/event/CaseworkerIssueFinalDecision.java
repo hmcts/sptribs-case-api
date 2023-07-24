@@ -177,7 +177,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> uploadDocumentMidEvent(CaseDetails<CaseData, State> details,
-                                                                                 CaseDetails<CaseData, State> detailsBefore) {
+                                                                                CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         CICDocument uploadedDocument = data.getCaseIssueFinalDecision().getDocument();
         final List<String> errors = validateDecisionDocumentFormat(uploadedDocument);
