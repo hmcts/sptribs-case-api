@@ -16,8 +16,6 @@ public class MaintainLinkCaseSelectCase implements CcdPageConfiguration {
             .pageShowConditions(maintainCaseLinks())
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getLinkDynamicList)
-            .done()
-            .mandatory(CaseData::getCaseLinks)
             .done();
     }
 }

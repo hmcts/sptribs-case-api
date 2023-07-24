@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.MaintainLinkCaseSelectCase;
 import uk.gov.hmcts.sptribs.caseworker.service.LinkService;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -118,7 +119,8 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Case Updated")
+            .confirmationHeader(MessageUtil.generateSimpleMessage(
+                "Link removed from case", ""))
             .build();
     }
 
