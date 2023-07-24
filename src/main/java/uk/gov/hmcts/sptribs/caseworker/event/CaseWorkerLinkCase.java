@@ -83,9 +83,11 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
+
         var data = details.getData();
+        var caseNumber=data.getCicCase().getLinkCaseNumber().replace("-","");
         CaseLink caseLink = CaseLink.builder()
-            .caseReference(data.getCicCase().getLinkCaseNumber())
+            .caseReference(caseNumber)
             .createdDateTime(null)
             .caseType("CriminalInjuriesCompensation")
             .build();
