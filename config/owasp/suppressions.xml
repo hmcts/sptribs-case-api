@@ -16,6 +16,11 @@
     <suppress>
       <notes>jackson-databind-2.13.1.jar</notes>
       <cve>CVE-2020-36518</cve>
+      <cve>CVE-2023-35116</cve>
+    </suppress>
+    <suppress>
+      <notes>launchdarkly-java-server-sdk-6.1.0.jar</notes>
+      <cve>CVE-2023-2976</cve>
     </suppress>
     <suppress>
       <notes>
@@ -71,6 +76,7 @@
       <notes>no updates yet for tomcat-embed-core and tomcat-embed-websocket</notes>
       <cve>CVE-2022-34305</cve>
       <cve>CVE-2021-43980</cve>
+      <cve>CVE-2023-34981</cve>
     </suppress>
     <suppress>
       <cve>CVE-2022-42252</cve>
