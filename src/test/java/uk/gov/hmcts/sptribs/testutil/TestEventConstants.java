@@ -38,7 +38,7 @@ public final class TestEventConstants {
     public static final String STITCH_BUNDLE = "stitchBundle";
     public static final String EDIT_BUNDLE = "editBundle";
     public static final String CLONE_BUNDLE = "cloneBundle";
-
+    public static final String ASYNC_STITCH_COMPLETE = "asyncStitchingComplete";
 
     private TestEventConstants() {
     }
