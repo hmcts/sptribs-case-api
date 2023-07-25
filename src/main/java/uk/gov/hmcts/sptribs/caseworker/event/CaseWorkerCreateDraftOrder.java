@@ -25,9 +25,9 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -51,7 +52,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
@@ -97,10 +98,11 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+
         var caseData = details.getData();
         OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
-
-        addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase());
+        String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
+        addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
@@ -131,22 +133,21 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
-
+        caseData.getCicCase().setOrderTemplateIssued(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
             .build();
     }
 
-    private void addToDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, CicCase cicCase) {
+    private void addToDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, CicCase cicCase, String date) {
         DynamicList orderTemplateDynamicList = cicCase.getDraftOrderDynamicList();
         if (orderTemplateDynamicList == null) {
             orderTemplateDynamicList = DynamicList.builder().listItems(new ArrayList<>()).build();
             cicCase.setDraftOrderDynamicList(orderTemplateDynamicList);
         }
 
-        Calendar cal = Calendar.getInstance();
-        String templateNamePlusCurrentDate = orderTemplate.getLabel() + " " + simpleDateFormat.format(cal.getTime()) + "_draft.pdf";
+        String templateNamePlusCurrentDate = orderTemplate.getLabel() + DOUBLE_HYPHEN + date + DOUBLE_HYPHEN + "draft.pdf";
 
         DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
         orderTemplateDynamicList.getListItems().add(element);
@@ -164,8 +165,9 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         CaseDetails<CaseData, State> detailsBefore
     ) {
 
-        var caseData = orderService.generateOrderFile(details.getData(), details.getId());
-
+        LocalDateTime localTime = LocalDateTime.now();
+        String date = formatter.format(localTime);
+        var caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
