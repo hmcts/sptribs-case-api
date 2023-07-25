@@ -12,8 +12,8 @@ import java.util.List;
 
 import static java.util.List.of;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_REGION;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_CATEGORY;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_REGION;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_SUBCATEGORY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
@@ -40,6 +40,7 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Applicant Name").id(APPLICANT_NAME).build(),
         SearchField.<UserRole>builder().label("Representative Reference").id(REPRESENTATIVE_REFERENCE).build()
     );
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
