@@ -41,6 +41,7 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Representative Reference").id(REPRESENTATIVE_REFERENCE).build()
     );
 
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.searchInputFields().fields(SEARCH_FIELD_LIST);
