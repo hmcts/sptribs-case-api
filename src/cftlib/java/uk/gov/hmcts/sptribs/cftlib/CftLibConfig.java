@@ -91,7 +91,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             "cic-senior-judge",
             "cic-judge",
             "cic-respondent",
-            "citizen"
+            "citizen",
+            "[CREATOR]"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")

@@ -43,6 +43,9 @@ public class CICAccessProfile extends CriminalInjuriesCompensation {
         configBuilder.caseRoleToAccessProfile(UserRole.CREATOR)
             .accessProfiles(UserRole.CREATOR.getRole())
             .caseAccessCategories(UserRole.CREATOR.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.SOLICITOR)
+            .accessProfiles(UserRole.SOLICITOR.getRole())
+            .caseAccessCategories(UserRole.SOLICITOR.getCaseTypePermissions()).build();
 
         /*
         // This block works as intended and to our understanding of setting up AM/IDAM for legacy operation
