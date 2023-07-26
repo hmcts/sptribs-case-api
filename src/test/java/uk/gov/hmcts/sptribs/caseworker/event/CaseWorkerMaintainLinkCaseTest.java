@@ -3,14 +3,15 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
+import uk.gov.hmcts.sptribs.caseworker.service.LinkService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -28,6 +29,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_MAINTA
 class CaseWorkerMaintainLinkCaseTest {
     @InjectMocks
     private CaseWorkerMaintainLinkCase caseWorkerMaintainLinkCase;
+
+    @Mock
+    private LinkService linkService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -59,10 +63,10 @@ class CaseWorkerMaintainLinkCaseTest {
     }
 
     @Test
-    void shouldAdd2LinksToCase() {
+    void shouldRemoveLinkCase() {
         //Given
         CicCase cicCase = CicCase.builder()
-            .linkCaseNumber(new CaseLink())
+            .linkCaseNumber(TEST_CASE_ID.toString())
             .linkCaseReason(LinkCaseReason.CASE_CONSOLIDATED)
             .build();
         CaseData caseData = caseData();
@@ -73,6 +77,8 @@ class CaseWorkerMaintainLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
+        AboutToStartOrSubmitResponse<CaseData, State> start =
+            caseWorkerMaintainLinkCase.aboutToStart(updatedCaseDetails);
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseWorkerMaintainLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submitted = caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
@@ -80,5 +86,6 @@ class CaseWorkerMaintainLinkCaseTest {
         //Then
         assertThat(response1).isNotNull();
         assertThat(submitted).isNotNull();
+        assertThat(start).isNotNull();
     }
 }
