@@ -15,16 +15,41 @@ public class CICAccessProfile extends CriminalInjuriesCompensation {
 
     @Override
     public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
-        ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
+        //ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
+
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_SUPER_USER)
+            .accessProfiles("cic-superuser")
+            .caseAccessCategories(UserRole.CIC_SUPER_USER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_CASEWORKER)
+            .accessProfiles("cic-caseworker")
+            .caseAccessCategories(UserRole.CIC_CASEWORKER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_SENIOR_CASEWORKER)
+            .accessProfiles("cic-senior-caseworker")
+            .caseAccessCategories(UserRole.CIC_SENIOR_CASEWORKER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_CENTRE_ADMIN)
+            .accessProfiles("cic-centre-admin")
+            .caseAccessCategories(UserRole.CIC_CENTRE_ADMIN.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_CENTRE_TEAM_LEADER)
+            .accessProfiles("cic-centre-team-leader")
+            .caseAccessCategories(UserRole.CIC_CENTRE_TEAM_LEADER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_SENIOR_JUDGE)
+            .accessProfiles("cic-senior-judge")
+            .caseAccessCategories(UserRole.CIC_SENIOR_JUDGE.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_JUDGE)
+            .accessProfiles("cic-judge")
+            .caseAccessCategories(UserRole.CIC_JUDGE.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_RESPONDENT)
+            .accessProfiles("cic-respondent")
+            .caseAccessCategories(UserRole.CIC_RESPONDENT.getCaseTypePermissions()).build();
 
         /*
         // This block works as intended and to our understanding of setting up AM/IDAM for legacy operation
         // However if we uncomment this although be case create cases as expected we cannot see them on the case list
         // Commented out until we start to tackle Access Profiles as we're going to need support
         //
-        configBuilder.caseRoleToAccessProfile(UserRole.SUPER_USER)
-            .accessProfiles(UserRole.getAccessProfileName(UserRole.SUPER_USER))
-            .caseAccessCategories(UserRole.SUPER_USER.getCaseTypePermissions()).legacyIdamRole();
+        configBuilder.caseRoleToAccessProfile(UserRole.CIC_SUPER_USER)
+            .accessProfiles(UserRole.getAccessProfileName(UserRole.CIC_SUPER_USER))
+            .caseAccessCategories(UserRole.CIC_SUPER_USER.getCaseTypePermissions()).legacyIdamRole();
         configBuilder.caseRoleToAccessProfile(UserRole.SYSTEMUPDATE)
             .accessProfiles(UserRole.getAccessProfileName(UserRole.SYSTEMUPDATE))
             .caseAccessCategories(UserRole.SYSTEMUPDATE.getCaseTypePermissions()).legacyIdamRole();

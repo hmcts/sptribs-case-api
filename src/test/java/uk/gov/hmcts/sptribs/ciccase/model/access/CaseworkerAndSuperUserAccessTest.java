@@ -11,7 +11,7 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CIC_SUPER_USER;
 
 class CaseworkerAndSuperUserAccessTest {
 
@@ -23,10 +23,10 @@ class CaseworkerAndSuperUserAccessTest {
         assertThat(grants)
             .hasSize(4)
             .contains(
-                entry(SUPER_USER, C),
-                entry(SUPER_USER, R),
-                entry(SUPER_USER, U),
-                entry(SUPER_USER, D)
+                entry(CIC_SUPER_USER, C),
+                entry(CIC_SUPER_USER, R),
+                entry(CIC_SUPER_USER, U),
+                entry(CIC_SUPER_USER, D)
             );
     }
 }
