@@ -57,7 +57,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
@@ -65,7 +65,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
@@ -73,7 +73,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
@@ -81,7 +81,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }

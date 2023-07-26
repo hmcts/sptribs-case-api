@@ -108,7 +108,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
@@ -116,7 +116,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
@@ -124,7 +124,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
@@ -132,7 +132,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }

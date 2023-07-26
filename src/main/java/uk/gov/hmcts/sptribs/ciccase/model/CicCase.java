@@ -118,7 +118,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Status flagStatus;
+    private Status status;
 
 
     @CCD(
