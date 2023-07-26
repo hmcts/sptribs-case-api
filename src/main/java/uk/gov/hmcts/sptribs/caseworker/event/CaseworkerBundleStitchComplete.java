@@ -48,8 +48,8 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
         new PageBuilder(configBuilder
             .event(ASYNC_STITCH_COMPLETE)
             .forStates(BUNDLE_STATES)
-            .name("Bundle: Async Stitching Complete")
-            .description("Bundle: Async Stitching Complete")
+            .name("Bundle: Async Stitching Comp")
+            .description("Bundle: Async Stitching Comp")
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
