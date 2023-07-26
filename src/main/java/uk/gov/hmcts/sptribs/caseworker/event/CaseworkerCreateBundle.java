@@ -54,6 +54,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             .name("Bundle: Create a bundle")
             .description("Bundle: Create a bundle")
             .aboutToSubmitCallback(this::aboutToSubmit)
+            .showSummary()
             .grant(CREATE_READ_UPDATE, CIC_SUPER_USER,
                 CIC_CASEWORKER, CIC_SENIOR_CASEWORKER, CIC_CENTRE_ADMIN,
                 CIC_CENTRE_TEAM_LEADER)

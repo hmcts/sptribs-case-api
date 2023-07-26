@@ -132,6 +132,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .contains(draftOrderCIC.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
                 && draftOrderFile[2].contains(dynamicListLabel[1])) {
                 draftOrderCIC.getValue().setTemplateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued());
+                draftOrderCIC.getValue().setDraftOrderContentCIC(caseData.getDraftOrderContentCIC());
             }
         }
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());

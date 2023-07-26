@@ -45,6 +45,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
             .forStates(BUNDLE_STATES)
             .name("Bundle: Edit a bundle")
             .description("Bundle: Edit a bundle")
+            .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, CIC_SUPER_USER,
                 CIC_CASEWORKER, CIC_SENIOR_CASEWORKER, CIC_CENTRE_ADMIN,
