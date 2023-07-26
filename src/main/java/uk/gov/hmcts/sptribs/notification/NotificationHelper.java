@@ -43,7 +43,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
-
 @Component
 public class NotificationHelper {
 
