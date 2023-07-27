@@ -8,6 +8,8 @@ public final class CaseFieldsConstants {
     public static final String REPRESENTATIVE_REFERENCE = "cicCaseRepresentativeReference";
     public static final String SUBJECT_ADDRESS = "cicCaseAddress";
     public static final String HEARING_LOCATION = "hearingVenueName";
+    public static final String CASE_CATEGORY = "cicCaseCaseCategory";
+    public static final String CASE_SUBCATEGORY = "cicCaseCaseSubcategory";
     public static final String APPLICANT_NAME = "cicCaseApplicantFullName";
     public static final String CCD_REFERENCE = "[CASE_REFERENCE]";
     public static final String CASE_STATE = "[STATE]";

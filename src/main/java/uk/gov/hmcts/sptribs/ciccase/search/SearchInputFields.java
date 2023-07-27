@@ -12,8 +12,10 @@ import java.util.List;
 
 import static java.util.List.of;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_NAME;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_CATEGORY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_REGION;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_SUBCATEGORY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_LOCATION;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_REFERENCE;
@@ -29,6 +31,8 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Case status (state)").id(CASE_STATE).build(),
         SearchField.<UserRole>builder().label("Case status (state)").id(CASE_STATE).build(),
         SearchField.<UserRole>builder().label("Case Region").id(CASE_REGION).build(),
+        SearchField.<UserRole>builder().label("Case category").id(CASE_CATEGORY).build(),
+        SearchField.<UserRole>builder().label("Case sub-category").id(CASE_SUBCATEGORY).build(),
         SearchField.<UserRole>builder().label("Hearing Location").id(HEARING_LOCATION).build(),
         SearchField.<UserRole>builder().label("Subject Name").id(SUBJECT_NAME).build(),
         SearchField.<UserRole>builder().label("Subject PostCode").id(SUBJECT_ADDRESS).listElementCode("PostCode").build(),
@@ -36,6 +40,7 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Applicant Name").id(APPLICANT_NAME).build(),
         SearchField.<UserRole>builder().label("Representative Reference").id(REPRESENTATIVE_REFERENCE).build()
     );
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
