@@ -11,7 +11,7 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CIC_SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
 class SystemUpdateAndSuperUserAccessTest {
@@ -24,10 +24,10 @@ class SystemUpdateAndSuperUserAccessTest {
         assertThat(grants)
             .hasSize(7)
             .contains(
-                entry(CIC_SUPER_USER, C),
-                entry(CIC_SUPER_USER, R),
-                entry(CIC_SUPER_USER, U),
-                entry(CIC_SUPER_USER, D),
+                entry(SUPER_USER, C),
+                entry(SUPER_USER, R),
+                entry(SUPER_USER, U),
+                entry(SUPER_USER, D),
                 entry(SYSTEMUPDATE, C),
                 entry(SYSTEMUPDATE, R),
                 entry(SYSTEMUPDATE, U)

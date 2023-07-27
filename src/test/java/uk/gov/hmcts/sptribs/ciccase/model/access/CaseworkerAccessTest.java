@@ -11,7 +11,7 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CIC_SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
@@ -29,7 +29,7 @@ class CaseworkerAccessTest {
             .contains(
                 entry(CITIZEN_CIC, R),
                 entry(SOLICITOR, R),
-                entry(CIC_SUPER_USER, R),
+                entry(SUPER_USER, R),
                 entry(COURT_ADMIN_CIC, C),
                 entry(COURT_ADMIN_CIC, R),
                 entry(COURT_ADMIN_CIC, U),

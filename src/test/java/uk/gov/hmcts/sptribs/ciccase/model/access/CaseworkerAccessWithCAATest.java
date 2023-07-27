@@ -10,8 +10,8 @@ import static org.assertj.guava.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CIC_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CIC_RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 
 class CaseworkerAccessWithCAATest {
 
@@ -23,12 +23,12 @@ class CaseworkerAccessWithCAATest {
         assertThat(grants)
             .hasSize(6)
             .contains(
-                entry(CIC_JUDGE, C),
-                entry(CIC_JUDGE, R),
-                entry(CIC_JUDGE, U),
-                entry(CIC_RESPONDENT, C),
-                entry(CIC_RESPONDENT, R),
-                entry(CIC_RESPONDENT, U)
+                entry(ST_CIC_JUDGE, C),
+                entry(ST_CIC_JUDGE, R),
+                entry(ST_CIC_JUDGE, U),
+                entry(ST_CIC_RESPONDENT, C),
+                entry(ST_CIC_RESPONDENT, R),
+                entry(ST_CIC_RESPONDENT, U)
             );
     }
 }
