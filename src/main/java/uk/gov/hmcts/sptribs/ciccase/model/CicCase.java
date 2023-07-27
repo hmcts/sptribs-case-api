@@ -130,7 +130,6 @@ public class CicCase {
     @CCD(
         label = "Explain why you are creating this flag.\n"
             + "Do not include any sensitive information such as personal details.",
-        regex = "^.{0,200}$",
         hint = "You can enter up to 200 characters",
         typeOverride = TextArea,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
