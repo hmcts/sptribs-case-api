@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
@@ -35,6 +36,9 @@ class CaseworkerCaseFlagTest {
 
     @InjectMocks
     private CaseworkerCaseFlag caseworkerCaseFlag;
+
+    @InjectMocks
+    private FlagAdditionalInfo flagAdditionalInfo;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -206,4 +210,30 @@ class CaseworkerCaseFlagTest {
         assertThat(response2.getData().getCaseFlags()).isNotNull();
     }
 
+    @Test
+    void shouldCheckAdditionalInfoLength() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setNote("This is a test note");
+        CicCase cicCase = new CicCase();
+        cicCase.setFlagType(FlagType.OTHER);
+        cicCase.setFlagAdditionalDetail("some detailsome detaisome detaisome detaisome detaisome detaisome detai"
+            + "some detaisome detaisome detaisome detaisome detailsome detaisome detaisome detaisome detaisome"
+            + " detailsome detaisome detaisome detaisome detaisome detai");
+        cicCase.setFlagLevel(FlagLevel.CASE_LEVEL);
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            flagAdditionalInfo.midEvent(updatedCaseDetails, beforeDetails);
+
+
+        //Then
+        assertThat(response.getErrors()).hasSize(1);
+    }
 }
