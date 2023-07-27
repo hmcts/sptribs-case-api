@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.LinkReason;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
@@ -21,7 +22,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
@@ -107,7 +107,7 @@ public class CicCase {
         label = "Why should these cases be linked?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private LinkCaseReason linkCaseReason;
+    private List<ListValue<LinkReason>> linkCaseReason;
 
     @CCD(
         label = "Other Description",

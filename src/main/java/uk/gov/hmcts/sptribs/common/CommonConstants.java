@@ -50,6 +50,8 @@ public final class CommonConstants {
     public static final String ADDRESS_LINE_7 = "address_line_7";
     public static final String YES = "yes";
     public static final String NO = "no";
+    public static final String CATEGORY_ID = "categoryId";
+    public static final String CATEGORY_ID_LINK_REASON = "CaseLinkingReasonCode";
 
     public static final String MARKUP_SEPARATOR = "]";
     public static final String CIC = "Criminal Injuries Compensation Tribunal";
