@@ -191,6 +191,19 @@
           "jurisdiction": "ST_CIC"
         },
         "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-legal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
+        "authorisations": []
       }
     ],
     "overrideAll": true
