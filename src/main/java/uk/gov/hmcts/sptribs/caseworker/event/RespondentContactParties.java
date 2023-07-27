@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -57,6 +58,9 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     private static final CcdPageConfiguration resPartiesToContact = new RespondentPartiesToContact();
     private static final CcdPageConfiguration contactPartiesSelectDocument = new ContactPartiesSelectDocument();
 
+    @Value("${case_document_am.url}")
+    private String baseUrl;
+
 
     @Autowired
     private ContactPartiesNotification contactPartiesNotification;
@@ -99,7 +103,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData,baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

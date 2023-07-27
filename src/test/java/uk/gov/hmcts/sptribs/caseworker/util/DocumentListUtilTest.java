@@ -50,7 +50,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
@@ -107,7 +107,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
@@ -131,7 +131,7 @@ public class DocumentListUtilTest {
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
@@ -156,8 +156,7 @@ public class DocumentListUtilTest {
         caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
-
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
         //Then
         assertThat(result).isNotNull();
 
@@ -185,7 +184,7 @@ public class DocumentListUtilTest {
         details.setData(caseData);
 
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
