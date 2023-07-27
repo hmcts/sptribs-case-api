@@ -7,17 +7,15 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil.maintainCaseLinks;
 
-public class LinkCaseSelectCase implements CcdPageConfiguration {
+public class MaintainLinkCaseSelectCase implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        pageBuilder.page("linkCaseSelectCase")
-            .pageLabel("Select a case you want to link to this case")
+        pageBuilder.page("maintainLinkCaseSelectCase")
+            .pageLabel("Select the cases you want to unlink from this case")
             .pageShowConditions(maintainCaseLinks())
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getLinkCaseNumber)
-            .mandatory(CicCase::getLinkCaseReason)
-            .mandatory(CicCase::getLinkCaseOtherDescription, "cicCaseLinkCaseReason = \"other\"")
+            .mandatory(CicCase::getLinkDynamicList)
             .done();
     }
 }

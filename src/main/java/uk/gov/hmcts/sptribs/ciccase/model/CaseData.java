@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -61,6 +62,25 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        label = "Linked cases",
+        typeParameterOverride = "CaseLink")
+    @Builder.Default
+    private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private String caseLinkExists = "YES";
+
+
+    @CCD(
+        label = "Linked cases",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ComponentLauncher linkedCasesComponentLauncher;
 
     @CCD(
         label = "Case flags",
@@ -272,6 +292,15 @@ public class CaseData {
         typeOverride = TextArea
     )
     private String decisionMainContent;
+
+    @CCD(
+        label = "Messages",
+        typeOverride = Collection,
+        typeParameterOverride = "DssMessage",
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DssMessage>> messages;
+
 
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default

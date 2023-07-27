@@ -9,10 +9,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -83,38 +83,39 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
-        var data = details.getData();
 
-        CaseLinks caseLink = CaseLinks.builder()
-            .caseReference(data.getCicCase().getLinkCaseNumber())
-            .reason(data.getCicCase().getLinkCaseReason().getLabel())
-            .otherDescription(data.getCicCase().getLinkCaseOtherDescription())
+        var data = details.getData();
+        var caseNumber = data.getCicCase().getLinkCaseNumber().replace("-", "");
+        CaseLink caseLink = CaseLink.builder()
+            .caseReference(caseNumber)
+            .createdDateTime(null)
+            .caseType("CriminalInjuriesCompensation")
             .build();
 
-        if (CollectionUtils.isEmpty(data.getCicCase().getCaseLinks())) {
-            List<ListValue<CaseLinks>> listValues = new ArrayList<>();
+        //TODO  .reasonForLink(Set.of(data.getCicCase().getLinkCaseReason().getLabel()))
+        if (CollectionUtils.isEmpty(data.getCaseLinks())) {
+            List<ListValue<CaseLink>> listValues = new ArrayList<>();
 
             var listValue = ListValue
-                .<CaseLinks>builder()
+                .<CaseLink>builder()
                 .id("1")
                 .value(caseLink)
                 .build();
 
             listValues.add(listValue);
 
-            data.getCicCase().setCaseLinks(listValues);
+            data.setCaseLinks(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
             var listValue = ListValue
-                .<CaseLinks>builder()
+                .<CaseLink>builder()
                 .value(caseLink)
                 .build();
 
-            data.getCicCase().getCaseLinks().add(0, listValue); // always add new note as first element so that it is displayed on top
+            data.getCaseLinks().add(0, listValue); // always add new note as first element so that it is displayed on top
 
-            data.getCicCase().getCaseLinks().forEach(
-                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-
+            data.getCaseLinks().forEach(
+                caseLinkListValue -> caseLinkListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

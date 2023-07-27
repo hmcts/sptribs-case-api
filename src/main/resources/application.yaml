@@ -112,7 +112,7 @@ flagType:
 
 bundling:
   api:
-    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-demo.service.core-compute-demo.internal}
 
 s2s:
   stub: false
@@ -186,11 +186,11 @@ feature:
   link-case:
     enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
-    enabled: ${CASE_FLAGS_FEATURE:false}
+    enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
-    enabled: ${BUNDLING_FEATURE:false}
+    enabled: ${BUNDLING_FEATURE:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
 

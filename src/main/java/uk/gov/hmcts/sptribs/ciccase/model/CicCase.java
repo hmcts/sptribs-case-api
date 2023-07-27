@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -12,13 +11,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
-import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
@@ -101,10 +98,10 @@ public class CicCase {
     private HearingCancellationReason hearingCancellationReason;
 
     @CCD(
-        label = "Enter case number",
+        label = "Case number to be linked",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseLink linkCaseNumber;
+    private String linkCaseNumber;
 
     @CCD(
         label = "Why should these cases be linked?",
@@ -117,16 +114,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String linkCaseOtherDescription;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLinks>> caseLinks;
-
-    @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher linkedCasesComponentLauncher;
-
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -143,7 +130,6 @@ public class CicCase {
     @CCD(
         label = "Explain why you are creating this flag.\n"
             + "Do not include any sensitive information such as personal details.",
-        regex = "^.{0,200}$",
         hint = "You can enter up to 200 characters",
         typeOverride = TextArea,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -182,6 +168,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList flagDynamicList;
+
+    @CCD(
+        label = "",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicMultiSelectList linkDynamicList;
 
     @CCD(
         label = "Template",
@@ -443,6 +435,27 @@ public class CicCase {
     private String respondentEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
+        label = "Tribunal name ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalName = "First-tier Tribunal (CIC)";
+
+    @CCD(
+        label = "Tribunal organisation ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalOrganisation = "Criminal Injuries Compensation";
+
+    @CCD(
+        label = "Tribunal email  ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalEmail = "CIC.enquiries@justice.gov.uk";
+
+    @CCD(
         label = "Subject's full name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -702,6 +715,12 @@ public class CicCase {
     )
     @JsonIgnore
     private NotificationResponse repNotificationResponse;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse tribunalNotificationResponse;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.common;
 
 public final class CommonConstants {
 
-    public static final String EMPTY_STRING = "";
+    public static final String EMPTY_PLACEHOLDER = "";
 
     public static final String CONTACT_NAME = "ContactName";
     public static final String TRIBUNAL_NAME = "TribunalName";
@@ -12,6 +12,7 @@ public final class CommonConstants {
     public static final String CIC_CASE_APPLICANT_NAME = "CicCaseApplicantFullName";
     public static final String CIC_CASE_REPRESENTATIVE_NAME = "CicCaseRepresentativeFullName";
     public static final String CIC_CASE_RESPONDENT_NAME = "CicCaseRespondentFullName";
+    public static final String CIC_CASE_TRIBUNAL_NAME = "CicCaseTribunalFullName";
     public static final String CIC_CASE_HEARING_TYPE = "HearingType";
     public static final String CIC_CASE_HEARING_VENUE = "HearingVenue";
     public static final String CIC_CASE_HEARING_DATE = "HearingDate";
@@ -50,6 +51,7 @@ public final class CommonConstants {
     public static final String YES = "yes";
     public static final String NO = "no";
 
+    public static final String MARKUP_SEPARATOR = "]";
     public static final String CIC = "Criminal Injuries Compensation Tribunal";
 
     public static final String STITCHED_FILE_NAME_FIELD_LENGTH_ERROR_MSG = "File Name should contain at least 2 and "
