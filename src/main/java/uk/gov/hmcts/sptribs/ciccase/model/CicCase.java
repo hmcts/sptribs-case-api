@@ -101,11 +101,13 @@ public class CicCase {
         label = "Case number to be linked",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String linkCaseNumber;
+    private CaseNumber linkCaseNumber;
 
     @CCD(
         label = "Why should these cases be linked?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "LinkCaseReason"
     )
     private LinkCaseReason linkCaseReason;
 
