@@ -57,6 +57,9 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     @Value("${feature.contact-parties.enabled}")
     private boolean contactPartiesEnabled;
 
+    @Value("${case_document_am.url}")
+    private String baseUrl;
+
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
     private static final CcdPageConfiguration contactPartiesSelectDocument = new ContactPartiesSelectDocument();
 
@@ -107,7 +110,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData,baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
