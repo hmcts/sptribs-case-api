@@ -2,50 +2,50 @@ package uk.gov.hmcts.sptribs.ciccase.model.accessprofile;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.sptribs.ciccase.CriminalInjuriesCompensation;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRolesForAccessProfiles;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 @Component
 @Slf4j
-public class CICAccessProfile extends CriminalInjuriesCompensation {
+public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationData, State, UserRolesForAccessProfiles> {
 
     @Override
-    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRole> configBuilder) {
+    public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRolesForAccessProfiles> configBuilder) {
         //ConfigBuilderHelper.configureWithMandatoryConfig(configBuilder);
 
-        configBuilder.caseRoleToAccessProfile(UserRole.SUPER_USER)
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SUPER_USER)
             .accessProfiles("cic-superuser")
-            .caseAccessCategories(UserRole.CIC_SUPER_USER.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.ST_CIC_CASEWORKER)
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_SUPER_USER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_CASEWORKER)
             .accessProfiles("cic-caseworker")
-            .caseAccessCategories(UserRole.CIC_CASEWORKER.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.ST_CIC_SENIOR_CASEWORKER)
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_CASEWORKER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_SENIOR_CASEWORKER)
             .accessProfiles("cic-senior-caseworker")
-            .caseAccessCategories(UserRole.CIC_SENIOR_CASEWORKER.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.ST_CIC_HEARING_CENTRE_ADMIN)
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_HEARING_CENTRE_ADMIN)
             .accessProfiles("cic-centre-admin")
-            .caseAccessCategories(UserRole.CIC_CENTRE_ADMIN.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .accessProfiles("cic-centre-team-leader")
-            .caseAccessCategories(UserRole.CIC_CENTRE_TEAM_LEADER.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.ST_CIC_SENIOR_JUDGE)
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_SENIOR_JUDGE)
             .accessProfiles("cic-senior-judge")
-            .caseAccessCategories(UserRole.CIC_SENIOR_JUDGE.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.ST_CIC_JUDGE)
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_JUDGE)
             .accessProfiles("cic-judge")
-            .caseAccessCategories(UserRole.CIC_JUDGE.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.ST_CIC_RESPONDENT)
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_JUDGE.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_RESPONDENT)
             .accessProfiles("cic-respondent")
-            .caseAccessCategories(UserRole.CIC_RESPONDENT.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.CREATOR)
-            .accessProfiles(UserRole.CREATOR.getRole())
-            .caseAccessCategories(UserRole.CREATOR.getCaseTypePermissions()).build();
-        configBuilder.caseRoleToAccessProfile(UserRole.SOLICITOR)
-            .accessProfiles(UserRole.SOLICITOR.getRole())
-            .caseAccessCategories(UserRole.SOLICITOR.getCaseTypePermissions()).build();
+            .caseAccessCategories(UserRolesForAccessProfiles.CIC_RESPONDENT.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CREATOR)
+            .accessProfiles(UserRolesForAccessProfiles.CREATOR.getRole())
+            .caseAccessCategories(UserRolesForAccessProfiles.CREATOR.getCaseTypePermissions()).build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SOLICITOR)
+            .accessProfiles("caseworker")
+            .caseAccessCategories(UserRolesForAccessProfiles.SOLICITOR.getCaseTypePermissions()).build();
 
         /*
         // This block works as intended and to our understanding of setting up AM/IDAM for legacy operation
