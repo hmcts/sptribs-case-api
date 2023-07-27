@@ -188,7 +188,7 @@ public class NotificationHelper {
                 String[] labels = element.getLabel().split(MARKUP_SEPARATOR);
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(CASE_DOCUMENT + count,
-                    StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 1),
+                    StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
                         "/"));
                 LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
                     uploadedDocuments.get(CASE_DOCUMENT + count));
