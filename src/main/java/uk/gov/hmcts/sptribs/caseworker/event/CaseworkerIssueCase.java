@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -43,6 +44,9 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     @Autowired
     private CaseIssuedNotification caseIssuedNotification;
 
+    @Value("${case_document_am.url}")
+    private String baseUrl;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
@@ -72,7 +76,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData,baseUrl);
         caseData.getCaseIssue().setDocumentList(documentList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
