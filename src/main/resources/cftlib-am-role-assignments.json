@@ -168,7 +168,7 @@
       },
       {
         "roleType": "ORGANISATION",
-        "roleName": "Regional-Centre-Admin",
+        "roleName": "regional-centre-admin",
         "grantType": "STANDARD",
         "roleCategory": "LEGAL_OPERATIONS",
         "classification": "PUBLIC",
