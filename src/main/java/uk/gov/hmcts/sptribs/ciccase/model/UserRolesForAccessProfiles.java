@@ -25,14 +25,14 @@ public enum UserRolesForAccessProfiles implements HasRole {
 
     CITIZEN_CIC("citizen", "CRU"),
 
-    CIC_SUPER_USER("cic-superuser", "CRU"),
-    CIC_CASEWORKER("cic-caseworker", "CRU"),
-    CIC_SENIOR_CASEWORKER("cic-senior-caseworker", "CRU"),
-    CIC_CENTRE_ADMIN("cic-centre-admin", "CRU"),
-    CIC_CENTRE_TEAM_LEADER("cic-centre-team-leader", "CRU"),
-    CIC_SENIOR_JUDGE("cic-senior-judge", "CRU"),
-    CIC_JUDGE("cic-judge", "CRU"),
-    CIC_RESPONDENT("cic-respondent", "CRU");
+    CIC_SUPER_USER("caseworker-sptribs-superuser", "CRU"),
+    CIC_CASEWORKER("caseworker-st_cic-caseworker", "CRU"),
+    CIC_SENIOR_CASEWORKER("caseworker-st_cic-senior-caseworker", "CRU"),
+    CIC_CENTRE_ADMIN("caseworker-st_cic-hearing-centre-admin", "CRU"),
+    CIC_CENTRE_TEAM_LEADER("caseworker-st_cic-hearing-centre-team-leader", "CRU"),
+    CIC_SENIOR_JUDGE("caseworker-st_cic-senior-judge", "CRU"),
+    CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
+    CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU");
 
     @JsonValue
     private final String role;
