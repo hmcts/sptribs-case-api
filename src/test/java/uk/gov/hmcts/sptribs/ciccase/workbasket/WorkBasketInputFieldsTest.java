@@ -39,7 +39,7 @@ class WorkBasketInputFieldsTest {
                     "Case Number",
                     null,
                     null),
-                tuple("hearingLocation",
+                tuple("hearingVenueName",
                     "Hearing Location",
                     null,
                     null),
