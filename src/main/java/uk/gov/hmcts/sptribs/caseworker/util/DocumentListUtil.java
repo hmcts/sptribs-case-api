@@ -78,7 +78,7 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        String apiUrl = baseUrl + "/cases/documents/%s/binary";
+        String apiUrl = "https://manage-case.demo.platform.hmcts.net/documents/%s/binary";
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
