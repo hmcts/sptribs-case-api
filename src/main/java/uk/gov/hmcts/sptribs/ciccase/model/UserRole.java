@@ -37,5 +37,4 @@ public enum UserRole implements HasRole {
     @JsonValue
     private final String role;
     private final String caseTypePermissions;
-
 }
