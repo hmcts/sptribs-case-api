@@ -62,7 +62,6 @@ class CaseWorkerLinkCaseTest {
         //Given
         CicCase cicCase = CicCase.builder()
             .linkCaseNumber(CaseNumber.builder().caseNumber(TEST_CASE_ID.toString()).build())
-            .linkCaseReason(LinkCaseReason.CASE_CONSOLIDATED)
             .build();
         CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
