@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.service.LinkService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseNumber;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -66,7 +67,7 @@ class CaseWorkerMaintainLinkCaseTest {
     void shouldRemoveLinkCase() {
         //Given
         CicCase cicCase = CicCase.builder()
-            .linkCaseNumber(TEST_CASE_ID.toString())
+            .linkCaseNumber(CaseNumber.builder().caseNumber(TEST_CASE_ID.toString()).build())
             .linkCaseReason(LinkCaseReason.CASE_CONSOLIDATED)
             .build();
         CaseData caseData = caseData();
