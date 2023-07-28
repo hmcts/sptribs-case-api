@@ -106,8 +106,8 @@ public class CicCase {
     @CCD(
         label = "Why should these cases be linked?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "LinkCaseReason"
+        typeOverride = Collection,
+        typeParameterOverride = "LinkReason"
     )
     private List<ListValue<LinkReason>> linkCaseReason;
 
