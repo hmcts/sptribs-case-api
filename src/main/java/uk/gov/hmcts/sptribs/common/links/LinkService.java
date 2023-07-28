@@ -62,7 +62,7 @@ public class LinkService {
                 CATEGORY_ID_LINK_REASON);
 
         } catch (FeignException exception) {
-            log.error("Unable to get Region data from reference data with exception {}",
+            log.error("Unable to get reason data from reference data with exception {}",
                 exception.getMessage());
         }
 
