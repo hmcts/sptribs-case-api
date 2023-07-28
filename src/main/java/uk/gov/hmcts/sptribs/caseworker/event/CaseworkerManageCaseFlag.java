@@ -10,11 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageFlagShowList;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageFlagUpdate;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagDetail;
 import uk.gov.hmcts.sptribs.caseworker.service.FlagService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -108,7 +108,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
@@ -116,7 +116,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
@@ -124,7 +124,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
@@ -132,7 +132,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             for (ListValue<FlagDetail> listValueFlag : caseData.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     listValueFlag.getValue().setFlagComment(cicCase.getFlagAdditionalDetail());
-                    listValueFlag.getValue().setStatus(cicCase.getFlagStatus().getLabel());
+                    listValueFlag.getValue().setStatus(cicCase.getStatus().getLabel());
                     break;
                 }
             }
