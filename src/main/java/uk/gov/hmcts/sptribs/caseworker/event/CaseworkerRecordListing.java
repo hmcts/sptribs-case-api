@@ -107,7 +107,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)
             .build();
     }
 
