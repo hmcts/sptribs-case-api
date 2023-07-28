@@ -105,9 +105,9 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
-flagType:
+refdata_common:
   api:
-    baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
 
 
 bundling:
