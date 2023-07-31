@@ -33,6 +33,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .forStates(State.Draft)
             .name("Submit case (cic)")
             .description("Application submit (cic)")
+            .publishToCamunda()
             .retries(120, 120)
             .grant(CREATE_READ_UPDATE, CITIZEN_CIC)
             .aboutToSubmitCallback(this::aboutToSubmit);
