@@ -58,6 +58,7 @@
     <suppress>
       <notes>spring-security-crypto 5.8.3 release brought in by service-auth-provider-java-client</notes>
       <cve>CVE-2023-34035</cve>
+      <cve>CVE-2023-34034</cve>
     </suppress>
     <suppress>
       <notes>no updates yet for tomcat-embed-core and tomcat-embed-websocket</notes>
