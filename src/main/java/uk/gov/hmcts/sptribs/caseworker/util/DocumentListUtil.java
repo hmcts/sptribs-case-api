@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -70,20 +71,24 @@ public final class DocumentListUtil {
             .filter(CaseworkerCICDocument::isDocumentValid)
             .map(doc -> DynamicListElement.builder()
                 .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
-                + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
-                + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+                    + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
+                    + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
     }
 
-    public static DynamicMultiSelectList prepareDocumentList(final CaseData data) {
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-
-        List<DynamicListElement> dynamicListElements = docList
-            .stream()
-            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
-                + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
-                + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
+        String apiUrl = baseUrl + "/documents/%s/binary";
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+        for (CaseworkerCICDocument doc : docList) {
+            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
+                "/");
+            String url = String.format(apiUrl, documentId);
+            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + url + ")").code(UUID.randomUUID()).build();
+            dynamicListElements.add(element);
+        }
 
         return DynamicMultiSelectList
             .builder()

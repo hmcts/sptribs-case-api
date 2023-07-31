@@ -45,6 +45,7 @@ public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRol
             .forStates(BUNDLE_STATES)
             .name("Bundle: Clone a bundle")
             .description("Bundle: Clone a bundle")
+            .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,

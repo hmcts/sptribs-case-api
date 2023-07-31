@@ -122,7 +122,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -146,7 +146,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -170,7 +170,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -194,7 +194,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(response.getData().getCicCase().getStatus()).isNotNull();
     }
 
     @Test
@@ -215,9 +215,9 @@ class CaseworkerManageCaseFlagTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> midResponse = manageFlagShowList.midEvent(updatedCaseDetails, beforeDetails);
-        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getStatus()).isNotNull();
 
-        cicCase.setFlagStatus(Status.INACTIVE);
+        cicCase.setStatus(Status.INACTIVE);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
 
@@ -253,7 +253,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(midEventResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midEventResponse.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -278,7 +278,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getStatus()).isNotNull();
 
     }
 
@@ -303,7 +303,7 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getFlagStatus()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getStatus()).isNotNull();
 
     }
 

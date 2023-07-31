@@ -11,9 +11,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.LinkReason;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
@@ -21,7 +22,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
@@ -101,13 +101,15 @@ public class CicCase {
         label = "Case number to be linked",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseLink linkCaseNumber;
+    private CaseNumber linkCaseNumber;
 
     @CCD(
         label = "Why should these cases be linked?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "LinkReason"
     )
-    private LinkCaseReason linkCaseReason;
+    private List<ListValue<LinkReason>> linkCaseReason;
 
     @CCD(
         label = "Other Description",
@@ -118,7 +120,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Status flagStatus;
+    private Status status;
 
 
     @CCD(
@@ -130,7 +132,6 @@ public class CicCase {
     @CCD(
         label = "Explain why you are creating this flag.\n"
             + "Do not include any sensitive information such as personal details.",
-        regex = "^.{0,200}$",
         hint = "You can enter up to 200 characters",
         typeOverride = TextArea,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -169,6 +170,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList flagDynamicList;
+
+    @CCD(
+        label = "",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicMultiSelectList linkDynamicList;
 
     @CCD(
         label = "Template",

@@ -77,7 +77,6 @@ public class CaseTypeTabTest {
         assertThat(casePartiesTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
         assertThat(ordersTab.getFields()).extracting(TabField::getId).contains("cicCaseOrderList");
         assertThat(caseDocsTab.getFields()).extracting(TabField::getId).contains("cicCaseApplicantDocumentsUploaded");
-        assertThat(hearingsTab.getFields()).extracting(TabField::getId).contains("cicCaseHearingNotificationParties");
         assertThat(cicaDetailsTab.getFields()).extracting(TabField::getId).contains("CICA Details");
         assertThat(caseCategoryTab.getFields()).extracting(TabField::getDisplayContextParameter).isNotNull();
         assertThat(messages.getFields()).extracting(TabField::getId).isNotNull();

@@ -45,6 +45,7 @@ public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRo
             .forStates(BUNDLE_STATES)
             .name("Bundle: Stitch a bundle")
             .description("Bundle: Stitch a bundle")
+            .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,

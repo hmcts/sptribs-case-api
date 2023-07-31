@@ -41,6 +41,10 @@ location:
   api:
     baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
 
+flagType:
+  api:
+    baseUrl: ${FLAGTYPE_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
 judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
@@ -57,6 +61,9 @@ core_case_data:
     url: http://localhost:4012
   search:
     page_size: 100
+
+case-api:
+  url: ${CASE_API_URL:https://manage-case.aat.platform.hmcts.net}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}

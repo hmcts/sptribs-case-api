@@ -14,7 +14,7 @@ public final class CommonConstants {
     public static final String CIC_CASE_RESPONDENT_NAME = "CicCaseRespondentFullName";
     public static final String CIC_CASE_TRIBUNAL_NAME = "CicCaseTribunalFullName";
     public static final String CIC_CASE_HEARING_TYPE = "HearingType";
-    public static final String CIC_CASE_HEARING_VENUE = "HearingVenue";
+    public static final String CIC_CASE_HEARING_VENUE = "FlagType";
     public static final String CIC_CASE_HEARING_DATE = "HearingDate";
     public static final String CIC_CASE_HEARING_TIME = "HearingTime";
     public static final String CIC_CASE_HEARING_INFO = "HearingInfo";
@@ -50,7 +50,10 @@ public final class CommonConstants {
     public static final String ADDRESS_LINE_7 = "address_line_7";
     public static final String YES = "yes";
     public static final String NO = "no";
+    public static final String CATEGORY_ID = "categoryId";
+    public static final String CATEGORY_ID_LINK_REASON = "CaseLinkingReasonCode";
 
+    public static final String MARKUP_SEPARATOR = "]";
     public static final String CIC = "Criminal Injuries Compensation Tribunal";
 
     public static final String STITCHED_FILE_NAME_FIELD_LENGTH_ERROR_MSG = "File Name should contain at least 2 and "
