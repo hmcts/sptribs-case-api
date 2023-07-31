@@ -105,9 +105,9 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
-flagType:
+refdata_common:
   api:
-    baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
 
 
 bundling:
@@ -147,6 +147,9 @@ docmosis:
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
       CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
+
+case-api:
+  url: ${CASE_API_URL:https://manage-case.aat.platform.hmcts.net}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}

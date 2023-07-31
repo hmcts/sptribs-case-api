@@ -44,7 +44,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     @Autowired
     private CaseIssuedNotification caseIssuedNotification;
 
-    @Value("${case_document_am.url}")
+    @Value("${case-api.url}")
     private String baseUrl;
 
     @Override

@@ -2,8 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagDetail;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -57,7 +57,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getCaseFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
@@ -65,7 +65,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getApplicantFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
@@ -73,7 +73,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getRepresentativeFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
@@ -81,7 +81,7 @@ public class ManageFlagShowList implements CcdPageConfiguration {
             for (ListValue<FlagDetail> listValueFlag : data.getSubjectFlags().getDetails()) {
                 if (Objects.equals(listValueFlag.getId(), selectedList[1])) {
                     cicCase.setFlagAdditionalDetail(listValueFlag.getValue().getFlagComment());
-                    cicCase.setFlagStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
+                    cicCase.setStatus(Status.valueOf(listValueFlag.getValue().getStatus()));
                     break;
                 }
             }
