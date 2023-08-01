@@ -82,6 +82,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
             .name("Orders: Send order")
             .description("Orders: Send order")
+            .publishToCamunda()
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::sent)
