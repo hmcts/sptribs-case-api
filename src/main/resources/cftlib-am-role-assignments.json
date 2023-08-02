@@ -196,7 +196,7 @@
         "roleType": "ORGANISATION",
         "roleName": "senior-judge",
         "grantType": "STANDARD",
-        "roleCategory": "LEGAL_OPERATIONS",
+        "roleCategory": "JUDICIAL",
         "classification": "PUBLIC",
         "readOnly": false,
         "attributes": {
