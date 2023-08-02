@@ -17,31 +17,42 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
 
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SUPER_USER)
             .accessProfiles(UserRolesForAccessProfiles.CIC_SUPER_USER.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_SUPER_USER.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_CASEWORKER)
             .accessProfiles(UserRolesForAccessProfiles.CIC_CASEWORKER.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_CASEWORKER.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_SENIOR_CASEWORKER)
             .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_HEARING_CENTRE_ADMIN)
             .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_SENIOR_JUDGE)
             .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_JUDGE)
             .accessProfiles(UserRolesForAccessProfiles.CIC_JUDGE.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_JUDGE.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_RESPONDENT)
             .accessProfiles(UserRolesForAccessProfiles.CIC_RESPONDENT.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CIC_RESPONDENT.getCaseTypePermissions()).build();
+            .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CREATOR)
             .accessProfiles(UserRolesForAccessProfiles.CREATOR.getRole())
-            .caseAccessCategories(UserRolesForAccessProfiles.CREATOR.getCaseTypePermissions()).build();
-
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CASEWORKER)
+            .accessProfiles(UserRolesForAccessProfiles.AC_CASEWORKER.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.PUI_CASE_MANAGER)
+            .accessProfiles(UserRolesForAccessProfiles.ST_PUI_CASE_MANAGER.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.PUI_SYSTEM_USER)
+            .accessProfiles(UserRolesForAccessProfiles.ST_PUI_SYSTEM_USER.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.PUI_ADMIN)
+            .accessProfiles(UserRolesForAccessProfiles.ST_PUI_ADMIN.getRole())
+            .build();
     }
 }
