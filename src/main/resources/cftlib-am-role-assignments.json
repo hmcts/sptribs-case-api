@@ -204,6 +204,32 @@
           "jurisdiction": "ST_CIC"
         },
         "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "judge",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "fee-paid-judge",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "caseType": "CriminalInjuriesCompensation",
+          "jurisdiction": "ST_CIC"
+        },
+        "authorisations": []
       }
     ],
     "overrideAll": true
