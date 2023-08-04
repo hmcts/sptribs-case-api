@@ -24,3 +24,18 @@ services:
       - LOGBACK_REQUIRE_ERROR_CODE=false
     ports:
       - $SERVER_PORT:$SERVER_PORT
+  database:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: plum
+      POSTGRES_PASSWORD: plum
+      POSTGRES_DB: plum
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    mem_limit: 320m
+    memswap_limit: 0
+
+volumes:
+  database-data:

@@ -23,6 +23,7 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
+
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
@@ -159,6 +160,9 @@ document_management:
 
 case_document_am:
   url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
+
+notify_proxy:
+  url: ${NOTIFY_PROXY_BASEURL:http://localhost:4013}
 
 prd:
   api:

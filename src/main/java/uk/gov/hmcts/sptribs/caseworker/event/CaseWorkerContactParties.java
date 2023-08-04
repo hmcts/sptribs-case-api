@@ -63,9 +63,9 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
     private static final CcdPageConfiguration contactPartiesSelectDocument = new ContactPartiesSelectDocument();
 
-    @Autowired
+    /*@Autowired
     private ContactPartiesNotification contactPartiesNotification;
-
+*/
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (contactPartiesEnabled) {
@@ -153,7 +153,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     }
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+        /*if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             contactPartiesNotification.sendToSubject(details.getData(), caseNumber);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
@@ -164,7 +164,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
-        }
+        }*/
+        log.info("");
     }
 
 }

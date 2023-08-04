@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
@@ -19,6 +21,8 @@ import uk.gov.hmcts.sptribs.common.links.LinkReasonClient;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
+import uk.gov.hmcts.sptribs.notification.NotifyProxyClient;
+import uk.gov.hmcts.sptribs.notifyproxy.config.DataSourceConfig;
 import uk.gov.hmcts.sptribs.recordlisting.LocationClient;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
@@ -27,7 +31,7 @@ import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication(
-    exclude = {CoreCaseDataClientAutoConfiguration.class},
+    exclude = {CoreCaseDataClientAutoConfiguration.class, DataSourceAutoConfiguration.class},
     scanBasePackages = {"uk.gov.hmcts.ccd.sdk", "uk.gov.hmcts.sptribs", "uk.gov.hmcts.reform.ccd.document"}
 
 )
@@ -44,11 +48,13 @@ import javax.annotation.PostConstruct;
         CaseAssignmentApi.class,
         CaseDocumentClientApi.class,
         BundlingClient.class,
-        LinkReasonClient.class
+        LinkReasonClient.class,
+        NotifyProxyClient.class
     }
 )
 @EnableScheduling
 @EnableRetry
+//@EnableJpaRepositories(basePackages="uk.gov.hmcts.sptribs.notifyproxy")
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
 @Slf4j
 public class CaseApiApplication implements CommandLineRunner {
