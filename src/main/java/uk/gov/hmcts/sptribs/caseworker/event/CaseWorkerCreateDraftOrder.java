@@ -92,9 +92,11 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         pageBuilder.page("createDraftOrderAddDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
             .label("draftOrderDocFooter",
-                "\nOrder Signature\n"
-                    + "\nConfirm the Role and Surname of the person who made this order - this will be added"
-                    + " to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'")
+                """
+                    Order Signature
+                    Confirm the Role and Surname of the person who made this order - this will be added
+                    to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'
+                    """)
             .complex(CaseData::getDraftOrderContentCIC)
             .mandatory(DraftOrderContentCIC::getOrderSignature)
             .done();
@@ -141,9 +143,9 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         }
         caseData.getCicCase().setOrderTemplateIssued(null);
-        if(caseData.getReferToJudge() != null && caseData.getReferToJudge().getReferralReason() != null) {
+        if (caseData.getReferToJudge() != null && caseData.getReferToJudge().getReferralReason() != null) {
             caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
-        }else if(caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
+        } else if (caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
             caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
