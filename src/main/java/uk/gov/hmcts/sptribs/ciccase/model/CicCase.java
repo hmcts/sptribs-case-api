@@ -605,12 +605,6 @@ public class CicCase {
 
     private YesOrNo representativeDetailsObjects;
 
-
-    @CCD(
-        label = "Police authority management incident",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String policeAuthority;
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
