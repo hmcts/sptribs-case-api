@@ -73,6 +73,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .forStates(CaseManagement, AwaitingHearing, CaseStayed, CaseClosed)
                 .name("Orders: Create draft")
                 .description("Orders: Create draft")
+                .publishToCamunda()
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::draftCreated)
