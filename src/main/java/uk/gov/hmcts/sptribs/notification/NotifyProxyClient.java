@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.sptribs.common.config.ControllerConstants;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
+import uk.gov.hmcts.sptribs.notifyproxy.model.Notification;
 
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public interface NotifyProxyClient {
 
     @PostMapping(value = "/{caseId}/email")
     ResponseEntity<Resource> sendEmailNotification(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                               @RequestHeader(ControllerConstants.SERVICE_AUTHORIZATION) String serviceAuth,
-                                               @PathVariable final Long  caseId);
+                                                   @RequestHeader(ControllerConstants.SERVICE_AUTHORIZATION) String serviceAuth,
+                                                   @PathVariable final Long  caseId,
+                                                   Notification notification);
 }
