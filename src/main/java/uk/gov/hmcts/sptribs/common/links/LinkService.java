@@ -71,9 +71,11 @@ public class LinkService {
 
     private List<ListValue<LinkReason>> getListValueLinkReason(List<LinkReason> list) {
         List<ListValue<LinkReason>> listValuesList = new ArrayList<>();
+        List<ListValue<LinkReason>> listValues = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
+
         for (LinkReason reason : list) {
             if (CollectionUtils.isEmpty(listValuesList)) {
-                List<ListValue<LinkReason>> listValues = new ArrayList<>();
 
                 var listValue = ListValue
                     .<LinkReason>builder()
@@ -85,7 +87,7 @@ public class LinkService {
 
                 listValuesList = listValues;
             } else {
-                AtomicInteger listValueIndex = new AtomicInteger(0);
+
                 var listValue = ListValue
                     .<LinkReason>builder()
                     .value(reason)
