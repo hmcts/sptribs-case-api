@@ -13,9 +13,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     SUPER_USER("idam:caseworker-sptribs-superuser", "CRU"),
     SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     CASEWORKER("idam:caseworker", "CRU"),
-    PUI_CASE_MANAGER("idam:pui-case-manager", "CRU"),
-    PUI_SYSTEM_USER("idam:jrd-system-user", "CRU"),
-    PUI_ADMIN("idam:jrd-admin", "CRU"),
 
     ST_CIC_CASEWORKER("idam:caseworker-st_cic-caseworker", "CRU"),
     ST_CIC_SENIOR_CASEWORKER("idam:caseworker-st_cic-senior-caseworker", "CRU"),
@@ -34,9 +31,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     CIC_SENIOR_JUDGE("caseworker-st_cic-senior-judge", "CRU"),
     CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
     CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
-    ST_PUI_CASE_MANAGER("pui-case-manager", "CRU"),
-    ST_PUI_SYSTEM_USER("jrd-system-user", "CRU"),
-    ST_PUI_ADMIN("jrd-admin", "CRU"),
     AC_CASEWORKER("caseworker", "CRU");
 
     @JsonValue
