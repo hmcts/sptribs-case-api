@@ -23,8 +23,8 @@ import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -55,7 +55,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration draftOrderEditMainContentPage = new DraftOrderMainContentPage();
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     @Autowired
     private OrderService orderService;
@@ -98,8 +98,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         CaseDetails<CaseData, State> detailsBefore
     ) {
 
-        Calendar cal = Calendar.getInstance();
-        String date = simpleDateFormat.format(cal.getTime());
+        LocalDateTime localTime = LocalDateTime.now();
+        String date = formatter.format(localTime);
         var caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

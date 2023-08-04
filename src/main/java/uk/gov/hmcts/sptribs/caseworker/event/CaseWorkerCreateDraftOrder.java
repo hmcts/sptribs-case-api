@@ -25,9 +25,9 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -53,7 +53,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
@@ -167,8 +167,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         CaseDetails<CaseData, State> detailsBefore
     ) {
 
-        Calendar cal = Calendar.getInstance();
-        String date = simpleDateFormat.format(cal.getTime());
+        LocalDateTime localTime = LocalDateTime.now();
+        String date = formatter.format(localTime);
         var caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
