@@ -144,4 +144,8 @@
     <cve>CVE-2023-34034</cve>
     <cve>CVE-2023-34035</cve>
   </suppress>
+  <suppress>
+    <notes>netty:4.1.91</notes>
+    <cve>CVE-2023-34462</cve>
+  </suppress>
 </suppressions>
