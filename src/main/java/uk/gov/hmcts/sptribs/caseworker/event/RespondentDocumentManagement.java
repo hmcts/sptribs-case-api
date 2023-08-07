@@ -62,8 +62,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
-                ST_CIC_JUDGE,
-                ST_CIC_RESPONDENT)
+                ST_CIC_JUDGE)
             .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
