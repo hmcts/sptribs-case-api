@@ -48,6 +48,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -68,7 +69,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getSubmitEvent())
@@ -76,7 +76,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .name("Submit case (cic)")
             .description("Application submit (cic)")
             .retries(120, 120)
-            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR).grantHistoryOnly(
+            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, SYSTEMUPDATE, CREATOR).grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
@@ -97,11 +97,23 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         String caseNumber = data.getHyphenatedCaseRef();
         EventUtil.setDssMetaData(data);
 
+        setDssMetaData(data);
         sendApplicationReceivedNotification(caseNumber, data);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
             .build();
+    }
+
+    private void setDssMetaData(CaseData data) {
+        data.setDssQuestion1("First Name");
+        data.setDssQuestion2("Last Name");
+        data.setDssQuestion3("Date of Birth");
+        data.setDssAnswer1("case_data.childrenFirstName");
+        data.setDssAnswer2("case_data.childrenLastName");
+        data.setDssAnswer3("case_data.childrenDateOfBirth");
+        data.setDssHeaderDetails("Child Details");
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
