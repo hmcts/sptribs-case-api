@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -10,13 +11,19 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.common.links.LinkReasonClient;
 import uk.gov.hmcts.sptribs.common.links.LinkService;
+import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +31,28 @@ class LinkServiceTest {
 
     @InjectMocks
     private LinkService linkService;
+
+    @Mock
+    private LinkReasonClient client;
+
+    @Mock
+    private AuthorisationService authorisationService;
+
+    @Test
+    void shouldGetLinkReason() {
+        //Given
+
+        Object sample = new Object();
+        when(authorisationService.getAuthorisation()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(authorisationService.getServiceAuthorization()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(client.getLinkReasons(any(), any(), any())).thenReturn(sample);
+
+        //When
+        Object response = linkService.getLinkReasons();
+
+        //Then
+        assertThat(response).isNotNull();
+    }
 
     @Test
     void shouldPopulateLinkDynamicList() {

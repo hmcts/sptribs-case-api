@@ -2,20 +2,21 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagTypePage;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagDetail;
-import uk.gov.hmcts.sptribs.caseworker.model.Flags;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.model.Status;
+import uk.gov.hmcts.sptribs.flag.refdata.FlagTypeService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
+    @Autowired
+    private FlagTypeService flagTypeService;
+
     private static final CcdPageConfiguration flagLevel = new FlagLevel();
     private static final CcdPageConfiguration flagParties = new FlagParties();
     private static final CcdPageConfiguration flagType = new FlagTypePage();
@@ -80,6 +85,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .name("Flags: Create flag")
             .showSummary()
             .description("Create a flag")
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -93,6 +99,16 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
                 ST_CIC_JUDGE));
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+
+        flagTypeService.getFlagTypes();
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(

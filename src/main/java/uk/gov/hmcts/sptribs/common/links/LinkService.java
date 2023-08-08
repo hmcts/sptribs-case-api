@@ -10,94 +10,82 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.LinkReason;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.http.HttpServletRequest;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CATEGORY_ID_LINK_REASON;
-import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.MICRO_SERVICE_ID;
 
 @Service
 @Slf4j
 public class LinkService {
 
     @Autowired
-    private IdamService idamService;
-
-    @Autowired
-    private HttpServletRequest httpServletRequest;
-
-    @Autowired
-    private AuthTokenGenerator authTokenGenerator;
+    AuthorisationService authorisationService;
 
     @Autowired
     private LinkReasonClient linkReasonClient;
 
     public List<ListValue<LinkReason>> getLinkReasons() {
-        List<LinkReason> list = getReasons();
-        return getListValueLinkReason(list);
+        Object list = getReasons();
+        log.info("list: " + list);
+        return getListValueLinkReason(null);
     }
 
-    private List<LinkReason> getReasons() {
+    private Object getReasons() {
 
         try {
-            final User user = idamService.retrieveUser(httpServletRequest.getHeader(AUTHORIZATION));
-            final String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
-                ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
-            String serviceAuthorization = authTokenGenerator.generate();
-            String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
-                ? serviceAuthorization.substring(7) : serviceAuthorization;
+            final String authorisation = authorisationService.getAuthorisation();
+            String serviceAuthorization = authorisationService.getServiceAuthorization();
 
             return linkReasonClient.getLinkReasons(
-                serviceAuthorizationLatest,
+                serviceAuthorization,
                 authorisation,
-                CATEGORY_ID_LINK_REASON);
+                MICRO_SERVICE_ID);
+
 
         } catch (FeignException exception) {
             log.error("Unable to get reason data from reference data with exception {}",
                 exception.getMessage());
         }
 
-        return new ArrayList<>();
+        return null;
     }
 
     private List<ListValue<LinkReason>> getListValueLinkReason(List<LinkReason> list) {
         List<ListValue<LinkReason>> listValuesList = new ArrayList<>();
         List<ListValue<LinkReason>> listValues = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
+        if (!CollectionUtils.isEmpty(list)) {
+            for (LinkReason reason : list) {
+                if (CollectionUtils.isEmpty(listValuesList)) {
 
-        for (LinkReason reason : list) {
-            if (CollectionUtils.isEmpty(listValuesList)) {
+                    var listValue = ListValue
+                        .<LinkReason>builder()
+                        .id("1")
+                        .value(reason)
+                        .build();
 
-                var listValue = ListValue
-                    .<LinkReason>builder()
-                    .id("1")
-                    .value(reason)
-                    .build();
+                    listValues.add(listValue);
 
-                listValues.add(listValue);
+                    listValuesList = listValues;
+                } else {
 
-                listValuesList = listValues;
-            } else {
+                    var listValue = ListValue
+                        .<LinkReason>builder()
+                        .value(reason)
+                        .build();
 
-                var listValue = ListValue
-                    .<LinkReason>builder()
-                    .value(reason)
-                    .build();
+                    listValuesList.add(0, listValue); // always add new note as first element so that it is displayed on top
 
-                listValuesList.add(0, listValue); // always add new note as first element so that it is displayed on top
+                    listValuesList.forEach(
+                        reasonListItem -> reasonListItem.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
-                listValuesList.forEach(
-                    reasonListItem -> reasonListItem.setId(String.valueOf(listValueIndex.incrementAndGet())));
-
+                }
             }
         }
         return listValuesList;
