@@ -19,6 +19,10 @@
       <cve>CVE-2023-35116</cve>
     </suppress>
     <suppress>
+      <notes>launchdarkly-java-server-sdk-6.1.0.jar</notes>
+      <cve>CVE-2023-2976</cve>
+    </suppress>
+    <suppress>
       <notes>
         CVE-2013-4152, CVE-2013-7315, CVE-2014-0054 affect Spring Framework before 3.2.4 and 4.0.0.M1 through 4.0.0.M2
       </notes>
@@ -72,6 +76,7 @@
       <notes>no updates yet for tomcat-embed-core and tomcat-embed-websocket</notes>
       <cve>CVE-2022-34305</cve>
       <cve>CVE-2021-43980</cve>
+      <cve>CVE-2023-34981</cve>
     </suppress>
     <suppress>
       <cve>CVE-2022-42252</cve>
