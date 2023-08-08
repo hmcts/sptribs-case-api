@@ -15,7 +15,7 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
     @Override
     public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRolesForAccessProfiles> configBuilder) {
 
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SUPER_USER)
+        /*configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SUPER_USER)
             .accessProfiles(UserRolesForAccessProfiles.CIC_SUPER_USER.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_CASEWORKER)
@@ -47,6 +47,6 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CITIZEN_CIC)
             .accessProfiles(UserRolesForAccessProfiles.AC_CITIZEN.getRole())
-            .build();
+            .build();*/
     }
 }
