@@ -6,15 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class Flags {
+public class Value {
 
-    @JsonProperty("details")
-    private List<FlagDetail> details;
+    @JsonProperty("key")
+    private String key;
 
+    @JsonProperty("value")
+    private String value;
+
+    @JsonProperty("value_cy")
+    private String valueCy;
 }

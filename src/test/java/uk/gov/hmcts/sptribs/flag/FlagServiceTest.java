@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker.service;
+package uk.gov.hmcts.sptribs.flag;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
