@@ -97,6 +97,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         CaseData data = details.getData();
 
         CaseData beforeData = beforeDetails.getData();
+        
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
             data.getCicCase().removeRepresentative();
