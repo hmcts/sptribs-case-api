@@ -364,50 +364,6 @@ public class CaseData {
     )
     private YesOrNo hasDssNotificationSent;
 
-    @CCD(
-        access = { DefaultAccess.class}
-    )
-    private String dssQuestion1;
-
-    @CCD(
-        access = { DefaultAccess.class}
-    )
-    private String dssAnswer1;
-
-    @CCD(
-        access = { DefaultAccess.class}
-    )
-    private String dssQuestion2;
-
-    @CCD(
-        access = {DefaultAccess.class}
-    )
-    private String dssAnswer2;
-
-    @CCD(
-        access = {DefaultAccess.class}
-    )
-    private String dssQuestion3;
-
-    @CCD(
-        access = { DefaultAccess.class}
-    )
-    private String dssAnswer3;
-
-
-    @CCD(
-        label = "Uploaded DSS Documents",
-        typeOverride = Collection,
-        typeParameterOverride = "DssUploadedDocument",
-        access = {CaseworkerAccess.class}
-    )
-    private List<ListValue<DssUploadedDocument>> uploadedDssDocuments;
-
-    @CCD(
-        access = { DefaultAccess.class}
-    )
-    private String dssHeaderDetails;
-
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
 
