@@ -65,7 +65,7 @@ public class CaseData {
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
-        label = "Linked cases",
+        label = "Linked Cases",
         typeParameterOverride = "CaseLink")
     @Builder.Default
     private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
@@ -75,9 +75,8 @@ public class CaseData {
     @Builder.Default
     private String caseLinkExists = "YES";
 
-
     @CCD(
-        label = "Linked cases",
+        label = "Component Launcher (for displaying Linked Cases data)",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ComponentLauncher linkedCasesComponentLauncher;

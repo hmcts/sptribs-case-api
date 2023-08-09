@@ -82,32 +82,6 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
-    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(CASEWORKER_LINK_CASE)
-            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-            .name("Links: Link case")
-            .showSummary()
-            .description("Links: Link case")
-            .aboutToStartCallback(this::aboutToStart)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE));
-
-        addWarning(pageBuilder);
-        linkCaseSelectCase.addTo(pageBuilder);
-    }
-
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
 
