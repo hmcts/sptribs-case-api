@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class Value {
+public class ValueObject {
 
     @JsonProperty("key")
     private String key;

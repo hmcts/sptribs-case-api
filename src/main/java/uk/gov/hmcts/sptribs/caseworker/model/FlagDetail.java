@@ -39,7 +39,7 @@ public class FlagDetail {
     private int listOfValuesLength;
 
     @JsonProperty("listOfValues")
-    private List<Value> listOfValues;
+    private List<ValueObject> listOfValues;
 
 
     @JsonProperty("name_cy")
