@@ -63,6 +63,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .forStates(CaseClosed)
             .name("Case: Reinstate case")
             .description("Case: Reinstate case")
+            .publishToCamunda()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::reinstated)
             .showSummary()
