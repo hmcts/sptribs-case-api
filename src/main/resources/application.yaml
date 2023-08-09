@@ -149,7 +149,7 @@ docmosis:
 
 
 case-api:
-  url: ${CASE_API:https://manage-case.aat.platform.hmcts.net}
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
