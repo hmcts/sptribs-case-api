@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker.service;
+package uk.gov.hmcts.sptribs.flag.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

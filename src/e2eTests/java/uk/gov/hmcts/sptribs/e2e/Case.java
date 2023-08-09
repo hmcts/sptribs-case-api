@@ -26,6 +26,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditCase;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
@@ -189,6 +190,7 @@ public class Case {
         assertThat(page.locator("h1"))
             .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
         page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
+        page.selectOption("#cicCaseRegionCIC", new SelectOption().setLabel("London"));
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
         getTextBoxByLabel(page, "CICA reference number").fill("CICATestReference");
         page.locator("#cicCaseCompensationClaimLinkCIC_Yes").click();
@@ -601,5 +603,22 @@ public class Case {
             .hasText("History", textOptionsWithTimeout(60000));
         assertThat(page.locator("tr a").first())
             .hasText(ManageDueDate.label, textOptionsWithTimeout(60000));
+    }
+
+    public void linkCase(String case1) {
+        startNextStepAction(LinkCase);
+        assertThat(page.locator("h1"))
+            .hasText("Before you start", textOptionsWithTimeout(60000));
+        clickButton(page, "Continue");
+        page.locator("#cicCaseLinkCaseNumber_caseNumber").fill(case1);
+        getRadioButtonByLabel(page, "Case consolidated").click();
+        clickButton(page, "Continue");
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("h1").last())
+            .hasText("Case link successful", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
     }
 }

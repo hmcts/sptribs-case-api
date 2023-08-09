@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.flag.service.FlagService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
