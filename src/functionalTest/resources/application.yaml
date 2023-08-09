@@ -11,6 +11,9 @@ azure:
 
 test-url: ${TEST_URL:http://localhost:4013}
 
+test:
+  url: https://manage-case.aat.platform.hmcts.net
+
 uk:
   gov:
     notify:
