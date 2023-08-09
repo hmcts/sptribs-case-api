@@ -71,7 +71,7 @@ core_case_data:
     page_size: ${CCD_SEARCH_PAGE_SIZE:100}
 
 case-api:
-  url: ${CASE_API:https://manage-case.aat.platform.hmcts.net}
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:https://manage-case.aat.platform.hmcts.net}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
