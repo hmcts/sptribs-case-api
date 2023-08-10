@@ -37,6 +37,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String ALWAYS_SHOW = "flagLauncherInternal != \"ALWAYS_HIDE\"";
+
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
@@ -55,9 +57,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-            .name("Create flag")
+            .name("Create Flag")
             .showSummary()
-            .description("Create a flag")
+            .description("Create Flag")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -73,9 +75,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_JUDGE))
             .page("caseworkerCaseFlag")
             .pageLabel("Case Flags")
-            .optional(CaseData::getCaseFlags,"",true,true)
-            .optional(CaseData::getAppellantFlags,"",true,true)
-            .optional(CaseData::getRespondentFlags,"",true,true)
+            .optional(CaseData::getCaseFlags, ALWAYS_SHOW, true, true)
+            .optional(CaseData::getAppellantFlags, ALWAYS_SHOW, true, true)
+            .optional(CaseData::getRespondentFlags, ALWAYS_SHOW, true, true)
             .mandatory(CaseData::getFlagLauncherInternal,
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
