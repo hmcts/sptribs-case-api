@@ -31,7 +31,7 @@ import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication(
-    exclude = {CoreCaseDataClientAutoConfiguration.class},
+    exclude = {CoreCaseDataClientAutoConfiguration.class, DataSourceAutoConfiguration.class},
     scanBasePackages = {"uk.gov.hmcts.ccd.sdk", "uk.gov.hmcts.sptribs", "uk.gov.hmcts.reform.ccd.document"}
 
 )
