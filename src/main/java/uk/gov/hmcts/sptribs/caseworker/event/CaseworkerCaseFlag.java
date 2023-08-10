@@ -76,8 +76,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .page("caseworkerCaseFlag")
             .pageLabel("Case Flags")
             .optional(CaseData::getCaseFlags, ALWAYS_SHOW, true, true)
-            .optional(CaseData::getAppellantFlags, ALWAYS_SHOW, true, true)
-            .optional(CaseData::getRespondentFlags, ALWAYS_SHOW, true, true)
+            .optional(CaseData::getSubjectFlags, ALWAYS_SHOW, true, true)
+            .optional(CaseData::getApplicantFlags, ALWAYS_SHOW, true, true)
+            .optional(CaseData::getRepresentativeFlags, ALWAYS_SHOW, true, true)
             .mandatory(CaseData::getFlagLauncherInternal,
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }

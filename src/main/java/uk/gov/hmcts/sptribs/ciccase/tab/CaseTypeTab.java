@@ -81,8 +81,9 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .field(CaseData::getFlagLauncherInternal, null, "#ARGUMENT(READ)")
             .field(CaseData::getCaseFlags)
-            .field(CaseData::getAppellantFlags)
-            .field(CaseData::getRespondentFlags);
+            .field(CaseData::getSubjectFlags)
+            .field(CaseData::getApplicantFlags)
+            .field(CaseData::getRepresentativeFlags);
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
