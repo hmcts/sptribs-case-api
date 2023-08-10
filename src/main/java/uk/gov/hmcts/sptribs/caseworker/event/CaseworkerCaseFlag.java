@@ -71,7 +71,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
                 ST_CIC_JUDGE))
-            .page("caseworkerCaseLinkInitial")
+            .page("caseworkerCaseFlag")
             .pageLabel("Case Flags")
             .optional(CaseData::getCaseFlags,"",true,true)
             .optional(CaseData::getAppellantFlags,"",true,true)
