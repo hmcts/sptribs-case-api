@@ -92,12 +92,16 @@ public class CaseData {
     private Flags caseFlags;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Flags for Appellant")
-    private Flags appellantFlags;
+        label = "Flags for Subject")
+    private Flags subjectFlags;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Flags for Respondent")
-    private Flags respondentFlags;
+        label = "Flags for Representative")
+    private Flags representativeFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Flags for Applicant")
+    private Flags applicantFlags;
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default
