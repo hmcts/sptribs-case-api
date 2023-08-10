@@ -54,7 +54,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
 
         NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsRepresentative,
-            cicCase.getSelectedHearingToCancel(),
+            cicCase.getRepresentativeEmailAddress(),
             TemplateName.APPLICATION_RECEIVED);
         cicCase.setRepNotificationResponse(notificationResponse);
     }
