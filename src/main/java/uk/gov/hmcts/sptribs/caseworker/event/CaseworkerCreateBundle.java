@@ -80,6 +80,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         var caseData = details.getData();
         caseData.setCaseDocuments(DocumentListUtil.getAllCaseDocuments(caseData));
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfig());
+        details.setData(caseData);
         Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
         BundleCallback bundleCallback = new BundleCallback(callback);
 
