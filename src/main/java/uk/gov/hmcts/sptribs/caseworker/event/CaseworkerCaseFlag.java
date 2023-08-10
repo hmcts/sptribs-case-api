@@ -37,7 +37,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final String ALWAYS_SHOW = "flagLauncherInternal != \"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "flagLauncherInternal = \"ALWAYS_HIDE\"";
 
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
@@ -75,10 +75,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_JUDGE))
             .page("caseworkerCaseFlag")
             .pageLabel("Case Flags")
-            .optional(CaseData::getCaseFlags, ALWAYS_SHOW, true, true)
-            .optional(CaseData::getSubjectFlags, ALWAYS_SHOW, true, true)
-            .optional(CaseData::getApplicantFlags, ALWAYS_SHOW, true, true)
-            .optional(CaseData::getRepresentativeFlags, ALWAYS_SHOW, true, true)
+            .optional(CaseData::getCaseFlags, ALWAYS_HIDE, true, true)
+            .optional(CaseData::getSubjectFlags, ALWAYS_HIDE, true, true)
+            .optional(CaseData::getApplicantFlags, ALWAYS_HIDE, true, true)
+            .optional(CaseData::getRepresentativeFlags, ALWAYS_HIDE, true, true)
             .mandatory(CaseData::getFlagLauncherInternal,
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
