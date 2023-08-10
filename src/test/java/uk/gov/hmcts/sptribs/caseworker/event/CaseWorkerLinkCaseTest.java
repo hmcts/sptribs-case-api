@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseNumber;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -61,7 +60,6 @@ class CaseWorkerLinkCaseTest {
     void shouldAdd2LinksToCase() {
         //Given
         CicCase cicCase = CicCase.builder()
-            .linkCaseNumber(CaseNumber.builder().number(TEST_CASE_ID.toString()).build())
             .build();
         CaseData caseData = caseData();
         caseData.setCicCase(cicCase);

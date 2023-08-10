@@ -2,29 +2,18 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.links.LinkService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -48,10 +37,6 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
-    @Autowired
-    LinkService linkService;
-
-    private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -62,7 +47,6 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 .name("Create Case Link")
                 .showSummary()
                 .description("Create Case Link")
-                .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -82,55 +66,13 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
-
-        caseData.getCicCase().setLinkCaseReason(linkService.getLinkReasons());
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
 
         var data = details.getData();
-        var caseNumber = (null != data.getCicCase().getLinkCaseNumber()
-            && null != data.getCicCase().getLinkCaseNumber().getNumber())
-            ? data.getCicCase().getLinkCaseNumber().getNumber().replace("-", "") : "";
-        CaseLink caseLink = CaseLink.builder()
-            .caseReference(caseNumber)
-            .createdDateTime(null)
-            .caseType("CriminalInjuriesCompensation")
-            .build();
 
-        //TODO  .reasonForLink(Set.of(data.getCicCase().getLinkCaseReason().getLabel()))
-        if (CollectionUtils.isEmpty(data.getCaseLinks())) {
-            List<ListValue<CaseLink>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<CaseLink>builder()
-                .id("1")
-                .value(caseLink)
-                .build();
-
-            listValues.add(listValue);
-
-            data.setCaseLinks(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<CaseLink>builder()
-                .value(caseLink)
-                .build();
-
-            data.getCaseLinks().add(0, listValue); // always add new note as first element so that it is displayed on top
-
-            data.getCaseLinks().forEach(
-                caseLinkListValue -> caseLinkListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .state(details.getState())

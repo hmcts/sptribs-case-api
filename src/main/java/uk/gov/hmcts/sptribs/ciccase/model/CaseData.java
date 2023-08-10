@@ -82,26 +82,22 @@ public class CaseData {
     private ComponentLauncher linkedCasesComponentLauncher;
 
     @CCD(
-        label = "Case flags",
+        label = "Launch the Flags screen",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private FlagLauncher flagLauncher;
+    private FlagLauncher flagLauncherInternal;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Case Flags")
     private Flags caseFlags;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Flags for Subject")
-    private Flags subjectFlags;
+        label = "Flags for Appellant")
+    private Flags appellantFlags;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Flags for Representative")
-    private Flags representativeFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Flags for Applicant")
-    private Flags applicantFlags;
+        label = "Flags for Respondent")
+    private Flags respondentFlags;
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default
