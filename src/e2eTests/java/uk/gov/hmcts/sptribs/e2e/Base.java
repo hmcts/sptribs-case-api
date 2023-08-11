@@ -41,7 +41,7 @@ public abstract class Base {
         playwright = Playwright.create();
 
         var launchOptions = getenv("CI").equalsIgnoreCase("true")
-            ? new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(100)
+            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(100)
             : new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(100);
 
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();

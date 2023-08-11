@@ -4,6 +4,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.e2e.Base.CASE_API_BASE_URL;
 import static uk.gov.hmcts.sptribs.e2e.Base.DSS_BASE_URL;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -82,26 +83,26 @@ public class Login {
     }
 
     public void loginAsStTest1User() {
-        loginAs("st-test1@mailinator.com");
+        loginAs(getenv("LEGAL_OFFICER"));
     }
 
     public void loginAsHearingCentreTL() {
-        loginAs("st-hearingcentretl@mailinator.com");
+        loginAs(getenv("HEARING_CENTRAL_TEAM_LEAD"));
     }
 
     public void loginAsStJudge2User() {
-        loginAs("st-judge2@mailinator.com");
+        loginAs(getenv("JUDGE"));
     }
 
     public void loginAsStSuperUser() {
-        loginAs("st-super@mailinator.com");
+        loginAs(getenv("SUPER_USER"));
     }
 
     public void loginAsStRespondentUser() {
-        loginAs("st-respondent5@mailinator.com");
+        loginAs(getenv("RESPONDENT"));
     }
 
     public void loginAsStCitizen1User() {
-        loginAsDssUser("st-citizen1@mailinator.com");
+        loginAs(getenv("DSS_CITIZEN_USER"));
     }
 }
