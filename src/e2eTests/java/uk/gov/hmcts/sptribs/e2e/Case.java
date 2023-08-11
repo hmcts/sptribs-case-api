@@ -25,7 +25,6 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
@@ -218,7 +217,7 @@ public class Case {
             .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
     }
 
-    public String editDssCase(String... args) {
+    /*public String editDssCase(String... args) {
         startNextStepAction(EditCase);
         // Select case categories
         assertThat(page.locator("h1"))
@@ -344,7 +343,7 @@ public class Case {
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
         return page.locator("ccd-markdown markdown h3")
             .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
-    }
+    }*/
 
     public void buildCase() {
         startNextStepAction(BuildCase);
