@@ -406,7 +406,7 @@ xui-webapp:
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
-      WA_SUPPORTED_JURISDICTIONS: EMPLOYMENT
+      WA_SUPPORTED_JURISDICTIONS: ST_CIC
       SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
       SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
       FEATURE_REDIS_ENABLED: false
