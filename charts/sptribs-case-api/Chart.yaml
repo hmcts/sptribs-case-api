@@ -43,3 +43,15 @@ dependencies:
     version: 1.0.31
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
+  - name: wa
+    version: ~0.1.5
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: wa.enabled
+  - name: servicebus
+    version: 1.0.4
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: servicebus.enabled
+  - name: ccd-message-publisher
+    version: ~0.1.11
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: ccd-message-publisher.enabled
