@@ -23,6 +23,12 @@ idam-pr:
 
 ccd-case-document-am-api:
   enabled: false
+wa:
+  enabled: false
+servicebus:
+  enabled: false
+ccd-message-publisher:
+  enabled: false
 
 em-ccdorc:
   enabled: false
