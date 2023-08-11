@@ -1,7 +1,5 @@
 # Special Tribunals Case API [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This API handles callbacks from CCD for the Criminal Injuries Compensation (CIC) (and other services, in the future) case type for Special Tribunals.
-
 ## Overview
 
                         ┌──────────────────┐

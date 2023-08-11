@@ -9,7 +9,8 @@ import uk.gov.hmcts.contino.MetricsPublisher
 def type = "java"
 def product = "sptribs"
 def component = "case-api"
-
+def dmnBranch = "master"
+def bpmnBranch = "master"
 GradleBuilder builder = new GradleBuilder(this, product)
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -27,7 +28,8 @@ def secrets = [
                 secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
                 secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
                 secret('microservicekey-ccd-data', 'CCD_DATA_STORE_S2S_SECRET'),
-                secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
+                secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET'),
+                secret('microservicekey-sptribs-case-api', 'ST_CASE_API_S2S_KEY')
         ],
         'ccd-${env}'      : [
                 secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET'),
@@ -243,6 +245,18 @@ withPipeline(type, product, component) {
         env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         setCommonEnvVariables()
         setFeatureFlags(env.ENVIRONMENT)
+    }
+
+    afterSuccess('akschartsinstall') {
+        onPR {
+            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+            env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+            sh """
+      ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+      ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+    """
+        }
     }
 
     afterSuccess('functionalTest:aat') {
