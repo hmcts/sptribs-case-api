@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -92,6 +93,10 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setRepresentativeEmailAddress(dssCaseData.getRepresentativeEmailAddress());
             caseData.getCicCase().setIsRepresentativeQualified(dssCaseData.getRepresentationQualified());
             caseData.getCicCase().getPartiesCIC().add(PartiesCIC.REPRESENTATIVE);
+            final Set<RepresentativeCIC> setRep = new HashSet<>();
+            setRep.add(RepresentativeCIC.REPRESENTATIVE);
+            caseData.getCicCase().setRepresentativeCIC(setRep);
+            caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         }
         List<CaseworkerCICDocument> docList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
