@@ -12,6 +12,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import java.util.ArrayList;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -30,7 +40,18 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .initialState(State.Draft)
             .name("Create draft case (cic)")
             .description("Apply for edge case (cic)")
-            .grant(CREATE_READ_UPDATE, updatedRoles.toArray(UserRole[]::new))
+            .name("Create draft case (DSS)")
+            .description("Apply for edge case (DSS)")
+            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR).grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE,
+                CITIZEN_CIC,
+                CREATOR)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .retries(120, 120);
     }

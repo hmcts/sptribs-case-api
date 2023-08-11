@@ -27,7 +27,6 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
-import uk.gov.hmcts.sptribs.edgecase.event.cic.CicUpdateCaseEvent;
 
 import java.util.Arrays;
 import java.util.List;

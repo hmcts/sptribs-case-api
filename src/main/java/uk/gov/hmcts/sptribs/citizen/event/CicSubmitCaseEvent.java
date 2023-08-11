@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.edgecase.event.cic;
+package uk.gov.hmcts.sptribs.citizen.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
