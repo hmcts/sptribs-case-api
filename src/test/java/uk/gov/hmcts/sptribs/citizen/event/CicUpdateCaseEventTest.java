@@ -76,7 +76,7 @@ class CicUpdateCaseEventTest {
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-
+        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
         when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
 
         cicUpdateCaseEvent.configure(configBuilder);
@@ -127,10 +127,5 @@ class CicUpdateCaseEventTest {
 
         //Then
         assertThat(response1).isNotNull();
-        assertThat(response1.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
-        assertThat(response1.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
-            .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
     }
 }

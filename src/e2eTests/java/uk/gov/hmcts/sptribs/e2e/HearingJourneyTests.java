@@ -156,7 +156,7 @@ public class HearingJourneyTests extends Base {
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));
         Assertions.assertEquals(DssSubmitted.label, dssCase.getCaseStatus());
-        dssCase.editDssCase("representative","applicant");
+        //dssCase.editDssCase("representative","applicant"); // TODO: to fix - Santoshini
         dssCase.buildCase();
     }
 

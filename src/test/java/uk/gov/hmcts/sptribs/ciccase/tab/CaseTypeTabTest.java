@@ -55,7 +55,6 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
         when(configBuilder.tab("cicaDetails", "CICA Details")).thenReturn(cicaDetailsTabBuilder);
         when(configBuilder.tab("caseFileView", "Case file view")).thenReturn(caseCategoryTabBuilder);
-        when(configBuilder.tab("bundles", "Bundles")).thenReturn(bundlingTabBuilder);
         when(configBuilder.tab("messages", "Messages")).thenReturn(messagesTabBuilder);
 
         //When
