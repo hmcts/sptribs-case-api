@@ -186,8 +186,11 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                     <h3>Files should be:</h3>
                     uploaded separately and not in one large file
                     a maximum of 100MB in size (larger files must be split)
-                    labelled clearly, e.g. applicant-name-decision-notice.pdf
+                    labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                    Note: If the remove button is disabled, please refresh the page to remove attachments
                     """)
+
+
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();
