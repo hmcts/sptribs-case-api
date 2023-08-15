@@ -43,7 +43,6 @@ uk:
           respondentName: 'Appeals Team'
           respondentOrganisation: 'CICA'
           respondentEmail: appeals.team@cica.gov.uk
-
           tribunalName: 'First-tier Tribunal (CIC)'
           tribunalOrganisation: 'CICA'
           tribunalEmail: CIC.enquiries@justice.gov.uk
@@ -78,6 +77,9 @@ uk:
           CASE_WITHDRAWN_POST: '54fe1990-2213-4bcb-9027-7b595cd9db12'
           NEW_ORDER_ISSUED_EMAIL: 'e451a469-e61d-4daf-95c3-e405448ececf'
           NEW_ORDER_ISSUED_POST: '797e62bd-a1d4-4a6a-b15d-ddd642d2b14b'
+          CASE_LINKED_EMAIL: '8af9efba-9861-4663-8305-0a378def1e46'
+          CASE_LINKED_POST: 'd69207af-ed64-4a60-b0a3-224d429d8b17'
+
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
