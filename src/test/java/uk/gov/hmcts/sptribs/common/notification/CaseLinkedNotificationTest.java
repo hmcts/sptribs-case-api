@@ -1,15 +1,9 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -21,6 +15,12 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CaseLinkedNotificationTest {
@@ -143,18 +143,16 @@ class CaseLinkedNotificationTest {
     }
 
 
-
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
-//
-        CaseData caseData = CaseData.builder()
+
+        return CaseData.builder()
             .cicCase(cicCase)
             .caseLinkExists("YES")
             .build();
 
-        return caseData;
     }
 
 }
