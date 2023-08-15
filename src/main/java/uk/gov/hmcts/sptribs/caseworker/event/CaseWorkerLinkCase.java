@@ -15,24 +15,16 @@ import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
-import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.links.LinkService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -41,22 +33,28 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
+import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.links.LinkService;
 import uk.gov.hmcts.sptribs.common.notification.CaseLinkedNotification;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
 @Setter
 public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.link-case.enabled}")
-    private boolean linkCaseEnabled;
+    private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
     @Autowired
     LinkService linkService;
 
     @Autowired
     CaseLinkedNotification caseLinkedNotification;
-
-    private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
+    @Value("${feature.link-case.enabled}")
+    private boolean linkCaseEnabled;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -190,7 +188,6 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             caseLinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }
-
 
 
 }
