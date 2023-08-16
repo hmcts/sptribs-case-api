@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -11,10 +12,13 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.CaseLinkedNotification;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -37,6 +41,9 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
+
+    @Autowired
+    CaseLinkedNotification caseLinkedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -81,6 +88,16 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+        var data = details.getData();
+        String claimNumber = data.getHyphenatedCaseRef();
+        try {
+            sendCaseStayedNotification(claimNumber, data);
+        } catch (Exception notificationException) {
+            log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case Link notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(MessageUtil.generateSimpleMessage(
                 "Link added to case", ""))
@@ -96,6 +113,22 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
                     If the cases to be linked has no lead, you can start the linking journey from any of those cases
                     """);
+    }
+
+    private void sendCaseStayedNotification(String caseNumber, CaseData data) {
+        CicCase cicCase = data.getCicCase();
+
+        if (!cicCase.getSubjectCIC().isEmpty()) {
+            caseLinkedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (!cicCase.getApplicantCIC().isEmpty()) {
+            caseLinkedNotification.sendToApplicant(data, caseNumber);
+        }
+
+        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+            caseLinkedNotification.sendToRepresentative(data, caseNumber);
+        }
     }
 
 
