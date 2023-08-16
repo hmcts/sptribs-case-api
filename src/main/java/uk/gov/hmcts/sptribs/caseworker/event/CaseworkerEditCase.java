@@ -98,7 +98,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         var submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
-        var state = details.getState();
+        var state = beforeDetails.getState();
         if (state == DSS_Submitted) {
             state = Submitted;
         }

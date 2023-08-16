@@ -20,8 +20,8 @@ spring:
     allow-bean-definition-overriding: true
   servlet:
     multipart:
-      max-file-size: 42MB
-      max-request-size: 42MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
@@ -136,6 +136,9 @@ docmosis:
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
       CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
+
+case-api:
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}

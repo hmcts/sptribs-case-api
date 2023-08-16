@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.sptribs.services.DocumentManagementService;
 
 @RestController
-@RequestMapping("/doc/dss-orhestration")
+@RequestMapping("/doc/dss-orchestration")
 public class DocumentManagementController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class DocumentManagementController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Uploaded Successfully"),
         @ApiResponse(code = 400, message = "Bad Request while uploading the document"),
-        @ApiResponse(code = 401, message = "Provided Authroization token is missing or invalid"),
+        @ApiResponse(code = 401, message = "Provided Authorization token is missing or invalid"),
         @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public ResponseEntity<?> uploadDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
@@ -49,7 +49,7 @@ public class DocumentManagementController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Deleted document successfully"),
         @ApiResponse(code = 400, message = "Bad Request while deleting the document"),
-        @ApiResponse(code = 401, message = "Provided Authroization token is missing or invalid"),
+        @ApiResponse(code = 401, message = "Provided Authorization token is missing or invalid"),
         @ApiResponse(code = 404, message = "Document Not found"),
         @ApiResponse(code = 500, message = "Internal Server Error")
     })

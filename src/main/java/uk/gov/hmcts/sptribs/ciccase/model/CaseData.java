@@ -223,7 +223,7 @@ public class CaseData {
         label = "Messages",
         typeOverride = Collection,
         typeParameterOverride = "DssMessage",
-        access = {DefaultAccess.class}
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<DssMessage>> messages;
 
