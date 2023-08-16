@@ -12,17 +12,21 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.MaintainLinkCaseSelectCase;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.links.LinkService;
+import uk.gov.hmcts.sptribs.common.notification.CaseUnlinkedNotification;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.NO_LINKS;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.YES;
@@ -50,6 +54,9 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     @Autowired
     private LinkService linkService;
+
+    @Autowired
+    CaseUnlinkedNotification caseUnlinkedNotification;
 
     private static final String SHOW = "caseLinkExists != \"YES\"";
     private static final CcdPageConfiguration maintainLinkCaseSelectCase = new MaintainLinkCaseSelectCase();
@@ -118,10 +125,37 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+        var data = details.getData();
+        String claimNumber = data.getHyphenatedCaseRef();
+        try {
+            sendCaseUnlinkedNotification(claimNumber, data);
+        } catch (Exception notificationException) {
+            log.error("Maintain case link  notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Maintain case link notification failed %n## Please resend the notification"))
+                .build();
+        }
+
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(MessageUtil.generateSimpleMessage(
-                "Link removed from case", ""))
+            .confirmationHeader(format("# Link removed from case %n## %s",
+                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(data.getCicCase()))))
             .build();
+    }
+
+    private void sendCaseUnlinkedNotification(String caseNumber, CaseData data) {
+        CicCase cicCase = data.getCicCase();
+
+        if (!cicCase.getSubjectCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (!cicCase.getApplicantCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToApplicant(data, caseNumber);
+        }
+
+        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToRepresentative(data, caseNumber);
+        }
     }
 
     private void addWarning(PageBuilder pageBuilder) {
