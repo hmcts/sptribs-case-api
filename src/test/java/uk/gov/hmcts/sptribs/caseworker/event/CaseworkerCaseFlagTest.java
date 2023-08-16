@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.service.CoreCaseApiService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +36,8 @@ class CaseworkerCaseFlagTest {
     @InjectMocks
     private CaseworkerCaseFlag caseworkerCaseFlag;
 
+    @Mock
+    private CoreCaseApiService coreCaseApiService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

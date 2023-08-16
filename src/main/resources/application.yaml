@@ -1,6 +1,9 @@
 server:
   port: 4013
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 management:
   endpoint:
     health:
@@ -207,4 +210,3 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
-

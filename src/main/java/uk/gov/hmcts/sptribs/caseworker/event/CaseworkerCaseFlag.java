@@ -15,7 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.flag.refdata.FlagTypeService;
+import uk.gov.hmcts.sptribs.common.service.CoreCaseApiService;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
@@ -43,7 +43,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     private boolean caseFlagsEnabled;
 
     @Autowired
-    private FlagTypeService flagTypeService;
+    private CoreCaseApiService coreCaseApiService;
 
 
     @Override
@@ -91,7 +91,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
+        String claimNumber = caseData.getHyphenatedCaseRef();
 
+        coreCaseApiService.submitSupplementaryDataToCcd(claimNumber);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
