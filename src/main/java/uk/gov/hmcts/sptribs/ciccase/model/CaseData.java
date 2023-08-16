@@ -172,7 +172,6 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
     private List<CaseworkerCICDocument> caseDocuments;
 
     @CCD(
