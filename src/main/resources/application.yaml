@@ -184,7 +184,7 @@ feature:
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
   dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:true}
+    enabled: ${DSS_FRONTEND_FEATURE:false}
 
 caseinfo:
   apps:
