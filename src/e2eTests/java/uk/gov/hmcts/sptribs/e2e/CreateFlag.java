@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 
@@ -13,26 +14,26 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class CreateFlag extends Base {
 
-    @Disabled
-    public void caseWorkerShouldBeAbleToCreateACaseFlag() {
+    @RepeatedIfExceptionsTest
+    public void caseWorkedShouldBeAbleToCreateCaseLevelFlag() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.createCaseFlag();
+        newCase.createCaseLevelFlag();
     }
 
     @Disabled
     public void caseWorkerShouldAbleToDoManageFlags() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.createCaseFlag();
+        newCase.createCaseLevelFlag();
         newCase.startNextStepAction(ManageFlags);
         assertThat(page.locator("h1")).hasText("Flags: Manage flags", textOptionsWithTimeout(60000));
         page.getByLabel("Flag Type (Optional)").click();

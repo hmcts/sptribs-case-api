@@ -82,7 +82,7 @@ public class Login {
 
     }
 
-    public void loginAsStTest1User() {
+    public void loginAsCaseWorker() {
         loginAs(getenv("LEGAL_OFFICER"));
     }
 
