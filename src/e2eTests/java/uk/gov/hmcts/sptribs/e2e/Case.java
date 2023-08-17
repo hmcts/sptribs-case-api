@@ -194,7 +194,6 @@ public class Case {
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
         getTextBoxByLabel(page, "CICA reference number").fill("CICATestReference");
         page.locator("#cicCaseCompensationClaimLinkCIC_Yes").click();
-//        getTextBoxByLabel(page, "Police Authority Management Incident").fill("PAMITestReference");
         page.locator("#cicCaseFormReceivedInTime_No").click();
         page.locator("#cicCaseMissedTheDeadLineCic_Yes").click();
         clickButton(page, "Continue");
