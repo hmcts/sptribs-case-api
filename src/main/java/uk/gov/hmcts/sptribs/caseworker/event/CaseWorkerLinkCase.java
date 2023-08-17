@@ -51,13 +51,13 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             new PageBuilder(configBuilder
                 .event(CASEWORKER_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Create Case Link")
+                .name("Link cases")
                 .showSummary()
-                .description("Create Case Link")
+                .description("To link related cases")
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,CASEWORKER_ADMIN_PROFILE,
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, CASEWORKER_ADMIN_PROFILE,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
@@ -69,7 +69,9 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                     ST_CIC_JUDGE))
                 .page("caseworkerCaseLinkInitial")
                 .pageLabel("Case Link")
-                .mandatory(CaseData::getCaseLinks);
+                .mandatory(CaseData::getCaseLinks)
+                .mandatory(CaseData::getLinkedCasesComponentLauncher,
+                    null, null, null, null, "#ARGUMENT(CREATE)");
         }
     }
 

@@ -52,9 +52,9 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
             new PageBuilder(configBuilder
                 .event(CASEWORKER_MAINTAIN_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Maintain Case Links")
+                .name("Manage case links")
                 .showSummary()
-                .description("Maintain Case Links")
+                .description("To maintain linked cases")
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -70,7 +70,9 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                     ST_CIC_JUDGE))
                 .page("caseworkerMaintainCaseLinkInitial")
                 .pageLabel("Maintain Case Link")
-                .mandatory(CaseData::getCaseLinks);
+                .mandatory(CaseData::getCaseLinks)
+                .mandatory(CaseData::getLinkedCasesComponentLauncher,
+                    null, null, null, null, "#ARGUMENT(UPDATE)");
         }
     }
 

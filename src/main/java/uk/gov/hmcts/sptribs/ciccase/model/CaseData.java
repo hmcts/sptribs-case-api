@@ -71,11 +71,6 @@ public class CaseData {
     private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
-    private String caseLinkExists = "YES";
-
-    @CCD(
         label = "Component Launcher (for displaying Linked Cases data)",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
