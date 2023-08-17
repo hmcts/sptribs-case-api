@@ -69,6 +69,9 @@ class CicSubmitCaseEventTest {
     private CicSubmitCaseEvent cicSubmitCaseEvent;
 
     @Mock
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
+    @Mock
     private AddSystemUpdateRole addSystemUpdateRole;
 
     @Mock
