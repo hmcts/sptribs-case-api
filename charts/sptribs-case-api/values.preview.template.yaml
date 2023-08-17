@@ -8,7 +8,7 @@ java:
   environment:
     CASE_DATA_STORE_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
-    BUNDLING_API_URL: http://em-ccd-orchestrator-${SERVICE_FQDN}
+    BUNDLING_API_URL: http://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
   keyVaults:
     sptribs:
@@ -436,10 +436,11 @@ idam-pr:
 em-ccdorc:
   enabled: true
   java:
+    disableKeyVaults: true
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
     image: hmctspublic.azurecr.io/em/ccdorc:latest
-    ingressHost: em-ccd-orchestrator-${SERVICE_FQDN}
+    ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
@@ -447,11 +448,12 @@ em-ccdorc:
       EM_STITCHING_API_URL: http://em-stitching-${SERVICE_FQDN}
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_API_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
-      CALLBACK_DOMAIN: em-ccd-orchestrator-${SERVICE_FQDN}
+      CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
 
 em-stitching:
   enabled: true
   java:
+    disableKeyVaults: true
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
     image: hmctspublic.azurecr.io/em/stitching:latest
