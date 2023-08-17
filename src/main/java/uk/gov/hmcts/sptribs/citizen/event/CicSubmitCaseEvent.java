@@ -32,12 +32,12 @@ import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
@@ -68,6 +68,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
+    @Autowired
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -104,7 +106,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         CaseData caseData = getCaseData(data, dssData);
         String caseNumber = data.getHyphenatedCaseRef();
 
-        //sendApplicationReceivedNotification(caseNumber, data);
+        sendApplicationReceivedNotification(caseNumber, data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
@@ -205,7 +207,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     }
 
 
-    /*private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
+    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
 
         DssCaseData dssCaseData = data.getDssCaseData();
 
@@ -216,6 +218,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         if (null != data.getDssCaseData().getRepresentativeFullName()) {
             dssApplicationReceivedNotification.sendToRepresentative(data, caseNumber);
         }
-    }*/
+    }
+
 
 }

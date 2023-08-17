@@ -358,6 +358,11 @@ public class CicCase {
     )
     private Set<RespondentCIC> notifyPartyRespondent;
 
+    @CCD(
+        label = "Message",
+        typeOverride = TextArea
+    )
+    private String notifyPartyMessage;
 
     @CCD(
         label = "What is the reason for reinstating the case?",
