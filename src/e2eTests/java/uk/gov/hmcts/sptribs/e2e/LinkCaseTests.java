@@ -9,7 +9,7 @@ public class LinkCaseTests extends Base {
     void linkTwoCases() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         String case1 = newCase.createCase();
         newCase.buildCase();
