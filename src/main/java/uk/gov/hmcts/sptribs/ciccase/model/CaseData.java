@@ -69,7 +69,7 @@ public class CaseData {
         label = "Launch the Flags screen",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseFlagsAccess.class}
     )
-    private FlagLauncher flagLauncher;
+    private FlagLauncher flagLauncherInternal;
 
     @CCD(
         label = "Case name Hmcts Internal",

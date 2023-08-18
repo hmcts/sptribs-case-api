@@ -19,6 +19,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 
 
+
 @Component
 @Setter
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
@@ -62,7 +63,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("caseFlags", "Case Flags")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
+            .field(CaseData::getFlagLauncherInternal, null, "#ARGUMENT(READ)")
             .field(CaseData::getCaseFlags, ALWAYS_HIDE)
             .field(CaseData::getSubjectFlags, ALWAYS_HIDE)
             .field(CaseData::getApplicantFlags, ALWAYS_HIDE)

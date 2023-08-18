@@ -50,6 +50,8 @@ public final class CommonConstants {
     public static final String YES = "yes";
     public static final String NO = "no";
     public static final String CATEGORY_ID = "categoryId";
+    public static final String SERVICE_ID = "serviceId";
+    public static final String MICRO_SERVICE_ID = "sptribs_case_api";
     public static final String CATEGORY_ID_LINK_REASON = "CaseLinkingReasonCode";
 
     public static final String MARKUP_SEPARATOR = "]";
