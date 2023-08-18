@@ -225,4 +225,3 @@ caseinfo:
         dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC
-
