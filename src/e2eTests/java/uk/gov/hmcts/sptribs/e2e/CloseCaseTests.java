@@ -25,7 +25,7 @@ public class CloseCaseTests extends Base {
     public void caseworkerShouldAbleToCloseTheCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
@@ -62,7 +62,7 @@ public class CloseCaseTests extends Base {
     public void caseworkerShouldAbleToReinstateCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();

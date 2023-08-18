@@ -172,6 +172,14 @@ task e2eTestInDemo(type: Test) {
   environment 'DSS_BASE_URL', 'https://sptribs-frontend.demo.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
+  environment 'LEGAL_OFFICER', 'st-ciclegal-officer@cic.demo'
+  environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
+  environment 'JUDGE', 'st-cicjudge@mailinator.com'
+  environment 'SENIOR_JUDGE', 'st-cicseniorjudge@mailinator.com'
+  environment 'HEARING_CENTRAL_ADMIN', 'cic-hearing-centreadmin@mailinator.com'
+  environment 'HEARING_CENTRAL_TEAM_LEAD', 'cic-hearing-centre-leader@mailinator.com'
+  environment 'RESPONDENT', 'st-cicrespondent@mailinator.com'
+  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
 }
 
 task e2eTests(type: Test) {
@@ -191,6 +199,14 @@ task e2eTests(type: Test) {
   environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
+  environment 'LEGAL_OFFICER', 'st-test1@mailinator.com '
+  environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
+  environment 'JUDGE', 'st-judge2@mailinator.com'
+  environment 'SENIOR_JUDGE', 'NOT TOO SURE'
+  environment 'HEARING_CENTRAL_ADMIN', 'NOT TOO SURE'
+  environment 'HEARING_CENTRAL_TEAM_LEAD', 'st-hearingcentretl@mailinator.com'
+  environment 'RESPONDENT', 'st-cicrespondent@mailinator.com'
+  environment 'SUPER_USER', 'st-super@mailinator.com'
 }
 
 task e2eTestsNightlyFirefox(type: Test) {
