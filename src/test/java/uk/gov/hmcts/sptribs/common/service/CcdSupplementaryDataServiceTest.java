@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
-public class CoreCaseApiServiceTest {
+public class CcdSupplementaryDataServiceTest {
     @InjectMocks
     private CcdSupplementaryDataService coreCaseApiService;
 
