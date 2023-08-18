@@ -49,6 +49,11 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
+refdata_common:
+  api:
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
+
 bundling:
   api:
     baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
@@ -61,6 +66,9 @@ core_case_data:
     url: http://localhost:4012
   search:
     page_size: 100
+
+case-api:
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:https://manage-case.aat.platform.hmcts.net}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}

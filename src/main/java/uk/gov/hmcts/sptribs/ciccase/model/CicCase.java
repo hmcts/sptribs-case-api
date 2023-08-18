@@ -106,8 +106,8 @@ public class CicCase {
     @CCD(
         label = "Why should these cases be linked?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "LinkCaseReason"
+        typeOverride = Collection,
+        typeParameterOverride = "LinkReason"
     )
     private List<ListValue<LinkReason>> linkCaseReason;
 
@@ -605,12 +605,6 @@ public class CicCase {
 
     private YesOrNo representativeDetailsObjects;
 
-
-    @CCD(
-        label = "Police authority management incident",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String policeAuthority;
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

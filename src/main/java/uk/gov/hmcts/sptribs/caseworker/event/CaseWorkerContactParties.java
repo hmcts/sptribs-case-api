@@ -57,7 +57,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     @Value("${feature.contact-parties.enabled}")
     private boolean contactPartiesEnabled;
 
-    @Value("${case_document_am.url}")
+    @Value("${case-api.url}")
     private String baseUrl;
 
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();

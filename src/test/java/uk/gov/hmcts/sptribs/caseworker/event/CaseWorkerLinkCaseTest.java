@@ -61,7 +61,7 @@ class CaseWorkerLinkCaseTest {
     void shouldAdd2LinksToCase() {
         //Given
         CicCase cicCase = CicCase.builder()
-            .linkCaseNumber(CaseNumber.builder().caseNumber(TEST_CASE_ID.toString()).build())
+            .linkCaseNumber(CaseNumber.builder().number(TEST_CASE_ID.toString()).build())
             .build();
         CaseData caseData = caseData();
         caseData.setCicCase(cicCase);

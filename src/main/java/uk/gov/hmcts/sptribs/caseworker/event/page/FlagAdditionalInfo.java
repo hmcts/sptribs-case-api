@@ -13,6 +13,8 @@ import java.util.List;
 
 public class FlagAdditionalInfo implements CcdPageConfiguration {
 
+    private static final int FLAG_ADDITIONAL_DETAIL_LIMIT = 200;
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
@@ -28,7 +30,8 @@ public class FlagAdditionalInfo implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        if (data.getCicCase().getFlagAdditionalDetail().length() > 200) {
+        if (null != data.getCicCase().getFlagAdditionalDetail()
+            && data.getCicCase().getFlagAdditionalDetail().length() > FLAG_ADDITIONAL_DETAIL_LIMIT) {
             errors.add("You can enter up to 200 characters");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

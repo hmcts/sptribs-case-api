@@ -71,14 +71,14 @@ public final class DocumentListUtil {
             .filter(CaseworkerCICDocument::isDocumentValid)
             .map(doc -> DynamicListElement.builder()
                 .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
-                + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
-                + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+                    + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
+                    + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
     }
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        String apiUrl = "https://manage-case.demo.platform.hmcts.net/documents/%s/binary";
+        String apiUrl = baseUrl + "documents/%s/binary";
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),

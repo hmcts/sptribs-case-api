@@ -26,6 +26,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditCase;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
@@ -189,11 +190,11 @@ public class Case {
         assertThat(page.locator("h1"))
             .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
         page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
+        page.selectOption("#cicCaseRegionCIC", new SelectOption().setLabel("London"));
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
         getTextBoxByLabel(page, "CICA reference number").fill("CICATestReference");
         page.locator("#cicCaseCompensationClaimLinkCIC_Yes").click();
-        getTextBoxByLabel(page, "Police Authority Management Incident").fill("PAMITestReference");
-        page.locator("#cicCaseFormReceivedInTime_Yes").click();
+        page.locator("#cicCaseFormReceivedInTime_No").click();
         page.locator("#cicCaseMissedTheDeadLineCic_Yes").click();
         clickButton(page, "Continue");
 
@@ -413,20 +414,18 @@ public class Case {
         getTextBoxByLabel(page, "Postcode/Zipcode").fill("SW11 1PD");
     }
 
-    public void createCaseFlag() {
+    public void createCaseLevelFlag() {
         startNextStepAction(CreateFlag);
-        assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(60000));
-        assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Case").click();
-        clickButton(page, "Continue");
-        getCheckBoxByLabel(page, "Subject").check();
         clickButton(page, "Continue");
         getRadioButtonByLabel(page, "Other").click();
         page.getByLabel("Enter a flag type").click();
         page.getByLabel("Enter a flag type").fill("test flag");
         clickButton(page, "Continue");
-        assertThat(page.locator("h2"))
-            .hasText("Add comments for this flag (Optional)",textOptionsWithTimeout(30000));
+        page.getByLabel(
+            "Explain why you are creating this flag. Do not include any sensitive information such as personal details. (Optional)")
+            .fill("Test Flag Comment");
         clickButton(page, "Continue");
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
@@ -601,5 +600,22 @@ public class Case {
             .hasText("History", textOptionsWithTimeout(60000));
         assertThat(page.locator("tr a").first())
             .hasText(ManageDueDate.label, textOptionsWithTimeout(60000));
+    }
+
+    public void linkCase(String case1) {
+        startNextStepAction(LinkCase);
+        assertThat(page.locator("h1"))
+            .hasText("Before you start", textOptionsWithTimeout(60000));
+        clickButton(page, "Continue");
+        page.locator("#cicCaseLinkCaseNumber_caseNumber").fill(case1);
+        getRadioButtonByLabel(page, "Case consolidated").click();
+        clickButton(page, "Continue");
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("h1").last())
+            .hasText("Case link successful", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
     }
 }

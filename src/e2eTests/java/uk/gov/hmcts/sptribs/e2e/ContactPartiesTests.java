@@ -22,7 +22,7 @@ public class ContactPartiesTests extends Base {
     public void caseWorkerShouldBeAbleToContactParties() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase("representative");
         newCase.buildCase();
@@ -39,7 +39,7 @@ public class ContactPartiesTests extends Base {
     public void respondentShouldBeAbleToContactParties() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         final String caseNumber = newCase.createCase("representative");
         newCase.buildCase();

@@ -8,6 +8,7 @@ java:
   environment:
     CASE_DATA_STORE_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+    BUNDLING_API_URL: http://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
   keyVaults:
     sptribs:
@@ -87,6 +88,7 @@ ccd:
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
+        ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
@@ -95,7 +97,7 @@ ccd:
     java:
       disableKeyVaults: true
       environment:
-        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+        CCD_DATA_STORE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
 
   ccd-definition-store-api:
@@ -367,6 +369,8 @@ xui-webapp:
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
       FEATURE_REDIS_ENABLED: false
       NODE_OPTIONS: --max-old-space-size=900
+      HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
 
 xui-mo-webapp:
   enabled: true
@@ -382,6 +386,7 @@ xui-mo-webapp:
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
 
 sptribs-frontend:
   enabled: true
@@ -415,6 +420,7 @@ aac-manage-case-assignment:
       CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
       CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store-api
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
     autoscaling:
       enabled: false
 
@@ -427,3 +433,32 @@ idam-pr:
     XUIMO:
       - https://xui-mo-${SERVICE_FQDN}/oauth2/callback
 
+em-ccdorc:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
+    image: hmctspublic.azurecr.io/em/ccdorc:latest
+    ingressHost: em-ccdorc-${SERVICE_FQDN}
+    environment:
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+      OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
+      S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      EM_STITCHING_API_URL: http://em-stitching-${SERVICE_FQDN}
+      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_DATA_API_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
+
+em-stitching:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-em-stitching
+    image: hmctspublic.azurecr.io/em/stitching:latest
+    ingressHost: em-stitching-${SERVICE_FQDN}
+    environment:
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+      OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
+      S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CDAM_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
