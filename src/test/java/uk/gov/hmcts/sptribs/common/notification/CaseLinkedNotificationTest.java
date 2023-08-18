@@ -150,7 +150,6 @@ class CaseLinkedNotificationTest {
 
         return CaseData.builder()
             .cicCase(cicCase)
-            .caseLinkExists("YES")
             .build();
 
     }
