@@ -8,20 +8,56 @@ folders:
   - name: Application Documents
     documents:
       - type: documentSet
-        property: /ciccase/casedocuments
+        property: /caseDocuments
         filters:
-          - property: /documentType
-              value: A
-  - name: Further additions
+          - property: /category_id
+            value: A
+  - name: Direction - decision notices
     documents:
       - type: documentSet
         property: /caseDocuments
         filters:
-          - property: /documentType
-              value: TD
-              value: B
-              value: C
-              value: D
-              value: E
-              value: L
-              value: TG
+          - property: /category_id
+            value: TD
+  - name: Police evidence
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /category_id
+            value: B
+  - name: Medical records
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /category_id
+            value: C
+  - name: Financial records
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /category_id
+            value: D
+  - name: Other evidence
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /category_id
+            value: E
+  - name: Linked documents
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /category_id
+            value: L
+  - name: General evidence
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /category_id
+            value: TG
