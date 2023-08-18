@@ -12,7 +12,7 @@ import java.util.Map;
 import static java.util.Collections.singletonMap;
 
 @Service
-public class CoreCaseApiService {
+public class CcdSupplementaryDataService {
 
     @Autowired
     private AuthTokenGenerator authTokenGenerator;

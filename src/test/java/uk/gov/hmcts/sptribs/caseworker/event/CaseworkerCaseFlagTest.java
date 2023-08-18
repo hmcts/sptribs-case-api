@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.service.CoreCaseApiService;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +37,7 @@ class CaseworkerCaseFlagTest {
     private CaseworkerCaseFlag caseworkerCaseFlag;
 
     @Mock
-    private CoreCaseApiService coreCaseApiService;
+    private CcdSupplementaryDataService coreCaseApiService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

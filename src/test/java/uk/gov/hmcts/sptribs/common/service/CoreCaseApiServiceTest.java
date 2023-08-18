@@ -18,7 +18,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 @ExtendWith(MockitoExtension.class)
 public class CoreCaseApiServiceTest {
     @InjectMocks
-    private CoreCaseApiService coreCaseApiService;
+    private CcdSupplementaryDataService coreCaseApiService;
 
     @Mock
     private CoreCaseDataApi coreCaseDataApi;

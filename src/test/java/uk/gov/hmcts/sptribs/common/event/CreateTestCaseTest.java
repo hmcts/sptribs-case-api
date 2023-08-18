@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
-import uk.gov.hmcts.sptribs.common.service.CoreCaseApiService;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.Set;
 
@@ -31,7 +31,7 @@ class CreateTestCaseTest {
     private CreateTestCase createTestCase;
 
     @Mock
-    private CoreCaseApiService coreCaseApiService;
+    private CcdSupplementaryDataService coreCaseApiService;
 
     @InjectMocks
     private SelectParties selectParties;

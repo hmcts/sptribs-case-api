@@ -15,7 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.service.CoreCaseApiService;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
@@ -43,7 +43,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     private boolean caseFlagsEnabled;
 
     @Autowired
-    private CoreCaseApiService coreCaseApiService;
+    private CcdSupplementaryDataService coreCaseApiService;
 
 
     @Override
