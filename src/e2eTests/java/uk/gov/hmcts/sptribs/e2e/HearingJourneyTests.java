@@ -137,7 +137,7 @@ public class HearingJourneyTests extends Base {
 
     private void createAndBuildCase(Page page) {
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
 
         Case newCase = new Case(page);
         newCase.createCase("representative");
@@ -152,7 +152,7 @@ public class HearingJourneyTests extends Base {
         final String caseNumber = newDssCase.createCase("representative");
         clickLink(page, "Sign out");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         page.navigate(getCaseUrl(caseNumber));
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));
