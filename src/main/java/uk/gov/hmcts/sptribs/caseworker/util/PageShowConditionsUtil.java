@@ -14,18 +14,7 @@ public final class PageShowConditionsUtil {
     private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " hearingSummaryExists != \"YES\"";
     private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  hearingSummaryExists = \"YES\"";
 
-    private static final String LINK_EXISTS = "caseLinkExists = \"YES\"";
-    private static final String LINK_DOES_NOT_EXIST = "caseLinkExists != \"YES\"";
-
     private PageShowConditionsUtil() {
-    }
-
-
-    public static Map<String, String> maintainCaseLinks() {
-        Map<String, String> map = new HashMap<>();
-        map.put("caseworkerCaseLinkNoLinks", LINK_DOES_NOT_EXIST);
-        map.put("caseworkerMaintainLinkBeforeYouStart", LINK_EXISTS);
-        return map;
     }
 
     public static Map<String, String> issueDecisionShowConditions() {
