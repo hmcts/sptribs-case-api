@@ -105,10 +105,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var data = details.getData();
         var dssData = details.getData().getDssCaseData();
         CaseData caseData = getCaseData(data, dssData);
-        String caseNumber = data.getHyphenatedCaseRef();
 
         setDssMetaData(data);
-        //sendApplicationReceivedNotification(caseNumber, data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -120,9 +118,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         data.setDssQuestion1("Full Name");
         data.setDssQuestion2("Date of Birth");
         data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
-        //data.setDssAnswer1("case_data.note");
         data.setDssAnswer2("case_data.dssCaseDataSubjectDateOfBirth");
-        //data.setDssAnswer2("case_data.dueDate");
         data.setDssHeaderDetails("Subject of this case");
     }
 
@@ -217,20 +213,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         caseData.setDssCaseData(dssCaseData);
         return caseData;
-    }
-
-
-    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
-
-        DssCaseData dssCaseData = data.getDssCaseData();
-
-        if (!dssCaseData.getSubjectFullName().isEmpty()) {
-            dssApplicationReceivedNotification.sendToSubject(data, caseNumber);
-        }
-
-        if (null != data.getDssCaseData().getRepresentativeFullName()) {
-            dssApplicationReceivedNotification.sendToRepresentative(data, caseNumber);
-        }
     }
 
 
