@@ -69,9 +69,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
-    @Autowired
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (dssSubmitCaseEnabled) {
