@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
@@ -65,6 +66,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private SubmissionService submissionService;
+
+    @Autowired
+    private CcdSupplementaryDataService coreCaseApiService;
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
@@ -131,6 +135,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         String claimNumber = data.getHyphenatedCaseRef();
         try {
             sendApplicationReceivedNotification(claimNumber, data);
+            coreCaseApiService.submitSupplementaryDataRequestToCcd(claimNumber);
         } catch (Exception notificationException) {
             log.error("Create case notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()

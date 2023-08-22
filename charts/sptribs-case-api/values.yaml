@@ -30,6 +30,12 @@ servicebus:
 ccd-message-publisher:
   enabled: false
 
+em-ccdorc:
+  enabled: false
+
+em-stitching:
+  enabled: false
+
 java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'

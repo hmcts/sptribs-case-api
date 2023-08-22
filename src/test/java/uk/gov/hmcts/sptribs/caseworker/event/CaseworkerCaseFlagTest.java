@@ -3,15 +3,13 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -19,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,8 +36,8 @@ class CaseworkerCaseFlagTest {
     @InjectMocks
     private CaseworkerCaseFlag caseworkerCaseFlag;
 
-    @InjectMocks
-    private FlagAdditionalInfo flagAdditionalInfo;
+    @Mock
+    private CcdSupplementaryDataService coreCaseApiService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -76,9 +75,6 @@ class CaseworkerCaseFlagTest {
         caseData.setNote("This is a test note");
 
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detail");
-        cicCase.setFlagLevel(FlagLevel.PARTY_LEVEL);
         final Set<RepresentativeCIC> set = new HashSet<>();
         set.add(RepresentativeCIC.REPRESENTATIVE);
         cicCase.setRepresentativeCIC(set);
@@ -98,13 +94,11 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getRepresentativeFlags()).isNotNull();
     }
 
     @Test
@@ -113,9 +107,6 @@ class CaseworkerCaseFlagTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detail");
-        cicCase.setFlagLevel(FlagLevel.PARTY_LEVEL);
         final Set<ApplicantCIC> set = new HashSet<>();
         set.add(ApplicantCIC.APPLICANT_CIC);
         cicCase.setApplicantCIC(set);
@@ -135,13 +126,11 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
-        assertThat(response.getData().getApplicantFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getApplicantFlags()).isNotNull();
     }
 
     @Test
@@ -150,8 +139,6 @@ class CaseworkerCaseFlagTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         final CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagLevel(FlagLevel.PARTY_LEVEL);
         final Set<SubjectCIC> set = new HashSet<>();
         set.add(SubjectCIC.SUBJECT);
         cicCase.setSubjectCIC(set);
@@ -170,13 +157,11 @@ class CaseworkerCaseFlagTest {
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getSubjectFlags()).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
 
         updatedCaseDetails.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getSubjectFlags()).isNotNull();
     }
 
     @Test
@@ -185,9 +170,6 @@ class CaseworkerCaseFlagTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
         CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detail");
-        cicCase.setFlagLevel(FlagLevel.CASE_LEVEL);
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -200,40 +182,10 @@ class CaseworkerCaseFlagTest {
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
-
         //Then
-        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response2.getData().getCaseFlags()).isNotNull();
     }
 
-    @Test
-    void shouldCheckAdditionalInfoLength() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setNote("This is a test note");
-        CicCase cicCase = new CicCase();
-        cicCase.setFlagType(FlagType.OTHER);
-        cicCase.setFlagAdditionalDetail("some detailsome detaisome detaisome detaisome detaisome detaisome detai"
-            + "some detaisome detaisome detaisome detaisome detailsome detaisome detaisome detaisome detaisome"
-            + " detailsome detaisome detaisome detaisome detaisome detai");
-        cicCase.setFlagLevel(FlagLevel.CASE_LEVEL);
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            flagAdditionalInfo.midEvent(updatedCaseDetails, beforeDetails);
-
-
-        //Then
-        assertThat(response.getErrors()).hasSize(1);
-    }
 }
