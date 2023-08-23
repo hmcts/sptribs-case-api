@@ -39,7 +39,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AP_CASEWORKER_ADMIN("caseworker-admin", "CRU"),
     AP_HMCTS_ADMIN("hmcts-admin", "CRU");
 
-  @JsonValue
+    @JsonValue
     private final String role;
     private final String caseTypePermissions;
 
