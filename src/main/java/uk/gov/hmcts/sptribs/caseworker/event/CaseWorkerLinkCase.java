@@ -72,6 +72,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 .mandatory(CaseData::getCaseLinks)
                 .mandatory(CaseData::getLinkedCasesComponentLauncher,
                     null, null, null, null, "#ARGUMENT(CREATE)");
+
         }
     }
 
