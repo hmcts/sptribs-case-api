@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Order;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ContactParties;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -24,7 +25,7 @@ public class ContactPartiesTests extends Base {
         Login login = new Login(page);
         login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase("representative");
+        newCase.createCase(Representative);
         newCase.buildCase();
         newCase.startNextStepAction(UploadDocuments);
         DocumentManagement docManagement = new DocumentManagement(page);
@@ -41,7 +42,7 @@ public class ContactPartiesTests extends Base {
         Login login = new Login(page);
         login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        final String caseNumber = newCase.createCase("representative");
+        final String caseNumber = newCase.createCase(Representative);
         newCase.buildCase();
         newCase.startNextStepAction(UploadDocuments);
         DocumentManagement docManagement = new DocumentManagement(page);
