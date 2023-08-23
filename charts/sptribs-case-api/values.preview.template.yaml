@@ -478,9 +478,15 @@ idam-pr:
 
 wa:
   enabled: true
-  wa-task-batch-service:
+  wa-initiation-batch:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
+  wa-reconfiguration-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-reconfiguration-batch"
+  wa-termination-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-termination-batch"
   wa-message-cron-service:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
