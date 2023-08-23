@@ -9,6 +9,7 @@ java:
     CASE_DATA_STORE_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
+
   keyVaults:
     sptribs:
       secrets:
@@ -74,6 +75,7 @@ ccd:
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
+        LOG_CALLBACK_DETAILS: "*"
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,fpl_case_service,finrem_case_orchestration,iac,sptribs_frontend,civil_service,sptribs_case_api
         ELASTIC_SEARCH_ENABLED: true
