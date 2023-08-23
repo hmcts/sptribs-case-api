@@ -46,7 +46,7 @@ idam:
     redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
 
 s2s-authorised:
-  services: ccd_data
+  services: ccd_data,sptribs_frontend
 
 location:
   api:
@@ -95,3 +95,17 @@ feature:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
+  dss-frontend:
+    enabled: ${DSS_FRONTEND_FEATURE:false}
+
+caseinfo:
+  apps:
+    - caseType: CriminalInjuriesCompensation
+      jurisdiction: ST_CIC
+      eventIds:
+        createEvent: citizen-cic-create-dss-application
+        updateEvent: citizen-cic-update-dss-application
+        submitEvent: citizen-cic-submit-dss-application
+      caseTypeOfApplication:
+        - CIC
+

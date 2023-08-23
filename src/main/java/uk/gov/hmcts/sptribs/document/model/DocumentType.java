@@ -131,7 +131,19 @@ public enum DocumentType implements HasLabel {
 
     @JsonProperty("Other-TG")
     @JsonAlias({"TG Docs"})
-    OTHER_GENERAL_EVIDENCE("TG - Other", "Other-TG", "TG");
+    OTHER_GENERAL_EVIDENCE("TG - Other", "Other-TG", "TG"),
+
+    @JsonProperty("DSS Tribunal form uploaded documents")
+    @JsonAlias({"DSS Docs"})
+    DSS_TRIBUNAL_FORM("DSS Tribunal form uploaded documents", "DSS Tribunal form uploaded documents", "DSS"),
+
+    @JsonProperty("DSS Supporting uploaded documents")
+    @JsonAlias({"DSS Docs"})
+    DSS_SUPPORTING("DSS Supporting uploaded documents", "DSS Supporting uploaded documents", "DSS"),
+
+    @JsonProperty("DSS Other information documents")
+    @JsonAlias({"DSS Docs"})
+    DSS_OTHER("DSS Other information documents", "DSS Other information documents", "DSS");
 
 
     private final String label;
