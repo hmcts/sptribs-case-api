@@ -39,6 +39,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String ALWAYS_HIDE = "linkedCasesComponentLauncher = \"DONOTSHOW\"";
+
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
@@ -67,10 +69,10 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
                     ST_CIC_JUDGE))
-                .page("caseworkerCaseLinkInitial")
+                .page("createCaseLink")
                 .pageLabel("Case Link")
-                .mandatory(CaseData::getCaseLinks)
-                .mandatory(CaseData::getLinkedCasesComponentLauncher,
+                .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
+                .optional(CaseData::getLinkedCasesComponentLauncher,
                     null, null, null, null, "#ARGUMENT(CREATE)");
 
         }
