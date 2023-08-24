@@ -96,6 +96,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
+        log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
         caseData.setListing(new Listing());
         DynamicList regionList = locationService.getAllRegions();
         caseData.getListing().setRegionList(regionList);
@@ -105,9 +106,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             : null;
         caseData.getListing().setRegionsMessage(regionMessage);
         caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
+
+        log.info("AboutToStart output event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)
             .build();
     }
 
