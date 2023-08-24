@@ -211,12 +211,12 @@ public class CaseData {
     @Builder.Default
     private Listing listing = new Listing();
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "nextHearing")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private Listing nextListedHearing = new Listing();
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "latestHearing")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private Listing latestCompletedHearing = new Listing();
