@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.notification;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
@@ -16,6 +18,9 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
 @Component
 public class DssNotificationHelper {
+
+    @Autowired
+    private EmailTemplatesConfigCIC emailTemplatesConfig;
 
     public Map<String, Object> commonTemplateVars(final CaseData caseData, final String caseNumber) {
         final Map<String, Object> templateVars = new HashMap<>();
@@ -42,7 +47,7 @@ public class DssNotificationHelper {
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
-            .template(emailTemplateName)
+            .templateId(emailTemplatesConfig.getTemplatesCIC().get(emailTemplateName.name()))
             .templateVars(templateVars)
             .build();
     }

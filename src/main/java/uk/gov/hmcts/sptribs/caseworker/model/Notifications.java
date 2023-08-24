@@ -13,30 +13,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 @NoArgsConstructor
 @Builder
 /*@ComplexType(name = "Notification", generate = false)*/
-public class Notification {
+public class Notifications {
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String name;
+    Notification caseWithdrawnNotification;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String destinationAddress;
+    Notification caseReinstateNotification;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String templateId;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String reference;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String caseId;
 }

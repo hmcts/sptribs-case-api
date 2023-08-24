@@ -162,7 +162,7 @@ case_document_am:
   url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
 
 notify_proxy:
-  url: ${NOTIFY_PROXY_BASEURL:http://localhost:4013}
+  url: ${NOTIFY_PROXY_BASEURL:http://localhost:8080}
 
 prd:
   api:

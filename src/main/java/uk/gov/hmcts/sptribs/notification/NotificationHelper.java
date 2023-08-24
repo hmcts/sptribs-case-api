@@ -4,6 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
@@ -13,12 +14,14 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
@@ -45,6 +48,9 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
 @Component
 public class NotificationHelper {
+
+    @Autowired
+    private EmailTemplatesConfigCIC emailTemplatesConfig;
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationHelper.class);
 
@@ -101,8 +107,9 @@ public class NotificationHelper {
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
-            .template(emailTemplateName)
+            .templateId(emailTemplatesConfig.getTemplatesCIC().get(emailTemplateName.name()))
             .templateVars(templateVars)
+            .reference(UUID.randomUUID().toString())
             .build();
     }
 
@@ -115,7 +122,7 @@ public class NotificationHelper {
             .destinationAddress(destinationAddress)
             .hasFileAttachments(hasFileAttachment)
             .uploadedDocuments(uploadedDocuments)
-            .template(emailTemplateName)
+            .templateId(emailTemplatesConfig.getTemplatesCIC().get(emailTemplateName.name()))
             .templateVars(templateVars)
             .build();
     }
@@ -123,7 +130,7 @@ public class NotificationHelper {
     public NotificationRequest buildLetterNotificationRequest(Map<String, Object> templateVarsLetter,
                                                               TemplateName letterTemplateName) {
         return NotificationRequest.builder()
-            .template(letterTemplateName)
+            .templateId(emailTemplatesConfig.getTemplatesCIC().get(letterTemplateName.name()))
             .templateVars(templateVarsLetter)
             .build();
     }

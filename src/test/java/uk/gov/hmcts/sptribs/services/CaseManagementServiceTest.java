@@ -181,7 +181,7 @@ class CaseManagementServiceTest {
             .data(caseDataMap)
             .build();
 
-        when(caseApiService.updateCase(
+        when(caseApiService.updateCaseForCitizen(
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
             TEST_CASE_ID,
@@ -222,7 +222,7 @@ class CaseManagementServiceTest {
         DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_USER);
-        when(caseApiService.updateCase(
+        when(caseApiService.updateCaseForCitizen(
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
             TEST_CASE_ID,

@@ -56,7 +56,7 @@ public class NotificationServiceCIC {
     public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
         SendEmailResponse sendEmailResponse;
         String destinationAddress = notificationRequest.getDestinationAddress();
-        TemplateName template = notificationRequest.getTemplate();
+        //TemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
         String referenceId = UUID.randomUUID().toString();
@@ -66,7 +66,7 @@ public class NotificationServiceCIC {
                 addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments());
             }
 
-            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
+            String templateId = notificationRequest.getTemplateId();
 
             log.info("Sending email for reference id : {} using template : {}", referenceId, templateId);
 
@@ -102,13 +102,13 @@ public class NotificationServiceCIC {
     }
 
     public NotificationResponse sendLetter(NotificationRequest notificationRequest) {
-        TemplateName template = notificationRequest.getTemplate();
+        //TemplateName template = notificationRequest.getTemplate();
         Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
         String referenceId = UUID.randomUUID().toString();
 
         try {
-            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
+            String templateId = notificationRequest.getTemplateId();
 
             log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
 

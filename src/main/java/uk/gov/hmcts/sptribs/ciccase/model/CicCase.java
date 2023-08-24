@@ -22,7 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
-import uk.gov.hmcts.sptribs.caseworker.model.Notification;
+import uk.gov.hmcts.sptribs.caseworker.model.Notifications;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
@@ -253,6 +253,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ReminderDays orderReminderDays;
+
+    //**********
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Notifications notifications;
 
     @CCD(
         label = "Sent Order",
@@ -700,11 +706,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String days;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Notification notification;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
