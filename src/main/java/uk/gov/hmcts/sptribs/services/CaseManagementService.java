@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
+import uk.gov.hmcts.sptribs.notification.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.services.ccd.CaseApiService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -54,7 +55,7 @@ public class CaseManagementService {
             }
 
             // Updating or Submitting case to CCD..
-            CaseDetails caseDetails = caseApiService.updateCase(authorization, event, caseId, caseData,
+            CaseDetails caseDetails = caseApiService.updateCaseForCitizen(authorization, event, caseId, caseData,
                                                                 AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData()));
             log.info("Updated case details: " + caseDetails.toString());
             return CaseResponse.builder().caseData(caseDetails.getData())
@@ -81,5 +82,25 @@ public class CaseManagementService {
 
     }
 
+    public CaseResponse updateNotificationDetails(String authorization, Long caseId,
+                                                  NotificationResponse notificationResponse) {
+        try {
+            String caseTypeOfApplication = "CIC";
+            CaseDetails caseDetails = caseApiService.getCaseDetails(authorization,
+                caseId);
+            CaseDetails caseDetails1 = caseApiService.updateCaseForCaseworker(authorization, caseId, caseDetails,
+                AppsUtil.getExactAppsDetails(appsConfig, caseTypeOfApplication));
+
+
+
+            log.info("Case Details for CaseID :{} and CaseDetails:{}", caseId, caseDetails);
+            return CaseResponse.builder().caseData(caseDetails.getData())
+                .id(caseDetails.getId()).status(SUCCESS).build();
+        } catch (Exception e) {
+            log.error("Error while fetching Case Details" + e);
+            throw new CaseCreateOrUpdateException("Failing while fetching the case details" + e.getMessage(), e);
+        }
+
+    }
 
 }

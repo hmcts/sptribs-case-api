@@ -44,8 +44,8 @@ public class CaseApiService {
         );
     }
 
-    public CaseDetails updateCase(String authorization, Event eventEnum, Long caseId,
-                                  CaseData caseData, AppsConfig.AppsDetails appsDetails) {
+    public CaseDetails updateCaseForCitizen(String authorization, Event eventEnum, Long caseId,
+                                            CaseData caseData, AppsConfig.AppsDetails appsDetails) {
 
         String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
 
@@ -62,6 +62,24 @@ public class CaseApiService {
         );
     }
 
+    public CaseDetails updateCaseForCaseworker(String authorization, Long caseId,
+                                               CaseDetails caseDetails, AppsConfig.AppsDetails appsDetails) {
+
+        String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
+
+        return coreCaseDataApi.submitEventForCaseWorker(
+            authorization,
+            authTokenGenerator.generate(),
+            userId,
+            appsDetails.getJurisdiction(),
+            appsDetails.getCaseType(),
+            String.valueOf(caseId),
+            true,
+            getCaseDataContent(authorization, caseDetails, userId,
+                String.valueOf(caseId), appsDetails)
+        );
+    }
+
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, String userId,
                                                AppsConfig.AppsDetails appsDetails) {
         return CaseDataContent.builder()
@@ -71,6 +89,15 @@ public class CaseApiService {
             .build();
     }
 
+    private CaseDataContent getCaseDataContent(String authorization, CaseDetails caseDetails,
+                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
+        CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseDetails.getData());
+            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateEvent()).build())
+                .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateEvent(),
+                    caseId, appsDetails));
+
+        return builder.build();
+    }
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, Event eventEnum,
                                                String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
         CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseData);
