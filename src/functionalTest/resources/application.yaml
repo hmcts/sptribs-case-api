@@ -11,6 +11,9 @@ azure:
 
 test-url: ${TEST_URL:http://localhost:4013}
 
+test:
+  url: http://localhost:4013
+
 uk:
   gov:
     notify:
