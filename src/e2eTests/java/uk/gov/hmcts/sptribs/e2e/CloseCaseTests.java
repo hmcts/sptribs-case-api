@@ -45,7 +45,7 @@ public class CloseCaseTests extends Base {
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Select recipients", textOptionsWithTimeout(30000));
-        page.getByLabel("Subject").check();
+        page.getByText("Subject", new Page.GetByTextOptions().setExact(true)).check();
         page.getByLabel("Respondent").check();
         clickButton(page, "Continue");
         assertThat(page.locator("h2.heading-h2")).hasText("Check your answers", textOptionsWithTimeout(30000));

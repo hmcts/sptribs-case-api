@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.DssSubmitted;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.visibleOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -140,7 +141,7 @@ public class HearingJourneyTests extends Base {
         login.loginAsCaseWorker();
 
         Case newCase = new Case(page);
-        newCase.createCase("representative");
+        newCase.createCase(Representative);
         newCase.buildCase();
     }
 
