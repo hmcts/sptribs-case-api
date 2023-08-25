@@ -5,9 +5,13 @@ import com.microsoft.playwright.options.AriaRole;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParty;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.ApplicantEmail;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.RepresentativePost;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.SubjectEmail;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -23,6 +27,17 @@ public class CreateFlag extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.createCaseLevelFlag();
+    }
+
+    @Disabled
+    public void caseWorkedShouldBeAbleToCreatePartyLevelFlag() {
+        Page page = getPage();
+        Login login = new Login(page);
+        login.loginAsCaseWorker();
+        Case newCase = new Case(page);
+        newCase.createCase(SubjectEmail, ApplicantEmail, RepresentativePost);
+        newCase.buildCase();
+        newCase.createFlagForParties(CaseParty.Subject, CaseParty.Applicant, CaseParty.Representative);
     }
 
     @Disabled
