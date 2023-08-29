@@ -18,8 +18,8 @@ public final class EventConstants {
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
     public static final String CASEWORKER_ADD_NOTE = "caseworker-add-note";
     public static final String CASEWORKER_CASE_BUILT = "caseworker-case-built";
-    public static final String CASEWORKER_CASE_FLAG = "create-flags";
-    public static final String CASEWORKER_MANAGE_CASE_FLAG = "manage-flags";
+    public static final String CASEWORKER_CASE_FLAG = "createFlags";
+    public static final String CASEWORKER_MANAGE_CASE_FLAG = "manageFlags";
     public static final String CASEWORKER_CLOSE_THE_CASE = "caseworker-close-the-case";
     public static final String CASEWORKER_CONTACT_PARTIES = "contact-parties";
     public static final String RESPONDENT_CONTACT_PARTIES = "respondent-contact-parties";
@@ -37,8 +37,8 @@ public final class EventConstants {
     public static final String CASEWORKER_DOCUMENT_MANAGEMENT_AMEND = "caseworker-amend-document";
     public static final String CASEWORKER_ISSUE_DECISION = "caseworker-issue-decision";
     public static final String CASEWORKER_ISSUE_FINAL_DECISION = "caseworker-issue-final-decision";
-    public static final String CASEWORKER_LINK_CASE = "create-case-link";
-    public static final String CASEWORKER_MAINTAIN_LINK_CASE = "maintain-case-link";
+    public static final String CASEWORKER_LINK_CASE = "createCaseLink";
+    public static final String CASEWORKER_MAINTAIN_LINK_CASE = "maintainCaseLink";
     public static final String CASEWORKER_AMEND_DUE_DATE = "caseworker-amend-due-date";
     public static final String CASEWORKER_POSTPONE_HEARING = "caseworker-postpone-hearing";
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
