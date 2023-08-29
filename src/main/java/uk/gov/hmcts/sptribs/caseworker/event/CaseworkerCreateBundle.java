@@ -18,8 +18,6 @@ import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 
-import java.util.ArrayList;
-
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -89,7 +87,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseBundles(bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback)));
 
         caseData.setMultiBundleConfiguration(null);
-        caseData.setCaseDocuments(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
