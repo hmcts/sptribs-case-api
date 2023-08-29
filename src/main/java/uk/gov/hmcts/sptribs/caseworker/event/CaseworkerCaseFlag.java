@@ -57,7 +57,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-            .name("Create Flag")
+            .name("Flags: Create flag")
             .showSummary()
             .description("Create Flag")
             .aboutToSubmitCallback(this::aboutToSubmit)
