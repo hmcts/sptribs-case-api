@@ -53,7 +53,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             new PageBuilder(configBuilder
                 .event(CASEWORKER_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Link cases")
+                .name("Links: Link case")
                 .showSummary()
                 .description("To link related cases")
                 .aboutToSubmitCallback(this::aboutToSubmit)

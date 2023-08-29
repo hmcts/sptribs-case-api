@@ -54,7 +54,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
             new PageBuilder(configBuilder
                 .event(CASEWORKER_MAINTAIN_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Manage case links")
+                .name("Links: Manage links")
                 .showSummary()
                 .description("To maintain linked cases")
                 .aboutToSubmitCallback(this::aboutToSubmit)
