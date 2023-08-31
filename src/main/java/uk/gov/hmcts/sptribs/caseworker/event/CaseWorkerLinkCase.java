@@ -73,7 +73,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 .pageLabel("Case Link")
                 .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
                 .optional(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(CREATE)");
+                    null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
 
         }
     }

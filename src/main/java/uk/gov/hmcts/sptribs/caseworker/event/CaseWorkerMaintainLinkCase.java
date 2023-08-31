@@ -74,7 +74,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 .pageLabel("Maintain Case Link")
                 .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
                 .optional(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(UPDATE)");
+                    null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
         }
     }
 
