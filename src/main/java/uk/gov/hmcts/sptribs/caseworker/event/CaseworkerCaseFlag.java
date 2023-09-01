@@ -23,6 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -62,9 +63,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .description("Create Flag")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
