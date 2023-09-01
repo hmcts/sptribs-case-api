@@ -60,7 +60,6 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .name("Flags: Create flag")
             .showSummary()
             .description("Create Flag")
-            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -84,25 +83,17 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        log.info("Caseworker Case flags aboutToStart callback invoked for Case Id: {}", details.getId());
-
-        var caseData = details.getData();
-        String claimNumber = caseData.getHyphenatedCaseRef();
-        coreCaseApiService.submitSupplementaryDataToCcd(claimNumber);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        log.info("Caseworker Case flags aboutToSubmit callback invoked for Case Id: {}", details.getId());
-        var caseData = details.getData();
+        log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
+        var caseData = details.getData();
+        String claimNumber = caseData.getHyphenatedCaseRef();
+
+        coreCaseApiService.submitSupplementaryDataToCcd(claimNumber);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
