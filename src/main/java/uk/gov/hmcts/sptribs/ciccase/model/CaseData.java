@@ -82,6 +82,12 @@ public class CaseData {
     )
     private FlagLauncher flagLauncherInternal;
 
+    @CCD(
+        label = "Case name Hmcts Internal",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNameHmctsInternal;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Case Flags")
     private Flags caseFlags;
