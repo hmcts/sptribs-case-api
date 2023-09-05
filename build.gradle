@@ -136,6 +136,25 @@ task integration(type: Test) {
   failFast = true
 }
 
+task e2eTestInPrev(type: Test) {
+  description = "Runs e2e tests in Preview Environment"
+  group = "Verification"
+  testClassesDirs = sourceSets.e2eTests.output.classesDirs
+  classpath = sourceSets.e2eTests.runtimeClasspath
+  failFast = false
+  systemProperties([
+    // Configuration parameters to execute top-level classes in parallel but methods in same thread
+    'junit.jupiter.execution.parallel.enabled': 'true',
+    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
+    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
+  ])
+  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
+  environment 'CASE_API_BASE_URL', System.env.TEST_E2E_URL
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend-pr-329.preview.platform.hmcts.net'
+  environment 'BROWSER', 'chromium'
+  environment 'CI', 'true'
+}
+
 task e2eTests(type: Test) {
   description = "Runs e2e tests"
   group = "Verification"
@@ -149,7 +168,8 @@ task e2eTests(type: Test) {
     'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
-  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
 }
@@ -167,7 +187,8 @@ task e2eTestsNightlyFirefox(type: Test) {
     'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
-  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
   environment 'BROWSER', 'firefox'
   environment 'CI', 'true'
 }
@@ -185,7 +206,8 @@ task e2eTestsNightlyMsEdge(type: Test) {
     'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
   ])
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
-  environment 'BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
+  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
   environment 'BROWSER', 'msedge'
   environment 'CI', 'true'
 }
@@ -366,6 +388,7 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
   }
 
+  implementation 'io.swagger:swagger-annotations:1.5.0'
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
   implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.17'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.2'
@@ -570,7 +593,7 @@ cftlibTest {
 }
 
 // exclude the logback binding is coming in via cftlib
-configurations.cftlibTestImplementation {
+configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
