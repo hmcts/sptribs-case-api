@@ -14,6 +14,13 @@ import java.util.EnumSet;
 public enum State {
 
     @CCD(
+        label = "DSS-Draft",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Draft("DSS-Draft"),
+
+    @CCD(
         label = "Application rejected",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccess.class}
@@ -53,6 +60,13 @@ public enum State {
         access = {DefaultStateAccessExcludingCAA.class}
     )
     Submitted("Submitted"),
+
+    @CCD(
+        label = "DSS-Submitted",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Submitted("DSS-Submitted"),
 
     @CCD(
         label = "New case received",
