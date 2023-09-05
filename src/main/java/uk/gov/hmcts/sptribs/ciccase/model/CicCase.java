@@ -358,6 +358,11 @@ public class CicCase {
     )
     private Set<RespondentCIC> notifyPartyRespondent;
 
+    @CCD(
+        label = "Message",
+        typeOverride = TextArea
+    )
+    private String notifyPartyMessage;
 
     @CCD(
         label = "What is the reason for reinstating the case?",
@@ -533,12 +538,6 @@ public class CicCase {
 
     private YesOrNo representativeDetailsObjects;
 
-
-    @CCD(
-        label = "Police authority management incident",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String policeAuthority;
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
