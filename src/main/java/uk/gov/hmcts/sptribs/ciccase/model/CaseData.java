@@ -173,7 +173,7 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<CaseworkerCICDocument> caseDocuments;
+    private List<ListValue<CaseworkerCICDocument>> caseDocuments;
 
     @CCD(
         label = "Hearing Date",
