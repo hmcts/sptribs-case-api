@@ -18,6 +18,10 @@ spring:
     import: "optional:configtree:/mnt/secrets/sptribs/"
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
@@ -77,7 +81,7 @@ uk:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
 
 s2s-authorised:
-  services: ${S2S_AUTHORISED_SERVICES:ccd_data}
+  services: ${S2S_AUTHORISED_SERVICES:ccd_data,sptribs_frontend}
 
 idam:
   s2s-auth:
@@ -133,6 +137,9 @@ docmosis:
       CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
 
+case-api:
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
+
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
 
@@ -176,3 +183,18 @@ feature:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
+  dss-frontend:
+    enabled: ${DSS_FRONTEND_FEATURE:true}
+
+caseinfo:
+  apps:
+    - caseType: CriminalInjuriesCompensation
+      jurisdiction: ST_CIC
+      eventIds:
+        createEvent: citizen-cic-create-dss-application
+        updateEvent: citizen-cic-update-dss-application
+        submitEvent: citizen-cic-submit-dss-application
+        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
+      caseTypeOfApplication:
+        - CIC
+
