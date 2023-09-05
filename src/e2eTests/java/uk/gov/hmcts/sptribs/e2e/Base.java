@@ -28,8 +28,14 @@ public abstract class Base {
 
     private BrowserContext context;
 
-    public static String BASE_URL;
-    protected static final String AAT_URL = "https://manage-case.aat.platform.hmcts.net";
+    protected static final String CASE_API_AAT_URL = "https://manage-case.aat.platform.hmcts.net";
+
+    protected static final String DSS_AAT_URL = "https://sptribs-frontend.aat.platform.hmcts.net";
+
+    public static String CASE_API_BASE_URL;
+
+    public static String DSS_BASE_URL;
+    
 
     @BeforeAll
     public void setUp() {
@@ -66,8 +72,8 @@ public abstract class Base {
         page = context.newPage();
         page.setDefaultTimeout(30000);
         page.setDefaultNavigationTimeout(30000);
-        BASE_URL = getenv("BASE_URL") == null ? AAT_URL : getenv("BASE_URL");
-        page.navigate(BASE_URL, new Page.NavigateOptions().setTimeout(120000));
+        CASE_API_BASE_URL = getenv("CASE_API_BASE_URL") == null ? CASE_API_AAT_URL : getenv("CASE_API_BASE_URL");
+        page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(120000));
     }
 
     @AfterEach

@@ -16,6 +16,12 @@
     <suppress>
       <notes>jackson-databind-2.13.1.jar</notes>
       <cve>CVE-2020-36518</cve>
+      <cve>CVE-2023-35116</cve>
+    </suppress>
+    <suppress>
+      <notes>launchdarkly-java-server-sdk-6.1.0.jar</notes>
+      <cve>CVE-2023-2976</cve>
+      <cve>CVE-2020-8908</cve>
     </suppress>
     <suppress>
       <notes>
@@ -71,6 +77,7 @@
       <notes>no updates yet for tomcat-embed-core and tomcat-embed-websocket</notes>
       <cve>CVE-2022-34305</cve>
       <cve>CVE-2021-43980</cve>
+      <cve>CVE-2023-34981</cve>
     </suppress>
     <suppress>
       <cve>CVE-2022-42252</cve>
@@ -95,6 +102,8 @@
   <suppress>
     <notes>pkg:maven/commons-fileupload/commons-fileupload@1.4</notes>
     <cve>CVE-2023-24998</cve>
+    <cve>CVE-2023-2976</cve>
+    <cve>CVE-2023-34981</cve>
   </suppress>
   <suppress>
     <notes>pkg:maven/org\.yaml/snakeyaml@1.32</notes>
@@ -116,5 +125,14 @@
     <cve>CVE-2023-20861</cve>
     <cve>CVE-2023-20863</cve>
     <cve>CVE-2023-20883</cve>
+  </suppress>
+  <suppress>
+    <notes>pkg:maven/com.google.guava/guava@31.1-jre</notes>
+    <cve>CVE-2020-8908</cve>
+  </suppress>
+  <suppress>
+    <notes>pkg:maven/org.springframework.security/spring-security-crypto@5.8.3</notes>
+    <cve>CVE-2023-34034</cve>
+    <cve>CVE-2023-34035</cve>
   </suppress>
 </suppressions>
