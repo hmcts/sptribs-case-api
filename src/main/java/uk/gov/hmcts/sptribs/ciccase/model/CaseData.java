@@ -219,6 +219,15 @@ public class CaseData {
     )
     private String decisionMainContent;
 
+    @CCD(
+        label = "Messages",
+        typeOverride = Collection,
+        typeParameterOverride = "DssMessage",
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DssMessage>> messages;
+
+
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -266,6 +275,50 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private String pcqId;
+
+    @CCD(
+        access = { DefaultAccess.class}
+    )
+    private String dssQuestion1;
+
+    @CCD(
+        access = { DefaultAccess.class}
+    )
+    private String dssAnswer1;
+
+    @CCD(
+        access = { DefaultAccess.class}
+    )
+    private String dssQuestion2;
+
+    @CCD(
+        access = {DefaultAccess.class}
+    )
+    private String dssAnswer2;
+
+    @CCD(
+        access = {DefaultAccess.class}
+    )
+    private String dssQuestion3;
+
+    @CCD(
+        access = { DefaultAccess.class}
+    )
+    private String dssAnswer3;
+
+
+    @CCD(
+        label = "Uploaded DSS Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "DssUploadedDocument",
+        access = {CaseworkerAccess.class}
+    )
+    private List<ListValue<DssUploadedDocument>> uploadedDssDocuments;
+
+    @CCD(
+        access = { DefaultAccess.class}
+    )
+    private String dssHeaderDetails;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
