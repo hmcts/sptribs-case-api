@@ -21,6 +21,6 @@ public class CategoriesCICTest {
         new CategoriesCIC().configure(configBuilder);
 
         //Then
-        assertThat(getCategories(configBuilder)).hasSize(9);
+        assertThat(getCategories(configBuilder)).hasSize(10);
     }
 }
