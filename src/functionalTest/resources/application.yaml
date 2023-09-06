@@ -109,8 +109,6 @@ feature:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
-  dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:false}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
 
