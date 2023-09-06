@@ -44,10 +44,6 @@ location:
   api:
     baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
 
-flagType:
-  api:
-    baseUrl: ${FLAGTYPE_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
-
 judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
