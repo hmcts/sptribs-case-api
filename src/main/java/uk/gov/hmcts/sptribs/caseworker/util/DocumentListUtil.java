@@ -46,8 +46,8 @@ public final class DocumentListUtil {
         return docList;
     }
 
-    public static List<CaseworkerCICDocument> getAllCaseDocuments(final CaseData data) {
-        return prepareList(data);
+    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {
+        return buildListValues(prepareList(data));
     }
 
     public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {

@@ -86,6 +86,8 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-wa-task-configuration",
             "caseworker-admin",
             "hmcts-admin",
+            "caseflags-admin",
+            "caseflags-viewer",
             "citizen"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
