@@ -20,7 +20,6 @@ public class AppsConfig {
         private String createEvent;
         private String updateEvent;
         private String submitEvent;
-        private String dssUpdateEvent;
     }
 
     @Data
