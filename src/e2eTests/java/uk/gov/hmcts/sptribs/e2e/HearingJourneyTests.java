@@ -122,7 +122,7 @@ public class HearingJourneyTests extends Base {
     }
 
     @RepeatedIfExceptionsTest
-    
+
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
