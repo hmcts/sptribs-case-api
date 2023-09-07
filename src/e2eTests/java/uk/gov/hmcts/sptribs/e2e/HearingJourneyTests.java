@@ -103,6 +103,7 @@ public class HearingJourneyTests extends Base {
 
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
+
         Page page = getPage();
         createAndBuildCase(page);
         Hearing hearing = createListing(page);
