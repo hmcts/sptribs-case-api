@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BundleResponse {
-    private LinkedHashMap<String,Object> data;
+    private Map<String,Object> data;
     private List<String> errors;
     private List<String> warnings;
     private Integer documentTaskId;
