@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
@@ -58,6 +59,18 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags caseFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags subjectFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags representativeFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Flags applicantFlags;
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default
