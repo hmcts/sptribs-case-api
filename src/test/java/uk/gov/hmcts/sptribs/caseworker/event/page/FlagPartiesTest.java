@@ -7,6 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -40,6 +41,38 @@ class FlagPartiesTest {
         final CaseData caseData = CaseData.builder().build();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = flagParties.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    void shouldReturnErrorsIfMinor() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.MINOR)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = flagParties.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    void shouldReturnErrorsIfFatal() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         caseData.setCicCase(cicCase);
