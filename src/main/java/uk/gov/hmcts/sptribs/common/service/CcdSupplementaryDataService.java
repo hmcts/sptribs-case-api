@@ -10,10 +10,8 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Collections.singletonMap;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
 public class CcdSupplementaryDataService {
@@ -31,10 +29,8 @@ public class CcdSupplementaryDataService {
     private CaseFlagsConfiguration caseFlagsConfiguration;
 
     @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
     private AuthorisationService authorisationService;
+
 
     public void submitSupplementaryDataToCcd(String caseId) {
 
@@ -55,7 +51,7 @@ public class CcdSupplementaryDataService {
             singletonMap("$set", singletonMap("HMCTSServiceId",
                 caseFlagsConfiguration.getHmctsId())));
 
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
         coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(),
             caseId,
