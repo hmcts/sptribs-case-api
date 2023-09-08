@@ -371,6 +371,12 @@ public class CaseData {
     )
     private YesOrNo hasDssNotificationSent;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String firstHearingDate;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String hearingVenueName;
+
     public String getFirstHearingDate() {
 
         Listing nextListing = getNextListedHearing();
