@@ -10,7 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -235,7 +237,8 @@ class CaseworkerContactPartiesTest {
     void shouldSuccessfullyMoveToNextPageWithOutError() {
         final CaseData caseData = caseData();
 
-        CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of()).build();
+        CicCase cicCase = CicCase.builder().caseSubcategory(CaseSubcategory.MEDICAL_REOPENING)
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC)).contactPartiesCIC(Set.of()).build();
         cicCase.setRepresentativeFullName("www");
         caseData.setCicCase(cicCase);
         caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
