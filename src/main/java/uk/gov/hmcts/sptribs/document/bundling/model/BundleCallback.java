@@ -15,8 +15,8 @@ public class BundleCallback extends Callback {
 
     public BundleCallback(Callback callback) {
         super(callback.getCaseDetails(), callback.getCaseDetailsBefore(), callback.getEvent(), callback.isIgnoreWarnings());
-        setCaseTypeId(callback.getCaseDetails().getCaseTypeId());
-        setJurisdictionId(callback.getCaseDetails().getJurisdiction());
+        this.caseTypeId = callback.getCaseDetails().getCaseTypeId();
+        this.jurisdictionId = callback.getCaseDetails().getJurisdiction();
     }
 
     public String getCaseTypeId() {

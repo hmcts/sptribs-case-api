@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.HttpServletRequest;
 
@@ -79,8 +80,9 @@ public class BundlingService {
     private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
         List<Bundle> bundleList = new ArrayList<>();
         List<BundleFolder> folders = new ArrayList<>();
-        for (int i = 0; i < response.size(); i++) {
-            LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) response.get(i).get(VALUE);
+
+        response.forEach(res -> {
+            LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
             Bundle bundle = Bundle.builder()
                 .stitchStatus(NEW)
                 .description(null != objectLinkedHashMap.get(DESCRIPTION) ? objectLinkedHashMap.get(DESCRIPTION).toString() : "")
@@ -119,17 +121,18 @@ public class BundlingService {
             }
             bundle.setFolders(buildBundleFolderListValues(folders));
             bundleList.add(bundle);
-        }
+        });
 
         return bundleList;
     }
 
     public List<ListValue<Bundle>> buildBundleListValues(List<Bundle> bundleList) {
-        List<ListValue<Bundle>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
         if (CollectionUtils.isEmpty(bundleList)) {
             return null;
         }
+
+        AtomicInteger listValueIndex = new AtomicInteger(0);
+        List<ListValue<Bundle>> newList = new ArrayList<>();
         for (Bundle doc : bundleList) {
             var listValue = ListValue
                 .<Bundle>builder()
@@ -144,11 +147,12 @@ public class BundlingService {
     }
 
     public List<ListValue<BundleFolder>> buildBundleFolderListValues(List<BundleFolder> bundleList) {
-        List<ListValue<BundleFolder>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
         if (CollectionUtils.isEmpty(bundleList)) {
             return null;
         }
+
+        List<ListValue<BundleFolder>> newList = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleFolder doc : bundleList) {
             var listValue = ListValue
                 .<BundleFolder>builder()
@@ -163,11 +167,12 @@ public class BundlingService {
     }
 
     public List<ListValue<BundleDocument>> buildBundleDocumentListValues(List<BundleDocument> bundleList) {
-        List<ListValue<BundleDocument>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
         if (CollectionUtils.isEmpty(bundleList)) {
             return null;
         }
+
+        List<ListValue<BundleDocument>> newList = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleDocument doc : bundleList) {
             var listValue = ListValue
                 .<BundleDocument>builder()
@@ -181,19 +186,20 @@ public class BundlingService {
         return newList;
     }
 
-    private List<BundleDocument> getDocuments(LinkedHashMap<String, Object> response) {
+    private List<BundleDocument> getDocuments(Map<String, Object> response) {
         List<BundleDocument> documents = new ArrayList<>();
         if (null != response.get(DOCUMENTS)) {
-            List<LinkedHashMap<String, Object>> documentsFromResponse = (List<LinkedHashMap<String, Object>>) response.get(DOCUMENTS);
-            for (int z = 0; z < documentsFromResponse.size(); z++) {
-                LinkedHashMap<String, Object> document = (LinkedHashMap<String, Object>) documentsFromResponse.get(z).get(VALUE);
+            List<Map<String, Object>> documentsFromResponse = (List<Map<String, Object>>) response.get(DOCUMENTS);
+            documentsFromResponse.forEach(res -> {
+                Map<String, Object> document = (Map<String, Object>) res.get(VALUE);
                 BundleDocument bundleDocument = BundleDocument.builder()
                     .name(null != document.get(NAME) ? document.get(NAME).toString() : "")
                     .name(null != document.get(DESCRIPTION) ? document.get(DESCRIPTION).toString() : "")
                     .sortIndex(null != document.get(SORT_INDEX) ? (Integer) document.get(SORT_INDEX) : null)
                     .build();
                 documents.add(bundleDocument);
-            }
+            });
+
             return documents;
         }
         return null;

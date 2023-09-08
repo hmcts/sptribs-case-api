@@ -1,10 +1,6 @@
 package uk.gov.hmcts.sptribs.document.bundling;
 
 public final class BundlingConstants {
-    private BundlingConstants() {
-
-    }
-
     public static final String DOCUMENTS = "documents";
     public static final String NAME = "name";
     public static final String CASE_BUNDLES = "caseBundles";
@@ -20,4 +16,7 @@ public final class BundlingConstants {
     public static final String STITCHING_STATUS = "stitchingStatus";
     public static final String NEW = "new";
     public static final String FOLDERS = "folders";
+
+    private BundlingConstants() {
+    }
 }
