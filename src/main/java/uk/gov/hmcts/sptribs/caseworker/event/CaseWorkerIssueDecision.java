@@ -149,14 +149,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Issue a decision notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Issue a decision notification failed %n## Please resend the notification"))
-                .build();
-        }
+
+        sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Decision notice issued %n## %s",

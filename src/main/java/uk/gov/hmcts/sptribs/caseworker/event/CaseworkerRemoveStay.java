@@ -93,14 +93,9 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
     public SubmittedCallbackResponse stayRemoved(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
-        try {
-            sendCaseUnStayedNotification(caseData.getHyphenatedCaseRef(), caseData);
-        } catch (Exception notificationException) {
-            log.error("Remove case stay notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Remove case stay notification failed %n## Please resend the notification"))
-                .build();
-        }
+
+        sendCaseUnStayedNotification(caseData.getHyphenatedCaseRef(), caseData);
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Stay Removed from Case %n## %s",
                 MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(caseData.getCicCase()))))
