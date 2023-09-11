@@ -142,7 +142,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         String claimNumber = data.getHyphenatedCaseRef();
         try {
             sendApplicationReceivedNotification(claimNumber, data);
-            coreCaseApiService.submitSupplementaryDataRequestToCcd(claimNumber);
         } catch (Exception notificationException) {
             log.error("Create case notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
