@@ -133,10 +133,12 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
+
+        setSupplementaryData(details.getId());
+
         String claimNumber = data.getHyphenatedCaseRef();
         try {
             sendApplicationReceivedNotification(claimNumber, data);
-            coreCaseApiService.submitSupplementaryDataRequestToCcd(claimNumber);
         } catch (Exception notificationException) {
             log.error("Create case notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -147,6 +149,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
             .build();
+    }
+
+    private void setSupplementaryData(Long caseId) {
+        try {
+            coreCaseApiService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
     }
 
     private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
