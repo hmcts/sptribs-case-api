@@ -232,6 +232,7 @@ public class NewOrderIssuedNotificationTest {
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
+
     @Test
     void shouldNotifyApplicantWithEmail() {
         //Given
