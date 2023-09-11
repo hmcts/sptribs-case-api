@@ -10,8 +10,10 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Collections.singletonMap;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
 public class CcdSupplementaryDataService {
@@ -29,8 +31,7 @@ public class CcdSupplementaryDataService {
     private CaseFlagsConfiguration caseFlagsConfiguration;
 
     @Autowired
-    private AuthorisationService authorisationService;
-
+    private HttpServletRequest request;
 
     public void submitSupplementaryDataToCcd(String caseId) {
 
@@ -39,7 +40,8 @@ public class CcdSupplementaryDataService {
             singletonMap("$set", singletonMap("HMCTSServiceId",
                 caseFlagsConfiguration.getHmctsId())));
 
-        coreCaseDataApi.submitSupplementaryData(authorisationService.getAuthorisation(),
+        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(),
             caseId,
             supplementaryDataUpdates);
@@ -51,7 +53,7 @@ public class CcdSupplementaryDataService {
             singletonMap("$set", singletonMap("HMCTSServiceId",
                 caseFlagsConfiguration.getHmctsId())));
 
-        final User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
+        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(),
             caseId,
