@@ -503,6 +503,8 @@ em-stitching:
       CDAM_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
       SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
       SPRING_DATASOURCE_NAME: emstitch
+      SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
+      SPRING_DATASOURCE_PORT: 5432
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_PASSWORD: hmcts
 
