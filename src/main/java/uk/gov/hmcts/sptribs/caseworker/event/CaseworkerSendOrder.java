@@ -225,6 +225,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
         }
 
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
+        }
+
         //Once Notification is sent, nullify the last selected order
         caseData.getCicCase().setLastSelectedOrder(null);
     }

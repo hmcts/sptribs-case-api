@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
-import uk.gov.hmcts.sptribs.document.CaseDocumentClient;
+import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
 @Slf4j
@@ -51,7 +52,7 @@ public class NotificationServiceCIC {
     private AuthTokenGenerator authTokenGenerator;
 
     @Autowired
-    private CaseDocumentClient caseDocumentClient;
+    private DocumentClient caseDocumentClient;
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
         SendEmailResponse sendEmailResponse;
@@ -136,9 +137,12 @@ public class NotificationServiceCIC {
 
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
 
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        final String authorisation = caseworkerUser.getAuthToken();
+        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
+            ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
         String serviceAuthorization = authTokenGenerator.generate();
+        String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
+            ? serviceAuthorization.substring(7) : serviceAuthorization;
 
         for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
             String docName = document.getKey();
@@ -147,15 +151,18 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                Resource uploadedDocument = StringUtils.isNotEmpty(item)
-                    ? caseDocumentClient.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item)).getBody()
-                    : null;
+                if (StringUtils.isNotEmpty(item)) {
+                    byte[] uploadedDocument = caseDocumentClient
+                        .getDocumentBinary(authorisation, serviceAuthorizationLatest, UUID.fromString(item)).getBody();
 
-                if (uploadedDocument != null) {
-                    byte[] uploadedDocumentContents = uploadedDocument.getInputStream().readAllBytes();
-                    templateVars.put(docName, getJsonFileAttachment(uploadedDocumentContents));
+                    if (uploadedDocument != null) {
+                        log.info("Document available for: {}", docName);
+                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                    } else {
+                        templateVars.put(docName, "");
+                    }
                 } else {
-                    log.info("Document not found with uuid : {}", item);
+                    log.info("Document not available for: {}", docName);
                     templateVars.put(docName, "");
                 }
             }

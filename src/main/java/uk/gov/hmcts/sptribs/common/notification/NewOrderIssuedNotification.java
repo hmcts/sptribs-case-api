@@ -78,6 +78,25 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
+    @Override
+    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+
+        NotificationResponse notificationResponse;
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
+
+            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getApplicantEmailAddress(),
+                uploadedDocuments, templateVars);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
+        }
+
+        cicCase.setSubjectNotifyList(notificationResponse);
+    }
+
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
                                                                      Map<String, String> uploadedDocuments,
                                                                      final Map<String, Object> templateVars) {
