@@ -168,10 +168,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             caseWithdrawnNotification.sendToSubject(caseData, caseNumber);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+        if (null != cicCase.getNotifyPartyRespondent()) {
             caseWithdrawnNotification.sendToRespondent(caseData, caseNumber);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+        if (null != cicCase.getNotifyPartyRepresentative()) {
             caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
         }
     }

@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
 
 @Service
 @Slf4j
@@ -26,6 +27,9 @@ public class CaseApiService {
 
     @Autowired
     IdamService idamService;
+
+    @Autowired
+    CaseDetailsConverter caseDetailsConverter;
 
 
     public CaseDetails createCase(String authorization, CaseData caseData,
@@ -80,6 +84,17 @@ public class CaseApiService {
         );
     }
 
+    private CaseDataContent getCaseDataContent(String authorization, CaseDetails caseDetails,
+                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
+        CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseDetails.getData());
+        builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateNotificationEvent()).build())
+            .eventToken(getEventToken(authorization, userId, appsDetails.getEventIds().getUpdateNotificationEvent(),
+                caseId, appsDetails))
+            .data(caseDetailsConverter.toCaseData(caseDetails));
+
+        return builder.build();
+    }
+
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, String userId,
                                                AppsConfig.AppsDetails appsDetails) {
         return CaseDataContent.builder()
@@ -89,15 +104,6 @@ public class CaseApiService {
             .build();
     }
 
-    private CaseDataContent getCaseDataContent(String authorization, CaseDetails caseDetails,
-                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
-        CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseDetails.getData());
-            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateEvent()).build())
-                .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateEvent(),
-                    caseId, appsDetails));
-
-        return builder.build();
-    }
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, Event eventEnum,
                                                String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
         CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseData);
@@ -141,6 +147,22 @@ public class CaseApiService {
 
         //This has to be removed
         log.info("Response of update event token: " + res.getToken());
+
+        return res.getToken();
+    }
+
+    public String getEventToken(String authorization, String userId, String eventId, String caseId,
+                                         AppsConfig.AppsDetails appsDetails) {
+        StartEventResponse res = coreCaseDataApi.startEventForCaseWorker(authorization,
+            authTokenGenerator.generate(),
+            userId,
+            appsDetails.getJurisdiction(),
+            appsDetails.getCaseType(),
+            caseId,
+            eventId);
+
+        //This has to be removed
+        log.info("Response of update notification event token: " + res.getToken());
 
         return res.getToken();
     }

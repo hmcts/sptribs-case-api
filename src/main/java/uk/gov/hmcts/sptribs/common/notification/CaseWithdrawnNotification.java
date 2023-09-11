@@ -3,6 +3,9 @@ package uk.gov.hmcts.sptribs.common.notification;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -10,10 +13,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.Notification;
+import uk.gov.hmcts.sptribs.caseworker.model.Notifications;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -58,6 +64,15 @@ public class CaseWithdrawnNotification implements PartiesNotification {
     @Autowired
     private NotificationHelper notificationHelper;
 
+    @Autowired
+    private RestTemplate restTemplateNotify;
+
+    @Value("${notify_proxy.url}")
+    private String notificationUrl;
+
+    @Value("/notifications/email")
+    private String emailUrlPath;
+
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
@@ -74,8 +89,10 @@ public class CaseWithdrawnNotification implements PartiesNotification {
             notification.setReference(notificationRequest.getReference());
             notification.setTemplateId(notificationRequest.getTemplateId());
             notification.setCaseId(notificationRequest.getCaseId());
+            Notifications notifications = new Notifications();
+            notifications.setCaseWithdrawnNotification(notification);
+            cicCase.setNotifications(notifications);
 
-            cicCase.getNotifications().setCaseWithdrawnNotification(notification);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             sendLetterNotification(templateVars);
@@ -118,23 +135,36 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         //return notificationService.sendEmail(notificationRequest);
 
         String serviceAuthToken = authTokenGenerator.generate();
-        serviceAuthToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2OTI3MDYxNzh9.yykpeS53jeOkp-JmPAu_25UHwFD4G_jL2T-yBEcqVJJcR6egJSTiFJSicdM0ZAd3_y3QDSF4VAO4Rbltc52U5g";
+        serviceAuthToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2OTQwODk1OTF9.yjfUdpnHdxYbt070M1Zg2qmjxfYKCHoU56g_iuH3HVw2gVoJCgq3GSlSX5bnzGSD2GctsMrWpM0ZnIG2bE4REg";
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
             ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
-        authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJiYXJwcmVwcm9kQG1haWxpbmF0b3IuY29tIiwiY3RzIjoiT0FVVEgyX1NUQVRFTEVTU19HUkFOVCIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6IjQ3MjBhNTNmLWU0NjEtNGM3Ny05OTZmLTdjNmE4Y2Q3OGRiOC0xNDIzODA2NSIsInN1Ym5hbWUiOiJiYXJwcmVwcm9kQG1haWxpbmF0b3IuY29tIiwiaXNzIjoiaHR0cHM6Ly9mb3JnZXJvY2stYW0uc2VydmljZS5jb3JlLWNvbXB1dGUtaWRhbS1hYXQyLmludGVybmFsOjg0NDMvb3BlbmFtL29hdXRoMi9yZWFsbXMvcm9vdC9yZWFsbXMvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXV0aEdyYW50SWQiOiJ2ejJBSERNWGRzUE9HVm1hZHhaZnhRSXZpQ3ciLCJhdWQiOiJwYXlidWJibGUiLCJuYmYiOjE2OTI2OTE3ODEsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJyb2xlcyJdLCJhdXRoX3RpbWUiOjE2OTI2OTE3ODEsInJlYWxtIjoiL2htY3RzIiwiZXhwIjoxNjkyNzIwNTgxLCJpYXQiOjE2OTI2OTE3ODEsImV4cGlyZXNfaW4iOjI4ODAwLCJqdGkiOiJWbUJrY1Mtei1MNXpsaEI5T2hxYWlwVDhrdUEifQ.gD2Pxgl48gblhejE-38c3hMlpzezZ6KH_CmlCdGCiZXyG3-SKJgw0zXkk1W5TSgyOC3HMQjCUBhPiF73j2PhsSVDdV5q4okOy_ZI8_HB1OSY1gZv3JCfTr0MmhT4cr9Nh8ieEJlNr7SuAb0Q4Oak51sbqGWjYTEdG1wwIxfL4vv7HhMQ9JJrq7PJT7Fev4OGmaFglm9bQvmNkj1kQxKIYOrA1Gf5g98Zk3kKheKMwlK8Sk2HHGQBaZ4VwgwTV3NdxkXjakOF70zlmB8spgxqll6c7g964FM8w1yRwAMEl-HGwdI6QBwmKYTRAMvEQg0Kjre2fcueb582CfXXi8bMUA";
+        authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJiYXJwcmVwcm9kQG1haWxpbmF0b3IuY29tIiwiY3RzIjoiT0FVVEgyX1NUQVRFTEVTU19HUkFOVCIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6IjljZDZhN2U0LTc3NmQtNDJjNC1hOWU1LTM2YmVhODdkNTM3Ny0xMjk0NTQ3MzgiLCJzdWJuYW1lIjoiYmFycHJlcHJvZEBtYWlsaW5hdG9yLmNvbSIsImlzcyI6Imh0dHBzOi8vZm9yZ2Vyb2NrLWFtLnNlcnZpY2UuY29yZS1jb21wdXRlLWlkYW0tYWF0Mi5pbnRlcm5hbDo4NDQzL29wZW5hbS9vYXV0aDIvcmVhbG1zL3Jvb3QvcmVhbG1zL2htY3RzIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiSmcxaWxFT3dLc0d2bTl1Nm5ST3N3SnZqbTBvIiwiYXVkIjoicGF5YnViYmxlIiwibmJmIjoxNjk0MDc1MTk0LCJncmFudF90eXBlIjoicGFzc3dvcmQiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9sZXMiXSwiYXV0aF90aW1lIjoxNjk0MDc1MTk0LCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTY5NDEwMzk5NCwiaWF0IjoxNjk0MDc1MTk0LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoidDNsOWZiSWwzYndFQV91YldqY2kzajBIaDFVIn0.qenInWJY5xNNS2xIiUMBdz6Y8aw6b-hjVveExHeEq-ozpues6PHz3yJcH_e0WPmNrEb3fwqzGo-L3RG9qiDN1QA0Px01HSdyPSQp7oobS88h6d5h19WS3uz3dq3WpIQCF5YbqNCvOEkzAKvRyAF1xAn6k3OaqAjS2YNyL1rQDu42ssnYxx5GxnNf40DccuE9ooswW556D8J5X-FEGB6NOtF3jtsJcvP_aZu7MrGzQiuMViTRK1XKuSrqBZIAY-2MNKwXbqb0F9iGsXi_6VT1ovweYLNk2AEJX7Xxa_ImGTkda3pu195HyTOWUkry8isUiYSkH67LqBgtLVEQuzmdCg";
 
-        ResponseEntity<?> responseEntity = notifyProxyClient.
-            sendEmailNotification(authorisation, serviceAuthToken, getHttpHeaders(), notificationRequest);
-        String isNotificationSent = (String) responseEntity.getBody();
+
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(new StringBuilder(notificationUrl).append(emailUrlPath).toString());
+        log.info("Notification URL in Refunds app email {}",builder.toUriString());
+        ResponseEntity<String> responseEntity = restTemplateNotify.exchange(builder.toUriString(), HttpMethod.POST,
+            new HttpEntity<>(notificationRequest, getHttpHeaders()),String.class);
+
+
+
+
+        //ResponseEntity<?> responseEntity = notifyProxyClient.
+        //    sendEmailNotification(authorisation, serviceAuthToken, getHttpHeaders(), notificationRequest);
+        //String isNotificationSent = (String) responseEntity.getBody();
         return notificationRequest;
     }
 
     private MultiValueMap<String,String> getHttpHeaders() {
         MultiValueMap<String, String> inputHeaders = new LinkedMultiValueMap<>();
+        String serviceAuthToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzcHRyaWJzX2Nhc2VfYXBpIiwiZXhwIjoxNjk0NDM0OTg1fQ.jwvIj74XbQ4S0UVHE7iQGB7ePdBM4IzZpsqp3mQ4PX4gZxQO-U_APsg5G79pkSlZJkJY_Ve5W32rf3Ode_g4gw";
+        String authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJzdC10ZXN0NjZAbWFpbGluYXRvci5jb20iLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkIjoiNDcyMGE1M2YtZTQ2MS00Yzc3LTk5NmYtN2M2YThjZDc4ZGI4LTM5MDg0OTc5Iiwic3VibmFtZSI6InN0LXRlc3Q2NkBtYWlsaW5hdG9yLmNvbSIsImlzcyI6Imh0dHBzOi8vZm9yZ2Vyb2NrLWFtLnNlcnZpY2UuY29yZS1jb21wdXRlLWlkYW0tYWF0Mi5pbnRlcm5hbDo4NDQzL29wZW5hbS9vYXV0aDIvcmVhbG1zL3Jvb3QvcmVhbG1zL2htY3RzIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiSlk0RllwTVRzS0xyZUZqeWZJazZDajZuZXhBIiwiYXVkIjoic3B0cmlicy1jYXNlLWFwaSIsIm5iZiI6MTY5NDQyMDU4MSwiZ3JhbnRfdHlwZSI6InBhc3N3b3JkIiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsInJvbGVzIl0sImF1dGhfdGltZSI6MTY5NDQyMDU4MSwicmVhbG0iOiIvaG1jdHMiLCJleHAiOjE2OTQ0NDkzODEsImlhdCI6MTY5NDQyMDU4MSwiZXhwaXJlc19pbiI6Mjg4MDAsImp0aSI6IjNSS2k0OFZXVk5LXzZRV0tVelZhYWQ4LUU2TSJ9.lKPq6rIdH52g7AxOv9x6-uePOfswLGyJuRtoVQiDd2472FgZO6zfRrHwn93znKXPGNcZaAv4iTVKpDNw_TWzUmXkiASAzy_gGcR3GT1acOCBKfjvRC8jJTxC6SvcKRKpkKPbV69LXnnuV1MlaQmZoioATgNyZumvZeqxR2T1E-yGyHPKPO4STDlYM4bhSI2OLEiFrG8RKFdmGpbdhZdtHMdlhK-22DXDPuKG0e4mc7JC4Mu4qGV9MTUcOCW8Xx_iCLN5HcZzCzRUFJMJ9O282YsWThHNK8RATORljhuuyx-negYi4-zSMfpEBxJ_oqzFHe_Vx1Me4_gc22yLHD4FtA";
+
         inputHeaders.put("content-type", Arrays.asList("application/json"));
-        inputHeaders.put("authorization", Arrays.asList("Bearer " + request.getHeader(AUTHORIZATION)));
-        inputHeaders.put("ServiceAuthorization", Arrays.asList(getServiceAuthorisationToken()));
+        inputHeaders.put("authorization", Arrays.asList(authorisation));
+        inputHeaders.put("ServiceAuthorization", Arrays.asList(serviceAuthToken));
         log.info("HttpHeader {}", inputHeaders);
         return inputHeaders;
     }

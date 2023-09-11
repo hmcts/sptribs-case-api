@@ -117,11 +117,11 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             caseReinstatedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getNotifyPartyRepresentative().isEmpty()) {
+        if (null != cicCase.getNotifyPartyRepresentative()) {
             caseReinstatedNotification.sendToRepresentative(data, caseNumber);
         }
 
-        if (!cicCase.getNotifyPartyRespondent().isEmpty()) {
+        if (null != cicCase.getNotifyPartyRespondent()) {
             caseReinstatedNotification.sendToRespondent(data, caseNumber);
         }
     }

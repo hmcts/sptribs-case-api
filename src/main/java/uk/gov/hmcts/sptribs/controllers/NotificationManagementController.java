@@ -29,7 +29,7 @@ public class NotificationManagementController {
     @Autowired
     CaseManagementService caseManagementService;
 
-    @PutMapping("case/{caseId}/update")
+    @PutMapping("/case/{caseId}/update")
     @ApiOperation("Call CCD to update case")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "updated"),

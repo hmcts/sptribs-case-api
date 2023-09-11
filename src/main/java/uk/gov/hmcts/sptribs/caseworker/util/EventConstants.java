@@ -56,6 +56,8 @@ public final class EventConstants {
     public static final String EDIT_BUNDLE = "editBundle";
     public static final String CLONE_BUNDLE = "cloneBundle";
 
+    public static final String CASEWORKER_UPDATE_NOTIFICATION = "caseworker-update-notification";
+
     public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
     public static final String YES = "YES";
     public static final String NO_LINKS = "No links on this case";
