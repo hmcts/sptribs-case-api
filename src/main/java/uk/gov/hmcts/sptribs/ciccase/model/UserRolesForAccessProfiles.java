@@ -13,7 +13,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     SUPER_USER("idam:caseworker-sptribs-superuser", "CRU"),
     SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     CASEWORKER("idam:caseworker", "CRU"),
-
     ST_CIC_CASEWORKER("idam:caseworker-st_cic-caseworker", "CRU"),
     ST_CIC_SENIOR_CASEWORKER("idam:caseworker-st_cic-senior-caseworker", "CRU"),
     ST_CIC_HEARING_CENTRE_ADMIN("idam:caseworker-st_cic-hearing-centre-admin", "CRU"),
@@ -22,9 +21,9 @@ public enum UserRolesForAccessProfiles implements HasRole {
     ST_CIC_JUDGE("idam:caseworker-st_cic-judge", "CRU"),
     ST_CIC_RESPONDENT("idam:caseworker-st_cic-respondent", "CRU"),
     CITIZEN_CIC("idam:citizen", "CRU"),
+    ST_CIC_WA_CONFIG_USER("idam:caseworker-wa-task-configuration", "CRU"),
     CASEWORKER_ADMIN("idam:caseworker-admin", "CRU"),
     HMCTS_ADMIN("idam:hmcts-admin", "CRU"),
-
     // Below are the Access Profiles for the Idam Roles
     CIC_SUPER_USER("caseworker-sptribs-superuser", "CRU"),
     CIC_CASEWORKER("caseworker-st_cic-caseworker", "CRU"),
@@ -36,6 +35,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
     AC_CASEWORKER("caseworker", "CRU"),
     AC_CITIZEN("citizen", "CRU"),
+    AC_ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "CRU"),
     AP_CASEWORKER_ADMIN("caseworker-admin", "CRU"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),

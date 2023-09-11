@@ -509,7 +509,7 @@ task loadEnvSecrets() {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env','wa-aat',"AZURE_SERVICE_BUS_CONNECTION_STRING","sscs-aat","sscs-servicebus-connection-string-tf"
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
@@ -609,9 +609,7 @@ bootWithCCD {
     environment 'AZURE_SERVICE_BUS_CONNECTION_STRING','Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndReceiveCCDMessage;SharedAccessKey=BXOmN0uU5RZN7KW51soNUv7xNBcNtXqwh+ASbD8y4p4=;EntityPath=st-ccd-case-event'
     environment 'AZURE_SERVICE_BUS_TOPIC_NAME','st-ccd-case-event'
     environment 'AZURE_SERVICE_BUS_SUBSCRIPTION_NAME', 'sptribs_sabir_local'
-//  environment 'AZURE_SERVICE_BUS_SUBSCRIPTION_NAME', 'wa-sptribs-ccd-case-event'
     environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'sptribs_sabir_local'
-//  environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'wa-sptribs-ccd-case-event'
     environment 'AZURE_SERVICE_BUS_MESSAGE_AUTHOR', 'shweta'
     environment 'IDAM_API_BASEURL_WA', 'https://idam-web-public.aat.platform.hmcts.net'
     environment 'S2S_URL_WA', 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
