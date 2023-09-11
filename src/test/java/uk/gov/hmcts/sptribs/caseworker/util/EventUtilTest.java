@@ -6,11 +6,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -308,4 +311,52 @@ public class EventUtilTest {
 
     }
 
+    @Test
+    void shouldSuccessfullyCheckRecipients() {
+        //Given
+        final CaseData data = new CaseData();
+
+        //When
+        List<String> result = EventUtil.checkRecipient(data);
+
+        //Then
+        assertThat(result).isNotNull();
+
+    }
+
+    @Test
+    void shouldSuccessfullyCheckRecipientsMinor() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.MINOR)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
+        final CaseData data = new CaseData();
+        data.setCicCase(cicCase);
+
+        //When
+        List<String> result = EventUtil.checkRecipient(data);
+
+        //Then
+        assertThat(result).isNotNull();
+
+    }
+
+    @Test
+    void shouldSuccessfullyCheckRecipientsFatal() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
+        final CaseData data = new CaseData();
+        data.setCicCase(cicCase);
+
+        //When
+        List<String> result = EventUtil.checkRecipient(data);
+
+        //Then
+        assertThat(result).isNotNull();
+
+    }
 }
