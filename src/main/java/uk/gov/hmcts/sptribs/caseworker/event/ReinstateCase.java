@@ -85,14 +85,8 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
     public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
                                                 CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Case Reinstate notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case Reinstate notification failed %n## Please resend the notification"))
-                .build();
-        }
+
+        sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
         var cicCase = details.getData().getCicCase();
         return SubmittedCallbackResponse.builder()
