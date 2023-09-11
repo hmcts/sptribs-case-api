@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -41,6 +42,9 @@ public class CcdSupplementaryDataServiceTest {
 
     @Mock
     private HttpServletRequest request;
+
+    @Mock
+    private AuthorisationService authorisationService;
 
     @Test
     void shouldSubmitSupplementaryDataToCcd() {

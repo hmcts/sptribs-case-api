@@ -33,6 +33,9 @@ public class CcdSupplementaryDataService {
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private AuthorisationService authorisationService;
+
     public void submitSupplementaryDataToCcd(String caseId) {
 
         Map<String, Map<String, Map<String, Object>>> supplementaryDataUpdates = new HashMap<>();
@@ -40,8 +43,7 @@ public class CcdSupplementaryDataService {
             singletonMap("$set", singletonMap("HMCTSServiceId",
                 caseFlagsConfiguration.getHmctsId())));
 
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
+        coreCaseDataApi.submitSupplementaryData(authorisationService.getAuthorisation(),
             authTokenGenerator.generate(),
             caseId,
             supplementaryDataUpdates);
