@@ -1,0 +1,13 @@
+package uk.gov.hmcts.sptribs.caseworker.util;
+
+public final class ErrorConstants {
+
+    public static final String MINOR_FATAL_SUBJECT_ERROR_MESSAGE
+        = "Subject should not be selected for notification if the case is Fatal or Minor";
+    public static final String SELECT_AT_LEAST_ONE_ERROR_MESSAGE
+        = "One recipient must be selected.";
+
+    private ErrorConstants() {
+
+    }
+}

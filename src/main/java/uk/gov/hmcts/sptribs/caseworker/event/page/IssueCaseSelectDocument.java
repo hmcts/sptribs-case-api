@@ -33,7 +33,6 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-
         DynamicMultiSelectList list = data.getCaseIssue().getDocumentList();
         if (list.getValue().size() > MAX_DOCUMENT_COUNT) {
             errors.add("Select up to 5 documents");
