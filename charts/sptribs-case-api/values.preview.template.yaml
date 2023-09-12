@@ -125,6 +125,9 @@ ccd:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
       autoscaling:
         enabled: false
+    postgresql:
+      persistence:
+        enabled: false
 
   ccd-user-profile-api:
     java:
