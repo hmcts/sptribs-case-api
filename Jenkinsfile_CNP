@@ -193,10 +193,6 @@ withPipeline(type, product, component) {
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
 
-      def githubApi = new GithubAPI(this)
-      if (!githubApi.getLabelsbyPattern(env.BRANCH_NAME, "keep-helm")) {
-        enableCleanupOfHelmReleaseOnSuccess()
-      }
     }
 
     onMaster {
