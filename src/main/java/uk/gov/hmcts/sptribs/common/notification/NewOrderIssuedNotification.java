@@ -94,7 +94,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
             notificationResponse = sendLetterNotification(templateVars);
         }
 
-        cicCase.setSubjectNotifyList(notificationResponse);
+        cicCase.setAppNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
