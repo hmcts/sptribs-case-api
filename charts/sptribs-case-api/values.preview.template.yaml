@@ -42,8 +42,6 @@ ccd:
       enabled: false
     apiGatewayWeb:
       enabled: true
-    postgresql:
-      enabled: false
     s2s:
       enabled: false
     elastic:
@@ -163,8 +161,6 @@ ccd:
       userProfileDatabaseName: user-profile
 
   postgresql:
-    persistence:
-      enabled: false
     enabled: false
     auth:
       database: cft_task_db
