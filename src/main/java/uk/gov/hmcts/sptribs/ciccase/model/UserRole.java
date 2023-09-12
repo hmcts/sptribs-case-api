@@ -35,7 +35,6 @@ public enum UserRole implements HasRole {
     CASEWORKER_ADMIN_PROFILE("hmcts-admin", "CRU"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
-    ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "CRU"),
 
     CITIZEN_CIC("citizen", "CRU");
 
