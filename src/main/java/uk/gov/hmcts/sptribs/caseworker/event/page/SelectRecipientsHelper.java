@@ -2,15 +2,13 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 
 public final class SelectRecipientsHelper {
 
@@ -48,11 +46,7 @@ public final class SelectRecipientsHelper {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
-
-        if (checkNullSubjectRepresentativeRespondent(data)) {
-            errors.add("One recipient must be selected.");
-        }
+        final List<String> errors = EventUtil.checkRecipient(data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
