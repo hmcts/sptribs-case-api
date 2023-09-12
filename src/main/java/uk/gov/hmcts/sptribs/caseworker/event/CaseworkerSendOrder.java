@@ -266,6 +266,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 .stream()
                 .forEach(orderListValue -> orderListValue.getValue().setIsLastSelectedOrder(YesOrNo.NO));
         }
+        //Once Notification is sent, nullify the last selected order
+        //cicCase.setLastSelectedOrder(null);
     }
 
 }
