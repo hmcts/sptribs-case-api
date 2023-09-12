@@ -36,17 +36,12 @@ java:
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
 
-  postgresql:
-    enabled: false
-
 ccd:
   ccd:
     definitionImporter:
       enabled: false
     apiGatewayWeb:
       enabled: true
-    postgresql:
-      enabled: false
     s2s:
       enabled: false
     elastic:
@@ -166,8 +161,6 @@ ccd:
       userProfileDatabaseName: user-profile
 
   postgresql:
-    persistence:
-      enabled: false
     enabled: false
     auth:
       database: cft_task_db
