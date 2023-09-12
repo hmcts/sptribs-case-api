@@ -81,7 +81,6 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
-
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
@@ -99,6 +98,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         }
 
         cicCase.setSubjectNotifyList(notificationResponse);
+        cicCase.setAppNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
