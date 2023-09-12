@@ -96,8 +96,6 @@ public class NewOrderIssuedNotification implements PartiesNotification {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars);
         }
-
-        cicCase.setSubjectNotifyList(notificationResponse);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
