@@ -265,6 +265,8 @@ public class NewOrderIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
@@ -287,6 +289,8 @@ public class NewOrderIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
@@ -310,6 +314,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
@@ -333,6 +338,7 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
