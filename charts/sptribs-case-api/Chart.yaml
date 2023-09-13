@@ -55,3 +55,4 @@ dependencies:
     version: ~0.1.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-message-publisher.enabled
+
