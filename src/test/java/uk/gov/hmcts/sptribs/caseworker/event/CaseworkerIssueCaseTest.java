@@ -13,11 +13,14 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -51,6 +54,9 @@ class CaseworkerIssueCaseTest {
 
     @InjectMocks
     private CaseworkerIssueCase caseworkerIssueCase;
+
+    @InjectMocks
+    private IssueCaseNotifyParties issueCaseNotifyParties;
 
     @InjectMocks
     private IssueCaseSelectDocument issueCaseSelectDocument;
@@ -194,5 +200,36 @@ class CaseworkerIssueCaseTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getCaseIssue().getDocumentList()).isNotNull();
         assertThat(response.getData().getCaseIssue().getDocumentList().getListItems()).hasSize(1);
+    }
+
+    @Test
+    void shouldReturnErrorsIfNoFlagPartySelected() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    void shouldSelectContactPreferenceMinor() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.MINOR)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isNotNull();
     }
 }
