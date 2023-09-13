@@ -12,12 +12,10 @@ import java.net.URL;
 import static org.junit.Assert.assertEquals;
 
 @SpringBootTest()
-
-public class SmokeFT{
+public class SmokeFT {
 
     @Value("${test.url:http://localhost:4013}")
     private String testUrl;
-
 
     @Test
     public void testLandingPageAccessibility() {
@@ -48,7 +46,6 @@ public class SmokeFT{
         }
 
     }
-
 
 
     @Test
