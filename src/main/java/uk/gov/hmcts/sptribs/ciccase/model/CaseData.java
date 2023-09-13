@@ -39,14 +39,11 @@ import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -359,35 +356,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
 
-    public String getFirstHearingDate() {
-
-        Listing nextListing = getNextListedHearing();
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        if (!ObjectUtils.isEmpty(nextListing) && !ObjectUtils.isEmpty(nextListing.getDate())) {
-            return dateFormatter.format(nextListing.getDate());
-        }
-        return "";
-
-    }
-
     @JsonIgnore
     public Listing getListing() {
         return listing;
-    }
-
-    @JsonIgnore
-    public Listing getLatestCompletedHearing() {
-
-        Listing completedHearing = new Listing();
-        LocalDate latest = LocalDate.MIN;
-        for (ListValue<Listing> listingValueList : hearingList) {
-            if (listingValueList.getValue().getDate().isAfter(latest)) {
-                latest = listingValueList.getValue().getDate();
-                completedHearing = listingValueList.getValue();
-            }
-        }
-
-        return completedHearing;
     }
 
     @JsonIgnore
@@ -414,6 +385,7 @@ public class CaseData {
         }
         return "";
     }
+
     @JsonIgnore
     public String formatCaseRef(long caseId) {
         String temp = format("%016d", caseId);
