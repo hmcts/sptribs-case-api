@@ -14,7 +14,7 @@ public final class CommonConstants {
     public static final String CIC_CASE_RESPONDENT_NAME = "CicCaseRespondentFullName";
     public static final String CIC_CASE_TRIBUNAL_NAME = "CicCaseTribunalFullName";
     public static final String CIC_CASE_HEARING_TYPE = "HearingType";
-    public static final String CIC_CASE_HEARING_VENUE = "FlagType";
+    public static final String CIC_CASE_HEARING_VENUE = "HearingVenue";
     public static final String CIC_CASE_HEARING_DATE = "HearingDate";
     public static final String CIC_CASE_HEARING_TIME = "HearingTime";
     public static final String CIC_CASE_HEARING_INFO = "HearingInfo";
