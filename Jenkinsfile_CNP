@@ -221,8 +221,7 @@ withPipeline(type, product, component) {
               reportFiles          : "index.html",
               reportName           : "E2E Tests Report"
            ]
-        }
-        */
+        }*/
 
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
