@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -51,14 +50,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCicaDetails(configBuilder);
         buildCaseFileViewTab(configBuilder);
         buildMessagesTab(configBuilder);
-        buildCaseFlagTab(configBuilder);
         buildCaseLinkTab(configBuilder);
-    }
-
-    private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFlagsEnabled) {
-            //doBuildCaseFlagTab(configBuilder);
-        }
     }
 
     private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -74,16 +66,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
             .field(CaseData::getCaseNameHmctsInternal, "caseLinks=\"DUMMY_VALUE\"", null)
             .field(CaseData::getCaseLinks, "linkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
-    }
-
-    private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("caseFlags", "Case Flags")
-            .forRoles(AC_CASEFLAGS_VIEWER)
-            //.field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
-            .field(CaseData::getCaseFlags, ALWAYS_HIDE)
-            .field(CaseData::getSubjectFlags, ALWAYS_HIDE)
-            .field(CaseData::getApplicantFlags, ALWAYS_HIDE)
-            .field(CaseData::getRepresentativeFlags, ALWAYS_HIDE);
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
