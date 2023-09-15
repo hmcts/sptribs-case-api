@@ -38,7 +38,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AC_CITIZEN("citizen", "CRU"),
     AP_CASEWORKER_ADMIN("caseworker-admin", "CRU"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
-    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
+    AC_CASEFLAGS_VIEWER("caseflags-viewer", "CRU"),
     AP_HMCTS_ADMIN("hmcts-admin", "CRU");
 
     @JsonValue

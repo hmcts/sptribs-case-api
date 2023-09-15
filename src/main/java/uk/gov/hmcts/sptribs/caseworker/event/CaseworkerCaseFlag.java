@@ -9,9 +9,11 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -38,7 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final String ALWAYS_HIDE = "flagLauncherInternal = \"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
 
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
@@ -59,10 +61,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .event(CASEWORKER_CASE_FLAG)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Flags: Create flag")
-            .showSummary()
             .description("Create Flag")
+            .aboutToStartCallback(this::aboutToSTart)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::flagCreated)
+            //.submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
@@ -78,8 +80,14 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .optional(CaseData::getSubjectFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getApplicantFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getRepresentativeFlags, ALWAYS_HIDE, true, true)
-            .mandatory(CaseData::getFlagLauncherInternal,
+            .mandatory(CaseData::getFlagLauncher,
                 null, null, null, null, "#ARGUMENT(CREATE)");
+    }
+
+    private AboutToStartOrSubmitResponse<CaseData, State> aboutToSTart(CaseDetails<CaseData, State> details) {
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(details.getData())
+            .build();
     }
 
 

@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
@@ -122,6 +123,35 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+
+        data.setCaseFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(null)
+                .roleOnCase(null)
+                .build());
+
+        data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+            .partyName(data.getCicCase().getFullName())
+            .roleOnCase("subject")
+            .build()
+        );
+
+        data.setApplicantFlags(Flags.builder()
+                .details(new ArrayList<>())
+            .partyName(data.getCicCase().getApplicantFullName())
+            .roleOnCase("applicant")
+            .build()
+        );
+
+        data.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+            .partyName(data.getCicCase().getRepresentativeFullName())
+            .roleOnCase("Representative")
+            .build()
+        );
+
+
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

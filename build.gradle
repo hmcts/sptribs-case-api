@@ -27,7 +27,7 @@ plugins {
   id 'org.springframework.boot' version '2.7.11'
   id 'com.github.ben-manes.versions' version '0.46.0'
   id 'hmcts.ccd.sdk'  version '5.4.4'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.786'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.716'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -411,7 +411,7 @@ ext.libraries = [
 
 dependencies {
 // uncomment for local version
-// implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
+ implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson

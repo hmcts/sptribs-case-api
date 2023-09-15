@@ -57,7 +57,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (caseFlagsEnabled) {
-            doBuildCaseFlagTab(configBuilder);
+            //doBuildCaseFlagTab(configBuilder);
         }
     }
 
@@ -79,7 +79,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")
             .forRoles(AC_CASEFLAGS_VIEWER)
-            .field(CaseData::getFlagLauncherInternal, null, "#ARGUMENT(READ)")
+            //.field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
             .field(CaseData::getCaseFlags, ALWAYS_HIDE)
             .field(CaseData::getSubjectFlags, ALWAYS_HIDE)
             .field(CaseData::getApplicantFlags, ALWAYS_HIDE)
