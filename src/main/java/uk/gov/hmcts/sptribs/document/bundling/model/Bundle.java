@@ -68,7 +68,7 @@ public class Bundle {
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Page Number Format",
+        label = "PAge Number Formet",
         typeOverride = FixedList,
         typeParameterOverride = "PageNumberFormat"
     )
