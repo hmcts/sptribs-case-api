@@ -165,16 +165,6 @@ public class CaseData {
     @Builder.Default
     private Listing listing = new Listing();
 
-    @JsonUnwrapped(prefix = "nh")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
-    private Listing nextListedHearing = new Listing();
-
-    @JsonUnwrapped(prefix = "lh")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
-    private Listing latestCompletedHearing = new Listing();
-
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Listings",
@@ -359,31 +349,6 @@ public class CaseData {
     @JsonIgnore
     public Listing getListing() {
         return listing;
-    }
-
-    @JsonIgnore
-    public Listing getNextListedHearing() {
-        Listing nextListing = new Listing();
-
-        LocalDate compare = LocalDate.MAX;
-        if (!CollectionUtils.isEmpty(hearingList)) {
-            for (ListValue<Listing> listingValueList : hearingList) {
-                if (listingValueList.getValue().getHearingStatus() == HearingState.Listed
-                    && listingValueList.getValue().getDate().isBefore(compare)) {
-                    compare = listingValueList.getValue().getDate();
-                    nextListing = listingValueList.getValue();
-                }
-            }
-        }
-        return nextListing;
-    }
-
-    public String getHearingVenueName() {
-        Listing nextListing = getNextListedHearing();
-        if (!ObjectUtils.isEmpty(nextListing)) {
-            return nextListing.getHearingVenueNameAndAddress();
-        }
-        return "";
     }
 
     @JsonIgnore
