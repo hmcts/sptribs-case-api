@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -36,7 +34,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.Bundle;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -116,12 +113,6 @@ public class CaseData {
     private State caseStatus;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonIgnore
-    private List<CaseworkerCICDocument> caseDocuments;
-
-    @CCD(
         label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -164,13 +155,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private Listing listing = new Listing();
-
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Listings",
-        typeOverride = Collection,
-        typeParameterOverride = "Listing")
-    private List<ListValue<Listing>> hearingList = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "removeStay")
     @Builder.Default
@@ -339,17 +323,6 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo hasDssNotificationSent;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String firstHearingDate;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String hearingVenueName;
-
-    @JsonIgnore
-    public Listing getListing() {
-        return listing;
-    }
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
