@@ -112,7 +112,6 @@ public class CaseData {
     )
     private State caseStatus;
 
-
     @CCD(
         label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -153,8 +152,8 @@ public class CaseData {
 
 
     @JsonUnwrapped
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
     private Listing listing = new Listing();
 
     @JsonUnwrapped(prefix = "removeStay")
@@ -319,6 +318,11 @@ public class CaseData {
         access = { DefaultAccess.class}
     )
     private String dssHeaderDetails;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private YesOrNo hasDssNotificationSent;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
