@@ -68,8 +68,8 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             .optional(CaseData::getSubjectFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getApplicantFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getRepresentativeFlags, ALWAYS_HIDE, true, true)
-            /*.optional(CaseData::getFlagLauncher,
-                null, null, null, null, "#ARGUMENT(UPDATE)")*/;
+            .optional(CaseData::getFlagLauncher,
+                null, null, null, null, "#ARGUMENT(UPDATE)");
     }
 
 

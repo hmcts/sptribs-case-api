@@ -17,7 +17,7 @@ public class CaseFlagsAccess implements HasAccessControl {
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
         grants.putAll(AC_CASEFLAGS_ADMIN, CREATE_READ_UPDATE);
-        grants.putAll(AC_CASEFLAGS_VIEWER, CREATE_READ_UPDATE);
+        grants.putAll(AC_CASEFLAGS_VIEWER, READ);
 
         return grants;
     }
