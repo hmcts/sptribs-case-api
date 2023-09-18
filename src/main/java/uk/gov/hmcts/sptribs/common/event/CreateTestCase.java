@@ -124,6 +124,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
 
+        //TODO: Confirm with BA on the value to be set to this field
+        data.setCaseNameHmctsInternal("testCaseNameHmctsInternal");
+
         data.setCaseFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(null)
