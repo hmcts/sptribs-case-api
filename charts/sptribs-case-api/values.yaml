@@ -29,11 +29,13 @@ servicebus:
   enabled: false
 ccd-message-publisher:
   enabled: false
-
 em-ccdorc:
   enabled: false
-
 em-stitching:
+  enabled: false
+am-org-role-mapping-service:
+  enabled: false
+rd-caseworker-ref-api:
   enabled: false
 
 java:

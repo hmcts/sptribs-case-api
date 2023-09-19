@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.82
+version: 0.0.81
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
@@ -11,7 +11,7 @@ dependencies:
     version: 4.1.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: 8.0.29
+    version: ~8.0.29
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
       - ccd-idam-pr
@@ -32,7 +32,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: ccd-case-document-am-api
-    version: 1.7.11
+    version: ~1.7.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
@@ -55,3 +55,11 @@ dependencies:
     version: ~0.1.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-message-publisher.enabled
+  - name: am-org-role-mapping-service
+    version: ~0.0.48
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: am-org-role-mapping-service.enabled
+  - name: rd-caseworker-ref-api
+    version: ~1.0.1
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: rd-caseworker-ref-api.enabled
