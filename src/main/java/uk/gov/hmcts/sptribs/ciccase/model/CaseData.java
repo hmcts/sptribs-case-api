@@ -168,10 +168,22 @@ public class CaseData {
     private State caseStatus;
 
     @CCD(
+        label = "CCD Case Reference",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Long caseNumber;
+
+    @CCD(
+        label = "SubjectRepFullName",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String subjectRepFullName;
+
+    @CCD(
         label = "Bundle Configuration",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String bundleConfiguration;
+    private MultiBundleConfig bundleConfiguration;
 
     @CCD(
         label = "Multi Bundle Configuration",
