@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.READ;
 
 public class CaseFlagsAccess implements HasAccessControl {
 
