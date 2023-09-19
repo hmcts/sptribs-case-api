@@ -171,7 +171,7 @@ public class CaseData {
         label = "CCD Case Reference",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Long caseNumber;
+    private String caseNumber;
 
     @CCD(
         label = "SubjectRepFullName",
