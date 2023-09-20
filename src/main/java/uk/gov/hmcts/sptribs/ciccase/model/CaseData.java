@@ -381,6 +381,12 @@ public class CaseData {
     private String pcqId;
 
     @CCD(
+        label = "Scheme Label",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private String schemeLabel;
+
+    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo hasDssNotificationSent;
