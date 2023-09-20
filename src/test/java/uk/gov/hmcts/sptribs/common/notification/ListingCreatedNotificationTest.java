@@ -137,6 +137,37 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
+    @Test
+    void shouldNotifyApplicantOfCaseIssuedWithEmail() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        listingCreatedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyApplicantOfCaseIssuedWithPost() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
+        data.getCicCase().setApplicantAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
+
+        //When
+        when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        listingCreatedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
+    }
+
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
         CaseData caseData = CaseData.builder().cicCase(cicCase).build();
