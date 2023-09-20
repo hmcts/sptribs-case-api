@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.AdjournmentReasons;
 import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -70,9 +72,25 @@ public class HearingSummary {
 
     @CCD(
         label = "What type of decision was given at the hearing?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingOutcome",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingOutcome outcome;
+
+    @CCD(
+        label = "Why was the hearing adjourned?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "AdjournmentReasons",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private AdjournmentReasons adjournmentReasons;
+
+    @CCD(
+        label = "Enter any other important information about this adjournment",
+        typeOverride = TextArea
+    )
+    private String otherDetailsOfAdjournment;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
