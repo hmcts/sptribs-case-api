@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -17,6 +18,11 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
+import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
@@ -78,7 +84,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-        caseData.setCaseDocuments(DocumentListUtil.getAllCaseDocuments(caseData));
+        List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
+        List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : documentListValues) {
+            abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
+        }
+        caseData.setCaseDocuments(abstractCaseworkerCICDocumentList);
         log.info("Case Documents attached to caseData: {}", caseData.getCaseDocuments());
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
