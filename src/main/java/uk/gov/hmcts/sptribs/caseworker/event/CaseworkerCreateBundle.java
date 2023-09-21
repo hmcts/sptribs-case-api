@@ -79,6 +79,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         var caseData = details.getData();
         caseData.setCaseDocuments(DocumentListUtil.getAllCaseDocuments(caseData));
+        log.info("Case Documents attached to caseData: {}", caseData.getCaseDocuments());
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
         caseData.setCaseNumber(String.valueOf(details.getId()));
