@@ -93,6 +93,7 @@ public class HearingSummary {
     private String otherDetailsOfAdjournment;
 
     @CCD(
+        label = "Subject Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String subjectName;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -13,9 +14,9 @@ public class CancelHearingReasonSelect implements CcdPageConfiguration {
         pageBuilder.page("caseworkerCancelHearingReason")
             .pageLabel("Reasons for cancellation")
             .label("LabelCaseworkerCancelHearingReason", "")
-            .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getHearingCancellationReason)
-            .optional(CicCase::getCancelHearingAdditionalDetail)
+            .complex(CaseData::getListing)
+            .mandatory(Listing::getHearingCancellationReason)
+            .optional(Listing::getCancelHearingAdditionalDetail)
             .done();
     }
 }
