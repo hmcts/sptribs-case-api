@@ -158,6 +158,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
                 listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
             }
+            if (notificationPartiesSet.contains(NotificationParties.APPLICANT)) {
+                listingCreatedNotification.sendToApplicant(details.getData(), caseNumber);
+            }
         } catch (Exception notificationException) {
             log.error("Create listing notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
