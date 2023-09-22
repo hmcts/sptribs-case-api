@@ -90,6 +90,27 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
+    @Override
+    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+
+        NotificationResponse notificationResponse;
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+            notificationResponse = sendEmailNotificationWithAttachment(templateVars,
+                cicCase.getApplicantEmailAddress(),
+                uploadedDocuments,
+                TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
+            notificationResponse = sendLetterNotification(templateVars,
+                TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+        }
+
+        cicCase.setSubjectNotifyList(notificationResponse);
+    }
+
     private NotificationResponse sendEmailNotificationWithAttachment(final Map<String, Object> templateVars,
                                                                      String toEmail,
                                                                      Map<String, String> uploadedDocuments,
