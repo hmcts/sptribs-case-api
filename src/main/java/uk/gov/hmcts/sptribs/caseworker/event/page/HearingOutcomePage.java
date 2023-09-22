@@ -22,6 +22,9 @@ public class HearingOutcomePage implements CcdPageConfiguration {
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .mandatory(HearingSummary::getOutcome)
+            .mandatory(HearingSummary::getAdjournmentReasons,"outcome= \"Adjourned\"")
+            .optional(HearingSummary::getOtherDetailsOfAdjournment,
+                "adjournmentReasons= \"Other\" AND outcome= \"Adjourned\" ")
             .done();
     }
 }
