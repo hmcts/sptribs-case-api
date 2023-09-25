@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingSelectReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
@@ -43,7 +43,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     private static final CcdPageConfiguration selectHearing = new SelectHearing();
     private static final CcdPageConfiguration selectReason = new PostponeHearingSelectReason();
-    private static final CcdPageConfiguration notifyParties = new PostponeHaringNotifyParties();
+    private static final CcdPageConfiguration notifyParties = new PostponeHearingNotifyParties();
 
     @Autowired
     private HearingService hearingService;
