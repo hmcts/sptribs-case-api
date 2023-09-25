@@ -8,6 +8,9 @@ springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 uk:
   gov:
     notify:
@@ -45,6 +48,15 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
+refdata_common:
+  api:
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
+
+bundling:
+  api:
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
+
 s2s:
   stub: true
 
@@ -53,6 +65,9 @@ core_case_data:
     url: http://localhost:4012
   search:
     page_size: 100
+
+case-api:
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:https://manage-case.aat.platform.hmcts.net}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
@@ -90,15 +105,15 @@ feature:
   contact-parties:
     enabled: ${CONTACT_PARTIES_FEATURE:false}
   link-case:
-    enabled: ${LINK_CASE_FEATURE:false}
+    enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
-    enabled: ${CASE_FLAGS_FEATURE:false}
+    enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
-  dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:false}
+  security-classification:
+    enabled: ${SECURITY_CLASSIFICATION:false}
 
 caseinfo:
   apps:
@@ -108,6 +123,5 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
-        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC

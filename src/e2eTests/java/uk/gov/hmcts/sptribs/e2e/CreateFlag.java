@@ -2,37 +2,53 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParty;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.ApplicantEmail;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.RepresentativePost;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.SubjectEmail;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 
 public class CreateFlag extends Base {
 
-    @Disabled
-    public void caseWorkerShouldBeAbleToCreateACaseFlag() {
+    @RepeatedIfExceptionsTest
+    public void caseWorkedShouldBeAbleToCreateCaseLevelFlag() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.createCaseFlag();
+        newCase.createCaseLevelFlag();
+    }
+
+    @Disabled
+    public void caseWorkedShouldBeAbleToCreatePartyLevelFlag() {
+        Page page = getPage();
+        Login login = new Login(page);
+        login.loginAsCaseWorker();
+        Case newCase = new Case(page);
+        newCase.createCase(SubjectEmail, ApplicantEmail, RepresentativePost);
+        newCase.buildCase();
+        newCase.createFlagForParties(CaseParty.Subject, CaseParty.Applicant, CaseParty.Representative);
     }
 
     @Disabled
     public void caseWorkerShouldAbleToDoManageFlags() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-        newCase.createCaseFlag();
+        newCase.createCaseLevelFlag();
         newCase.startNextStepAction(ManageFlags);
         assertThat(page.locator("h1")).hasText("Flags: Manage flags", textOptionsWithTimeout(60000));
         page.getByLabel("Flag Type (Optional)").click();

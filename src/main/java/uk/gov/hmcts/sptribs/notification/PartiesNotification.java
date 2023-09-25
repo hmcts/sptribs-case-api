@@ -18,4 +18,8 @@ public interface PartiesNotification {
     default void sendToRespondent(final CaseData caseData, final String caseNumber) {
         //No operation
     }
+
+    default void sendToTribunal(final CaseData caseData, final String caseNumber) {
+        //No operation
+    }
 }

@@ -24,7 +24,7 @@ public class ApplicantDetails implements CcdPageConfiguration {
         map.put("representativeDetailsObjects", "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"");
         pageBuilder.page("applicantDetailsObjects", this::midEvent)
             .pageLabel("Who is the applicant in this case?")
-            .label("applicantDetails", "")
+            .label("applicantDetailsLabel", "")
             .pageShowConditions(map)
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getApplicantFullName)

@@ -9,14 +9,17 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -36,13 +39,17 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
 public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
+
+    private static final CcdPageConfiguration selectHearing = new SelectHearing();
 
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
 
@@ -56,7 +63,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private RecordListHelper recordListHelper;
 
     @Autowired
-    private ListingUpdatedNotification liistingUpdatedNotification;
+    private HearingService hearingService;
+
+    @Autowired
+    private ListingUpdatedNotification listingUpdatedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -69,11 +79,19 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE));
 
-
+        selectHearing.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
@@ -92,6 +110,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         if (caseData.getListing().getRegionList() == null) {
             recordListHelper.regionData(caseData);
         }
+        DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
+        caseData.getCicCase().setHearingList(hearingDateDynamicList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
@@ -113,6 +133,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordListHelper.getNotificationParties(caseData);
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
+        hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
@@ -127,17 +148,22 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         var cicCase = data.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
         String caseNumber = data.getHyphenatedCaseRef();
-
-        if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-            liistingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+        try {
+            if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
+                listingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
+                listingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
+                listingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+        } catch (Exception notificationException) {
+            log.error("Update listing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Update listing notification failed %n## Please resend the notification"))
+                .build();
         }
-        if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-            liistingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-            liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
-        }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record updated %n##  If any changes are made to this hearing, "
                     + " remember to make those changes in this listing record. %n## %s",

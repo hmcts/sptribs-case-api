@@ -46,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_FILE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
@@ -91,7 +92,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
         issueFinalDecisionNotice.addTo(pageBuilder);
@@ -122,7 +123,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 Upload a copy of the decision notice that you want to add to this case.
                   *  <h3>The decision notice should be:</h3>
                   *  a maximum of 100MB in size (larger files must be split)
-                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf
+                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                  Note: If the remove button is disabled, please refresh the page to remove attachments
                 """
             )
             .complex(CaseData::getCaseIssueFinalDecision)
@@ -209,22 +211,31 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
-
-        final StringBuilder messageLine2 = new StringBuilder(100);
-        messageLine2.append(" A notification will be sent  to: ");
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            messageLine2.append("Subject, ");
-            caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
+        try {
+            final StringBuilder messageLine2 = new StringBuilder(100);
+            messageLine2.append(" A notification will be sent  to: ");
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+                messageLine2.append("Subject, ");
+                caseFinalDecisionIssuedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+                messageLine2.append("Representative, ");
+                caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+                messageLine2.append("Respondent, ");
+                caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+                messageLine2.append("Applicant ");
+                caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+            }
+        } catch (Exception notificationException) {
+            log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
+                .build();
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            messageLine2.append("Representative, ");
-            caseFinalDecisionIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            messageLine2.append("Respondent, ");
-            caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-        }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))

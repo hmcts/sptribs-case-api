@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
@@ -91,6 +92,7 @@ class CaseworkerSendOrderTest {
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
             .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
@@ -145,6 +147,7 @@ class CaseworkerSendOrderTest {
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNotNull();
+        assertThat(order.getIsLastSelectedOrder()).isEqualTo(YesOrNo.YES);
     }
 
     @Test
@@ -155,6 +158,7 @@ class CaseworkerSendOrderTest {
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
             .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
@@ -212,6 +216,7 @@ class CaseworkerSendOrderTest {
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
@@ -266,12 +271,14 @@ class CaseworkerSendOrderTest {
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC firstDraftOrder = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build())
             .build();
         final ListValue<DraftOrderCIC> firstValue = new ListValue<>();
         firstValue.setValue(firstDraftOrder);
         firstValue.setId("0");
         final DraftOrderCIC secondDraftOrder = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
             .build();
 
@@ -397,7 +404,7 @@ class CaseworkerSendOrderTest {
     private DynamicList getDraftOrderList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
-            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel())
+            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--bb--cc")
             .code(UUID.randomUUID())
             .build();
         return DynamicList

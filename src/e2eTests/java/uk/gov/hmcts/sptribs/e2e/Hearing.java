@@ -241,6 +241,7 @@ public class Hearing {
         assertThat(page.locator("h1"))
             .hasText("Hearing outcome", textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Adjourned").click();
+        getRadioButtonByLabel(page, "Appellant did not attend").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Upload hearing recording form
@@ -310,7 +311,7 @@ public class Hearing {
         // Fill Hearing outcome form
         assertThat(page.locator("h1"))
             .hasText("Hearing outcome", textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, "Adjourned").click();
+        getRadioButtonByLabel(page, "Refused").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Upload hearing recording form

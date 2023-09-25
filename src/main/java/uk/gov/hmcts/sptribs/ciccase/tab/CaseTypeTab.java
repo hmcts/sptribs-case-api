@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -19,13 +20,19 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 
 
-
 @Component
 @Setter
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     @Value("${feature.case-file-view-and-document-management.enabled}")
     private boolean caseFileViewAndDocumentManagementEnabled;
+
+    @Value("${feature.case-flags.enabled}")
+    private boolean caseFlagsEnabled;
+
+    @Value("${feature.link-case.enabled}")
+    private boolean caseLinkEnabled;
+
 
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
 
@@ -39,10 +46,44 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCasePartiesTab(configBuilder);
         buildOrderTab(configBuilder);
         buildCaseDocumentTab(configBuilder);
+        buildBundlesTab(configBuilder);
         buildHearing(configBuilder);
         buildCicaDetails(configBuilder);
         buildCaseFileViewTab(configBuilder);
         buildMessagesTab(configBuilder);
+        buildCaseFlagTab(configBuilder);
+        buildCaseLinkTab(configBuilder);
+    }
+
+    private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (caseFlagsEnabled) {
+            doBuildCaseFlagTab(configBuilder);
+        }
+    }
+
+    private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (caseLinkEnabled) {
+            doBuildCaseLinkTab(configBuilder);
+        }
+    }
+
+    private void doBuildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseLinks", "Linked cases")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
+            .field(CaseData::getCaseNameHmctsInternal, "caseLinks=\"DUMMY_VALUE\"", null)
+            .field(CaseData::getCaseLinks, "linkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
+    }
+
+    private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseFlags", "Case Flags")
+            .forRoles(AC_CASEFLAGS_VIEWER)
+            .field(CaseData::getFlagLauncherInternal, null, "#ARGUMENT(READ)")
+            .field(CaseData::getCaseFlags, ALWAYS_HIDE)
+            .field(CaseData::getSubjectFlags, ALWAYS_HIDE)
+            .field(CaseData::getApplicantFlags, ALWAYS_HIDE)
+            .field(CaseData::getRepresentativeFlags, ALWAYS_HIDE);
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -110,12 +151,12 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getMessages);
     }
 
-    /*private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("bundles", "Bundles")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .field(CaseData::getCaseBundles);
-    }*/
+    }
 
     private void buildFlagsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
@@ -129,12 +170,14 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseCaseCategory")
             .field("cicCaseCaseReceivedDate")
             .field("cicCaseCaseSubcategory")
+            .label("objectSubjects", null, "### Subject Details")
+            .field("cicCaseFullName")
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
-            .field("cicCaseFullName")
             .field("cicCasePhoneNumber")
-            .label("objectSubjects", null, "### Object Subjects")
+            .field("cicCaseAddress")
             .field("cicCaseSubjectCIC")
+            .label("applicantDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
             .field("cicCaseRepresentativeCIC")
             .field("cicCaseRepresentativeFullName")
             .field("cicCaseRepresentativeOrgName")
@@ -144,8 +187,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRepresentativeReference")
             .field("cicCaseIsRepresentativeQualified", "cicCaseRepresentativeFullName!=\"\"")
             .field("cicCaseRepresentativeContactDetailsPreference", "cicCaseRepresentativeFullName!=\"\"")
-            .field("cicCaseAddress")
-            .label("applicantDetails", null, "### Applicant Details")
+            .label("applicantDetails", "cicCaseApplicantFullName!=\"\"", "### Applicant Details")
             .field("cicCaseApplicantFullName")
             .field("cicCaseApplicantDateOfBirth", "cicCaseApplicantFullName!=\"\"")
             .field("cicCaseApplicantPhoneNumber")
@@ -231,31 +273,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .label("Listing details", "hearingType!=\"\"", "#### Listing details")
-            .field("hearingStatus")
-            .field("hearingType")
-            .field("hearingFormat")
-            .field("hearingVenueNameAndAddress")
-            .field("roomAtVenue")
-            .field("date")
-            .field("session")
-            .field("hearingTime")
-            .field("videoCallLink")
-            .field("importantInfoDetails")
-            .field("cicCaseHearingNotificationParties")
-
-            .label("Hearing summary", "isFullPanel!=\"\"", "#### Hearing summary")
-            .field("judge")
-            .field("isFullPanel")
-            .field("memberList")
-            .field("roles")
-            .field("others")
-            .field("outcome")
-            .field("recFile")
-            .field("recDesc")
-            .label("Postponement summary", "cicCasePostponeReason!=\"\"", "#### Postponement summary")
-            .field("cicCasePostponeReason")
-            .field("cicCasePostponeAdditionalInformation");
+            .label("Listing details", null, "#### Listing details")
+            .field(CaseData::getHearingList);
 
 
     }

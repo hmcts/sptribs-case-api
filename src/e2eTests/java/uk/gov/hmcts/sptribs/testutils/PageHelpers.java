@@ -67,7 +67,7 @@ public class PageHelpers {
     }
 
     public static String getValueFromTableFor(Page page, String rowHeader) {
-        return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
+        return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent().trim();
     }
 
     public static String getCaseStatus(Page page) {

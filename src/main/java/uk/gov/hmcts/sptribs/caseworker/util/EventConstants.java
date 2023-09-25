@@ -1,11 +1,18 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 public final class EventConstants {
-
+    public static final String CASE_FLAG = "CASE LEVEL FLAG";
+    public static final String SUBJECT_FLAG = "SUBJECT FLAG";
+    public static final String REPRESENTATIVE_FLAG = "REPRESENTATIVE FLAG";
+    public static final String APPLICANT_FLAG = "APPLICANT FLAG";
     public static final String HYPHEN = "-";
+    public static final String DOUBLE_HYPHEN = "--";
     public static final String SPACE = " ";
+    public static final String SEMICOLON = " :";
     public static final String CURRENT_EVENT = "currentEvent = \"";
 
+    public static final String DRAFT = "DRAFT";
+    public static final String SENT = "SENT";
     public static final String COURT_TYPE_ID = "14";
 
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
@@ -44,11 +51,14 @@ public final class EventConstants {
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
     public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
     public static final String CREATE_BUNDLE = "createBundle";
+    public static final String ASYNC_STITCH_COMPLETE = "asyncStitchingComplete";
     public static final String STITCH_BUNDLE = "stitchBundle";
     public static final String EDIT_BUNDLE = "editBundle";
     public static final String CLONE_BUNDLE = "cloneBundle";
 
     public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
+    public static final String YES = "YES";
+    public static final String NO_LINKS = "No links on this case";
 
     private EventConstants() {
     }

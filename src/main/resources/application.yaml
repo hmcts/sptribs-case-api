@@ -1,6 +1,9 @@
 server:
   port: 4013
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 management:
   endpoint:
     health:
@@ -43,7 +46,6 @@ uk:
           respondentName: 'Appeals Team'
           respondentOrganisation: 'CICA'
           respondentEmail: appeals.team@cica.gov.uk
-
           tribunalName: 'First-tier Tribunal (CIC)'
           tribunalOrganisation: 'CICA'
           tribunalEmail: CIC.enquiries@justice.gov.uk
@@ -54,10 +56,14 @@ uk:
           CASE_REINSTATED_POST: '313e8992-8538-4485-a461-a244cc893bb3'
           CASE_STAYED_EMAIL: 'ce3e6749-0400-47fd-aa96-33e348c860ad'
           CASE_STAYED_POST: '23e1153e-c95c-4630-83eb-b0a272908e94'
+          CASE_UNLINKED_EMAIL: 'e19b7d26-2a5b-4275-ae40-f0309f6a30ff'
+          CASE_UNLINKED_POST: 'c6703270-58d1-40bf-aca0-b968356fe952'
           CASE_UNSTAYED_EMAIL: '46f69c0d-5114-4319-a8e0-dd2cad1ecac4'
           CASE_UNSTAYED_POST: 'a3c51a6e-b686-4ade-af32-fd62cc0d7451'
           DECISION_ISSUED_EMAIL: 'e8edb80a-6924-4247-aa33-178c28251120'
           DECISION_ISSUED_POST: 'ae833f41-30da-48bb-8384-e832a244abb9'
+          CONTACT_PARTIES_EMAIL: '02722db0-2f62-46f8-bdcc-46e891ab9a31'
+          CONTACT_PARTIES_POST: '59ac1cb3-7c19-4993-945b-5cd331e12feb'
           TEST_TEMPLATE: '8d20e578-21cd-42b8-b27f-d13095e499d6'
           CASE_ISSUED_CITIZEN_EMAIL: '3f25663d-9f3f-4330-afdb-3302399d29cf'
           CASE_ISSUED_CITIZEN_POST: 'eedc916f-088f-4653-99ed-b954e1dbd58d'
@@ -76,6 +82,9 @@ uk:
           CASE_WITHDRAWN_POST: '54fe1990-2213-4bcb-9027-7b595cd9db12'
           NEW_ORDER_ISSUED_EMAIL: 'e451a469-e61d-4daf-95c3-e405448ececf'
           NEW_ORDER_ISSUED_POST: '797e62bd-a1d4-4a6a-b15d-ddd642d2b14b'
+          CASE_LINKED_EMAIL: '8af9efba-9861-4663-8305-0a378def1e46'
+          CASE_LINKED_POST: 'd69207af-ed64-4a60-b0a3-224d429d8b17'
+
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
@@ -102,6 +111,15 @@ location:
 judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
+
+refdata_common:
+  api:
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
+
+bundling:
+  api:
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-demo.service.core-compute-demo.internal}
 
 s2s:
   stub: false
@@ -174,17 +192,17 @@ toggle:
 
 feature:
   contact-parties:
-    enabled: ${CONTACT_PARTIES_FEATURE:false}
+    enabled: ${CONTACT_PARTIES_FEATURE:true}
   link-case:
-    enabled: ${LINK_CASE_FEATURE:false}
+    enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
-    enabled: ${CASE_FLAGS_FEATURE:false}
+    enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
-    enabled: ${BUNDLING_FEATURE:false}
-  dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:true}
+    enabled: ${BUNDLING_FEATURE:true}
+  security-classification:
+    enabled: ${SECURITY_CLASSIFICATION:false}
 
 caseinfo:
   apps:
@@ -194,7 +212,5 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
-        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC
-

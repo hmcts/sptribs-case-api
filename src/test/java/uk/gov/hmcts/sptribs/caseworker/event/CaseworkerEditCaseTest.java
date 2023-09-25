@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.RegionCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -150,11 +151,11 @@ class CaseworkerEditCaseTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse editedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData()).isNotNull();
-        assertThat(stayedResponse).isNotNull();
+        assertThat(editedResponse).isNotNull();
     }
 
     @Test
@@ -201,4 +202,38 @@ class CaseworkerEditCaseTest {
         assertThat(stayedResponse).isNotNull();
     }
 
+    @Test
+    void shouldSuccessfullyEditCaseUpdateRegion() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .regionCIC(RegionCIC.SCOTLAND)
+            .build();
+
+        final CicCase newCicCase = CicCase.builder()
+            .regionCIC(RegionCIC.LONDON)
+            .build();
+        afterData.setCicCase(newCicCase);
+        beforeData.setCicCase(beforeCicCase);
+        afterData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse editedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCicCase().getRegionCIC().getLabel()).isEqualTo(RegionCIC.LONDON.getLabel());
+        assertThat(editedResponse).isNotNull();
+    }
 }

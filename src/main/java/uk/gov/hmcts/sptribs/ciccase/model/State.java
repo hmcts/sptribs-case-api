@@ -14,13 +14,6 @@ import java.util.EnumSet;
 public enum State {
 
     @CCD(
-        label = "DSS-Draft",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    DSS_Draft("DSS-Draft"),
-
-    @CCD(
         label = "Application rejected",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccess.class}
@@ -69,6 +62,13 @@ public enum State {
     DSS_Submitted("DSS-Submitted"),
 
     @CCD(
+        label = "DSS-Draft",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Draft("DSS-Draft"),
+
+    @CCD(
         label = "New case received",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
@@ -111,35 +111,7 @@ public enum State {
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
-    CaseStayed("CaseStayed"),
-
-    @CCD(
-        label = "Case Strike Out",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    StrikeOut("StrikeOut"),
-
-    @CCD(
-        label = "Case Concession",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    Concession("Concession"),
-
-    @CCD(
-        label = "Consent Order",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    ConsentOrder("ConsentOrder"),
-
-    @CCD(
-        label = "Rule 27",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    Rule27("Rule27");
+    CaseStayed("CaseStayed");
 
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
@@ -153,10 +125,10 @@ public enum State {
     ));
 
 
-    public static final EnumSet<State> BUNDLE_STATES = EnumSet.complementOf(EnumSet.of(
+    public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
         CaseManagement,
         AwaitingHearing
-    ));
+    );
     private final String name;
 }
 

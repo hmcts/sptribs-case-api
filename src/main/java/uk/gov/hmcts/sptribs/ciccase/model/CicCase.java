@@ -2,29 +2,22 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
-import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
@@ -34,15 +27,20 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.common.model.Status;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -57,6 +55,28 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+
+    @CCD(
+        label = "Enter any other important information about this adjournment",
+        typeOverride = TextArea
+    )
+    private String otherDetailsOfAdjournment;
+
+    @CCD(
+        label = "What type of decision was given at the hearing?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingOutcome",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private HearingOutcome hearingOutcome;
+
+    @CCD(
+        label = "Why was the hearing adjourned?",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "AdjournmentReasons",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private AdjournmentReasons adjournmentReasons;
 
 
     @CCD(
@@ -74,78 +94,10 @@ public class CicCase {
     private HearingCancellationReason hearingCancellationReason;
 
     @CCD(
-        label = "Enter case number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseLink linkCaseNumber;
+    private Status status;
 
-    @CCD(
-        label = "Why should these cases be linked?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private LinkCaseReason linkCaseReason;
-
-    @CCD(
-        label = "Other Description",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String linkCaseOtherDescription;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLinks>> caseLinks;
-
-    @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher linkedCasesComponentLauncher;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> appellantFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> caseFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> respondentFlags;
-
-    @JsonUnwrapped(prefix = "flagLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher flagLauncher;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagType flagType;
-
-    @CCD(
-        label = "Explain why you are creating this flag.\n"
-            + "Do not include any sensitive information such as personal details.",
-        regex = "^.{0,200}$",
-        hint = "You can enter up to 200 characters",
-        typeOverride = TextArea,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String flagAdditionalDetail;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Enter a flag type"
-    )
-    private String flagOtherDescription;
-
-
-    @CCD(
-        label = "Why is a stay being added to this case?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagLevel flagLevel;
 
     @CCD(
         label = "Preview order",
@@ -222,6 +174,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private Document lastSelectedOrder;
 
     @CCD(
@@ -249,11 +202,32 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
     @CCD(
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private DynamicList amendDocumentList;
+
+    @CCD(
+        label = "Documents",
+        typeParameterOverride = "CaseworkerCICDocument",
+        access = {DefaultAccess.class}
+    )
+    private CaseworkerCICDocument selectedDocument;
+
+    @CCD(
         label = "Notified Parties",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<NotificationParties> hearingNotificationParties;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String selectedDocumentType;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isDocumentCreatedFromTemplate;
 
     @CCD(
         label = "Upload a file to the system",
@@ -399,6 +373,27 @@ public class CicCase {
     private String respondentEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
+        label = "Tribunal name ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalName = "First-tier Tribunal (CIC)";
+
+    @CCD(
+        label = "Tribunal organisation ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalOrganisation = "Criminal Injuries Compensation";
+
+    @CCD(
+        label = "Tribunal email  ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalEmail = "CIC.enquiries@justice.gov.uk";
+
+    @CCD(
         label = "Subject's full name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -442,6 +437,14 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private SchemeCic schemeCic;
+
+    @CCD(
+        label = "Case Region",
+        typeOverride = FixedList,
+        typeParameterOverride = "RegionCIC",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private RegionCIC regionCIC;
 
     @CCD(
         label = "CICA reference number",
@@ -627,9 +630,11 @@ public class CicCase {
     )
     private String days;
 
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private NotificationResponse subjectNotifyList;
 
     @CCD(
@@ -640,7 +645,14 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private NotificationResponse repNotificationResponse;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse tribunalNotificationResponse;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -677,6 +689,47 @@ public class CicCase {
     )
     private NotificationResponse repLetterNotificationResponse;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String firstDueDate;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String eventName;
+
+    private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
+        LocalDate earliestDate = compare;
+        for (ListValue<DateModel> dateModelListValue : dueDateList) {
+            if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
+                || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
+                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
+                earliestDate = dateModelListValue.getValue().getDueDate();
+            }
+        }
+        return earliestDate;
+
+    }
+
+    public String getFirstDueDate() {
+
+        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+        LocalDate compare = LocalDate.MAX;
+        if (!CollectionUtils.isEmpty(orderList)) {
+            for (ListValue<Order> orderListValue : orderList) {
+                if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
+                    compare = findEarliestDate(orderListValue.getValue().getDueDateList(), compare);
+                }
+            }
+            if (compare.isBefore(LocalDate.MAX)) {
+                return dateFormatter.format(compare);
+            }
+        }
+        return "";
+    }
+
     @JsonIgnore
     public String getSelectedHearingToCancel() {
         return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
@@ -694,9 +747,9 @@ public class CicCase {
         }
         if (null != contactPartiesCIC) {
             Set<ContactPartiesCIC> temp = new HashSet<>();
-            for (ContactPartiesCIC partiesCIC : contactPartiesCIC) {
-                if (partiesCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
-                    temp.add(partiesCIC);
+            for (ContactPartiesCIC partyCIC : contactPartiesCIC) {
+                if (partyCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
+                    temp.add(partyCIC);
                 }
             }
             contactPartiesCIC = temp;

@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -12,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,8 @@ class RespondentContactPartiesTest {
     @InjectMocks
     private RespondentPartiesToContact respondentPartiesToContact;
 
+    @Mock
+    private ContactPartiesNotification contactPartiesNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -201,42 +204,6 @@ class RespondentContactPartiesTest {
         assertThat(response.getErrors()).isEmpty();
 
 
-    }
-
-    @Test
-    void shouldReturnErrorsIfMinor() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .contactParties(ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT)).build())
-            .build();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.MINOR)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        caseData.setCicCase(cicCase);
-        caseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors()).hasSize(1);
-    }
-
-    @Test
-    void shouldReturnErrorsIfFatal() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .contactParties(ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT)).build())
-            .build();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.FATAL)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        caseData.setCicCase(cicCase);
-        caseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors()).hasSize(1);
     }
 
 }

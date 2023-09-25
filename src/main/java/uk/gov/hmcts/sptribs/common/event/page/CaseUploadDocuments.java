@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 public class CaseUploadDocuments implements CcdPageConfiguration {
 
@@ -30,7 +30,8 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
                     + "\n<h3>Files should be:</h3>\n"
                     + "\n- uploaded separately, and not in one large file\n"
                     + "\n- a maximum of 100MB in size (large files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n")
+                    + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n\n\n"
+                    + "\n- Note: If the remove button is disabled, please refresh the page to remove attachments.\n\n")
             .complex(CaseData::getCicCase)
             .optionalWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
             .done();
@@ -42,8 +43,7 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
         LOG.info("Start of midEvent");
 
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
-        List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-
+        List<String> errors = validateUploadedDocuments(uploadedDocuments);
         LOG.info("End of midEvent");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
