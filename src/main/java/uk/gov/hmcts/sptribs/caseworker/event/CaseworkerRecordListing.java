@@ -202,6 +202,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     of anyone who should be excluded from attending this hearing.
                     """)
             .optional(Listing::getImportantInfoDetails)
+            .readonly(Listing::getPostponeReason, ALWAYS_HIDE)
+            .readonly(Listing::getPostponeAdditionalInformation, ALWAYS_HIDE)
+            .readonly(Listing::getHearingCancellationReason, ALWAYS_HIDE)
+            .readonly(Listing::getCancelHearingAdditionalDetail, ALWAYS_HIDE)
             .complex(Listing::getSummary)
             .readonly(HearingSummary::getJudge, ALWAYS_HIDE)
             .readonly(HearingSummary::getIsFullPanel, ALWAYS_HIDE)
