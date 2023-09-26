@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -52,7 +52,7 @@ class CaseworkerPostponeHearingTest {
     private HearingPostponedNotification hearingPostponedNotification;
 
     @InjectMocks
-    private PostponeHaringNotifyParties postponeHaringNotifyParties;
+    private PostponeHearingNotifyParties postponeHearingNotifyParties;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -94,7 +94,7 @@ class CaseworkerPostponeHearingTest {
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHaringNotifyParties.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
     }

@@ -75,6 +75,22 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         cicCase.setResNotificationResponse(caseWithdrawnNotifyResponse);
     }
 
+    @Override
+    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+
+        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        addCaseClosedTemplateVars(caseData, templateVars);
+
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            cicCase.setAppNotificationResponse(caseWithdrawnNotifyResponse);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
+            sendLetterNotification(templateVars);
+        }
+    }
+
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,

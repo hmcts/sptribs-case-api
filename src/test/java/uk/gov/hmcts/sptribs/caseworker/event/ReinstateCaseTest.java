@@ -32,8 +32,10 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
@@ -89,9 +91,12 @@ class ReinstateCaseTest {
             .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+            .applicantFullName(APPLICANT_FIRST_NAME)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .subjectCIC(Set.of())
             .applicantCIC(Set.of())
             .representativeCIC(Set.of())
@@ -115,6 +120,7 @@ class ReinstateCaseTest {
         assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
+        assertThat(responseReinstate.getConfirmationHeader()).contains("Applicant");
         assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
 
@@ -139,9 +145,12 @@ class ReinstateCaseTest {
             .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+            .applicantFullName(APPLICANT_FIRST_NAME)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .subjectCIC(Set.of(SubjectCIC.SUBJECT))
             .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
