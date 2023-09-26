@@ -122,6 +122,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+        data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
