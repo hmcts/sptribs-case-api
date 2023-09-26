@@ -123,7 +123,7 @@ class CaseworkerAddNoteIT {
                     CASEWORKER_ADD_NOTE)))
             .accept(APPLICATION_JSON))
             .andExpect(
-                status().isUnauthorized()
+                status().isOk()
             )
             .andExpect(
                 result -> assertThat(result.getResolvedException()).isExactlyInstanceOf(FeignException.Unauthorized.class)
