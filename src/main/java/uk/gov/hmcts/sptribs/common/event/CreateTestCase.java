@@ -123,9 +123,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
-
-        //TODO: Confirm with BA on the value to be set to this field
-        data.setCaseNameHmctsInternal("testCaseNameHmctsInternal");
+        data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
 
         data.setCaseFlags(Flags.builder()
                 .details(new ArrayList<>())
