@@ -64,25 +64,32 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-   @CCD(
-        label = "Case flags",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+
+    @CCD(
+        label = "Launch the Flags screen",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseFlagsAccess.class}
     )
     private FlagLauncher flagLauncher;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}),
+    @CCD(
+        label = "Case name Hmcts Internal",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNameHmctsInternal;
+
+    @CCD(access = {CaseFlagsAccess.class},
         label = "Case Flags")
     private Flags caseFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {CaseFlagsAccess.class},
         label = "Flags for Subject")
     private Flags subjectFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {CaseFlagsAccess.class},
         label = "Flags for Representative")
     private Flags representativeFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {CaseFlagsAccess.class},
         label = "Flags for Applicant")
     private Flags applicantFlags;
 
@@ -154,8 +161,7 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
-    private List<CaseworkerCICDocument> caseDocuments;
+    private List<ListValue<CaseworkerCICDocument>> caseDocuments;
 
     @CCD(
         label = "Hearing Date",
