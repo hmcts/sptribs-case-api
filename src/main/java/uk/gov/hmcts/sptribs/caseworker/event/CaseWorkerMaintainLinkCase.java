@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseUnlinkedNotification;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -48,7 +51,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 .event(CASEWORKER_MAINTAIN_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
                 .name("Manage case links")
-                .showSummary()
+                .submittedCallback(this::linkUpdated)
                 .description("To maintain linked cases")
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -67,6 +70,13 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 .optional(CaseData::getLinkedCasesComponentLauncher,
                     null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
         }
+    }
+
+    public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,
+                                                 CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Case Link Updated %n##"))
+            .build();
     }
 
 }
