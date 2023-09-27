@@ -434,7 +434,7 @@ xui-webapp:
       HEALTH_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
-      SERVICES_CASE_CASEWORKER_API: https://rd-caseworker-ref-api-${SERVICE_FQDN}
+      SERVICES_CASE_CASEWORKER_API: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
 xui-mo-webapp:
   enabled: true
   nodejs:
