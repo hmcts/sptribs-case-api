@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -78,8 +77,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")
-            .forRoles(AC_CASEFLAGS_VIEWER)
-            .field(CaseData::getFlagLauncherInternal, null, "#ARGUMENT(READ)")
+            .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
             .field(CaseData::getCaseFlags, ALWAYS_HIDE)
             .field(CaseData::getSubjectFlags, ALWAYS_HIDE)
             .field(CaseData::getApplicantFlags, ALWAYS_HIDE)

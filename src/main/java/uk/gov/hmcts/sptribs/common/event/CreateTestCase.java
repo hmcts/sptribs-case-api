@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
@@ -124,6 +125,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         data.setSecurityClass(SecurityClass.PUBLIC);
         data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
 
+        initialiseFlags(data);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .state(submittedDetails.getState())
@@ -149,6 +152,39 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
             .build();
+    }
+
+    private void initialiseFlags(CaseData data) {
+        data.setCaseFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .partyName(null)
+            .roleOnCase(null)
+            .build());
+
+        data.setSubjectFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .partyName(data.getCicCase().getFullName())
+            .roleOnCase("subject")
+            .build()
+        );
+
+        if (null != data.getCicCase().getApplicantFullName()) {
+            data.setApplicantFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getApplicantFullName())
+                .roleOnCase("applicant")
+                .build()
+            );
+        }
+
+        if (null != data.getCicCase().getRepresentativeFullName()) {
+            data.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getRepresentativeFullName())
+                .roleOnCase("Representative")
+                .build()
+            );
+        }
     }
 
     private void setSupplementaryData(Long caseId) {
