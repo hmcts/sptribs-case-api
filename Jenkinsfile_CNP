@@ -1,8 +1,8 @@
 #!groovy
-import uk.gov.hmcts.contino.AppPipelineConfig
-import uk.gov.hmcts.contino.GithubAPI
+
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.GradleBuilder
 import uk.gov.hmcts.contino.MetricsPublisher
 
@@ -61,7 +61,7 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     enableSlackNotifications('#special-tribunals-builds')
-    MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
+    MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       if(params.environment != 'prod') {
         enableHighLevelDataSetup()
@@ -195,13 +195,8 @@ withPipeline(type, product, component) {
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-
-
-
-
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
-
     }
 
     onMaster {
