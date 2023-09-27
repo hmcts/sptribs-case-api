@@ -51,7 +51,6 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 .event(CASEWORKER_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
                 .name("Link cases")
-                .showSummary()
                 .submittedCallback(this::linkCreated)
                 .description("To link related cases")
                 .grant(CREATE_READ_UPDATE, SUPER_USER,

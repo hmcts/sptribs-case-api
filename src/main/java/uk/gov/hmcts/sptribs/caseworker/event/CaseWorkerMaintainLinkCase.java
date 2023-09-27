@@ -51,7 +51,6 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 .event(CASEWORKER_MAINTAIN_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
                 .name("Manage case links")
-                .showSummary()
                 .submittedCallback(this::linkUpdated)
                 .description("To maintain linked cases")
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
