@@ -185,13 +185,14 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
-
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
-
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
+            decisionIssuedNotification.sendToApplicant(data, caseNumber);
         }
     }
 }

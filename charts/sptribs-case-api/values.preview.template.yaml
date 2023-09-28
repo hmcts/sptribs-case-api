@@ -94,21 +94,31 @@ ccd:
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
         OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-        CASE_DOCUMENT_AM_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+        CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
-        ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
 
   am-role-assignment-service:
     java:
-      disableKeyVaults: true
+      imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/am/role-assignment-service:latest
+      ingressHost: am-role-assignment-${SERVICE_FQDN}
       environment:
-        CCD_DATA_STORE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+        CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
+      keyVaults:
+        am:
+          secrets:
+            - am-role-assignment-service-s2s-secret
+            - app-insights-connection-string
+            - role-assignment-service-IDAM-CLIENT-SECRET
+            - role-assignment-service-IDAM-ADMIN-SECRET
+            - role-assignment-service-LD-SDK-KEY
 
   ccd-definition-store-api:
     java:
@@ -185,7 +195,16 @@ ccd:
             CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "sptribs-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-
+            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "draftstore" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "payment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "evidence" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "annotation" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "dbrdcaseworker" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
@@ -377,9 +396,8 @@ ccd-case-document-am-api:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
     environment:
-      CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,dg_docassembly_api,bulk_scan_orchestrator,sptribs_case_api
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
       OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
@@ -399,8 +417,8 @@ xui-webapp:
     devmemoryLimits: 1024Mi
     environment:
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
-      SERVICES_DOCUMENTS_API_V2: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
+      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
@@ -408,11 +426,15 @@ xui-webapp:
       SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
       SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
       FEATURE_REDIS_ENABLED: false
+      FEATURE_WORKALLOCATION_ENABLED: true
+      FEATURE_ACCESS_MANAGEMENT_ENABLED: true
+      FEATURE_SUBSTANTIVE_ROLE_ENABLED: true
       FEATURE_APP_INSIGHTS_ENABLED: true
       NODE_OPTIONS: --max-old-space-size=900
-      HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
-      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
-
+      HEALTH_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
+      SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
+      SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
+      SERVICES_CASE_CASEWORKER_API: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
 xui-mo-webapp:
   enabled: true
   nodejs:
@@ -423,11 +445,11 @@ xui-mo-webapp:
     environment:
       MANAGE_CASE_LINK: https://xui-${SERVICE_FQDN}/cases
       MANAGE_ORG_LINK: https://xui-mo-${SERVICE_FQDN}
-      SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
-      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
 
 sptribs-frontend:
   enabled: true
@@ -439,7 +461,7 @@ sptribs-frontend:
     image: hmctspublic.azurecr.io/sptribs/frontend:latest #pr-xxxx
     ingressHost: frontend-${SERVICE_FQDN}
     environment:
-      CCD_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       SKIP_DIV_CASE_CHECK: true
 
 aac-manage-case-assignment:
@@ -458,10 +480,10 @@ aac-manage-case-assignment:
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,sptribs_frontend,sptribs_ccd_submission,finrem_case_orchestration
-      CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store-api
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
-      ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     autoscaling:
       enabled: false
 
@@ -609,9 +631,9 @@ em-ccdorc:
       IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      EM_STITCHING_API_URL: http://em-stitching-${SERVICE_FQDN}
+      EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_API_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
 
@@ -627,7 +649,7 @@ em-stitching:
       OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CDAM_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+      CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
       SPRING_DATASOURCE_USERNAME: hmcts
       SPRING_DATASOURCE_PASSWORD: hmcts
@@ -674,7 +696,7 @@ wa:
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
-        ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
         POSTGRES_REPLICA_HOST: "{{ .Release.Name }}-postgresql"
         POSTGRES_REPLICA_PORT: 5432
@@ -709,7 +731,7 @@ wa:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
         CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
-        ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-aat.service.core-compute-aat.internal
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
         WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
         WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
@@ -739,6 +761,10 @@ servicebus:
       - name: ccd-case-events
         subscriptionNeeded: yes
         requiresSession: true
+      - name: crd-topic
+        subscriptionNeeded: yes
+      - name: jrd-topic
+        subscriptionNeeded: yes
 
 ccd-message-publisher:
   enabled: true
@@ -764,3 +790,84 @@ ccd-message-publisher:
         secretRef: sptribs-sb-preview
         key: connectionString
 
+am-org-role-mapping-service:
+  enabled: true
+  java:
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
+    secrets:
+      SB_ACCESS_KEY:
+        secretRef: sptribs-sb-preview
+        key: primaryKey
+      SB_CONNECTION_STRING:
+        secretRef: sptribs-sb-preview
+        key: connectionString
+    keyVaults:
+      am:
+        secrets:
+          - app-insights-connection-string
+          - am-org-role-mapping-service-s2s-secret
+          - role-assignment-service-LD-SDK-KEY
+          - orm-IDAM-CLIENT-ID
+          - orm-IDAM-CLIENT-SECRET
+          - orm-IDAM-ADMIN-SECRET
+    environment:
+      IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
+      JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
+      JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
+      LAUNCH_DARKLY_ENV: pr
+      AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
+      AMQP_HOST: "sptribs-sb-preview.servicebus.windows.net"
+      CRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-jrd-topic"
+      CRD_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_TOPIC_NAME: "{{ .Release.Name}}-jrd-topic"
+      AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      ORG_ROLE_MAPPING_DB_HOST: "{{ .Release.Name }}-postgresql"
+      ORG_ROLE_MAPPING_DB_NAME: org_role_mapping
+      ORG_ROLE_MAPPING_DB_USERNAME: hmcts
+      ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
+      ORG_ROLE_MAPPING_DB_PORT: 5432
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
+      RUN_LD_ON_STARTUP: true
+
+rd-caseworker-ref-api:
+  enabled: true
+  java:
+    image: 'hmctspublic.azurecr.io/rd/caseworker-ref-api:latest'
+    ingressHost: rd-caseworker-ref-api-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-rd-caseworker-ref-api
+    secrets:
+      CWRD_MQ_PASSWORD:
+        secretRef: sptribs-sb-preview
+        key: primaryKey
+    keyVaults:
+      rd:
+        secrets:
+          - name: ApplicationInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+          - name: caseworker-ref-api-s2s-secret
+            alias: CASEWORKER_REF_API_S2S_SECRET
+          - name: LD-SDK-KEY
+            alias: LD_SDK_KEY
+    environment:
+      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+      POSTGRES_DB_NAME: dbrdcaseworker
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PASSWORD: hmcts
+      POSTGRES_PORT: 5432
+      POSTGRES_CONNECTION_OPTIONS: '?currentSchema=dbrdcaseworker'
+      CWRD_MQ_HOST: "sptribs-sb-preview.servicebus.windows.net"
+      CASEWORKER_TOPIC_PRIMARY_SEND_LISTEN_SHARED_ACCESS_KEY: "$(CWRD_MQ_PASSWORD)"
+      CWRD_MQ_USERNAME: RootManageSharedAccessKey
+      CWRD_MQ_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
+      CWRD_MQ_TRUST_ALL_CERTS: false
+      CWRD_DATA_PER_MESSAGE: 50
+      LAUNCH_DARKLY_ENV: "preview"
+      ENVIRONMENT_NAME: "preview"
+      EMAIL_DOMAIN_LIST: "justice.gov.uk,dwp.gov.uk,hmrc.gov.uk,hmcts.net,dfcni.gov.uk"
