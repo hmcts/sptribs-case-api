@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -80,7 +79,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         var data = details.getData();
         String claimNumber = data.getHyphenatedCaseRef();
         try {
-            sendCaseStayedNotification(claimNumber, data);
+            linkedCaseNotification(claimNumber, data);
         } catch (Exception notificationException) {
             log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -94,7 +93,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
 
-    private void sendCaseStayedNotification(String caseNumber, CaseData data) {
+    private void linkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
         if (!cicCase.getSubjectCIC().isEmpty()) {
