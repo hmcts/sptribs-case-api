@@ -89,19 +89,19 @@ public class CaseData {
     )
     private String caseNameHmctsInternal;
 
-    @CCD(access = {CaseFlagsAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Case Flags")
     private Flags caseFlags;
 
-    @CCD(access = {CaseFlagsAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Subject")
     private Flags subjectFlags;
 
-    @CCD(access = {CaseFlagsAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Representative")
     private Flags representativeFlags;
 
-    @CCD(access = {CaseFlagsAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Applicant")
     private Flags applicantFlags;
 

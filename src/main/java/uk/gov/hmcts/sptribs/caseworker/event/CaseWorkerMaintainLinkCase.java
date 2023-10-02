@@ -70,7 +70,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Link Updated %n##"))
+            .confirmationHeader(format("# Case Link Updated %n"))
             .build();
     }
 
