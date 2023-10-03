@@ -38,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
@@ -115,20 +114,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
 
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
-            String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_HYPHEN);
 
-            for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
+            for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
 
-                String[] draftOrderFile = draftOrderCICListValue.getValue()
-                    .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
-
-                if (selectedDynamicDraft
-                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
-                    && selectedDraft[1].equals(draftOrderFile[2])
-                ) {
-                    selectedDraftOrder = draftOrderCICListValue.getValue();
+                if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                    selectedDraftOrder = draftOrderCICValue.getValue();
                     String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(SEMICOLON);
-                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileName[1]);
+                    String fileNameSuffix = fileName.length > 1
+                        ? fileName[1]
+                        : selectedDraftOrder.getTemplateGeneratedDocument().getFilename();
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileNameSuffix);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }
@@ -224,10 +219,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     }
 
     private void updateLastSelectedOrder(CicCase cicCase, Order order) {
-        if (null != order.getDraftOrder()) {
+        if (order.getDraftOrder() != null) {
             cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
-        } else if (null != order.getUploadedFile()
-            && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
             updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
