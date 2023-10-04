@@ -38,7 +38,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -119,11 +120,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
                 if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
                     selectedDraftOrder = draftOrderCICValue.getValue();
-                    String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(SEMICOLON);
-                    String fileNameSuffix = fileName.length > 1
-                        ? fileName[1]
-                        : selectedDraftOrder.getTemplateGeneratedDocument().getFilename();
-                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileNameSuffix);
+                    String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }
