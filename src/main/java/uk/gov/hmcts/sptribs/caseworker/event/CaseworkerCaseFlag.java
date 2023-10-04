@@ -59,7 +59,6 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Create case flags")
             .showSummary()
-            .showEventNotes()
             .description("Create case flags")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
