@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -9,9 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.notification.CaseUnlinkedNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
@@ -38,6 +41,9 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
+
+    @Autowired
+    CaseUnlinkedNotification caseUnlinkedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -69,9 +75,36 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
+        var data = details.getData();
+        String claimNumber = data.getHyphenatedCaseRef();
+        try {
+            unLinkedCaseNotification(claimNumber, data);
+        } catch (Exception notificationException) {
+            log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case Link updated %n"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Link Updated %n"))
+            .confirmationHeader(format("# Case Link updated %n"))
             .build();
+    }
+
+
+    private void unLinkedCaseNotification(String caseNumber, CaseData data) {
+        CicCase cicCase = data.getCicCase();
+
+        if (!cicCase.getSubjectCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToSubject(data, caseNumber);
+        }
+
+        if (!cicCase.getApplicantCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToApplicant(data, caseNumber);
+        }
+
+        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToRepresentative(data, caseNumber);
+        }
     }
 
 }
