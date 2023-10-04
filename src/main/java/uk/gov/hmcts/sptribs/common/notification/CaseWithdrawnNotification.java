@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.Notification;
-import uk.gov.hmcts.sptribs.caseworker.model.Notifications;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -129,7 +128,7 @@ public class CaseWithdrawnNotification {
         cicCase.setResNotificationResponse(caseWithdrawnNotifyResponse);*/
     }
 
-    @Override
+    //@Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
@@ -137,16 +136,14 @@ public class CaseWithdrawnNotification {
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
-            cicCase.setAppNotificationResponse(caseWithdrawnNotifyResponse);
+            //NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            //cicCase.setAppNotificationResponse(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
     private NotificationRequest sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest notificationRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
