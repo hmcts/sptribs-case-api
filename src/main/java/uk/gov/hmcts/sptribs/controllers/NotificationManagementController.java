@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.services.CaseManagementService;
 
@@ -39,7 +40,7 @@ public class NotificationManagementController {
     })
     public ResponseEntity<?> updateNotificationDetails(@PathVariable final Long caseId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                                        @RequestBody final NotificationResponse notificationResponse) {
+                                        @RequestBody final NotificationRequest notificationResponse) {
 
         CaseResponse updatedCase = caseManagementService.updateNotificationDetails(authorisation, caseId, notificationResponse);
         return ResponseEntity.ok(updatedCase);

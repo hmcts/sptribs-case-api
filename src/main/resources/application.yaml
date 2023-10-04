@@ -209,6 +209,7 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
+        createNotificationEvent: caseworker-create-notification
         updateNotificationEvent: caseworker-update-notification
       caseTypeOfApplication:
         - CIC

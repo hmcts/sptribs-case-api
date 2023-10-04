@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.services.ccd.CaseApiService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
@@ -83,13 +84,14 @@ public class CaseManagementService {
     }
 
     public CaseResponse updateNotificationDetails(String authorization, Long caseId,
-                                                  NotificationResponse notificationResponse) {
+                                                  NotificationRequest notificationResponse) {
         try {
             String caseTypeOfApplication = "CIC";
-            CaseDetails caseDetails = caseApiService.getCaseDetails(authorization,
+            String auth = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJzdC10ZXN0NjZAbWFpbGluYXRvci5jb20iLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkIjoiNDcyMGE1M2YtZTQ2MS00Yzc3LTk5NmYtN2M2YThjZDc4ZGI4LTY4Mjk1ODU4Iiwic3VibmFtZSI6InN0LXRlc3Q2NkBtYWlsaW5hdG9yLmNvbSIsImlzcyI6Imh0dHBzOi8vZm9yZ2Vyb2NrLWFtLnNlcnZpY2UuY29yZS1jb21wdXRlLWlkYW0tYWF0Mi5pbnRlcm5hbDo4NDQzL29wZW5hbS9vYXV0aDIvcmVhbG1zL3Jvb3QvcmVhbG1zL2htY3RzIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiSE9XMEZQUUJudU5URnVKMTFGaU9MejBRd0w0IiwiYXVkIjoic3B0cmlicy1jYXNlLWFwaSIsIm5iZiI6MTY5NTg5OTg3OCwiZ3JhbnRfdHlwZSI6InBhc3N3b3JkIiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsInJvbGVzIl0sImF1dGhfdGltZSI6MTY5NTg5OTg3OCwicmVhbG0iOiIvaG1jdHMiLCJleHAiOjE2OTU5Mjg2NzgsImlhdCI6MTY5NTg5OTg3OCwiZXhwaXJlc19pbiI6Mjg4MDAsImp0aSI6IlhDdHlIUGo4eE4wZUdNQmpJc0ZCcU9LQTRHdyJ9.b3j8VXQQwGCqvU6oqol1AgEVVD9NyADrUB9qvNKMkUK_MoNSON8jpWdvyiQf1JB-38ppnuhxsI0bY87Z_OlPBXvXItUwjOSgGR9a6lNjDyhALdUVVTvhL7fOOlg6K1nERxxKLVC3XOHLKzAivjUnigQUFEPMNtgPbXG2qghaSjsd9D_YbRZaNkvD5Nnp80BIhhVzrVzwotjc2_PJARUlrsQRmYhla8vJAUIhTu_op2u2jqcGbis-ssHwAQ08ZH1FJ0RSuckr1dHU_3ZJmXiWeYZQSDpcWqtiM1S5YmN1sIkv3jxvuhwgc24AdxrvZ0EsACh3jLTEzlZAw3NQuyM6iA";
+            CaseDetails caseDetails = caseApiService.getCaseDetails(auth,
                 caseId);
-            CaseDetails caseDetails1 = caseApiService.updateCaseForCaseworker(authorization, caseId, caseDetails,
-                AppsUtil.getExactAppsDetails(appsConfig, caseTypeOfApplication));
+            CaseDetails caseDetails1 = caseApiService.updateCaseForCaseworker(auth, caseId, caseDetails,
+                AppsUtil.getExactAppsDetails(appsConfig, caseTypeOfApplication), notificationResponse);
 
 
 

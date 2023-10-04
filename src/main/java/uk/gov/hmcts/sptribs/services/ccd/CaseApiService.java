@@ -3,16 +3,23 @@ package uk.gov.hmcts.sptribs.services.ccd;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.Notification;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -67,7 +74,26 @@ public class CaseApiService {
     }
 
     public CaseDetails updateCaseForCaseworker(String authorization, Long caseId,
-                                               CaseDetails caseDetails, AppsConfig.AppsDetails appsDetails) {
+                                               CaseData caseData, AppsConfig.AppsDetails appsDetails) {
+
+        String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
+
+        return coreCaseDataApi.submitEventForCaseWorker(
+            authorization,
+            authTokenGenerator.generate(),
+            userId,
+            appsDetails.getJurisdiction(),
+            appsDetails.getCaseType(),
+            String.valueOf(caseId),
+            true,
+            getCaseDataContent(authorization, caseData, userId,
+                String.valueOf(caseId), appsDetails)
+        );
+    }
+
+    public CaseDetails updateCaseForCaseworker(String authorization, Long caseId,
+                                               CaseDetails caseDetails, AppsConfig.AppsDetails appsDetails,
+                                               NotificationRequest notificationResponse) {
 
         String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
 
@@ -80,19 +106,47 @@ public class CaseApiService {
             String.valueOf(caseId),
             true,
             getCaseDataContent(authorization, caseDetails, userId,
-                String.valueOf(caseId), appsDetails)
+                String.valueOf(caseId), appsDetails, notificationResponse)
         );
     }
 
     private CaseDataContent getCaseDataContent(String authorization, CaseDetails caseDetails,
-                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
-        CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseDetails.getData());
-        builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateNotificationEvent()).build())
+                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails,
+                                               NotificationRequest notificationRequest) {
+        CaseData caseData = caseDetailsConverter.toCaseData(caseDetails);
+        Notification notification = new Notification();
+        notification.setReference(notificationRequest.getReference());
+        notification.setTemplateId(notificationRequest.getTemplateId());
+        notification.setCaseId(notificationRequest.getCaseId());
+
+        List<ListValue<Notification>> listValues = new ArrayList<>();
+
+        var listValue = ListValue
+            .<Notification>builder()
+            .id("1")
+            .value(notification)
+            .build();
+
+        listValues.add(listValue);
+
+        caseData.getCicCase().setNotificationList(listValues);
+        caseData.setCurrentEvent("updateNotification");
+        //CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseDetails.getData());
+        return CaseDataContent.builder().event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateNotificationEvent()).build())
             .eventToken(getEventToken(authorization, userId, appsDetails.getEventIds().getUpdateNotificationEvent(),
                 caseId, appsDetails))
-            .data(caseDetailsConverter.toCaseData(caseDetails));
+            .data(caseData)
+            .build();
+    }
 
-        return builder.build();
+    private CaseDataContent getCaseDataContent(String authorization, CaseData caseData,
+                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
+
+        return CaseDataContent.builder().event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getCreateNotificationEvent()).build())
+            .eventToken(getEventToken(authorization, userId, appsDetails.getEventIds().getCreateNotificationEvent(),
+                caseId, appsDetails))
+            .data(caseData)
+            .build();
     }
 
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, String userId,

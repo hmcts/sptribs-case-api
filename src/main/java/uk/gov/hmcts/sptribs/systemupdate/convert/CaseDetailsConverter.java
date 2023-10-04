@@ -34,8 +34,6 @@ public class CaseDetailsConverter {
         data.put("ccdCaseReference", caseDetails.getId());
 
         CaseData caseData = objectMapper.convertValue(data, CaseData.class);
-        //caseData.getCicCase().getNotifications().getCaseWithdrawnNotification().setName("Notification sent");
-        //caseData.getCicCase().getNotifications().getCaseWithdrawnNotification().setReference(Calendar.getInstance().getTime().toString());
         return caseData;
     }
 }
