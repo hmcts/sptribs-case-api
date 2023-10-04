@@ -74,10 +74,9 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 CaseStayed)
             .name("Document management: Remove")
             .description("Document management: Remove")
-            .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, ST_CIC_SENIOR_JUDGE)
+            .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_SENIOR_CASEWORKER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
