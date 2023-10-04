@@ -399,7 +399,7 @@ class CaseworkerSendOrderTest {
     private DynamicList getDraftOrderList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
-            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--bb--cc")
+            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel())
             .code(UUID.randomUUID())
             .build();
         return DynamicList
