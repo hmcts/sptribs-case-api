@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -83,10 +84,12 @@ class CaseworkerRecordListingTest {
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
+        parties.add(NotificationParties.APPLICANT);
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .hearingNotificationParties(parties)
             .build();
         final CaseData caseData = caseData();
@@ -103,6 +106,7 @@ class CaseworkerRecordListingTest {
         Mockito.doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        Mockito.doNothing().when(listingCreatedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When

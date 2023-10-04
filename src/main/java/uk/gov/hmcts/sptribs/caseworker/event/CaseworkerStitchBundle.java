@@ -71,6 +71,7 @@ public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRo
 
         var caseData = details.getData();
 
+        log.info("Caseworker Stitch bundle case_data for Case Id: {}. {}", details.getId(), details.getData());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

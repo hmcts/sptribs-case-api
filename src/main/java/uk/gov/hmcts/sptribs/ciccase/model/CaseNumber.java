@@ -17,5 +17,5 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 public class CaseNumber {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String caseNumber;
+    private String number;
 }

@@ -75,6 +75,9 @@ public final class MessageUtil {
         if (notificationParties.contains(NotificationParties.REPRESENTATIVE)) {
             message.append(REPRESENTATIVE + COMMA_SPACE);
         }
+        if (notificationParties.contains(NotificationParties.APPLICANT)) {
+            message.append(APPLICANT + COMMA_SPACE);
+        }
         return message.substring(0, message.length() - 2);
     }
 

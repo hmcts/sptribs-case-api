@@ -83,6 +83,10 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-st_cic-senior-judge",
             "caseworker-st_cic-judge",
             "caseworker-st_cic-respondent",
+            "caseworker-admin",
+            "hmcts-admin",
+            "caseflags-admin",
+            "caseflags-viewer",
             "citizen"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();

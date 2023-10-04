@@ -25,7 +25,8 @@ public class IssueDecisionUploadNotice implements CcdPageConfiguration {
                 "\nUpload a copy of the decision notice that you want to add to this case.\n"
                     + "\nThe decision notice should be:\n"
                     + "\n- a maximum of 100MB in size (larger files must be split)\n"
-                    + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n")
+                    + "\n- labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n"
+                    + "Note: If the remove button is disabled, please refresh the page to remove attachments")
             .complex(CaseData::getCaseIssueDecision)
             .mandatoryWithLabel(CaseIssueDecision::getDecisionDocument, "Add a file")
             .done();

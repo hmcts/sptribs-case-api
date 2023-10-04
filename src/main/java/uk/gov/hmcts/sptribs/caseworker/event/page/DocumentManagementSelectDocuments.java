@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 
 public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
@@ -50,8 +49,7 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
     private void setSelectedDocuments(CaseData data) {
         var cicCase = data.getCicCase();
         DynamicList documentList = cicCase.getAmendDocumentList();
-        List<CaseworkerCICDocument> allCaseDocumentsList = DocumentListUtil.getAllCaseDocuments(data);
-        List<ListValue<CaseworkerCICDocument>> allCaseDocuments = buildListValues(allCaseDocumentsList);
+        List<ListValue<CaseworkerCICDocument>> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(data);
         CaseworkerCICDocument selectedDocument = null;
         String selectedDocumentType = null;
 

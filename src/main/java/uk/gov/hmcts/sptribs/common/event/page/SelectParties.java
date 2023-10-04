@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -30,14 +31,19 @@ public class SelectParties implements CcdPageConfiguration {
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
         if (null != data.getCicCase() && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.SUBJECT)) {
             errors.add("Subject is mandatory.");
         }
-
+        if (null != data.getCicCase()
+            && (data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR
+            || data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL)
+            && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+            errors.add("Applicant is mandatory for Fatal and Minor cases.");
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

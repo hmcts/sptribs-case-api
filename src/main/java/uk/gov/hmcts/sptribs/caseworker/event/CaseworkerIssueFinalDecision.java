@@ -123,7 +123,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 Upload a copy of the decision notice that you want to add to this case.
                   *  <h3>The decision notice should be:</h3>
                   *  a maximum of 100MB in size (larger files must be split)
-                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf
+                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                  Note: If the remove button is disabled, please refresh the page to remove attachments
                 """
             )
             .complex(CaseData::getCaseIssueFinalDecision)
@@ -224,6 +225,10 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
                 messageLine2.append("Respondent, ");
                 caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+                messageLine2.append("Applicant ");
+                caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
             }
         } catch (Exception notificationException) {
             log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());

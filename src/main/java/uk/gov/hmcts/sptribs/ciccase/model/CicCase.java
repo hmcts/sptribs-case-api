@@ -17,8 +17,18 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.LinkReason;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.*;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Notifications;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
+import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
+import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -52,95 +62,10 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CicCase {
 
     @CCD(
-        label = "Enter any other important information about this adjournment",
-        typeOverride = TextArea
-    )
-    private String otherDetailsOfAdjournment;
-
-    @CCD(
-        label = "What type of decision was given at the hearing?",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "HearingOutcome",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private HearingOutcome hearingOutcome;
-
-    @CCD(
-        label = "Why was the hearing adjourned?",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "AdjournmentReasons",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private AdjournmentReasons adjournmentReasons;
-
-
-    @CCD(
-        label = "Enter any other important information about this cancellation",
-        typeOverride = TextArea
-    )
-    private String cancelHearingAdditionalDetail;
-
-    @CCD(
-        label = "Why was the hearing cancelled?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "HearingCancellationReason"
-    )
-    private HearingCancellationReason hearingCancellationReason;
-
-    @CCD(
-        label = "Case number to be linked",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CaseNumber linkCaseNumber;
-
-    @CCD(
-        label = "Why should these cases be linked?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "LinkReason"
-    )
-    private List<ListValue<LinkReason>> linkCaseReason;
-
-    @CCD(
-        label = "Other Description",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String linkCaseOtherDescription;
-
-    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Status status;
 
-
-    @CCD(
-        label = "Flag Type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagType flagType;
-
-    @CCD(
-        label = "Explain why you are creating this flag.\n"
-            + "Do not include any sensitive information such as personal details.",
-        hint = "You can enter up to 200 characters",
-        typeOverride = TextArea,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String flagAdditionalDetail;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Enter a flag type"
-    )
-    private String flagOtherDescription;
-
-
-    @CCD(
-        label = "Why is a stay being added to this case?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagLevel flagLevel;
 
     @CCD(
         label = "Preview order",
@@ -157,37 +82,10 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
-        label = "",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicList flagDynamicList;
-
-    @CCD(
-        label = "",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicMultiSelectList linkDynamicList;
-
-    @CCD(
         label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList orderDynamicList;
-
-    @CCD(
-        label = "Postpone Reason",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "PostponeReason",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private PostponeReason postponeReason;
-
-    @CCD(
-        label = "Enter any other important information about this postponement",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = TextArea
-    )
-    private String postponeAdditionalInformation;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -602,12 +500,6 @@ public class CicCase {
 
     private YesOrNo representativeDetailsObjects;
 
-
-    @CCD(
-        label = "Police authority management incident",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String policeAuthority;
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

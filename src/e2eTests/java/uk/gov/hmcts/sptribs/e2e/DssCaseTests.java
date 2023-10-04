@@ -26,7 +26,7 @@ public class DssCaseTests extends Base {
         clickLink(page, "Sign out");
         assertH1Heading(page, "Submit a First-tier Tribunal form");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         page.navigate(getCaseUrl(caseNumber));
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));
@@ -45,7 +45,7 @@ public class DssCaseTests extends Base {
         clickLink(page, "Sign out");
         assertH1Heading(page, "Submit a First-tier Tribunal form");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         page.navigate(getCaseUrl(caseNumber));
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));

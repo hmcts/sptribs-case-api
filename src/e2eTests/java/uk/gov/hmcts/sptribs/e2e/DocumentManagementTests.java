@@ -7,6 +7,7 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 
 public class DocumentManagementTests extends Base {
@@ -30,10 +31,10 @@ public class DocumentManagementTests extends Base {
 
     private Case createAndBuildCase(Page page) {
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
 
         Case newCase = new Case(page);
-        newCase.createCase("representative");
+        newCase.createCase(Representative);
         newCase.buildCase();
         return newCase;
     }

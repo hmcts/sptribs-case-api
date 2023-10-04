@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.RemoveStay;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseStayed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -21,9 +22,9 @@ public class StayCaseTests extends Base {
     public void caseWorkerShouldBeAbleToAddStayToCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase("representative");
+        newCase.createCase(Representative);
         newCase.buildCase();
         newCase.addStayToCase();
     }
@@ -33,7 +34,7 @@ public class StayCaseTests extends Base {
     public void caseWorkerShouldBeAbleEditStayToCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
@@ -65,7 +66,7 @@ public class StayCaseTests extends Base {
     public void caseworkerShouldBeAbleToRemoveStayCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();

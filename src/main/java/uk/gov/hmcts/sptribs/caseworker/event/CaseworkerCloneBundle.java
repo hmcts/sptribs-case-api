@@ -71,6 +71,7 @@ public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRol
 
         var caseData = details.getData();
 
+        log.info("Caseworker Clone bundle case_data for Case Id: {}. {}", details.getId(), details.getData());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

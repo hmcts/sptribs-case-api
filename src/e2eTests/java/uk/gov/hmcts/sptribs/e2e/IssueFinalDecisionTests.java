@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueFinalDecision;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -20,9 +21,9 @@ public class IssueFinalDecisionTests extends Base {
     public void caseWorkerShouldBeAbleToIssueFinalDecision() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase("representative");
+        newCase.createCase(Representative);
         newCase.buildCase();
         Hearing hearing = new Hearing(page);
         hearing.createListing();

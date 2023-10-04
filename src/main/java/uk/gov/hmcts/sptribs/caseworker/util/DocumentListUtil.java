@@ -46,8 +46,8 @@ public final class DocumentListUtil {
         return docList;
     }
 
-    public static List<CaseworkerCICDocument> getAllCaseDocuments(final CaseData data) {
-        return prepareList(data);
+    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {
+        return buildListValues(prepareList(data));
     }
 
     public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
@@ -78,7 +78,7 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        String apiUrl = baseUrl + "/documents/%s/binary";
+        String apiUrl = baseUrl + "documents/%s/binary";
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),

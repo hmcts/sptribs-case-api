@@ -74,6 +74,25 @@ public class CaseReinstatedNotification implements PartiesNotification {
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
+    @Override
+    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+
+        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        addCaseReInstateTemplateVars(cicCase, templateVars);
+
+        NotificationResponse notificationResponse;
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
+        }
+
+        cicCase.setAppNotificationResponse(notificationResponse);
+    }
+
+
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,

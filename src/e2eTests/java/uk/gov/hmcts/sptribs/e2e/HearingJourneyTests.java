@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.DssSubmitted;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.visibleOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -103,9 +104,9 @@ public class HearingJourneyTests extends Base {
 
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
+
         Page page = getPage();
         createAndBuildCase(page);
-
         Hearing hearing = createListing(page);
         hearing.postponeHearing();
         getTabByText(page, "Hearings").click();
@@ -122,6 +123,7 @@ public class HearingJourneyTests extends Base {
     }
 
     @RepeatedIfExceptionsTest
+
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
         createAndBuildCase(page);
@@ -137,10 +139,10 @@ public class HearingJourneyTests extends Base {
 
     private void createAndBuildCase(Page page) {
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
 
         Case newCase = new Case(page);
-        newCase.createCase("representative");
+        newCase.createCase(Representative);
         newCase.buildCase();
     }
 
@@ -152,7 +154,7 @@ public class HearingJourneyTests extends Base {
         final String caseNumber = newDssCase.createCase("representative");
         clickLink(page, "Sign out");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         page.navigate(getCaseUrl(caseNumber));
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));
