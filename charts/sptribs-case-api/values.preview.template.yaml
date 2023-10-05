@@ -139,6 +139,11 @@ ccd:
         - st_caseworker@mailinator.com|ST_CIC|CIC|Submitted
         - st_solicitor@mailinator.com|ST_CIC|CIC|Submitted
         - st_super@mailinator.com|ST_CIC|CIC|Submitted
+      userProfileDatabaseHost: sptribs-preview.postgres.database.azure.com
+      userProfileDatabasePort: 5432
+      userProfileDatabaseUser: hmcts
+      userProfileDatabasePassword: hmcts
+      userProfileDatabaseName: user-profile
 
   postgresql:
     enabled: false
@@ -678,4 +683,3 @@ postgresql:
       - name: emstitch
       - name: payment
       - name: dbrdcaseworker
-      - name: sptribs-case-api
