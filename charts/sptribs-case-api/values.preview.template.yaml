@@ -1,5 +1,5 @@
 tags:
-  ccd-idam-pr: true
+  sptribs-ccd-stack: true
 
 java:
   # Don't modify below here
@@ -43,7 +43,7 @@ ccd:
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
     postgresUsername: hmcts
     postgresSecret: postgres
-    postgresHostname: et-preview.postgres.database.azure.com
+    postgresHostname: sptribs-preview.postgres.database.azure.com
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:

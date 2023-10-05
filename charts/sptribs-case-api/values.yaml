@@ -1,5 +1,5 @@
 tags:
-  ccd-idam-pr: false
+  sptribs-ccd-stack: false
 
 ccd:
   postgres:
