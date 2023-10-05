@@ -11,7 +11,7 @@ dependencies:
     version: 4.2.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: ~8.0.29
+    version: ~9.0.3
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
       - ccd-idam-pr
@@ -44,7 +44,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
   - name: wa
-    version: ~0.1.5
+    version: ~1.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
@@ -63,3 +63,7 @@ dependencies:
     version: ~1.0.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: rd-caseworker-ref-api.enabled
+  - name: postgresql
+    version: 1.0.0
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: postgresql.enabled

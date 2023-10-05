@@ -7,34 +7,18 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
-    CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
+    CASE_DOCUMENT_AM_BASEURL: https://ccd-case-document-am-api-${SERVICE_FQDN}
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
-    POSTGRES_HOST: ${SERVICE_NAME}-postgresql
+    POSTGRES_HOST: sptribs-preview.postgres.database.azure.com
     POSTGRES_NAME: sptribs-case-api
     POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD: hmcts
-    POSTGRES_CONNECTION_OPTIONS: ""
-
-  keyVaults:
-    sptribs:
-      secrets:
-        - name: app-insights-instrumentation-key-preview
-          alias: app-insights-instrumentation-key
-        - name: app-insights-connection-string-preview
-          alias: app-insights-connection-string
-        - name: uk-gov-notify-api-key
-          alias: UK_GOV_NOTIFY_API_KEY_1
-        - name: s2s-case-api-secret
-          alias: S2S_SECRET
-        - name: idam-secret
-          alias: IDAM_CLIENT_SECRET
-        - name: idam-systemupdate-username
-          alias: IDAM_SYSTEM_UPDATE_USERNAME
-        - name: idam-systemupdate-password
-          alias: IDAM_SYSTEM_UPDATE_PASSWORD
-        - name: launchdarkly-sdk-key
-          alias: LAUNCH_DARKLY_SDK_KEY
+    POSTGRES_CONNECTION_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+  secrets:
+    POSTGRES_PASSWORD:
+      secretRef: postgres
+      key: PASSWORD
+      disabled: false
 
 ccd:
   ccd:
@@ -58,7 +42,8 @@ ccd:
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
     postgresUsername: hmcts
-    postgresPassword: hmcts
+    postgresSecret: postgres
+    postgresHostname: et-preview.postgres.database.azure.com
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
@@ -78,9 +63,6 @@ ccd:
       imagePullPolicy: Always
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: false
-        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
-        DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
         LOG_CALLBACK_DETAILS: "*"
@@ -91,10 +73,7 @@ ccd:
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         CCD_DM_DOMAIN: http://dm-store-aat.service.core-compute-aat.internal
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:api-gateway\.preprod\.dm\.reform\.hmcts\.net|dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?)|(em-hrs-api-aat\.service\.core-compute-aat\.internal(?::\d+)?\/hearing-recordings\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\/segments\/[0-9]))
-        IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
-        IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
-        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-        CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+        CASE_DOCUMENT_AM_URL: https://ccd-case-document-am-api-${SERVICE_FQDN}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
@@ -125,9 +104,7 @@ ccd:
       disableKeyVaults: true
       imagePullPolicy: Always
       environment:
-        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
-        IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
@@ -142,7 +119,6 @@ ccd:
       disableKeyVaults: true
       imagePullPolicy: Always
       enviroment:
-        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-admin-web:
@@ -151,7 +127,6 @@ ccd:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
       ingressHost: admin-web-${SERVICE_FQDN}
       environment:
-        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
 
@@ -164,47 +139,10 @@ ccd:
         - st_caseworker@mailinator.com|ST_CIC|CIC|Submitted
         - st_solicitor@mailinator.com|ST_CIC|CIC|Submitted
         - st_super@mailinator.com|ST_CIC|CIC|Submitted
-      userProfileDatabaseHost: ${SERVICE_NAME}-ccd-postgres
-      userProfileDatabasePort: 5432
-      userProfileDatabaseUser: hmcts
-      userProfileDatabasePassword: hmcts
-      userProfileDatabaseName: user-profile
 
   postgresql:
     enabled: false
-    auth:
-      database: cft_task_db
-    primary:
-      persistence:
-        enabled: false
-      extraEnvVars:
-        - name: POSTGRESQL_WAL_LEVEL
-          value: "logical"
-      resources:
-        requests:
-          cpu: 25m
-      initdb:
-        user: postgres
-        scripts:
-          init-et_cos.sql: |
-            ALTER ROLE hmcts WITH SUPERUSER;
-            CREATE DATABASE "wa-case-event-handler" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "wa_workflow_api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "camunda" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "cft_task_db_replica" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "sptribs-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "draftstore" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "payment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "evidence" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "annotation" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "org_role_mapping" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "dbrdcaseworker" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
     clusterName: "es"
@@ -247,9 +185,15 @@ ccd:
     extraVolumes: |
       - name: logstash-lib
         emptyDir: {}
+      - name: database-secret-volume
+        secret:
+          secretName: postgres
     extraVolumeMounts: |
       - name: logstash-lib
         mountPath: /usr/share/logstash/ccd
+      - name: database-secret-volume
+        mountPath: /etc/logstash/secrets
+        readOnly: true
     logstashConfig:
       logstash.yml: |
         http.host: 0.0.0.0
@@ -265,9 +209,9 @@ ccd:
       01_input.conf: |
         input  {
           jdbc {
-            jdbc_connection_string => "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/data-store?stringtype=unspecified"
+            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/data-store?stringtype=unspecified"
             jdbc_user => "hmcts"
-            jdbc_password => "hmcts"
+            jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
             jdbc_validate_connection => true
             jdbc_driver_library => "/usr/share/logstash/ccd/postgresql.jar"
             jdbc_driver_class => "org.postgresql.Driver"
@@ -396,12 +340,7 @@ ccd-case-document-am-api:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
     environment:
-      DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
-      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
-      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
-      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
-      IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     autoscaling:
       enabled: false
 
@@ -418,7 +357,7 @@ xui-webapp:
     environment:
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
-      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
+      SERVICES_DOCUMENTS_API_V2: https://ccd-case-document-am-api-${SERVICE_FQDN}
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
@@ -521,24 +460,27 @@ em-stitching:
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
-      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
-      OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
-      S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
+      CDAM_URL: https://ccd-case-document-am-api-${SERVICE_FQDN}
+      SPRING_DATASOURCE_HOST: sptribs-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
-      SPRING_DATASOURCE_PASSWORD: hmcts
       SPRING_DATASOURCE_NAME: emstitch
       SPRING_DATASOURCE_PORT: 5432
-      SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
+      SPRING_DATASOURCE_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
-
+    secrets:
+      SPRING_DATASOURCE_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
 
 wa:
   enabled: true
+  global:
+    postgresUsername: hmcts
+    postgresSecret: postgres
+    postgresHost: sptribs-preview.postgres.database.azure.com
   wa-initiation-batch:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
@@ -551,39 +493,24 @@ wa:
   wa-message-cron-service:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
+
+  camunda-bpm:
+    java:
+      environment:
+        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      keyVaults:
-        wa:
-          secrets:
-            - name: wa-system-username
-              alias: WA_SYSTEM_USERNAME
-            - name: wa-system-password
-              alias: WA_SYSTEM_PASSWORD
-            - name: wa-idam-client-secret
-              alias: WA_IDAM_CLIENT_SECRET
-            - name: s2s-secret-task-management-api
-              alias: S2S_SECRET_TASK_MANAGEMENT_API
-            - name: ld-secret
-              alias: LAUNCH_DARKLY_SDK_KEY
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
         S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
-        POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-        POSTGRES_REPLICA_HOST: "{{ .Release.Name }}-postgresql"
-        POSTGRES_REPLICA_PORT: 5432
-        POSTGRES_NAME: "cft_task_db"
-        POSTGRES_REPLICA_NAME: "cft_task_db_replica"
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
-        REPLICATION_USERNAME: hmcts
-        REPLICATION_PASSWORD: hmcts
-        POSTGRES_CONNECTION_OPTIONS: ""
-        SPRING_PROFILES_ACTIVE: "preview,replica"
+        ALLOWED_JURISDICTIONS: ST_CIC
+        ALLOWED_CASE_TYPES: criminalinjuriescompensation
+
   wa-case-event-handler:
     java:
       ingressHost: wa-case-event-handler-${SERVICE_FQDN}
@@ -592,17 +519,6 @@ wa:
         AZURE_SERVICE_BUS_CONNECTION_STRING:
           secretRef: sptribs-sb-preview
           key: connectionString
-      keyVaults:
-        wa:
-          secrets:
-            - name: s2s-secret-case-event-handler
-              alias: S2S_SECRET_CASE_EVENT_HANDLER
-            - name: ld-secret
-              alias: LAUNCH_DARKLY_SDK_KEY
-            - name: wa-case-event-handler-POSTGRES-DATABASE
-              alias: POSTGRES_NAME
-            - name: wa-idam-client-secret
-              alias: WA_IDAM_CLIENT_SECRET
       environment:
         CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
         CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
@@ -612,13 +528,7 @@ wa:
         WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        #AZURE_SERVICE_BUS_TOPIC_NAME: servicebus-topic-{{ .Release.Name }}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
-        POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-        POSTGRES_NAME: wa-case-event-handler
-        POSTGRES_USERNAME: hmcts
-        POSTGRES_PASSWORD: hmcts
-        POSTGRES_CONNECTION_OPTIONS: ""
   wa-task-monitor:
     java:
       ingressHost: wa-task-monitor-${SERVICE_FQDN}
@@ -627,6 +537,7 @@ wa:
   wa:
     postgresql:
       enabled: false
+
 servicebus:
   enabled: true
   releaseNameOverride: ${SERVICE_NAME}
@@ -669,9 +580,13 @@ ccd-message-publisher:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:pr-1583'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
+    devmemoryRequests: 1024Mi
+    devcpuRequests: 250m
+    devmemoryLimits: 2048Mi
+    devcpuLimits: 1500m
     secrets:
       SB_ACCESS_KEY:
         secretRef: sptribs-sb-preview
@@ -679,6 +594,10 @@ am-org-role-mapping-service:
       SB_CONNECTION_STRING:
         secretRef: sptribs-sb-preview
         key: connectionString
+      ORG_ROLE_MAPPING_DB_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
     keyVaults:
       am:
         secrets:
@@ -689,12 +608,8 @@ am-org-role-mapping-service:
           - orm-IDAM-CLIENT-SECRET
           - orm-IDAM-ADMIN-SECRET
     environment:
-      IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
-      JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
+      CASE_WORKER_REF_APP_URL: https://rd-caseworker-ref-api-${SERVICE_FQDN}
       ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
-      JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
       LAUNCH_DARKLY_ENV: pr
       AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
       AMQP_HOST: "sptribs-sb-preview.servicebus.windows.net"
@@ -704,12 +619,11 @@ am-org-role-mapping-service:
       JRD_TOPIC_NAME: "{{ .Release.Name}}-jrd-topic"
       AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
       AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
-      ORG_ROLE_MAPPING_DB_HOST: "{{ .Release.Name }}-postgresql"
+      ORG_ROLE_MAPPING_DB_HOST: sptribs-preview.postgres.database.azure.com
       ORG_ROLE_MAPPING_DB_NAME: org_role_mapping
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
-      ORG_ROLE_MAPPING_DB_PASSWORD: hmcts
       ORG_ROLE_MAPPING_DB_PORT: 5432
-      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified"
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
 
 rd-caseworker-ref-api:
@@ -722,22 +636,16 @@ rd-caseworker-ref-api:
       CWRD_MQ_PASSWORD:
         secretRef: sptribs-sb-preview
         key: primaryKey
-    keyVaults:
-      rd:
-        secrets:
-          - name: ApplicationInsightsInstrumentationKey
-            alias: azure.application-insights.instrumentation-key
-          - name: caseworker-ref-api-s2s-secret
-            alias: CASEWORKER_REF_API_S2S_SECRET
-          - name: LD-SDK-KEY
-            alias: LD_SDK_KEY
+      POSTGRES_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
     environment:
-      POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+      POSTGRES_HOST: sptribs-preview.postgres.database.azure.com
       POSTGRES_DB_NAME: dbrdcaseworker
       POSTGRES_USERNAME: hmcts
-      POSTGRES_PASSWORD: hmcts
       POSTGRES_PORT: 5432
-      POSTGRES_CONNECTION_OPTIONS: '?currentSchema=dbrdcaseworker'
+      POSTGRES_CONNECTION_OPTIONS: "?currentSchema=dbrdcaseworker&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CWRD_MQ_HOST: "sptribs-sb-preview.servicebus.windows.net"
       CASEWORKER_TOPIC_PRIMARY_SEND_LISTEN_SHARED_ACCESS_KEY: "$(CWRD_MQ_PASSWORD)"
       CWRD_MQ_USERNAME: RootManageSharedAccessKey
@@ -747,3 +655,27 @@ rd-caseworker-ref-api:
       LAUNCH_DARKLY_ENV: "preview"
       ENVIRONMENT_NAME: "preview"
       EMAIL_DOMAIN_LIST: "justice.gov.uk,dwp.gov.uk,hmrc.gov.uk,hmcts.net,dfcni.gov.uk"
+
+postgresql:
+  enabled: true
+  flexibleserver: et-preview
+  setup:
+    databases:
+      - name: data-store
+      - name: definition-store
+      - name: user-profile
+      - name: draftstore
+      - name: evidence
+      - name: annotation
+      - name: role-assignment
+      - name: hmc-cft-hearing-service
+      - name: cft_task_db
+      - name: wa-case-event-handler
+      - name: wa_workflow_api
+      - name: camunda
+      - name: org_role_mapping
+      - name: sptribs-case-api
+      - name: emstitch
+      - name: payment
+      - name: dbrdcaseworker
+      - name: sptribs-case-api
