@@ -391,8 +391,8 @@ repositories {
 
 def versions = [
   jackson           : '2.14.0-rc1',
-  junit             : '5.9.3',
-  junitPlatform     : '1.9.3',
+  junit             : '5.10.0',
+  junitPlatform     : '1.10.0',
   lombok            : '1.18.30',
   springBoot        : springBoot.class.package.implementationVersion
 ]
