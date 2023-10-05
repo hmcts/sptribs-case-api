@@ -57,7 +57,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         new PageBuilder(configBuilder
             .event(CREATE_BUNDLE)
             .forStates(BUNDLE_STATES)
-            .name("Create bundle")
+            .name("Bundle: Create a bundle")
             .description("Bundle: Create a bundle")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .showSummary()
