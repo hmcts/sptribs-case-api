@@ -192,54 +192,49 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         List<ListValue<Notification>> listValues = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            notificationRequest = caseWithdrawnNotification.sendToSubject(caseData, caseNumber);
-            listValues = prepareNotificationList(notificationRequest, listValues);
+            NotificationRequest notificationRequestSubject = caseWithdrawnNotification.sendToSubject(caseData, caseNumber);
+            listValues = prepareNotificationList(notificationRequestSubject, listValues);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            caseWithdrawnNotification.sendToRespondent(caseData, caseNumber);
-            listValues = prepareNotificationList(notificationRequest, listValues);
+            NotificationRequest notificationRequestRespondent = caseWithdrawnNotification.sendToRespondent(caseData, caseNumber);
+            listValues = prepareNotificationList(notificationRequestRespondent, listValues);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
-            listValues = prepareNotificationList(notificationRequest, listValues);
+            NotificationRequest notificationRequestRepresentative = caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
+            listValues = prepareNotificationList(notificationRequestRepresentative, listValues);
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
+            NotificationRequest notificationRequestApplicant = caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
+            listValues = prepareNotificationList(notificationRequestApplicant, listValues);
         }
-/*
 
-        listValues = prepareNotificationList(notificationRequest, listValues);
 
         caseData.getCicCase().setNotificationList(listValues);
-        caseData.setCurrentEvent("updateNotification-1");
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
             ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
+        authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJzdC10ZXN0NjZAbWFpbGluYXRvci5jb20iLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkIjoiYmE5OWViMTktYmI0Yy00NTE2LWJmZjktN2NmNDA4ZTM0ZDAyLTE3MzUwMTIyMyIsInN1Ym5hbWUiOiJzdC10ZXN0NjZAbWFpbGluYXRvci5jb20iLCJpc3MiOiJodHRwczovL2Zvcmdlcm9jay1hbS5zZXJ2aWNlLmNvcmUtY29tcHV0ZS1pZGFtLWFhdDIuaW50ZXJuYWw6ODQ0My9vcGVuYW0vb2F1dGgyL3JlYWxtcy9yb290L3JlYWxtcy9obWN0cyIsInRva2VuTmFtZSI6ImFjY2Vzc190b2tlbiIsInRva2VuX3R5cGUiOiJCZWFyZXIiLCJhdXRoR3JhbnRJZCI6Ik5XZ1NmTjhqS0ZPNTJzczhLQ2JwVFVIUENzSSIsImF1ZCI6InNwdHJpYnMtY2FzZS1hcGkiLCJuYmYiOjE2OTY0MTM2OTQsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJyb2xlcyJdLCJhdXRoX3RpbWUiOjE2OTY0MTM2OTQsInJlYWxtIjoiL2htY3RzIiwiZXhwIjoxNjk2NDQyNDk0LCJpYXQiOjE2OTY0MTM2OTQsImV4cGlyZXNfaW4iOjI4ODAwLCJqdGkiOiJRTnhwa1R5ZG0tNHl4Rnd0eERSUmVhYlB2MDgifQ.ow0Ieve73mAWoZyBqtehtJRh7Vapbzq6QIuzm0jN02PSgCIibQN1WTHsTp0K3pdIdt3K9S6hSQLgP0IQSVuhG40IV7WVY4YHflWSaqTaqnxCGNW8YBKaUvQHF_0cpyub1wteCG6A4wnYYHfe6m5wqcmsvz7a1IDVp0cVMK09YePjqKyPx24vdTQWefYHRUZvz_cVC79-ZwMncAYPcx8o_rMmgJ1WBhn3Bm-G-0Bw1w0fwk7k_N8MyXhNLVqZnOA3QpyCPebLaXJmjitFJnrzHT03pr7Mo7ihGMNCZ7J0Wip9HvmBXUZd0Uz3CwLGOswTLXJumdcjxj6J18jbPiyWxQ";
 
         String caseTypeOfApplication = "CIC";
-        authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJzdC10ZXN0NjZAbWFpbGluYXRvci5jb20iLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkIjoiOWNkNmE3ZTQtNzc2ZC00MmM0LWE5ZTUtMzZiZWE4N2Q1Mzc3LTE3MDk2ODk4MyIsInN1Ym5hbWUiOiJzdC10ZXN0NjZAbWFpbGluYXRvci5jb20iLCJpc3MiOiJodHRwczovL2Zvcmdlcm9jay1hbS5zZXJ2aWNlLmNvcmUtY29tcHV0ZS1pZGFtLWFhdDIuaW50ZXJuYWw6ODQ0My9vcGVuYW0vb2F1dGgyL3JlYWxtcy9yb290L3JlYWxtcy9obWN0cyIsInRva2VuTmFtZSI6ImFjY2Vzc190b2tlbiIsInRva2VuX3R5cGUiOiJCZWFyZXIiLCJhdXRoR3JhbnRJZCI6IkhQM084R2lKUWlIVlQ0TmFCekEyUnF4TXFkdyIsImF1ZCI6InNwdHJpYnMtY2FzZS1hcGkiLCJuYmYiOjE2OTYzNDQ3NzQsImdyYW50X3R5cGUiOiJwYXNzd29yZCIsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJyb2xlcyJdLCJhdXRoX3RpbWUiOjE2OTYzNDQ3NzQsInJlYWxtIjoiL2htY3RzIiwiZXhwIjoxNjk2MzczNTc0LCJpYXQiOjE2OTYzNDQ3NzQsImV4cGlyZXNfaW4iOjI4ODAwLCJqdGkiOiJhVklncDlwQlY2S3FzRUZxOVczejhPQUI0WWsifQ.szW63HiTfSIl9MelD0yUcOh21C0FO9Rf6fsnTuPzL_9KCHCtJjP7bRj8E8nNCAE9s3Sn9oDQ0daQUqHxQJsXL5sqis34K0DLvrZhuEqxpOjoeBeUPJP16PUMVybdlyKhWc-2O9J0YrMGSEQHoxrKDs7m4xghaaRWREdxi1plxvzkaF--fErtcozAmcQGBecUsxrQ20S93lK14az5m5iHpgAMiZzW1_unkSZ3fjgaJL9BW1NF-hzvxVjOZlCnGc79v1QAYwtmu_8cCwvJ180JsXu0-QUDThIPdKoVdPFtADLBDFdyzuW1uL8akwW3PmJt1cBuB0rJcQNB7O0a6tw7zw";
         caseApiService.updateCaseForCaseworker(authorisation, Long.parseLong(caseNumber.replace("-", "")), caseData,
                         AppsUtil.getExactAppsDetails(appsConfig, caseTypeOfApplication));
-*/
-
-
     }
 
     private List<ListValue<Notification>> prepareNotificationList(NotificationRequest notificationRequest, List<ListValue<Notification>> listValues) {
-        Notification notification = new Notification();
-        notification.setReference(notificationRequest.getReference());
-        notification.setTemplateId(notificationRequest.getTemplateId());
-        notification.setCaseId(notificationRequest.getCaseId());
+        if(notificationRequest != null) {
+            Notification notification = new Notification();
+            notification.setReference(notificationRequest.getReference());
+            notification.setTemplateId(notificationRequest.getTemplateId());
+            notification.setCaseId(notificationRequest.getCaseId());
+            var listValue = ListValue
+                .<Notification>builder()
+                .id(notificationRequest.getReference())
+                .value(notification)
+                .build();
 
-
-        var listValue = ListValue
-            .<Notification>builder()
-            .id("3")
-            .value(notification)
-            .build();
-
-        listValues.add(listValue);
+            listValues.add(listValue);
+        }
         return listValues;
     }
 

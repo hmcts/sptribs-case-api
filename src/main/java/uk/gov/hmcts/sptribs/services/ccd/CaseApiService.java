@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -74,7 +73,7 @@ public class CaseApiService {
     }
 
     public CaseDetails updateCaseForCaseworker(String authorization, Long caseId,
-                                               CaseData caseData, AppsConfig.AppsDetails appsDetails) {
+                                                           CaseData caseData, AppsConfig.AppsDetails appsDetails) {
 
         String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
 
@@ -91,9 +90,11 @@ public class CaseApiService {
         );
     }
 
-    public CaseDetails updateCaseForCaseworker(String authorization, Long caseId,
-                                               CaseDetails caseDetails, AppsConfig.AppsDetails appsDetails,
-                                               NotificationRequest notificationResponse) {
+    public CaseDetails updateNotificationCaseForCaseworker(String authorization, Long caseId,
+                                                           CaseDetails caseDetails, AppsConfig.AppsDetails appsDetails,
+                                                           NotificationRequest notificationRequest) {
+
+        CaseData caseData = getCaseData(caseDetails, notificationRequest);
 
         String userId = idamService.retrieveUser(authorization).getUserDetails().getId();
 
@@ -105,33 +106,31 @@ public class CaseApiService {
             appsDetails.getCaseType(),
             String.valueOf(caseId),
             true,
-            getCaseDataContent(authorization, caseDetails, userId,
-                String.valueOf(caseId), appsDetails, notificationResponse)
+            getCaseDataContentUpdateNotification(authorization, caseData, userId,
+                String.valueOf(caseId), appsDetails)
         );
     }
 
-    private CaseDataContent getCaseDataContent(String authorization, CaseDetails caseDetails,
-                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails,
-                                               NotificationRequest notificationRequest) {
+    private CaseData getCaseData(CaseDetails caseDetails, NotificationRequest notificationRequest) {
         CaseData caseData = caseDetailsConverter.toCaseData(caseDetails);
-        Notification notification = new Notification();
-        notification.setReference(notificationRequest.getReference());
-        notification.setTemplateId(notificationRequest.getTemplateId());
-        notification.setCaseId(notificationRequest.getCaseId());
+        List<ListValue<Notification>> notificationList = caseData.getCicCase().getNotificationList();
+        if(notificationList != null) {
+            notificationList.stream()
+                .filter(notification -> !notification.getId().equals(notificationRequest.getReference()))
+                .findFirst()
+                .ifPresent(n -> {
+                        n.getValue().setName(notificationRequest.getCaseId());
+                        n.getValue().setTemplateId(notificationRequest.getCaseId());
+                    }
+                );
+        }
+        caseData.getCicCase().setNotificationList(notificationList);
+        return caseData;
+    }
 
-        List<ListValue<Notification>> listValues = new ArrayList<>();
+    private CaseDataContent getCaseDataContentUpdateNotification(String authorization, CaseData caseData,
+                                               String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
 
-        var listValue = ListValue
-            .<Notification>builder()
-            .id("1")
-            .value(notification)
-            .build();
-
-        listValues.add(listValue);
-
-        caseData.getCicCase().setNotificationList(listValues);
-        caseData.setCurrentEvent("updateNotification");
-        //CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseDetails.getData());
         return CaseDataContent.builder().event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateNotificationEvent()).build())
             .eventToken(getEventToken(authorization, userId, appsDetails.getEventIds().getUpdateNotificationEvent(),
                 caseId, appsDetails))

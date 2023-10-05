@@ -85,63 +85,59 @@ public class CaseWithdrawnNotification {
         addCaseClosedTemplateVars(caseData, templateVars);
         NotificationRequest notificationRequest;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-
             notificationRequest = sendEmailNotification(cicCase.getEmail(), templateVars);
-            //cicCase.setSubjectNotifyList(caseWithdrawnNotifyResponse);
-
-            caseManagementService.updateNotificationDetails(authTokenGenerator.generate(),
-                Long.parseLong(caseNumber.replace("-", "")), notificationRequest);
             return notificationRequest;
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
-
         return null;
     }
 
     //@Override
-    public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
+    public NotificationRequest sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, templateVars);
-
+        NotificationRequest notificationRequest;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            /*NotificationResponse caseWithdrawnNotifyResponse =
-                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
-            cicCase.setRepNotificationResponse(caseWithdrawnNotifyResponse);*/
+            notificationRequest = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            return notificationRequest;
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
+        return null;
     }
 
     //@Override
-    public void sendToRespondent(final CaseData caseData, final String caseNumber) {
+    public NotificationRequest sendToRespondent(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, respondentTemplateVars);
 
-        /*NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
-        cicCase.setResNotificationResponse(caseWithdrawnNotifyResponse);*/
+        NotificationRequest notificationRequest = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
+        return notificationRequest;
     }
 
     //@Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+    public NotificationRequest sendToApplicant(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
         Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, templateVars);
 
+        NotificationRequest notificationRequest;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            //NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
-            //cicCase.setAppNotificationResponse(caseWithdrawnNotifyResponse);
+            notificationRequest = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
+            return notificationRequest;
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             sendLetterNotification(templateVars);
         }
+        return null;
     }
 
     private NotificationRequest sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
@@ -175,8 +171,8 @@ public class CaseWithdrawnNotification {
 
     private MultiValueMap<String,String> getHttpHeaders() {
         MultiValueMap<String, String> inputHeaders = new LinkedMultiValueMap<>();
-        String serviceAuthToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2OTYzNTY5NDF9.EVX6H5jOCVmqKPLCfMPeSWWc9D0quJtzq0r-5jC1T87l3nuYe8JVWMY--16-HKgUeZPS2D8kqcTHlLf-cAqxpg";
-        String authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJiYXJwcmVwcm9kQG1haWxpbmF0b3IuY29tIiwiY3RzIjoiT0FVVEgyX1NUQVRFTEVTU19HUkFOVCIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImJhOTllYjE5LWJiNGMtNDUxNi1iZmY5LTdjZjQwOGUzNGQwMi0xNzE5Mzk5NjUiLCJzdWJuYW1lIjoiYmFycHJlcHJvZEBtYWlsaW5hdG9yLmNvbSIsImlzcyI6Imh0dHBzOi8vZm9yZ2Vyb2NrLWFtLnNlcnZpY2UuY29yZS1jb21wdXRlLWlkYW0tYWF0Mi5pbnRlcm5hbDo4NDQzL29wZW5hbS9vYXV0aDIvcmVhbG1zL3Jvb3QvcmVhbG1zL2htY3RzIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiQTVPeXowOUdPQzFUQTJTc2dLZmJmRzRZbzB3IiwiYXVkIjoicGF5YnViYmxlIiwibmJmIjoxNjk2MzQyNTM2LCJncmFudF90eXBlIjoicGFzc3dvcmQiLCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwicm9sZXMiXSwiYXV0aF90aW1lIjoxNjk2MzQyNTM2LCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTY5NjM3MTMzNiwiaWF0IjoxNjk2MzQyNTM2LCJleHBpcmVzX2luIjoyODgwMCwianRpIjoiWk04SDJuZGpRV1JmOG9Ua2VCT2V5T0V6WDF3In0.nScIeOjXa-t2wjjj3e22jsROeYQokzuetZblf1ogVLLDD58zPHXL89FknNVbk-OhBIOwMIq_3JGgVBFPR98xpucvKigMdjVNo0ruBKgNr8sgLopEtsXGpXmFZWLb-T4QLYPtBju28CPxWTz0SXR2kSbMWkjvSNTvmzCE2Lhvn5H9NXvr0Qa5KAERKFrKJCZoD1VyuMYxwY8IWBn9M9Th_ReJ1k2IEuD3D9ZImOhfpbSFRzeIvhr0DSQ0REy2orFd1EkmLiGFm06lONM1VPlaMFD0YM485O61bGN76yK8SEiWQlpgXGGDzSXZhQFFFk8fEtT5Ss5CXLABBypFdMuzCw";
+        String serviceAuthToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjY3BheV9idWJibGUiLCJleHAiOjE2OTY0MjgxNTR9.32cGi19I2ssq5NqjbYkjne65jH0_j-fugKol0VNh_x7qB0BlrU4o5OPUvOYUW96HqHDcEYcUcNsNxhMM5BY6pg";
+        String authorisation = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiIxZXIwV1J3Z0lPVEFGb2pFNHJDL2ZiZUt1M0k9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJiYXJwcmVwcm9kQG1haWxpbmF0b3IuY29tIiwiY3RzIjoiT0FVVEgyX1NUQVRFTEVTU19HUkFOVCIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6ImUxYzlhMDAzLTNmN2ItNDFjNy04OTM3LWU4OTdmZTU5ZjRiNy0xMTU0NjUyIiwic3VibmFtZSI6ImJhcnByZXByb2RAbWFpbGluYXRvci5jb20iLCJpc3MiOiJodHRwczovL2Zvcmdlcm9jay1hbS5zZXJ2aWNlLmNvcmUtY29tcHV0ZS1pZGFtLWFhdDIuaW50ZXJuYWw6ODQ0My9vcGVuYW0vb2F1dGgyL3JlYWxtcy9yb290L3JlYWxtcy9obWN0cyIsInRva2VuTmFtZSI6ImFjY2Vzc190b2tlbiIsInRva2VuX3R5cGUiOiJCZWFyZXIiLCJhdXRoR3JhbnRJZCI6Im5qNTNaNjZSOFlSMnBiR0p4c3lqM3Zpcks3TSIsImF1ZCI6InBheWJ1YmJsZSIsIm5iZiI6MTY5NjQxMzc3MywiZ3JhbnRfdHlwZSI6InBhc3N3b3JkIiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsInJvbGVzIl0sImF1dGhfdGltZSI6MTY5NjQxMzc3MywicmVhbG0iOiIvaG1jdHMiLCJleHAiOjE2OTY0NDI1NzMsImlhdCI6MTY5NjQxMzc3MywiZXhwaXJlc19pbiI6Mjg4MDAsImp0aSI6Ik9iMm5SejlGR0d3dnYyY2pGUEF0Tk1TVUMyUSJ9.OErQN7-vomjcuonLAdmJzfGj-LDix-4y0yyrSLHLi0BYw2yXwUfDb6TnprUtLY08krYeZUspdqy-fiNzRDfVu1PF3BDuUOhvkWhRKdhYpj3XmAxVos0Nd5dupAQzOCsOVfpP_66zv5BLdJNQQvdOPnnWTH6o03XASb0wpgBNlmX94CIQuOmkH2m1rwxCxtil-n_NOdum4KcJ95rsnIpdZvycMLqvqN09QEeT30Hkg-h8fl0YaqgtXMZB6Ple93RDLMbvempum21TghjVBuFUTNWaAE1VjCvcrPtgmM7bjO0fwASGkrvK1HUd5PoElumhQGkxUdoemulkIqvjrv9ZYw";
 
         inputHeaders.put("content-type", Arrays.asList("application/json"));
         inputHeaders.put("authorization", Arrays.asList(authorisation));
