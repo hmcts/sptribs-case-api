@@ -657,7 +657,7 @@ rd-caseworker-ref-api:
 
 postgresql:
   enabled: true
-  flexibleserver: et-preview
+  flexibleserver: sptribs-preview
   setup:
     databases:
       - name: data-store
