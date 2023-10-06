@@ -77,7 +77,7 @@ class CaseworkerCreateHearingSummaryTest {
             .build();
         updatedCaseDetails.setData(caseData);
         when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
-        when(judicialService.getAllUsers()).thenReturn(null);
+        when(judicialService.getAllUsers(caseData)).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);

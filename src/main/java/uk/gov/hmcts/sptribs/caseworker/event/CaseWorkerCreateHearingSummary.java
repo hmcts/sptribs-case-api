@@ -90,7 +90,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
         caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
         caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

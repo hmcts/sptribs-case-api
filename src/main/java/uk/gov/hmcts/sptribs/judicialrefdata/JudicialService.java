@@ -2,23 +2,23 @@ package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.sptribs.caseworker.model.Judge;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
+import static java.util.Comparator.comparing;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
@@ -36,45 +36,53 @@ public class JudicialService {
 
     private static final String SERVICE_NAME = "ST_CIC";
 
-    public DynamicList getAllUsers() {
+    public DynamicList getAllUsers(CaseData caseData) {
         final var users = getUsers();
-        return populateUsersDynamicList(users);
+        final var judges = populateJudgesList(users);
+        caseData.getListing().getSummary().setJudgeList(judges);
+        return populateUsersDynamicList(judges);
     }
 
-    private UserProfileRefreshResponse[] getUsers() {
-        ResponseEntity<UserProfileRefreshResponse[]> regionResponseEntity = null;
+    private List<UserProfileRefreshResponse> getUsers() {
 
         try {
-            regionResponseEntity = judicialClient.getUserProfiles(
+            List<UserProfileRefreshResponse> list = judicialClient.getUserProfiles(
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 JudicialUsersRequest.builder()
                     .ccdServiceName(SERVICE_NAME)
                     .build());
+            if (CollectionUtils.isEmpty(list)) {
+                return new ArrayList<>();
+
+            }
+
+            return list;
         } catch (FeignException exception) {
             log.error("Unable to get user profile data from reference data with exception {}",
                 exception.getMessage());
         }
+        return new ArrayList<>();
 
-        return Optional.ofNullable(regionResponseEntity)
-            .map(response ->
-                Optional.ofNullable(response.getBody())
-                    .orElseGet(() -> null)
-            )
-            .orElseGet(() -> null);
     }
 
-
-    private DynamicList populateUsersDynamicList(UserProfileRefreshResponse... userProfiles) {
-        List<String> usersList = Objects.nonNull(userProfiles)
-            ? Arrays.asList(userProfiles).stream().map(v -> v.getFullName()).collect(Collectors.toList())
-            : new ArrayList<>();
-
-        List<DynamicListElement> usersDynamicList = usersList
-            .stream()
-            .sorted()
-            .map(user -> DynamicListElement.builder().label(user).code(UUID.randomUUID()).build())
+    private List<Judge> populateJudgesList(List<UserProfileRefreshResponse> userProfiles) {
+        return userProfiles.stream()
+            .map(userProfile -> Judge.builder()
+                .uuid(UUID.randomUUID())
+                .judgeFullName(userProfile.getFullName())
+                .personalCode(userProfile.getPersonalCode())
+                .build()
+            )
             .collect(Collectors.toList());
+    }
+
+    private DynamicList populateUsersDynamicList(List<Judge> judges) {
+        List<DynamicListElement> usersDynamicList =
+            judges.stream()
+                .sorted(comparing(Judge::getJudgeFullName))
+                .map(user -> DynamicListElement.builder().label(user.getJudgeFullName()).code(user.getUuid()).build())
+                .collect(Collectors.toList());
 
         return DynamicList
             .builder()
