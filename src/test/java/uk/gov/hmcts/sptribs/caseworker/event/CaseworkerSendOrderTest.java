@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -153,6 +154,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefix() {
         //Given
+        ReflectionTestUtils.setField(caseworkerSendOrder, "enableSNI4753", true);
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -217,6 +219,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefixIsNotPresent() {
         //Given
+        ReflectionTestUtils.setField(caseworkerSendOrder, "enableSNI4753", true);
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -530,7 +533,8 @@ class CaseworkerSendOrderTest {
     private DynamicList getDraftOrderList() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
-            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel())
+            //TODO: remove  + "--bb--cc" once testing complete for SNI-4753 & SNI-4754
+            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--bb--cc")
             .code(UUID.randomUUID())
             .build();
         return DynamicList

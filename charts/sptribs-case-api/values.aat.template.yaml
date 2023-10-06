@@ -1,6 +1,8 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+    ENABLED_SNI_4753: true
   keyVaults:
     sptribs:
       secrets:

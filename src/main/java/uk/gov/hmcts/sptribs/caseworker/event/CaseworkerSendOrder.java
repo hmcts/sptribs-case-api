@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -39,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
@@ -67,6 +69,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     @Autowired
     private NewOrderIssuedNotification newOrderIssuedNotification;
+
+    @Value("${toggle.enable_sni4753}")
+    private boolean enableSNI4753;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -116,12 +121,27 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
 
+            // TODO: remove selectedDraft, draftOrderFile and below else if once testing
+            //  for SNI-4753/SNI-4754 is complete
+            String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_HYPHEN);
             for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
 
-                if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                String[] draftOrderFile = draftOrderCICValue.getValue()
+                    .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
+
+                if (enableSNI4753
+                    && selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
+                ) {
                     selectedDraftOrder = draftOrderCICValue.getValue();
                     String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
                     selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
+                    order.setDraftOrder(selectedDraftOrder);
+                } else if (selectedDynamicDraft
+                    .contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
+                    && selectedDraft[1].equals(draftOrderFile[2])) {
+                    selectedDraftOrder = draftOrderCICValue.getValue();
+                    String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(COLON);
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName[1]);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }
