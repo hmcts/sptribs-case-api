@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.84
+version: 0.0.83
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
@@ -11,10 +11,10 @@ dependencies:
     version: 4.2.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: ~9.0.3
+    version: 8.0.29
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
-      - sptribs-ccd-stack
+      - ccd-idam-pr
   - name: xui-webapp
     version: ~1.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
@@ -32,7 +32,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: ccd-case-document-am-api
-    version: ~1.7.11
+    version: 1.7.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc

@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
-import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
@@ -123,21 +122,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList orderDynamicList;
-
-    @CCD(
-        label = "Postpone Reason",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "PostponeReason",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private PostponeReason postponeReason;
-
-    @CCD(
-        label = "Enter any other important information about this postponement",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = TextArea
-    )
-    private String postponeAdditionalInformation;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

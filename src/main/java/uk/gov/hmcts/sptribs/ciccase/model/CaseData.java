@@ -81,7 +81,7 @@ public class CaseData {
         label = "Launch the Flags screen",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseFlagsAccess.class}
     )
-    private FlagLauncher flagLauncherInternal;
+    private FlagLauncher flagLauncher;
 
     @CCD(
         label = "Case name Hmcts Internal",
@@ -89,19 +89,19 @@ public class CaseData {
     )
     private String caseNameHmctsInternal;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Case Flags")
     private Flags caseFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Subject")
     private Flags subjectFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Representative")
     private Flags representativeFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Applicant")
     private Flags applicantFlags;
 
