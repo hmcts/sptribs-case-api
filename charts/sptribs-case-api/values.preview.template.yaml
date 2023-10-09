@@ -608,7 +608,6 @@ am-org-role-mapping-service:
           - orm-IDAM-CLIENT-SECRET
           - orm-IDAM-ADMIN-SECRET
     environment:
-      CASE_WORKER_REF_APP_URL: https://rd-caseworker-ref-api-${SERVICE_FQDN}
       ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
       LAUNCH_DARKLY_ENV: pr
       AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
