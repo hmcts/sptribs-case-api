@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
@@ -67,20 +69,26 @@ public class JudicialService {
 
     }
 
-    private List<Judge> populateJudgesList(List<UserProfileRefreshResponse> userProfiles) {
+    private List<ListValue<Judge>> populateJudgesList(List<UserProfileRefreshResponse> userProfiles) {
+        AtomicInteger listValueIndex = new AtomicInteger(0);
         return userProfiles.stream()
-            .map(userProfile -> Judge.builder()
-                .uuid(UUID.randomUUID().toString())
-                .judgeFullName(userProfile.getFullName())
-                .personalCode(userProfile.getPersonalCode())
-                .build()
+            .map(userProfile -> ListValue.<Judge>builder()
+                    .id(String.valueOf(listValueIndex.incrementAndGet()))
+                    .value(Judge.builder()
+                            .uuid(UUID.randomUUID().toString())
+                            .judgeFullName(userProfile.getFullName())
+                            .personalCode(userProfile.getPersonalCode())
+                            .build()
+                    )
+                    .build()
             )
             .collect(Collectors.toList());
     }
 
-    private DynamicList populateUsersDynamicList(List<Judge> judges) {
+    private DynamicList populateUsersDynamicList(List<ListValue<Judge>> judges) {
         List<DynamicListElement> usersDynamicList =
             judges.stream()
+                .map(ListValue::getValue)
                 .sorted(comparing(Judge::getJudgeFullName))
                 .map(user -> DynamicListElement.builder().label(user.getJudgeFullName()).code(UUID.fromString(user.getUuid())).build())
                 .collect(Collectors.toList());
@@ -94,6 +102,7 @@ public class JudicialService {
     public String populateJudicialId(CaseData caseData) {
         UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
         Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
+            .map(ListValue::getValue)
             .filter(j -> selectedJudgeUuid.equals(UUID.fromString(j.getUuid())))
             .findFirst()
             .map(Judge::getPersonalCode);

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
@@ -100,15 +101,24 @@ class JudicialServiceTest {
                                     .build()
                             )
                             .judgeList(List.of(
-                                Judge.builder()
-                                    .uuid(UUID.randomUUID().toString())
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(UUID.randomUUID().toString())
+                                            .build())
                                     .build(),
-                                Judge.builder()
-                                    .uuid(selectedJudgeUuid.toString())
-                                    .personalCode("mr judges personal code")
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(selectedJudgeUuid.toString())
+                                            .personalCode("mr judges personal code")
+                                            .build())
                                     .build(),
-                                Judge.builder()
-                                    .uuid(UUID.randomUUID().toString())
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(UUID.randomUUID().toString())
+                                            .build())
                                     .build()
                             ))
                             .build()
@@ -140,9 +150,15 @@ class JudicialServiceTest {
                                     .build()
                             )
                             .judgeList(List.of(
-                                Judge.builder().uuid(UUID.randomUUID().toString()).build(),
-                                Judge.builder().uuid(UUID.randomUUID().toString()).build(),
-                                Judge.builder().uuid(UUID.randomUUID().toString()).build()
+                                ListValue.<Judge>builder()
+                                    .value(Judge.builder().uuid(UUID.randomUUID().toString()).build())
+                                    .build(),
+                                ListValue.<Judge>builder()
+                                    .value(Judge.builder().uuid(UUID.randomUUID().toString()).build())
+                                    .build(),
+                                ListValue.<Judge>builder()
+                                    .value(Judge.builder().uuid(UUID.randomUUID().toString()).build())
+                                    .build()
                             ))
                             .build()
                     )

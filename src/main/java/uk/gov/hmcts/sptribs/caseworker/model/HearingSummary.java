@@ -46,7 +46,7 @@ public class HearingSummary {
         typeParameterOverride = "Judge",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<Judge> judgeList;
+    private List<ListValue<Judge>> judgeList;
 
     @CCD(
         label = "panel member Name",
