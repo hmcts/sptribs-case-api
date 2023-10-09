@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -38,8 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -67,6 +69,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     @Autowired
     private NewOrderIssuedNotification newOrderIssuedNotification;
+
+    @Value("${toggle.enable_sni4753}")
+    private boolean enableSNI4753;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -115,20 +120,28 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
 
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
+
+            // TODO: remove selectedDraft, draftOrderFile and below else if once testing
+            //  for SNI-4753/SNI-4754 is complete
             String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_HYPHEN);
+            for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
 
-            for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
-
-                String[] draftOrderFile = draftOrderCICListValue.getValue()
+                String[] draftOrderFile = draftOrderCICValue.getValue()
                     .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
 
-                if (selectedDynamicDraft
-                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
-                    && selectedDraft[1].equals(draftOrderFile[2])
+                if (enableSNI4753
+                    && selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
                 ) {
-                    selectedDraftOrder = draftOrderCICListValue.getValue();
-                    String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(SEMICOLON);
-                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileName[1]);
+                    selectedDraftOrder = draftOrderCICValue.getValue();
+                    String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
+                    order.setDraftOrder(selectedDraftOrder);
+                } else if (selectedDynamicDraft
+                    .contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
+                    && selectedDraft[1].equals(draftOrderFile[2])) {
+                    selectedDraftOrder = draftOrderCICValue.getValue();
+                    String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(COLON);
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName[1]);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }
@@ -224,10 +237,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     }
 
     private void updateLastSelectedOrder(CicCase cicCase, Order order) {
-        if (null != order.getDraftOrder()) {
+        if (order.getDraftOrder() != null) {
             cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
-        } else if (null != order.getUploadedFile()
-            && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
             updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
