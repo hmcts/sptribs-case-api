@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +70,7 @@ public class JudicialService {
     private List<Judge> populateJudgesList(List<UserProfileRefreshResponse> userProfiles) {
         return userProfiles.stream()
             .map(userProfile -> Judge.builder()
-                .uuid(UUID.randomUUID())
+                .uuid(UUID.randomUUID().toString())
                 .judgeFullName(userProfile.getFullName())
                 .personalCode(userProfile.getPersonalCode())
                 .build()
@@ -81,12 +82,22 @@ public class JudicialService {
         List<DynamicListElement> usersDynamicList =
             judges.stream()
                 .sorted(comparing(Judge::getJudgeFullName))
-                .map(user -> DynamicListElement.builder().label(user.getJudgeFullName()).code(user.getUuid()).build())
+                .map(user -> DynamicListElement.builder().label(user.getJudgeFullName()).code(UUID.fromString(user.getUuid())).build())
                 .collect(Collectors.toList());
 
         return DynamicList
             .builder()
             .listItems(usersDynamicList)
             .build();
+    }
+
+    public String populateJudicialId(CaseData caseData) {
+        UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
+        Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
+            .filter(j -> selectedJudgeUuid.equals(UUID.fromString(j.getUuid())))
+            .findFirst()
+            .map(Judge::getPersonalCode);
+
+        return judgeJudicialId.orElse("");
     }
 }

@@ -20,7 +20,7 @@ public class Judge {
         label = "Judge UUID",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private UUID uuid;
+    private String uuid;
 
     @CCD(
         label = "Judge Full Name",

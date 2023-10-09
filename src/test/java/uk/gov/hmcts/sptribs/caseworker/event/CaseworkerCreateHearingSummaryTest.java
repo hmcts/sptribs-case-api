@@ -112,6 +112,7 @@ class CaseworkerCreateHearingSummaryTest {
         updatedCaseDetails.setData(caseData);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
+        when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -119,7 +120,12 @@ class CaseworkerCreateHearingSummaryTest {
 
         //Then
         assertThat(response).isNotNull();
-        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Complete));
+        assertThat(response.getData().getListing().getHearingStatus())
+            .isEqualTo(HearingState.Complete);
+        assertThat(response.getData().getListing().getSummary().getJudicialId())
+            .isEqualTo("personal_code");
+        assertThat(response.getData().getListing())
+            .isEqualTo(recordListing);
     }
 
     @Test
