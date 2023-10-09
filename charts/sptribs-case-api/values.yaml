@@ -1,5 +1,5 @@
 tags:
-  ccd-idam-pr: false
+  sptribs-ccd-stack: false
 
 ccd:
   postgres:
@@ -8,19 +8,14 @@ ccd:
     enabled: false
   xui:
     enabled: false
-
 xui-webapp:
   enabled: false
-
 xui-mo-webapp:
   enabled: false
-
 aac-manage-case-assignment:
   enabled: false
-
 idam-pr:
   enabled: false
-
 ccd-case-document-am-api:
   enabled: false
 wa:
@@ -36,6 +31,8 @@ em-stitching:
 am-org-role-mapping-service:
   enabled: false
 rd-caseworker-ref-api:
+  enabled: false
+postgresql:
   enabled: false
 
 java:
