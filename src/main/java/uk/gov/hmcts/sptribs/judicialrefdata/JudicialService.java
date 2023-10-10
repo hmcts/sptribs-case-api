@@ -57,16 +57,13 @@ public class JudicialService {
                     .build());
             if (CollectionUtils.isEmpty(list)) {
                 return new ArrayList<>();
-
             }
-
             return list;
         } catch (FeignException exception) {
             log.error("Unable to get user profile data from reference data with exception {}",
                 exception.getMessage());
         }
         return new ArrayList<>();
-
     }
 
     private List<ListValue<Judge>> populateJudgesList(List<UserProfileRefreshResponse> userProfiles) {

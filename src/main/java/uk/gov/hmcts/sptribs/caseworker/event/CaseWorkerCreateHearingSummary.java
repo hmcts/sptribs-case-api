@@ -42,13 +42,13 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCasewor
 @Component
 @Slf4j
 public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State, UserRole> {
+
     private static final CcdPageConfiguration createHearingSummary = new CreateHearingSummary();
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration hearingAttendees = new HearingAttendees();
     private static final CcdPageConfiguration hearingAttendeesRole = new HearingAttendeesRolePage();
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
-
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
 
     @Autowired
@@ -91,22 +91,20 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
-        System.out.println("judicialUsersDynamicList here -->" + judicialUsersDynamicList);
-        System.out.println("judge list here -->" + caseData.getListing().getSummary().getJudgeList());
-
         caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
         caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
+
         caseData.getListing().setHearingStatus(Complete);
         caseData.getListing().getSummary().setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
@@ -114,12 +112,10 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
         updateCategoryToCaseworkerDocument(caseData.getListing().getSummary().getRecFile());
 
-        System.out.println(caseData.getListing().getSummary().getJudicialId());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
             .build();
-
     }
 
     public SubmittedCallbackResponse summaryEdited(CaseDetails<CaseData, State> details,
@@ -130,5 +126,4 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 "This hearing summary has been added to the case record."))
             .build();
     }
-
 }
