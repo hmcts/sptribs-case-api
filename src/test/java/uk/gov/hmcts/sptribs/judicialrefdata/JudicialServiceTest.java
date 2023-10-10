@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -37,9 +39,6 @@ class JudicialServiceTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private List<UserProfileRefreshResponse> responseEntity;
-
-    @Mock
     private HttpServletRequest httpServletRequest;
 
     @Mock
@@ -48,9 +47,17 @@ class JudicialServiceTest {
     @Test
     void shouldPopulateUserDynamicList() {
         //Given
-        var userResponse = UserProfileRefreshResponse
+        var userResponse1 = UserProfileRefreshResponse
             .builder()
+            .fullName("John Smith")
+            .personalCode("12345")
             .build();
+        var userResponse2 = UserProfileRefreshResponse
+            .builder()
+            .fullName("John Doe")
+            .personalCode("98765")
+            .build();
+        List<UserProfileRefreshResponse> responseEntity = List.of(userResponse1, userResponse2);
         var caseData = CaseData.builder().build();
 
         //When
@@ -63,6 +70,25 @@ class JudicialServiceTest {
 
         //Then
         assertThat(userList).isNotNull();
+        assertThat(caseData.getListing().getSummary().getJudgeList()).isNotNull();
+        assertThat(caseData.getListing().getSummary().getJudgeList()).hasSize(2);
+    }
+
+    @Test
+    void shouldReturnEmptyDynamicListWhenListFromJudicialRefDataCallIsNull() {
+        //Given
+        var caseData = CaseData.builder().build();
+
+        //When
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
+            new JudicialUsersRequest("ST_CIC")))
+            .thenReturn(null);
+        DynamicList regionList = judicialService.getAllUsers(caseData);
+
+        //Then
+        assertThat(regionList.getListItems()).isEmpty();
     }
 
     @Test
@@ -73,9 +99,12 @@ class JudicialServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
-            new JudicialUsersRequest("ST_CIC")))
-            .thenReturn(null);
+        doThrow(FeignException.class)
+            .when(judicialClient).getUserProfiles(
+                TEST_SERVICE_AUTH_TOKEN,
+                TEST_AUTHORIZATION_TOKEN,
+                new JudicialUsersRequest("ST_CIC")
+            );
         DynamicList regionList = judicialService.getAllUsers(caseData);
 
         //Then
