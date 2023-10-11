@@ -350,9 +350,10 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:pr-3206
     ingressHost: xui-${SERVICE_FQDN}
-    devcpuRequests: 250m
-    devmemoryRequests: 1024Mi
-    devmemoryLimits: 1024Mi
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
@@ -373,7 +374,7 @@ xui-webapp:
       HEALTH_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
-      SERVICES_CASE_CASEWORKER_API: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
+      SERVICES_CASE_CASEWORKER_API: https://rd-caseworker-ref-api-${SERVICE_FQDN}
 xui-mo-webapp:
   enabled: true
   nodejs:
@@ -425,6 +426,23 @@ aac-manage-case-assignment:
       ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
     autoscaling:
       enabled: false
+    keyVaults:
+      aac:
+        secrets:
+          - name: aac-manage-case-s2s-secret
+            alias: MANAGE_CASE_S2S_KEY
+          - name: idam-mca-client-secret
+            alias: IDAM_CLIENT_SECRET
+          - name: idam-mca-system-user-username
+            alias: IDAM_CAA_USERNAME
+          - name: idam-mca-system-user-password
+            alias: IDAM_CAA_PASSWORD
+          - name: idam-noc-approver-username
+            alias: IDAM_NOC_APPROVER_USERNAME
+          - name: idam-noc-approver-password
+            alias: IDAM_NOC_APPROVER_PASSWORD
+          - name: notify-mca-api-key-secret
+            alias: NOTIFY_MCA_API_KEY
 
 idam-pr:
   enabled: true
@@ -608,6 +626,7 @@ am-org-role-mapping-service:
           - orm-IDAM-CLIENT-SECRET
           - orm-IDAM-ADMIN-SECRET
     environment:
+      CASE_WORKER_REF_APP_URL: https://rd-caseworker-ref-api-${SERVICE_FQDN}
       ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
       LAUNCH_DARKLY_ENV: pr
       AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
