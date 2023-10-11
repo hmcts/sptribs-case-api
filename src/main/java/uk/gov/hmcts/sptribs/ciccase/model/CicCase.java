@@ -46,7 +46,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -58,7 +57,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Status status;
-
 
     @CCD(
         label = "Preview order",
@@ -90,14 +88,12 @@ public class CicCase {
     )
     private DynamicList hearingSummaryList;
 
-
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "ContactPartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<ContactPartiesCIC> contactPartiesCIC;
-
 
     @CCD(
         label = "How would you like to issue an order?"
@@ -110,7 +106,6 @@ public class CicCase {
     )
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
-
     @CCD(
         label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -120,7 +115,6 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
     private Document lastSelectedOrder;
 
     @CCD(
@@ -296,7 +290,6 @@ public class CicCase {
     )
     private String reinstateAdditionalDetail;
 
-
     @CCD(
         label = "Respondent name ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -360,7 +353,6 @@ public class CicCase {
     )
     private String email;
 
-
     @CCD(
         label = "Subject's date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -368,13 +360,11 @@ public class CicCase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
-
     @CCD(
         label = "What is subject's contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactPreferenceType;
-
 
     @CCD(
         label = "Scheme",
@@ -518,7 +508,6 @@ public class CicCase {
     )
     private String caseNumber;
 
-
     @CCD(
         label = "Is there a representative?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -540,7 +529,6 @@ public class CicCase {
     )
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
 
-
     @CCD(
         label = "Decision Documents",
         access = {CaseworkerAndSuperUserAccess.class}
@@ -557,7 +545,6 @@ public class CicCase {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
-
 
     private YesOrNo selectedCheckBox;
 
@@ -576,7 +563,6 @@ public class CicCase {
     )
     private String days;
 
-
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -593,7 +579,6 @@ public class CicCase {
     )
     @JsonIgnore
     private NotificationResponse repNotificationResponse;
-
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
