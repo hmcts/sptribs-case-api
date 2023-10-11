@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_NOT_SELECTED_MESSAGE;
 
 public final class DocumentUtil {
 
@@ -45,11 +46,14 @@ public final class DocumentUtil {
 
     public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocument>> documentList) {
         final List<String> errors = new ArrayList<>();
+        System.out.println(documentList); // is null when should be []
         if (documentList != null) {
             documentList.stream()
                 .filter(value -> !value.getValue().isDocumentValid())
                 .findFirst()
                 .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
+        } else {
+            errors.add(DOCUMENT_NOT_SELECTED_MESSAGE);
         }
 
         return errors;

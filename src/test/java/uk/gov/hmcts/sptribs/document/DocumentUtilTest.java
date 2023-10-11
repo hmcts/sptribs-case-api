@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
+import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_NOT_SELECTED_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
@@ -73,6 +74,16 @@ class DocumentUtilTest {
 
         //Then
         assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldValidateCaseworkerCICDocumentFormatInvalidWithDocumentListNull() {
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = null;
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).contains(DOCUMENT_NOT_SELECTED_MESSAGE);
     }
 
     @Test
