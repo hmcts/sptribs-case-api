@@ -90,7 +90,6 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
-
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -284,7 +283,6 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithPost() {
         //Given
-
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -324,6 +322,7 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -341,11 +340,11 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithOnlyPost() {
         //Given
-
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
             .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .build();
@@ -397,7 +396,6 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderMultiple() {
         //Given
-
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -505,7 +503,6 @@ class CaseworkerSendOrderTest {
         caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
 
         // Then
-
         assertThat(caseDetails.getData().getCicCase().getDraftOrderDynamicList().getListItems()
             .contains(OrderTemplate.CIC6_GENERAL_DIRECTIONS));
     }
@@ -528,6 +525,7 @@ class CaseworkerSendOrderTest {
             .confirmationHeader(format("# Order sent %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
             .build();
+
         // Then
         assertThat(s.getConfirmationHeader().contains("# Order sent %n## %s"));
     }

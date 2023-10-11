@@ -135,6 +135,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             rearrangeLists(caseData, selectedDynamicDraft, selectedDraftOrder);
         }
         nullifyRelatedObjects(caseData);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -264,5 +265,4 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         //Once Notification is sent, nullify the last selected order
         //cicCase.setLastSelectedOrder(null);
     }
-
 }
