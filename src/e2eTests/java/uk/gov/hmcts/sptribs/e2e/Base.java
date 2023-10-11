@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference;
 
 import static java.lang.System.getenv;
 
@@ -41,7 +42,7 @@ public abstract class Base {
         playwright = Playwright.create();
 
         var launchOptions = getenv("CI").equalsIgnoreCase("true")
-            ? new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(100)
+            ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(100)
             : new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(100);
 
         var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
@@ -80,5 +81,15 @@ public abstract class Base {
         if (context != null) {
             context.close();
         }
+    }
+
+    protected Case createAndBuildCase(Page page, CasePartyContactPreference... parties) {
+        Login login = new Login(page);
+        login.loginAsCaseWorker();
+
+        Case newCase = new Case(page);
+        newCase.createCase(parties);
+        newCase.buildCase();
+        return newCase;
     }
 }
