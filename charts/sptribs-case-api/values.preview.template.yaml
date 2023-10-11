@@ -598,7 +598,7 @@ ccd-message-publisher:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:pr-1583'
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:pr-1597'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     devmemoryRequests: 1024Mi
