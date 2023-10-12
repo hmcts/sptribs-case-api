@@ -53,6 +53,89 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
 
+
+    @CCD(
+        label = "Enter any other important information about this cancellation",
+        typeOverride = TextArea
+    )
+    private String cancelHearingAdditionalDetail;
+
+    @CCD(
+        label = "Why was the hearing cancelled?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingCancellationReason"
+    )
+    private HearingCancellationReason hearingCancellationReason;
+
+    @CCD(
+        label = "Enter case number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseLink linkCaseNumber;
+
+    @CCD(
+        label = "Why should these cases be linked?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private LinkCaseReason linkCaseReason;
+
+    @CCD(
+        label = "Other Description",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String linkCaseOtherDescription;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "CaseLinks")
+    private List<ListValue<CaseLinks>> caseLinks;
+
+    @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ComponentLauncher linkedCasesComponentLauncher;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> appellantFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> caseFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> respondentFlags;
+
+    @JsonUnwrapped(prefix = "flagLauncher")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ComponentLauncher flagLauncher;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagType flagType;
+
+    @CCD(
+        label = "Explain why you are creating this flag.\n"
+            + "Do not include any sensitive information such as personal details.",
+        regex = "^.{0,200}$",
+        hint = "You can enter up to 200 characters",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String flagAdditionalDetail;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Enter a flag type"
+    )
+    private String flagOtherDescription;
+
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )

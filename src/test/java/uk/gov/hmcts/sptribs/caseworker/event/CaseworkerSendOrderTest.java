@@ -90,7 +90,6 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
-
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -282,14 +281,142 @@ class CaseworkerSendOrderTest {
     }
 
     @Test
-    void shouldSuccessfullySendOrderWithPost() {
+    void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefix() {
         //Given
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final ListValue<DateModel> dates = new ListValue<>();
+        dates.setValue(dateModel);
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename(DRAFT + COLON + "aa--bb--cc").build())
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .build();
+        final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
+        draftOrderCICListValue.setValue(draftOrderCIC);
+        draftOrderCICListValue.setId("0");
 
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+
+        final CicCase cicCase = CicCase.builder()
+            .draftOrderDynamicList(getDraftOrderList())
+            .draftOrderCICList(List.of(draftOrderCICListValue))
+            .fullName(TEST_FIRST_NAME)
+            .email(TEST_SUBJECT_EMAIL)
+            .contactPreferenceType(ContactPreferenceType.EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderFile(List.of(documentListValue))
+            .orderDueDates(List.of(dates))
+            .orderReminderYesOrNo(YesNo.YES)
+            .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+
+        //Then
+        Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
+        assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
+            .isNotNull();
+        assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
+            .isEqualTo(SENT + COLON + "aa--bb--cc");
+    }
+
+    @Test
+    void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefixIsNotPresent() {
+        //Given
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .build();
+        final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
+        draftOrderCICListValue.setValue(draftOrderCIC);
+        draftOrderCICListValue.setId("0");
+
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+
+        final CicCase cicCase = CicCase.builder()
+            .draftOrderDynamicList(getDraftOrderList())
+            .draftOrderCICList(List.of(draftOrderCICListValue))
+            .fullName(TEST_FIRST_NAME)
+            .email(TEST_SUBJECT_EMAIL)
+            .contactPreferenceType(ContactPreferenceType.EMAIL)
+            .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .orderFile(List.of(documentListValue))
+            .orderDueDates(List.of(dates))
+            .orderReminderYesOrNo(YesNo.YES)
+            .orderReminderDays(ReminderDays.DAY_COUNT_1)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+
+        //Then
+        Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
+        assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
+            .isNotNull();
+        assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
+            .isEqualTo(SENT + COLON + "aa--bb--cc");
+    }
+
+    @Test
+    void shouldSuccessfullySendOrderWithPost() {
+        //Given
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final ListValue<DateModel> dates = new ListValue<>();
+        dates.setValue(dateModel);
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
+
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
             .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
@@ -324,6 +451,7 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -341,11 +469,11 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithOnlyPost() {
         //Given
-
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
             .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .build();
@@ -397,7 +525,6 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderMultiple() {
         //Given
-
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
@@ -505,7 +632,6 @@ class CaseworkerSendOrderTest {
         caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
 
         // Then
-
         assertThat(caseDetails.getData().getCicCase().getDraftOrderDynamicList().getListItems()
             .contains(OrderTemplate.CIC6_GENERAL_DIRECTIONS));
     }
@@ -528,6 +654,7 @@ class CaseworkerSendOrderTest {
             .confirmationHeader(format("# Order sent %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
             .build();
+
         // Then
         assertThat(s.getConfirmationHeader().contains("# Order sent %n## %s"));
     }

@@ -168,6 +168,7 @@ public class CaseData {
     )
     private State caseStatus;
 
+
     @CCD(
         label = "CCD Case Reference",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -436,6 +437,7 @@ public class CaseData {
     )
     private YesOrNo hasDssNotificationSent;
 
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
 
@@ -497,6 +499,7 @@ public class CaseData {
         }
         return "";
     }
+
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
