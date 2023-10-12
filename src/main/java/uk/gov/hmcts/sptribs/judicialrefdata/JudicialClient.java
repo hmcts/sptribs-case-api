@@ -25,6 +25,7 @@ public interface JudicialClient {
     List<UserProfileRefreshResponse> getUserProfiles(
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @RequestHeader(AUTHORIZATION) final String authorisation,
+        @RequestHeader(ACCEPT) final String accept,
         @RequestBody JudicialUsersRequest judicialUsersRequest
     );
 
