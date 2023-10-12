@@ -20,7 +20,7 @@ public class CitizenAccessTest {
         final SetMultimap<HasRole, Permission> grants = new CitizenAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(3)
+            .hasSize(6)
             .contains(
                 entry(CITIZEN_CIC, C),
                 entry(CITIZEN_CIC, R),
