@@ -13,9 +13,9 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 
-public class PostponeHaringNotifyParties implements CcdPageConfiguration {
+public class PostponeHearingNotifyParties implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "cicCasePostponeReason=\"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "postponeReason=\"ALWAYS_HIDE\"";
     private static final String RECIPIENT_LABEL = "Postpone information recipient";
 
     @Override

@@ -148,4 +148,7 @@
     <notes>netty:4.1.91</notes>
     <cve>CVE-2023-34462</cve>
   </suppress>
+  <suppress>
+      <cve>CVE-2023-4586</cve>
+  </suppress>
 </suppressions>

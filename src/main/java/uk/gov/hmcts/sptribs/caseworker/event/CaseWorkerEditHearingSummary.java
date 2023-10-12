@@ -62,6 +62,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
                 .event(CASEWORKER_EDIT_HEARING_SUMMARY)
                 .forStates(AwaitingOutcome)
                 .name("Hearings: Edit summary")
+                .publishToCamunda()
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)

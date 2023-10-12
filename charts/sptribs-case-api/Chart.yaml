@@ -3,15 +3,15 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.82
+version: 0.0.84
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
   - name: java
-    version: 4.1.1
+    version: 5.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: ~8.0.29
+    version: 8.0.29
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
       - ccd-idam-pr
@@ -32,7 +32,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
   - name: ccd-case-document-am-api
-    version: ~1.7.11
+    version: 1.7.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
@@ -44,7 +44,7 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
   - name: wa
-    version: ~0.1.5
+    version: ~1.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
@@ -63,3 +63,7 @@ dependencies:
     version: ~1.0.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: rd-caseworker-ref-api.enabled
+  - name: postgresql
+    version: 1.0.0
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: postgresql.enabled
