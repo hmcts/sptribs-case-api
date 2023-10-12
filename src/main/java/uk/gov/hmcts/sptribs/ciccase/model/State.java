@@ -12,6 +12,24 @@ import java.util.EnumSet;
 @RequiredArgsConstructor
 @Getter
 public enum State {
+    @CCD(
+        label = "Application created",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccess.class}
+    )
+    Created("Created"),
+    @CCD(
+        label = "Application issued",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccess.class}
+    )
+    Issued("Issued"),
+    @CCD(
+        label = "Application settled",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccess.class}
+    )
+    Settled("Settled"),
 
     @CCD(
         label = "Application rejected",

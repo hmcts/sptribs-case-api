@@ -89,8 +89,12 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseflags-admin",
             "caseflags-viewer",
             "citizen",
-            "caseworker-wa-task-configuration"
-        );
+            "caseworker-wa-task-configuration",
+            "hmcts-judiciary",
+            "hmcts-lagaloperations",
+            "hmcts-ctsc"
+
+            );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
             .getInputStream(), Charset.defaultCharset());
