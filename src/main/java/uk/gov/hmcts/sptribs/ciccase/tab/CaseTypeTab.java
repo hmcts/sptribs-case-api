@@ -71,14 +71,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
+            .field(CaseData::getCaseNameHmctsInternal, null, null)
             .field(CaseData::getCaseLinks, "linkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
     }
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")
-            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getFlagLauncherInternal, null, "#ARGUMENT(READ)")
+            .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
             .field(CaseData::getCaseFlags, ALWAYS_HIDE)
             .field(CaseData::getSubjectFlags, ALWAYS_HIDE)
             .field(CaseData::getApplicantFlags, ALWAYS_HIDE)

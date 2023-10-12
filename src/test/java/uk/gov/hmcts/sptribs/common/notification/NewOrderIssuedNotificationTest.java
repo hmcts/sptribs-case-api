@@ -259,6 +259,98 @@ public class NewOrderIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
+    @Test
+    void shouldNotifyApplicantWithEmail() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
+        newOrderIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyApplicantWithEmailWithNoUploadedDocument() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
+        newOrderIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyApplicantWithEmailThrowsException() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
+        newOrderIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyApplicantWithPost() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
+        data.getCicCase().setAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+        data.getCicCase().setOrderList(List.of());
+
+        //When
+        when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        newOrderIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
+    }
+
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")

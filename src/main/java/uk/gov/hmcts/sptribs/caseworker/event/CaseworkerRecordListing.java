@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
@@ -46,6 +47,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRole> {
+
+    private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
 
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
@@ -96,6 +99,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
+        log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
         caseData.setListing(new Listing());
         DynamicList regionList = locationService.getAllRegions();
         caseData.getListing().setRegionList(regionList);
@@ -105,9 +109,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             : null;
         caseData.getListing().setRegionsMessage(regionMessage);
         caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
+
+        log.info("AboutToStart output event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)
             .build();
     }
 
@@ -152,6 +157,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             }
             if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
                 listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+            if (notificationPartiesSet.contains(NotificationParties.APPLICANT)) {
+                listingCreatedNotification.sendToApplicant(details.getData(), caseNumber);
             }
         } catch (Exception notificationException) {
             log.error("Create listing notification failed with exception : {}", notificationException.getMessage());
@@ -208,6 +216,22 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     of anyone who should be excluded from attending this hearing.
                     """)
             .optional(Listing::getImportantInfoDetails)
+            .readonly(Listing::getPostponeReason, ALWAYS_HIDE)
+            .readonly(Listing::getPostponeAdditionalInformation, ALWAYS_HIDE)
+            .readonly(Listing::getHearingCancellationReason, ALWAYS_HIDE)
+            .readonly(Listing::getCancelHearingAdditionalDetail, ALWAYS_HIDE)
+            .complex(Listing::getSummary)
+            .readonly(HearingSummary::getJudge, ALWAYS_HIDE)
+            .readonly(HearingSummary::getIsFullPanel, ALWAYS_HIDE)
+            .readonly(HearingSummary::getMemberList, ALWAYS_HIDE)
+            .readonly(HearingSummary::getOutcome, ALWAYS_HIDE)
+            .readonly(HearingSummary::getAdjournmentReasons, ALWAYS_HIDE)
+            .readonly(HearingSummary::getOthers, ALWAYS_HIDE)
+            .readonly(HearingSummary::getOtherDetailsOfAdjournment, ALWAYS_HIDE)
+            .readonly(HearingSummary::getRecFile, ALWAYS_HIDE)
+            .readonly(HearingSummary::getRecDesc, ALWAYS_HIDE)
+            .readonly(HearingSummary::getRoles, ALWAYS_HIDE)
+            .readonly(HearingSummary::getSubjectName, ALWAYS_HIDE)
             .done();
     }
 

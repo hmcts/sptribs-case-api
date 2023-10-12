@@ -7,7 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.config.CaseFlagsConfiguration;
+import uk.gov.hmcts.sptribs.idam.IdamService;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -27,10 +31,19 @@ public class CcdSupplementaryDataServiceTest {
     private CaseFlagsConfiguration caseFlagsConfiguration;
 
     @Mock
-    private AuthorisationService authorisationService;
+    private  AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private  AuthTokenGenerator authTokenGenerator;
+    private IdamService idamService;
+
+    @Mock
+    private User user;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private AuthorisationService authorisationService;
 
     @Test
     void shouldSubmitSupplementaryDataToCcd() {
@@ -47,6 +60,8 @@ public class CcdSupplementaryDataServiceTest {
     void shouldSubmitSupplementaryUpdateDataToCcd() {
         //Given
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveUser(any())).thenReturn(user);
+        when(user.getAuthToken()).thenReturn("token");
         //When
         coreCaseApiService.submitSupplementaryDataRequestToCcd(TEST_CASE_ID.toString());
 

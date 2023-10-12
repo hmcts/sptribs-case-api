@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -39,6 +37,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String ALWAYS_HIDE = "linkedCasesComponentLauncher = \"DONOTSHOW\"";
+
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
@@ -52,9 +52,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 .event(CASEWORKER_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
                 .name("Link cases")
-                .showSummary()
                 .description("To link related cases")
-                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, CASEWORKER_ADMIN_PROFILE,
@@ -67,25 +65,13 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
                     ST_CIC_JUDGE))
-                .page("caseworkerCaseLinkInitial")
+                .page("createCaseLink")
                 .pageLabel("Case Link")
-                .mandatory(CaseData::getCaseLinks)
-                .mandatory(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(CREATE)");
+                .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
+                .optional(CaseData::getLinkedCasesComponentLauncher,
+                    null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
+
         }
-    }
-
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker link the case callback invoked for Case Id: {}", details.getId());
-
-        var data = details.getData();
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .state(details.getState())
-            .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
@@ -93,31 +79,21 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         var data = details.getData();
         String claimNumber = data.getHyphenatedCaseRef();
         try {
-            sendCaseStayedNotification(claimNumber, data);
+            linkedCaseNotification(claimNumber, data);
         } catch (Exception notificationException) {
             log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case Link notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Case Link created %n"))
                 .build();
         }
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(MessageUtil.generateSimpleMessage(
-                "Link added to case", ""))
+            .confirmationHeader(format("# Case Link created %n"))
+
             .build();
     }
 
-    private void addWarning(PageBuilder pageBuilder) {
-        pageBuilder.page("beforeYouStart")
-            .pageLabel("Before you start")
-            .label("beforeYouStartLabel",
-                """
-                    If a group of linked cases has a lead case, you must start from the lead case.
 
-                    If the cases to be linked has no lead, you can start the linking journey from any of those cases
-                    """);
-    }
-
-    private void sendCaseStayedNotification(String caseNumber, CaseData data) {
+    private void linkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
         if (!cicCase.getSubjectCIC().isEmpty()) {

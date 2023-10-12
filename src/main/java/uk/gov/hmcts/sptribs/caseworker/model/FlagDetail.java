@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,13 +13,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FlagDetail {
 
     @JsonProperty("name")
     private String name;
 
     @JsonProperty("hearingRelevant")
-    private boolean hearingRelevant;
+    private YesNo hearingRelevant;
 
     @JsonProperty("flagComment")
     private boolean flagComment;
@@ -26,8 +28,8 @@ public class FlagDetail {
     @JsonProperty("defaultStatus")
     private String defaultStatus;
 
-    @JsonProperty("externallyAvailable")
-    private boolean externallyAvailable;
+    @JsonProperty("availableExternally")
+    private YesNo availableExternally;
 
     @JsonProperty("flagCode")
     private String flagCode;
@@ -44,6 +46,12 @@ public class FlagDetail {
 
     @JsonProperty("name_cy")
     private String nameCy;
+
+    @JsonProperty("subTypeKey")
+    private String subTypeKey;
+
+    @JsonProperty("subTypeValue")
+    private String subTypeValue;
 
     @JsonProperty("isParent")
     private boolean isParent;

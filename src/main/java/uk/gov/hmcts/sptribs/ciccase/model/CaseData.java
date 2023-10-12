@@ -34,6 +34,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -78,23 +79,29 @@ public class CaseData {
 
     @CCD(
         label = "Launch the Flags screen",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseFlagsAccess.class}
+    )
+    private FlagLauncher flagLauncher;
+
+    @CCD(
+        label = "Case name Hmcts Internal",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private FlagLauncher flagLauncherInternal;
+    private String caseNameHmctsInternal;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Case Flags")
     private Flags caseFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Subject")
     private Flags subjectFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Representative")
     private Flags representativeFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Flags for Applicant")
     private Flags applicantFlags;
 
@@ -166,7 +173,7 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<CaseworkerCICDocument> caseDocuments;
+    private List<ListValue<CaseworkerCICDocument>> caseDocuments;
 
     @CCD(
         label = "Hearing Date",
@@ -211,12 +218,12 @@ public class CaseData {
     @Builder.Default
     private Listing listing = new Listing();
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "nh")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private Listing nextListedHearing = new Listing();
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "lh")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private Listing latestCompletedHearing = new Listing();

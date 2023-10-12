@@ -303,6 +303,60 @@ public class CaseFinalDecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
+    @Test
+    void shouldNotifyApplicantWithEmail() {
+        //Given
+        LocalDate expDate = LocalDate.now();
+        final CaseData data = getMockCaseData(expDate);
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
+
+        final UUID uuid = UUID.randomUUID();
+        final Document guidanceDocument = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+
+        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
+            .finalDecisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
+            .document(document)
+            .finalDecisionGuidance(guidanceDocument).build();
+        data.setCaseIssueFinalDecision(caseIssueFinalDecision);
+
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
+        finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyApplicantWithPost() {
+        //Given
+        LocalDate expDate = LocalDate.now();
+        final CaseData data = getMockCaseData(expDate);
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
+        data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
+        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
+
+        //When
+        when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
+    }
+
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
