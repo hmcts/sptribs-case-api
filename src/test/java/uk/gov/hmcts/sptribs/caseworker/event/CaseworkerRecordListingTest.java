@@ -173,6 +173,46 @@ class CaseworkerRecordListingTest {
 
     }
 
+
+
+    @Test
+    void shouldReturnErrorsIfAllNotificationPartiesSelected() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        Listing recordListing = getRecordListing();
+        caseData.setListing(recordListing);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(recordListing);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response
+            = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData().getCicCase().getHearingNotificationParties()).hasSize(4);
+        assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
+        assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
+    }
+
+    private CicCase getMockCicCase() {
+        return CicCase.builder().fullName("fullName").notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .representativeFullName("repFullName").notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .respondentName("respName").notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+    }
+
+
+
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
