@@ -181,6 +181,12 @@ public class CaseData {
     private String subjectRepFullName;
 
     @CCD(
+        label = "Scheme Label",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String schemeLabel;
+
+    @CCD(
         label = "Bundle Configuration",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
