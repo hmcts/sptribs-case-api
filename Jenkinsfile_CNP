@@ -191,10 +191,6 @@ withPipeline(type, product, component) {
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
 
-      def githubApi = new GithubAPI(this)
-      if (!githubApi.getLabelsbyPattern(env.BRANCH_NAME, "keep-helm")) {
-        enableCleanupOfHelmReleaseOnSuccess()
-      }
     }
 
     onMaster {
@@ -314,7 +310,7 @@ def setFeatureFlags(environment) {
     env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = true
   } else if (environment =~ /aat/) {
-    env.CONTACT_PARTIES_FEATURE = false
+    env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
@@ -322,7 +318,7 @@ def setFeatureFlags(environment) {
     env.BUNDLING_FEATURE = false
     env.SECURITY_CLASSIFICATION = false
   } else if (environment =~ /prod/) {
-    env.CONTACT_PARTIES_FEATURE = false
+    env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true

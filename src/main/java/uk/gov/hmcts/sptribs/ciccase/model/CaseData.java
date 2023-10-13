@@ -12,7 +12,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
@@ -36,9 +35,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
-import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -59,18 +56,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags caseFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags subjectFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags representativeFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags applicantFlags;
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default
@@ -135,11 +120,6 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<MultiBundleConfig> multiBundleConfiguration;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
     @JsonIgnore
     private List<CaseworkerCICDocument> caseDocuments;
 
@@ -180,6 +160,7 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
+
 
     @JsonUnwrapped
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
