@@ -167,9 +167,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                 .confirmationHeader(format("# Create listing notification failed %n## Please resend the notification"))
                 .build();
         }
-
-        data.getListing().setHearingStatus(Listed);
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record created %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
