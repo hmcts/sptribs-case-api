@@ -7,22 +7,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,46 +45,8 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setEmail("testrepr@outlook.com");
 
         final UUID uuid = UUID.randomUUID();
-        CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
-        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
-        cicDocumentListValue.setValue(document);
-        Order order = Order.builder().isLastSelectedOrder(YesOrNo.YES).uploadedFile(List.of(cicDocumentListValue)).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        data.getCicCase().setOrderList(List.of(orderListValue));
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        newOrderIssuedNotification.sendToSubject(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
-    void shouldNotifySubjectWithEmailWithUploadedTemplateDocument() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
-
-        final UUID uuid = UUID.randomUUID();
-        Document document = Document.builder()
-            .filename("test.pdf")
-            .binaryUrl("http://url/")
-            .url("http://url/")
-            .build();
-        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-            .templateGeneratedDocument(document)
-            .build();
-        Order order = Order.builder().draftOrder(draftOrderCIC).isLastSelectedOrder(YesOrNo.YES).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        data.getCicCase().setOrderList(List.of(orderListValue));
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -109,7 +65,10 @@ public class NewOrderIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
-        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -129,7 +88,10 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
-        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -167,7 +129,10 @@ public class NewOrderIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
-        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -186,7 +151,10 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
-        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -206,7 +174,10 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
-        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -227,7 +198,10 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
-        data.getCicCase().setOrderList(List.of());
+
+        final UUID uuid = UUID.randomUUID();
+        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        data.getCicCase().setLastSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
