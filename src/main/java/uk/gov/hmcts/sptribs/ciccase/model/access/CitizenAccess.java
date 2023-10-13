@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DSS_SYSTEM_UPDATE;
 
 public class CitizenAccess implements HasAccessControl {
 
@@ -15,7 +14,6 @@ public class CitizenAccess implements HasAccessControl {
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
         grants.putAll(CITIZEN_CIC, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(DSS_SYSTEM_UPDATE, Permissions.CREATE_READ_UPDATE);
         return grants;
     }
 }
