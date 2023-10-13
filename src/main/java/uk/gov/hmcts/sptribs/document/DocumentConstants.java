@@ -10,9 +10,9 @@ public final class DocumentConstants {
     public static final String SPTRIBS_DRAFT_APPLICATION_DOCUMENT_NAME = "draft-sptribs-application-";
 
     public static final String DOCUMENT_ID = "documentId";
+    public static final String DOCUMENT_NOT_SELECTED_MESSAGE = "A document was not selected for upload. " +
+        "Please select a document to upload or press the 'Remove' button";
     public static final String DOCUMENT_VALIDATION_MESSAGE = "Please upload valid document";
-
-    public static final String DOCUMENT_NOT_SELECTED_MESSAGE = "A document was not selected for upload. Please select a document to upload or press the 'Remove' button";
 
     private DocumentConstants() {
     }
