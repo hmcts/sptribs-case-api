@@ -238,44 +238,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-
-    private void updateCicCaseOrderList(CaseData caseData, Order order) {
-        if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
-            List<ListValue<Order>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<Order>builder()
-                .id("1")
-                .value(order)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.getCicCase().setOrderList(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<Order>builder()
-                .value(order)
-                .build();
-
-            caseData.getCicCase().getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
-
-            caseData.getCicCase().getOrderList().forEach(
-                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-    }
-
-    private void updateLastSelectedOrder(CicCase cicCase, Order order) {
-        if (order.getDraftOrder() != null) {
-            cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
-        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
-        }
-    }
-
-
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             newOrderIssuedNotification.sendToSubject(caseData, caseNumber);

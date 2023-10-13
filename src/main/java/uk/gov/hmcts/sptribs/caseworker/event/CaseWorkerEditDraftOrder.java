@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static java.util.Locale.ENGLISH;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
