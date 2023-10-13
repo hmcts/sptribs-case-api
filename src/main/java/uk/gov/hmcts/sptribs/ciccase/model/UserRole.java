@@ -34,8 +34,7 @@ public enum UserRole implements HasRole {
     CASEWORKER_ADMIN_PROFILE("hmcts-admin", "CRU"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
-    CITIZEN_CIC("citizen", "CRU"),
-    DSS_SYSTEM_UPDATE("caseworker-update-dss-application", "CRU");
+    CITIZEN_CIC("citizen", "CRU");
 
     @JsonValue
     private final String role;
