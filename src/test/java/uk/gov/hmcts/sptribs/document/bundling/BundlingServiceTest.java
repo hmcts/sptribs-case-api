@@ -62,7 +62,6 @@ public class BundlingServiceTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfig());
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
@@ -136,7 +135,6 @@ public class BundlingServiceTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfig());
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
