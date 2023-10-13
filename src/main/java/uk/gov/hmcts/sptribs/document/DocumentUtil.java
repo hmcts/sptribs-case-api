@@ -46,7 +46,6 @@ public final class DocumentUtil {
 
     public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocument>> documentList) {
         final List<String> errors = new ArrayList<>();
-        System.out.println(documentList); // is null when should be []
         if (documentList != null) {
             documentList.stream()
                 .filter(value -> !value.getValue().isDocumentValid())
