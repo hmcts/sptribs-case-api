@@ -87,8 +87,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             "hmcts-admin",
             "caseflags-admin",
             "caseflags-viewer",
-            "citizen",
-            "caseworker-update-dss-application"
+            "citizen"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
