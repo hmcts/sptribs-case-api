@@ -31,7 +31,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.model.Parties;
+import uk.gov.hmcts.sptribs.caseworker.model.SearchParty;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
@@ -68,24 +68,24 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
     @CCD(
-        label = "Party",
+        label = "SearchParty",
         typeOverride = Collection,
-        typeParameterOverride = "Party",
+        typeParameterOverride = "SearchParty",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Set<Parties> party;
+    private Set<SearchParty> searchParties;
 
     @CCD(
         label = "Appellant",
-        typeParameterOverride = "Party"
+        typeParameterOverride = "SearchParty"
     )
-    private Parties appellant;
+    private SearchParty appellant;
 
     @CCD(
         label = "Deceased",
-        typeParameterOverride = "Party"
+        typeParameterOverride = "SearchParty"
     )
-    private Parties deceased;
+    private SearchParty deceased;
     @CCD(
         label = "Deceased's title",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
