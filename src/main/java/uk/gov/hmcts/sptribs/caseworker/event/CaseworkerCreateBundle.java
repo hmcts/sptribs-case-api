@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,6 +79,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             .done();
     }
 
+    @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
@@ -90,7 +93,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
         }
         caseData.setCaseDocuments(abstractCaseworkerCICDocumentList);
-        log.info("Case Documents attached to caseData: {}", caseData.getCaseDocuments());
+        ObjectMapper objectMapper = new ObjectMapper();
+        log.info("Case Documents attached to caseData: {}", objectMapper.writeValueAsString(caseData.getCaseDocuments()));
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
         caseData.setCaseNumber(String.valueOf(details.getId()));
