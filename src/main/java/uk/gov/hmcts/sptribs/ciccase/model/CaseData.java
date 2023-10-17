@@ -165,6 +165,7 @@ public class CaseData {
     )
     private State caseStatus;
 
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -360,9 +361,54 @@ public class CaseData {
     private String pcqId;
 
     @CCD(
+        access = { DefaultAccess.class, CitizenAccess.class}
+    )
+    private String dssQuestion1;
+
+    @CCD(
+        access = { DefaultAccess.class, CitizenAccess.class}
+    )
+    private String dssAnswer1;
+
+    @CCD(
+        access = { DefaultAccess.class, CitizenAccess.class}
+    )
+    private String dssQuestion2;
+
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String dssAnswer2;
+
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String dssQuestion3;
+
+    @CCD(
+        access = { DefaultAccess.class, CitizenAccess.class}
+    )
+    private String dssAnswer3;
+
+
+    @CCD(
+        label = "Uploaded DSS Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "DssUploadedDocument",
+        access = {CaseworkerAccess.class, CitizenAccess.class}
+    )
+    private List<ListValue<DssUploadedDocument>> uploadedDssDocuments;
+
+    @CCD(
+        access = { DefaultAccess.class, CitizenAccess.class}
+    )
+    private String dssHeaderDetails;
+
+    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo hasDssNotificationSent;
+
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
@@ -425,6 +471,7 @@ public class CaseData {
         }
         return "";
     }
+
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
