@@ -8,7 +8,7 @@ public final class EventConstants {
     public static final String DOUBLE_SEMICOLON = "::";
     public static final String DOUBLE_HYPHEN = "--";
     public static final String SPACE = " ";
-    public static final String COLON = " :";
+    public static final String SEMICOLON = " :";
     public static final String CURRENT_EVENT = "currentEvent = \"";
 
     public static final String DRAFT = "DRAFT";

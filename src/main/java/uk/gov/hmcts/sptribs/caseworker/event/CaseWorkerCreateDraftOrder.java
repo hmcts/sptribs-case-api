@@ -99,6 +99,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+
         var caseData = details.getData();
         OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
         String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_SEMICOLON);

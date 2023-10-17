@@ -136,7 +136,7 @@ withPipeline(type, product, component) {
       reportName           : "Functional Tests Report"
     ]
   }
-  
+
   afterSuccess('functionalTest:preview') {
     if( "880" == "${CHANGE_ID}" ) {
       try {
@@ -152,7 +152,7 @@ withPipeline(type, product, component) {
           reportName           : "E2E Tests Report"
         ]
       }
-     } 
+     }
   }
 
   afterAlways('functionalTest:aat') {
@@ -209,6 +209,10 @@ withPipeline(type, product, component) {
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
 
+      def githubApi = new GithubAPI(this)
+      if (!githubApi.getLabelsbyPattern(env.BRANCH_NAME, "keep-helm")) {
+        enableCleanupOfHelmReleaseOnSuccess()
+      }
     }
 
     onMaster {
@@ -225,7 +229,7 @@ withPipeline(type, product, component) {
 
     afterSuccess('functionalTest:aat') {
 
-        /*try {
+        try {
           builder.gradle('e2eTests')
         } finally {
 
@@ -237,7 +241,7 @@ withPipeline(type, product, component) {
               reportFiles          : "index.html",
               reportName           : "E2E Tests Report"
            ]
-        }*/
+        }
 
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
@@ -321,24 +325,17 @@ def generateDefinitions() {
 def setFeatureFlags(environment) {
   if (environment =~ /preview|demo|perftest/) {
     env.CONTACT_PARTIES_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
-    env.DSS_FRONTEND_FEATURE = true
-  } else if (environment =~ /aat/) {
-    env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = false
-    env.DSS_FRONTEND_FEATURE = true
-  } else if (environment =~ /prod/) {
-    env.CONTACT_PARTIES_FEATURE = true
+    env.SECURITY_CLASSIFICATION = false
+  } else if (environment =~ /aat|prod/) {
+    env.CONTACT_PARTIES_FEATURE = false
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = false
-    env.DSS_FRONTEND_FEATURE = false
+    env.SECURITY_CLASSIFICATION = false
   }
 }

@@ -2,13 +2,11 @@ package uk.gov.hmcts.sptribs.citizen.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -24,20 +22,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.dss-frontend.enabled}")
-    private boolean dssCreateCaseEnabled;
-
     @Autowired
     AppsConfig appsConfig;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (dssCreateCaseEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
 
-    private void doConfigure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getCreateEvent())
@@ -53,20 +43,10 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
         caseData.setHyphenatedCaseRef(details.getData().formatCaseRef(details.getId()));
-        setIsRepresentativePresent(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Draft)
             .build();
-    }
-
-
-    private void setIsRepresentativePresent(CaseData data) {
-        if (null != data.getDssCaseData().getRepresentativeFullName()) {
-            data.getDssCaseData().setIsRepresentativePresent(YesOrNo.YES);
-        } else {
-            data.getDssCaseData().setIsRepresentativePresent(YesOrNo.NO);
-        }
     }
 
 
