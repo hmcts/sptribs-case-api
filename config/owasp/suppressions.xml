@@ -135,4 +135,10 @@
     <cve>CVE-2023-34034</cve>
     <cve>CVE-2023-34035</cve>
   </suppress>
+  <suppress>
+    <notes>pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@9.0.80</notes>
+    <cve>CVE-2023-42794</cve>
+    <cve>CVE-2023-42795</cve>
+    <cve>CVE-2023-45648</cve>
+  </suppress>
 </suppressions>
