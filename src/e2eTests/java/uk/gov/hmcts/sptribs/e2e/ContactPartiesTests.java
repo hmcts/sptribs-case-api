@@ -1,11 +1,14 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
+import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CicaContactParties;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ContactParties;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
@@ -19,7 +22,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 public class ContactPartiesTests extends Base {
 
     @Order(1)
-    @Disabled
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToContactParties() {
         Page page = getPage();
         Login login = new Login(page);
@@ -31,7 +34,7 @@ public class ContactPartiesTests extends Base {
         DocumentManagement docManagement = new DocumentManagement(page);
         docManagement.uploadDocuments();
         newCase.startNextStepAction(ContactParties);
-        completeContactPartiesJourney(page);
+        completeContactPartiesJourney(page, ContactParties);
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
@@ -50,16 +53,22 @@ public class ContactPartiesTests extends Base {
         clickLink(page, "Sign out");
         login.loginAsStRespondentUser();
         page.navigate(getCaseUrl(caseNumber));
-        newCase.startNextStepAction(ContactParties);
-        completeContactPartiesJourney(page);
+        assertThat(page.locator("ccd-markdown markdown h3").first())
+            .hasText("Case number: " + caseNumber, textOptionsWithTimeout(60000));
+        newCase.startNextStepAction(CicaContactParties);
+        completeContactPartiesJourney(page, CicaContactParties);
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
-    private void completeContactPartiesJourney(Page page) {
+    private void completeContactPartiesJourney(Page page, Actions parties) {
         assertThat(page.locator("h1")).hasText("Documents to include", textOptionsWithTimeout(60000));
         getCheckBoxByLabel(page, "sample_file.pdf").check();
         clickButton(page, "Continue");
-        assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(60000));
+        if (parties.equals(CicaContactParties)) {
+            assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(60000));
+        } else {
+            assertThat(page.locator("h1")).hasText("Contact Parties", textOptionsWithTimeout(60000));
+        }
         if (page.isVisible("input[type='checkbox'][value='SubjectCIC']")
             && !page.isChecked("input[type='checkbox'][value='SubjectCIC']")) {
             getCheckBoxByLabel(page, "Subject").check();
