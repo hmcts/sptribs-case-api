@@ -355,7 +355,7 @@ xui-webapp:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_DOCUMENTS_API_V2: https://ccd-case-document-am-api-${SERVICE_FQDN}
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
