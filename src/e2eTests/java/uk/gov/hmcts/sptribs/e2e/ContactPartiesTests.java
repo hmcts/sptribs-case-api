@@ -64,10 +64,9 @@ public class ContactPartiesTests extends Base {
         assertThat(page.locator("h1")).hasText("Documents to include", textOptionsWithTimeout(60000));
         getCheckBoxByLabel(page, "sample_file.pdf").check();
         clickButton(page, "Continue");
-        if(parties.equals(CicaContactParties)) {
+        if (parties.equals(CicaContactParties)) {
             assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(60000));
-        }
-        else {
+        } else {
             assertThat(page.locator("h1")).hasText("Contact Parties", textOptionsWithTimeout(60000));
         }
         if (page.isVisible("input[type='checkbox'][value='SubjectCIC']")
