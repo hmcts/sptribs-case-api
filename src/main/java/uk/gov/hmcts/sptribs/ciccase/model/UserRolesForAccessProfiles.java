@@ -11,7 +11,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
 
     CREATOR("[CREATOR]", "CRU"),
     SUPER_USER("idam:caseworker-sptribs-superuser", "CRU"),
-    SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
+    SYSTEMUPDATE("idam:caseworker-sptribs-systemupdate", "CRU"),
     CASEWORKER("idam:caseworker", "CRU"),
 
     ST_CIC_CASEWORKER("idam:caseworker-st_cic-caseworker", "CRU"),
@@ -27,6 +27,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
 
     // Below are the Access Profiles for the Idam Roles
     CIC_SUPER_USER("caseworker-sptribs-superuser", "CRU"),
+    AC_SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     CIC_CASEWORKER("caseworker-st_cic-caseworker", "CRU"),
     CIC_SENIOR_CASEWORKER("caseworker-st_cic-senior-caseworker", "CRU"),
     CIC_CENTRE_ADMIN("caseworker-st_cic-hearing-centre-admin", "CRU"),
