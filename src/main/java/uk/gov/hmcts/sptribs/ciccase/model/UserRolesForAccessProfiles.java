@@ -32,9 +32,9 @@ public enum UserRolesForAccessProfiles implements HasRole {
     CIC_SUPER_USER("caseworker-sptribs-superuser", "CRU"),
     AC_SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     CIC_CASEWORKER("caseworker-st_cic-caseworker", "CRU"),
-    CIC_SENIOR_CASEWORKER("caseworker-st_cic-senior-caseworker", "CRU"),
+    CIC_SENIOR_CASEWORKER_PROFILE("caseworker-st_cic-senior-caseworker", "CRU"),
     CIC_CENTRE_ADMIN("caseworker-st_cic-hearing-centre-admin", "CRU"),
-    CIC_CENTRE_TEAM_LEADER("caseworker-st_cic-hearing-centre-team-leader", "CRU"),
+    CIC_CENTRE_TEAM_LEADER_PROFILE("caseworker-st_cic-hearing-centre-team-leader", "CRU"),
     CIC_SENIOR_JUDGE("caseworker-st_cic-senior-judge", "CRU"),
     CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
     CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
@@ -47,7 +47,11 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AP_HMCTS_ADMIN("hmcts-admin", "CRU"),
     AP_CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
     AP_COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
-    AP_DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU");
+    AP_DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU"),
+
+    // Role assignment based roles
+    SENIOR_TRIBUNAL_CASE_WORKER("senior-tribunal-caseworker", "CRU"),
+    HEARING_CENTRE_TEAM_LEADER("hearing-centre-team-leader", "CRU");
 
     @JsonValue
     private final String role;

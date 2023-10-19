@@ -63,6 +63,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
+@SuppressWarnings("PMD.ExcessiveImports")
 public class CaseData {
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
