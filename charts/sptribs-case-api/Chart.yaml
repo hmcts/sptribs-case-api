@@ -35,3 +35,7 @@ dependencies:
     version: 1.7.11
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
+  - name: sptribs-cron-trigger
+    version: 1.7.11
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: wa.enabled

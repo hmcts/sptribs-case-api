@@ -290,3 +290,40 @@ idam-pr:
     XUIMO:
       - https://xui-mo-${SERVICE_FQDN}/oauth2/callback
 
+sptribs-cron-trigger:
+  job:
+    kind: CronJob
+    #image: 'hmctspublic.azurecr.io/sscs/cron-trigger:pr-5'
+    releaseNameOverride: ${SERVICE_NAME}-sptribs-cron-trigger
+    name: ${SERVICE_NAME}-sptribs-cron-trigger
+    schedule: "0 10-17 * * *"
+    environment:
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OAUTH2_CLIENT_ID: ${IDAM_OAUTH2_CLIENT_ID}
+      IDAM_OAUTH2_CLIENT_SECRET: ${IDAM_OAUTH2_CLIENT_SECRET}
+      IDAM_OAUTH2_REDIRECT_URL: ${IDAM_OAUTH2_REDIRECT_URL}
+      IDAM_S2S_AUTH: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      IDAM_S2S_AUTH_TOTP_SECRET: ${IDAM_S2S_AUTH_TOTP_SECRET}
+      IDAM_S2S_AUTH_MICROSERVICE: ${IDAM_S2S_AUTH_MICROSERVICE}
+      IDAM_SSCS_SYSTEMUPDATE_USER: ${IDAM_SSCS_SYSTEMUPDATE_USER}
+      IDAM_SSCS_SYSTEMUPDATE_PASSWORD: ${IDAM_SSCS_SYSTEMUPDATE_PASSWORD}
+      CORE_CASE_DATA_API_URL: "http://${SERVICE_NAME}-ccd-data-store-api"
+
+ sptribs-cron-trigger:
+  job:
+    kind: CronJob
+    image: 'hmctspublic.azurecr.io/sptribs/cron-trigger:pr-5'
+    releaseNameOverride: ${SERVICE_NAME}-sscs-cron-trigger
+    name: ${SERVICE_NAME}-sptribs-cron-trigger
+    schedule: "0 10-17 * * *"
+    environment:
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OAUTH2_CLIENT_ID: ${IDAM_OAUTH2_CLIENT_ID}
+      IDAM_OAUTH2_CLIENT_SECRET: ${IDAM_OAUTH2_CLIENT_SECRET}
+      IDAM_OAUTH2_REDIRECT_URL: ${IDAM_OAUTH2_REDIRECT_URL}
+      IDAM_S2S_AUTH: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      IDAM_S2S_AUTH_TOTP_SECRET: ${IDAM_S2S_AUTH_TOTP_SECRET}
+      IDAM_S2S_AUTH_MICROSERVICE: ${IDAM_S2S_AUTH_MICROSERVICE}
+      IDAM_SPTRIBS_SYSTEMUPDATE_USER: ${IDAM_SSCS_SYSTEMUPDATE_USER}
+      IDAM_SPTRIBS_SYSTEMUPDATE_PASSWORD: ${IDAM_SSCS_SYSTEMUPDATE_PASSWORD}
+      CORE_CASE_DATA_API_URL: "http://${SERVICE_NAME}-ccd-data-store-api"
