@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.model.SearchParty;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
@@ -51,13 +49,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -67,97 +63,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
-    @CCD(
-        label = "SearchParty",
-        typeOverride = Collection,
-        typeParameterOverride = "SearchParty",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Set<SearchParty> searchParties;
-
-    @CCD(
-        label = "Appellant",
-        typeParameterOverride = "SearchParty"
-    )
-    private SearchParty appellant;
-
-    @CCD(
-        label = "Deceased",
-        typeParameterOverride = "SearchParty"
-    )
-    private SearchParty deceased;
-    @CCD(
-        label = "Deceased's title",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String deceasedTitle;
-
-    @CCD(
-        label = "Deceased's first name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String deceasedFirstName;
-    @CCD(
-        label = "Deceased's last name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String deceasedLastName;
-
-    @CCD(label = "Deceased's address")
-    private AddressGlobalUK deceasedAddress;
-
-    @CCD(
-        label = "Deceased's email address",
-        typeOverride = Email
-    )
-    private String deceasedEmailAddress;
-
-    @CCD(
-        label = "Deceased's date of birth",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate deceasedDateOfBirth;
-
-    @CCD(
-        label = "Deceased's date of death",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate deceasedDateOfDeath;
-
-    @CCD(
-        label = "Appellant's title",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String appellantTitle;
-
-    @CCD(
-        label = "Appellant's first name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String appellantFirstName;
-    @CCD(
-        label = "Appellant's last name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String appellantLastName;
-
-    @CCD(label = "Appellant's address")
-    private AddressGlobalUK appellantAddress;
-
-    @CCD(
-        label = "Appellant's email address",
-        typeOverride = Email
-    )
-    private String appellantEmailAddress;
-
-    @CCD(
-        label = "Appellant's date of birth",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate appellantDateOfBirth;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
