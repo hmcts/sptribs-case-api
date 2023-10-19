@@ -106,9 +106,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     private void setDssMetaData(CaseData data) {
         data.setDssQuestion1("Full Name");
-        data.setDssQuestion2("Date of Birth");
+        data.setDssQuestion3("Date of Birth");
         data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
-        data.setDssAnswer2("case_data.dssCaseDataSubjectDateOfBirth");
+        data.setDssAnswer3("case_data.dssCaseDataSubjectDateOfBirth");
         data.setDssHeaderDetails("Subject of this case");
     }
 
