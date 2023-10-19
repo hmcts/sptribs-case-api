@@ -46,7 +46,9 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .optionalWithoutDefaultValue(ContactParties::getTribunal,
                 null, RECIPIENT_LABEL)
-            .mandatory(ContactParties::getMessage)
+            .done()
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getNotifyPartyMessage)
             .done();
     }
 
