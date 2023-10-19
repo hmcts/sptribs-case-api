@@ -36,7 +36,7 @@ public class CaseworkerDssUpdateCase implements CCDConfig<CaseData, State, UserR
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-            doConfigure(configBuilder);
+        doConfigure(configBuilder);
     }
 
     private void doConfigure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
