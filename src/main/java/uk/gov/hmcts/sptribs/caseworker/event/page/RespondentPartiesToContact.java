@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -32,7 +33,9 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .optional(ContactParties::getSubjectContactParties)
             .optional(ContactParties::getRepresentativeContactParties)
             .optional(ContactParties::getTribunal)
-            .mandatory(ContactParties::getMessage)
+            .done()
+            .complex(CaseData::getCicCase)
+            .mandatory(CicCase::getNotifyPartyMessage)
             .done();
     }
 
