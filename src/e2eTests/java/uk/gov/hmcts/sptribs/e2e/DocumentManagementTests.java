@@ -15,7 +15,7 @@ public class DocumentManagementTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToUploadDocuments() {
         Page page = getPage();
-        Case newCase = createAndBuildCase(page);
+        Case newCase = createAndBuildCase(page, Representative);
         newCase.startNextStepAction(UploadDocuments);
         DocumentManagement docManagement = new DocumentManagement(page);
         docManagement.uploadDocuments();
@@ -27,15 +27,5 @@ public class DocumentManagementTests extends Base {
         Assertions.assertEquals("This is a test document", hearingType);
         String hearingFormat = PageHelpers.getValueFromTableFor(page, "File");
         Assertions.assertEquals("sample_file.pdf", hearingFormat);
-    }
-
-    private Case createAndBuildCase(Page page) {
-        Login login = new Login(page);
-        login.loginAsCaseWorker();
-
-        Case newCase = new Case(page);
-        newCase.createCase(Representative);
-        newCase.buildCase();
-        return newCase;
     }
 }

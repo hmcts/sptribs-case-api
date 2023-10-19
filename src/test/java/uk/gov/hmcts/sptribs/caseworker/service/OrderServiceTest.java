@@ -102,8 +102,9 @@ class OrderServiceTest {
         DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
         details.setData(caseData);
+
         //When
-        CaseData result = orderService.generateOrderFile(caseData, details.getId(),"");
+        CaseData result = orderService.generateOrderFile(caseData, details.getId(), "");
 
         //Then
         assertThat(result).isNotNull();

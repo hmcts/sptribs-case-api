@@ -236,6 +236,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
                 .build();
         }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))

@@ -138,6 +138,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         caseData.getCicCase().setOrderTemplateIssued(null);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())

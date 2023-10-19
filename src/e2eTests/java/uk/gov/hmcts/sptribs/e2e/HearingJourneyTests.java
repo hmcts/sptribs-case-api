@@ -18,7 +18,7 @@ public class HearingJourneyTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToEditListingAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         hearing.editListing();
@@ -35,7 +35,7 @@ public class HearingJourneyTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToCreateHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         hearing.createHearingSummary();
@@ -81,7 +81,7 @@ public class HearingJourneyTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToEditHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         hearing.createHearingSummary();
@@ -104,9 +104,9 @@ public class HearingJourneyTests extends Base {
 
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
-
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
+
         Hearing hearing = createListing(page);
         hearing.postponeHearing();
         getTabByText(page, "Hearings").click();
@@ -123,10 +123,9 @@ public class HearingJourneyTests extends Base {
     }
 
     @RepeatedIfExceptionsTest
-
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         hearing.cancelHearing();
@@ -136,15 +135,6 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Cancelled", hearingStatus);
     }
 
-
-    private void createAndBuildCase(Page page) {
-        Login login = new Login(page);
-        login.loginAsCaseWorker();
-
-        Case newCase = new Case(page);
-        newCase.createCase(Representative);
-        newCase.buildCase();
-    }
 
     private void createEditAndBuildDssCase(Page page) {
         DssCase newDssCase = new DssCase(page);

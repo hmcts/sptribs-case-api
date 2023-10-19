@@ -5,7 +5,6 @@ import com.google.common.collect.SetMultimap;
 import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
-
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -13,6 +12,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
 public class DefaultAccess implements HasAccessControl {
     @Override
@@ -25,6 +25,7 @@ public class DefaultAccess implements HasAccessControl {
         grants.putAll(ST_CIC_HEARING_CENTRE_TEAM_LEADER, Permissions.CREATE_READ_UPDATE_DELETE);
         grants.putAll(ST_CIC_SENIOR_JUDGE, Permissions.CREATE_READ_UPDATE);
         grants.putAll(ST_CIC_WA_CONFIG_USER, Permissions.READ);
+        grants.putAll(SYSTEMUPDATE, Permissions.CREATE_READ_UPDATE);
         return grants;
     }
 }
