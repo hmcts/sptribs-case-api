@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.cleanDocumentList;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 @Slf4j
@@ -47,7 +48,9 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
+        uploadedDocuments = cleanDocumentList(uploadedDocuments);
         final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
+        data.getListing().getSummary().setRecFile(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

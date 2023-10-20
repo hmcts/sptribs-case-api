@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_NOT_SELECTED_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 
 public final class DocumentUtil {
@@ -51,11 +50,13 @@ public final class DocumentUtil {
                 .filter(value -> !value.getValue().isDocumentValid())
                 .findFirst()
                 .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
-        } else {
-            errors.add(DOCUMENT_NOT_SELECTED_MESSAGE);
         }
 
         return errors;
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> cleanDocumentList(List<ListValue<CaseworkerCICDocument>> documentList) {
+        return (documentList == null) ? new ArrayList<>() : documentList;
     }
 
     public static List<String> validateDecisionDocumentFormat(CICDocument document) {

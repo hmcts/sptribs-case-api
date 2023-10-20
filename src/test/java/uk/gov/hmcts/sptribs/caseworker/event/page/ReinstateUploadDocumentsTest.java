@@ -10,6 +10,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
@@ -37,5 +39,25 @@ public class ReinstateUploadDocumentsTest {
 
         //Then
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
+    }
+
+    @Test
+    void shouldValidateUploadedDocumentListNull() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(null)
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getData().getCicCase().getReinstateDocuments()).isEqualTo(new ArrayList<>());
+        assertThat(response.getErrors()).isEmpty();
     }
 }

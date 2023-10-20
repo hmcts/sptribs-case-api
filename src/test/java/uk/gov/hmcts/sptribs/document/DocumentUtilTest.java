@@ -10,13 +10,15 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_NOT_SELECTED_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.cleanDocumentList;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,16 +79,6 @@ class DocumentUtilTest {
     }
 
     @Test
-    void shouldValidateCaseworkerCICDocumentFormatInvalidWithDocumentListNull() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = null;
-        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
-
-        //Then
-        assertThat(errors).contains(DOCUMENT_NOT_SELECTED_MESSAGE);
-    }
-
-    @Test
     void shouldValidateDecisionDocumentFormat() {
         //When
         final CICDocument document = CICDocument.builder()
@@ -98,6 +90,26 @@ class DocumentUtilTest {
 
         //Then
         assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldCleanDocumentListWhenNull() {
+        //When
+        final List<ListValue<CaseworkerCICDocument>> documentList = null;
+        final List<ListValue<CaseworkerCICDocument>> newDocumentList = cleanDocumentList(documentList);
+
+        //Then
+        assertThat(newDocumentList).isEqualTo(new ArrayList<>());
+    }
+
+    @Test
+    void shouldCleanDocumentListWhenNotNull() {
+        //When
+        final List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList();
+        final List<ListValue<CaseworkerCICDocument>> newDocumentList = cleanDocumentList(documentList);
+
+        //Then
+        assertThat(newDocumentList).isEqualTo(documentList);
     }
 
     private DocumentInfo documentInfo() {

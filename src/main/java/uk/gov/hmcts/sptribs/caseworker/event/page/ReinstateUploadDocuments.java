@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.cleanDocumentList;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 public class ReinstateUploadDocuments implements CcdPageConfiguration {
@@ -46,14 +47,14 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
         List<ListValue<CaseworkerCICDocument>> documents = data.getCicCase().getReinstateDocuments();
+        documents = cleanDocumentList(documents);
+        data.getCicCase().setReinstateDocuments(documents);
 
-        if (null != documents) {
-            errors.addAll(validateCaseworkerCICDocumentFormat(documents));
-            for (ListValue<CaseworkerCICDocument> documentListValue : data.getCicCase().getReinstateDocuments()) {
-                if (null != documentListValue.getValue().getDocumentLink()
-                    && StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
-                    errors.add("Description is mandatory for each document");
-                }
+        errors.addAll(validateCaseworkerCICDocumentFormat(documents));
+        for (ListValue<CaseworkerCICDocument> documentListValue : data.getCicCase().getReinstateDocuments()) {
+            if (documentListValue.getValue().getDocumentLink() != null
+                && StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
+                errors.add("Description is mandatory for each document");
             }
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
