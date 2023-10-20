@@ -314,6 +314,8 @@ dependencyCheck {
   }
 }
 
+check.dependsOn integration
+integration.shouldRunAfter(test)
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
