@@ -50,10 +50,40 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
+
+    }
+
+    @Test
+    void shouldGenerateSelectedAmendDocList() {
+        //Given
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .newDocManagement(documentManagement)
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+        //When
+
+        //Then
+        //assertThat(result).isNotNull();
 
     }
 
@@ -77,11 +107,10 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -101,13 +130,11 @@ public class DocumentListUtilTest {
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
-
     }
-
 
     @Test
     void shouldGenerateDocListDocManagement() {
@@ -125,12 +152,12 @@ public class DocumentListUtilTest {
         final CaseData caseData = CaseData.builder().build();
         caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
+
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -149,12 +176,12 @@ public class DocumentListUtilTest {
         final CaseData caseData = CaseData.builder().build();
         caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
         details.setData(caseData);
+
         //When
         DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -208,5 +235,4 @@ public class DocumentListUtilTest {
         //Then
         assertThat(result).isNotNull();
     }
-
 }
