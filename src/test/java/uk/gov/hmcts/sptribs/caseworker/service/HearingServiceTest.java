@@ -72,12 +72,10 @@ class HearingServiceTest {
         final CaseData caseData = CaseData.builder().hearingList(listValueList).build();
         details.setData(caseData);
         //When
-
         DynamicList hearingList = hearingService.getCompletedHearingDynamicList(caseData);
 
         //Then
         assertThat(hearingList).isNotNull();
-
     }
 
     @Test
