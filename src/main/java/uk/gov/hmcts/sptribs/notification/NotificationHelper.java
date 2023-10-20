@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -180,7 +180,7 @@ public class NotificationHelper {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (!ObjectUtils.isEmpty(documentList.getValue()) && documentList.getValue().size() > 0) {
+        if (!isEmpty(documentList.getValue())) {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
@@ -189,16 +189,28 @@ public class NotificationHelper {
                 uploadedDocuments.put(CASE_DOCUMENT + count,
                     StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
                         "/"));
-                LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
-                    uploadedDocuments.get(CASE_DOCUMENT + count));
+
+                final String message = String.format(
+                    "Document when Available: %d, %s with value %s",
+                    count,
+                    uploadedDocuments.get(DOC_AVAILABLE + count),
+                    uploadedDocuments.get(CASE_DOCUMENT + count)
+                );
+                LOG.info(message);
             }
         }
         while (count < docAttachLimit) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
             uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_STRING);
-            LOG.info("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
-                uploadedDocuments.get(CASE_DOCUMENT + count));
+
+            final String message = String.format(
+                "Document not Available: %d, %s with value %s",
+                count,
+                uploadedDocuments.get(DOC_AVAILABLE + count),
+                uploadedDocuments.get(CASE_DOCUMENT + count)
+            );
+            LOG.info(message);
         }
 
         return uploadedDocuments;

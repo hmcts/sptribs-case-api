@@ -304,15 +304,15 @@ public class NotificationHelperTest {
 
         //Then
         assertThat(result).isNotNull();
-        assertThat(result.size()).isEqualTo(4);
-        assertThat(result.containsKey("CaseDocument1")).isTrue();
-        assertThat(result.containsKey("CaseDocument2")).isTrue();
-        assertThat(result.containsKey("DocumentAvailable1")).isTrue();
-        assertThat(result.containsKey("DocumentAvailable2")).isTrue();
-        assertThat(result.get("CaseDocument1")).isEqualTo("5e32a0d2-9b37-4548-b007-b9b2eb580d0a");
-        assertThat(result.get("CaseDocument2")).isEqualTo(EMPTY_STRING);
-        assertThat(result.get("DocumentAvailable1")).isEqualTo(YES);
-        assertThat(result.get("DocumentAvailable2")).isEqualTo(NO);
+        assertThat(result).hasSize(4);
+        assertThat(result).containsKey("CaseDocument1");
+        assertThat(result).containsKey("CaseDocument2");
+        assertThat(result).containsKey("DocumentAvailable1");
+        assertThat(result).containsKey("DocumentAvailable2");
+        assertThat(result).containsEntry("CaseDocument1", "5e32a0d2-9b37-4548-b007-b9b2eb580d0a");
+        assertThat(result).containsEntry("CaseDocument2", EMPTY_STRING);
+        assertThat(result).containsEntry("DocumentAvailable1", YES);
+        assertThat(result).containsEntry("DocumentAvailable2", NO);
     }
 
     private DynamicList getDynamicList() {
