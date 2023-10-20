@@ -58,36 +58,6 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldGenerateSelectedAmendDocList() {
-        //Given
-
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
-        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
-            .build();
-        ListValue<CaseworkerCICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
-        CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(listValueList)
-            .build();
-        DocumentManagement documentManagement = DocumentManagement.builder()
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .newDocManagement(documentManagement)
-            .build();
-        caseData.setCicCase(cicCase);
-        details.setData(caseData);
-        //When
-
-        //Then
-        //assertThat(result).isNotNull();
-
-    }
-
-    @Test
     void shouldGenerateDocListApplicant() {
         //Given
 
