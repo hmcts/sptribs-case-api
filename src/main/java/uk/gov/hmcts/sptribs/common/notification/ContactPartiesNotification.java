@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
@@ -138,27 +137,32 @@ public class ContactPartiesNotification implements PartiesNotification {
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
                                                        TemplateName emailTemplateName) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail, templateVars, emailTemplateName);
-        return notificationService.sendEmail(request);
+
+        return notificationService.sendEmail(
+            notificationHelper.buildEmailNotificationRequest(toEmail, templateVars, emailTemplateName)
+        );
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(String toEmail,
                                                                      final Map<String, Object> templateVars,
                                                                      Map<String, String> uploadedDocuments,
                                                                      TemplateName emailTemplateName) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
-            toEmail,
-            true,
-            uploadedDocuments,
-            templateVars,
-            emailTemplateName
+
+        return notificationService.sendEmail(
+            notificationHelper.buildEmailNotificationRequest(
+                toEmail,
+                true,
+                uploadedDocuments,
+                templateVars,
+                emailTemplateName
+            )
         );
-        return notificationService.sendEmail(request);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName emailTemplateName) {
-        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter, emailTemplateName);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(
+            notificationHelper.buildLetterNotificationRequest(templateVarsLetter, emailTemplateName)
+        );
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {

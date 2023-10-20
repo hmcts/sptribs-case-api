@@ -23,10 +23,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -254,6 +256,30 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
     }
 
+    @Test
+    void shouldDisplayTheCorrectFailureMessageIfExceptionThrownByNotification() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        doThrow(NotificationException.class)
+            .when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+
+        SubmittedCallbackResponse response =
+            caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getConfirmationHeader()).contains("Contact Parties notification failed");
+        assertThat(response.getConfirmationHeader()).contains("Please resend the notification");
+    }
 
     @Test
     void shouldSuccessfullyMoveToNextPageWithOutError() {
