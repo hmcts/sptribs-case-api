@@ -100,6 +100,10 @@
       <cve>CVE-2022-45688</cve>
     </suppress>
   <suppress>
+    <notes>Not a vulnerability as project does not contain json-java</notes>
+    <cve>CVE-2023-5072</cve>
+  </suppress>
+  <suppress>
     <notes>pkg:maven/commons-fileupload/commons-fileupload@1.4</notes>
     <cve>CVE-2023-24998</cve>
     <cve>CVE-2023-2976</cve>
