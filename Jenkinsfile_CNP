@@ -22,6 +22,9 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 }
 
 def secrets = [
+        'rpx-${env}': [
+                secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
+        ],
         's2s-${env}'      : [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
@@ -328,7 +331,6 @@ withPipeline(type, product, component) {
 
 def setCommonEnvVariables() {
     env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
-    env.REDIRECT_URI = "https://manage-case.aat.platform.hmcts.net/oauth2/callback"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
