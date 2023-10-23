@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class PartiesToContact implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "contactPartiesDocumentsDocumentList= \"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
     private static final String RECIPIENT_LABEL = "Contact parties recipient";
 
     @Override

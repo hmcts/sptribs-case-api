@@ -26,7 +26,7 @@ plugins {
   id 'org.springframework.boot' version '2.7.16'
   id 'com.github.ben-manes.versions' version '0.49.0'
   id 'hmcts.ccd.sdk'  version '5.4.7'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.716'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.817'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -277,7 +277,7 @@ task fortifyScan(type: JavaExec)  {
 }
 checkstyle {
   maxWarnings = 0
-  toolVersion = '9.2.1'
+  toolVersion = '9.3'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
