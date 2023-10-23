@@ -116,8 +116,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
 
-            // TODO: remove selectedDraft, draftOrderFile and below else if once testing
-            //  for SNI-4753/SNI-4754 is complete
             for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
 
                 if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
