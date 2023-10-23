@@ -128,6 +128,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
+
         setDefaultLastSelectedOrderFlag(caseData.getCicCase());
         updateLastSelectedOrder(order);
         addToList(caseData, order);
@@ -217,6 +218,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
+
     }
 
     public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
@@ -264,5 +266,4 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         //Once Notification is sent, nullify the last selected order
         //cicCase.setLastSelectedOrder(null);
     }
-
 }

@@ -39,6 +39,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
@@ -164,6 +165,7 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private State caseStatus;
+
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -360,32 +362,32 @@ public class CaseData {
     private String pcqId;
 
     @CCD(
-        access = { DefaultAccess.class, CitizenAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssQuestion1;
 
     @CCD(
-        access = { DefaultAccess.class, CitizenAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssAnswer1;
 
     @CCD(
-        access = { DefaultAccess.class, CitizenAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssQuestion2;
 
     @CCD(
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssAnswer2;
 
     @CCD(
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssQuestion3;
 
     @CCD(
-        access = { DefaultAccess.class, CitizenAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssAnswer3;
 
@@ -394,12 +396,12 @@ public class CaseData {
         label = "Uploaded DSS Documents",
         typeOverride = Collection,
         typeParameterOverride = "DssUploadedDocument",
-        access = {CaseworkerAccess.class, CitizenAccess.class}
+        access = {CaseworkerAccess.class, DSSUpdateAccess.class}
     )
     private List<ListValue<DssUploadedDocument>> uploadedDssDocuments;
 
     @CCD(
-        access = { DefaultAccess.class, CitizenAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssHeaderDetails;
 
@@ -407,6 +409,7 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo hasDssNotificationSent;
+
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
@@ -469,6 +472,7 @@ public class CaseData {
         }
         return "";
     }
+
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

@@ -103,7 +103,7 @@ toggle:
 
 feature:
   contact-parties:
-    enabled: ${CONTACT_PARTIES_FEATURE:false}
+    enabled: ${CONTACT_PARTIES_FEATURE:true}
   link-case:
     enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
@@ -123,5 +123,6 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
+        dssUpdateEvent: caseworker-update-dss-application
       caseTypeOfApplication:
         - CIC
