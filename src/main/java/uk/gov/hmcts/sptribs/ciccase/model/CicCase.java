@@ -52,6 +52,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -86,12 +87,24 @@ public class CicCase {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ComponentLauncher linkedCasesComponentLauncher;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> appellantFlags;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Status flagStatus;
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> caseFlags;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> respondentFlags;
+
+    @JsonUnwrapped(prefix = "flagLauncher")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ComponentLauncher flagLauncher;
 
     @CCD(
         label = "Flag Type",
