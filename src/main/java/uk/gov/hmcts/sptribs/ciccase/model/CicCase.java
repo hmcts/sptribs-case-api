@@ -56,7 +56,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -151,13 +150,6 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Status flagStatus;
-
-
-    @CCD(
-        label = "Flag Type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
     private FlagType flagType;
 
     @CCD(
@@ -196,12 +188,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList draftOrderDynamicList;
-
-    @CCD(
-        label = "",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicList flagDynamicList;
 
     @CCD(
         label = "Template",
@@ -631,12 +617,6 @@ public class CicCase {
 
     private YesOrNo representativeDetailsObjects;
 
-
-    @CCD(
-        label = "Police authority management incident",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String policeAuthority;
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

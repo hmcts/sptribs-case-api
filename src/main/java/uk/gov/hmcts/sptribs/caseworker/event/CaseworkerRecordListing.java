@@ -131,6 +131,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            partiesSet.add(NotificationParties.APPLICANT);
+        }
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
 
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
@@ -164,6 +167,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Create listing notification failed %n## Please resend the notification"))
                 .build();
+        }
+        if (notificationPartiesSet.contains(NotificationParties.APPLICANT)) {
+            listingCreatedNotification.sendToApplicant(details.getData(), caseNumber);
         }
         data.getListing().setHearingStatus(Listed);
         return SubmittedCallbackResponse.builder()

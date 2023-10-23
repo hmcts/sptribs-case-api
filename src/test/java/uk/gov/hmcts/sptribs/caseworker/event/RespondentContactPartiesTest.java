@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -204,6 +205,42 @@ class RespondentContactPartiesTest {
         assertThat(response.getErrors()).isEmpty();
 
 
+    }
+
+    @Test
+    void shouldReturnErrorsIfMinor() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .contactParties(ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT)).build())
+            .build();
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.MINOR)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    void shouldReturnErrorsIfFatal() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .contactParties(ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT)).build())
+            .build();
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
     }
 
 }

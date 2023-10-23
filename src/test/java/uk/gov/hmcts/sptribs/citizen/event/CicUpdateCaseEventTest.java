@@ -74,7 +74,7 @@ class CicUpdateCaseEventTest {
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-
+        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
         when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
 
         cicUpdateCaseEvent.configure(configBuilder);

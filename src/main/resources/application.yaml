@@ -143,6 +143,9 @@ docmosis:
       CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
 
+case-api:
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
+
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
 
@@ -188,6 +191,8 @@ feature:
     enabled: ${BUNDLING_FEATURE:false}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
+  dss-frontend:
+    enabled: ${DSS_FRONTEND_FEATURE:true}
 
 caseinfo:
   apps:
@@ -197,6 +202,7 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
+        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC
 

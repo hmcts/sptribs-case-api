@@ -136,7 +136,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCasePhoneNumber")
             .field("cicCaseAddress")
             .field("cicCaseSubjectCIC")
-            .label("applicantDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
             .field("cicCaseRepresentativeCIC")
             .field("cicCaseRepresentativeFullName")
             .field("cicCaseRepresentativeOrgName")
@@ -205,6 +204,17 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("FinalDecision", null, "### Final Decision")
             .field("caseIssueFinalDecisionDocument")
             .field("caseIssueFinalDecisionFinalDecisionDraft", "caseIssueFinalDecisionFinalDecisionDraft!=\"\"");
+    }
+
+    private void buildCaseDocumentTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseDocuments", "Case Documents")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .label("Case Documents", null, "#### Case Documents")
+            .field("cicCaseApplicantDocumentsUploaded")
+            .field("allCaseworkerCICDocument");
+
+
     }
 
     private void buildCicaDetails(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

@@ -39,8 +39,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SEMICOLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -111,90 +111,87 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
+
         if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
+
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
-            String[] selectedDraft = selectedDynamicDraft.split(DOUBLE_HYPHEN);
-            for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
-                String[] draftOrderFile = draftOrderCICListValue.getValue()
-                    .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
-                if (selectedDynamicDraft
-                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
-                    && draftOrderFile[2].contains(selectedDraft[1])) {
-                    selectedDraftOrder = draftOrderCICListValue.getValue();
-                    String[] fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().split(SEMICOLON);
-                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + SEMICOLON + fileName[1]);
+
+            for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
+
+                if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                    selectedDraftOrder = draftOrderCICValue.getValue();
+                    String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }
         }
 
-        setDefaultLastSelectedOrderFlag(caseData.getCicCase());
-        updateLastSelectedOrder(order);
-        addToList(caseData, order);
+        updateLastSelectedOrder(caseData.getCicCase(), order);
+        updateCicCaseOrderList(caseData, order);
+
+        caseData.getCicCase().setOrderIssuingType(null);
+        caseData.getCicCase().setOrderFile(null);
+        caseData.getCicCase().setOrderReminderYesOrNo(null);
+        caseData.getCicCase().setOrderReminderDays(null);
+
         if (null != selectedDraftOrder) {
-            rearrangeLists(caseData, selectedDynamicDraft, selectedDraftOrder);
+            DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+            List<DynamicListElement> newElements = new ArrayList<>();
+            for (DynamicListElement element : dynamicList.getListItems()) {
+                if (!element.getLabel().equals(selectedDynamicDraft)) {
+                    newElements.add(element);
+                }
+            }
+            caseData.getCicCase().setDraftOrderDynamicList(DynamicList
+                .builder()
+                .listItems(newElements)
+                .build());
+            List<ListValue<DraftOrderCIC>> draftList = new ArrayList<>();
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
+                if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
+                    var listValue = ListValue
+                        .<DraftOrderCIC>builder()
+                        .value(draftValue.getValue())
+                        .build();
+
+                    draftList.add(0, listValue); // always add new note as first element so that it is displayed on top
+
+                    draftList.forEach(
+                        caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+                }
+            }
+            caseData.getCicCase().setDraftOrderCICList(draftList);
         }
-        nullifyRelatedObjects(caseData);
+
+        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
             .build();
     }
 
-    private void updateLastSelectedOrder(Order order) {
-        if (null != order.getDraftOrder()) {
-            order.setIsLastSelectedOrder(YesOrNo.YES);
-        } else if (null != order.getUploadedFile()
-            && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            order.setIsLastSelectedOrder(YesOrNo.YES);
-        } else {
-            order.setIsLastSelectedOrder(YesOrNo.NO);
+    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
+                                          CaseDetails<CaseData, State> beforeDetails) {
+        try {
+            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Send order notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
+                .build();
         }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Order sent %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
+            .build();
     }
 
-    private void nullifyRelatedObjects(CaseData caseData) {
-        caseData.getCicCase().setOrderIssuingType(null);
-        caseData.getCicCase().setOrderFile(null);
-        caseData.getCicCase().setOrderReminderYesOrNo(null);
-        caseData.getCicCase().setOrderReminderDays(null);
-
-        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
-    }
-
-    private void rearrangeLists(CaseData caseData, String selectedDynamicDraft, DraftOrderCIC selectedDraftOrder) {
-        DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
-        List<DynamicListElement> newElements = new ArrayList<>();
-        for (DynamicListElement element : dynamicList.getListItems()) {
-            if (!element.getLabel().equals(selectedDynamicDraft)) {
-                newElements.add(element);
-            }
-        }
-        caseData.getCicCase().setDraftOrderDynamicList(DynamicList
-            .builder()
-            .listItems(newElements)
-            .build());
-        List<ListValue<DraftOrderCIC>> draftList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
-            if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
-                var listValue = ListValue
-                    .<DraftOrderCIC>builder()
-                    .value(draftValue.getValue())
-                    .build();
-
-                draftList.add(0, listValue); // always add new note as first element so that it is displayed on top
-
-                draftList.forEach(
-                    caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-            }
-        }
-        caseData.getCicCase().setDraftOrderCICList(draftList);
-    }
-
-    private void addToList(CaseData caseData, Order order) {
-
+    private void updateCicCaseOrderList(CaseData caseData, Order order) {
         if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
@@ -218,25 +215,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
             caseData.getCicCase().getOrderList().forEach(
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-
         }
     }
 
-    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
-                                          CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Send order notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
-                .build();
+    private void updateLastSelectedOrder(CicCase cicCase, Order order) {
+        if (order.getDraftOrder() != null) {
+            cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
+        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+            cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Order sent %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
-            .build();
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {

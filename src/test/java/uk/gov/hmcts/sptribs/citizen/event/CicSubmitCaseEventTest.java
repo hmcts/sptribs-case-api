@@ -69,9 +69,6 @@ class CicSubmitCaseEventTest {
     private CicSubmitCaseEvent cicSubmitCaseEvent;
 
     @Mock
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
-
-    @Mock
     private AddSystemUpdateRole addSystemUpdateRole;
 
     @Mock
@@ -105,6 +102,7 @@ class CicSubmitCaseEventTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
+        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
         when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
             .thenReturn(List.of(CITIZEN_CIC));
 
@@ -176,8 +174,6 @@ class CicSubmitCaseEventTest {
             .representationQualified(YesOrNo.YES)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
-            .documentRelevance("re")
-            .additionalInformation("message")
             .build();
 
         CicCase cicCase = CicCase.builder().build();

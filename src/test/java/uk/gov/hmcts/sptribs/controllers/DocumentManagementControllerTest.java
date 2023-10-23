@@ -12,7 +12,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.sptribs.controllers.DocumentManagementController;
 import uk.gov.hmcts.sptribs.exception.DocumentUploadOrDeleteException;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.model.DocumentResponse;
@@ -66,21 +65,21 @@ class DocumentManagementControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(
             JSON_FILE_TYPE,
-                CASE_DATA_FILE_CIC,
+            CASE_DATA_FILE_CIC,
             JSON_CONTENT_TYPE,
             caseDataJson.getBytes()
         );
 
         when(documentManagementService.uploadDocument(
             CASE_TEST_AUTHORIZATION,
-                CASE_DATA_CIC_ID,
+            CASE_DATA_CIC_ID,
             multipartFile
         )).thenReturn(
             documentResponse);
 
         ResponseEntity<?> uploadDocumentResponse = documentManagementController.uploadDocument(
             CASE_TEST_AUTHORIZATION,
-                CASE_DATA_CIC_ID,
+            CASE_DATA_CIC_ID,
             multipartFile
         );
 

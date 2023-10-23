@@ -36,6 +36,7 @@ public abstract class Base {
 
     public static String DSS_BASE_URL;
 
+
     @BeforeAll
     public void setUp() {
         playwright = Playwright.create();

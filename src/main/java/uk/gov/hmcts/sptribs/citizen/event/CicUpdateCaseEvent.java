@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -20,14 +22,23 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@Setter
 public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+
+    @Value("${feature.dss-frontend.enabled}")
+    private boolean dssUpdateCaseEnabled;
 
     @Autowired
     AppsConfig appsConfig;
 
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (dssUpdateCaseEnabled) {
+            doConfigure(configBuilder);
+        }
+    }
+
+    private void doConfigure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getUpdateEvent())
@@ -49,6 +60,5 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .data(data)
             .build();
     }
-
 
 }

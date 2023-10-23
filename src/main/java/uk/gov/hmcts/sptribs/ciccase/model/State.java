@@ -14,6 +14,13 @@ import java.util.EnumSet;
 public enum State {
 
     @CCD(
+        label = "DSS-Draft",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Draft("DSS-Draft"),
+
+    @CCD(
         label = "Application rejected",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccess.class}
@@ -60,13 +67,6 @@ public enum State {
         access = {DefaultStateAccessExcludingCAA.class}
     )
     DSS_Submitted("DSS-Submitted"),
-
-    @CCD(
-        label = "DSS-Draft",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    DSS_Draft("DSS-Draft"),
 
     @CCD(
         label = "New case received",
@@ -153,10 +153,10 @@ public enum State {
     ));
 
 
-    public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
+    public static final EnumSet<State> BUNDLE_STATES = EnumSet.complementOf(EnumSet.of(
         CaseManagement,
         AwaitingHearing
-    );
+    ));
     private final String name;
 }
 

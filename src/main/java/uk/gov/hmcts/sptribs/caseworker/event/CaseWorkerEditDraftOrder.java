@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static java.util.Locale.ENGLISH;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -55,7 +56,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration draftOrderEditMainContentPage = new DraftOrderMainContentPage();
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", ENGLISH);
 
     @Autowired
     private OrderService orderService;
@@ -113,31 +114,23 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     ) {
         CaseData caseData = details.getData();
         DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+        int listSize = dynamicList.getListItems().size();
         UUID code = dynamicList.getValue().getCode();
-        String label = dynamicList.getValue().getLabel();
-        String[] dynamicListLabel = label.split(DOUBLE_HYPHEN);
-        String editedFileName = caseData.getCicCase().getOrderTemplateIssued().getFilename();
-        String[] fileNameFields = editedFileName.split(DOUBLE_HYPHEN);
-        String date = fileNameFields[2].substring(0, fileNameFields[2].length() - 4);
-        for (DynamicListElement element : dynamicList.getListItems()) {
-            if (element.getCode().equals(code)) {
-                element.setLabel(dynamicListLabel[0] + DOUBLE_HYPHEN + date + DOUBLE_HYPHEN + "draft.pdf");
-                break;
-            }
-        }
-        for (ListValue<DraftOrderCIC> draftOrderCIC : caseData.getCicCase().getDraftOrderCICList()) {
-            String[] draftOrderFile = draftOrderCIC.getValue()
-                .getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
-            if (label
-                .contains(draftOrderCIC.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
-                && draftOrderFile[2].contains(dynamicListLabel[1])) {
-                draftOrderCIC.getValue().setTemplateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued());
-                draftOrderCIC.getValue().setDraftOrderContentCIC(caseData.getDraftOrderContentCIC());
-            }
-        }
+        IntStream.range(0, listSize)
+            .filter(i -> code.equals(dynamicList.getListItems().get(i).getCode()))
+            .findFirst()
+            .ifPresent(index -> {
+                // draftOrderCICList is in reverse order
+                DraftOrderCIC draftOrderCIC = caseData.getCicCase().getDraftOrderCICList().get(listSize - 1 - index).getValue();
+                draftOrderCIC.setDraftOrderContentCIC(caseData.getDraftOrderContentCIC());
+                draftOrderCIC.setTemplateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued());
+            });
+        // Reset values so that they are not prepopulated when creating another draft order
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
-        caseData.getCicCase().setOrderTemplateIssued(null);
+
+        // set orderTemplateIssued to null here once has been added to list.
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
