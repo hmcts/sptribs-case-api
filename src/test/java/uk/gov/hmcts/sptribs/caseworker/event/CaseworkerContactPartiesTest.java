@@ -31,7 +31,12 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CONTACT_PARTIES;
@@ -168,19 +173,20 @@ class CaseworkerContactPartiesTest {
 
 
     @Test
-    void shouldDisplayTheCorrectMessageWithCommaSeperatoin() {
+    void shouldDisplayTheCorrectMessageWithCommaSeparation() {
+        //Given
         final CaseData caseData = caseData();
-
-        Set<SubjectCIC> sub = new HashSet<>();
-        sub.add(SubjectCIC.SUBJECT);
-        Set<RepresentativeCIC> rep = new HashSet<>();
-        rep.add(RepresentativeCIC.REPRESENTATIVE);
-        Set<RespondentCIC> res = new HashSet<>();
-        res.add(RespondentCIC.RESPONDENT);
-
-        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
-            .representativeContactParties(rep).respondent(res).build();
-        caseData.setContactParties(contactParties);
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .address(SUBJECT_ADDRESS)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .representativeAddress(SOLICITOR_ADDRESS)
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+        caseData.setCicCase(cicCase);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -191,10 +197,10 @@ class CaseworkerContactPartiesTest {
         SubmittedCallbackResponse response =
             caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
 
-
-        assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getRespondent()).hasSize(1);
+        assertThat(caseData.getCicCase().getNotifyPartySubject()).hasSize(1);
+        assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
+        assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
+        assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
         assertThat(response).isNotNull();
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
         assertThat(contactPartiesResponse).isNotNull();
