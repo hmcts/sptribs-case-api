@@ -56,7 +56,7 @@ public final class DocumentUtil {
     }
 
     public static List<ListValue<CaseworkerCICDocument>> cleanDocumentList(List<ListValue<CaseworkerCICDocument>> documentList) {
-        return (documentList == null) ? new ArrayList<>() : documentList;
+        return documentList == null ? new ArrayList<>() : documentList;
     }
 
     public static List<String> validateDecisionDocumentFormat(CICDocument document) {
