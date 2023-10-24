@@ -15,10 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.APPELLANT_FLAG;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASE_FLAG;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_FLAG;
 
 
 public class ManageFlagShowList implements CcdPageConfiguration {
