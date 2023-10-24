@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -250,7 +249,6 @@ class CaseworkerContactPartiesTest {
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeparationIfSubjectIsNull() {
         //Given
-        ReflectionTestUtils.setField(caseWorkerContactParties, "enableSNI4875", true);
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -294,7 +292,6 @@ class CaseworkerContactPartiesTest {
     @Test
     void shouldDisplayTheCorrectFailureMessageIfExceptionThrownByNotification() {
         //Given
-        ReflectionTestUtils.setField(caseWorkerContactParties, "enableSNI4875", true);
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
