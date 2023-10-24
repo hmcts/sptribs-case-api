@@ -97,6 +97,10 @@ public class Login {
         loginAs("st-super@mailinator.com");
     }
 
+    public void loginAsStRespondentUser() {
+        loginAs("st-respondent5@mailinator.com");
+    }
+
     public void loginAsStCitizen1User() {
         loginAsDssUser("st-citizen1@mailinator.com");
     }

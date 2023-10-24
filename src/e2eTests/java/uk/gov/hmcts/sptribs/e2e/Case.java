@@ -25,7 +25,6 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
