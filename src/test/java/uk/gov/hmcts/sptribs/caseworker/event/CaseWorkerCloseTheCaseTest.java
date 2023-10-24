@@ -169,4 +169,22 @@ class CaseWorkerCloseTheCaseTest {
         assert (response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
 
+    @Test
+    void shouldValidateUploadedDocumentNull() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CloseCase closeCase = CloseCase.builder().documents(null).build();
+        final CaseData caseData = CaseData.builder()
+            .closeCase(closeCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getData().getCloseCase().getDocuments()).isNotNull();
+        assertThat(response.getErrors()).isEmpty();
+    }
+
 }
