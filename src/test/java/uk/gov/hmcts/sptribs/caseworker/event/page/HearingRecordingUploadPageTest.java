@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +66,7 @@ public class HearingRecordingUploadPageTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getData().getListing().getSummary().getRecFile()).isNotNull();
+        assertThat(response.getData().getListing().getSummary().getRecFile()).isEqualTo(new ArrayList<>());
         assertThat(response.getErrors()).isEmpty();
     }
 }

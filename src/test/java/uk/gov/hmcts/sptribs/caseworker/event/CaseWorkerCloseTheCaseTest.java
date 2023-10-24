@@ -183,7 +183,7 @@ class CaseWorkerCloseTheCaseTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getData().getCloseCase().getDocuments()).isNotNull();
+        assertThat(response.getData().getCloseCase().getDocuments()).isEqualTo(new ArrayList<>());
         assertThat(response.getErrors()).isEmpty();
     }
 
