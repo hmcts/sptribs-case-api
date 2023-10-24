@@ -5,10 +5,8 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
