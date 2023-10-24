@@ -37,6 +37,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -65,7 +66,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
-            .forStates(CaseManagement)
+            .forStates(CaseManagement, ReadyToList)
             .name("Hearings: Create listing")
             .description("Hearings: Create listing")
             .showSummary()
@@ -166,7 +167,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
         String selectedRegion = caseData.getListing().getSelectedRegionVal();
-        String regionId = getRegionId(selectedRegion);
+        String regionId = locationService.getRegionId(selectedRegion);
 
         if (null != regionId) {
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
@@ -191,13 +192,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .readonly(Listing::getRegionsMessage)
             .optional(Listing::getRegionList)
             .done();
-    }
-
-    private String getRegionId(String selectedRegion) {
-        String[] values = selectedRegion != null
-            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
-            : null;
-        return values != null && values.length > 0 ? values[0] : null;
     }
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {

@@ -66,6 +66,12 @@ public class Listing {
     private HearingFormat hearingFormat;
 
     @CCD(
+        label = "Case eligible for a short notice hearing?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo shortNotice;
+
+    @CCD(
         label = "Hearing venue",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
