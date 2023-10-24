@@ -176,6 +176,12 @@ public class CicCase {
     private FlagLevel flagLevel;
 
     @CCD(
+        label = "",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList flagDynamicList;
+
+    @CCD(
         label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         categoryID = "TD"
