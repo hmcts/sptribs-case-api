@@ -54,6 +54,9 @@ core_case_data:
   search:
     page_size: 100
 
+case-api:
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
+
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
 
@@ -85,6 +88,7 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
+  enable_sni4875: ${ENABLED_SNI_4875:false}
 
 feature:
   contact-parties:
