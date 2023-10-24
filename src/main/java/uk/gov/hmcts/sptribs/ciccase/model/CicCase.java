@@ -163,6 +163,11 @@ public class CicCase {
     private String flagAdditionalDetail;
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Status flagStatus;
+
+    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         label = "Enter a flag type"
     )
