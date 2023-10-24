@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -118,7 +120,20 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             caseData.getListing().setAdditionalHearingDate(null);
         }
 
-        recordListHelper.getNotificationParties(caseData);
+        Set<NotificationParties> partiesSet = new HashSet<>();
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+            partiesSet.add(NotificationParties.SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+            partiesSet.add(NotificationParties.REPRESENTATIVE);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+            partiesSet.add(NotificationParties.RESPONDENT);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            partiesSet.add(NotificationParties.APPLICANT);
+        }
+        caseData.getCicCase().setHearingNotificationParties(partiesSet);
 
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
