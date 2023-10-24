@@ -37,6 +37,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
         buildCasePartiesTab(configBuilder);
+        buildCaseDocumentTab(configBuilder);
         buildOrderTab(configBuilder);
         buildBundlesTab(configBuilder);
         buildHearing(configBuilder);
