@@ -356,26 +356,6 @@ public class CaseData {
         return "";
     }
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String firstHearingDate;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String hearingVenueName;
-
-    public String getFirstHearingDate() {
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        if (!ObjectUtils.isEmpty(listing) && !ObjectUtils.isEmpty(listing.getDate())) {
-            return dateFormatter.format(listing.getDate());
-        }
-        return "";
-    }
-
-    public String getHearingVenueName() {
-        if (!ObjectUtils.isEmpty(listing)) {
-            return listing.getHearingVenueNameAndAddress();
-        }
-        return "";
-    }
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
