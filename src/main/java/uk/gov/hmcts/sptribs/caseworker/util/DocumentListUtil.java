@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -21,6 +22,9 @@ import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildL
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
 
 public final class DocumentListUtil {
+
+    private static final String DOCUMENT_BINARY_PATH = "documents/%s/binary";
+
     private DocumentListUtil() {
 
     }
@@ -43,10 +47,32 @@ public final class DocumentListUtil {
 
         List<DynamicListElement> dynamicListElements = docList
             .stream()
+            .filter(CaseworkerCICDocument::isDocumentValidForEmail)
             .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
                 + "--" + doc.getDocumentLink().getUrl()
                 + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
             .collect(Collectors.toList());
+
+        return DynamicMultiSelectList
+            .builder()
+            .listItems(dynamicListElements)
+            .value(new ArrayList<>())
+            .build();
+    }
+
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
+        List<CaseworkerCICDocument> docList = prepareList(data);
+        String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+        for (CaseworkerCICDocument doc : docList) {
+            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
+                "/");
+            String url = String.format(apiUrl, documentId);
+            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + url + ")").code(UUID.randomUUID()).build();
+            dynamicListElements.add(element);
+        }
 
         return DynamicMultiSelectList
             .builder()
@@ -97,13 +123,10 @@ public final class DocumentListUtil {
 
     private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
-        for (ListValue<Listing> listing : caseData.getHearingList()) {
-            if (null != listing.getValue() && null != listing.getValue().getSummary()
-                && listing.getValue().getHearingStatus() == HearingState.Complete
-                && !CollectionUtils.isEmpty(listing.getValue().getSummary().getRecFile())) {
-                for (ListValue<CaseworkerCICDocument> document : caseData.getListing().getSummary().getRecFile()) {
-                    hearingSummaryDocs.add(document.getValue());
-                }
+        if (null != caseData.getListing() && null != caseData.getListing().getSummary()
+            && !CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getListing().getSummary().getRecFile()) {
+                hearingSummaryDocs.add(document.getValue());
             }
         }
         return hearingSummaryDocs;
@@ -120,6 +143,4 @@ public final class DocumentListUtil {
     public static List<ListValue<CaseworkerCICDocument>> getAllOrderDocuments(CicCase cicCase) {
         return buildListValues(getOrderDocuments(cicCase));
     }
-
-
 }
