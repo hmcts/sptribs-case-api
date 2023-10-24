@@ -46,6 +46,7 @@ public class HearingRecordingUploadPageTest {
         //Then
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
     }
+
     @Test
     void shouldValidateUploadedDocumentListNull() {
         //Given
