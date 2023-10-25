@@ -10,6 +10,9 @@ dependencies:
   - name: java
     version: 5.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+  - name: sptribs-frontend
+    version: 0.0.23
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
     version: 9.0.20
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
