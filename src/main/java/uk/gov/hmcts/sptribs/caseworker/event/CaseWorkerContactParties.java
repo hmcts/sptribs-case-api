@@ -57,6 +57,12 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     @Value("${feature.contact-parties.enabled}")
     private boolean contactPartiesEnabled;
 
+    @Value("${case-api.url}")
+    private String baseUrl;
+
+    @Value("${toggle.enable_sni4875}")
+    private boolean enableSNI4875;
+
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
     private static final CcdPageConfiguration contactPartiesSelectDocument = new ContactPartiesSelectDocument();
 
@@ -133,6 +139,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
         var cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
+
         try {
             sendContactPartiesNotification(details, cicCase, caseNumber);
         } catch (Exception notificationException) {
@@ -149,6 +156,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             .build();
     }
 
+
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             contactPartiesNotification.sendToSubject(details.getData(), caseNumber);
@@ -163,5 +171,4 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
         }
     }
-
 }

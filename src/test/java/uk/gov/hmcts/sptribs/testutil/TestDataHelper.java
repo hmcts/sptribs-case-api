@@ -415,6 +415,7 @@ public class TestDataHelper {
         return documentList;
     }
 
+
     public static List<ListValue<Flags>> getAppellantFlags() {
 
         Flags appellantFlag = Flags.builder().partyName(TestConstants.APPLICANT_FIRST_NAME).details(getFlagDetails()).build();
@@ -454,6 +455,7 @@ public class TestDataHelper {
         flagDetailList.add(flagDetailListValue);
         return flagDetailList;
     }
+
 
     public static DynamicMultiSelectList getDynamicMultiSelectDocumentListWithXElements(int numberOfDocuments) {
         List<DynamicListElement> elements = new ArrayList<>();
