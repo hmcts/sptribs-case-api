@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -36,7 +34,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
@@ -212,7 +209,7 @@ public class NotificationHelper {
         while (count < docAttachLimit) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
-            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_STRING);
+            uploadedDocuments.put(CASE_DOCUMENT + count, "");
 
             final String message = String.format(
                 "Document not Available: %d, %s with value %s",

@@ -44,7 +44,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
@@ -326,7 +325,7 @@ public class NotificationHelperTest {
             .containsKey("DocumentAvailable1")
             .containsKey("DocumentAvailable2")
             .containsEntry("CaseDocument1", "5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
-            .containsEntry("CaseDocument2", EMPTY_STRING)
+            .containsEntry("CaseDocument2", "")
             .containsEntry("DocumentAvailable1", YES)
             .containsEntry("DocumentAvailable2", NO);
     }
