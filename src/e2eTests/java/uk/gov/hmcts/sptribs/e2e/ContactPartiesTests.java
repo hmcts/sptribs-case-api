@@ -15,8 +15,8 @@ import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseNumber;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
