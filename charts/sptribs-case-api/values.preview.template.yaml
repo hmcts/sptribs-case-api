@@ -124,9 +124,6 @@ ccd:
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
       autoscaling:
         enabled: false
-    postgresql:
-      persistence:
-        enabled: false
 
   ccd-user-profile-api:
     java:
@@ -429,6 +426,7 @@ sptribs-frontend:
     ingressHost: frontend-${SERVICE_FQDN}
     environment:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CASE_API_URL: https://${SERVICE_FQDN}
       SKIP_DIV_CASE_CHECK: true
 
 aac-manage-case-assignment:
