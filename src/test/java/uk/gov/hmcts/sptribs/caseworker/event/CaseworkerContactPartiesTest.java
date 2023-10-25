@@ -197,6 +197,7 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Which parties do you want to contact is required.");
 
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
 
