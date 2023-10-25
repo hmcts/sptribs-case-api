@@ -52,7 +52,7 @@ public class CaseworkerDocumentManagementRemoveTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseworkerDocumentManagementRemove.setCaseFileViewAndDocumentManagementEnabled(true);
+        caseworkerDocumentManagementRemove.setDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
