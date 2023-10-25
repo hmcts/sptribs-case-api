@@ -17,9 +17,9 @@ public class DocumentManagement {
         this.page = page;
     }
 
-    public void uploadDocuments() {
+    public void uploadDocuments(String documentCategory, String documentDescription, String documentName) {
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(60000));
-        uploadDocument(page, "sample_file.pdf");
+        uploadDocument(page, documentCategory, documentDescription, documentName);
         clickButton(page, "Continue");
 
         assertThat(page.locator(".check-your-answers h2.heading-h2"))
@@ -34,11 +34,34 @@ public class DocumentManagement {
             .hasText("History", textOptionsWithTimeout(60000));
     }
 
-    private void uploadDocument(Page page, String file) {
+    public void amendDocument(String documentCategory, String documentDescription, String documentName) {
+        assertThat(page.locator("h1")).hasText("Select documents", textOptionsWithTimeout(60000));
+        String documentOptionSelector = "//select[@id='cicCaseAmendDocumentList']//option[contains(text(), '" + documentName + "')]";
+        String documentToSelect = page.locator(documentOptionSelector).textContent();
+        page.selectOption("#cicCaseAmendDocumentList", new SelectOption().setLabel(documentToSelect));
+        clickButton(page, "Continue");
+
+        assertThat(page.locator("h1")).hasText("Amend case documents", textOptionsWithTimeout(60000));
+        String amendedDocumentCategory = "A - Correspondence from the CICA";
+        page.selectOption("#cicCaseSelectedDocument_documentCategory", new SelectOption().setLabel(documentCategory));
+        String amendedDocumentDescription = "This is a test to amend document";
+        page.locator("#cicCaseSelectedDocument_documentEmailContent").fill(documentDescription);
+        clickButton(page, "Continue");
+
+        assertThat(page.locator(".check-your-answers h2.heading-h2"))
+            .hasText("Check your answers", textOptionsWithTimeout(60000));
+        clickButton(page, "Save and continue");
+
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Document Updated", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+    }
+
+    private void uploadDocument(Page page, String documentCategory, String documentDescription, String documentName) {
         clickButton(page, "Add new");
-        page.selectOption("#newCaseworkerCICDocument_0_documentCategory", new SelectOption().setLabel("A - Notice of Appeal"));
-        page.locator("#newCaseworkerCICDocument_0_documentEmailContent").fill("This is a test document");
-        page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + file));
+        page.selectOption("#newCaseworkerCICDocument_0_documentCategory", new SelectOption().setLabel(documentCategory));
+        page.locator("#newCaseworkerCICDocument_0_documentEmailContent").fill(documentDescription);
+        page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
     }
