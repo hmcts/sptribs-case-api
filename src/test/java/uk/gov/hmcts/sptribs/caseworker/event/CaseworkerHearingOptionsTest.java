@@ -1,0 +1,172 @@
+package uk.gov.hmcts.sptribs.caseworker.event;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_HEARING_OPTIONS;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
+import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
+import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedHearingVenueData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedRegionData;
+
+@ExtendWith(MockitoExtension.class)
+public class CaseworkerHearingOptionsTest {
+
+    @Mock
+    private RecordListHelper recordListHelper;
+
+    @InjectMocks
+    private CaseworkerHearingOptions caseworkerHearingOptions;
+
+    @Test
+    void shouldAddConfigurationToConfigBuilder() {
+        //Given
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        //When
+        caseworkerHearingOptions.configure(configBuilder);
+
+        //Then
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .contains(CASEWORKER_HEARING_OPTIONS);
+    }
+
+    @Test
+    void shouldPopulateHearingVenuesDataWithPreviouslySelectedValuesIfPresent() {
+        //Given
+        final CaseData caseDataBefore = caseData();
+        final Listing recordListing = new Listing();
+        recordListing.setHearingVenues(getMockedHearingVenueData());
+        caseDataBefore.setListing(recordListing);
+        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        caseDetailsBefore.setData(caseDataBefore);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
+
+        //Then
+        verifyNoInteractions(recordListHelper);
+        assertThat(response.getData().getListing().getHearingVenues()).isNotNull();
+        assertThat(response.getData().getListing().getHearingVenues().getValueLabel())
+            .isEqualTo("courtname-courtAddress");
+    }
+
+    @Test
+    void shouldPopulateHearingVenuesIfNotAlreadyPopulatedAndSavedToCase() {
+        //Given
+        final CaseData caseData = caseData();
+        final Listing recordListing = new Listing();
+        recordListing.setRegionList(getMockedRegionData());
+        caseData.setListing(recordListing);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetailsBefore.setData(caseData());
+
+        //When
+        caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
+
+        //Then
+        verify(recordListHelper).populateVenuesData(caseData);
+    }
+
+    @Test
+    void shouldNotPopulateHearingVenuesIfVenuesArePopulated() {
+        //Given
+        final CaseData caseData = caseData();
+        final Listing recordListing = new Listing();
+        recordListing.setHearingVenues(getMockedHearingVenueData());
+        caseData.setListing(recordListing);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetailsBefore.setData(caseData());
+
+        //When
+        caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
+
+        //Then
+        verifyNoInteractions(recordListHelper);
+    }
+
+    @Test
+    void shouldCallRecordListHelperToPopulateRegionDataIfRegionListIsNull() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        //When
+        caseworkerHearingOptions.aboutToStart(caseDetails);
+
+        //Then
+        verify(recordListHelper).regionData(caseData);
+    }
+
+    @Test
+    void shouldNotCallRecordListHelperToPopulateRegionDataIfRegionListIsPopulated() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.getListing().setRegionList(getMockedRegionData());
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        //When
+        caseworkerHearingOptions.aboutToStart(caseDetails);
+
+        //Then
+        verifyNoInteractions(recordListHelper);
+    }
+
+    @Test
+    void shouldChangeStateOnAboutToSubmitIfCurrentStateIsCaseManagement() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setState(CaseManagement);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getState()).isEqualTo(ReadyToList);
+    }
+
+    @Test
+    void shouldNotChangeStateOnAboutToSubmitIfCurrentStateIsReadyToList() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setState(ReadyToList);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getState()).isEqualTo(ReadyToList);
+    }
+}

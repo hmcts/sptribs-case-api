@@ -25,15 +25,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -55,9 +53,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     @Autowired
     private RecordListHelper recordListHelper;
-
-    @Autowired
-    private LocationService locationService;
 
     @Autowired
     private ListingCreatedNotification listingCreatedNotification;
@@ -87,13 +82,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList regionList = locationService.getAllRegions();
-        caseData.getListing().setRegionList(regionList);
+        if (isNull(caseData.getListing().getRegionList())) {
+            recordListHelper.regionData(caseData);
+        }
 
-        String regionMessage = regionList == null || regionList.getListItems().isEmpty()
-            ? "Unable to retrieve Region data"
-            : null;
-        caseData.getListing().setRegionsMessage(regionMessage);
         caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -166,19 +158,11 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
-        String selectedRegion = caseData.getListing().getSelectedRegionVal();
-        String regionId = locationService.getRegionId(selectedRegion);
 
-        if (null != regionId) {
-            DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
-            caseData.getListing().setHearingVenues(hearingVenueList);
-
-            String hearingVenueMessage = hearingVenueList == null || hearingVenueList.getListItems().isEmpty()
-                ? "Unable to retrieve Hearing Venues data"
-                : null;
-            caseData.getListing().setHearingVenuesMessage(hearingVenueMessage);
-
+        if (isNull(caseData.getListing().getHearingVenues())) {
+            recordListHelper.populateVenuesData(caseData);
         }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

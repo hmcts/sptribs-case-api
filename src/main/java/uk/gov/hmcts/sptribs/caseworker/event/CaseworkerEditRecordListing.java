@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -56,7 +57,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     private RecordListHelper recordListHelper;
 
     @Autowired
-    private ListingUpdatedNotification liistingUpdatedNotification;
+    private ListingUpdatedNotification listingUpdatedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -86,12 +87,15 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
+
         if (!StringUtils.isEmpty(caseData.getListing().getReadOnlyHearingVenueName())) {
             caseData.getListing().setHearingVenueNameAndAddress(null);
         }
-        if (caseData.getListing().getRegionList() == null) {
+
+        if (isNull(caseData.getListing().getRegionList())) {
             recordListHelper.regionData(caseData);
         }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
@@ -129,13 +133,13 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         String caseNumber = data.getHyphenatedCaseRef();
 
         if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-            liistingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
+            listingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
         }
         if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-            liistingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
+            listingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
         }
         if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-            liistingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
+            listingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
         return SubmittedCallbackResponse.builder()
@@ -160,7 +164,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         final CaseData caseData = details.getData();
         final CaseData caseDataBefore = detailsBefore.getData();
 
-        recordListHelper.populatedVenuesData(caseData);
+        recordListHelper.populateVenuesData(caseData);
 
         if (null != caseDataBefore.getListing().getReadOnlyHearingVenueName()
             && null != caseData.getListing().getSelectedRegionVal()
@@ -174,5 +178,4 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .data(caseData)
             .build();
     }
-
 }

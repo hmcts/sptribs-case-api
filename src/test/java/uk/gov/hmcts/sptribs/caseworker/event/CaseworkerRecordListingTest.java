@@ -26,7 +26,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +34,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -50,9 +50,6 @@ class CaseworkerRecordListingTest {
 
     @Mock
     private RecordListHelper recordListHelper;
-
-    @Mock
-    private LocationService locationService;
 
     @InjectMocks
     private CaseworkerRecordListing caseworkerRecordListing;
@@ -154,15 +151,27 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
-        AboutToStartOrSubmitResponse<CaseData, State> response
-            = caseworkerRecordListing.aboutToStart(updatedCaseDetails);
+        caseworkerRecordListing.aboutToStart(updatedCaseDetails);
 
         //Then
-        assertThat(response.getData().getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
-        assertThat(response.getData().getListing().getRegionList().getListItems()).hasSize(1);
-        assertThat(response.getData().getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+        verify(recordListHelper).regionData(caseData);
+    }
 
+    @Test
+    void shouldNotPopulateRegionDataInAboutToStartCallbackIfAlreadyPresent() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.getListing().setRegionList(getMockedRegionData());
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        caseworkerRecordListing.aboutToStart(updatedCaseDetails);
+
+        //Then
+        verifyNoInteractions(recordListHelper);
     }
 
     @Test
@@ -178,20 +187,35 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
+        caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getListing().getHearingVenues()
-            .getValue().getLabel()).isEqualTo("courtname-courtAddress");
-        assertThat(response.getData().getListing().getHearingVenues().getListItems()).hasSize(1);
-        assertThat(response.getData().getListing().getHearingVenues()
-            .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
-
+        verify(recordListHelper).populateVenuesData(caseData);
     }
 
+    @Test
+    void shouldNotPopulateHearingVenueDataInMidEventCallbackIfAlreadyPresent() {
+        //Given
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final Listing recordListing = new Listing();
+        recordListing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        recordListing.setRegionList(getMockedRegionData());
+        recordListing.setHearingVenues(getMockedHearingVenueData());
+        caseData.setListing(recordListing);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
+
+        //Then
+        verifyNoInteractions(recordListHelper);
+    }
 
     @Test
     void shouldReturnErrorsIfAllNotificationPartiesSelected() {

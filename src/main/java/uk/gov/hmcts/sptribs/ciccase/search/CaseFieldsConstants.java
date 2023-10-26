@@ -8,6 +8,8 @@ public final class CaseFieldsConstants {
     public static final String REPRESENTATIVE_REFERENCE = "cicCaseRepresentativeReference";
     public static final String SUBJECT_ADDRESS = "cicCaseAddress";
     public static final String HEARING_LOCATION = "hearingLocation";
+    public static final String HEARING_FORMAT = "hearingFormat";
+    public static final String SHORT_NOTICE = "shortNotice";
     public static final String CASE_CATEGORY = "cicCaseCaseCategory";
     public static final String CASE_SUBCATEGORY = "cicCaseCaseSubcategory";
     public static final String APPLICANT_NAME = "cicCaseApplicantFullName";
@@ -20,5 +22,4 @@ public final class CaseFieldsConstants {
     // required for Checkstyle
     private CaseFieldsConstants() {
     }
-
 }

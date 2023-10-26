@@ -1,18 +1,19 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_HEARING_OPTIONS;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
@@ -22,10 +23,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
+@Component
 public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
-    private LocationService locationService;
+    private RecordListHelper recordListHelper;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -59,8 +61,10 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        final DynamicList regionList = locationService.getAllRegions();
-        caseData.getListing().setRegionList(regionList);
+
+        if (isNull(caseData.getListing().getRegionList())) {
+            recordListHelper.regionData(caseData);
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -71,12 +75,14 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
                                                                   CaseDetails<CaseData, State> detailsBefore) {
 
         final CaseData caseData = details.getData();
-        String selectedRegion = caseData.getListing().getSelectedRegionVal();
-        String regionId = locationService.getRegionId(selectedRegion);
+        final CaseData caseDataBefore = detailsBefore.getData();
 
-        if (regionId != null) {
-            DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
-            caseData.getListing().setHearingVenues(hearingVenueList);
+        // for edit journey we need to ensure previously entered venue value is retained
+        if (!isNull(caseDataBefore.getListing().getHearingVenues())) {
+            caseData.getListing().setHearingVenues(caseDataBefore.getListing().getHearingVenues());
+            caseData.getListing().getHearingVenues().setValue(caseDataBefore.getListing().getHearingVenues().getValue());
+        } else if (isNull(caseData.getListing().getHearingVenues())) {
+            recordListHelper.populateVenuesData(caseData);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
