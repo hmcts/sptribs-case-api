@@ -31,7 +31,9 @@ public enum Actions {
     TestChangeState("Test change state"),
     ReferCaseToJudge("Refer case to judge"),
     ReferCaseToLegalOfficer("Refer case to legal officer"),
-    UploadDocuments("Document management: Upload");
+    UploadDocuments("Document management: Upload"),
+    AmendDocuments("Document management: Amend"),
+    RemoveDocuments("Document management: Remove");
 
     public final String label;
 

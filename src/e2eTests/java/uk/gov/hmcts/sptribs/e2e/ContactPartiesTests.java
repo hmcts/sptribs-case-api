@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 
@@ -16,45 +15,49 @@ import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseNumber;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class ContactPartiesTests extends Base {
+    private final String documentCategory = "A - Notice of Appeal";
+    private final String documentDescription = "This is a test to upload document";
+    private final String documentName = "sample_file.pdf";
 
     @Order(1)
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToContactParties() {
         Page page = getPage();
-        Login login = new Login(page);
-        login.loginAsCaseWorker();
-        Case newCase = new Case(page);
-        newCase.createCase(Representative);
-        newCase.buildCase();
+        Case newCase = createAndBuildCase(page, Representative);
+
         newCase.startNextStepAction(UploadDocuments);
         DocumentManagement docManagement = new DocumentManagement(page);
-        docManagement.uploadDocuments();
+        docManagement.uploadDocuments(documentCategory, documentDescription, documentName);
+
         newCase.startNextStepAction(ContactParties);
         completeContactPartiesJourney(page, ContactParties);
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
     @Order(2)
-    @Disabled
+    @RepeatedIfExceptionsTest
     public void respondentShouldBeAbleToContactParties() {
         Page page = getPage();
-        Login login = new Login(page);
-        login.loginAsCaseWorker();
-        Case newCase = new Case(page);
-        final String caseNumber = newCase.createCase(Representative);
-        newCase.buildCase();
+        Case newCase = createAndBuildCase(page, Representative);
+        final String caseNumber = getCaseNumber(page);
+
         newCase.startNextStepAction(UploadDocuments);
         DocumentManagement docManagement = new DocumentManagement(page);
-        docManagement.uploadDocuments();
+        docManagement.uploadDocuments(documentCategory, documentDescription, documentName);
+
         clickLink(page, "Sign out");
+        Login login = new Login(page);
         login.loginAsStRespondentUser();
         page.navigate(getCaseUrl(caseNumber));
         assertThat(page.locator("ccd-markdown markdown h3").first())
             .hasText("Case number: " + caseNumber, textOptionsWithTimeout(60000));
+
         newCase.startNextStepAction(CicaContactParties);
         completeContactPartiesJourney(page, CicaContactParties);
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
@@ -85,7 +88,7 @@ public class ContactPartiesTests extends Base {
             && !page.isChecked("input[type='checkbox'][value='TribunalCIC']")) {
             getCheckBoxByLabel(page, "Tribunal").check();
         }
-        page.getByLabel("Message").fill("test123");
+        getTextBoxByLabel(page, "Message").fill("test123");
         clickButton(page, "Continue");
         assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
