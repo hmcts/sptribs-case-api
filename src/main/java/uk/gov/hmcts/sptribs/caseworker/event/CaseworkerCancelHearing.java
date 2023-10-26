@@ -146,7 +146,9 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         if (cicCase.getHearingNotificationParties().contains(NotificationParties.RESPONDENT)) {
             cancelHearingNotification.sendToRespondent(data, caseNumber);
         }
-
+        if (cicCase.getHearingNotificationParties().contains(NotificationParties.APPLICANT)) {
+            cancelHearingNotification.sendToApplicant(data, caseNumber);
+        }
     }
 
 }
