@@ -132,7 +132,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         } catch (Exception notificationException) {
             log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Contact Parties notification failed %n## Please resend again"))
+                .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the notification"))
                 .build();
         }
         return SubmittedCallbackResponse.builder()
