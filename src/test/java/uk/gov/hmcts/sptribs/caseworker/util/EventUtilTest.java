@@ -370,4 +370,21 @@ public class EventUtilTest {
         assertThat(data.getDssHeaderDetails()).isEqualTo("Subject of this case");
 
     }
+
+    @Test
+    void shouldSuccessfullySetDSSMetadata() {
+        //Given
+        final CaseData data = new CaseData();
+
+        //When
+        EventUtil.setDssMetaData(data);
+
+        //Then
+        assertThat(data.getDssQuestion1()).isEqualTo("Full Name");
+        assertThat(data.getDssQuestion3()).isEqualTo("Date of Birth");
+        assertThat(data.getDssAnswer1()).isEqualTo("case_data.dssCaseDataSubjectFullName");
+        assertThat(data.getDssAnswer3()).isEqualTo("case_data.dssCaseDataSubjectDateOfBirth");
+        assertThat(data.getDssHeaderDetails()).isEqualTo("Subject of this case");
+
+    }
 }
