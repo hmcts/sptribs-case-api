@@ -43,7 +43,7 @@ public class CaseworkerDssUpdateCase implements CCDConfig<CaseData, State, UserR
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getDssUpdateEvent())
-            .forStates(State.DSS_Submitted)
+            .forAllStates()
             .name("DSS Update case (cic)")
             .description("Application DSS Update (cic)")
             .retries(120, 120)
