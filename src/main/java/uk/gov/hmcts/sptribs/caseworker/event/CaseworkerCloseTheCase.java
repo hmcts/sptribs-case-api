@@ -43,7 +43,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.cleanDocumentList;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
@@ -139,9 +138,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
-        uploadedDocuments = cleanDocumentList(uploadedDocuments);
         final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-        data.getCloseCase().setDocuments(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

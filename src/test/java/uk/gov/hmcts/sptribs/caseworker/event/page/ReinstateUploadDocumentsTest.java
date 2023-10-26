@@ -40,24 +40,4 @@ public class ReinstateUploadDocumentsTest {
         //Then
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
     }
-
-    @Test
-    void shouldValidateUploadedDocumentListNull() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(null)
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getData().getCicCase().getReinstateDocuments()).isEqualTo(new ArrayList<>());
-        assertThat(response.getErrors()).isEmpty();
-    }
 }

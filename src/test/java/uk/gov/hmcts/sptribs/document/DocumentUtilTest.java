@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.cleanDocumentList;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
@@ -90,26 +89,6 @@ class DocumentUtilTest {
 
         //Then
         assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
-    }
-
-    @Test
-    void shouldCleanDocumentListWhenNull() {
-        //When
-        final List<ListValue<CaseworkerCICDocument>> documentList = null;
-        final List<ListValue<CaseworkerCICDocument>> newDocumentList = cleanDocumentList(documentList);
-
-        //Then
-        assertThat(newDocumentList).isEqualTo(new ArrayList<>());
-    }
-
-    @Test
-    void shouldCleanDocumentListWhenNotNull() {
-        //When
-        final List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList();
-        final List<ListValue<CaseworkerCICDocument>> newDocumentList = cleanDocumentList(documentList);
-
-        //Then
-        assertThat(newDocumentList).isEqualTo(documentList);
     }
 
     private DocumentInfo documentInfo() {

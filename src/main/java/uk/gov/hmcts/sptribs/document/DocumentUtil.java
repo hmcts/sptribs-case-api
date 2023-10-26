@@ -26,6 +26,7 @@ public final class DocumentUtil {
     }
 
     public static void updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> documentList) {
+        documentList = documentList == null ? new ArrayList<>() : documentList;
         documentList.forEach(doc -> doc.getValue().getDocumentLink()
             .setCategoryId(doc.getValue().getDocumentCategory().getCategory()));
     }
@@ -53,10 +54,6 @@ public final class DocumentUtil {
         }
 
         return errors;
-    }
-
-    public static List<ListValue<CaseworkerCICDocument>> cleanDocumentList(List<ListValue<CaseworkerCICDocument>> documentList) {
-        return documentList == null ? new ArrayList<>() : documentList;
     }
 
     public static List<String> validateDecisionDocumentFormat(CICDocument document) {
