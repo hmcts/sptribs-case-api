@@ -8,11 +8,15 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseLocation;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -32,6 +36,8 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -123,7 +129,12 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+
         data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
+        data.setCaseManagementCategory(getCategoryList(data));
+        data.setCaseManagementLocation(CaseLocation.builder()
+            .baseLocation("366559").region("11")
+            .build());
 
         initialiseFlags(data);
 
@@ -131,6 +142,20 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .data(data)
             .state(submittedDetails.getState())
             .build();
+    }
+
+    private DynamicList getCategoryList(CaseData data) {
+        List<String> categories = new ArrayList<>();
+        categories.add("Assessment");
+        categories.add("Eligibility");
+
+        DynamicList categoryList = DynamicListUtil.createDynamicList(categories);
+        DynamicListElement selectedCategory = DynamicListElement.builder()
+            .label(data.getCicCase().getCaseCategory().getLabel())
+            .code(UUID.randomUUID()).build();
+        categoryList.setValue(selectedCategory);
+
+        return categoryList;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
