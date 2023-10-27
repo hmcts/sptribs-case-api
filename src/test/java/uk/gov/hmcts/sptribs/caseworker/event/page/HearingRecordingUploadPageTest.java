@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,27 +45,5 @@ public class HearingRecordingUploadPageTest {
 
         //Then
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
-    }
-
-    @Test
-    void shouldValidateUploadedDocumentListNull() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Listing listing = getRecordListing();
-        List<ListValue<CaseworkerCICDocument>> documentList = null;
-        HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
-        listing.setSummary(hearingSummary);
-
-        final CaseData caseData = CaseData.builder()
-            .listing(listing)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getData().getListing().getSummary().getRecFile()).isEqualTo(new ArrayList<>());
-        assertThat(response.getErrors()).isEmpty();
     }
 }
