@@ -1,10 +1,8 @@
-package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.caseworker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,33 +13,29 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-
-import static java.util.Objects.requireNonNull;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static java.util.Collections.emptySet;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.sptribs.testutil.ITEventConstants.CASEWORKER_ADD_NOTE;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.COURT_ADMIN_CIC;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamFailure;
+import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLEAR_HEARING_OPTIONS;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingFormat.FACE_TO_FACE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedHearingVenueData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedRegionData;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -49,10 +43,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class CaseworkerAddNoteIT {
+public class CaseworkerClearHearingOptionsIT {
 
-    private static final String CASEWORKER_ADD_NOTE_RESPONSE =
-        "classpath:caseworker-add-note-response.json";
+    private static final String CASEWORKER_CLEAR_HEARING_OPTIONS_RESPONSE =
+        "classpath:caseworker-clear-hearing-options-response.json";
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,9 +56,6 @@ class CaseworkerAddNoteIT {
 
     @MockBean
     private WebMvcConfig webMvcConfig;
-
-    @MockBean
-    private Clock clock;
 
     @BeforeAll
     static void setUp() {
@@ -76,61 +67,37 @@ class CaseworkerAddNoteIT {
         IdamWireMock.stopAndReset();
     }
 
-    @BeforeEach
-    void setClock() {
-        when(clock.instant()).thenReturn(Instant.parse("2021-06-18T12:00:00.000Z"));
-        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
-    }
-
     @Test
-    void shouldSuccessfullyAddCaseNoteToCaseDataWhenThereAreNoExistingCaseNotes() throws Exception {
+    void shouldClearPreviouslyPopulatedHearingOptionsOnAboutToSubmit() throws Exception {
         final CaseData caseData = caseData();
-        caseData.setNote("This is a test note");
+        final Listing listing = Listing.builder()
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .build();
+        caseData.setListing(listing);
 
-        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, COURT_ADMIN_CIC);
-
-        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_ADD_NOTE)))
+                    CASEWORKER_CLEAR_HEARING_OPTIONS)))
             .accept(APPLICATION_JSON))
             .andDo(print())
             .andExpect(
                 status().isOk())
-            .andExpect(
-                content().json(expectedResponse(CASEWORKER_ADD_NOTE_RESPONSE))
-            );
-    }
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
 
-    @Test
-    void shouldThrowUnauthorizedExceptionWhenAboutToSubmitIsInvokedAndIdamThrowsUnauthorized() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setNote("This is a test note");
-
-        stubForIdamFailure();
-
-        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(
-                    caseData,
-                    CASEWORKER_ADD_NOTE)))
-            .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isUnauthorized()
-            )
-            .andExpect(
-                result -> assertThat(result.getResolvedException()).isExactlyInstanceOf(FeignException.Unauthorized.class)
-            )
-            .andExpect(
-                result -> assertThat(requireNonNull(result.getResolvedException()).getMessage())
-                    .contains("Invalid idam credentials")
-            );
+        assertThatJson(response)
+            .isEqualTo(json(expectedResponse(CASEWORKER_CLEAR_HEARING_OPTIONS_RESPONSE)));
     }
 }
