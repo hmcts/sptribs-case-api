@@ -103,7 +103,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData,baseUrl);
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData,baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -132,7 +132,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         } catch (Exception notificationException) {
             log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Contact Parties notification failed %n## Please resend again"))
+                .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the notification"))
                 .build();
         }
         return SubmittedCallbackResponse.builder()
