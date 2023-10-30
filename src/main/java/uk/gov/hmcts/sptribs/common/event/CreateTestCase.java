@@ -115,7 +115,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
 
-        updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
+        data.getCicCase().setApplicantDocumentsUploaded(
+            updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded())
+        );
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
 
