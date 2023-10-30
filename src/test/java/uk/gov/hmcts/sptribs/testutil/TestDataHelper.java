@@ -432,4 +432,23 @@ public class TestDataHelper {
         documentList.add(documentListValue);
         return documentList;
     }
+
+    public static DynamicMultiSelectList getDynamicMultiSelectDocumentListWithXElements(int numberOfDocuments) {
+        List<DynamicListElement> elements = new ArrayList<>();
+        for (int i = 0; i < numberOfDocuments; i++) {
+            {
+                final DynamicListElement listItem = DynamicListElement
+                    .builder()
+                    .label("" + UUID.randomUUID())
+                    .code(UUID.randomUUID())
+                    .build();
+                elements.add(listItem);
+            }
+        }
+        return DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build();
+    }
 }
