@@ -25,12 +25,11 @@ public final class DocumentUtil {
         );
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> updateCategoryToCaseworkerDocument
-            (List<ListValue<CaseworkerCICDocument>> documentList) {
-        documentList = documentList == null ? new ArrayList<>() : documentList;
-        documentList.forEach(doc -> doc.getValue().getDocumentLink()
+    public static List<ListValue<CaseworkerCICDocument>> updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> docs) {
+        docs = docs == null ? new ArrayList<>() : docs;
+        docs.forEach(doc -> doc.getValue().getDocumentLink()
             .setCategoryId(doc.getValue().getDocumentCategory().getCategory()));
-        return documentList;
+        return docs;
     }
 
     public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList, String categoryId) {
