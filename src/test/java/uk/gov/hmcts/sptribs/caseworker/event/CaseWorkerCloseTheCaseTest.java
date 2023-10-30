@@ -170,7 +170,7 @@ class CaseWorkerCloseTheCaseTest {
     }
 
     @Test
-    void shouldReturnEmptyListWhenDocumentListIsNull(){
+    void shouldReturnEmptyListWhenDocumentListIsNull() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CloseCase closeCase = CloseCase.builder().documents(null).build();

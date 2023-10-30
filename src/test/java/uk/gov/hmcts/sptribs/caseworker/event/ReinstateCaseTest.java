@@ -203,7 +203,7 @@ class ReinstateCaseTest {
     }
 
     @Test
-    void shouldReturnEmptyListWhenDocumentListIsNull(){
+    void shouldReturnEmptyListWhenDocumentListIsNull() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(null)

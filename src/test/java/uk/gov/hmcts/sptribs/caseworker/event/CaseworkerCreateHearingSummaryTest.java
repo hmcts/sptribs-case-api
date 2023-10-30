@@ -139,7 +139,7 @@ class CaseworkerCreateHearingSummaryTest {
     }
 
     @Test
-    void shouldReturnEmptyListWhenDocumentListIsNull(){
+    void shouldReturnEmptyListWhenDocumentListIsNull() {
         //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()

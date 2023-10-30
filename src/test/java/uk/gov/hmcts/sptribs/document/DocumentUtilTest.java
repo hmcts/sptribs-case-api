@@ -92,7 +92,7 @@ class DocumentUtilTest {
     }
 
     @Test
-    void shouldUpdateCategoryToCaseworkerDocument(){
+    void shouldUpdateCategoryToCaseworkerDocument() {
         //When
         List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("docx");
         updateCategoryToCaseworkerDocument(documentList);
@@ -102,7 +102,7 @@ class DocumentUtilTest {
     }
 
     @Test
-    void shouldUpdateCategoryToCaseworkerDocumentNull(){
+    void shouldUpdateCategoryToCaseworkerDocumentNull() {
         //When
         List<ListValue<CaseworkerCICDocument>> documentList = null;
         List<ListValue<CaseworkerCICDocument>> newDocumentList = updateCategoryToCaseworkerDocument(documentList);
