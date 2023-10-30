@@ -17,14 +17,6 @@ public final class CheckRequiredUtil {
 
     }
 
-    public static boolean checkNullSubjectRepresentativeApplicant(CaseData data) {
-        return null != data.getCicCase()
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant());
-
-    }
-
     public static boolean checkMultiSubjectRepresentativeApplicant(CaseData data) {
         return !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
             && (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
