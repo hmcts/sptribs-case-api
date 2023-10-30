@@ -257,9 +257,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCasePostponeReason")
             .field("cicCasePostponeAdditionalInformation")
 
-            //TODO: sort out show condition
             .label("Hearing options",
-                "[STATE]=\"CaseManagement\" OR [STATE]=\"ReadyToList\"",
+                "hearingVenues!=\"\" OR roomAtVenue!=\"\" OR addlInstr!=\"\" OR hearingFormat!=\"\" OR shortNotice!=\"\"",
                 "#### Hearing summary")
             .field("hearingVenues")
             .field("roomAtVenue")
