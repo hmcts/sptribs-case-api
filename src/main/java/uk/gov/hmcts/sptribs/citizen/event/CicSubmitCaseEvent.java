@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -94,22 +95,13 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var dssData = details.getData().getDssCaseData();
         CaseData caseData = getCaseData(data, dssData);
         String caseNumber = data.getHyphenatedCaseRef();
-
-        setDssMetaData(data);
+        EventUtil.setDssMetaData(data);
 
         sendApplicationReceivedNotification(caseNumber, data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
             .build();
-    }
-
-    private void setDssMetaData(CaseData data) {
-        data.setDssQuestion1("Full Name");
-        data.setDssQuestion2("Date of Birth");
-        data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
-        data.setDssAnswer2("case_data.dssCaseDataSubjectDateOfBirth");
-        data.setDssHeaderDetails("Subject of this case");
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
