@@ -75,7 +75,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     ) {
 
         var caseData = details.getData();
-        updateCategoryToCaseworkerDocument(caseData.getCicCase().getReinstateDocuments());
+        caseData.getCicCase().setReinstateDocuments(updateCategoryToCaseworkerDocument(caseData.getCicCase().getReinstateDocuments()));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

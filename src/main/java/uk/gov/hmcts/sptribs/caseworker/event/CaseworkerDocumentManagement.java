@@ -81,7 +81,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
     ) {
         var caseData = details.getData();
 
-        updateCategoryToCaseworkerDocument(caseData.getNewDocManagement().getCaseworkerCICDocument());
+        caseData.getNewDocManagement().setCaseworkerCICDocument(updateCategoryToCaseworkerDocument(caseData.getNewDocManagement().getCaseworkerCICDocument()));
         // Copy new documents to list of all documents and clear the new document list
         caseData.getAllDocManagement().getCaseworkerCICDocument().addAll(caseData.getNewDocManagement().getCaseworkerCICDocument());
         caseData.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());

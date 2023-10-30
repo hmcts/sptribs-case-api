@@ -91,6 +91,26 @@ class DocumentUtilTest {
         assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
+    @Test
+    void shouldUpdateCategoryToCaseworkerDocument(){
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("docx");
+        updateCategoryToCaseworkerDocument(documentList);
+
+        //Then
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo("L");
+    }
+
+    @Test
+    void shouldUpdateCategoryToCaseworkerDocumentNull(){
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = null;
+        List<ListValue<CaseworkerCICDocument>> newDocumentList = updateCategoryToCaseworkerDocument(documentList);
+
+        //Then
+        assertThat(newDocumentList).isEqualTo(new ArrayList<>());
+    }
+
     private DocumentInfo documentInfo() {
         return new DocumentInfo(
             DOC_URL,

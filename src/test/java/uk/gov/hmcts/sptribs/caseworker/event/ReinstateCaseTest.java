@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -199,5 +200,20 @@ class ReinstateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(2);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenDocumentListIsNull(){
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(null)
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = reinstateCase.aboutToSubmit(caseDetails, caseDetails);
+        assertThat(response.getData().getCicCase().getReinstateDocuments()).isEqualTo(new ArrayList<>());
     }
 }

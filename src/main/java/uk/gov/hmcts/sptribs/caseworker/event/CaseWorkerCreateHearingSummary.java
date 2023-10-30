@@ -108,7 +108,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
 
-        updateCategoryToCaseworkerDocument(caseData.getListing().getSummary().getRecFile());
+        caseData.getListing().getSummary().setRecFile(updateCategoryToCaseworkerDocument(caseData.getListing().getSummary().getRecFile()));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
