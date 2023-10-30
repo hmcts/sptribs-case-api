@@ -11,7 +11,6 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.functionOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 
 public class DocumentManagement {
     private final Page page;
@@ -62,7 +61,8 @@ public class DocumentManagement {
 
     public void removeDocument(String documentCategory, String documentDescription, String documentName) {
         assertThat(page.locator("h1")).hasText("Show case documents", textOptionsWithTimeout(60000));
-        String documentRemoveSelector = "//div[@class='form-group'][.//div//a[contains(text(), '" + documentName + "')]]//button[text()='Remove']";
+        String documentRemoveSelector = "//div[@class='form-group'][.//div//a[contains(text(), '"
+            + documentName + "')]]//button[text()='Remove']";
 
         page.locator(documentRemoveSelector).click();
         page.locator("ccd-remove-dialog button[title='Remove']").click();
