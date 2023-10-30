@@ -112,6 +112,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData,baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
