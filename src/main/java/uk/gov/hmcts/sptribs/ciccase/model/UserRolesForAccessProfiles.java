@@ -35,10 +35,11 @@ public enum UserRolesForAccessProfiles implements HasRole {
     CIC_SENIOR_CASEWORKER_PROFILE("caseworker-st_cic-senior-caseworker", "CRU"),
     CIC_CENTRE_ADMIN_PROFILE("caseworker-st_cic-hearing-centre-admin", "CRU"),
     CIC_CENTRE_TEAM_LEADER_PROFILE("caseworker-st_cic-hearing-centre-team-leader", "CRU"),
+    JUDICIARY_PROFILE("judiciary", "CRU"),
 
     CIC_SENIOR_JUDGE("caseworker-st_cic-senior-judge", "CRU"),
-    CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
-    CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
+    CIC_JUDGE_PROFILE("caseworker-st_cic-judge", "CRU"),
+    CIC_RESPONDENT_PROFILE("caseworker-st_cic-respondent", "CRU"),
     AC_CASEWORKER("caseworker", "CRU"),
     AC_CITIZEN("citizen", "CRU"),
     AC_ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "CRU"),
@@ -48,7 +49,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AP_HMCTS_ADMIN("hmcts-admin", "CRU"),
     AP_CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
     AP_COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
-    AP_DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU"),
+    AP_DISTRICT_JUDGE_CIC_PROFILE("caseworker-sptribs-cic-districtjudge", "CRU"),
 
     // Staff Roles of role assignment
     SENIOR_TRIBUNAL_CASE_WORKER("senior-tribunal-caseworker", "CRU"),
@@ -63,8 +64,18 @@ public enum UserRolesForAccessProfiles implements HasRole {
     HMCTS_ADMIN("hmcts-admin", "CRU"),
     HMCTS_LEGAL_OPERATIONS("hmcts-legal-operations", "CRU"),
     CICA("cica", "CRU"),
-    // Staff Roles of role assignment
+    // Judicial Roles of role assignment
     SENIOR_JUDGE("senior-judge", "CRU"),
+    LEADERSHIP_JUDGE("leadership-judge", "CRU"),
+    FEE_PAID_JUDGE("fee-paid-judge", "CRU"),
+    FEE_PAID_MEDICAL("fee-paid-medical", "CRU"),
+    FEE_PAID_DISABILITY("fee-paid-disability", "CRU"),
+    FEE_PAID_FINANCIAL("fee-paid-financial", "CRU"),
+    FEE_PAID_TRIBUNAL_MEMBER("fee-paid-tribunal-member", "CRU"),
+    TRIBUNAL_MEMBER_1("tribunal-member-1", "CRU"),
+    TRIBUNAL_MEMBER_2("tribunal-member-2", "CRU"),
+    TRIBUNAL_MEMBER_3("tribunal-member-3", "CRU"),
+    MEDICAL("medical", "CRU"),
     JUDGE("judge", "CRU");
 
     @JsonValue
