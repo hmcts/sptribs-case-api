@@ -35,7 +35,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     CIC_SENIOR_CASEWORKER_PROFILE("caseworker-st_cic-senior-caseworker", "CRU"),
     CIC_CENTRE_ADMIN_PROFILE("caseworker-st_cic-hearing-centre-admin", "CRU"),
     CIC_CENTRE_TEAM_LEADER_PROFILE("caseworker-st_cic-hearing-centre-team-leader", "CRU"),
-    JUDICIARY_PROFILE("judiciary", "CRU"),
 
     CIC_SENIOR_JUDGE("caseworker-st_cic-senior-judge", "CRU"),
     CIC_JUDGE_PROFILE("caseworker-st_cic-judge", "CRU"),

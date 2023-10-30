@@ -107,50 +107,22 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
                 .accessProfiles(UserRolesForAccessProfiles.CIC_RESPONDENT_PROFILE.getRole())
                 .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.JUDGE)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole(),
-                        UserRolesForAccessProfiles.CIC_JUDGE_PROFILE.getRole(),
+                .accessProfiles(UserRolesForAccessProfiles.CIC_JUDGE_PROFILE.getRole(),
                         UserRolesForAccessProfiles.AP_DISTRICT_JUDGE_CIC_PROFILE.getRole())
                 .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.FEE_PAID_JUDGE)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole(),
-                        UserRolesForAccessProfiles.CIC_JUDGE_PROFILE.getRole(),
+                .accessProfiles(UserRolesForAccessProfiles.CIC_JUDGE_PROFILE.getRole(),
                         UserRolesForAccessProfiles.AP_DISTRICT_JUDGE_CIC_PROFILE.getRole())
                 .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SENIOR_JUDGE)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole(),
-                        UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole(),
+                .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole(),
                         UserRolesForAccessProfiles.CIC_JUDGE_PROFILE.getRole(),
                         UserRolesForAccessProfiles.AP_DISTRICT_JUDGE_CIC_PROFILE.getRole())
                 .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.LEADERSHIP_JUDGE)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole(),
-                        UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole(),
+                .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole(),
                         UserRolesForAccessProfiles.CIC_JUDGE_PROFILE.getRole(),
                         UserRolesForAccessProfiles.AP_DISTRICT_JUDGE_CIC_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.MEDICAL)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.FEE_PAID_MEDICAL)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.FEE_PAID_DISABILITY)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.FEE_PAID_FINANCIAL)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.FEE_PAID_TRIBUNAL_MEMBER)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.TRIBUNAL_MEMBER_1)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.TRIBUNAL_MEMBER_2)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
-                .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.TRIBUNAL_MEMBER_3)
-                .accessProfiles(UserRolesForAccessProfiles.JUDICIARY_PROFILE.getRole())
                 .build();
     }
 }
