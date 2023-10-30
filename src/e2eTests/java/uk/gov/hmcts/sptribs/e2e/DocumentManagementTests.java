@@ -87,6 +87,6 @@ public class DocumentManagementTests extends Base {
 
         getTabByText(page, "Case Documents").click();
         assertThat(page.locator("h4").first()).hasText("Case Documents");
-        assertThat(page.locator("//a[contains(text(), 'sample_file.pdf')]")).isHidden();
+        assertThat(page.locator("//a[contains(text(), '" + documentName + "')]")).isHidden();
     }
 }
