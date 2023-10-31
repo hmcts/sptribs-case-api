@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -119,6 +120,7 @@ class RecordListHelperTest {
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        caseData.getCicCase().setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -126,10 +128,11 @@ class RecordListHelperTest {
 
         recordListHelper.getNotificationParties(caseData);
 
-        assertThat(caseData.getCicCase().getHearingNotificationParties()).hasSize(3);
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).hasSize(4);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.REPRESENTATIVE);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.RESPONDENT);
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.APPLICANT);
         assertThat(caseData.getCicCase()).isNotNull();
     }
 

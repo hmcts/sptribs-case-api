@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
@@ -112,7 +113,6 @@ public class CaseData {
     )
     private State caseStatus;
 
-
     @CCD(
         label = "Hearing Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -153,8 +153,8 @@ public class CaseData {
 
 
     @JsonUnwrapped
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
     private Listing listing = new Listing();
 
     @JsonUnwrapped(prefix = "removeStay")
@@ -232,6 +232,11 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseIssue caseIssue = new CaseIssue();
+
+    @JsonUnwrapped(prefix = "contactPartiesDocuments")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
 
     @JsonUnwrapped(prefix = "caseIssueDecision")
     @Builder.Default
@@ -319,6 +324,11 @@ public class CaseData {
         access = { DefaultAccess.class}
     )
     private String dssHeaderDetails;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private YesOrNo hasDssNotificationSent;
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
