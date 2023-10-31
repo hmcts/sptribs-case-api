@@ -29,7 +29,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .pageLabel("Edit order")
             .label("LabelEditDraftOrder", "Draft to be edited")
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getDraftOrderDynamicList)
+            .mandatoryWithLabel(CicCase::getDraftOrderDynamicList, "Draft order to be edited")
             .done()
             .complex(CaseData::getDraftOrderContentCIC)
             // readonly below is required in order to be able to set the order template in midEvent below
