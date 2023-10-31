@@ -355,7 +355,7 @@ dependencyManagement {
   dependencies {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'
     // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '31.1-jre') {
+    dependencySet(group: 'com.google.guava', version: '32.0.1-jre') {
       entry 'guava'
     }
 
@@ -425,7 +425,7 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
   }
 
-  implementation 'io.swagger:swagger-annotations:1.6.11'
+  implementation 'io.swagger:swagger-annotations:1.6.12'
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
   implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.19'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.2'
