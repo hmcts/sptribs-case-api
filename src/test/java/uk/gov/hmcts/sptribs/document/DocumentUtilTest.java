@@ -7,6 +7,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -96,6 +97,23 @@ class DocumentUtilTest {
 
         //Then
         assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldValidateAllChecksCaseworkerCICDocumentFormatValidEmptyDocument() {
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
+        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
     }
 
     @Test
