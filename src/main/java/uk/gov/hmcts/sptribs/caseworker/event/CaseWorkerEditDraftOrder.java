@@ -21,10 +21,13 @@ import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.EditDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static java.lang.String.format;
+import static java.util.Locale.ENGLISH;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -48,6 +51,8 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
 
     private static final CcdPageConfiguration draftOrderEditMainContentPage = new DraftOrderMainContentPage();
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", ENGLISH);
 
     @Autowired
     private OrderService orderService;
@@ -90,7 +95,9 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         CaseDetails<CaseData, State> detailsBefore
     ) {
 
-        var caseData = orderService.generateOrderFile(details.getData(), details.getId());
+        Calendar cal = Calendar.getInstance();
+        String date = simpleDateFormat.format(cal.getTime());
+        var caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -117,6 +124,9 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         // Reset values so that they are not prepopulated when creating another draft order
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
+
+        // set orderTemplateIssued to null here once has been added to list.
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
