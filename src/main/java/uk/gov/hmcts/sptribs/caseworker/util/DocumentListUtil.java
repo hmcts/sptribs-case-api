@@ -29,6 +29,9 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TY
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 
 public final class DocumentListUtil {
+
+    private static final String DOCUMENT_BINARY_PATH = "documents/%s/binary";
+
     private DocumentListUtil() {
 
     }
@@ -113,6 +116,7 @@ public final class DocumentListUtil {
             .build();
     }
 
+
     private static void createDocumentList(String apiUrl, List<DynamicListElement> dynamicListElements, CaseworkerCICDocument doc) {
         String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
             "/");
@@ -121,6 +125,28 @@ public final class DocumentListUtil {
             + " " + doc.getDocumentCategory().getLabel()
             + "](" + url + ")").code(UUID.randomUUID()).build();
         dynamicListElements.add(element);
+    }
+
+
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
+        List<CaseworkerCICDocument> docList = prepareList(data);
+        String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+        for (CaseworkerCICDocument doc : docList) {
+            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
+                "/");
+            String url = String.format(apiUrl, documentId);
+            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + url + ")").code(UUID.randomUUID()).build();
+            dynamicListElements.add(element);
+        }
+
+        return DynamicMultiSelectList
+            .builder()
+            .listItems(dynamicListElements)
+            .value(new ArrayList<>())
+            .build();
     }
 
 
@@ -189,6 +215,4 @@ public final class DocumentListUtil {
     public static List<ListValue<CaseworkerCICDocument>> getAllOrderDocuments(CicCase cicCase) {
         return buildListValues(getOrderDocuments(cicCase));
     }
-
-
 }
