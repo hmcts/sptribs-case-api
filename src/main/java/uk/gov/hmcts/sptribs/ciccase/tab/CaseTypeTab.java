@@ -30,6 +30,9 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
+    @Value("${feature.bundling.enabled}")
+    private boolean bundlingEnabled;
+
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
 
     @Override
@@ -122,6 +125,12 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (bundlingEnabled) {
+            doBuildBundlesTab(configBuilder);
+        }
+    }
+
+    private void doBuildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("bundles", "Bundles")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
