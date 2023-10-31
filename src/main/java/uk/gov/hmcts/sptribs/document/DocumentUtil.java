@@ -33,7 +33,7 @@ public final class DocumentUtil {
     }
 
     public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList, String categoryId) {
-        if (documentList != null || !documentList.isEmpty()){
+        if (documentList != null || !documentList.isEmpty()) {
             documentList.forEach(doc -> doc.getValue().getDocumentLink().setCategoryId(categoryId));
         }
     }

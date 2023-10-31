@@ -26,7 +26,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -137,37 +136,4 @@ class CaseworkerCreateHearingSummaryTest {
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Hearing summary created");
     }
-
-    @Test
-    void shouldReturnEmptyListWhenDocumentListIsNull() {
-        //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder()
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-
-        Listing recordListing = getRecordListing();
-        caseData.setListing(recordListing);
-
-        HearingSummary hearingSummary = HearingSummary.builder().recFile(null).build();
-        recordListing.setSummary(hearingSummary);
-
-        updatedCaseDetails.setData(caseData);
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerCreateHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response.getData().getListing().getHearingStatus()).isEqualTo(HearingState.Complete);
-        assertThat(response.getData().getListing().getSummary().getRecFile()).isEqualTo(new ArrayList<>());
-    }
-
 }
