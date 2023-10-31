@@ -3,11 +3,11 @@ package uk.gov.hmcts.sptribs.document;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
