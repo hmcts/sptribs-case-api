@@ -14,6 +14,7 @@ public final class MessageUtil {
     private static final String REPRESENTATIVE = "Representative";
     private static final String RESPONDENT = "Respondent";
     private static final String SUBJECT = "Subject";
+    private static final String APPLICANT = "Applicant";
 
     private static final String TRIBUNAL = "Tribunal";
 
@@ -56,7 +57,9 @@ public final class MessageUtil {
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             message.append(REPRESENTATIVE + COMMA_SPACE);
         }
-
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            message.append(APPLICANT + COMMA_SPACE);
+        }
         return message.substring(0, message.length() - 2);
     }
 
