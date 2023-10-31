@@ -345,15 +345,15 @@ class CaseworkerContactPartiesTest {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .address(SUBJECT_ADDRESS)
-            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+                .fullName(TEST_FIRST_NAME)
+                .address(SUBJECT_ADDRESS)
+                .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+                .representativeFullName(TEST_SOLICITOR_NAME)
+                .representativeAddress(SOLICITOR_ADDRESS)
+                .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+                .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+                .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         final ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
@@ -371,28 +371,12 @@ class CaseworkerContactPartiesTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
-
-
-    @Test
-    void shouldSendErrorOnTooManyDocuments() {
-        //Given
-        final CaseData caseData = caseData();
-        final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .address(SUBJECT_ADDRESS)
-            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
-        caseData.setCicCase(cicCase);
+                contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getErrors()).hasSize(1);
     }
+
 
     @Test
     void shouldRunAboutToStart() {
@@ -426,13 +410,3 @@ class CaseworkerContactPartiesTest {
     }
 }
 
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response.getErrors()).hasSize(1);
-    }
-}
