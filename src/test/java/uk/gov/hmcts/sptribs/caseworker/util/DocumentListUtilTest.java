@@ -136,10 +136,8 @@ public class DocumentListUtilTest {
         details.setData(caseData);
         //When
         DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, "");
-
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -163,9 +161,7 @@ public class DocumentListUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
-
 
     @Test
     void shouldGenerateDocListDocManagement() {
@@ -183,11 +179,11 @@ public class DocumentListUtilTest {
         final CaseData caseData = CaseData.builder().build();
         caseData.setAllDocManagement(DocumentManagement.builder().caseworkerCICDocument(listValueList).build());
         details.setData(caseData);
+
         //When
         DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, "");
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -216,7 +212,6 @@ public class DocumentListUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -270,5 +265,4 @@ public class DocumentListUtilTest {
         //Then
         assertThat(result).isNotNull();
     }
-
 }

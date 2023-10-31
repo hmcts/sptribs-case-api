@@ -155,4 +155,9 @@
     <cve>CVE-2023-42795</cve>
     <cve>CVE-2023-45648</cve>
   </suppress>
+  <suppress>
+    <notes>pkg:maven/org.json/json@20230227</notes>
+    <cve>CVE-2023-5072</cve>
+    <cve>CVE-2023-44487</cve>
+  </suppress>
 </suppressions>

@@ -174,6 +174,7 @@ class ContactPartiesNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
+
     @Test
     void shouldNotifyTribunalOfCaseIssuedWithEmailWithAttachments() {
         //Given
@@ -191,6 +192,7 @@ class ContactPartiesNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
+
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
