@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -75,10 +77,17 @@ class CaseworkerRecordListingTest {
     @Test
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
+        Set<NotificationParties> parties = new HashSet<>();
+        parties.add(NotificationParties.SUBJECT);
+        parties.add(NotificationParties.RESPONDENT);
+        parties.add(NotificationParties.REPRESENTATIVE);
+        parties.add(NotificationParties.APPLICANT);
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .hearingNotificationParties(parties)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
@@ -191,6 +200,7 @@ class CaseworkerRecordListingTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -208,7 +218,7 @@ class CaseworkerRecordListingTest {
             = caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getCicCase().getHearingNotificationParties()).hasSize(3);
+        assertThat(response.getData().getCicCase().getHearingNotificationParties()).hasSize(4);
         assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
         assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
     }

@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +44,11 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 
 @ExtendWith(MockitoExtension.class)
@@ -272,6 +277,43 @@ public class NotificationHelperTest {
         // Then
         assertThat(templateVars.get(HEARING_DATE)).isEqualTo(LocalDate.now().toString());
         assertThat(templateVars.get(HEARING_TIME)).isEqualTo("11:00");
+    }
+
+    @Test
+    void shouldBuildDocumentList() {
+        //Given
+        final String documentLabel =
+            "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(documentLabel)
+            .code(UUID.randomUUID())
+            .build();
+
+        final List<DynamicListElement> listItems = new ArrayList<>();
+        listItems.add(listItem);
+
+        final DynamicMultiSelectList documentList = new DynamicMultiSelectList();
+        documentList.setListItems(listItems);
+        documentList.setValue(listItems);
+
+        final int docAttachLimit = 2;
+
+        //When
+        Map<String, String> result = notificationHelper.buildDocumentList(documentList, docAttachLimit);
+
+        //Then
+        assertThat(result)
+            .isNotNull()
+            .hasSize(4)
+            .containsKey("CaseDocument1")
+            .containsKey("CaseDocument2")
+            .containsKey("DocumentAvailable1")
+            .containsKey("DocumentAvailable2")
+            .containsEntry("CaseDocument1", "5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
+            .containsEntry("CaseDocument2", EMPTY_STRING)
+            .containsEntry("DocumentAvailable1", YES)
+            .containsEntry("DocumentAvailable2", NO);
     }
 
     private DynamicList getDynamicList() {
