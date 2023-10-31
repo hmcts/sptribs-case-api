@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
@@ -103,6 +104,15 @@ class DocumentUtilTest {
     }
 
     @Test
+    void shouldUpdateCategoryToCaseworkerDocumentNull() {
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = null;
+
+        //Then
+        assertDoesNotThrow(() -> updateCategoryToCaseworkerDocument(documentList));
+    }
+
+    @Test
     void shouldUpdateCategoryToDocument() {
         //When
         List<ListValue<CICDocument>> documentList = getCICDocumentList();
@@ -111,6 +121,16 @@ class DocumentUtilTest {
 
         //Then
         assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(categoryId);
+    }
+
+    @Test
+    void shouldUpdateCategoryToDocumentNull() {
+        //When
+        List<ListValue<CICDocument>> documentList = null;
+        String categoryId = "1";
+
+        //Then
+        assertDoesNotThrow(() -> updateCategoryToDocument(documentList, categoryId));
     }
 
     private DocumentInfo documentInfo() {
