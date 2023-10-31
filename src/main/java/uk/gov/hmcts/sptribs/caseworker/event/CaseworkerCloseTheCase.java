@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConcessionDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConsentOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRejectionDetails;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRule27;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseStrikeOutDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
@@ -56,6 +57,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private static final CcdPageConfiguration closeCaseConcessionDetails = new CloseCaseConcessionDetails();
     private static final CcdPageConfiguration closeCaseStrikeOutDetails = new CloseCaseStrikeOutDetails();
     private static final CcdPageConfiguration closeCaseConsentOrder = new CloseCaseConsentOrder();
+    private static final CcdPageConfiguration closeCaseRule27 = new CloseCaseRule27();
     private static final CcdPageConfiguration closeCaseSelectRecipients = new CloseCaseSelectRecipients();
 
     @Autowired
@@ -75,6 +77,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         closeCaseConcessionDetails.addTo(pageBuilder);
         closeCaseStrikeOutDetails.addTo(pageBuilder);
         closeCaseConsentOrder.addTo(pageBuilder);
+        closeCaseRule27.addTo(pageBuilder);
         uploadDocuments(pageBuilder);
         closeCaseSelectRecipients.addTo(pageBuilder);
     }
@@ -153,6 +156,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
         }
     }
 
