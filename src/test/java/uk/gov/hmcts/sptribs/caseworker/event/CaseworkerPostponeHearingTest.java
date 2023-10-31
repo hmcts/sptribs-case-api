@@ -10,13 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingNotifyParties;
-import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHaringNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -24,7 +22,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,16 +40,13 @@ class CaseworkerPostponeHearingTest {
     private CaseWorkerPostponeHearing caseWorkerPostponeHearing;
 
     @Mock
-    private RecordListHelper recordListHelper;
-
-    @Mock
     private HearingService hearingService;
 
     @Mock
     private HearingPostponedNotification hearingPostponedNotification;
 
     @InjectMocks
-    private PostponeHearingNotifyParties postponeHearingNotifyParties;
+    private PostponeHaringNotifyParties postponeHaringNotifyParties;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -77,7 +71,7 @@ class CaseworkerPostponeHearingTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
+        when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerPostponeHearing.aboutToStart(updatedCaseDetails);
@@ -94,7 +88,7 @@ class CaseworkerPostponeHearingTest {
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHaringNotifyParties.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
     }
@@ -102,15 +96,10 @@ class CaseworkerPostponeHearingTest {
     @Test
     void shouldSuccessfullyPostpone() {
         //Given
-        Set<NotificationParties> parties = new HashSet<>();
-        parties.add(NotificationParties.SUBJECT);
-        parties.add(NotificationParties.RESPONDENT);
-        parties.add(NotificationParties.REPRESENTATIVE);
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .hearingNotificationParties(parties)
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -126,7 +115,6 @@ class CaseworkerPostponeHearingTest {
         doNothing().when(hearingPostponedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
         doNothing().when(hearingPostponedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         doNothing().when(hearingPostponedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(recordListHelper).getNotificationParties(any());
 
         AboutToStartOrSubmitResponse<CaseData, State> response
             = caseWorkerPostponeHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);

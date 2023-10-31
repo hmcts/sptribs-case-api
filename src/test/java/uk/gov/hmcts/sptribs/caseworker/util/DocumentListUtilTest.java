@@ -144,11 +144,7 @@ public class DocumentListUtilTest {
         list.setValue(doc);
         listValueList.add(list);
         final CaseData caseData = CaseData.builder().build();
-        Listing listing = Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build();
-
-        ListValue<Listing> listingListValue = new ListValue<>();
-        listingListValue.setValue(listing);
-        caseData.setHearingList(List.of(listingListValue));
+        caseData.setListing(Listing.builder().summary(HearingSummary.builder().recFile(listValueList).build()).build());
         details.setData(caseData);
 
         //When

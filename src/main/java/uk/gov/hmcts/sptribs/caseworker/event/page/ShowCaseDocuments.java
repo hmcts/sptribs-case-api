@@ -43,7 +43,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             .readonly(CicCase::getFinalDecisionDocumentList)
             .readonly(CicCase::getDecisionDocumentList)
             .done()
-            .complex(CaseData::getLatestCompletedHearing)
+            .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .readonlyWithLabel(HearingSummary::getRecFile, "Hearing Summary Documents")
             .done();

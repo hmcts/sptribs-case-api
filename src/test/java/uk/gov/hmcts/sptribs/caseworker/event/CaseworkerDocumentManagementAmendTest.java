@@ -59,7 +59,7 @@ class CaseworkerDocumentManagementAmendTest {
     }
 
     @Test
-    void shouldSuccessfullyAmendCaseDocument() {
+    void shouldSuccessfullyAddDocument() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();

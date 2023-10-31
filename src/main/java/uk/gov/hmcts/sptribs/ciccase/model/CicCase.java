@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
@@ -24,9 +23,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
@@ -38,13 +39,10 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -52,13 +50,26 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+
+    @CCD(
+        label = "Enter any other important information about this cancellation",
+        typeOverride = TextArea
+    )
+    private String cancelHearingAdditionalDetail;
+
+    @CCD(
+        label = "Why was the hearing cancelled?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingCancellationReason"
+    )
+    private HearingCancellationReason hearingCancellationReason;
 
     @CCD(
         label = "Enter case number",
@@ -107,7 +118,6 @@ public class CicCase {
     private ComponentLauncher flagLauncher;
 
     @CCD(
-        label = "Flag Type",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private FlagType flagType;
@@ -150,16 +160,25 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
-        label = "",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private DynamicList flagDynamicList;
-
-    @CCD(
         label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList orderDynamicList;
+
+    @CCD(
+        label = "Postpone Reason",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "PostponeReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private PostponeReason postponeReason;
+
+    @CCD(
+        label = "Enter any other important information about this postponement",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String postponeAdditionalInformation;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -201,7 +220,6 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
     private Document lastSelectedOrder;
 
     @CCD(
@@ -229,32 +247,11 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
     @CCD(
-        access = {CaseworkerAndSuperUserAccess.class}
-    )
-    private DynamicList amendDocumentList;
-
-    @CCD(
-        label = "Documents",
-        typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
-    )
-    private CaseworkerCICDocument selectedDocument;
-
-    @CCD(
         label = "Notified Parties",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<NotificationParties> hearingNotificationParties;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String selectedDocumentType;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private YesOrNo isDocumentCreatedFromTemplate;
 
     @CCD(
         label = "Upload a file to the system",
@@ -445,14 +442,6 @@ public class CicCase {
     private SchemeCic schemeCic;
 
     @CCD(
-        label = "Case Region",
-        typeOverride = FixedList,
-        typeParameterOverride = "RegionCIC",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private RegionCIC regionCIC;
-
-    @CCD(
         label = "CICA reference number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -547,12 +536,6 @@ public class CicCase {
 
     private YesOrNo representativeDetailsObjects;
 
-
-    @CCD(
-        label = "Police authority management incident",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String policeAuthority;
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -692,41 +675,6 @@ public class CicCase {
     )
     private NotificationResponse repLetterNotificationResponse;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String firstDueDate;
-
-    private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
-        LocalDate earliestDate = compare;
-        for (ListValue<DateModel> dateModelListValue : dueDateList) {
-            if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
-                || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
-                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
-                earliestDate = dateModelListValue.getValue().getDueDate();
-            }
-        }
-        return earliestDate;
-
-    }
-
-    public String getFirstDueDate() {
-
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        LocalDate compare = LocalDate.MAX;
-        if (!CollectionUtils.isEmpty(orderList)) {
-            for (ListValue<Order> orderListValue : orderList) {
-                if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
-                    compare = findEarliestDate(orderListValue.getValue().getDueDateList(), compare);
-                }
-            }
-            if (compare.isBefore(LocalDate.MAX)) {
-                return dateFormatter.format(compare);
-            }
-        }
-        return "";
-    }
-
     @JsonIgnore
     public String getSelectedHearingToCancel() {
         return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
@@ -744,9 +692,9 @@ public class CicCase {
         }
         if (null != contactPartiesCIC) {
             Set<ContactPartiesCIC> temp = new HashSet<>();
-            for (ContactPartiesCIC partyCIC : contactPartiesCIC) {
-                if (partyCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
-                    temp.add(partyCIC);
+            for (ContactPartiesCIC partiesCIC : contactPartiesCIC) {
+                if (partiesCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
+                    temp.add(partiesCIC);
                 }
             }
             contactPartiesCIC = temp;

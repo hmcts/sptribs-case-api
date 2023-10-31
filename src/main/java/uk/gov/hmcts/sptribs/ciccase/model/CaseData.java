@@ -8,11 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
@@ -37,19 +34,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
-import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.bundling.Bundle;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -60,18 +52,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags caseFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags subjectFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags representativeFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private Flags applicantFlags;
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default
@@ -115,7 +95,7 @@ public class CaseData {
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
+    private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
@@ -132,17 +112,6 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private State caseStatus;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private List<MultiBundleConfig> multiBundleConfiguration;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonIgnore
-    private List<CaseworkerCICDocument> caseDocuments;
 
     @CCD(
         label = "Hearing Date",
@@ -182,27 +151,11 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
+
     @JsonUnwrapped
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     @Builder.Default
     private Listing listing = new Listing();
-
-    @JsonUnwrapped(prefix = "nh")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
-    private Listing nextListedHearing = new Listing();
-
-    @JsonUnwrapped(prefix = "lh")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
-    private Listing latestCompletedHearing = new Listing();
-
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Listings",
-        typeOverride = Collection,
-        typeParameterOverride = "Listing")
-    private List<ListValue<Listing>> hearingList = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "removeStay")
     @Builder.Default
@@ -376,68 +329,6 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo hasDssNotificationSent;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String firstHearingDate;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private String hearingVenueName;
-
-    public String getFirstHearingDate() {
-
-        Listing nextListing = getNextListedHearing();
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        if (!ObjectUtils.isEmpty(nextListing) && !ObjectUtils.isEmpty(nextListing.getDate())) {
-            return dateFormatter.format(nextListing.getDate());
-        }
-        return "";
-
-    }
-
-    @JsonIgnore
-    public Listing getListing() {
-        return listing;
-    }
-
-    @JsonIgnore
-    public Listing getLatestCompletedHearing() {
-
-        Listing completedHearing = new Listing();
-        LocalDate latest = LocalDate.MIN;
-        for (ListValue<Listing> listingValueList : hearingList) {
-            if (listingValueList.getValue().getDate().isAfter(latest)) {
-                latest = listingValueList.getValue().getDate();
-                completedHearing = listingValueList.getValue();
-            }
-        }
-
-        return completedHearing;
-    }
-
-    @JsonIgnore
-    public Listing getNextListedHearing() {
-        Listing nextListing = new Listing();
-
-        LocalDate compare = LocalDate.MAX;
-        if (!CollectionUtils.isEmpty(hearingList)) {
-            for (ListValue<Listing> listingValueList : hearingList) {
-                if (listingValueList.getValue().getHearingStatus() == HearingState.Listed
-                    && listingValueList.getValue().getDate().isBefore(compare)) {
-                    compare = listingValueList.getValue().getDate();
-                    nextListing = listingValueList.getValue();
-                }
-            }
-        }
-        return nextListing;
-    }
-
-    public String getHearingVenueName() {
-        Listing nextListing = getNextListedHearing();
-        if (!ObjectUtils.isEmpty(nextListing)) {
-            return nextListing.getHearingVenueNameAndAddress();
-        }
-        return "";
-    }
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

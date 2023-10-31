@@ -8,11 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
-import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
-import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
-import uk.gov.hmcts.sptribs.document.bundling.model.BundleSubFolder;
-import uk.gov.hmcts.sptribs.document.bundling.model.BundleSubFolder2;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +40,6 @@ class BundleTest {
         assertThat(bundleDTO.getValue().getPageNumberFormat()).isNotNull();
         assertThat(bundleDTO.getValue().getPaginationStyle()).isNotNull();
         assertThat(bundleDTO.getValue().getStitchedDocument()).isNull();
-        assertThat(bundleDTO.getValue().getEligibleForCloning()).isNull();
 
         ListValue<BundleDocument> bundleDocumentDTO = bundleDTO.getValue().getDocuments().get(0);
         assertDocument(bundleDocumentDTO);

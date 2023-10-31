@@ -27,12 +27,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-file-view-and-document-management.enabled}")
     private boolean caseFileViewAndDocumentManagementEnabled;
 
-    @Value("${feature.case-flags.enabled}")
-    private boolean caseFlagsEnabled;
-
-    @Value("${feature.bundling.enabled}")
-    private boolean bundlingEnabled;
-
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
 
     @Override
@@ -45,25 +39,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCasePartiesTab(configBuilder);
         buildOrderTab(configBuilder);
         buildCaseDocumentTab(configBuilder);
-        buildBundlesTab(configBuilder);
         buildHearing(configBuilder);
         buildCicaDetails(configBuilder);
         buildCaseFileViewTab(configBuilder);
         buildMessagesTab(configBuilder);
-        buildCaseFlagTab(configBuilder);
-    }
-
-    private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFlagsEnabled) {
-            doBuildCaseFlagTab(configBuilder);
-        }
-    }
-
-    private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        /*configBuilder.tab("caseFlagView", "Case  flags")
-            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getFlagLauncher1, null, "#ARGUMENT(READ)");*/
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -124,19 +103,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getNotes);
     }
 
-    private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (bundlingEnabled) {
-            doBuildBundlesTab(configBuilder);
-        }
-    }
-
-    private void doBuildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("bundles", "Bundles")
-            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getCaseBundles);
-    }
-
     private void buildMessagesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("messages", "Messages")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -163,14 +129,12 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseCaseCategory")
             .field("cicCaseCaseReceivedDate")
             .field("cicCaseCaseSubcategory")
-            .label("objectSubjects", null, "### Subject Details")
-            .field("cicCaseFullName")
             .field("cicCaseDateOfBirth")
             .field("cicCaseEmail")
+            .field("cicCaseFullName")
             .field("cicCasePhoneNumber")
-            .field("cicCaseAddress")
+            .label("objectSubjects", null, "### Object Subjects")
             .field("cicCaseSubjectCIC")
-            .label("applicantDetails", "cicCaseRepresentativeFullName!=\"\"", "### Representative Details")
             .field("cicCaseRepresentativeCIC")
             .field("cicCaseRepresentativeFullName")
             .field("cicCaseRepresentativeOrgName")
@@ -180,7 +144,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseRepresentativeReference")
             .field("cicCaseIsRepresentativeQualified", "cicCaseRepresentativeFullName!=\"\"")
             .field("cicCaseRepresentativeContactDetailsPreference", "cicCaseRepresentativeFullName!=\"\"")
-            .label("applicantDetails", "cicCaseApplicantFullName!=\"\"", "### Applicant Details")
+            .field("cicCaseAddress")
+            .label("applicantDetails", null, "### Applicant Details")
             .field("cicCaseApplicantFullName")
             .field("cicCaseApplicantDateOfBirth", "cicCaseApplicantFullName!=\"\"")
             .field("cicCaseApplicantPhoneNumber")
@@ -266,8 +231,31 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .label("Listing details", null, "#### Listing details")
-            .field(CaseData::getHearingList);
+            .label("Listing details", "hearingType!=\"\"", "#### Listing details")
+            .field("hearingStatus")
+            .field("hearingType")
+            .field("hearingFormat")
+            .field("hearingVenueNameAndAddress")
+            .field("roomAtVenue")
+            .field("date")
+            .field("session")
+            .field("hearingTime")
+            .field("videoCallLink")
+            .field("importantInfoDetails")
+            .field("cicCaseHearingNotificationParties")
+
+            .label("Hearing summary", "isFullPanel!=\"\"", "#### Hearing summary")
+            .field("judge")
+            .field("isFullPanel")
+            .field("memberList")
+            .field("roles")
+            .field("others")
+            .field("outcome")
+            .field("recFile")
+            .field("recDesc")
+            .label("Postponement summary", "cicCasePostponeReason!=\"\"", "#### Postponement summary")
+            .field("cicCasePostponeReason")
+            .field("cicCasePostponeAdditionalInformation");
 
 
     }

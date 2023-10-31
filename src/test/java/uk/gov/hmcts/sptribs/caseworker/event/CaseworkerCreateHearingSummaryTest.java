@@ -76,7 +76,7 @@ class CaseworkerCreateHearingSummaryTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
+        when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
         when(judicialService.getAllUsers()).thenReturn(null);
 
         //When
@@ -130,7 +130,7 @@ class CaseworkerCreateHearingSummaryTest {
 
         //When
         SubmittedCallbackResponse response =
-            caseWorkerCreateHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);
+            caseWorkerCreateHearingSummary.summaryEdited(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response).isNotNull();
