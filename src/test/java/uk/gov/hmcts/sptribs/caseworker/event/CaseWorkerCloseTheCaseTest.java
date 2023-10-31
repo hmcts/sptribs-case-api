@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -35,6 +36,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
@@ -116,12 +119,15 @@ class CaseWorkerCloseTheCaseTest {
         CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .respondentEmail(TEST_CASEWORKER_USER_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .build();
 
         caseData.setCicCase(cicCase);

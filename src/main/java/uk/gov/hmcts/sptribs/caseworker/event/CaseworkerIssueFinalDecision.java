@@ -224,7 +224,10 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             messageLine2.append("Respondent, ");
             caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
         }
-
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            messageLine2.append("Applicant ");
+            caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
