@@ -116,7 +116,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     ) {
         log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
         var caseData = details.getData();
-        caseData.getCloseCase().setDocuments(updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments()));
+        updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)

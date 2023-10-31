@@ -25,17 +25,17 @@ public final class DocumentUtil {
         );
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> updateCategoryToCaseworkerDocument(
-        List<ListValue<CaseworkerCICDocument>> documentList) {
-        documentList = documentList == null ? new ArrayList<>() : documentList;
-        documentList.forEach(doc -> doc.getValue().getDocumentLink()
-            .setCategoryId(doc.getValue().getDocumentCategory().getCategory()));
-        return documentList;
+    public static void updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> documentList) {
+        if (documentList != null || !documentList.isEmpty()) {
+            documentList.forEach(doc -> doc.getValue().getDocumentLink()
+                .setCategoryId(doc.getValue().getDocumentCategory().getCategory()));
+        }
     }
 
     public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList, String categoryId) {
-        documentList = documentList == null ? new ArrayList<>() : documentList;
-        documentList.forEach(doc -> doc.getValue().getDocumentLink().setCategoryId(categoryId));
+        if (documentList != null || !documentList.isEmpty()){
+            documentList.forEach(doc -> doc.getValue().getDocumentLink().setCategoryId(categoryId));
+        }
     }
 
     public static List<String> validateDocumentFormat(List<ListValue<CICDocument>> documentList) {

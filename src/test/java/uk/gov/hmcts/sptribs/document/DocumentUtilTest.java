@@ -15,10 +15,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.*;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentUtilTest {
@@ -102,13 +100,14 @@ class DocumentUtilTest {
     }
 
     @Test
-    void shouldUpdateCategoryToCaseworkerDocumentNull() {
+    void shouldUpdateCategoryToDocument() {
         //When
-        List<ListValue<CaseworkerCICDocument>> documentList = null;
-        List<ListValue<CaseworkerCICDocument>> newDocumentList = updateCategoryToCaseworkerDocument(documentList);
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        String categoryId = "1";
+        updateCategoryToDocument(documentList, categoryId);
 
         //Then
-        assertThat(newDocumentList).isEqualTo(new ArrayList<>());
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(categoryId);
     }
 
     private DocumentInfo documentInfo() {
