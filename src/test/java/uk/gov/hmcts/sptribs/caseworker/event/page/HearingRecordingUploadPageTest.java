@@ -6,17 +6,19 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
@@ -44,6 +46,61 @@ public class HearingRecordingUploadPageTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    void shouldValidateUploadedDocumentWithoutCategoryWithoutDesc() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final Listing listing = getRecordListing();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("file.mp3").build())
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
+        HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
+
+        final CaseData caseData = CaseData.builder()
+            .listing(listing)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).hasSize(2);
+    }
+
+    @Test
+    void shouldValidateUploadedDocumentWithoutDoc() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final Listing listing = getRecordListing();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
+        HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
+
+        final CaseData caseData = CaseData.builder()
+            .listing(listing)
+            .build();
+        caseDetails.setData(caseData);
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).hasSize(1);
     }
 }
