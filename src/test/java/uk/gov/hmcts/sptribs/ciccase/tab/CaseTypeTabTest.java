@@ -32,6 +32,7 @@ public class CaseTypeTabTest {
     void shouldConfigureCaseTypeTab() {
         //Given
         caseTypeTab.setCaseFileViewAndDocumentManagementEnabled(true);
+        caseTypeTab.setBundlingEnabled(true);
         Tab.TabBuilder<CaseData, UserRole> summaryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> stateTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> notesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
