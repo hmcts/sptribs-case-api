@@ -87,6 +87,13 @@ public class CloseCase {
     private LocalDate consentOrderDate;
 
     @CCD(
+        label = "What was the date of Rule 27 decision?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate rule27DecisionDate;
+
+    @CCD(
         label = "Who made the decision to strike out the case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
