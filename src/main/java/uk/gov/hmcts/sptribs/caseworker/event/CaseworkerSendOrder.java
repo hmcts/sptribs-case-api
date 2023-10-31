@@ -38,6 +38,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -107,49 +110,31 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
+
         if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
+
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
-            for (ListValue<DraftOrderCIC> draftOrderCICListValue : caseData.getCicCase().getDraftOrderCICList()) {
-                if (selectedDynamicDraft
-                    .contains(draftOrderCICListValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
-                    selectedDraftOrder = draftOrderCICListValue.getValue();
+
+            for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
+
+                if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                    selectedDraftOrder = draftOrderCICValue.getValue();
+                    String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
+                    selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
                     order.setDraftOrder(selectedDraftOrder);
                 }
             }
         }
 
         updateLastSelectedOrder(caseData.getCicCase(), order);
+        updateCicCaseOrderList(caseData, order);
 
-        if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
-            List<ListValue<Order>> listValues = new ArrayList<>();
-
-            var listValue = ListValue
-                .<Order>builder()
-                .id("1")
-                .value(order)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.getCicCase().setOrderList(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
-                .<Order>builder()
-                .value(order)
-                .build();
-
-            caseData.getCicCase().getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
-
-            caseData.getCicCase().getOrderList().forEach(
-                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-
-        }
         caseData.getCicCase().setOrderIssuingType(null);
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
         caseData.getCicCase().setOrderReminderDays(null);
+
         if (null != selectedDraftOrder) {
             DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
             List<DynamicListElement> newElements = new ArrayList<>();
@@ -179,7 +164,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
             caseData.getCicCase().setDraftOrderCICList(draftList);
         }
+
         caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -202,11 +189,37 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
+    private void updateCicCaseOrderList(CaseData caseData, Order order) {
+        if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
+            List<ListValue<Order>> listValues = new ArrayList<>();
+
+            var listValue = ListValue
+                .<Order>builder()
+                .id("1")
+                .value(order)
+                .build();
+
+            listValues.add(listValue);
+
+            caseData.getCicCase().setOrderList(listValues);
+        } else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            var listValue = ListValue
+                .<Order>builder()
+                .value(order)
+                .build();
+
+            caseData.getCicCase().getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
+
+            caseData.getCicCase().getOrderList().forEach(
+                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+        }
+    }
+
     private void updateLastSelectedOrder(CicCase cicCase, Order order) {
-        if (null != order.getDraftOrder()) {
+        if (order.getDraftOrder() != null) {
             cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
-        } else if (null != order.getUploadedFile()
-            && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
             updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
@@ -232,5 +245,4 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         //Once Notification is sent, nullify the last selected order
         caseData.getCicCase().setLastSelectedOrder(null);
     }
-
 }
