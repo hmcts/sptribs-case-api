@@ -136,4 +136,5 @@ class CaseworkerCreateHearingSummaryTest {
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Hearing summary created");
     }
+
 }

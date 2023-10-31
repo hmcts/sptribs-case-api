@@ -26,14 +26,14 @@ public final class DocumentUtil {
     }
 
     public static void updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> documentList) {
-        if (documentList != null || !documentList.isEmpty()) {
+        if (documentList != null && !documentList.isEmpty()) {
             documentList.forEach(doc -> doc.getValue().getDocumentLink()
                 .setCategoryId(doc.getValue().getDocumentCategory().getCategory()));
         }
     }
 
     public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList, String categoryId) {
-        if (documentList != null || !documentList.isEmpty()) {
+        if (documentList != null && !documentList.isEmpty()) {
             documentList.forEach(doc -> doc.getValue().getDocumentLink().setCategoryId(categoryId));
         }
     }

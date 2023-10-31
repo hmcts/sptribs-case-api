@@ -168,4 +168,5 @@ class CaseWorkerCloseTheCaseTest {
         //Then
         assert (response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
+
 }
