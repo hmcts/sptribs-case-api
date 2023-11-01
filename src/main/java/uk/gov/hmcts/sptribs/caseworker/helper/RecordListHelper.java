@@ -89,6 +89,9 @@ public class RecordListHelper {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            partiesSet.add(NotificationParties.APPLICANT);
+        }
 
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
     }

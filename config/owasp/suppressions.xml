@@ -99,6 +99,14 @@
       <notes>False positive as project does not contain json-java or hutool</notes>
       <cve>CVE-2022-45688</cve>
     </suppress>
+    <suppress>
+        <notes>False positive as project does not contain json-java</notes>
+        <cve>CVE-2023-5072</cve>
+    </suppress>
+  <suppress>
+    <notes>Not a vulnerability as project does not contain json-java</notes>
+    <cve>CVE-2023-5072</cve>
+  </suppress>
   <suppress>
     <notes>pkg:maven/commons-fileupload/commons-fileupload@1.4</notes>
     <cve>CVE-2023-24998</cve>
@@ -127,6 +135,15 @@
     <cve>CVE-2023-20883</cve>
   </suppress>
   <suppress>
+    <notes>pkg:maven/org.springframework.boot/spring-boot-starter-web@2.7.11</notes>
+    <cve>CVE-2023-20883</cve>
+  </suppress>
+  <suppress>
+    <notes>pkg:maven/org.springframework.boot/spring-boot-starter-web@2.7.11</notes>
+    <cve>CVE-2023-20883</cve>
+    <cve>CVE-2023-20883</cve>
+  </suppress>
+  <suppress>
     <notes>pkg:maven/com.google.guava/guava@31.1-jre</notes>
     <cve>CVE-2020-8908</cve>
   </suppress>
@@ -134,5 +151,16 @@
     <notes>pkg:maven/org.springframework.security/spring-security-crypto@5.8.3</notes>
     <cve>CVE-2023-34034</cve>
     <cve>CVE-2023-34035</cve>
+  </suppress>
+  <suppress>
+    <notes>pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@9.0.80</notes>
+    <cve>CVE-2023-42794</cve>
+    <cve>CVE-2023-42795</cve>
+    <cve>CVE-2023-45648</cve>
+  </suppress>
+  <suppress>
+    <notes>pkg:maven/org.json/json@20230227</notes>
+    <cve>CVE-2023-5072</cve>
+    <cve>CVE-2023-44487</cve>
   </suppress>
 </suppressions>

@@ -69,16 +69,21 @@ class CaseWorkerEditDraftOrderTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
-        DynamicListElement element = DynamicListElement.builder().code(UUID.randomUUID()).label("label").build();
+        DynamicListElement element = DynamicListElement.builder().code(UUID.randomUUID())
+            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--01-01-2023 11:11:11").build();
         List<DynamicListElement> elements = new ArrayList<>();
         elements.add(element);
         caseData.getCicCase().setDraftOrderDynamicList(DynamicList.builder().value(element).listItems(elements).build());
         List<ListValue<DraftOrderCIC>> cicList = new ArrayList<>();
         cicList.add(ListValue.<DraftOrderCIC>builder().value(
-            DraftOrderCIC.builder().build()
+            DraftOrderCIC.builder()
+                .templateGeneratedDocument(Document.builder().filename("draft--user--01-01-2023 11:11:11.pdf")
+                    .build())
+                .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build()).build()
+
         ).build());
         caseData.getCicCase().setDraftOrderCICList(cicList);
-        caseData.getCicCase().setOrderTemplateIssued(new Document());
+        caseData.getCicCase().setOrderTemplateIssued(Document.builder().filename("draft--user--01-01-2023 11:11:11.pdf").build());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
