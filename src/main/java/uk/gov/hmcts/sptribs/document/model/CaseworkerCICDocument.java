@@ -50,13 +50,19 @@ public class CaseworkerCICDocument {
     }
 
     @JsonIgnore
-    public boolean isDocumentValid() {
-        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3");
+    public boolean isDocumentValidForEmail() {
+        return isDocumentValid("pdf,csv,odt,txt,rtf,xlsx,docx");
     }
 
-    public boolean isDocumentValid(String validExtensions) {
+    @JsonIgnore
+    public boolean isDocumentValid() {
+        return isDocumentValid("pdf,jpg,jpeg,gif,png,txt,rtf,rtf2,mp4,xls,xlsx,doc,docx");
+    }
+
+    private boolean isDocumentValid(String validExtensions) {
         String fileName = this.documentLink.getFilename();
         String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-        return Arrays.asList(validExtensions.split(",")).contains(fileExtension);
+        return Arrays.stream(validExtensions.split(","))
+            .anyMatch(validExtension -> fileExtension.equals(validExtension));
     }
 }

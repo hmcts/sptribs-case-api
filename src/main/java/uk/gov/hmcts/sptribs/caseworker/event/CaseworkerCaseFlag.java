@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagLevel;
@@ -14,12 +18,19 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.FlagParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.FlagTypePage;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.model.Status;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -66,14 +77,14 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .name("Flags: Create flag")
             .showSummary()
             .description("Create a flag")
-            //.aboutToSubmitCallback(this::aboutToSubmit)
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER));
     }
 
-    /*public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
@@ -144,7 +155,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .data(caseData)
             .state(details.getState())
             .build();
-    }*/
+    }
 
     public SubmittedCallbackResponse flagCreated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
@@ -154,7 +165,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .build();
     }
 
-    /*private void addCaseLevel(CaseData caseData, Flags flag) {
+    private void addCaseLevel(CaseData caseData, Flags flag) {
         if (isEmpty(caseData.getCicCase().getCaseFlags())) {
             List<ListValue<Flags>> listValues = new ArrayList<>();
 
@@ -230,5 +241,5 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().getRespondentFlags()
                 .forEach(flagsListValue -> flagsListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
-    }*/
+    }
 }

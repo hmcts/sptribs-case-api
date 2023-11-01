@@ -15,7 +15,6 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -46,9 +45,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_R
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerEditRecordListingTest {
-
-    @Mock
-    private HearingService hearingService;
 
     @InjectMocks
     private CaseworkerEditRecordListing caseworkerEditRecordList;

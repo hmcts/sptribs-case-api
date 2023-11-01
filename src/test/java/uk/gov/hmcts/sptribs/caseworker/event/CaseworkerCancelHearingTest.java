@@ -82,7 +82,7 @@ class CaseworkerCancelHearingTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
+        when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCancelHearing.aboutToStart(updatedCaseDetails);

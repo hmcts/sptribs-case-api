@@ -5,7 +5,6 @@ public final class ControllerConstants {
     public static final String BEARER_PREFIX = "Bearer" + " ";
     public static final String AUTHORIZATION = "Authorization";
     public static final String AUTHORIZATION_VALUE = "authHeader";
-    public static final String ACCEPT = "accept";
 
     private ControllerConstants() {
     }

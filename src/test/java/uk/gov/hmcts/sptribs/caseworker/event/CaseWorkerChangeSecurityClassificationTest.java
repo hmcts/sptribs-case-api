@@ -48,7 +48,6 @@ class CaseWorkerChangeSecurityClassificationTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseworkerChangeSecurityClassification.setSecurityClassificationEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When

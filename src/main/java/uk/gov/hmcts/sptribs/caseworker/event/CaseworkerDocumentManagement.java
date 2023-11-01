@@ -14,7 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
+
+import java.util.ArrayList;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
 @Component
 @Slf4j
@@ -78,7 +80,11 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        DocumentUtil.uploadDocument(caseData);
+
+        updateCategoryToCaseworkerDocument(caseData.getNewDocManagement().getCaseworkerCICDocument());
+        // Copy new documents to list of all documents and clear the new document list
+        caseData.getAllDocManagement().getCaseworkerCICDocument().addAll(caseData.getNewDocManagement().getCaseworkerCICDocument());
+        caseData.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

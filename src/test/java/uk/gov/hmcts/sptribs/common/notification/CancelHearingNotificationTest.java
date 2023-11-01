@@ -146,48 +146,6 @@ public class CancelHearingNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
-
-    @Test
-    void shouldNotifyApplicantWithEmail() {
-        //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
-        data.getCicCase().setApplicantFullName("applicantFullName");
-        data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
-        data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
-        data.getCicCase().setHearingList(getDynamicList());
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        cancelHearingNotification.sendToApplicant(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
-    void shouldNotifyApplicantWithPost() {
-        //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
-        data.getCicCase().setApplicantFullName("applicantFullName");
-        data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
-        data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
-        data.getCicCase().setHearingList(getDynamicList());
-
-        //When
-        when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        cancelHearingNotification.sendToApplicant(data, "CN1");
-
-        //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
-    }
-
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")

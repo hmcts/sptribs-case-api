@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.common.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -141,15 +140,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (CollectionUtils.isNotEmpty(cicCase.getSubjectCIC())) {
+        if (!cicCase.getSubjectCIC().isEmpty()) {
             applicationReceivedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (CollectionUtils.isNotEmpty(cicCase.getApplicantCIC())) {
+        if (!cicCase.getApplicantCIC().isEmpty()) {
             applicationReceivedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (CollectionUtils.isNotEmpty(cicCase.getRepresentativeCIC())) {
+        if (!cicCase.getRepresentativeCIC().isEmpty()) {
             applicationReceivedNotification.sendToRepresentative(data, caseNumber);
         }
     }

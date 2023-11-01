@@ -17,7 +17,7 @@
             "id": null,
             "title": "Bundle Title",
             "description": null,
-            "eligibleForStitching": "Yes",
+            "eligibleForStitching": "",
             "documents": [
               {
                 "value": {

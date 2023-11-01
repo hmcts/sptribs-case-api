@@ -10,7 +10,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.removeO
 
 
 public final class DocumentRemoveListUtil {
-
     private DocumentRemoveListUtil() {
 
     }
@@ -42,16 +41,11 @@ public final class DocumentRemoveListUtil {
             || cic.getApplicantDocumentsUploaded().size() < oldData.getCicCase().getApplicantDocumentsUploaded().size())) {
             checkLists(caseData, oldData.getCicCase().getApplicantDocumentsUploaded(), cic.getApplicantDocumentsUploaded());
         }
-
-        if (!CollectionUtils.isEmpty(oldData.getLatestCompletedHearing().getSummary().getRecFile())
-            && (CollectionUtils.isEmpty(caseData.getLatestCompletedHearing().getSummary().getRecFile())
-            || caseData.getLatestCompletedHearing().getSummary().getRecFile().size()
-            < oldData.getLatestCompletedHearing().getSummary().getRecFile().size())) {
-            checkLists(caseData, oldData.getLatestCompletedHearing().getSummary().getRecFile(),
-                caseData.getLatestCompletedHearing().getSummary().getRecFile());
+        if (!CollectionUtils.isEmpty(oldData.getListing().getSummary().getRecFile())
+            && (CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())
+            || caseData.getListing().getSummary().getRecFile().size() < oldData.getListing().getSummary().getRecFile().size())) {
+            checkLists(caseData, oldData.getListing().getSummary().getRecFile(), caseData.getListing().getSummary().getRecFile());
         }
-
-
         return caseData;
     }
 

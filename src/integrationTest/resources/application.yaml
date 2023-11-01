@@ -45,10 +45,6 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
-bundling:
-  api:
-    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
-
 s2s:
   stub: true
 
@@ -106,8 +102,6 @@ feature:
     enabled: ${BUNDLING_FEATURE:false}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:false}
-  security-classification:
-    enabled: ${SECURITY_CLASSIFICATION:false}
 
 caseinfo:
   apps:

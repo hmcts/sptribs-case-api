@@ -72,24 +72,6 @@ public class CancelHearingNotification implements PartiesNotification {
         cicCase.setResNotificationResponse(respondentNotificationResponse);
     }
 
-    @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-
-        Map<String, Object> applicantCommonVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
-        notificationHelper.addHearingPostponedTemplateVars(cicCase, applicantCommonVars);
-
-        NotificationResponse applicantNotificationResponse;
-        if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            applicantNotificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), applicantCommonVars);
-        } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), applicantCommonVars);
-            applicantNotificationResponse = sendLetterNotification(applicantCommonVars);
-        }
-
-        cicCase.setAppNotificationResponse(applicantNotificationResponse);
-    }
-
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
