@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -38,7 +37,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final String ALWAYS_HIDE = "flagLauncherInternal = \"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
@@ -63,7 +62,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .description("Create Flag")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
-            .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN)
+            .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN, SUPER_USER,
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -78,7 +79,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .optional(CaseData::getSubjectFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getApplicantFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getRepresentativeFlags, ALWAYS_HIDE, true, true)
-            .mandatory(CaseData::getFlagLauncherInternal,
+            .mandatory(CaseData::getFlagLauncher,
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
 
@@ -87,12 +88,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
+        log.info("Create Case flags about to Submit invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-        String claimNumber = caseData.getHyphenatedCaseRef();
-
-        coreCaseApiService.submitSupplementaryDataToCcd(claimNumber);
+        coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -102,9 +101,8 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse flagCreated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Flag created %n## This Flag has been added to case %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
-            .build();
+                .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
+                .build();
     }
 
 
