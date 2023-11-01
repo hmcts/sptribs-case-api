@@ -278,8 +278,6 @@ class CaseworkerEditCaseTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
-
 
         //Then
         assertThat(response.getData()).isNotNull();

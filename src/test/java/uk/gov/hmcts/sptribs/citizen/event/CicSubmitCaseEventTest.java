@@ -157,6 +157,9 @@ class CicSubmitCaseEventTest {
 
         //Then
         Assertions.assertEquals(State.DSS_Submitted, aboutToSubmitResponse.getState());
+        assertThat(aboutToSubmitResponse.getData().getDssAnswer1()).isEqualTo("case_data.dssCaseDataSubjectFullName");
+        assertThat(aboutToSubmitResponse.getData().getDssAnswer3()).isEqualTo("case_data.dssCaseDataSubjectDateOfBirth");
+
     }
 
     @Test

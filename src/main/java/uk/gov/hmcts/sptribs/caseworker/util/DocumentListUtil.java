@@ -29,6 +29,9 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TY
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 
 public final class DocumentListUtil {
+
+    private static final String DOCUMENT_BINARY_PATH = "documents/%s/binary";
+
     private DocumentListUtil() {
 
     }
@@ -113,6 +116,7 @@ public final class DocumentListUtil {
             .build();
     }
 
+
     private static void createDocumentList(String apiUrl, List<DynamicListElement> dynamicListElements, CaseworkerCICDocument doc) {
         String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
             "/");
@@ -189,6 +193,4 @@ public final class DocumentListUtil {
     public static List<ListValue<CaseworkerCICDocument>> getAllOrderDocuments(CicCase cicCase) {
         return buildListValues(getOrderDocuments(cicCase));
     }
-
-
 }
