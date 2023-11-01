@@ -13,10 +13,14 @@ import java.util.Map;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.CIC_CASE_SCHEME;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.COMMA_SPACE;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DATED;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DECISION_DATED;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DIRECTION_DATED;
 import static uk.gov.hmcts.sptribs.notification.FormatUtil.FILE_NAME_DATE_FORMATTER;
 
 public final class DocmosisTemplateHelper {
+
+    private static final String EMPTY = "";
+
     private DocmosisTemplateHelper() {
     }
 
@@ -28,7 +32,7 @@ public final class DocmosisTemplateHelper {
             }
             return members.substring(0, members.length() - 2);
         }
-        return "";
+        return EMPTY;
     }
 
     public static Map<String, Object> getCommonFields(final CaseData caseData,
@@ -36,7 +40,8 @@ public final class DocmosisTemplateHelper {
 
         Map<String, Object> templateContent = new HashMap<>();
 
-        templateContent.put(DATED, LocalDate.now().format(FILE_NAME_DATE_FORMATTER));
+        templateContent.put(DECISION_DATED, LocalDate.now().format(FILE_NAME_DATE_FORMATTER));
+        templateContent.put(DIRECTION_DATED, LocalDate.now().format(FILE_NAME_DATE_FORMATTER));
         templateContent.put(CIC_CASE_SCHEME, caseData.getCicCase().getSchemeCic().getLabel());
         templateContent.put(CASE_NUMBER, ccdCaseReference);
         return templateContent;
