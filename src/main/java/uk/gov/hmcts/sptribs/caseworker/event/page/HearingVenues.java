@@ -32,14 +32,14 @@ public class HearingVenues implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("listingDetails", this::midEvent)
             .pageLabel("Listing Details")
-            .label("LabelListingDetails","")
+            .label("LabelListingDetails", "")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getListing)
             .readonly(Listing::getHearingVenuesMessage)
             .optional(Listing::getHearingVenues,
-                            "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\"" 
-                     + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
+                "venueNotListedOption!= \"VenueNotListed\" AND (" + CURRENT_EVENT + CASEWORKER_RECORD_LISTING + "\""
+                    + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
             .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
             .optional(Listing::getVenueNotListedOption)
@@ -54,7 +54,7 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(Listing::getNumberOfDays)
             .mandatory(Listing::getAdditionalHearingDate, "numberOfDays = \"Yes\"")
             .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
-            .readonly(Listing::getHearingStatus,ALWAYS_HIDE)
+            .readonly(Listing::getHearingStatus, ALWAYS_HIDE)
             .done();
     }
 
@@ -74,7 +74,7 @@ public class HearingVenues implements CcdPageConfiguration {
             && StringUtils.isBlank(listing.getReadOnlyHearingVenueName())) {
             errors.add("Please enter valid Hearing venue");
         }
-
+        data.setListing(listing);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

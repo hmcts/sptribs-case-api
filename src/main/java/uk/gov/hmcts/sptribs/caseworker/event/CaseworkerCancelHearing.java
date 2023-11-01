@@ -11,9 +11,9 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingDateSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -33,15 +33,17 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
 public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration hearingDateSelect = new CancelHearingDateSelect();
+    private static final CcdPageConfiguration hearingDateSelect = new SelectHearing();
     private static final CcdPageConfiguration reasonSelect = new CancelHearingReasonSelect();
 
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
@@ -73,13 +75,21 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE)
         );
 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
-        DynamicList hearingDateDynamicList = hearingService.getHearingDateDynamicList(details);
+        DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -101,6 +111,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             state = CaseManagement;
         }
         caseData.getListing().setHearingStatus(Cancelled);
+        hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(state)
@@ -109,8 +120,14 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse hearingCancelled(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-
-        sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        try {
+            sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Cancel hearing notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Cancel hearing notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Hearing cancelled %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
@@ -129,7 +146,9 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         if (cicCase.getHearingNotificationParties().contains(NotificationParties.RESPONDENT)) {
             cancelHearingNotification.sendToRespondent(data, caseNumber);
         }
-
+        if (cicCase.getHearingNotificationParties().contains(NotificationParties.APPLICANT)) {
+            cancelHearingNotification.sendToApplicant(data, caseNumber);
+        }
     }
 
 }
