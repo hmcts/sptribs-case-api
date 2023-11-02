@@ -95,7 +95,7 @@ public class CcdSearchService {
                         .must(matchQuery("reference", 1688978122333564L)))
             )
             .from(0)
-            .size(25);
+            .size(500);
         log.info("Query:" + sourceBuilder.toString());
         log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
         var cases = coreCaseDataApi.searchCases(
