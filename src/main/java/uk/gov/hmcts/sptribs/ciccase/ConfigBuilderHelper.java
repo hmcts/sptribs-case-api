@@ -6,6 +6,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.search.SearchInputFields.SEARCH_FIELD_LIST;
@@ -14,6 +15,17 @@ import static uk.gov.hmcts.sptribs.ciccase.search.SearchResultFields.SEARCH_RESU
 public final class ConfigBuilderHelper {
 
     private ConfigBuilderHelper() {
+
+    }
+
+    public static void configureSearchParties(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder) {
+        configBuilder.searchParties(UserRole.SUPER_USER)
+            .name("cicCaseFullName")
+            .emailAddress("cicCaseEmail")
+            .addressLine1("cicCaseAddress")
+            .dateOfBirth("cicCaseDateOfBirth")
+            .dateOfDeath("")
+            .build();
 
     }
 
