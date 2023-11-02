@@ -360,7 +360,7 @@ dependencyManagement {
     }
 
     //CVE-2022-31692, CVE-2022-31690
-    dependencySet( group: 'org.springframework.security', version: '5.8.7'){
+    dependencySet( group: 'org.springframework.security', version: '5.8.8'){
       entry 'spring-security-core'
       entry 'spring-security-acl'
       entry 'spring-security-aspects'
@@ -482,7 +482,7 @@ dependencies {
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '12.5'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.3.0'
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.29'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.38.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
