@@ -31,9 +31,9 @@ import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateHelper.getMe
 @ExtendWith(MockitoExtension.class)
 class DocmosisTemplateHelperTest {
 
-    private final Long ccdCaseReference = 1649246783609781L;
-    private final String PANEL_MEMBER_NAME_1 = "Hubert Blaine Earl Frederick Gerald Irvin John Kenneth Charles David";
-    private final String PANEL_MEMBER_NAME_2 = "Charles David Earl Frederick Gerald Hubert Irvin John Kenneth Hubert Blaine";
+    private static final Long ccdCaseReference = 1649246783609781L;
+    private static final String PANEL_MEMBER_1 = "Hubert Blaine Earl Frederick Gerald Irvin John Kenneth Charles David";
+    private static final String PANEL_MEMBER_2 = "Charles David Earl Frederick Gerald Hubert Irvin John Kenneth Hubert Blaine";
 
     @Test
     void shouldReturnEmptyStringWhenMembersListIsNull() {
@@ -62,7 +62,7 @@ class DocmosisTemplateHelperTest {
         String members = getMembers(memberList);
 
         //Then
-        assertEquals( PANEL_MEMBER_NAME_1 + COMMA_SPACE + PANEL_MEMBER_NAME_2, members);
+        assertEquals(PANEL_MEMBER_1 + COMMA_SPACE + PANEL_MEMBER_2, members);
     }
 
     @Test
@@ -147,10 +147,10 @@ class DocmosisTemplateHelperTest {
         ListValue<PanelMember> member2 = new ListValue<>();
 
         PanelMember panelMember1 = PanelMember.builder()
-            .name(getDynamicList(PANEL_MEMBER_NAME_1))
+            .name(getDynamicList(PANEL_MEMBER_1))
             .build();
         PanelMember panelMember2 = PanelMember.builder()
-            .name(getDynamicList(PANEL_MEMBER_NAME_2))
+            .name(getDynamicList(PANEL_MEMBER_2))
             .build();
 
         member1.setValue(panelMember1);
@@ -177,7 +177,8 @@ class DocmosisTemplateHelperTest {
     private CaseData getCaseDataWithCICScheme(SchemeCic schemeCic) {
         return CaseData
             .builder()
-            .cicCase(CicCase
+            .cicCase(
+                CicCase
                 .builder()
                 .schemeCic(schemeCic)
                 .build())
