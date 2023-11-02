@@ -245,8 +245,25 @@ withPipeline(type, product, component) {
         generateDefinitions()
     }
 
+    afterSuccess('functionalTest:preview') {
 
-    onDemo {
+        try {
+            builder.gradle('e2eTests')
+        } finally {
+
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/e2eTests",
+                    reportFiles          : "index.html",
+                    reportName           : "E2E Tests Report"
+            ]
+        }
+    }
+
+
+        onDemo {
       env.ENVIRONMENT="demo"
       env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
       env.CCD_DEF_NAME = "demo"
