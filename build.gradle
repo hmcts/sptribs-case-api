@@ -27,7 +27,7 @@ plugins {
   id 'org.springframework.boot' version '2.7.17'
   id 'com.github.ben-manes.versions' version '0.49.0'
   id 'hmcts.ccd.sdk'  version '5.5.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.857'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.860'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -360,7 +360,7 @@ dependencyManagement {
     }
 
     //CVE-2022-31692, CVE-2022-31690
-    dependencySet( group: 'org.springframework.security', version: '5.8.7'){
+    dependencySet( group: 'org.springframework.security', version: '5.8.8'){
       entry 'spring-security-core'
       entry 'spring-security-acl'
       entry 'spring-security-aspects'
@@ -438,7 +438,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.0.1'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.1'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.21.1'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.82'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.15'
@@ -482,7 +482,7 @@ dependencies {
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '12.5'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.3.0'
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.29'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.38.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
