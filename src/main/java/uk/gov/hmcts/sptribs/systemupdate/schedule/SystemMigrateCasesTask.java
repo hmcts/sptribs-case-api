@@ -35,5 +35,7 @@ public class SystemMigrateCasesTask implements Runnable {
         migrations.stream()
                 .sorted(comparing(Migration::getPriority)) //Ascending priority, 0 (zero) is highest
                 .forEach(migration -> migration.apply(user, serviceAuthorization));
+
+        log.info("Migrate cases scheduled task finished");
     }
 }
