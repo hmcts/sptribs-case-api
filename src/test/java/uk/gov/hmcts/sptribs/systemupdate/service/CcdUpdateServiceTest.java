@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
+import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task.MigrateRetiredFields;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,8 @@ class CcdUpdateServiceTest {
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private CaseDetailsUpdater caseDetailsUpdater;
 
     @InjectMocks
     private CcdUpdateService ccdUpdateService;
@@ -97,6 +100,57 @@ class CcdUpdateServiceTest {
                 TEST_CASE_ID.toString(),
                 true,
                 caseDataContent);
+    }
+
+    @Test
+    void shouldSubmitEventWithRetry() {
+
+        final User user = systemUpdateUser();
+        final Map<String, Object> caseData = new HashMap<>();
+        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails =
+            new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(CaseData.builder().build());
+
+        final StartEventResponse startEventResponse = getStartEventResponse();
+        final CaseDataContent caseDataContent = mock(CaseDataContent.class);
+
+
+        when(ccdCaseDataContentProvider
+            .createCaseDataContent(
+                startEventResponse,
+                SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
+                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
+                caseDetails.getData()))
+            .thenReturn(caseDataContent);
+        when(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(),  anyString(),
+            anyString(), any(), any())).thenReturn(startEventResponse);
+
+        when(ccdCaseDataContentProvider
+            .createCaseDataContent(
+                startEventResponse,
+                SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
+                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
+                caseDetails.getData()))
+            .thenReturn(caseDataContent);
+
+        when(caseDetailsUpdater
+            .updateCaseData(
+                any(),
+                any()))
+            .thenReturn(caseDetails);
+
+        ccdUpdateService.submitEventWithRetry(TEST_CASE_ID.toString(), SYSTEM_REMOVE_FAILED_CASES, new MigrateRetiredFields(), user, SERVICE_AUTHORIZATION);
+
+        verify(coreCaseDataApi).submitEventForCaseWorker(
+            SYSTEM_UPDATE_AUTH_TOKEN,
+            SERVICE_AUTHORIZATION,
+            SYSTEM_USER_USER_ID,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            TEST_CASE_ID.toString(),
+            true,
+            caseDataContent);
     }
 
     private StartEventResponse getStartEventResponse() {
