@@ -111,6 +111,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             state = CaseManagement;
         }
         caseData.getListing().setHearingStatus(Cancelled);
+        hearingService.addListingIfExists(caseData);
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

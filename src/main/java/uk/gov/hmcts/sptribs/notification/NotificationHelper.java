@@ -232,10 +232,10 @@ public class NotificationHelper {
         String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
         String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
         String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(0, hearingDateTimeArr[1].lastIndexOf(SPACE))
+            ? hearingDateTimeArr[2].substring(0, hearingDateTimeArr[2].lastIndexOf(SPACE))
             : null;
         String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(hearingDateTimeArr[1].lastIndexOf(SPACE) + 1)
+            ? hearingDateTimeArr[2].substring(hearingDateTimeArr[2].lastIndexOf(SPACE) + 1)
             : null;
 
         templateVars.put(HEARING_DATE, hearingDate);

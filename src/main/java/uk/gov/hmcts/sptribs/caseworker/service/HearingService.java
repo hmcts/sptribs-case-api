@@ -31,11 +31,7 @@ public class HearingService {
     public DynamicList getListedHearingDynamicList(final CaseData data) {
 
         List<String> hearingDateList = new ArrayList<>();
-
-        if (isNotEmpty(data.getListing()) && data.getHearingList().isEmpty()) {
-            Listing existingListing = data.getListing();
-            addListing(data, existingListing);
-        }
+        addListingIfExists(data);
 
         for (ListValue<Listing> listing : data.getHearingList()) {
             if (listing.getValue().getHearingStatus() == HearingState.Listed) {
@@ -45,6 +41,12 @@ public class HearingService {
         }
 
         return createDynamicList(hearingDateList);
+    }
+
+    public void addListingIfExists(CaseData data) {
+        if (isNotEmpty(data.getListing()) && data.getHearingList().isEmpty()) {
+            addListing(data, data.getListing());
+        }
     }
 
     private String getHearingDate(String id, Listing listing) {
