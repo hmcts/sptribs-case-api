@@ -26,7 +26,27 @@ public final class ConfigBuilderHelper {
             .dateOfBirth("cicCaseDateOfBirth")
             .dateOfDeath("")
             .build();
-
+        configBuilder.searchParties(UserRole.SUPER_USER)
+            .name("cicCaseApplicantFullName")
+            .emailAddress("cicCaseApplicantEmailAddress")
+            .addressLine1("cicCaseApplicantAddress")
+            .dateOfBirth("cicCaseApplicantDateOfBirth")
+            .dateOfDeath("")
+            .build();
+        configBuilder.searchParties(UserRole.SUPER_USER)
+            .name("cicCaseRepresentativeFullName")
+            .emailAddress("cicCaseRepresentativeEmailAddress")
+            .addressLine1("cicCaseRepresentativeAddress")
+            .dateOfBirth("cicCaseRepresentativeDateOfBirth")
+            .dateOfDeath("")
+            .build();
+        configBuilder.searchParties(UserRole.SUPER_USER)
+            .name("cicCaseRespondentName")
+            .emailAddress("cicCaseRespondentEmail")
+            .addressLine1("")
+            .dateOfBirth("")
+            .dateOfDeath("")
+            .build();
     }
 
     public static void configureCategories(ConfigBuilder<? extends CaseData, State, UserRole> configBuilder) {
