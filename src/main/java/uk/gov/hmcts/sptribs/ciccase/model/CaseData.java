@@ -383,6 +383,10 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
 
+    @CCD(access = {DefaultAccess.class})
+    @JsonUnwrapped
+    private RetiredFields retiredFields;
+
     public String getFirstHearingDate() {
 
         Listing nextListing = getNextListedHearing();
