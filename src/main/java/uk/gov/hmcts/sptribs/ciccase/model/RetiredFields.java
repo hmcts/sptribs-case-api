@@ -29,7 +29,7 @@ public class RetiredFields {
 
     @JsonIgnore
     private static final Map<String, TriConsumer<Map<String, Object>, String, Object>> migrations = Map.of(
-            "orderDynamicList", moveTo("flagDynamicList")
+            "cicBundles", moveTo("caseBundles")
     );
 
     /**
