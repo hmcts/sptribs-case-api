@@ -10,6 +10,7 @@ import static org.assertj.guava.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
+import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -26,7 +27,7 @@ class DefaultAccessTest {
         final SetMultimap<HasRole, Permission> grants = new DefaultAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(21)
+            .hasSize(22)
             .contains(
                 entry(CREATOR, C),
                 entry(CREATOR, R),
@@ -48,7 +49,8 @@ class DefaultAccessTest {
                 entry(ST_CIC_SENIOR_JUDGE, U),
                 entry(SYSTEMUPDATE, C),
                 entry(SYSTEMUPDATE, R),
-                entry(SYSTEMUPDATE, U)
+                entry(SYSTEMUPDATE, U),
+                entry(SYSTEMUPDATE, D)
             );
     }
 }
