@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
@@ -103,9 +105,14 @@ class CcdSearchServiceTest {
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
                 .searchSource()
                 .query(
-                        boolQuery()
-                                .must(boolQuery()
-                                        .must(matchQuery("reference", 1688978122333564L)))
+                    boolQuery()
+                        .must(boolQuery()
+                            .mustNot(matchQuery("data.dataVersion", 0))
+                        )
+                        .must(boolQuery()
+                            .should(boolQuery().mustNot(existsQuery("data.dataVersion")))
+                            .should(boolQuery().must(rangeQuery("data.dataVersion").lt(RetiredFields.getVersion())))
+                        )
                 )
                 .from(0)
                 .size(500);

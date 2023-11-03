@@ -20,7 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 
@@ -92,20 +94,22 @@ public class CcdSearchService {
             .query(
                 boolQuery()
                     .must(boolQuery()
-                        .must(matchQuery("reference", 1688978122333564L)))
+                        .mustNot(matchQuery("data.dataVersion", 0))
+                    )
+                    .must(boolQuery()
+                        .should(boolQuery().mustNot(existsQuery("data.dataVersion")))
+                        .should(boolQuery().must(rangeQuery("data.dataVersion").lt(latestVersion)))
+                    )
             )
             .from(0)
             .size(500);
-        log.info("Query:" + sourceBuilder.toString());
-        log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
-        var cases = coreCaseDataApi.searchCases(
+
+        return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
             CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
-        log.info("Cases:" + cases.size());
-        return cases;
     }
 
     public List<CaseDetails> searchForCases(
