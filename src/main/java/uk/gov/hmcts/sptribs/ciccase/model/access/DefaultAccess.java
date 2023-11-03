@@ -12,6 +12,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
 
 public class DefaultAccess implements HasAccessControl {
@@ -24,6 +25,7 @@ public class DefaultAccess implements HasAccessControl {
         grants.putAll(ST_CIC_HEARING_CENTRE_ADMIN, Permissions.CREATE_READ_UPDATE);
         grants.putAll(ST_CIC_HEARING_CENTRE_TEAM_LEADER, Permissions.CREATE_READ_UPDATE);
         grants.putAll(ST_CIC_SENIOR_JUDGE, Permissions.CREATE_READ_UPDATE);
+        grants.putAll(SYSTEMUPDATE, Permissions.CREATE_READ_UPDATE);
         return grants;
     }
 }
