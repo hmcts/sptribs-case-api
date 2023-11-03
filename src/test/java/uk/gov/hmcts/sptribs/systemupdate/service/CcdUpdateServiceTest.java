@@ -140,7 +140,11 @@ class CcdUpdateServiceTest {
                 any()))
             .thenReturn(caseDetails);
 
-        ccdUpdateService.submitEventWithRetry(TEST_CASE_ID.toString(), SYSTEM_REMOVE_FAILED_CASES, new MigrateRetiredFields(), user, SERVICE_AUTHORIZATION);
+        ccdUpdateService.submitEventWithRetry(
+            TEST_CASE_ID.toString(),
+            SYSTEM_REMOVE_FAILED_CASES,
+            new MigrateRetiredFields(),
+            user, SERVICE_AUTHORIZATION);
 
         verify(coreCaseDataApi).submitEventForCaseWorker(
             SYSTEM_UPDATE_AUTH_TOKEN,
