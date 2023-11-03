@@ -6,15 +6,10 @@ import lombok.NoArgsConstructor;
 import org.elasticsearch.common.TriConsumer;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
-import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.Map;
-
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
@@ -23,41 +18,10 @@ public class RetiredFields {
     private int dataVersion;
 
     @CCD(
-            label = "Enter any other important information about this cancellation",
-            typeOverride = TextArea
-    )
-    private String cancelHearingAdditionalDetail;
-
-    @CCD(
-            label = "Why was the hearing cancelled?",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-            typeOverride = FixedRadioList,
-            typeParameterOverride = "HearingCancellationReason"
-    )
-    private HearingCancellationReason hearingCancellationReason;
-
-
-    @CCD(
             label = "Template",
             access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList orderDynamicList;
-
-    @CCD(
-            label = "Enter any other important information about this postponement",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-            typeOverride = TextArea
-    )
-    private String postponeAdditionalInformation;
-
-    @CCD(
-            label = "Postpone Reason",
-            typeOverride = FixedRadioList,
-            typeParameterOverride = "PostponeReason",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private PostponeReason postponeReason;
-
 
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
