@@ -2,17 +2,20 @@ package uk.gov.hmcts.sptribs.e2e.enums;
 
 public enum Actions {
     AddNote("Case: Add note"),
+    CicaContactParties("Case: CICA Contact parties"),
     ContactParties("Case: Contact parties"),
     EditCase("Case: Edit case"),
-    CreateFlag("Flags: Create flag"),
-    ManageFlags("Flags: Manage flags"),
+    CreateFlag("Create case flags"),
+    ManageFlags("Manage case flags"),
     CancelHearing("Hearings: Cancel hearing"),
     CreateListing("Hearings: Create listing"),
     CreateSummary("Hearings:Create summary"),
+    EditCicaCaseDetails("Case: Edit case details"),
     EditListing("Hearings: Edit listing"),
     EditSummary("Hearings: Edit summary"),
     PostponeHearing("Hearings: Postpone hearing"),
-    LinkCase("Links: Link case"),
+    LinkCase("Link cases"),
+    ManageLinks("Manage case links"),
     CreateDraft("Orders: Create draft"),
     EditeDraft("Orders: Edit draft"),
     ManageDueDate("Orders: Manage due date"),
@@ -28,7 +31,9 @@ public enum Actions {
     TestChangeState("Test change state"),
     ReferCaseToJudge("Refer case to judge"),
     ReferCaseToLegalOfficer("Refer case to legal officer"),
-    UploadDocuments("Document management: Upload");
+    UploadDocuments("Document management: Upload"),
+    AmendDocuments("Document management: Amend"),
+    RemoveDocuments("Document management: Remove");
 
     public final String label;
 

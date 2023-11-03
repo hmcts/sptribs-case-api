@@ -22,9 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.time.LocalDate.now;
 import static java.util.Arrays.stream;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.BuildCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
@@ -33,6 +35,8 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageLinks;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Subject;
 import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.SubjectEmail;
@@ -93,8 +97,8 @@ public class Case {
         // Select case categories
         assertThat(page.locator("h1"))
             .hasText("Case categorisation", textOptionsWithTimeout(30000));
-        page.selectOption("#cicCaseCaseCategory", new SelectOption().setLabel("Assessment")); // Available options: Assessment, Eligibility
-        page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Fatal")); // Available options: Fatal, Sexual Abuse, Other
+        page.selectOption("#cicCaseCaseCategory", new SelectOption().setLabel("Assessment"));
+        page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Sexual Abuse"));
         clickButton(page, "Continue");
 
         // Fill date case received form
@@ -140,7 +144,7 @@ public class Case {
         } else {
             getRadioButtonByLabel(page, "Email").click();
             getTextBoxByLabel(page, "Subject's email address")
-                        .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
+                .fill(StringHelpers.getRandomString(9).toLowerCase() + "@sub.com");
         }
         clickButton(page, "Continue");
 
@@ -220,7 +224,7 @@ public class Case {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(Submitted.label, getCaseStatus());
+        assertEquals(Submitted.label, getCaseStatus());
 
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
         return page.locator("ccd-markdown markdown h3")
@@ -345,7 +349,7 @@ public class Case {
         // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(Submitted.label, getCaseStatus());
+        assertEquals(Submitted.label, getCaseStatus());
 
         String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
         return page.locator("ccd-markdown markdown h3")
@@ -362,7 +366,7 @@ public class Case {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+        assertEquals(CaseManagement.label, getCaseStatus());
     }
 
     public String getCaseStatus() {
@@ -420,35 +424,52 @@ public class Case {
     }
 
     public void createCaseLevelFlag() {
-        startNextStepAction(CreateFlag);
-        assertThat(page.locator("h1")).hasText("Where should this flag be added?", textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, "Case").click();
-        clickButton(page, "Continue");
-        getRadioButtonByLabel(page, "Other").click();
-        page.getByLabel("Enter a flag type").click();
-        page.getByLabel("Enter a flag type").fill("test flag");
-        clickButton(page, "Continue");
-        page.getByLabel(
-                "Explain why you are creating this flag. Do not include any sensitive information such as personal details. (Optional)")
-            .fill("Test Flag Comment");
-        clickButton(page, "Continue");
-        assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
-        clickButton(page, "Save and continue");
-        assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Case Flag created", textOptionsWithTimeout(60000));
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+        createFlag("case level");
     }
 
     public void createFlagForParties(CaseParty... parties) {
+        stream(parties).map(Enum::name).forEach(this::createFlag);
+    }
+
+    public void updateCaseLevelFlags() {
+        startNextStepAction(ManageFlags);
+        assertThat(page.locator("h1").last()).hasText("Manage case flags", textOptionsWithTimeout(60000));
+        getRadioButtonByLabel(page, "case level").click();
+        clickButton(page, "Next");
+        clickButton(page, "Make inactive");
+        page.locator("#flagComments").fill("Test Manage case flag, making the flag inactive");
+        clickButton(page, "Next");
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Review flag details", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Flag updated", textOptionsWithTimeout(60000));
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        assertEquals(CaseManagement.label, getCaseStatus());
+    }
+
+    private void createFlag(String flagLocation) {
         startNextStepAction(CreateFlag);
-        assertThat(page.locator("h1")).hasText("Where should this flag be added?", textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, "Party").click();
-        clickButton(page, "Continue");
-        stream(parties).forEach(party -> party.select(page));
+        assertThat(page.locator("h1").last()).hasText("Where should this flag be added?", textOptionsWithTimeout(30000));
+        getRadioButtonByLabel(page, flagLocation).click();
+        clickButton(page, "Next");
+        getRadioButtonByLabel(page, "Other").click();
+        page.getByLabel("Enter a flag type").click();
+        page.getByLabel("Enter a flag type").fill("test flag");
+        clickButton(page, "Next");
+        page.locator("#flagComments").fill("Test Flag Comment");
+        clickButton(page, "Next");
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Review flag details", textOptionsWithTimeout(30000));
+        clickButton(page, "Save and continue");
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Flag created", textOptionsWithTimeout(60000));
+        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        assertEquals(CaseManagement.label, getCaseStatus());
     }
 
     public void caseworkerShouldAbleToCloseTheCase() {
@@ -478,7 +499,7 @@ public class Case {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseClosed.label, getCaseStatus());
+        assertEquals(CaseClosed.label, getCaseStatus());
     }
 
     public void createDraft(DraftOrderTemplate template) {
@@ -601,20 +622,61 @@ public class Case {
             .hasText(ManageDueDate.label, textOptionsWithTimeout(60000));
     }
 
-    public void linkCase(String case1) {
+    public void linkCase(String caseId1, String caseId2) {
+        openCase(caseId1);
         startNextStepAction(LinkCase);
         assertThat(page.locator("h1"))
             .hasText("Before you start", textOptionsWithTimeout(60000));
-        clickButton(page, "Continue");
-        page.locator("#cicCaseLinkCaseNumber_caseNumber").fill(case1);
-        getRadioButtonByLabel(page, "Case consolidated").click();
-        clickButton(page, "Continue");
-        clickButton(page, "Save and continue");
+        clickButton(page, "Next");
+        page.locator("#caseNumber input").fill(caseId2);
+        page.getByLabel("Bail").check();
+        clickButton(page, "Propose case link");
+        clickButton(page, "Next");
+        clickButton(page, "Submit");
         assertThat(page.locator("h1").last())
-            .hasText("Case link successful", textOptionsWithTimeout(60000));
+            .hasText("Case Link created", textOptionsWithTimeout(60000));
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+        assertEquals(CaseManagement.label, getCaseStatus());
+    }
+
+    public void unlinkCase(String caseId1, String caseId2) {
+        openCase(caseId1);
+        startNextStepAction(ManageLinks);
+        assertThat(page.locator("h1"))
+            .hasText("Before you start", textOptionsWithTimeout(60000));
+        clickButton(page, "Next");
+        page.locator(format("#case-reference-%s", caseId2)).check();
+        clickButton(page, "Next");
+        clickButton(page, "Submit");
+        assertThat(page.locator("h1").last())
+            .hasText("Case Link updated", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        assertEquals(CaseManagement.label, getCaseStatus());
+    }
+
+    private void openCase(String caseId1) {
+        clickLink(page, "Find Case");
+        page.locator("input[id*=CASE_REFERENCE]").fill(caseId1);
+        clickButton(page, "Apply");
+        page.locator("table tr td").first().click();
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+    }
+
+    public void bundle() {
+        startNextStepAction(BuildCase);
+        assertThat(page.locator("h1"))
+            .hasText("Case Built", textOptionsWithTimeout(60000));
+        clickButton(page, "Submit");
+        assertThat(page.locator("h1").last())
+            .hasText("Case built successful", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        assertEquals(CaseManagement.label, getCaseStatus());
     }
 }

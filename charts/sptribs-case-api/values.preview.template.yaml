@@ -11,7 +11,7 @@ java:
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
     POSTGRES_HOST: sptribs-preview.postgres.database.azure.com
-    POSTGRES_NAME: sptribs-case-api
+    POSTGRES_NAME: "pr-${CHANGE_ID}-sptribs-case-api"
     POSTGRES_USERNAME: hmcts
     POSTGRES_CONNECTION_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
   secrets:
@@ -30,6 +30,8 @@ ccd:
       enabled: false
     elastic:
       enabled: true
+    postgresql:
+      enabled: false
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
@@ -41,9 +43,11 @@ ccd:
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
+    ccdCaseManagementWebIngress: case-management-web-${SERVICE_FQDN}
     postgresUsername: hmcts
     postgresSecret: postgres
     postgresHostname: sptribs-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
@@ -61,22 +65,28 @@ ccd:
   ccd-data-store-api:
     java:
       imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/data-store-api:latest
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: false
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
         LOG_CALLBACK_DETAILS: "*"
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,em_ccd_orchestrator
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service,sptribs_frontend,sptribs_case_api,em_ccd_orchestrator
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,fpl_case_service,finrem_case_orchestration,iac,sptribs_frontend,civil_service,sptribs_case_api
-        ELASTIC_SEARCH_ENABLED: true
-        ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
-        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         CCD_DM_DOMAIN: http://dm-store-aat.service.core-compute-aat.internal
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:api-gateway\.preprod\.dm\.reform\.hmcts\.net|dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?)|(em-hrs-api-aat\.service\.core-compute-aat\.internal(?::\d+)?\/hearing-recordings\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\/segments\/[0-9]))
         CASE_DOCUMENT_AM_URL: https://ccd-case-document-am-api-${SERVICE_FQDN}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
+        ELASTIC_SEARCH_ENABLED: true
+        ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
+        ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
+        ENABLE_ATTRIBUTE_BASED_ACCESS_CONTROL: true
+        ENABLE_PSEUDO_ROLE_ASSIGNMENTS_GENERATION: true
+        ENABLE_PSEUDO_ACCESS_PROFILES_GENERATION: true
+        DEFINITION_STORE_HOST: https://ccd-definition-store-${SERVICE_FQDN}
+        USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
         ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
@@ -89,6 +99,7 @@ ccd:
       ingressHost: am-role-assignment-${SERVICE_FQDN}
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,sptribs_frontend,sptribs_case_api
         RUN_LD_ON_STARTUP: false
       keyVaults:
         am:
@@ -103,15 +114,15 @@ ccd:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
+      devmemoryRequests: 1024Mi
+      devmemoryLimits: 2048Mi
       environment:
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
+        USER_PROFILE_HOST: https://ccd-user-profile-api-${SERVICE_FQDN}
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
       autoscaling:
-        enabled: false
-    postgresql:
-      persistence:
         enabled: false
 
   ccd-user-profile-api:
@@ -208,7 +219,7 @@ ccd:
       01_input.conf: |
         input  {
           jdbc {
-            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/data-store?stringtype=unspecified"
+            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode=require&stringtype=unspecified"
             jdbc_user => "hmcts"
             jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
             jdbc_validate_connection => true
@@ -348,17 +359,17 @@ xui-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:pr-3206
+    image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     devcpuRequests: 500m
     devmemoryRequests: 1Gi
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
+      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
+      SERVICES_CCD_COMPONENT_API: https://gateway-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_DOCUMENTS_API_V2: https://ccd-case-document-am-api-${SERVICE_FQDN}
-      SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
       WA_SUPPORTED_JURISDICTIONS: ST_CIC
@@ -375,6 +386,19 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_API: https://am-role-assignment-${SERVICE_FQDN}
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: https://am-org-role-mapping-service-${SERVICE_FQDN}
       SERVICES_CASE_CASEWORKER_API: https://rd-caseworker-ref-api-${SERVICE_FQDN}
+      LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
+      REDISCLOUD_URL: redis://${SERVICE_NAME}-redis-master:6379
+    keyVaults:
+      rpx:
+        resourceGroup: rpx
+        secrets:
+          - mc-s2s-client-secret
+          - mc-idam-client-secret
+          - system-user-name
+          - system-user-password
+redis:
+  enabled: true
+
 xui-mo-webapp:
   enabled: true
   nodejs:
@@ -402,6 +426,7 @@ sptribs-frontend:
     ingressHost: frontend-${SERVICE_FQDN}
     environment:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+      CASE_API_URL: https://${SERVICE_FQDN}
       SKIP_DIV_CASE_CHECK: true
 
 aac-manage-case-assignment:
@@ -481,7 +506,7 @@ em-stitching:
       CDAM_URL: https://ccd-case-document-am-api-${SERVICE_FQDN}
       SPRING_DATASOURCE_HOST: sptribs-preview.postgres.database.azure.com
       SPRING_DATASOURCE_USERNAME: hmcts
-      SPRING_DATASOURCE_NAME: emstitch
+      SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
       SPRING_DATASOURCE_PORT: 5432
       SPRING_DATASOURCE_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       ENABLE_DB_MIGRATE: true
@@ -499,12 +524,13 @@ wa:
     postgresUsername: hmcts
     postgresSecret: postgres
     postgresHost: sptribs-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
   wa-initiation-batch:
     job:
       releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
   wa-reconfiguration-batch:
     job:
-      releaseNameOverride: "{{ .Release.Name }}-reconfiguration-batch"
+      releaseNameOverride: "{{ .Release.Name }}-reconfiguration"
   wa-termination-batch:
     job:
       releaseNameOverride: "{{ .Release.Name }}-termination-batch"
@@ -584,21 +610,24 @@ ccd-message-publisher:
           - name: AppInsightsInstrumentationKey
             alias: azure.application-insights.instrumentation-key
     environment:
-      DATA_STORE_DB_HOST: "{{ .Release.Name }}-postgresql"
-      DATA_STORE_DB_NAME: data-store
+      DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
+      DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
       DATA_STORE_DB_USERNAME: hmcts
-      DATA_STORE_DB_PASSWORD: hmcts
-      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
+      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CCD_CASE_EVENTS_DESTINATION: ${SERVICE_NAME}-ccd-case-events
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
         secretRef: sptribs-sb-preview
         key: connectionString
+      DATA_STORE_DB_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
 
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:pr-1597'
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     devmemoryRequests: 1024Mi
@@ -625,6 +654,8 @@ am-org-role-mapping-service:
           - orm-IDAM-CLIENT-ID
           - orm-IDAM-CLIENT-SECRET
           - orm-IDAM-ADMIN-SECRET
+          - caseworker-topic-primary-send-listen-shared-access-key
+          - judicial-topic-primary-send-listen-shared-access-key
     environment:
       CASE_WORKER_REF_APP_URL: https://rd-caseworker-ref-api-${SERVICE_FQDN}
       ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
@@ -638,7 +669,7 @@ am-org-role-mapping-service:
       AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
       AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
       ORG_ROLE_MAPPING_DB_HOST: sptribs-preview.postgres.database.azure.com
-      ORG_ROLE_MAPPING_DB_NAME: org_role_mapping
+      ORG_ROLE_MAPPING_DB_NAME: "pr-${CHANGE_ID}-org_role_mapping"
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
@@ -650,6 +681,17 @@ rd-caseworker-ref-api:
     image: 'hmctspublic.azurecr.io/rd/caseworker-ref-api:latest'
     ingressHost: rd-caseworker-ref-api-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-rd-caseworker-ref-api
+    keyVaults:
+      rd:
+        secrets:
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: caseworker-topic-primary-send-listen-shared-access-key
+            alias: CASEWORKER_TOPIC_PRIMARY_SEND_LISTEN_SHARED_ACCESS_KEY
+          - name: caseworker-ref-api-s2s-secret
+            alias: CASEWORKER_REF_API_S2S_SECRET
+          - name: LD-SDK-KEY
+            alias: LD_SDK_KEY
     secrets:
       CWRD_MQ_PASSWORD:
         secretRef: sptribs-sb-preview
@@ -660,7 +702,7 @@ rd-caseworker-ref-api:
         disabled: false
     environment:
       POSTGRES_HOST: sptribs-preview.postgres.database.azure.com
-      POSTGRES_DB_NAME: dbrdcaseworker
+      POSTGRES_DB_NAME: "pr-${CHANGE_ID}-dbrdcaseworker"
       POSTGRES_USERNAME: hmcts
       POSTGRES_PORT: 5432
       POSTGRES_CONNECTION_OPTIONS: "?currentSchema=dbrdcaseworker&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
@@ -674,25 +716,173 @@ rd-caseworker-ref-api:
       ENVIRONMENT_NAME: "preview"
       EMAIL_DOMAIN_LIST: "justice.gov.uk,dwp.gov.uk,hmrc.gov.uk,hmcts.net,dfcni.gov.uk"
 
+rd-professional-api:
+  enabled: false
+  java:
+    image: 'hmctspublic.azurecr.io/rd/professional-api:latest'
+    ingressHost: rd-professional-api-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-rd-professional-api
+    keyVaults:
+      rd:
+        secrets:
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: professional-api-s2s-secret
+            alias: PROFESSIONAL_API_S2S_SECRET
+    secrets:
+      POSTGRES_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+    environment:
+      POSTGRES_HOST: et-preview.postgres.database.azure.com
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: "pr-${CHANGE_ID}-dbrefdata"
+      USER_PROFILE_URL: https://rd-user-profile-api-${SERVICE_FQDN}
+      CCD_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+      POSTGRES_CONNECTION_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
+rd-user-profile-api:
+  enabled: false
+  java:
+    image: 'hmctspublic.azurecr.io/rd/user-profile-api:latest'
+    ingressHost: rd-user-profile-api-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-rd-user-profile-api
+    keyVaults:
+      rd:
+        secrets:
+          - name: user-profile-api-s2s-secret
+            alias: USER_PROFILE_API_S2S_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: LD-SDK-KEY
+            alias: LD_SDK_KEY
+    secrets:
+      POSTGRES_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+    environment:
+      POSTGRES_HOST: et-preview.postgres.database.azure.com
+      POSTGRES_USERNAME: hmcts
+      POSTGRES_NAME: "pr-${CHANGE_ID}-dbuserprofile"
+      POSTGRES_PORT: 5432
+      CCD_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+      POSTGRES_CONNECTION_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
+rd-judicial-api:
+  enabled: false
+  java:
+    image: 'hmctspublic.azurecr.io/rd/judicial-api:latest'
+    ingressHost: rd-judicial-api-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-rd-judicial-api
+    keyVaults:
+      rd:
+        secrets:
+          - name: judicial-api-s2s-secret
+            alias: JUDICIAL_API_S2S_SECRET
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: judicial-api-elinks-api-key
+            alias: judicial_api_elinks_api_key
+          - name: OAUTH2-CLIENT-SECRET
+            alias: OAUTH2_CLIENT_SECRET
+          - name: OAUTH2-AUTH
+            alias: OAUTH2_AUTH
+          - name: OAUTH2-CLIENT-AUTH
+            alias: OAUTH2_CLIENT_AUTH
+          - name: rd-sendgrid-api-key
+            alias: RD_SENDGRID_API_KEY
+          - name: judicial-topic-primary-send-listen-shared-access-key
+            alias: JUDICIAL_TOPIC_PRIMARY_SEND_LISTEN_SHARED_ACCESS_KEY
+    secrets:
+      POSTGRES_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+    environment:
+#      JRD_MQ_HOST: "et-sb-preview.servicebus.windows.net"
+      JRD_MQ_USERNAME: SendAndListenSharedAccessKey
+#      JRD_MQ_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
+      LAUNCH_DARKLY_ENV: "{{ .Values.global.environment }}"
+      ENVIRONMENT_NAME: "{{ .Values.global.environment }}"
+      SCHEDULER_ENABLED: false
+      CRON_EXPRESSION: "0 0 0 25 03 ?"
+      POSTGRES_USERNAME: hmcts
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-dbjuddata?currentSchema=dbjuddata&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
+rd-judicial-data-load:
+  enabled: false
+  job:
+    image: 'hmctspublic.azurecr.io/rd/judicial-data-load:latest'
+    kind: CronJob
+    schedule: "*/10 * * * *"
+    global:
+      jobKind: CronJob
+    releaseNameOverride: "{{ .Release.Name }}-jd-data-load"
+    secrets:
+      POSTGRES_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+    keyVaults:
+      rd:
+        resourceGroup: rd
+        secrets:
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: ACCOUNT-NAME
+            alias: ACCOUNT_NAME
+          - name: ACCOUNT-KEY
+            alias: ACCOUNT_KEY
+          - name: CONTAINER-NAME
+            alias: CONTAINER_NAME
+          - name: judicial-topic-primary-connection-string
+            alias: JUDICIAL_TOPIC_PRIMARY_CONNECTION_STRING
+          - name: LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: OAUTH2-CLIENT-SECRET
+            alias: OAUTH2_CLIENT_SECRET
+          - name: OAUTH2-AUTH
+            alias: OAUTH2_AUTH
+          - name: OAUTH2-CLIENT-AUTH
+            alias: OAUTH2_CLIENT_AUTH
+          - name: rd-sendgrid-api-key
+            alias: RD_SENDGRID_API_KEY
+          - name: judicial-api-elinks-api-key
+            alias: judicial_api_elinks_api_key
+    environment:
+      POSTGRES_USERNAME: hmcts
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-dbjuddata?currentSchema=dbjuddata&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
 postgresql:
   enabled: true
   flexibleserver: sptribs-preview
   setup:
     databases:
-      - name: data-store
-      - name: definition-store
-      - name: user-profile
-      - name: draftstore
-      - name: evidence
-      - name: annotation
-      - name: role-assignment
-      - name: hmc-cft-hearing-service
-      - name: cft_task_db
-      - name: wa-case-event-handler
-      - name: wa_workflow_api
-      - name: camunda
-      - name: org_role_mapping
-      - name: sptribs-case-api
-      - name: emstitch
-      - name: payment
-      - name: dbrdcaseworker
+      - name: "pr-${CHANGE_ID}-data-store"
+      - name: "pr-${CHANGE_ID}-definition-store"
+      - name: "pr-${CHANGE_ID}-user-profile"
+      - name: "pr-${CHANGE_ID}-draftstore"
+      - name: "pr-${CHANGE_ID}-evidence"
+      - name: "pr-${CHANGE_ID}-annotation"
+      - name: "pr-${CHANGE_ID}-role-assignment"
+      - name: "pr-${CHANGE_ID}-hmc-cft-hearing-service"
+      - name: "pr-${CHANGE_ID}-cft_task_db"
+      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
+      - name: "pr-${CHANGE_ID}-wa_workflow_api"
+      - name: "pr-${CHANGE_ID}-camunda"
+      - name: "pr-${CHANGE_ID}-org_role_mapping"
+      - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-payment"
+      - name: "pr-${CHANGE_ID}-dbrdcaseworker"
+      - name: "pr-${CHANGE_ID}-et_cos"
+      - name: "pr-${CHANGE_ID}-dbrefdata"
+      - name: "pr-${CHANGE_ID}-dbuserprofile"
+      - name: "pr-${CHANGE_ID}-dbjuddata"
+      - name: "pr-${CHANGE_ID}-sptribs-case-api"

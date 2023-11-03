@@ -103,6 +103,12 @@
     <suppress>
       <notes>False positive as project does not contain json-java or hutool</notes>
       <cve>CVE-2022-45688</cve>
+      <cve>CVE-2023-5072</cve>
+      <cve>CVE-2023-4586</cve>
+    </suppress>
+    <suppress>
+        <notes>False positive as project does not contain json-java</notes>
+        <cve>CVE-2023-5072</cve>
     </suppress>
   <suppress>
     <notes>pkg:maven/commons-fileupload/commons-fileupload@1.4</notes>
@@ -118,6 +124,7 @@
     <notes>pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@9.0.69</notes>
     <cve>CVE-2023-28708</cve>
     <cve>CVE-2023-20863</cve>
+    <cve>CVE-2023-44487</cve>
   </suppress>
   <suppress>
     <notes>pkg:maven/org.springframework/spring-webmvc@5.3.23</notes>
@@ -145,10 +152,9 @@
     <cve>CVE-2023-34035</cve>
   </suppress>
   <suppress>
-    <notes>netty:4.1.91</notes>
-    <cve>CVE-2023-34462</cve>
-  </suppress>
-  <suppress>
-      <cve>CVE-2023-4586</cve>
+    <notes>pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@9.0.80</notes>
+    <cve>CVE-2023-42794</cve>
+    <cve>CVE-2023-42795</cve>
+    <cve>CVE-2023-45648</cve>
   </suppress>
 </suppressions>

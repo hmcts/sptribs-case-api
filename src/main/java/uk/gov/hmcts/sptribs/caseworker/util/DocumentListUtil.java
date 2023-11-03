@@ -81,13 +81,7 @@ public final class DocumentListUtil {
         String apiUrl = baseUrl + "documents/%s/binary";
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
-                "/");
-            String url = String.format(apiUrl, documentId);
-            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
-                + " " + doc.getDocumentCategory().getLabel()
-                + "](" + url + ")").code(UUID.randomUUID()).build();
-            dynamicListElements.add(element);
+            createDocumentList(apiUrl, dynamicListElements, doc);
         }
 
         return DynamicMultiSelectList
@@ -96,6 +90,39 @@ public final class DocumentListUtil {
             .value(new ArrayList<>())
             .build();
     }
+
+    public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
+        List<CaseworkerCICDocument> docList = prepareList(data);
+
+
+        String apiUrl = baseUrl + "documents/%s/binary";
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+        for (CaseworkerCICDocument doc : docList) {
+            String fileName = doc.getDocumentLink().getFilename();
+            String fileExtension = StringUtils.substringAfterLast(fileName, ".");
+            if (fileExtension.equals("mp3")) {
+                continue;
+            }
+            createDocumentList(apiUrl, dynamicListElements, doc);
+        }
+
+        return DynamicMultiSelectList
+            .builder()
+            .listItems(dynamicListElements)
+            .value(new ArrayList<>())
+            .build();
+    }
+
+    private static void createDocumentList(String apiUrl, List<DynamicListElement> dynamicListElements, CaseworkerCICDocument doc) {
+        String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
+            "/");
+        String url = String.format(apiUrl, documentId);
+        DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+            + " " + doc.getDocumentCategory().getLabel()
+            + "](" + url + ")").code(UUID.randomUUID()).build();
+        dynamicListElements.add(element);
+    }
+
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();

@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -95,6 +96,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var dssData = details.getData().getDssCaseData();
         CaseData caseData = getCaseData(data, dssData);
         String caseNumber = data.getHyphenatedCaseRef();
+        EventUtil.setDssMetaData(data);
 
         sendApplicationReceivedNotification(caseNumber, data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

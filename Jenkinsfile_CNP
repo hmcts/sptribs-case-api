@@ -22,6 +22,9 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 }
 
 def secrets = [
+        'rpx-${env}': [
+                secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
+        ],
         's2s-${env}'      : [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
@@ -359,13 +362,20 @@ def setFeatureFlags(environment) {
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = false
-  } else if (environment =~ /aat|prod/) {
-    env.CONTACT_PARTIES_FEATURE = false
+    env.DSS_FRONTEND_FEATURE = true
+  } else if (environment =~ /aat/) {
+    env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = false
+    env.BUNDLING_FEATURE = false
+    env.DSS_FRONTEND_FEATURE = true
+  } else if (environment =~ /prod/) {
+    env.CONTACT_PARTIES_FEATURE = true
+    env.LINK_CASE_FEATURE = false
+    env.CASE_FLAGS_FEATURE = false
+    env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
+    env.BUNDLING_FEATURE = false
+    env.DSS_FRONTEND_FEATURE = false
   }
 }

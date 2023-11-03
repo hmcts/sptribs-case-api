@@ -3,39 +3,57 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
-import uk.gov.hmcts.sptribs.testutils.PageHelpers;
+import org.junit.jupiter.api.Order;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.AmendDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 
 public class DocumentManagementTests extends Base {
 
+    private final String documentCategory = "A - Notice of Appeal";
+    private final String documentDescription = "This is a test to upload document";
+    private final String documentName = "sample_file.pdf";
+
+    @Order(1)
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToUploadDocuments() {
         Page page = getPage();
-        Case newCase = createAndBuildCase(page);
+        Case newCase = createAndBuildCase(page, Representative);
+
         newCase.startNextStepAction(UploadDocuments);
         DocumentManagement docManagement = new DocumentManagement(page);
-        docManagement.uploadDocuments();
+        docManagement.uploadDocuments(documentCategory, documentDescription, documentName);
+
         getTabByText(page, "Case Documents").click();
         assertThat(page.locator("h4").first()).hasText("Case Documents");
-        String hearingStatus = PageHelpers.getValueFromTableFor(page, "Document Category");
-        Assertions.assertEquals("A - Notice of Appeal", hearingStatus);
-        String hearingType = PageHelpers.getValueFromTableFor(page, "Description");
-        Assertions.assertEquals("This is a test document", hearingType);
-        String hearingFormat = PageHelpers.getValueFromTableFor(page, "File");
-        Assertions.assertEquals("sample_file.pdf", hearingFormat);
+        Assertions.assertEquals(documentCategory, getValueFromTableFor(page, "Document Category"));
+        Assertions.assertEquals(documentDescription, getValueFromTableFor(page, "Description"));
+        Assertions.assertEquals(documentName, getValueFromTableFor(page, "File"));
     }
 
-    private Case createAndBuildCase(Page page) {
-        Login login = new Login(page);
-        login.loginAsCaseWorker();
+    @Order(2)
+    @RepeatedIfExceptionsTest
+    public void seniorCaseWorkerShouldBeAbleToAmendDocuments() {
+        Page page = getPage();
+        Case newCase = createAndBuildCase(page, Representative);
 
-        Case newCase = new Case(page);
-        newCase.createCase(Representative);
-        newCase.buildCase();
-        return newCase;
+        newCase.startNextStepAction(UploadDocuments);
+        DocumentManagement docManagement = new DocumentManagement(page);
+        docManagement.uploadDocuments(documentCategory, documentDescription, documentName);
+
+        newCase.startNextStepAction(AmendDocuments);
+        String amendedDocumentCategory = "A - Correspondence from the CICA";
+        String amendedDocumentDescription = "This is a test to amend document";
+        docManagement.amendDocument(amendedDocumentCategory, amendedDocumentDescription, documentName);
+
+        getTabByText(page, "Case Documents").click();
+        assertThat(page.locator("h4").first()).hasText("Case Documents");
+        Assertions.assertEquals(amendedDocumentCategory, getValueFromTableFor(page, "Document Category"));
+        Assertions.assertEquals(amendedDocumentDescription, getValueFromTableFor(page, "Description"));
+        Assertions.assertEquals(documentName, getValueFromTableFor(page, "File"));
     }
 }

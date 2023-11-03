@@ -10,20 +10,18 @@ import static org.assertj.guava.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
-class DefaultStateAccessExcludingCAATest {
+public class DSSUpdateAccessTest {
 
     @Test
-    void shouldGrantSolicitorsAndCitizens() {
+    void shouldGrantDSSUpdateAccess() {
         //When
-        final SetMultimap<HasRole, Permission> grants = new DefaultStateAccessExcludingCAA().getGrants();
+        final SetMultimap<HasRole, Permission> grants = new DSSUpdateAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(4)
+            .hasSize(3)
             .contains(
-                entry(CREATOR, R),
                 entry(SYSTEMUPDATE, C),
                 entry(SYSTEMUPDATE, R),
                 entry(SYSTEMUPDATE, U)
