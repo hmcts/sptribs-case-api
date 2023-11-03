@@ -25,7 +25,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
@@ -101,20 +100,15 @@ class CcdSearchServiceTest {
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
 
-        SearchSourceBuilder sourceBuilder = SearchSourceBuilder
-            .searchSource()
-            .query(
-                boolQuery()
-                    .must(boolQuery()
-                        .mustNot(matchQuery("data.dataVersion", 0))
-                    )
-                    .must(boolQuery()
-                        .should(boolQuery().mustNot(existsQuery("data.dataVersion")))
-                        .should(boolQuery().must(rangeQuery("data.dataVersion").lt(1)))
-                    )
-            )
-            .from(0)
-            .size(500);
+        final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
+                .searchSource()
+                .query(
+                        boolQuery()
+                                .must(boolQuery()
+                                        .must(matchQuery("reference", 1688978122333564L)))
+                )
+                .from(0)
+                .size(500);
 
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
