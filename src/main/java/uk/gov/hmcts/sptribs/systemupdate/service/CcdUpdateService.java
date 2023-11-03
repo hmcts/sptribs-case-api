@@ -21,8 +21,8 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION
 @Slf4j
 public class CcdUpdateService {
 
-    private static final String SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY = "spTribs case submission event";
-    private static final String SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting Sptribs Case Event";
+    static final String SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY = "spTribs case submission event";
+    static final String SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting Sptribs Case Event";
 
 
     @Autowired
