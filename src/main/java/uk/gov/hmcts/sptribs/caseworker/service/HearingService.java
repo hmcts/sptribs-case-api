@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.UK;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil.createDynamicList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
@@ -31,21 +32,29 @@ public class HearingService {
 
         List<String> hearingDateList = new ArrayList<>();
 
+        if (isNotEmpty(data.getListing()) && data.getHearingList().isEmpty()) {
+            Listing existingListing = data.getListing();
+            addListing(data, existingListing);
+        }
+
         for (ListValue<Listing> listing : data.getHearingList()) {
             if (listing.getValue().getHearingStatus() == HearingState.Listed) {
-                String hearingDate =
-                    listing.getId()
-                        + SPACE + HYPHEN + SPACE
-                        + listing.getValue().getHearingType().getLabel()
-                        + SPACE + HYPHEN + SPACE
-                        + listing.getValue().getDate().format(dateFormatter)
-                        + SPACE
-                        + listing.getValue().getHearingTime();
+                String hearingDate = getHearingDate(listing.getId(), listing.getValue());
                 hearingDateList.add(hearingDate);
             }
         }
 
         return createDynamicList(hearingDateList);
+    }
+
+    private String getHearingDate(String id, Listing listing) {
+        return id
+                + SPACE + HYPHEN + SPACE
+                + listing.getHearingType().getLabel()
+                + SPACE + HYPHEN + SPACE
+                + listing.getDate().format(dateFormatter)
+                + SPACE
+                + listing.getHearingTime();
     }
 
     public DynamicList getCompletedHearingDynamicList(final CaseData data) {
