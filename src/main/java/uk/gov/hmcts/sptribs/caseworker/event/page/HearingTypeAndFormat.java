@@ -25,7 +25,8 @@ public class HearingTypeAndFormat implements CcdPageConfiguration {
             .mandatory(Listing::getHearingType)
             .mandatory(Listing::getHearingFormat)
             .readonly(Listing::getHearingSummaryExists,ALWAYS_HIDE)
-            .done();
+            .done()
+            .readonly(CaseData::getHearingList, ALWAYS_HIDE);
     }
 
 

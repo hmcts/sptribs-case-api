@@ -6,12 +6,17 @@ import lombok.NoArgsConstructor;
 import org.elasticsearch.common.TriConsumer;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
+import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 
 import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
@@ -23,13 +28,46 @@ public class RetiredFields {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private List<ListValue<Bundle>> cicBundles;
 
+    @CCD(
+        label = "Enter any other important information about this cancellation",
+        typeOverride = TextArea
+    )
+    private String cicCaseCancelHearingAdditionalDetail;
+
+    @CCD(
+        label = "Why was the hearing cancelled?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingCancellationReason"
+    )
+    private HearingCancellationReason cicCaseHearingCancellationReason;
+
+    @CCD(
+        label = "Postpone Reason",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "PostponeReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private PostponeReason cicCasePostponeReason;
+
+    @CCD(
+        label = "Enter any other important information about this postponement",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String cicCasePostponeAdditionalInformation;
+
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
     };
 
     @JsonIgnore
     private static final Map<String, TriConsumer<Map<String, Object>, String, Object>> migrations = Map.of(
-            "cicBundles", moveTo("caseBundles")
+        "cicBundles", moveTo("caseBundles"),
+        "cicCasePostponeReason", moveTo("postponeReason"),
+        "cicCasePostponeAdditionalInformation", moveTo("postponeAdditionalInformation"),
+        "cicCaseHearingCancellationReason", moveTo("hearingCancellationReason"),
+        "cicCaseCancelHearingAdditionalDetail", moveTo("cancelHearingAdditionalDetail")
     );
 
     /**
