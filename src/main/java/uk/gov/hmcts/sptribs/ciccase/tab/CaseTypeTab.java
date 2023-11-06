@@ -289,9 +289,14 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("outcome",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
             .field("recFile",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
             .field("recDesc",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+
             .label("Postponement summary", "hearingList!=\"*\" AND postponeReason!=\"\"", "#### Postponement summary")
-            .field("postponeReason",  "hearingList!=\"*\" AND postponeReason!=\"\"")
-            .field("postponeAdditionalInformation",  "hearingList!=\"*\" AND postponeReason!=\"\"")
+            .field("cicCasePostponeReason",  "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"")
+            .field("cicCasePostponeAdditionalInformation",  "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"")
+
+            .label("Cancellation summary", "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"", "#### Cancellation summary")
+            .field("cicCaseHearingCancellationReason",  "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"")
+            .field("cicCaseCancelHearingAdditionalDetail",  "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"")
 
             .label("Listing details", null, "#### Listing details")
             .field(CaseData::getHearingList);
