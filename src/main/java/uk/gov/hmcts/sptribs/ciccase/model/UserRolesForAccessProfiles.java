@@ -27,7 +27,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     HMCTS_ADMIN("idam:hmcts-admin", "CRU"),
     HMCTS_JUDICIARY("idam:hmcts-judiciary", "R"),
     HMCTS_LEGALOPERATIONS("idam:hmcts-lagaloperations", "R"),
-    HMCTS_CTSC("idam:hmcts-ctsc", "R"),
     CASE_OFFICER_CIC("idam:caseworker-sptribs-cic-caseofficer", "CRU"),
     COURT_ADMIN_CIC("idam:caseworker-sptribs-cic-courtadmin", "CRU"),
     DISTRICT_JUDGE_CIC("idam:caseworker-sptribs-cic-districtjudge", "CRU"),
@@ -52,7 +51,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AP_HMCTS_ADMIN("hmcts-admin", "CRU"),
     AP_HMCTS_JUDICIARY("hmcts-judiciary", "R"),
     AP_HMCTS_LEGALOPERATION("hmcts-lagaloperations", "R"),
-    AP_HMCTS_CTSC("hmcts-ctsc", "R");
+    AP_HMCTS_CTSC("hmcts-ctsc", "R"),
     AP_CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
     AP_COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
     AP_DISTRICT_JUDGE_CIC_PROFILE("caseworker-sptribs-cic-districtjudge", "CRU"),
@@ -67,7 +66,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     CTSC_TEAM_LEADER("ctsc-team-leader", "CRU"),
     CTSC_ADMIN("ctsc", "CRU"),
     HMCTS_CTSC("hmcts-ctsc", "CRU"),
-    HMCTS_ADMIN("hmcts-admin", "CRU"),
     HMCTS_LEGAL_OPERATIONS("hmcts-legal-operations", "CRU"),
     CICA("cica", "CRU"),
     // Judicial Roles of role assignment
