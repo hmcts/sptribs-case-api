@@ -147,7 +147,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Message sent %n## %s",
-                MessageUtil.generateSimpleMessage(data.getCicCase())
+                MessageUtil.generateSimpleMessage(cicCase)
             ))
             .build();
     }
@@ -166,5 +166,4 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
         }
     }
-
 }

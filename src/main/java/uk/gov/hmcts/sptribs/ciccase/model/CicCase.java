@@ -17,8 +17,10 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
@@ -54,6 +56,20 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CicCase {
 
     @CCD(
+        label = "Enter any other important information about this cancellation",
+        typeOverride = TextArea
+    )
+    private String cancelHearingAdditionalDetail;
+
+    @CCD(
+        label = "Why was the hearing cancelled?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingCancellationReason"
+    )
+    private HearingCancellationReason hearingCancellationReason;
+
+    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Status status;
@@ -76,7 +92,28 @@ public class CicCase {
         label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    private DynamicList flagDynamicList;
+
+    @CCD(
+        label = "Template",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private DynamicList orderDynamicList;
+
+    @CCD(
+        label = "Postpone Reason",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "PostponeReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private PostponeReason postponeReason;
+
+    @CCD(
+        label = "Enter any other important information about this postponement",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String postponeAdditionalInformation;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -115,6 +152,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private Document lastSelectedOrder;
 
     @CCD(
@@ -476,6 +514,7 @@ public class CicCase {
     private YesOrNo isRepresentativeQualified;
 
     private YesOrNo representativeDetailsObjects;
+
 
     @CCD(
         label = "Have the tribunal forms been received in time?",

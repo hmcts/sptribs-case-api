@@ -160,16 +160,19 @@ public class NotificationHelper {
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
         }
+
         if (isVideoFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
         }
+
         if (isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
         }
+
         if (isFaceToFaceFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
         } else {

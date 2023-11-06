@@ -412,12 +412,15 @@ public class CaseData {
     )
     private YesOrNo hasDssNotificationSent;
 
-
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
+
+    @CCD(access = {DefaultAccess.class})
+    @JsonUnwrapped
+    private RetiredFields retiredFields;
 
     public String getFirstHearingDate() {
 
@@ -474,7 +477,6 @@ public class CaseData {
         }
         return "";
     }
-
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {
