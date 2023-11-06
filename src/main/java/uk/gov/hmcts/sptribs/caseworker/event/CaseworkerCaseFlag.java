@@ -62,7 +62,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .description("Create case flags")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
-            .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN)
+            .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN, SUPER_USER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,

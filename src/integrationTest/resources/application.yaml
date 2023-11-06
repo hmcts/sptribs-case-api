@@ -114,6 +114,8 @@ feature:
     enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
+  dss-frontend:
+    enabled: ${DSS_FRONTEND_FEATURE:false}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
 
