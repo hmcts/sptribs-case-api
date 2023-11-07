@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.UK;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil.createDynamicList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
@@ -44,12 +43,8 @@ public class HearingService {
     }
 
     public void addListingIfExists(CaseData data) {
-        if (isNotEmpty(data.getListing()) && data.getHearingList().isEmpty()) {
+        if (null != data.getListing().getHearingType() && data.getHearingList().isEmpty()) {
             addListing(data, data.getListing());
-            data.getHearingList().get(0).getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
-            data.getHearingList().get(0).getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
-            data.getHearingList().get(0).getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
-            data.getHearingList().get(0).getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
         }
     }
 

@@ -96,6 +96,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         hearingService.addListingIfExists(caseData);
 
         caseData.setListing(new Listing());
+        //caseData.setListing(Listing.nullifyListingFields(caseData.getListing()));
         DynamicList regionList = locationService.getAllRegions();
         caseData.getListing().setRegionList(regionList);
 

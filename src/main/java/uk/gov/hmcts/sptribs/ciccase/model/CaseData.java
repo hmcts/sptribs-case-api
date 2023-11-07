@@ -398,10 +398,6 @@ public class CaseData {
 
     }
 
-    @JsonIgnore
-    public Listing getListing() {
-        return listing;
-    }
 
     @JsonIgnore
     public Listing getLatestCompletedHearing() {

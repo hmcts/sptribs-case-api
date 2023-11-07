@@ -290,13 +290,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("recFile",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
             .field("recDesc",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
 
-            .label("Postponement summary", "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"", "#### Postponement summary")
-            .field("cicCasePostponeReason",  "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"")
-            .field("cicCasePostponeAdditionalInformation",  "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"")
+            .label("Postponement summary", "hearingList!=\"*\" AND postponeReason!=\"\"", "#### Postponement summary")
+            .field("postponeReason",  "hearingList!=\"*\" AND postponeReason!=\"\"")
+            .field("postponeAdditionalInformation",  "hearingList!=\"*\" AND postponeReason!=\"\"")
 
-            .label("Cancellation summary", "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"", "#### Cancellation summary")
-            .field("cicCaseHearingCancellationReason",  "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"")
-            .field("cicCaseCancelHearingAdditionalDetail",  "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"")
+            .label("Cancellation summary", "hearingList!=\"*\" AND hearingCancellationReason!=\"\"", "#### Cancellation summary")
+            .field("hearingCancellationReason",  "hearingList!=\"*\" AND hearingCancellationReason!=\"\"")
+            .field("cancelHearingAdditionalDetail",  "hearingList!=\"*\" AND hearingCancellationReason!=\"\"")
 
             .label("Listing details", null, "#### Listing details")
             .field(CaseData::getHearingList);
