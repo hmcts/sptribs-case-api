@@ -24,7 +24,7 @@ public enum OrderTemplate implements HasLabel {
     @JsonProperty("CIC13_Pro_Forma_Summons")
     CIC13_PRO_FORMA_SUMMONS("CIC13 - Pro Forma Summons", "CIC13_Pro_Forma_Summons"),
 
-    @JsonProperty("CIC14 – LO General Directions")
+    @JsonProperty("CIC14_LO_General_Directions")
     CIC14_LO_GENERAL_DIRECTIONS("CIC14 – LO General Directions", "CIC14_LO_General_Directions");
 
     private final String label;
