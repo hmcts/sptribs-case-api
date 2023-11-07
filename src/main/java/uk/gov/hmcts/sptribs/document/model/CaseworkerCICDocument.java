@@ -51,7 +51,7 @@ public class CaseworkerCICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3");
+        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a");
     }
 
     public boolean isDocumentValid(String validExtensions) {
