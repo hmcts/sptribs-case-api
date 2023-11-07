@@ -39,6 +39,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
@@ -77,17 +78,9 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .name("Document management: Amend")
             .description("Document management: Amend")
             .showSummary()
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE)
+            .grant(CREATE_READ_UPDATE_DELETE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN)
+            .grantHistoryOnly(ST_CIC_JUDGE)
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
