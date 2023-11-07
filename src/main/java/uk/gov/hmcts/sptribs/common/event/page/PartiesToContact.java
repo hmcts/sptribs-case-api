@@ -47,14 +47,13 @@ public class PartiesToContact implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
         final List<String> errors = new ArrayList<>();
 
-
-        if (null != data.getContactParties() && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())
-            && CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
-
+        if (null != data.getContactParties() && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())
+            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             errors.add("Which parties do you want to contact is required.");
         }
 
@@ -63,6 +62,4 @@ public class PartiesToContact implements CcdPageConfiguration {
             .errors(errors)
             .build();
     }
-
 }
-

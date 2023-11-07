@@ -127,7 +127,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
-        EventUtil.setDssMetaData(data);
+        EventUtil.setDssMetaDataForCaseApiCase(data);
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
@@ -245,6 +245,5 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             data.getCicCase().setIsRepresentativePresent(YesOrNo.NO);
         }
     }
-
 
 }
