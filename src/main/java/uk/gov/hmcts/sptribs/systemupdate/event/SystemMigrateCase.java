@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -31,7 +32,7 @@ public class SystemMigrateCase implements CCDConfig<CaseData, State, UserRole> {
                 .description("Migrate case data to the latest version")
                 .grant(CREATE_READ_UPDATE_DELETE, SYSTEMUPDATE));
 
-        addFields(pageBuilder);
+        //addFields(pageBuilder);
 
     }
 
@@ -52,6 +53,9 @@ public class SystemMigrateCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
         log.info("Migrating case data for case Id: {}", details.getId());
+
+        CaseData data = details.getData();
+        data.setCaseBundles(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(details.getData())

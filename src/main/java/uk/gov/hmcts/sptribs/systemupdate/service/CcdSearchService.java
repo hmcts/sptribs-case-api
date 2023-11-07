@@ -61,7 +61,8 @@ public class CcdSearchService {
             log.info(message, e);
             throw new CcdSearchCaseException(message, e);
         }
-
+        log.info("....Query:" + query);
+        log.info(".... totalResults Cases:" + totalResults);
         return allCaseDetails;
     }
 
