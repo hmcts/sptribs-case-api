@@ -26,7 +26,7 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_M
 
 @Component
 @Slf4j
-public class SystemFinalOrderOverdueTask implements Runnable {
+public class SystemMigrateFieldsTask implements Runnable {
 
     @Autowired
     private CcdSearchService ccdSearchService;
