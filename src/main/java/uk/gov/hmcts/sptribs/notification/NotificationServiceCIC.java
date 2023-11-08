@@ -175,7 +175,7 @@ public class NotificationServiceCIC {
                 jsonObject = NotificationClient.prepareUpload(fileContents);
             }
         } catch (NotificationClientException e) {
-            log.error("unable to upload file to Notification -", e.getMessage());
+            log.error("Unable to upload file to Notification - {}", e.getMessage());
             throw new NotificationException(e);
         }
 

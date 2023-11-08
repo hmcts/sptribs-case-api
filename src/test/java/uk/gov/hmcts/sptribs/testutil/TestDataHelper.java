@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
@@ -201,6 +202,7 @@ public class TestDataHelper {
         listing.setVideoCallLink("");
         listing.setDate(LocalDate.now());
         listing.setHearingTime("10:00");
+        listing.setHearingStatus(HearingState.Listed);
         return listing;
     }
 
@@ -431,5 +433,24 @@ public class TestDataHelper {
         documentListValue.setValue(document);
         documentList.add(documentListValue);
         return documentList;
+    }
+
+    public static DynamicMultiSelectList getDynamicMultiSelectDocumentListWithXElements(int numberOfDocuments) {
+        List<DynamicListElement> elements = new ArrayList<>();
+        for (int i = 0; i < numberOfDocuments; i++) {
+            {
+                final DynamicListElement listItem = DynamicListElement
+                    .builder()
+                    .label("" + UUID.randomUUID())
+                    .code(UUID.randomUUID())
+                    .build();
+                elements.add(listItem);
+            }
+        }
+        return DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build();
     }
 }

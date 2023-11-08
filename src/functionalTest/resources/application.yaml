@@ -56,11 +56,18 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
+bundling:
+  api:
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
+
 core_case_data:
   api:
     url: ${CASE_DATA_STORE_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
   search:
     page_size: ${CCD_SEARCH_PAGE_SIZE:100}
+
+case-api:
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
@@ -90,13 +97,15 @@ feature:
   link-case:
     enabled: ${LINK_CASE_FEATURE:false}
   case-flags:
-    enabled: ${CASE_FLAGS_FEATURE:false}
+    enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:false}
+  security-classification:
+    enabled: ${SECURITY_CLASSIFICATION:false}
 
 caseinfo:
   apps:
