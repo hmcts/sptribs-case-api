@@ -101,14 +101,6 @@ ccd:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,sptribs_frontend,sptribs_case_api
         RUN_LD_ON_STARTUP: false
-      keyVaults:
-        am:
-          secrets:
-            - am-role-assignment-service-s2s-secret
-            - app-insights-connection-string
-            - role-assignment-service-IDAM-CLIENT-SECRET
-            - role-assignment-service-IDAM-ADMIN-SECRET
-            - role-assignment-service-LD-SDK-KEY
 
   ccd-definition-store-api:
     java:
@@ -645,17 +637,6 @@ am-org-role-mapping-service:
         secretRef: postgres
         key: PASSWORD
         disabled: false
-    keyVaults:
-      am:
-        secrets:
-          - app-insights-connection-string
-          - am-org-role-mapping-service-s2s-secret
-          - role-assignment-service-LD-SDK-KEY
-          - orm-IDAM-CLIENT-ID
-          - orm-IDAM-CLIENT-SECRET
-          - orm-IDAM-ADMIN-SECRET
-          - caseworker-topic-primary-send-listen-shared-access-key
-          - judicial-topic-primary-send-listen-shared-access-key
     environment:
       CASE_WORKER_REF_APP_URL: https://rd-caseworker-ref-api-${SERVICE_FQDN}
       ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
