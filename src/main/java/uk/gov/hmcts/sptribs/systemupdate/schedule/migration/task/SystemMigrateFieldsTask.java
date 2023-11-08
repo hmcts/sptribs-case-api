@@ -46,7 +46,7 @@ public class SystemMigrateFieldsTask implements Runnable {
 
     @Override
     public void run() {
-        log.info("Final Order overdue scheduled task started");
+        log.info("Migrate fields scheduled task started");
 
         final User user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
@@ -74,22 +74,22 @@ public class SystemMigrateFieldsTask implements Runnable {
                 ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth, State.CaseManagement);
             log.info("Cases:" + casesInAwaitingFinalOrderState.size());
             for (final CaseDetails caseDetails : casesInAwaitingFinalOrderState) {
-                triggerFinalOrderEventForEligibleCases(user, serviceAuth, caseDetails);
+                triggerMigrateFieldsForEligibleCases(user, serviceAuth, caseDetails);
             }
 
-            log.info("Final Order overdue scheduled task complete.");
+            log.info("Migrate fields scheduled task complete.");
         } catch (final CcdSearchCaseException e) {
-            log.error("Final Order overdue schedule task stopped after search error", e);
+            log.error("Migrate fields schedule task stopped after search error", e);
         } catch (final CcdConflictException e) {
-            log.info("Final Order overdue schedule task stopping "
+            log.info("Migrate fields schedule task stopping "
                 + "due to conflict with another running task"
             );
         }
     }
 
-    private void triggerFinalOrderEventForEligibleCases(User user, String serviceAuth, CaseDetails caseDetails) {
+    private void triggerMigrateFieldsForEligibleCases(User user, String serviceAuth, CaseDetails caseDetails) {
         try {
-            log.info("Submitting Final Order Overdue Event for Case {}", caseDetails.getId());
+            log.info("Submitting Migrate Fields Event for Case {}", caseDetails.getId());
             ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_MIGRATE_CASE, user, serviceAuth);
         } catch (final CcdManagementException e) {
             log.error("Submit event failed for case id: {}, continuing to next case", caseDetails.getId());

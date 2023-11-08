@@ -21,7 +21,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @NoArgsConstructor
 public class RetiredFields {
-    @CCD(label = "Case data version")
+    @CCD(label = "Case data version", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private int dataVersion;
 
 
@@ -30,6 +30,7 @@ public class RetiredFields {
 
     @CCD(
         label = "Enter any other important information about this cancellation",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = TextArea
     )
     private String cicCaseCancelHearingAdditionalDetail;
