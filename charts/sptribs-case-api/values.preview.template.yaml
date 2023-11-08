@@ -706,7 +706,6 @@ rd-caseworker-ref-api:
       POSTGRES_USERNAME: hmcts
       POSTGRES_PORT: 5432
       POSTGRES_CONNECTION_OPTIONS: "?currentSchema=dbrdcaseworker&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-dbrdcaseworker?currentSchema=dbrdcaseworker&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CWRD_MQ_HOST: "sptribs-sb-preview.servicebus.windows.net"
       CASEWORKER_TOPIC_PRIMARY_SEND_LISTEN_SHARED_ACCESS_KEY: "$(CWRD_MQ_PASSWORD)"
       CWRD_MQ_USERNAME: RootManageSharedAccessKey
