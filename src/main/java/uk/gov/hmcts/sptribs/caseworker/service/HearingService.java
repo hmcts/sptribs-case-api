@@ -30,7 +30,7 @@ public class HearingService {
     public DynamicList getListedHearingDynamicList(final CaseData data) {
 
         List<String> hearingDateList = new ArrayList<>();
-        addListingIfExists(data);
+        //addListingIfExists(data);
 
         for (ListValue<Listing> listing : data.getHearingList()) {
             if (listing.getValue().getHearingStatus() == HearingState.Listed) {

@@ -93,10 +93,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
         log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
 
-        //hearingService.addListingIfExists(caseData);
-
         caseData.setListing(new Listing());
-        //caseData.setListing(Listing.nullifyListingFields(caseData.getListing()));
         DynamicList regionList = locationService.getAllRegions();
         caseData.getListing().setRegionList(regionList);
 
