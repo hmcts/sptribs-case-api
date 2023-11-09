@@ -55,6 +55,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 CaseStayed)
             .name("Document management: Upload")
             .description("Document management: Upload")
+            .publishToCamunda()
             .showSummary()
             .grantHistoryOnly(SUPER_USER,
                 ST_CIC_CASEWORKER,
