@@ -219,7 +219,7 @@ public class CaseData {
 
     @CCD(
         label = "Case number",
-        access = {CaseworkerAccess.class}
+        access = {DefaultAccess.class, CaseworkerAccess.class}
     )
     private String hyphenatedCaseRef;
 
