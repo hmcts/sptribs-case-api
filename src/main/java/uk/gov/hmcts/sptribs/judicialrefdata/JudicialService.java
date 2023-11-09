@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Comparator.comparing;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ACCEPT_VALUE;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
 @Service
 @Slf4j
@@ -37,8 +39,6 @@ public class JudicialService {
     @Autowired
     private JudicialClient judicialClient;
 
-    private static final String SERVICE_NAME = "ST_CIC";
-    private static final String ACCEPT_VALUE = "application/vnd.jrd.api+json;Version=2.0";
 
     public DynamicList getAllUsers(CaseData caseData) {
         final var users = getUsers();
@@ -55,7 +55,7 @@ public class JudicialService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 ACCEPT_VALUE,
                 JudicialUsersRequest.builder()
-                    .ccdServiceName(SERVICE_NAME)
+                    .ccdServiceName(ST_CIC_JURISDICTION)
                     .build());
             if (CollectionUtils.isEmpty(list)) {
                 return new ArrayList<>();

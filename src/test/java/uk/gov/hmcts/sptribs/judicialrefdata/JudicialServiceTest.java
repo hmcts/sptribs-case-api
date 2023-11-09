@@ -104,6 +104,7 @@ class JudicialServiceTest {
             .when(judicialClient).getUserProfiles(
                 TEST_SERVICE_AUTH_TOKEN,
                 TEST_AUTHORIZATION_TOKEN,
+                ACCEPT_VALUE,
                 new JudicialUsersRequest("ST_CIC")
             );
         DynamicList regionList = judicialService.getAllUsers(caseData);

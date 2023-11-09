@@ -76,8 +76,8 @@ class CaseworkerCreateHearingSummaryTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-      
-        when(hearingService.getHearingDateDynamicList(any())).thenReturn(null);
+
+        when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
         when(judicialService.getAllUsers(caseData)).thenReturn(null);
 
         //When
