@@ -13,6 +13,7 @@ public class FurtherDetails implements CcdPageConfiguration {
             .label("LabelFurtherDetails", "")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getSchemeCic,"Scheme")
+            .mandatory(CicCase::getRegionCIC)
             .mandatory(CicCase::getClaimLinkedToCic)
             .mandatory(CicCase::getCicaReferenceNumber, "cicCaseClaimLinkedToCic = \"Yes\"")
             .mandatory(CicCase::getCompensationClaimLinkCIC)

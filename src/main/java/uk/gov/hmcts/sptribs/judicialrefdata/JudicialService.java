@@ -38,6 +38,7 @@ public class JudicialService {
     private JudicialClient judicialClient;
 
     private static final String SERVICE_NAME = "ST_CIC";
+    private static final String ACCEPT_VALUE = "application/vnd.jrd.api+json;Version=2.0";
 
     public DynamicList getAllUsers(CaseData caseData) {
         final var users = getUsers();
@@ -52,6 +53,7 @@ public class JudicialService {
             List<UserProfileRefreshResponse> list = judicialClient.getUserProfiles(
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
+                ACCEPT_VALUE,
                 JudicialUsersRequest.builder()
                     .ccdServiceName(SERVICE_NAME)
                     .build());
