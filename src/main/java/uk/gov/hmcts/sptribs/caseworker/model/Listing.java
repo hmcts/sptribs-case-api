@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -226,39 +225,6 @@ public class Listing {
     @JsonIgnore
     public String getSelectedVenue() {
         return this.getHearingVenues() != null ? this.getHearingVenues().getValue().getLabel() : null;
-    }
-
-    public static Listing nullifyListingFields(Listing listing) {
-        listing.setHearingStatus(null);
-        listing.setSelectedRegionId(null);
-        listing.setHearingType(null);
-        listing.setDate(null);
-        listing.setHearingTime(null);
-        listing.setSession(null);
-        listing.setNumberOfDays(null);
-        listing.setAdditionalHearingDate(null);
-        listing.setHearingVenuesMessage(null);
-        listing.setRegionsMessage(null);
-        listing.setVideoCallLink(null);
-        listing.setConferenceCallNumber(null);
-        listing.setImportantInfoDetails(null);
-        listing.setRecordListingChangeReason(null);
-        listing.setHearingSummaryExists(null);
-        listing.setCancelHearingAdditionalDetail(null);
-        listing.setHearingCancellationReason(null);
-        listing.setPostponeReason(null);
-        listing.setPostponeAdditionalInformation(null);
-        listing.setSummary(null);
-        listing.setRegionList(null);
-        listing.setHearingVenues(null);
-        Set<VenueNotListed> venueNotListedSet = EnumSet.noneOf(VenueNotListed.class);
-        listing.setVenueNotListedOption(venueNotListedSet);
-        listing.setRoomAtVenue(null);
-        listing.setAddlInstr(null);
-        listing.setHearingFormat(null);
-        listing.setHearingVenueNameAndAddress(null);
-        listing.setReadOnlyHearingVenueName(null);
-        return listing;
     }
 
 }

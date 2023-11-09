@@ -99,7 +99,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     ) {
         var caseData = details.getData();
         recordListHelper.saveSummary(details.getData());
-        hearingService.addListingIfExists(caseData);
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

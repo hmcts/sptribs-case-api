@@ -101,7 +101,6 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         recordListHelper.getNotificationParties(caseData);
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingStatus(Postponed);
-        hearingService.addListingIfExists(caseData);
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
