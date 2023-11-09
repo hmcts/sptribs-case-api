@@ -30,7 +30,6 @@ public class HearingService {
     public DynamicList getListedHearingDynamicList(final CaseData data) {
 
         List<String> hearingDateList = new ArrayList<>();
-        //addListingIfExists(data);
 
         for (ListValue<Listing> listing : data.getHearingList()) {
             if (listing.getValue().getHearingStatus() == HearingState.Listed) {
@@ -45,6 +44,14 @@ public class HearingService {
     public void addListingIfExists(CaseData data) {
         if (null != data.getListing().getHearingType() && data.getHearingList().isEmpty()) {
             addListing(data, data.getListing());
+
+            ListValue<Listing> firstListing = data.getHearingList().stream().findFirst().orElse(null);
+            if(null != firstListing) {
+                firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
+                firstListing.getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
+                firstListing.getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
+                firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
+            }
         }
     }
 
