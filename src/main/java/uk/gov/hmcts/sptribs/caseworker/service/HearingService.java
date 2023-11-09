@@ -46,7 +46,7 @@ public class HearingService {
             addListing(data, data.getListing());
 
             ListValue<Listing> firstListing = data.getHearingList().stream().findFirst().orElse(null);
-            if(null != firstListing) {
+            if (null != firstListing) {
                 firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
                 firstListing.getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
                 firstListing.getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
