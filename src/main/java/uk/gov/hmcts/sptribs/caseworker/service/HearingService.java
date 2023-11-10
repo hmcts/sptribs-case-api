@@ -33,19 +33,36 @@ public class HearingService {
 
         for (ListValue<Listing> listing : data.getHearingList()) {
             if (listing.getValue().getHearingStatus() == HearingState.Listed) {
-                String hearingDate =
-                    listing.getId()
-                        + SPACE + HYPHEN + SPACE
-                        + listing.getValue().getHearingType().getLabel()
-                        + SPACE + HYPHEN + SPACE
-                        + listing.getValue().getDate().format(dateFormatter)
-                        + SPACE
-                        + listing.getValue().getHearingTime();
+                String hearingDate = getHearingDate(listing.getId(), listing.getValue());
                 hearingDateList.add(hearingDate);
             }
         }
 
         return createDynamicList(hearingDateList);
+    }
+
+    public void addListingIfExists(CaseData data) {
+        if (null != data.getListing().getHearingType() && data.getHearingList().isEmpty()) {
+            addListing(data, data.getListing());
+
+            ListValue<Listing> firstListing = data.getHearingList().stream().findFirst().orElse(null);
+            if (null != firstListing && null != data.getRetiredFields()) {
+                firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
+                firstListing.getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
+                firstListing.getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
+                firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
+            }
+        }
+    }
+
+    private String getHearingDate(String id, Listing listing) {
+        return id
+                + SPACE + HYPHEN + SPACE
+                + listing.getHearingType().getLabel()
+                + SPACE + HYPHEN + SPACE
+                + listing.getDate().format(dateFormatter)
+                + SPACE
+                + listing.getHearingTime();
     }
 
     public DynamicList getCompletedHearingDynamicList(final CaseData data) {

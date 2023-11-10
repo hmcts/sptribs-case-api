@@ -61,7 +61,6 @@ public class CcdSearchService {
             log.info(message, e);
             throw new CcdSearchCaseException(message, e);
         }
-
         return allCaseDetails;
     }
 
@@ -92,7 +91,7 @@ public class CcdSearchService {
             .query(
                 boolQuery()
                     .must(boolQuery()
-                        .must(matchQuery("reference", 1688978122333564L)))
+                        .must(matchQuery("reference", 1695290772211061L)))
             )
             .from(0)
             .size(500);
