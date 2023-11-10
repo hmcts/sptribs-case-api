@@ -33,8 +33,7 @@ public class SystemMigrateCase implements CCDConfig<CaseData, State, UserRole> {
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-        log.info("aboutToSubmit for case Id: {}", details.getId());
-        details.getData().setClosedDayCount("1"); // not getting set, trying to update only 1 field
+        log.info("Migrating case data for case Id: {}", details.getId());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(details.getData())
                 .build();
