@@ -105,7 +105,7 @@ class CcdSearchServiceTest {
                 .query(
                         boolQuery()
                                 .must(boolQuery()
-                                        .must(matchQuery("reference", 1688978122333564L)))
+                                        .must(matchQuery("reference", 1695290772211061L)))
                 )
                 .from(0)
                 .size(500);
