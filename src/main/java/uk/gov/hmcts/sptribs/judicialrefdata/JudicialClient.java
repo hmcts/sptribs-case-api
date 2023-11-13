@@ -9,8 +9,6 @@ import uk.gov.hmcts.sptribs.services.cdam.FeignSupportConfig;
 
 import java.util.List;
 
-import java.util.List;
-
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;

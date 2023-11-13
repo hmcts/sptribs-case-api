@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -61,8 +60,10 @@ public class JudicialService {
             }
             return list;
         } catch (FeignException exception) {
-            log.error("Unable to get user profile data from reference data with exception {}",
-                exception.getMessage());
+            log.error(
+                "Unable to get user profile data from reference data with exception {}",
+                exception.getMessage()
+            );
         }
         return new ArrayList<>();
     }

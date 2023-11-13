@@ -83,9 +83,10 @@ class JudicialServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
-            ACCEPT_VALUE, new JudicialUsersRequest("ST_CIC")))
-            .thenReturn(null);
+        when(judicialClient.getUserProfiles(
+            TEST_SERVICE_AUTH_TOKEN,
+            TEST_AUTHORIZATION_TOKEN,
+            new JudicialUsersRequest("ST_CIC"))).thenReturn(null);
         DynamicList regionList = judicialService.getAllUsers(caseData);
 
         //Then
