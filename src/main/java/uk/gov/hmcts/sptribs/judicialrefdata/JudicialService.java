@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Comparator.comparing;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.constants.CommonConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
 @Service
@@ -53,7 +53,6 @@ public class JudicialService {
             List<UserProfileRefreshResponse> list = judicialClient.getUserProfiles(
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
-                ACCEPT_VALUE,
                 JudicialUsersRequest.builder()
                     .ccdServiceName(ST_CIC_JURISDICTION)
                     .build());

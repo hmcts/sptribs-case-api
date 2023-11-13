@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
@@ -64,9 +63,10 @@ class JudicialServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
-            ACCEPT_VALUE, new JudicialUsersRequest("ST_CIC")))
-            .thenReturn(responseEntity);
+        when(judicialClient.getUserProfiles(
+            TEST_SERVICE_AUTH_TOKEN,
+            TEST_AUTHORIZATION_TOKEN,
+            new JudicialUsersRequest("ST_CIC"))).thenReturn(responseEntity);
         DynamicList userList = judicialService.getAllUsers(caseData);
 
         //Then
@@ -104,7 +104,6 @@ class JudicialServiceTest {
             .when(judicialClient).getUserProfiles(
                 TEST_SERVICE_AUTH_TOKEN,
                 TEST_AUTHORIZATION_TOKEN,
-                ACCEPT_VALUE,
                 new JudicialUsersRequest("ST_CIC")
             );
         DynamicList regionList = judicialService.getAllUsers(caseData);
