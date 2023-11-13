@@ -264,6 +264,38 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+
+            .label("Listing details",  "hearingList!=\"*\" AND hearingType!=\"\"", "#### Listing details")
+            .field("hearingStatus",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("hearingType",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("hearingFormat",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("hearingVenueNameAndAddress",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("roomAtVenue",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("date",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("session",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("hearingTime",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("videoCallLink",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("importantInfoDetails",  "hearingList!=\"*\" AND hearingType!=\"\"")
+            .field("cicCaseHearingNotificationParties",  "hearingList!=\"*\" AND hearingType!=\"\"")
+
+            .label("Hearing summary",  "hearingList!=\"*\" AND isFullPanel!=\"\"", "#### Hearing summary")
+            .field("judge",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+            .field("isFullPanel",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+            .field("memberList",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+            .field("roles",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+            .field("others",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+            .field("outcome",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+            .field("recFile",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+            .field("recDesc",  "hearingList!=\"*\" AND isFullPanel!=\"\"")
+
+            .label("Postponement summary", "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"", "#### Postponement summary")
+            .field("cicCasePostponeReason",  "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"")
+            .field("cicCasePostponeAdditionalInformation",  "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"")
+
+            .label("Cancellation summary", "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"", "#### Cancellation summary")
+            .field("cicCaseHearingCancellationReason",  "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"")
+            .field("cicCaseCancelHearingAdditionalDetail",  "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"")
+
             .label("Listing details", null, "#### Listing details")
             .field(CaseData::getHearingList);
 
