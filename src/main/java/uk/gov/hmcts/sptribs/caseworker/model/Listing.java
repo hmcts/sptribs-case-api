@@ -181,8 +181,7 @@ public class Listing {
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
-    private String hearingSummaryExists = "YES";
+    private String hearingSummaryExists;
 
     @CCD(
         label = "Enter any other important information about this cancellation",
