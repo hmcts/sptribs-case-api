@@ -63,6 +63,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                 CaseStayed)
             .name("Document management: Upload")
             .description("Document management: Upload")
+            .publishToCamunda()
             .showSummary()
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,

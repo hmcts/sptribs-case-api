@@ -76,6 +76,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .forStates(AwaitingOutcome)
             .name("Decision: Issue a decision")
             .description("Decision: Issue a decision")
+            .publishToCamunda()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
