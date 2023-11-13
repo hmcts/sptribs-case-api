@@ -110,7 +110,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
-        if (!documentList.getListItems().isEmpty()) {
+
+        if (documentList != null && !documentList.getListItems().isEmpty()) {
             caseData.getContactPartiesDocuments().setDocumentList(documentList);
         }
         caseData.getCicCase().setNotifyPartyMessage("");
