@@ -28,7 +28,4 @@ public class HearingTypeAndFormat implements CcdPageConfiguration {
             .done();
     }
 
-
-
-
 }
