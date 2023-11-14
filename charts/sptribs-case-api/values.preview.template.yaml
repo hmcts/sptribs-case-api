@@ -365,7 +365,7 @@ xui-webapp:
       SERVICES_DOCUMENTS_API_V2: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
-      CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      CASE_TYPES: CriminalInjuriesCompensation,CIC,CS,MH,PHL,SEN,DD
       FEATURE_REDIS_ENABLED: false
       NODE_OPTIONS: --max-old-space-size=900
 
