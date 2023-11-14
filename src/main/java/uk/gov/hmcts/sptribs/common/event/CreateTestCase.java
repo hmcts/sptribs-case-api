@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
@@ -66,6 +67,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private SubmissionService submissionService;
+
+    @Autowired
+    private CcdSupplementaryDataService coreCaseApiService;
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
@@ -119,6 +123,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+        data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -129,6 +134,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
+
+        setSupplementaryData(details.getId());
+
         String claimNumber = data.getHyphenatedCaseRef();
 
         sendApplicationReceivedNotification(claimNumber, data);
@@ -136,6 +144,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
             .build();
+    }
+
+    private void setSupplementaryData(Long caseId) {
+        try {
+            coreCaseApiService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
     }
 
     private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {

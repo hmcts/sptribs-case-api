@@ -31,7 +31,7 @@ public enum UserRole implements HasRole {
 
     ST_CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
     ST_CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
-
+    CASEWORKER_ADMIN_PROFILE("hmcts-admin", "CRU"),
     CITIZEN_CIC("citizen", "CRU");
 
     @JsonValue
