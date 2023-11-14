@@ -27,7 +27,7 @@ class DefaultAccessTest {
         final SetMultimap<HasRole, Permission> grants = new DefaultAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(22)
+            .hasSize(25)
             .contains(
                 entry(CREATOR, C),
                 entry(CREATOR, R),
@@ -35,15 +35,19 @@ class DefaultAccessTest {
                 entry(ST_CIC_CASEWORKER, C),
                 entry(ST_CIC_CASEWORKER, R),
                 entry(ST_CIC_CASEWORKER, U),
+                entry(ST_CIC_CASEWORKER, D),
                 entry(ST_CIC_SENIOR_CASEWORKER, C),
                 entry(ST_CIC_SENIOR_CASEWORKER, R),
                 entry(ST_CIC_SENIOR_CASEWORKER, U),
+                entry(ST_CIC_SENIOR_CASEWORKER, D),
                 entry(ST_CIC_HEARING_CENTRE_ADMIN, C),
                 entry(ST_CIC_HEARING_CENTRE_ADMIN, R),
                 entry(ST_CIC_HEARING_CENTRE_ADMIN, U),
+                entry(ST_CIC_HEARING_CENTRE_ADMIN, D),
                 entry(ST_CIC_HEARING_CENTRE_TEAM_LEADER, C),
                 entry(ST_CIC_HEARING_CENTRE_TEAM_LEADER, R),
                 entry(ST_CIC_HEARING_CENTRE_TEAM_LEADER, U),
+                entry(ST_CIC_HEARING_CENTRE_TEAM_LEADER, D),
                 entry(ST_CIC_SENIOR_JUDGE, C),
                 entry(ST_CIC_SENIOR_JUDGE, R),
                 entry(ST_CIC_SENIOR_JUDGE, U),

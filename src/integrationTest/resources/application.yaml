@@ -8,6 +8,9 @@ springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 uk:
   gov:
     notify:
@@ -44,6 +47,11 @@ location:
 judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
+
+refdata_common:
+  api:
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
 
 bundling:
   api:
@@ -97,7 +105,7 @@ feature:
   contact-parties:
     enabled: ${CONTACT_PARTIES_FEATURE:true}
   link-case:
-    enabled: ${LINK_CASE_FEATURE:false}
+    enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:
