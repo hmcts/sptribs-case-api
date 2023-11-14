@@ -29,7 +29,8 @@ public class DateModel {
 
     @CCD(
         label = "Due Date information",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String information;
 
