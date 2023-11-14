@@ -55,7 +55,8 @@ public class ContactParties {
 
     @CCD(
         label = "Message",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String message;
 

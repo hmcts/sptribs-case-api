@@ -28,6 +28,7 @@ public final class TestConstants {
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     public static final String AUTHORIZATION = "Authorization";
+    public static final String ACCEPT_VALUE = "application/vnd.jrd.api+json;Version=2.0";
     public static final String TEST_AUTHORIZATION_TOKEN = "test-auth";
     public static final String TEST_SYSTEM_AUTHORISATION_TOKEN = "test-system-auth";
 

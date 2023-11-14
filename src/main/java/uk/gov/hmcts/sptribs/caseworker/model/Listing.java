@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
@@ -144,7 +145,7 @@ public class Listing {
         label = "Additional Hearing date",
         typeOverride = Collection,
         typeParameterOverride = "HearingDate",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<HearingDate>> additionalHearingDate;
 
@@ -186,8 +187,36 @@ public class Listing {
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
-    private String hearingSummaryExists = "YES";
+    private String hearingSummaryExists;
+
+    @CCD(
+        label = "Enter any other important information about this cancellation",
+        typeOverride = TextArea
+    )
+    private String cancelHearingAdditionalDetail;
+
+    @CCD(
+        label = "Why was the hearing cancelled?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingCancellationReason"
+    )
+    private HearingCancellationReason hearingCancellationReason;
+
+    @CCD(
+        label = "Postpone Reason",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "PostponeReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private PostponeReason postponeReason;
+
+    @CCD(
+        label = "Enter any other important information about this postponement",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String postponeAdditionalInformation;
 
     @JsonUnwrapped
     @Builder.Default

@@ -1,7 +1,6 @@
-package uk.gov.hmcts.sptribs.document.bundling;
+package uk.gov.hmcts.sptribs.document.bundling.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,16 +19,25 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class BundleSubFolder {
+public class BundleFolder {
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String name;
-    @JsonUnwrapped(prefix = "documents")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<BundleDocument>> documents = new ArrayList<>();
-    @JsonUnwrapped(prefix = "folders")
-    @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<BundleSubFolder2>> folders = new ArrayList<>();
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<BundleDocument>> documents;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<BundleSubFolder>> folders;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private int sortIndex;
 }

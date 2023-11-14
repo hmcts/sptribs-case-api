@@ -92,10 +92,14 @@ idam:
     microservice: sptribs_case_api
   api:
     url: ${IDAM_API_BASEURL:http://localhost:5000}
+  client:
+    id: ${IDAM_CLIENT_ID:sptribs-case-api}
+    redirect_uri: ${IDAM_CLIENT_REDIRECT_URI:http://localhost:3001/receiver}
+    secret: ${IDAM_CLIENT_SECRET:thUphEveC2Ekuqedaneh4jEcRuba4t2t}
 
   systemupdate:
-    username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
-    password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
+    username: ${IDAM_SYSTEM_UPDATE_USERNAME:st-test1@mailinator.com}
+    password: ${IDAM_SYSTEM_UPDATE_PASSWORD:Pa55w0rd11}
 
 location:
   api:
@@ -104,6 +108,15 @@ location:
 judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
+
+flagType:
+  api:
+    baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
+
+
+bundling:
+  api:
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
 
 s2s:
   stub: false
@@ -187,6 +200,8 @@ feature:
     enabled: ${BUNDLING_FEATURE:false}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:true}
+  security-classification:
+    enabled: ${SECURITY_CLASSIFICATION:false}
 
 caseinfo:
   apps:

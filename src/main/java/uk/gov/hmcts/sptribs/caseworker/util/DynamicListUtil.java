@@ -27,4 +27,17 @@ public final class DynamicListUtil {
             .listItems(dynamicListElements)
             .build();
     }
+
+    public static DynamicList createDynamicList(List<String> hearingSummary) {
+        List<DynamicListElement> dynamicListElements = hearingSummary
+            .stream()
+            .sorted()
+            .map(hearing -> DynamicListElement.builder().label(hearing).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
+
+        return DynamicList
+            .builder()
+            .listItems(dynamicListElements)
+            .build();
+    }
 }

@@ -1,6 +1,6 @@
 # Special Tribunals Case API [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This API handles callbacks from CCD for the CIC case type.
+This API handles callbacks from CCD for the CIC (and others, in the future) case type.
 
 ## Overview
 
@@ -36,7 +36,7 @@ To build the project execute the following command:
 
 ### Running the application locally
 
-You will need access to the sptribs-aat vault and an active VPN to run locally as it depends on services in AAT.
+You will need access to the sptribs-aat vault and an active VPN to run locally, as it depends on services in AAT.
 
 Run the application by executing the following command:
 

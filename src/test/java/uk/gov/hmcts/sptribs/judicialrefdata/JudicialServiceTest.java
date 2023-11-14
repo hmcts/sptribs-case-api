@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,17 +41,27 @@ class JudicialServiceTest {
     @Test
     void shouldPopulateUserDynamicList() {
         //Given
-        var userResponse = UserProfileRefreshResponse
+        var userResponse1 = UserProfileRefreshResponse
             .builder()
+            .fullName("John Smith")
+            .personalCode("12345")
             .build();
+        var userResponse2 = UserProfileRefreshResponse
+            .builder()
+            .fullName("John Doe")
+            .personalCode("98765")
+            .build();
+        List<UserProfileRefreshResponse> responseEntity = List.of(userResponse1, userResponse2);
+
 
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
-            new JudicialUsersRequest("ST_CIC")))
-            .thenReturn(responseEntity);
-        when(responseEntity.getBody()).thenReturn(new UserProfileRefreshResponse[]{userResponse});
+        when(judicialClient.getUserProfiles(
+            TEST_SERVICE_AUTH_TOKEN,
+            TEST_AUTHORIZATION_TOKEN,
+            new JudicialUsersRequest("ST_CIC"))).thenReturn(responseEntity);
+
         DynamicList userList = judicialService.getAllUsers();
 
         //Then
@@ -62,9 +73,10 @@ class JudicialServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(judicialClient.getUserProfiles(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN,
-            new JudicialUsersRequest("ST_CIC")))
-            .thenReturn(null);
+        when(judicialClient.getUserProfiles(
+            TEST_SERVICE_AUTH_TOKEN,
+            TEST_AUTHORIZATION_TOKEN,
+            new JudicialUsersRequest("ST_CIC"))).thenReturn(null);
         DynamicList regionList = judicialService.getAllUsers();
 
         //Then

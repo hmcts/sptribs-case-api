@@ -195,6 +195,7 @@ withPipeline(type, product, component) {
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
     }
@@ -211,9 +212,9 @@ withPipeline(type, product, component) {
         setFeatureFlags(env.ENVIRONMENT)
     }
 
-    afterSuccess('functionalTest:aat') {
+    /*afterSuccess('functionalTest:aat') {
 
-        /*try {
+        try {
           builder.gradle('e2eTests')
         } finally {
 
@@ -225,7 +226,7 @@ withPipeline(type, product, component) {
               reportFiles          : "index.html",
               reportName           : "E2E Tests Report"
            ]
-        }*/
+        }
 
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
@@ -244,8 +245,25 @@ withPipeline(type, product, component) {
         generateDefinitions()
     }
 
+    afterSuccess('functionalTest:preview') {
 
-    onDemo {
+        try {
+            builder.gradle('e2eTests')
+        } finally {
+
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/e2eTests",
+                    reportFiles          : "index.html",
+                    reportName           : "E2E Tests Report"
+            ]
+        }
+    }*/
+
+
+        onDemo {
       env.ENVIRONMENT="demo"
       env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
       env.CCD_DEF_NAME = "demo"
@@ -314,13 +332,15 @@ def setFeatureFlags(environment) {
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
+    env.SECURITY_CLASSIFICATION = true
   } else if (environment =~ /aat/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = false
     env.DSS_FRONTEND_FEATURE = true
+    env.BUNDLING_FEATURE = false
+    env.SECURITY_CLASSIFICATION = false
   } else if (environment =~ /prod/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = false
@@ -328,5 +348,6 @@ def setFeatureFlags(environment) {
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = false
     env.DSS_FRONTEND_FEATURE = false
+    env.SECURITY_CLASSIFICATION = false
   }
 }
