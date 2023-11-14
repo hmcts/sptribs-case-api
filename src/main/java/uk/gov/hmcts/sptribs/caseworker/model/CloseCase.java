@@ -37,7 +37,8 @@ public class CloseCase {
 
     @CCD(
         label = "Provide additional details",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String additionalDetail;
 

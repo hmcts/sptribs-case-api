@@ -181,7 +181,8 @@ public class CicCase {
 
 
     @CCD(
-        label = "How would you like to issue an order?"
+        label = "How would you like to issue an order?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private OrderIssuingType orderIssuingType;
 
@@ -361,7 +362,8 @@ public class CicCase {
 
     @CCD(
         label = "Message",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String notifyPartyMessage;
 
@@ -373,7 +375,8 @@ public class CicCase {
 
     @CCD(
         label = "Additional information related to the case reinstatement",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String reinstateAdditionalDetail;
 
@@ -405,18 +408,23 @@ public class CicCase {
     )
     private String fullName;
 
-    @CCD(label = "Subject's address")
+    @CCD(
+        label = "Subject's address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private AddressGlobalUK address;
 
     @CCD(
         label = "Subject's phone number",
-        regex = "^[0-9 +().-]{9,}$"
+        regex = "^[0-9 +().-]{9,}$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String phoneNumber;
 
     @CCD(
         label = "Subject's email address",
-        typeOverride = Email
+        typeOverride = Email,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String email;
 
@@ -464,18 +472,23 @@ public class CicCase {
     )
     private String applicantFullName;
 
-    @CCD(label = "Applicant's address")
+    @CCD(
+        label = "Applicant's address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private AddressGlobalUK applicantAddress;
 
     @CCD(
         label = "Applicant's phone number",
-        regex = "^[0-9 +().-]{9,}$"
+        regex = "^[0-9 +().-]{9,}$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String applicantPhoneNumber;
 
     @CCD(
         label = "Applicant's email address",
-        typeOverride = Email
+        typeOverride = Email,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String applicantEmailAddress;
 
@@ -510,18 +523,23 @@ public class CicCase {
     )
     private String representativeReference;
 
-    @CCD(label = "Representative's Address")
+    @CCD(
+        label = "Representative's Address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private AddressGlobalUK representativeAddress;
 
     @CCD(
         label = "Representative's contact number",
-        regex = "^[0-9 +().-]{9,}$"
+        regex = "^[0-9 +().-]{9,}$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String representativePhoneNumber;
 
     @CCD(
         label = "Representative's email address",
-        typeOverride = Email
+        typeOverride = Email,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String representativeEmailAddress;
 
@@ -545,6 +563,9 @@ public class CicCase {
     )
     private YesOrNo isRepresentativeQualified;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo representativeDetailsObjects;
 
 
@@ -619,7 +640,9 @@ public class CicCase {
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
 
-
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo selectedCheckBox;
 
     @CCD(
