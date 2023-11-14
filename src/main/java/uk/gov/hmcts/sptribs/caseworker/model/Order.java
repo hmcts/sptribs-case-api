@@ -58,6 +58,9 @@ public class Order {
     )
     private String parties;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
