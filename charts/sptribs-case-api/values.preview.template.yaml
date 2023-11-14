@@ -382,7 +382,7 @@ xui-mo-webapp:
       SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
-      CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      CASE_TYPES: CriminalInjuriesCompensation,CS,MH,PHL,SEN,DD
 
 sptribs-frontend:
   enabled: true
