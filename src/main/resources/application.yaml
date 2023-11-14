@@ -152,6 +152,7 @@ docmosis:
       CIC8_ME_Joint_Instruction: ST-CIC-STD-ENG-CIC8_ME_Joint_Instruction.docx
       CIC10_Strike_Out_Warning: ST-CIC-STD-ENG-CIC10_Strike_Out_Warning.docx
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
+      CIC14_LO_General_Directions: ST-CIC-STD-ENG-CIC14_Legal_Officer_General_Directions.docx
       CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
 
@@ -189,6 +190,7 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
+  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
 
 feature:
   contact-parties:
