@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.judicialrefdata;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
 @Service
@@ -33,8 +35,8 @@ public class JudicialService {
     @Autowired
     private JudicialClient judicialClient;
 
-    private static final String SERVICE_NAME = "ST_CIC";
-    private static final String ACCEPT_VALUE = "application/vnd.jrd.api+json;Version=2.0";
+    @Value("${toggle.enable_jrd_api_v2}")
+    private boolean enableJrdApiV2;
 
     public DynamicList getAllUsers() {
 
@@ -45,12 +47,21 @@ public class JudicialService {
 
     private List<UserProfileRefreshResponse> getUsers() {
         try {
-            List<UserProfileRefreshResponse> list = judicialClient.getUserProfiles(
-                authTokenGenerator.generate(),
-                httpServletRequest.getHeader(AUTHORIZATION),
-                JudicialUsersRequest.builder()
-                    .ccdServiceName(ST_CIC_JURISDICTION)
-                    .build());
+            List<UserProfileRefreshResponse> list =
+                enableJrdApiV2
+                    ? judicialClient.getUserProfilesV2(
+                        authTokenGenerator.generate(),
+                        httpServletRequest.getHeader(AUTHORIZATION),
+                        ACCEPT_VALUE,
+                        JudicialUsersRequest.builder()
+                            .ccdServiceName(ST_CIC_JURISDICTION)
+                            .build())
+                    : judicialClient.getUserProfiles(
+                        authTokenGenerator.generate(),
+                        httpServletRequest.getHeader(AUTHORIZATION),
+                        JudicialUsersRequest.builder()
+                            .ccdServiceName(ST_CIC_JURISDICTION)
+                            .build());
             if (CollectionUtils.isEmpty(list)) {
                 return new ArrayList<>();
             }
