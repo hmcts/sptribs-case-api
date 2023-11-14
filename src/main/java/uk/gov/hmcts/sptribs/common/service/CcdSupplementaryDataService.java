@@ -8,9 +8,9 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.config.CaseFlagsConfiguration;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
