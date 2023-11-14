@@ -23,7 +23,6 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLEAR_HEARING_OPTIONS;
@@ -90,7 +89,6 @@ public class CaseworkerClearHearingOptionsIT {
                     caseData,
                     CASEWORKER_CLEAR_HEARING_OPTIONS)))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andReturn()

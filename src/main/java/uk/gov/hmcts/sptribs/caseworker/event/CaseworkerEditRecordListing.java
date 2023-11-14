@@ -93,6 +93,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
 
@@ -104,7 +105,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             recordListHelper.regionData(caseData);
         }
 
-      DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
+        DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

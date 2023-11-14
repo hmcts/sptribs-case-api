@@ -4,10 +4,11 @@
     "newCaseworkerCICDocument": [],
     "editCicaCaseDetails": {},
     "contactParties": {},
-    "cicBundles": [],
+    "caseBundles": [],
     "cicCaseRespondentName": "Appeals team",
     "cicCaseRespondentOrganisation": "CICA",
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFirstDueDate": "",
     "stayIsCaseStayed": "No",
     "hearingVenues": {
       "list_items": [
@@ -27,7 +28,9 @@
       },
       "valueLabel": "1-London"
     },
-    "hearingSummaryExists": "YES",
-    "closedDayCount": ""
+    "hearingList": [],
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0
   }
 }

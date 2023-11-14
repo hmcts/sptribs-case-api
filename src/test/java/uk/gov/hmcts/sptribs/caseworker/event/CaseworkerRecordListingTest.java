@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +55,9 @@ class CaseworkerRecordListingTest {
 
     @Mock
     private RecordListHelper recordListHelper;
+
+    @Mock
+    private LocationService locationService;
 
     @InjectMocks
     private CaseworkerRecordListing caseworkerRecordListing;
@@ -118,7 +122,7 @@ class CaseworkerRecordListingTest {
     }
 
     @Test
-    void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
+    void aboutToStartMethodShouldSuccessfullyPopulateRegionData() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -134,24 +138,7 @@ class CaseworkerRecordListingTest {
     }
 
     @Test
-    void shouldNotPopulateRegionDataInAboutToStartCallbackIfAlreadyPresent() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.getListing().setRegionList(getMockedRegionData());
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        //When
-        caseworkerRecordListing.aboutToStart(updatedCaseDetails);
-
-        //Then
-        verifyNoInteractions(recordListHelper);
-    }
-
-    @Test
-    void shouldMidEventMethodSuccessfullyPopulateHearingVenueData() {
+    void midEventMethodShouldSuccessfullyPopulateHearingVenueDataWhenNotPresent() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -160,16 +147,10 @@ class CaseworkerRecordListingTest {
         listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
         listing.setRegionList(getMockedRegionData());
         caseData.setListing(listing);
-        caseData.getListing().setHearingVenues(getMockedHearingVenueData());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        recordListHelper.regionData(caseData);
-
-        if (beforeDetails.getData() == null) {
-            beforeDetails.setData(updatedCaseDetails.getData());
-        }
         //When
         caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 

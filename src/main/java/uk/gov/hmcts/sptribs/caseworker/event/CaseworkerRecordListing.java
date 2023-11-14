@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -90,19 +91,13 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-      
-      log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
-      
+
         var caseData = details.getData();
-      
-        if (isNull(caseData.getListing().getRegionList())) {
-            recordListHelper.regionData(caseData);
-        }
+
+        log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
 
         caseData.setListing(new Listing());
-        DynamicList regionList = locationService.getAllRegions();
-        caseData.getListing().setRegionList(regionList);
-
+        recordListHelper.regionData(caseData);
         caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
 
         log.info("AboutToStart output event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
@@ -188,7 +183,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             recordListHelper.populateVenuesData(caseData);
         }
 
-      return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
