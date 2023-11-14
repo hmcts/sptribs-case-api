@@ -34,7 +34,6 @@ public class SystemMigrateCase implements CCDConfig<CaseData, State, UserRole> {
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
         log.info("Migrating case data for case Id: {}", details.getId());
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(details.getData())
                 .build();
