@@ -120,8 +120,17 @@ public class HearingService {
             if (hearingName.contains(listingListValue.getValue().getHearingTime())
                 && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())) {
                 listingListValue.setValue(caseData.getListing());
+                DynamicList hearingDateDynamicList = updateHearingDynamicList(listingListValue, caseData.getCicCase().getHearingList());
+                caseData.getCicCase().setHearingList(hearingDateDynamicList);
                 break;
             }
         }
+    }
+
+    public DynamicList updateHearingDynamicList(ListValue<Listing> listing, DynamicList hearingDateDynamicList) {
+        String dynamicHearingListLabel = getHearingDate(listing.getId(), listing.getValue());
+        hearingDateDynamicList.getValue().setLabel(dynamicHearingListLabel);
+
+        return hearingDateDynamicList;
     }
 }
