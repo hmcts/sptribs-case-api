@@ -35,7 +35,7 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
 
                     """)
             .complex(CaseData::getCicCase)
-            .optionalWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
+            .mandatoryWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
             .done();
     }
 

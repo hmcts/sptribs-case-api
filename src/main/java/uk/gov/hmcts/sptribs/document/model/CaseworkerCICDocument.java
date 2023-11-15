@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.Arrays;
 
@@ -23,18 +25,21 @@ public class CaseworkerCICDocument {
     @CCD(
         label = "Document Category",
         typeOverride = FixedList,
-        typeParameterOverride = "DocumentType"
+        typeParameterOverride = "DocumentType",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DocumentType documentCategory;
 
     @CCD(
         label = "Description",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String documentEmailContent;
 
     @CCD(
-        label = "File"
+        label = "File",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document documentLink;
 
