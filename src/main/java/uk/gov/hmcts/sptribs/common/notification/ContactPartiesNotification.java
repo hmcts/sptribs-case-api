@@ -21,7 +21,6 @@ import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMA
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_POST;
 
 
-
 @Component
 @Slf4j
 public class ContactPartiesNotification implements PartiesNotification {
@@ -75,19 +74,31 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsApplicant.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            // Send Email
-            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
-                cicCase.getApplicantEmailAddress(),
-                templateVarsApplicant,
-                uploadedDocuments,
-                CONTACT_PARTIES_EMAIL);
-            cicCase.setAppNotificationResponse(notificationResponse);
+
+            // Send Email with attachments
+            if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
+                Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+                NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
+                    cicCase.getApplicantEmailAddress(),
+                    templateVarsApplicant,
+                    uploadedDocuments,
+                    CONTACT_PARTIES_EMAIL);
+                cicCase.setAppNotificationResponse(notificationResponse);
+            } else {
+                // Send Email without attachments
+                NotificationResponse notificationResponse = sendEmailNotification(
+                    templateVarsApplicant,
+                    cicCase.getApplicantEmailAddress(),
+                    CONTACT_PARTIES_EMAIL
+                );
+                cicCase.setAppNotificationResponse(notificationResponse);
+            }
         } else {
+            //SEND POST
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVarsApplicant);
             NotificationResponse notificationResponse = sendLetterNotification(templateVarsApplicant,
                 CONTACT_PARTIES_POST);
-            cicCase.setAppNotificationResponse(notificationResponse);
+            cicCase.setAppLetterNotificationResponse(notificationResponse);
         }
     }
 
@@ -99,19 +110,30 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsRepresentative.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            // Send Email
-            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
-                cicCase.getRepresentativeEmailAddress(),
-                templateVarsRepresentative,
-                uploadedDocuments,
-                CONTACT_PARTIES_EMAIL);
-            cicCase.setRepNotificationResponse(notificationResponse);
+
+            // Send Email with attachments
+            if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
+                Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+                NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
+                    cicCase.getRepresentativeEmailAddress(),
+                    templateVarsRepresentative,
+                    uploadedDocuments,
+                    CONTACT_PARTIES_EMAIL);
+                cicCase.setRepNotificationResponse(notificationResponse);
+            } else {
+                // Send Email without attachments
+                NotificationResponse notificationResponse = sendEmailNotification(
+                    templateVarsRepresentative,
+                    cicCase.getRepresentativeEmailAddress(),
+                    CONTACT_PARTIES_EMAIL
+                );
+                cicCase.setRepNotificationResponse(notificationResponse);
+            }
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             NotificationResponse notificationResponse = sendLetterNotification(templateVarsRepresentative,
                 CONTACT_PARTIES_POST);
-            cicCase.setRepNotificationResponse(notificationResponse);
+            cicCase.setRepLetterNotificationResponse(notificationResponse);
         }
     }
 
