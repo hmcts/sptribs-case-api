@@ -104,11 +104,16 @@ ccd:
       keyVaults:
         am:
           secrets:
-            - am-role-assignment-service-s2s-secret
-            - app-insights-connection-string
-            - role-assignment-service-IDAM-CLIENT-SECRET
-            - role-assignment-service-IDAM-ADMIN-SECRET
-            - role-assignment-service-LD-SDK-KEY
+            - name: am-role-assignment-service-s2s-secret
+              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: role-assignment-service-IDAM-CLIENT-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+            - name: role-assignment-service-IDAM-ADMIN-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+            - name: role-assignment-service-LD-SDK-KEY
+              alias: LD_SDK_KEY
 
   ccd-definition-store-api:
     java:
@@ -634,6 +639,25 @@ am-org-role-mapping-service:
     devcpuRequests: 250m
     devmemoryLimits: 2048Mi
     devcpuLimits: 1500m
+    keyVaults:
+      am:
+        secrets:
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: am-org-role-mapping-service-s2s-secret
+            alias: AM_ORG_ROLE_MAPPING_SERVICE_SECRET
+          - name: role-assignment-service-LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: orm-IDAM-CLIENT-ID
+            alias: ORM_IDAM_CLIENT_ID
+          - name: orm-IDAM-CLIENT-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
+          - name: orm-IDAM-ADMIN-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
+          - name: caseworker-topic-primary-send-listen-shared-access-key
+            alias: AMQP_CRD_SHARED_ACCESS_KEY_VALUE
+          - name: judicial-topic-primary-send-listen-shared-access-key
+            alias: AMQP_JRD_SHARED_ACCESS_KEY_VALUE
     secrets:
       SB_ACCESS_KEY:
         secretRef: sptribs-sb-preview
@@ -645,17 +669,6 @@ am-org-role-mapping-service:
         secretRef: postgres
         key: PASSWORD
         disabled: false
-    keyVaults:
-      am:
-        secrets:
-          - app-insights-connection-string
-          - am-org-role-mapping-service-s2s-secret
-          - role-assignment-service-LD-SDK-KEY
-          - orm-IDAM-CLIENT-ID
-          - orm-IDAM-CLIENT-SECRET
-          - orm-IDAM-ADMIN-SECRET
-          - caseworker-topic-primary-send-listen-shared-access-key
-          - judicial-topic-primary-send-listen-shared-access-key
     environment:
       CASE_WORKER_REF_APP_URL: https://rd-caseworker-ref-api-${SERVICE_FQDN}
       ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
@@ -706,7 +719,6 @@ rd-caseworker-ref-api:
       POSTGRES_USERNAME: hmcts
       POSTGRES_PORT: 5432
       POSTGRES_CONNECTION_OPTIONS: "?currentSchema=dbrdcaseworker&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-dbrdcaseworker?currentSchema=dbrdcaseworker&stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CWRD_MQ_HOST: "sptribs-sb-preview.servicebus.windows.net"
       CASEWORKER_TOPIC_PRIMARY_SEND_LISTEN_SHARED_ACCESS_KEY: "$(CWRD_MQ_PASSWORD)"
       CWRD_MQ_USERNAME: RootManageSharedAccessKey

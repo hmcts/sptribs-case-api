@@ -68,6 +68,9 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
         log.info("Caseworker refer case to legal officer for Case Id: {}", details.getId());
 
         var caseData = details.getData();
+        if (caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
+            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
