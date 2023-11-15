@@ -53,9 +53,12 @@ public class ContactPartiesNotification implements PartiesNotification {
                     CONTACT_PARTIES_EMAIL);
                 cicCase.setSubjectNotifyList(notificationResponse);
             } else {
-                //Email with no attachments
-                NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject,
-                    cicCase.getEmail(), TemplateName.CONTACT_PARTIES_EMAIL);
+                // Send Email without attachments
+                NotificationResponse notificationResponse = sendEmailNotification(
+                    templateVarsSubject,
+                    cicCase.getEmail(),
+                    CONTACT_PARTIES_EMAIL
+                );
                 cicCase.setSubjectNotifyList(notificationResponse);
             }
         } else {
