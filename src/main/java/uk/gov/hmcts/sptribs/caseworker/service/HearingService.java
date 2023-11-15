@@ -118,19 +118,24 @@ public class HearingService {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
             String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
             if (hearingName.contains(listingListValue.getValue().getHearingTime())
-                && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())) {
+                && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
+                && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter))) {
                 listingListValue.setValue(caseData.getListing());
-                DynamicList hearingDateDynamicList = updateHearingDynamicList(listingListValue, caseData.getCicCase().getHearingList());
-                caseData.getCicCase().setHearingList(hearingDateDynamicList);
                 break;
             }
         }
     }
 
-    public DynamicList updateHearingDynamicList(ListValue<Listing> listing, DynamicList hearingDateDynamicList) {
-        String dynamicHearingListLabel = getHearingDate(listing.getId(), listing.getValue());
-        hearingDateDynamicList.getValue().setLabel(dynamicHearingListLabel);
-
-        return hearingDateDynamicList;
+    public void updateHearingSummaryList(CaseData caseData) {
+        for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
+            String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+            if (hearingName.contains(listingListValue.getValue().getHearingTime())
+                && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
+                && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter))) {
+                listingListValue.setValue(caseData.getListing());
+                break;
+            }
+        }
     }
+
 }
