@@ -24,7 +24,7 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
             .label("LabelReinstateCaseUploadDocument", "")
             .complex(CaseData::getCicCase)
             .label("reinstateUploadMessage",
-                "<b>Please upload any documents that explain why this case is being reinstated</b>")
+                "Please upload any documents that explain why this case is being reinstated")
             .label("reinstateUploadAdvice", """
                 Files should be
                   *  uploaded separately, not one large file

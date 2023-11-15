@@ -25,12 +25,15 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
         pageBuilder.page("documentsUploadObject", this::midEvent)
             .pageLabel("Upload tribunal forms")
             .label("LabelCaseUploadDocuments",
-                "\nPlease upload a copy of the completed tribunal form, as well as any"
-                    + " supporting documents or other information that has been supplied.\n"
-                    + "\n<h3>Files should be:</h3>\n"
-                    + "\n- uploaded separately, not one large file\n"
-                    + "\n- a maximum of 100MB in size (larger files must be split)\n"
-                    + "\n- select the appropriate category from case file view\n\n")
+                """
+                    Please upload a copy of the completed tribunal form, \
+                    as well as any supporting documents or other information that have been supplied
+                    Files should be:
+                    *  uploaded separately, not one large file
+                    *  a maximum of 100MB in size (larger files must be split)
+                    *  select the appropriate category from case file view
+
+                    """)
             .complex(CaseData::getCicCase)
             .optionalWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
             .done();
