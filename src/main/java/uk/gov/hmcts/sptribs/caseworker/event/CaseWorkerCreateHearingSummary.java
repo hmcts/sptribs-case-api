@@ -118,6 +118,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.setCurrentEvent("");
 
         updateCategoryToCaseworkerDocument(caseData.getListing().getSummary().getRecFile());
+        hearingService.addListingIfExists(caseData);
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

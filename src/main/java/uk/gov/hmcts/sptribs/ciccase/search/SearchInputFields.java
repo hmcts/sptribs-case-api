@@ -33,6 +33,7 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Case Region").id(CASE_REGION).build(),
         SearchField.<UserRole>builder().label("Case category").id(CASE_CATEGORY).build(),
         SearchField.<UserRole>builder().label("Case sub-category").id(CASE_SUBCATEGORY).build(),
+        SearchField.<UserRole>builder().label("Case Region").id(CASE_REGION).build(),
         SearchField.<UserRole>builder().label("Hearing Location").id(HEARING_LOCATION).build(),
         SearchField.<UserRole>builder().label("Subject Name").id(SUBJECT_NAME).build(),
         SearchField.<UserRole>builder().label("Subject PostCode").id(SUBJECT_ADDRESS).listElementCode("PostCode").build(),
