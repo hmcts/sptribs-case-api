@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -186,7 +185,7 @@ public class NotificationHelper {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (!ObjectUtils.isEmpty(documentList.getValue()) && documentList.getValue().size() > 0) {
+        if (documentList != null && !documentList.getValue().isEmpty()) {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
