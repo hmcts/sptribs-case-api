@@ -202,6 +202,7 @@ public class TestDataHelper {
         listing.setVideoCallLink("");
         listing.setDate(LocalDate.now());
         listing.setHearingTime("10:00");
+        listing.setDate(LocalDate.of(2023, 04, 21));
         listing.setHearingStatus(HearingState.Listed);
         return listing;
     }
