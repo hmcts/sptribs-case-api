@@ -42,23 +42,12 @@ public class ContactPartiesNotification implements PartiesNotification {
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
-            // Send Email with attachments
-            //if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
             NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
                 cicCase.getEmail(),
                 templateVarsSubject,
                 uploadedDocuments,
                 CONTACT_PARTIES_EMAIL);
             cicCase.setSubjectNotifyList(notificationResponse);
-            /*} else {
-                // Send Email without attachments
-                NotificationResponse notificationResponse = sendEmailNotification(
-                    templateVarsSubject,
-                    cicCase.getEmail(),
-                    CONTACT_PARTIES_EMAIL
-                );
-                cicCase.setSubjectNotifyList(notificationResponse);
-            }*/
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
