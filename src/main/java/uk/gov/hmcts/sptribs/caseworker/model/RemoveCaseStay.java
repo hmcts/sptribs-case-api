@@ -30,12 +30,14 @@ public class RemoveCaseStay {
 
     @CCD(
         label = "Provide additional details",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String additionalDetail;
 
     @CCD(
-        label = "Enter Other reason"
+        label = "Enter Other reason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stayRemoveOtherDescription;
 }

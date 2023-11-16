@@ -33,19 +33,22 @@ public class CaseStay {
 
     @CCD(
         label = "Provide additional details",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String additionalDetail;
 
     @CCD(
-        label = "Expiration Date"
+        label = "Expiration Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate expirationDate;
 
 
     @CCD(
-        label = " Enter a flag type "
+        label = " Enter a flag type ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String flagType;
 

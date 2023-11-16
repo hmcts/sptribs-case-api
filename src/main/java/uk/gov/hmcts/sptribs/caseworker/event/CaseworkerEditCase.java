@@ -80,7 +80,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .event(CASEWORKER_EDIT_CASE)
             .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
-            .description("")
+            .description("Case: Edit case")
             .showSummary()
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
