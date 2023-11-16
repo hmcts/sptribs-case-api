@@ -41,18 +41,17 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsSubject.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
             // Send Email with attachments
-            if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
-                Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-
+            //if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
                 NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
                     cicCase.getEmail(),
                     templateVarsSubject,
                     uploadedDocuments,
                     CONTACT_PARTIES_EMAIL);
                 cicCase.setSubjectNotifyList(notificationResponse);
-            } else {
+            /*} else {
                 // Send Email without attachments
                 NotificationResponse notificationResponse = sendEmailNotification(
                     templateVarsSubject,
@@ -60,7 +59,7 @@ public class ContactPartiesNotification implements PartiesNotification {
                     CONTACT_PARTIES_EMAIL
                 );
                 cicCase.setSubjectNotifyList(notificationResponse);
-            }
+            }*/
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
@@ -77,17 +76,17 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsApplicant.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
             // Send Email with attachments
-            if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
-                Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+            //if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
                 NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
                     cicCase.getApplicantEmailAddress(),
                     templateVarsApplicant,
                     uploadedDocuments,
                     CONTACT_PARTIES_EMAIL);
                 cicCase.setAppNotificationResponse(notificationResponse);
-            } else {
+            /*} else {
                 // Send Email without attachments
                 NotificationResponse notificationResponse = sendEmailNotification(
                     templateVarsApplicant,
@@ -95,7 +94,7 @@ public class ContactPartiesNotification implements PartiesNotification {
                     CONTACT_PARTIES_EMAIL
                 );
                 cicCase.setAppNotificationResponse(notificationResponse);
-            }
+            }*/
         } else {
             //SEND POST
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVarsApplicant);
@@ -113,17 +112,17 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsRepresentative.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
             // Send Email with attachments
-            if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
-                Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+            //if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
                 NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
                     cicCase.getRepresentativeEmailAddress(),
                     templateVarsRepresentative,
                     uploadedDocuments,
                     CONTACT_PARTIES_EMAIL);
                 cicCase.setRepNotificationResponse(notificationResponse);
-            } else {
+            /*} else {
                 // Send Email without attachments
                 NotificationResponse notificationResponse = sendEmailNotification(
                     templateVarsRepresentative,
@@ -131,7 +130,7 @@ public class ContactPartiesNotification implements PartiesNotification {
                     CONTACT_PARTIES_EMAIL
                 );
                 cicCase.setRepNotificationResponse(notificationResponse);
-            }
+            }*/
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             NotificationResponse notificationResponse = sendLetterNotification(templateVarsRepresentative,
@@ -147,10 +146,9 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsRespondent.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsRespondent.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
+        Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
         // Send Email
-        if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
-
-            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+        //if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
             NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(
                 cicCase.getRespondentEmail(),
                 templateVarsRespondent,
@@ -158,14 +156,14 @@ public class ContactPartiesNotification implements PartiesNotification {
                 CONTACT_PARTIES_EMAIL
             );
             cicCase.setResNotificationResponse(notificationResponse);
-        } else {
+        /*} else {
             NotificationResponse notificationResponse = sendEmailNotification(
                 templateVarsRespondent,
                 cicCase.getRespondentEmail(),
                 CONTACT_PARTIES_EMAIL
             );
             cicCase.setResNotificationResponse(notificationResponse);
-        }
+        }*/
     }
 
 
@@ -176,20 +174,21 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsTribunal.put(CommonConstants.CIC_CASE_TRIBUNAL_NAME, caseData.getCicCase().getTribunalName());
         templateVarsTribunal.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
-        // Send Email
-        if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
+        Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
-            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+        // Send Email
+        //if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
+
             NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getTribunalEmail(),
                 templateVarsTribunal,
                 uploadedDocuments,
                 TemplateName.CONTACT_PARTIES_EMAIL);
             cicCase.setTribunalNotificationResponse(notificationResponse);
-        } else {
+        /*} else {
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsTribunal,
                 cicCase.getTribunalEmail(), TemplateName.CONTACT_PARTIES_EMAIL);
             cicCase.setTribunalNotificationResponse(notificationResponse);
-        }
+        }*/
     }
 
 
