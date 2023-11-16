@@ -141,21 +141,6 @@ class ContactPartiesNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
-    //    @Test
-    //    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
-    //        //Given
-    //        final CaseData data = getMockCaseData();
-    //        data.getCicCase().setRepresentativeFullName("respFullName");
-    //
-    //        //When
-    //        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-    //            .thenReturn(NotificationRequest.builder().build());
-    //        contactPartiesNotification.sendToRespondent(data, "CN1");
-    //
-    //        //Then
-    //        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    //    }
-
     @Test
     void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
         //Given
