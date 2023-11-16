@@ -117,9 +117,7 @@ public class HearingService {
     public void updateHearingList(CaseData caseData) {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
             String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
-            if (hearingName.contains(listingListValue.getValue().getHearingTime())
-                && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
-                && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter))) {
+            if (isMatchingHearing(listingListValue, hearingName)) {
                 listingListValue.setValue(caseData.getListing());
                 break;
             }
@@ -129,13 +127,17 @@ public class HearingService {
     public void updateHearingSummaryList(CaseData caseData) {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
             String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
-            if (hearingName.contains(listingListValue.getValue().getHearingTime())
-                && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
-                && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter))) {
+            if (isMatchingHearing(listingListValue, hearingName)) {
                 listingListValue.setValue(caseData.getListing());
                 break;
             }
         }
+    }
+
+    private boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
+        return hearingName.contains(listingListValue.getValue().getHearingTime())
+            && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
+            && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter));
     }
 
 }
