@@ -44,7 +44,7 @@ public class Bundle {
     private String description;
 
     @CCD(
-        label = "Stitched Document"
+        label = "Stitched Document",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document stitchedDocument;
@@ -78,7 +78,7 @@ public class Bundle {
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
 
     @CCD(
-        label = "Error from stitching service"
+        label = "Error from stitching service",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchingFailureMessage;
