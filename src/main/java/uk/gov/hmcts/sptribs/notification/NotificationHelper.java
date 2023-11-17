@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -186,7 +185,7 @@ public class NotificationHelper {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (!ObjectUtils.isEmpty(documentList.getValue()) && documentList.getValue().size() > 0) {
+        if (documentList != null && !documentList.getValue().isEmpty()) {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
@@ -225,11 +224,12 @@ public class NotificationHelper {
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
         String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
         String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
+        int lastIndex = (hearingDateTimeArr != null ? hearingDateTimeArr.length : 0) > 0 ? hearingDateTimeArr.length - 1 : 0;
         String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(0, hearingDateTimeArr[1].lastIndexOf(SPACE))
+            ? hearingDateTimeArr[lastIndex].substring(0, hearingDateTimeArr[lastIndex].lastIndexOf(SPACE))
             : null;
         String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(hearingDateTimeArr[1].lastIndexOf(SPACE) + 1)
+            ? hearingDateTimeArr[lastIndex].substring(hearingDateTimeArr[lastIndex].lastIndexOf(SPACE) + 1)
             : null;
 
         templateVars.put(HEARING_DATE, hearingDate);

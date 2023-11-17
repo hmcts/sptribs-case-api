@@ -53,8 +53,8 @@ class DefaultAccessTest {
                 entry(ST_CIC_SENIOR_JUDGE, U),
                 entry(SYSTEMUPDATE, C),
                 entry(SYSTEMUPDATE, R),
-                entry(SYSTEMUPDATE, U)
-
+                entry(SYSTEMUPDATE, U),
+                entry(SYSTEMUPDATE, D)
             );
     }
 }

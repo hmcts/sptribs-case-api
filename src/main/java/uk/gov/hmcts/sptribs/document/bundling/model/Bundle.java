@@ -33,43 +33,98 @@ public class Bundle {
     private String title;
     @CCD(
         label = "Description",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String description;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private Document stitchedDocument;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         typeParameterOverride = "BundleDocument")
     private List<ListValue<BundleDocument>> documents;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         typeParameterOverride = "BundleFolder")
     private List<ListValue<BundleFolder>> folders;
+
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "BundlePaginationStyle"
     )
     private BundlePaginationStyle paginationStyle = BundlePaginationStyle.off;
+
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "PageNumberFormat"
     )
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String stitchingFailureMessage;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private DocumentImage documentImage;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String stitchStatus;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo eligibleForStitching;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo eligibleForCloning;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo hasCoversheets;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo hasTableOfContents;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo hasFolderCoversheets;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo enableEmailNotification;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String fileName;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String fileNameIdentifier;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String coverpageTemplate;
 }
