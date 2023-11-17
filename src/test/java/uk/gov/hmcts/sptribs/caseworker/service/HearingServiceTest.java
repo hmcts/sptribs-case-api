@@ -140,7 +140,128 @@ class HearingServiceTest {
 
         //Then
         assertThat(hearingList).isNotNull();
+    }
+
+    @Test
+    void shouldAddListingToCaseData() {
+        //Given
+        CaseData caseData = CaseData.builder().build();
+        Listing listing = getRecordListing();
+        assertThat(caseData.getHearingList()).isEmpty();
+
+        //When
+        hearingService.addListing(caseData, listing);
+
+        //Then
+        assertThat(caseData.getHearingList()).isNotEmpty();
+    }
+
+    @Test
+    void shouldUpdateHearingList() {
+        //Given
+        ListValue<Listing> listingListValue = new ListValue<>();
+        // A listed Listing
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        // A completed listing
+        Listing completedListing = getRecordListing();
+        completedListing.setHearingStatus(HearingState.Complete);
+
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
+        when(caseData.getCicCase()).thenReturn(cicCase);
+        when(caseData.getListing()).thenReturn(completedListing);
+        when(caseData.getHearingList()).thenReturn(listValueList);
+
+        //When
+        hearingService.updateHearingList(caseData);
+
+        //Then
+        // Have replaced listed Listing with completed Listing
+        Assertions.assertEquals(listValueList.get(0).getValue(), completedListing);
+    }
+
+    @Test
+    void shouldNotUpdateHearingList() {
+        //Given
+        ListValue<Listing> listingListValue = new ListValue<>();
+        // A listed Listing
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        // A completed listing
+        Listing completedListing = getRecordListing();
+        completedListing.setHearingStatus(HearingState.Complete);
+
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Interlocutory - 21 Apr 2023 10:00");
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
+        when(caseData.getCicCase()).thenReturn(cicCase);
+        when(caseData.getHearingList()).thenReturn(listValueList);
+
+        //When
+        hearingService.updateHearingList(caseData);
+
+        //Then
+        // Have replaced listed Listing with completed Listing
+        Assertions.assertNotEquals(listValueList.get(0).getValue(), completedListing);
 
     }
 
+    @Test
+    void shouldUpdateHearingSummaryList() {
+        //Given
+        ListValue<Listing> listingListValue = new ListValue<>();
+        // A listed Listing
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        // A completed listing
+        Listing completedListing = getRecordListing();
+        completedListing.setHearingStatus(HearingState.Complete);
+
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingSummaryList()).thenReturn(cicCaseHearingList);
+        when(caseData.getCicCase()).thenReturn(cicCase);
+        when(caseData.getListing()).thenReturn(completedListing);
+        when(caseData.getHearingList()).thenReturn(listValueList);
+
+        //When
+        hearingService.updateHearingSummaryList(caseData);
+
+        //Then
+        // Have replaced listed Listing with completed Listing
+        Assertions.assertEquals(listValueList.get(0).getValue(), completedListing);
+
+    }
+
+    @Test
+    void shouldNotUpdateHearingSummaryList() {
+        //Given
+        ListValue<Listing> listingListValue = new ListValue<>();
+        // A listed Listing
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        // A completed listing
+        Listing completedListing = getRecordListing();
+        completedListing.setHearingStatus(HearingState.Complete);
+
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 11:00");
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingSummaryList()).thenReturn(cicCaseHearingList);
+        when(caseData.getCicCase()).thenReturn(cicCase);
+        when(caseData.getHearingList()).thenReturn(listValueList);
+
+        //When
+        hearingService.updateHearingSummaryList(caseData);
+
+        //Then
+        // Have replaced listed Listing with completed Listing
+        Assertions.assertNotEquals(listValueList.get(0).getValue(), completedListing);
+
+    }
 }
