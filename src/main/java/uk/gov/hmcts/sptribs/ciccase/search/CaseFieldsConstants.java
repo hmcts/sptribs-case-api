@@ -15,7 +15,6 @@ public final class CaseFieldsConstants {
     public static final String CASE_STATE = "[STATE]";
     public static final String CASE_REGION = "cicCaseRegionCIC";
     public static final String DUE_DATE = "cicCaseFirstDueDate";
-
     public static final String SCHEME = "cicCaseSchemeCic";
     public static final String LAST_MODIFIED_DATE = "[LAST_MODIFIED_DATE]";
     public static final String LAST_STATE_MODIFIED_DATE = "[LAST_STATE_MODIFIED_DATE]";
