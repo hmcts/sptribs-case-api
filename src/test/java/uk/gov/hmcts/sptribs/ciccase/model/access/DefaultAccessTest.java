@@ -17,6 +17,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
 class DefaultAccessTest {
@@ -27,7 +28,7 @@ class DefaultAccessTest {
         final SetMultimap<HasRole, Permission> grants = new DefaultAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(26)
+            .hasSize(27)
             .contains(
                 entry(CREATOR, C),
                 entry(CREATOR, R),
@@ -54,7 +55,8 @@ class DefaultAccessTest {
                 entry(SYSTEMUPDATE, C),
                 entry(SYSTEMUPDATE, R),
                 entry(SYSTEMUPDATE, U),
-                entry(SYSTEMUPDATE, D)
+                entry(SYSTEMUPDATE, D),
+                entry(ST_CIC_WA_CONFIG_USER, R)
             );
     }
 }
