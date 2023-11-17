@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -77,6 +78,7 @@ public class CaseData {
         label = "Component Launcher (for displaying Linked Cases data)",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonProperty("LinkedCasesComponentLauncher")
     private ComponentLauncher linkedCasesComponentLauncher;
 
     @CCD(
@@ -280,7 +282,7 @@ public class CaseData {
 
     @CCD(
         label = "Case number",
-        access = {CaseworkerAccess.class}
+        access = {DefaultAccess.class, CaseworkerAccess.class}
     )
     private String hyphenatedCaseRef;
 
@@ -438,12 +440,15 @@ public class CaseData {
     )
     private YesOrNo hasDssNotificationSent;
 
-
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
+
+    @CCD(access = {DefaultAccess.class})
+    @JsonUnwrapped
+    private RetiredFields retiredFields;
 
     public String getFirstHearingDate() {
 
@@ -456,10 +461,6 @@ public class CaseData {
 
     }
 
-    @JsonIgnore
-    public Listing getListing() {
-        return listing;
-    }
 
     @JsonIgnore
     public Listing getLatestCompletedHearing() {
@@ -500,7 +501,6 @@ public class CaseData {
         }
         return "";
     }
-
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

@@ -69,6 +69,7 @@ core_case_data:
 case-api:
   url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:https://manage-case.aat.platform.hmcts.net}
 
+
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
 
@@ -100,6 +101,7 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
+  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
 
 feature:
   contact-parties:
@@ -112,6 +114,8 @@ feature:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
     enabled: ${BUNDLING_FEATURE:false}
+  dss-frontend:
+    enabled: ${DSS_FRONTEND_FEATURE:false}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
 
@@ -123,5 +127,6 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
+        dssUpdateEvent: caseworker-update-dss-application
       caseTypeOfApplication:
         - CIC

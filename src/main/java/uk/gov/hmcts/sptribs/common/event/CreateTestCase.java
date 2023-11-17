@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.common.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -119,7 +121,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
-
+        EventUtil.setDssMetaDataForCaseApiCase(data);
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
@@ -198,15 +200,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cicCase.getSubjectCIC())) {
             applicationReceivedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cicCase.getApplicantCIC())) {
             applicationReceivedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cicCase.getRepresentativeCIC())) {
             applicationReceivedNotification.sendToRepresentative(data, caseNumber);
         }
     }
@@ -218,6 +220,5 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             data.getCicCase().setIsRepresentativePresent(YesOrNo.NO);
         }
     }
-
 
 }

@@ -38,11 +38,14 @@ public class Bundle {
     private String title;
     @CCD(
         label = "Description",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String description;
+
     @CCD(
         label = "Stitched Document"
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document stitchedDocument;
 
@@ -73,51 +76,77 @@ public class Bundle {
         typeParameterOverride = "PageNumberFormat"
     )
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
+
     @CCD(
         label = "Error from stitching service"
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchingFailureMessage;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private DocumentImage documentImage;
+
+
     @CCD(
-        label = "Stitch status"
+        label = "Stitch status",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchStatus;
+
     @CCD(
-        label = "Is this the bundle you want to amend?"
+        label = "Is this the bundle you want to amend?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo eligibleForStitching;
+
     @CCD(
-        label = "Is this the bundle you want to clone?"
+        label = "Is this the bundle you want to clone?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo eligibleForCloning;
+
     @CCD(
-        label = "Should this bundle have coversheets separating each document?"
+        label = "Should this bundle have coversheets separating each document?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo hasCoversheets;
+
     @CCD(
-        label = "Should this bundle have a title page with a table of contents?"
+        label = "Does this bundle have a table of contents?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo hasTableOfContents;
+
     @CCD(
-        label = "Should this bundle’s folders have a coversheet?"
+        label = "Should this bundle have coversheets separating each folder?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo hasFolderCoversheets;
+
     @CCD(
-        label = "Should this bundle be notified by email?"
+        label = "Should this bundle be notified by email?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo enableEmailNotification;
+
     @CCD(
-        label = "Name of the PDF file"
+        label = "Name of the PDF file",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fileName;
+
     @CCD(
-        label = "Identifier of the PDF file"
+        label = "Identifier of the PDF file",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fileNameIdentifier;
+
     @CCD(
-        label = "Cover page template"
+        label = "Cover page template",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String coverpageTemplate;
 }

@@ -94,22 +94,13 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         var dssData = details.getData().getDssCaseData();
         CaseData caseData = getCaseData(data, dssData);
         String caseNumber = data.getHyphenatedCaseRef();
-
-        setDssMetaData(data);
+        setDssMetaDataForDssCase(data);
 
         sendApplicationReceivedNotification(caseNumber, data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
             .build();
-    }
-
-    private void setDssMetaData(CaseData data) {
-        data.setDssQuestion1("Full Name");
-        data.setDssQuestion2("Date of Birth");
-        data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
-        data.setDssAnswer2("case_data.dssCaseDataSubjectDateOfBirth");
-        data.setDssHeaderDetails("Subject of this case");
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
@@ -219,5 +210,13 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
+    private void setDssMetaDataForDssCase(CaseData data) {
+        data.setDssQuestion1("Full Name");
+        data.setDssQuestion3("Date of Birth");
+        data.setDssHeaderDetails("Subject of this case");
+
+        data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
+        data.setDssAnswer3("case_data.dssCaseDataSubjectDateOfBirth");
+    }
 
 }

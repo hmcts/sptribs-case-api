@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.List;
 
@@ -18,20 +20,28 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BundleFolder {
+
     @CCD(
-        label = "Folder Name"
+        label = "Folder Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String name;
+
     @CCD(
-        label = "Folder Documents"
+        label = "Folder Documents",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<BundleDocument>> documents;
+
     @CCD(
-        label = "Sub Folders"
+        label = "Sub Folders",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<BundleSubFolder>> folders;
+
     @CCD(
-        label = "Sort Index"
+        label = "Sort Index",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private int sortIndex;
 }

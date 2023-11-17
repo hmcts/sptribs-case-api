@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
@@ -18,19 +20,26 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 public class BundleDocument {
 
     @CCD(
-        label = "Document Name"
+        label = "Document Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String name;
+
     @CCD(
-        label = "Short Description"
+        label = "Short Description",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String description;
+
     @CCD(
-        label = "Sort Index"
+        label = "Sort Index",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private int sortIndex;
+
     @CCD(
-        label = "Source Document"
+        label = "Source Document",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document sourceDocument;
 }

@@ -108,13 +108,10 @@ class CaseWorkerCreateDraftOrderTest {
     void shouldSuccessfullyShowPreviewOrderWithTemplate() {
 
         //Given
-
         DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         final CicCase cicCase = CicCase.builder().orderTemplateIssued(Document.builder().filename("a--b--c").build()).build();
-
         final CaseData caseData = CaseData.builder()
             .draftOrderContentCIC(orderContentCIC)
-            .cicCase(cicCase)
             .build();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -145,8 +142,6 @@ class CaseWorkerCreateDraftOrderTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        caseData.setDraftOrderContentCIC(orderContentCIC);
-
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -171,5 +166,5 @@ class CaseWorkerCreateDraftOrderTest {
         assertThat(response2).isNotNull();
 
     }
-
 }
+
