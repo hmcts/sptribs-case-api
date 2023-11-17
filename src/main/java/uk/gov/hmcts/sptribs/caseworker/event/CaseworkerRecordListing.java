@@ -117,7 +117,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
