@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.judicialrefdata;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
 @Service
 @Slf4j
@@ -33,8 +35,8 @@ public class JudicialService {
     @Autowired
     private JudicialClient judicialClient;
 
-    private static final String SERVICE_NAME = "ST_CIC";
-    private static final String ACCEPT_VALUE = "application/vnd.jrd.api+json;Version=2.0";
+    @Value("${toggle.enable_jrd_api_v2}")
+    private boolean enableJrdApiV2;
 
     public DynamicList getAllUsers() {
 
@@ -42,33 +44,38 @@ public class JudicialService {
         return populateUsersDynamicList(users);
     }
 
-    private UserProfileRefreshResponse[] getUsers() {
+    private List<UserProfileRefreshResponse> getUsers() {
 
         try {
-            List<UserProfileRefreshResponse> list = judicialClient.getUserProfiles(
-                authTokenGenerator.generate(),
-                httpServletRequest.getHeader(AUTHORIZATION),
-                ACCEPT_VALUE,
-                JudicialUsersRequest.builder()
-                    .ccdServiceName(SERVICE_NAME)
-                    .build());
+            List<UserProfileRefreshResponse> list =
+                enableJrdApiV2
+                    ? judicialClient.getUserProfilesV2(
+                        authTokenGenerator.generate(),
+                        httpServletRequest.getHeader(AUTHORIZATION),
+                        ACCEPT_VALUE,
+                        JudicialUsersRequest.builder()
+                            .ccdServiceName(ST_CIC_JURISDICTION)
+                            .build())
+                    : judicialClient.getUserProfiles(
+                        authTokenGenerator.generate(),
+                        httpServletRequest.getHeader(AUTHORIZATION),
+                        JudicialUsersRequest.builder()
+                            .ccdServiceName(ST_CIC_JURISDICTION)
+                            .build());
             if (CollectionUtils.isEmpty(list)) {
-                return new UserProfileRefreshResponse[0];
+                return new ArrayList<>();
             }
-
-            return list.toArray(new UserProfileRefreshResponse[0]);
+            return list;
         } catch (FeignException exception) {
             log.error("Unable to get user profile data from reference data with exception {}",
                 exception.getMessage());
         }
-        return new UserProfileRefreshResponse[0];
-
+        return new ArrayList<>();
     }
 
-
-    private DynamicList populateUsersDynamicList(UserProfileRefreshResponse... userProfiles) {
-        List<String> usersList = Objects.nonNull(userProfiles)
-            ? Arrays.asList(userProfiles).stream().map(v -> v.getFullName()).collect(Collectors.toList())
+    private DynamicList populateUsersDynamicList(List<UserProfileRefreshResponse> judges) {
+        List<String> usersList = Objects.nonNull(judges)
+            ? judges.stream().map(UserProfileRefreshResponse::getFullName).collect(Collectors.toList())
             : new ArrayList<>();
 
         List<DynamicListElement> usersDynamicList = usersList
