@@ -10,9 +10,11 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
@@ -34,7 +36,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
-    //private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
+    private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -56,7 +58,7 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER));
 
-        //linkCaseSelectCase.addTo(pageBuilder);
+        linkCaseSelectCase.addTo(pageBuilder);
     }
 
     @SneakyThrows

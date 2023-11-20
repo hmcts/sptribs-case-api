@@ -157,10 +157,8 @@ public class CaseData {
     )
     private List<MultiBundleConfig> multiBundleConfiguration;
 
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private List<ListValue<CaseworkerCICDocument>> caseDocuments;
+    @JsonIgnore
+    private List<CaseworkerCICDocument> caseDocuments;
 
     @CCD(
         label = "Hearing Date",

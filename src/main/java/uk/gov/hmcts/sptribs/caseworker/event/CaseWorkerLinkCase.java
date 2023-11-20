@@ -12,11 +12,13 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.LinkCaseSelectCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
-    //private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
+    private static final CcdPageConfiguration linkCaseSelectCase = new LinkCaseSelectCase();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -65,7 +67,7 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER));
 
         addWarning(pageBuilder);
-        //linkCaseSelectCase.addTo(pageBuilder);
+        linkCaseSelectCase.addTo(pageBuilder);
     }
 
     @SneakyThrows
