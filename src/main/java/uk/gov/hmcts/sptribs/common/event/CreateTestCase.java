@@ -161,12 +161,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .roleOnCase(null)
             .build());
 
-        data.setSubjectFlags(Flags.builder()
-            .details(new ArrayList<>())
-            .partyName(data.getCicCase().getFullName())
-            .roleOnCase("subject")
-            .build()
-        );
+        if (null != data.getCicCase().getFullName()) {
+            data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getFullName())
+                .roleOnCase("subject")
+                .build()
+            );
+        }
 
         if (null != data.getCicCase().getApplicantFullName()) {
             data.setApplicantFlags(Flags.builder()
@@ -202,7 +204,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             applicationReceivedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cicCase.getApplicantCIC())) {
             applicationReceivedNotification.sendToApplicant(data, caseNumber);
         }
 

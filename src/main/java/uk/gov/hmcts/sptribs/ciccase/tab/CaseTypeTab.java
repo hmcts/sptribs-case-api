@@ -38,7 +38,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
-        buildFlagsTab(configBuilder);
         buildStateTab(configBuilder);
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
@@ -147,10 +146,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .field(CaseData::getMessages);
-    }
-
-    private void buildFlagsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
     }
 
     private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
