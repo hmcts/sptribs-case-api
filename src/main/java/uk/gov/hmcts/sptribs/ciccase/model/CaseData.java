@@ -219,7 +219,7 @@ public class CaseData {
 
     @CCD(
         label = "Case number",
-        access = {CaseworkerAccess.class}
+        access = {DefaultAccess.class, CaseworkerAccess.class}
     )
     private String hyphenatedCaseRef;
 
@@ -383,6 +383,10 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
 
+    @CCD(access = {DefaultAccess.class})
+    @JsonUnwrapped
+    private RetiredFields retiredFields;
+
     public String getFirstHearingDate() {
 
         Listing nextListing = getNextListedHearing();
@@ -394,10 +398,6 @@ public class CaseData {
 
     }
 
-    @JsonIgnore
-    public Listing getListing() {
-        return listing;
-    }
 
     @JsonIgnore
     public Listing getLatestCompletedHearing() {

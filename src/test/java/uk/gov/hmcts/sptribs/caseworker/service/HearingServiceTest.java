@@ -10,10 +10,13 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
+import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.util.ArrayList;
@@ -57,6 +60,83 @@ class HearingServiceTest {
 
         //Then
         assertThat(hearingList).isNotNull();
+    }
+
+    @Test
+    void shouldAddOldListingIfNotExists() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .listing(getRecordListing())
+            .retiredFields(new RetiredFields())
+            .build();
+        details.setData(caseData);
+
+        //When
+        hearingService.addListingIfExists(caseData);
+
+        //Then
+        assertThat(caseData.getHearingList()).isNotEmpty();
+    }
+
+    @Test
+    void shouldNotAddOldListingIfNotExists() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .listing(Listing.builder().build())
+            .build();
+        details.setData(caseData);
+
+        //When
+        hearingService.addListingIfExists(caseData);
+
+        //Then
+        assertThat(caseData.getHearingList()).isEmpty();
+    }
+
+    @Test
+    void shouldAddOldListingIfNotExistsForOldCancelledListing() {
+        RetiredFields retiredFields = new RetiredFields();
+        retiredFields.setCicCaseCancelHearingAdditionalDetail("cancelAddlDetail");
+        retiredFields.setCicCaseHearingCancellationReason(HearingCancellationReason.CASE_REJECTED);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .listing(getRecordListing())
+            .retiredFields(retiredFields)
+            .build();
+        details.setData(caseData);
+
+        //When
+        hearingService.addListingIfExists(caseData);
+
+        //Then
+        assertThat(caseData.getHearingList()).isNotEmpty();
+        assertThat(caseData.getHearingList().get(0).getValue()).isNotNull();
+        assertThat(caseData.getHearingList().get(0).getValue().getHearingCancellationReason().getReason()).isEqualTo("Case Rejected");
+        assertThat(caseData.getHearingList().get(0).getValue().getCancelHearingAdditionalDetail()).isEqualTo("cancelAddlDetail");
+    }
+
+    @Test
+    void shouldAddOldListingIfNotExistsForOldPostponedListing() {
+        RetiredFields retiredFields = new RetiredFields();
+        retiredFields.setCicCasePostponeReason(PostponeReason.BEREAVEMENT);
+        retiredFields.setCicCasePostponeAdditionalInformation("postponeInfo");
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder()
+            .listing(getRecordListing())
+            .retiredFields(retiredFields)
+            .build();
+        details.setData(caseData);
+
+        //When
+        hearingService.addListingIfExists(caseData);
+
+        //Then
+        assertThat(caseData.getHearingList()).isNotEmpty();
+        assertThat(caseData.getHearingList().get(0).getValue()).isNotNull();
+        assertThat(caseData.getHearingList().get(0).getValue().getPostponeReason().getReason()).isEqualTo("Bereavement");
+        assertThat(caseData.getHearingList().get(0).getValue().getPostponeAdditionalInformation()).isEqualTo("postponeInfo");
     }
 
 
@@ -104,7 +184,7 @@ class HearingServiceTest {
         Listing completedListing = getRecordListing();
         completedListing.setHearingStatus(HearingState.Complete);
 
-        when(cicCaseHearingLabel.getLabel()).thenReturn("Final 10:00");
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
         when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
         when(caseData.getCicCase()).thenReturn(cicCase);
@@ -120,4 +200,85 @@ class HearingServiceTest {
 
     }
 
+    @Test
+    void shouldNotUpdateHearingList() {
+        //Given
+        ListValue<Listing> listingListValue = new ListValue<>();
+        // A listed Listing
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        // A completed listing
+        Listing completedListing = getRecordListing();
+        completedListing.setHearingStatus(HearingState.Complete);
+
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Interlocutory - 21 Apr 2023 10:00");
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
+        when(caseData.getCicCase()).thenReturn(cicCase);
+        when(caseData.getHearingList()).thenReturn(listValueList);
+
+        //When
+        hearingService.updateHearingList(caseData);
+
+        //Then
+        // Have replaced listed Listing with completed Listing
+        Assertions.assertNotEquals(listValueList.get(0).getValue(), completedListing);
+
+    }
+
+    @Test
+    void shouldUpdateHearingSummaryList() {
+        //Given
+        ListValue<Listing> listingListValue = new ListValue<>();
+        // A listed Listing
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        // A completed listing
+        Listing completedListing = getRecordListing();
+        completedListing.setHearingStatus(HearingState.Complete);
+
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingSummaryList()).thenReturn(cicCaseHearingList);
+        when(caseData.getCicCase()).thenReturn(cicCase);
+        when(caseData.getListing()).thenReturn(completedListing);
+        when(caseData.getHearingList()).thenReturn(listValueList);
+
+        //When
+        hearingService.updateHearingSummaryList(caseData);
+
+        //Then
+        // Have replaced listed Listing with completed Listing
+        Assertions.assertEquals(listValueList.get(0).getValue(), completedListing);
+
+    }
+
+    @Test
+    void shouldNotUpdateHearingSummaryList() {
+        //Given
+        ListValue<Listing> listingListValue = new ListValue<>();
+        // A listed Listing
+        listingListValue.setValue(getRecordListing());
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        listValueList.add(listingListValue);
+        // A completed listing
+        Listing completedListing = getRecordListing();
+        completedListing.setHearingStatus(HearingState.Complete);
+
+        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 11:00");
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingSummaryList()).thenReturn(cicCaseHearingList);
+        when(caseData.getCicCase()).thenReturn(cicCase);
+        when(caseData.getHearingList()).thenReturn(listValueList);
+
+        //When
+        hearingService.updateHearingSummaryList(caseData);
+
+        //Then
+        // Have replaced listed Listing with completed Listing
+        Assertions.assertNotEquals(listValueList.get(0).getValue(), completedListing);
+
+    }
 }
