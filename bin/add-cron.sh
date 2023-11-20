@@ -125,7 +125,7 @@ async function main(taskName, cnpFluxPath, schedule, env) {
 const [exec, scriptPath, taskName, cnpFluxPath, schedule] = process.argv;
 
 if (taskName && cnpFluxPath && schedule) {
-  for (const env of ["aat", "ithc", "perftest", "demo"]) {
+  for (const env of ["aat", "ithc", "perftest", "demo", "preview"]) {
     main(taskName, cnpFluxPath, schedule, env).catch(e => console.error(e));
   }
 } else {
