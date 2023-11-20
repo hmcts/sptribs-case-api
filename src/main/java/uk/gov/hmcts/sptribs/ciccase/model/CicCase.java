@@ -57,6 +57,13 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
 
+    @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
+    @CCD(
+        label = "Retired component launcher for CaseLinks",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ComponentLauncher linkedCasesComponentLauncher;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         typeParameterOverride = "Flags")

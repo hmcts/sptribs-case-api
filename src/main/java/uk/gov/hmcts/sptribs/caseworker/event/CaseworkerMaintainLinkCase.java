@@ -35,7 +35,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
@@ -75,16 +75,17 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        String claimNumber = data.getHyphenatedCaseRef();
+        CaseData data = details.getData();
+
         try {
-            unLinkedCaseNotification(claimNumber, data);
+            unLinkedCaseNotification(data.getHyphenatedCaseRef(), data);
         } catch (Exception notificationException) {
             log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Case Link updated %n"))
                 .build();
         }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Link updated %n"))
             .build();
@@ -94,15 +95,15 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     private void unLinkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
+        if (null != cicCase.getSubjectCIC() && !cicCase.getSubjectCIC().isEmpty()) {
             caseUnlinkedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
+        if (null != cicCase.getApplicantCIC() && !cicCase.getApplicantCIC().isEmpty()) {
             caseUnlinkedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+        if (null != cicCase.getRepresentativeCIC() && !cicCase.getRepresentativeCIC().isEmpty()) {
             caseUnlinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }

@@ -63,10 +63,6 @@ bundling:
   api:
     baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
 
-refdata_common:
-  api:
-    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
-
 core_case_data:
   api:
     url: ${CASE_DATA_STORE_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}

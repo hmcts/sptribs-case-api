@@ -5,8 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.elasticsearch.common.TriConsumer;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
+import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -15,6 +18,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -58,17 +62,44 @@ public class RetiredFields {
     )
     private String cicCasePostponeAdditionalInformation;
 
+    @CCD(
+        label = "Retired field for link case number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseLink cicCaseLinkCaseNumber;
+
+    @CCD(
+        label = "Retired field for linkCaseReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private LinkCaseReason cicCaseLinkCaseReason;
+
+    @CCD(
+        label = "Retired field for Other Description",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String cicCaseLinkCaseOtherDescription;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for CaseLinks",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseLinks")
+    private List<ListValue<CaseLinks>> cicCaseCaseLinks;
+
+    /*@JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
+    @CCD(
+        label = "Retired component launcher for CaseLinks",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ComponentLauncher cicCaseLinkedCasesComponentLauncher;*/
+
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
     };
 
     @JsonIgnore
     private static final Map<String, TriConsumer<Map<String, Object>, String, Object>> migrations = Map.of(
-        "cicBundles", moveTo("caseBundles"),
-        "cicCasePostponeReason", moveTo("postponeReason"),
-        "cicCasePostponeAdditionalInformation", moveTo("postponeAdditionalInformation"),
-        "cicCaseHearingCancellationReason", moveTo("hearingCancellationReason"),
-        "cicCaseCancelHearingAdditionalDetail", moveTo("cancelHearingAdditionalDetail")
+        "cicBundles", moveTo("caseBundles")
     );
 
     /**

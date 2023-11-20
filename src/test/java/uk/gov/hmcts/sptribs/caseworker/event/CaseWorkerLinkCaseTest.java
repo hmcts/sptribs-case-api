@@ -34,7 +34,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_LINK_C
 @ExtendWith(MockitoExtension.class)
 class CaseWorkerLinkCaseTest {
     @InjectMocks
-    private CaseWorkerLinkCase caseWorkerLinkCase;
+    private CaseworkerLinkCase caseWorkerLinkCase;
 
     @Mock
     private CaseLinkedNotification caseLinkedNotification;

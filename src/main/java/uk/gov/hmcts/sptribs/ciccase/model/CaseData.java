@@ -34,6 +34,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -63,7 +64,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+    @CCD(access = {CaseLinksDefaultAccess.class},
         typeOverride = Collection,
         label = "Linked Cases",
         typeParameterOverride = "CaseLink")
@@ -72,7 +73,7 @@ public class CaseData {
 
     @CCD(
         label = "Component Launcher (for displaying Linked Cases data)",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CaseLinksDefaultAccess.class}
     )
     @JsonProperty("LinkedCasesComponentLauncher")
     private ComponentLauncher linkedCasesComponentLauncher;
