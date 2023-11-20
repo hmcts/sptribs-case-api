@@ -89,7 +89,6 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Link created %n"))
-
             .build();
     }
 

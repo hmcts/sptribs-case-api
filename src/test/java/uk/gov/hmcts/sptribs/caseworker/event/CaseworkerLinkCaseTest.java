@@ -32,7 +32,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_LINK_CASE;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerLinkCaseTest {
+class CaseworkerLinkCaseTest {
     @InjectMocks
     private CaseworkerLinkCase caseWorkerLinkCase;
 
@@ -69,7 +69,7 @@ class CaseWorkerLinkCaseTest {
     }
 
     @Test
-    void shouldSuccessfullyStayTheCase() {
+    void shouldSuccessfullyAddLinksToCase() {
         //Given
         final CaseData caseData = caseData();
         CicCase cicCase = new CicCase();
@@ -93,6 +93,7 @@ class CaseWorkerLinkCaseTest {
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader().contains("Case Link created")).isTrue();
 
     }
 
