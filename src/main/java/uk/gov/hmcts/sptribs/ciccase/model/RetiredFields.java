@@ -82,13 +82,6 @@ public class RetiredFields {
         typeParameterOverride = "Flags")
     private List<ListValue<Flags>> cicCaseRespondentFlags;
 
-    @JsonUnwrapped(prefix = "flagLauncher")
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Retired field for flagLauncher"
-    )
-    private ComponentLauncher cicCaseFlagLauncher;
-
     @CCD(
         label = "Retired field for Flag Type",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
