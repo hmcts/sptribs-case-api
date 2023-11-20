@@ -28,7 +28,6 @@ public class RetiredFields {
     @CCD(label = "Case data version", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private int dataVersion;
 
-
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private List<ListValue<Bundle>> cicBundles;
 
@@ -85,13 +84,6 @@ public class RetiredFields {
         typeOverride = Collection,
         typeParameterOverride = "CaseLinks")
     private List<ListValue<CaseLinks>> cicCaseCaseLinks;
-
-    /*@JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
-    @CCD(
-        label = "Retired component launcher for CaseLinks",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private ComponentLauncher cicCaseLinkedCasesComponentLauncher;*/
 
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
