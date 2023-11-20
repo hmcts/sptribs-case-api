@@ -110,13 +110,13 @@ async function main(taskName, cnpFluxPath, schedule, env) {
   const chartConfig = getChartConfig(taskName, cronName, schedule);
 
   await Promise.all([
-    writeFile(cronDirectory + `${env}-00.yaml`, clusterOverride),
+    writeFile(cronDirectory + `${env}-01.yaml`, clusterOverride),
     writeFile(cronDirectory + cronName + ".yaml", chartConfig),
   ]);
 
   const updatedOverlay = clusterOverlay
                           .replace("bases:", "bases:\n" + `- ../../../namespaces/sptribs/${cronName}/${cronName}.yaml`)
-                          .replace("patchesStrategicMerge:", "patchesStrategicMerge:\n" + `- ../../../namespaces/sptribs/${cronName}/${env}-00.yaml`);
+                          .replace("patchesStrategicMerge:", "patchesStrategicMerge:\n" + `- ../../../namespaces/sptribs/${cronName}/${env}-01.yaml`);
 
   writeFile(cnpFluxPath + clusterOverlayPath, updatedOverlay);
   console.log(`Added ${taskName} to cnp-flux-config.`);
