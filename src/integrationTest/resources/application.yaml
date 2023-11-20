@@ -8,9 +8,6 @@ springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
-case-flags:
-  supplementary-data:
-    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 uk:
   gov:
     notify:
