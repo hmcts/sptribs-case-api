@@ -47,10 +47,11 @@ public class HearingService {
 
             ListValue<Listing> firstListing = data.getHearingList().stream().findFirst().orElse(null);
             if (null != firstListing && null != data.getRetiredFields()) {
-/*                firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
+                firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
                 firstListing.getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
                 firstListing.getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
-                firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());*/
+                firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields()
+                    .getCicCasePostponeAdditionalInformation());
             }
         }
     }
