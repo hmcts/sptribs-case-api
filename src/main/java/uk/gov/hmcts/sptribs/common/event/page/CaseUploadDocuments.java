@@ -33,7 +33,7 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
                     + "\n- labelled clearly, e.g. applicant-name-B1-form.pdf\n\n\n\n"
                     + "\n- Note: If the remove button is disabled, please refresh the page to remove attachments.\n\n")
             .complex(CaseData::getCicCase)
-            .optionalWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
+            .mandatoryWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
             .done();
     }
 

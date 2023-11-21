@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -79,7 +80,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .event(CASEWORKER_EDIT_CASE)
             .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
-            .description("")
+            .description("Case: Edit case")
             .showSummary()
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -117,6 +118,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         if (state == DSS_Submitted) {
             state = Submitted;
         }
+        EventUtil.setDssMetaDataForCaseApiCase(data);
 
         initialiseFlags(data);
 

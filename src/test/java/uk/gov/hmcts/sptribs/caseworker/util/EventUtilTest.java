@@ -102,7 +102,6 @@ public class EventUtilTest {
         assertThat(result).isNull();
     }
 
-
     @Test
     void shouldSuccessfullyParseHyphen() {
         //Given
@@ -125,9 +124,7 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ELIGIBILITY_MAIN_CONTENT);
-
     }
-
 
     @Test
     void shouldSuccessfullyGetMainContentQuantum() {
@@ -139,7 +136,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(QUANTUM_MAIN_CONTENT);
-
     }
 
     @Test
@@ -152,7 +148,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEmpty();
-
     }
 
     @Test
@@ -165,7 +160,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(RULE27_MAIN_CONTENT);
-
     }
 
     @Test
@@ -178,7 +172,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_NOTICE_MAIN_CONTENT);
-
     }
 
     @Test
@@ -191,7 +184,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
-
     }
 
     @Test
@@ -204,7 +196,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
-
     }
 
     @Test
@@ -217,7 +208,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
-
     }
 
     @Test
@@ -230,7 +220,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
-
     }
 
     @Test
@@ -256,7 +245,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
-
     }
 
     @Test
@@ -269,7 +257,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
-
     }
 
     @Test
@@ -282,7 +269,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
-
     }
 
     @Test
@@ -295,7 +281,18 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
+    }
 
+    @Test
+    void shouldSuccessfullyGetOrderMainContentLOGeneralDirection() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC14_LO_GENERAL_DIRECTIONS;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -308,7 +305,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -321,7 +317,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -339,7 +334,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -366,14 +360,15 @@ public class EventUtilTest {
         final CaseData data = new CaseData();
 
         //When
-        EventUtil.setDssMetaData(data);
+        EventUtil.setDssMetaDataForCaseApiCase(data);
 
         //Then
         assertThat(data.getDssQuestion1()).isEqualTo("Full Name");
         assertThat(data.getDssQuestion3()).isEqualTo("Date of Birth");
-        assertThat(data.getDssAnswer1()).isEqualTo("case_data.dssCaseDataSubjectFullName");
-        assertThat(data.getDssAnswer3()).isEqualTo("case_data.dssCaseDataSubjectDateOfBirth");
         assertThat(data.getDssHeaderDetails()).isEqualTo("Subject of this case");
+
+        assertThat(data.getDssAnswer1()).isEqualTo("case_data.cicCaseFullName");
+        assertThat(data.getDssAnswer3()).isEqualTo("case_data.cicCaseDateOfBirth");
 
     }
 }
