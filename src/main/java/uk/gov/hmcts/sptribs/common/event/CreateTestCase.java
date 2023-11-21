@@ -70,7 +70,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private SubmissionService submissionService;
 
     @Autowired
-    private CcdSupplementaryDataService coreCaseApiService;
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
@@ -191,7 +191,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private void setSupplementaryData(Long caseId) {
         try {
-            coreCaseApiService.submitSupplementaryDataToCcd(caseId.toString());
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
         } catch (Exception exception) {
             log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
         }

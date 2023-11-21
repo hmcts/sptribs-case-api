@@ -114,10 +114,6 @@ public class RetiredFields {
     @JsonIgnore
     private static final Map<String, TriConsumer<Map<String, Object>, String, Object>> migrations = Map.of(
         "cicBundles", moveTo("caseBundles")
-        /*"cicCasePostponeReason", moveTo("postponeReason"),
-        "cicCasePostponeAdditionalInformation", moveTo("postponeAdditionalInformation"),
-        "cicCaseHearingCancellationReason", moveTo("hearingCancellationReason"),
-        "cicCaseCancelHearingAdditionalDetail", moveTo("cancelHearingAdditionalDetail")*/
     );
 
     /**

@@ -92,7 +92,6 @@ class CaseworkerCaseFlagTest {
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
-
         //Then
         assertThat(submittedCallbackResponse).isNotNull();
 
