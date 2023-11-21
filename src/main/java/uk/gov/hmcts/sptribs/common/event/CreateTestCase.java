@@ -125,6 +125,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        final String GLASGOW_TRIBUNALS_CENTRE = "366559";
+        final String REGION = "11";
+
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
         EventUtil.setDssMetaDataForCaseApiCase(data);
@@ -135,7 +138,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
         data.setCaseManagementCategory(getCategoryList(data));
         data.setCaseManagementLocation(CaseLocation.builder()
-            .baseLocation("366559").region("11")
+            .baseLocation(GLASGOW_TRIBUNALS_CENTRE).region(REGION)
             .build());
 
         initialiseFlags(data);
