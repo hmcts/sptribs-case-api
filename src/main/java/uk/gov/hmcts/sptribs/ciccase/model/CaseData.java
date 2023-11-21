@@ -46,6 +46,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.ciccase.model.access.GsProfileAccess;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
