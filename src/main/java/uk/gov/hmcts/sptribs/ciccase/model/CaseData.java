@@ -36,13 +36,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.*;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -89,17 +83,17 @@ public class CaseData {
 
     @CCD(
         label = "Case name Hmcts Internal",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, GsProfileAccess.class}
     )
     private String caseNameHmctsInternal;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, GsProfileAccess.class}
     )
     private DynamicList caseManagementCategory;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, GsProfileAccess.class}
     )
     private CaseLocation caseManagementLocation;
 

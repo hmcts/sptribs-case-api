@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultStateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultStateAccessExcludingCAA;
+import uk.gov.hmcts.sptribs.ciccase.model.access.GsProfileAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAccess;
 
 import java.util.EnumSet;
@@ -15,19 +16,19 @@ public enum State {
     @CCD(
         label = "Application created",
         hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
+        access = {DefaultStateAccess.class, GsProfileAccess.class}
     )
     Created("Created"),
     @CCD(
         label = "Application issued",
         hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
+        access = {DefaultStateAccess.class, GsProfileAccess.class}
     )
     Issued("Issued"),
     @CCD(
         label = "Application settled",
         hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
+        access = {DefaultStateAccess.class, GsProfileAccess.class}
     )
     Settled("Settled"),
 

@@ -16,6 +16,9 @@ public enum UserRole implements HasRole {
     SOLICITOR("caseworker", "CRU"),
     CREATOR("[CREATOR]", "CRU"),
 
+    //Global search Profile
+    GS_PROFILE("GS_profile", "R"),
+
     // CIC User roles
     COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
     CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),

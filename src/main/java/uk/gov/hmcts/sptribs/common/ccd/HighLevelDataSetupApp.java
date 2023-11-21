@@ -42,6 +42,7 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("hmcts-judiciary", "PUBLIC"),
         new CcdRoleConfig("hmcts-lagaloperations", "PUBLIC"),
         new CcdRoleConfig("hmcts-ctsc", "PUBLIC"),
+        new CcdRoleConfig("GS_profile", "PUBLIC"),
     };
 
     private final CcdEnvironment environment;
