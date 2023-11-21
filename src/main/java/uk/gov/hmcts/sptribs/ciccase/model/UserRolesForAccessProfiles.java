@@ -55,7 +55,8 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AP_CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
     AP_COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
     AP_DISTRICT_JUDGE_CIC_PROFILE("caseworker-sptribs-cic-districtjudge", "CRU"),
-
+    //Global search Profile
+    GS_PROFILE("GS_profile", "R"),
     // Staff Roles of role assignment
     SENIOR_TRIBUNAL_CASE_WORKER("senior-tribunal-caseworker", "CRU"),
     TRIBUNAL_CASE_WORKER("tribunal-caseworker", "CRU"),

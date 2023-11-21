@@ -68,19 +68,23 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.HMCTS_ADMIN)
             .accessProfiles(UserRolesForAccessProfiles.AP_HMCTS_ADMIN.getRole(),
-                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole(),
+                UserRolesForAccessProfiles.GS_PROFILE.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.HMCTS_JUDICIARY)
             .accessProfiles(UserRolesForAccessProfiles.AP_HMCTS_JUDICIARY.getRole(),
-                UserRolesForAccessProfiles.AP_HMCTS_JUDICIARY.getRole())
+                UserRolesForAccessProfiles.AP_HMCTS_JUDICIARY.getRole(),
+                UserRolesForAccessProfiles.GS_PROFILE.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.HMCTS_LEGALOPERATIONS)
             .accessProfiles(UserRolesForAccessProfiles.AP_HMCTS_LEGALOPERATION.getRole(),
-                UserRolesForAccessProfiles.AP_HMCTS_LEGALOPERATION.getRole())
+                UserRolesForAccessProfiles.AP_HMCTS_LEGALOPERATION.getRole(),
+                UserRolesForAccessProfiles.GS_PROFILE.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.HMCTS_CTSC)
             .accessProfiles(UserRolesForAccessProfiles.AP_HMCTS_CTSC.getRole(),
-                UserRolesForAccessProfiles.AP_HMCTS_CTSC.getRole())
+                UserRolesForAccessProfiles.AP_HMCTS_CTSC.getRole(),
+                UserRolesForAccessProfiles.GS_PROFILE.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SYSTEMUPDATE)
             .accessProfiles(UserRolesForAccessProfiles.AC_SYSTEMUPDATE.getRole())
