@@ -123,11 +123,6 @@ public class CicCase {
     )
     private String linkCaseOtherDescription;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLink>> caseLinks;
-
     @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ComponentLauncher linkedCasesComponentLauncher;
