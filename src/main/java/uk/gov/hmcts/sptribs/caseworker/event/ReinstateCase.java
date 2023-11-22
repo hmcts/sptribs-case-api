@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -98,18 +99,16 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     private void sendCaseReinstatedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getNotifyPartySubject().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             caseReinstatedNotification.sendToSubject(data, caseNumber);
         }
-
-        if (!cicCase.getNotifyPartyRepresentative().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseReinstatedNotification.sendToRepresentative(data, caseNumber);
         }
-
-        if (!cicCase.getNotifyPartyRespondent().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             caseReinstatedNotification.sendToRespondent(data, caseNumber);
         }
-        if (!cicCase.getNotifyPartyApplicant().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
             caseReinstatedNotification.sendToApplicant(data, caseNumber);
         }
     }
