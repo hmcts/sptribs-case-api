@@ -51,14 +51,14 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 @Setter
 public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.document-management.enabled}")
-    private boolean documentManagementEnabled;
+    @Value("${feature.case-file-view-and-document-management.enabled}")
+    private boolean caseFileViewAndDocumentManagementEnabled;
 
     private static final CcdPageConfiguration selectDocuments = new DocumentManagementSelectDocuments();
     private static final CcdPageConfiguration amendDocuments = new DocumentManagementAmendDocuments();
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (documentManagementEnabled) {
+        if (caseFileViewAndDocumentManagementEnabled) {
             doConfigure(configBuilder);
         }
     }
