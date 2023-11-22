@@ -17,9 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
@@ -158,7 +162,7 @@ class DocumentUtilTest {
     void shouldValidateDecisionDocumentFormat() {
         //When
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename("file.png").build())
+            .documentLink(Document.builder().filename("file.sql").build())
             .documentEmailContent("some email content")
             .build();
 
@@ -168,13 +172,44 @@ class DocumentUtilTest {
         assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
-    private DocumentInfo documentInfo() {
-        return new DocumentInfo(
-            DOC_URL,
-            PDF_FILENAME,
-            DOC_BINARY_URL,
-            CATEGORY_ID_VAL
-        );
+    @Test
+    void shouldUpdateCategoryToCaseworkerDocument() {
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("docx");
+        updateCategoryToCaseworkerDocument(documentList);
+
+        //Then
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo("L");
+    }
+
+    @Test
+    void shouldUpdateCategoryToCaseworkerDocumentNull() {
+        //When
+        List<ListValue<CaseworkerCICDocument>> documentList = null;
+
+        //Then
+        assertDoesNotThrow(() -> updateCategoryToCaseworkerDocument(documentList));
+    }
+
+    @Test
+    void shouldUpdateCategoryToDocument() {
+        //When
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        String categoryId = "1";
+        updateCategoryToDocument(documentList, categoryId);
+
+        //Then
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(categoryId);
+    }
+
+    @Test
+    void shouldUpdateCategoryToDocumentNull() {
+        //When
+        List<ListValue<CICDocument>> documentList = null;
+        String categoryId = "1";
+
+        //Then
+        assertDoesNotThrow(() -> updateCategoryToDocument(documentList, categoryId));
     }
 
     @Test
@@ -192,4 +227,14 @@ class DocumentUtilTest {
         //Then
         assertThat(caseData.getAllDocManagement().getCaseworkerCICDocument()).hasSize(1);
     }
+
+    private DocumentInfo documentInfo() {
+        return new DocumentInfo(
+            DOC_URL,
+            PDF_FILENAME,
+            DOC_BINARY_URL,
+            CATEGORY_ID_VAL
+        );
+    }
+
 }
