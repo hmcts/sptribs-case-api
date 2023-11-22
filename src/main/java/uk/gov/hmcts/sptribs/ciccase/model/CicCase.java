@@ -269,7 +269,7 @@ public class CicCase {
     private CaseCategory caseCategory;
 
     @CCD(
-        label = "CCase sub-category",
+        label = "Case sub-category",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "CaseSubcategory"

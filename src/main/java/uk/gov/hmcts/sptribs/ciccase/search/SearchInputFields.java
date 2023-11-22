@@ -19,6 +19,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_SUBCA
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CCD_REFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.HEARING_LOCATION;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_REFERENCE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SCHEME;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_ADDRESS;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_DATE_OF_BIRTH;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
@@ -33,6 +34,7 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Case Region").id(CASE_REGION).build(),
         SearchField.<UserRole>builder().label("Case category").id(CASE_CATEGORY).build(),
         SearchField.<UserRole>builder().label("Case sub-category").id(CASE_SUBCATEGORY).build(),
+        SearchField.<UserRole>builder().label("Scheme").id(SCHEME).build(),
         SearchField.<UserRole>builder().label("Case Region").id(CASE_REGION).build(),
         SearchField.<UserRole>builder().label("Hearing Location").id(HEARING_LOCATION).build(),
         SearchField.<UserRole>builder().label("Subject Name").id(SUBJECT_NAME).build(),
