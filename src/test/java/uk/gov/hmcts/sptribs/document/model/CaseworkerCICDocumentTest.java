@@ -21,6 +21,18 @@ public class CaseworkerCICDocumentTest {
     }
 
     @Test
+    public void shouldCheckIsValidForM4AFileType() {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename("test.m4a").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
     public void shouldCheckIsValidInvalid() {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
