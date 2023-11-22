@@ -25,7 +25,7 @@ public class DefaultAccess implements HasAccessControl {
         grants.putAll(ST_CIC_HEARING_CENTRE_ADMIN, Permissions.CREATE_READ_UPDATE_DELETE);
         grants.putAll(ST_CIC_HEARING_CENTRE_TEAM_LEADER, Permissions.CREATE_READ_UPDATE_DELETE);
         grants.putAll(ST_CIC_SENIOR_JUDGE, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(SYSTEMUPDATE, Permissions.CREATE_READ_UPDATE);
+        grants.putAll(SYSTEMUPDATE, Permissions.CREATE_READ_UPDATE_DELETE);
         return grants;
     }
 }

@@ -111,6 +111,22 @@ public final class ConfigTestUtil {
             .orElseThrow(() -> new AssertionError("Unable to find ConfigBuilderImpl.class method getEvents"));
     }
 
+    @SuppressWarnings({"unchecked"})
+    public static <T, S, R extends HasRole> Map<String, Event<T, R, S>> getEventsFrom(
+            final ConfigBuilder<T, S, R> configBuilder) {
+
+        return (Map<String, Event<T, R, S>>) findMethod(ConfigBuilderImpl.class, "getEvents")
+                .map(method -> {
+                    try {
+                        method.setAccessible(true);
+                        return method.invoke(configBuilder);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new AssertionError("Unable to invoke ConfigBuilderImpl.class method getEvents", e);
+                    }
+                })
+                .orElseThrow(() -> new AssertionError("Unable to find ConfigBuilderImpl.class method getEvents"));
+    }
+
     public static <T, S, R extends HasRole> List<CaseCategory.CaseCategoryBuilder> getCategories(
         final ConfigBuilder<T, S, R> configBuilder) throws IllegalAccessException {
         return getCategoriesFor("categories", configBuilder);
