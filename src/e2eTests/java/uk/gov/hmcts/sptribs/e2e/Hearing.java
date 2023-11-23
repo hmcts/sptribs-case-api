@@ -225,11 +225,11 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-         clickButton(page, "Add new");
-         page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
-         getRadioButtonByLabel(page, "Full member").click();
+        clickButton(page, "Add new");
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+        getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees second form
@@ -297,10 +297,10 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-         page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
-         getRadioButtonByLabel(page, "Observer").click();
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+        getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees second form
