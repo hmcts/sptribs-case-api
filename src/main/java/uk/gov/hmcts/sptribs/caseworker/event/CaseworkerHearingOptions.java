@@ -77,8 +77,11 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
         final CaseData caseData = details.getData();
         final CaseData caseDataBefore = detailsBefore.getData();
 
+        // for edit journey we need to ensure region list is reset if chosen region is changed
         // for edit journey we need to ensure previously entered venue value is retained
-        if (!isNull(caseDataBefore.getListing().getHearingVenues())) {
+        if (!caseData.getListing().getSelectedRegionVal().equals(caseDataBefore.getListing().getSelectedRegionVal())) {
+            recordListHelper.populateVenuesData(caseData);
+        } else if (!isNull(caseDataBefore.getListing().getHearingVenues())) {
             caseData.getListing().setHearingVenues(caseDataBefore.getListing().getHearingVenues());
             caseData.getListing().getHearingVenues().setValue(caseDataBefore.getListing().getHearingVenues().getValue());
         } else if (isNull(caseData.getListing().getHearingVenues())) {

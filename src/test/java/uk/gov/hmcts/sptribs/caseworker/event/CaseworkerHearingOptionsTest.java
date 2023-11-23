@@ -9,11 +9,16 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+
+import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -56,12 +61,14 @@ public class CaseworkerHearingOptionsTest {
         final CaseData caseDataBefore = caseData();
         final Listing recordListing = new Listing();
         recordListing.setHearingVenues(getMockedHearingVenueData());
+        recordListing.setRegionList(getMockedRegionData());
         caseDataBefore.setListing(recordListing);
         final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
         caseDetailsBefore.setData(caseDataBefore);
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = caseData();
+        caseData.setListing(Listing.builder().regionList(getMockedRegionData()).build());
         caseDetails.setData(caseData);
 
         //When
@@ -85,7 +92,41 @@ public class CaseworkerHearingOptionsTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
         caseDetails.setData(caseData);
-        caseDetailsBefore.setData(caseData());
+        final CaseData caseDataBefore = caseData();
+        caseDataBefore.setListing(Listing.builder().regionList(getMockedRegionData()).build());
+        caseDetailsBefore.setData(caseDataBefore);
+
+        //When
+        caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
+
+        //Then
+        verify(recordListHelper).populateVenuesData(caseData);
+    }
+
+    @Test
+    void shouldPopulateHearingVenuesIfSelectedRegionChangesInEditJourney() {
+        //Given
+        final CaseData caseData = caseData();
+        final Listing recordListing = new Listing();
+        recordListing.setRegionList(getMockedRegionData());
+        caseData.setListing(recordListing);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        final CaseData caseDataBefore = caseData();
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("2-Scotland")
+            .code(UUID.randomUUID())
+            .build();
+
+        final DynamicList regionList = DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
+            .build();
+        caseDataBefore.setListing(Listing.builder().regionList(regionList).build());
+        caseDetailsBefore.setData(caseDataBefore);
 
         //When
         caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
@@ -97,20 +138,25 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldNotPopulateHearingVenuesIfVenuesArePopulated() {
         //Given
+        final DynamicList hearingVenues = getMockedHearingVenueData();
         final CaseData caseData = caseData();
         final Listing recordListing = new Listing();
-        recordListing.setHearingVenues(getMockedHearingVenueData());
+        recordListing.setRegionList(getMockedRegionData());
+        recordListing.setHearingVenues(hearingVenues);
         caseData.setListing(recordListing);
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> caseDetailsBefore = new CaseDetails<>();
         caseDetails.setData(caseData);
-        caseDetailsBefore.setData(caseData());
+        caseDetailsBefore.setData(caseData);
 
         //When
-        caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.midEvent(caseDetails, caseDetailsBefore);
 
         //Then
         verifyNoInteractions(recordListHelper);
+        assertThat(response.getData().getListing().getHearingVenues())
+            .isEqualTo(hearingVenues);
     }
 
     @Test

@@ -232,5 +232,4 @@ public class Listing {
     public String getSelectedVenue() {
         return this.getHearingVenues() != null ? this.getHearingVenues().getValue().getLabel() : null;
     }
-
 }
