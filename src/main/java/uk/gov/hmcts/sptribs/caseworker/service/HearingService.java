@@ -50,8 +50,7 @@ public class HearingService {
                 firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
                 firstListing.getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
                 firstListing.getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
-                firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields()
-                    .getCicCasePostponeAdditionalInformation());
+                firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
             }
         }
     }
