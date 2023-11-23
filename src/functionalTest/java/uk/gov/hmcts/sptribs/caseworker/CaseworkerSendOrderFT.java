@@ -25,7 +25,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     private static final String RESPONSE = "classpath:responses/response-caseworker-send-order-about-to-submit.json";
 
     @Test
-    public void shouldRetainLastSelectedOrderDataWhenAboutToSubmitCallbackIsTriggered() throws Exception {
+    public void shouldRetainSelectedOrderDataWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
