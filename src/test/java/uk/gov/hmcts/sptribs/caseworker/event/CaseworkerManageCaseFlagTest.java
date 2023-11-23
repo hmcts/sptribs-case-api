@@ -8,10 +8,16 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -66,6 +72,11 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .build();
+        final Set<ApplicantCIC> set = new HashSet<>();
+        set.add(ApplicantCIC.APPLICANT_CIC);
+        cicCase.setApplicantCIC(set);
+        cicCase.setApplicantFullName("Jane Doe");
+        cicCase.setNotifyPartyApplicant(set);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -76,6 +87,8 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getApplicantCIC()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantCIC().contains(ApplicantCIC.APPLICANT_CIC)).isTrue();
 
     }
 
@@ -87,6 +100,11 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .build();
+        final Set<RepresentativeCIC> set = new HashSet<>();
+        set.add(RepresentativeCIC.REPRESENTATIVE);
+        cicCase.setRepresentativeCIC(set);
+        cicCase.setRepresentativeFullName("Jane Doe");
+        cicCase.setNotifyPartyRepresentative(set);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -97,6 +115,8 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getRepresentativeCIC()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getRepresentativeCIC().contains(RepresentativeCIC.REPRESENTATIVE)).isTrue();
 
     }
 
@@ -108,6 +128,11 @@ class CaseworkerManageCaseFlagTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .build();
+        final Set<SubjectCIC> set = new HashSet<>();
+        set.add(SubjectCIC.SUBJECT);
+        cicCase.setSubjectCIC(set);
+        cicCase.setFullName("Jane Doe");
+        cicCase.setNotifyPartySubject(set);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -118,6 +143,8 @@ class CaseworkerManageCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getSubjectCIC()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getSubjectCIC().contains(SubjectCIC.SUBJECT)).isTrue();
 
     }
 

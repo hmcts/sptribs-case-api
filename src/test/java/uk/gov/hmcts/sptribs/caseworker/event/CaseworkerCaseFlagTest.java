@@ -160,6 +160,9 @@ class CaseworkerCaseFlagTest {
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getSubjectCIC()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getSubjectCIC().contains(SubjectCIC.SUBJECT)).isTrue();
+
         assertThat(submittedCallbackResponse).isNotNull();
         assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
