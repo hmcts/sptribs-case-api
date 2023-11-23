@@ -61,6 +61,9 @@ public class Case {
 
     public static final String SELECT_A_VALUE = "--Select a value--";
     private final Page page;
+    private final String documentCategory = "A - Application Form";
+    private final String documentDescription = "This is a test document uploaded during create case journey";
+    private final String documentName = "sample_doc_file_3.doc";
 
     public Case(Page page) {
         this.page = page;
@@ -196,6 +199,12 @@ public class Case {
         // Upload tribunals form
         assertThat(page.locator("h1"))
             .hasText("Upload tribunal forms", textOptionsWithTimeout(30000));
+        clickButton(page, "Add new");
+        page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
+        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").fill(documentDescription);
+        page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
+        page.waitForFunction("selector => document.querySelector(selector).disabled === true",
+            "button[aria-label='Cancel upload']", functionOptionsWithTimeout(30000));
         clickButton(page, "Continue");
 
         // Fill further details form
