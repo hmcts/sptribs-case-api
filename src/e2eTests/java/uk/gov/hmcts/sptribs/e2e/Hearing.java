@@ -119,6 +119,9 @@ public class Hearing {
         Case newCase = new Case(page);
         newCase.startNextStepAction(EditListing);
 
+        // Select hearing
+        selectHearing();
+
         // Fill hearing type and format form
         assertThat(page.locator("h1"))
             .hasText("Hearing type and format", textOptionsWithTimeout(60000));
@@ -222,10 +225,11 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Miss Ivy-Rose Rayner"));
-        getRadioButtonByLabel(page, "Full member").click();
+         clickButton(page, "Add new");
+         page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees second form
@@ -241,6 +245,7 @@ public class Hearing {
         assertThat(page.locator("h1"))
             .hasText("Hearing outcome", textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Adjourned").click();
+        getRadioButtonByLabel(page, "Appellant did not attend").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Upload hearing recording form
@@ -292,10 +297,10 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+         page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
-        getRadioButtonByLabel(page, "Observer").click();
+         page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+         getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees second form
@@ -310,7 +315,7 @@ public class Hearing {
         // Fill Hearing outcome form
         assertThat(page.locator("h1"))
             .hasText("Hearing outcome", textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, "Adjourned").click();
+        getRadioButtonByLabel(page, "Allowed").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Upload hearing recording form
