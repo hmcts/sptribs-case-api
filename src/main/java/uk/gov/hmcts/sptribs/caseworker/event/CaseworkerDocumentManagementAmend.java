@@ -80,7 +80,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER)
+                ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -89,6 +90,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
                 ST_CIC_JUDGE)
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
