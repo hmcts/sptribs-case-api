@@ -93,11 +93,10 @@ class CaseworkerCaseFlagTest {
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
         //Then
+        assertThat(response).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
     }
 
     @Test
@@ -125,11 +124,10 @@ class CaseworkerCaseFlagTest {
 
 
         //Then
+        assertThat(response).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
     }
 
     @Test
@@ -156,11 +154,10 @@ class CaseworkerCaseFlagTest {
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
         //Then
+        assertThat(response).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
     }
 
     @Test
@@ -184,6 +181,7 @@ class CaseworkerCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
     }
 
 
