@@ -15,13 +15,12 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseNumber;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 
 public class DocumentManagementTests extends Base {
 
     private final String documentCategory = "A - Notice of Appeal";
     private final String documentDescription = "This is a test to upload document";
-    private final String documentName = "sample_file.pdf";
+    private final String documentName = "sample_pdf_file_3.pdf";
 
     @Order(1)
     @RepeatedIfExceptionsTest
@@ -35,9 +34,9 @@ public class DocumentManagementTests extends Base {
 
         getTabByText(page, "Case Documents").click();
         assertThat(page.locator("h4").first()).hasText("Case Documents");
-        Assertions.assertEquals(documentCategory, getValueFromTableFor(page, "Document Category"));
-        Assertions.assertEquals(documentDescription, getValueFromTableFor(page, "Description"));
-        Assertions.assertEquals(documentName, getValueFromTableFor(page, "File"));
+        Assertions.assertEquals(documentCategory, getValueFromTableWithinCaseDocumentsTabFor(page, "Document Category"));
+        Assertions.assertEquals(documentDescription, getValueFromTableWithinCaseDocumentsTabFor(page, "Description"));
+        Assertions.assertEquals(documentName, getValueFromTableWithinCaseDocumentsTabFor(page, "File"));
     }
 
     @Order(2)
@@ -57,9 +56,9 @@ public class DocumentManagementTests extends Base {
 
         getTabByText(page, "Case Documents").click();
         assertThat(page.locator("h4").first()).hasText("Case Documents");
-        Assertions.assertEquals(amendedDocumentCategory, getValueFromTableFor(page, "Document Category"));
-        Assertions.assertEquals(amendedDocumentDescription, getValueFromTableFor(page, "Description"));
-        Assertions.assertEquals(documentName, getValueFromTableFor(page, "File"));
+        Assertions.assertEquals(amendedDocumentCategory, getValueFromTableWithinCaseDocumentsTabFor(page, "Document Category"));
+        Assertions.assertEquals(amendedDocumentDescription, getValueFromTableWithinCaseDocumentsTabFor(page, "Description"));
+        Assertions.assertEquals(documentName, getValueFromTableWithinCaseDocumentsTabFor(page, "File"));
     }
 
     @Order(3)
@@ -87,6 +86,10 @@ public class DocumentManagementTests extends Base {
 
         getTabByText(page, "Case Documents").click();
         assertThat(page.locator("h4").first()).hasText("Case Documents");
-        assertThat(page.locator("//a[contains(text(), '" + documentName + "')]")).isHidden();
+        assertThat(page.locator("//span[contains(text(), '" + documentToBeRemovedCategory + "')]")).isHidden();
+    }
+
+    private String getValueFromTableWithinCaseDocumentsTabFor(Page page, String rowHeader) {
+        return page.locator("table.collection-field-table th:has-text(\"" + rowHeader + "\") + td").last().textContent().trim();
     }
 }
