@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -74,7 +73,6 @@ public class Order {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
     private YesOrNo isLastSelectedOrder;
 
 }
