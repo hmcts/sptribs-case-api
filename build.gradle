@@ -202,11 +202,12 @@ task e2eTests(type: Test) {
   environment 'LEGAL_OFFICER', 'st-test1@mailinator.com '
   environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
   environment 'JUDGE', 'st-judge2@mailinator.com'
-  environment 'SENIOR_JUDGE', 'NOT TOO SURE'
-  environment 'HEARING_CENTRAL_ADMIN', 'NOT TOO SURE'
+  environment 'SENIOR_JUDGE', 'st-senior-judge@mailinator.com'
+  environment 'HEARING_CENTRAL_ADMIN', 'st-hc-team-leader@mailinator.com'
   environment 'HEARING_CENTRAL_TEAM_LEAD', 'st-hearingcentretl@mailinator.com'
-  environment 'RESPONDENT', 'st-cicrespondent@mailinator.com'
+  environment 'RESPONDENT', 'st-respondent5@mailinator.com'
   environment 'SUPER_USER', 'st-super@mailinator.com'
+  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
 }
 
 task e2eTestsNightlyFirefox(type: Test) {
