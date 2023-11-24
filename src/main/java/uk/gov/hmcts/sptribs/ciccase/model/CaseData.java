@@ -61,6 +61,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
+    @CCD(
+        label = "Case name Hmcts Internal",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNameHmctsInternal;
+
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private Flags caseFlags;
 
