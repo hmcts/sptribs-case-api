@@ -10,7 +10,6 @@ public enum Actions {
     CancelHearing("Hearings: Cancel hearing"),
     CreateListing("Hearings: Create listing"),
     CreateSummary("Hearings:Create summary"),
-    EditCicaCaseDetails("Case: Edit case details"),
     EditListing("Hearings: Edit listing"),
     EditSummary("Hearings: Edit summary"),
     PostponeHearing("Hearings: Postpone hearing"),

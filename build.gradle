@@ -27,7 +27,7 @@ plugins {
   id 'org.springframework.boot' version '2.7.18'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk'  version '5.5.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.910'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.917'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -203,11 +203,12 @@ task e2eTests(type: Test) {
   environment 'LEGAL_OFFICER', 'st-test1@mailinator.com '
   environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
   environment 'JUDGE', 'st-judge2@mailinator.com'
-  environment 'SENIOR_JUDGE', 'NOT TOO SURE'
-  environment 'HEARING_CENTRAL_ADMIN', 'NOT TOO SURE'
+  environment 'SENIOR_JUDGE', 'st-senior-judge@mailinator.com'
+  environment 'HEARING_CENTRAL_ADMIN', 'st-hc-team-leader@mailinator.com'
   environment 'HEARING_CENTRAL_TEAM_LEAD', 'st-hearingcentretl@mailinator.com'
-  environment 'RESPONDENT', 'st-cicrespondent@mailinator.com'
+  environment 'RESPONDENT', 'st-respondent5@mailinator.com'
   environment 'SUPER_USER', 'st-super@mailinator.com'
+  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
 }
 
 task e2eTestsNightlyFirefox(type: Test) {
