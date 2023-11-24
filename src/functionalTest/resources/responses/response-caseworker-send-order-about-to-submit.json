@@ -40,7 +40,7 @@
         "value": {
           "dueDateList": [],
           "parties": "Representative",
-          "orderSentDate": "2023-11-23"
+          "orderSentDate": "${json-unit.any-string}"
         }
       },
       {
@@ -62,14 +62,14 @@
             }
           ],
           "parties": "Representative",
-          "orderSentDate": "2023-11-23"
+          "orderSentDate": "${json-unit.any-string}"
         }
       }
     ],
     "cicCaseOrderDocumentList": [],
     "cicCaseCaseCategory": "Assessment",
     "cicCaseCaseSubcategory": "Fatal",
-    "cicCaseCaseReceivedDate": "2023-01-01",
+    "cicCaseCaseReceivedDate": "${json-unit.any-string}",
     "cicCasePartiesCIC": [
       "ApplicantCIC",
       "RepresentativeCIC",
