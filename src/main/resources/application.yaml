@@ -229,4 +229,3 @@ caseinfo:
         dssUpdateEvent: caseworker-update-dss-application
       caseTypeOfApplication:
         - CIC
-

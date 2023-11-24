@@ -93,15 +93,23 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         var dssData = details.getData().getDssCaseData();
-        CaseData caseData = getCaseData(data, dssData);
         String caseNumber = data.getHyphenatedCaseRef();
         EventUtil.setDssMetaData(data);
-
+        setDssMetaData(data);
+        CaseData caseData = getCaseData(data, dssData);
         sendApplicationReceivedNotification(caseNumber, data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
             .build();
+    }
+
+    private void setDssMetaData(CaseData data) {
+        data.setDssQuestion1("Full Name");
+        data.setDssQuestion3("Date of Birth");
+        data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
+        data.setDssAnswer3("case_data.dssCaseDataSubjectDateOfBirth");
+        data.setDssHeaderDetails("Subject of this case");
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {

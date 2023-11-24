@@ -172,7 +172,8 @@ task e2eTestInDemo(type: Test) {
   environment 'DSS_BASE_URL', 'https://sptribs-frontend.demo.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-ciclegal-officer@cic.demo'
+  environment 'LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
+//  environment 'LEGAL_OFFICER', 'st-ciclegal-officer@cic.demo' // We need to investigate why this user isn't working
   environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
   environment 'JUDGE', 'st-cicjudge@mailinator.com'
   environment 'SENIOR_JUDGE', 'st-cicseniorjudge@mailinator.com'
