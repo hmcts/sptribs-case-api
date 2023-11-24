@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
 
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Applicant;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC6GeneralDirections;
 import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC7MEDmiReports;
 
