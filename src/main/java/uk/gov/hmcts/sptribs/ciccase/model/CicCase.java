@@ -654,11 +654,6 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private NotificationResponse tribunalNotificationResponse;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
     private NotificationResponse resNotificationResponse;
 
     @CCD(

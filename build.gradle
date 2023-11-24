@@ -183,33 +183,6 @@ task e2eTestInDemo(type: Test) {
   environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
 }
 
-task e2eTestInDemo(type: Test) {
-  description = "Runs e2e tests in Demo Environment"
-  group = "Verification"
-  testClassesDirs = sourceSets.e2eTests.output.classesDirs
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  failFast = false
-  systemProperties([
-    // Configuration parameters to execute top-level classes in parallel but methods in same thread
-    'junit.jupiter.execution.parallel.enabled': 'true',
-    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
-  ])
-  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
-  environment 'CASE_API_BASE_URL', System.env.TEST_E2E_URL
-  environment 'DSS_BASE_URL', 'https://sptribs-frontend.demo.platform.hmcts.net'
-  environment 'BROWSER', 'chromium'
-  environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-ciclegal-officer@cic.demo'
-  environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
-  environment 'JUDGE', 'st-cicjudge@mailinator.com'
-  environment 'SENIOR_JUDGE', 'st-cicseniorjudge@mailinator.com'
-  environment 'HEARING_CENTRAL_ADMIN', 'cic-hearing-centreadmin@mailinator.com'
-  environment 'HEARING_CENTRAL_TEAM_LEAD', 'cic-hearing-centre-leader@mailinator.com'
-  environment 'RESPONDENT', 'st-cicrespondent@mailinator.com'
-  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
-}
-
 task e2eTests(type: Test) {
   description = "Runs e2e tests"
   group = "Verification"
