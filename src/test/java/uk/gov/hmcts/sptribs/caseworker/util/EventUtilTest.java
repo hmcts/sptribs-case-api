@@ -370,5 +370,4 @@ public class EventUtilTest {
         assertThat(data.getDssHeaderDetails()).isEqualTo("Subject of this case");
 
     }
-
 }
