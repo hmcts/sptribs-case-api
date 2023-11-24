@@ -51,9 +51,9 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
 
     @Override
     protected boolean shouldTolerateDataSetupFailure(Throwable e) {
-        // Sometimes a heavy CCD definition would take more than 30 secs and throws 504 error
-        // But still the CCD definition will eventually get imported without any issues
-        // So the 504 error code can be tolerated
+        /* Sometimes a heavy CCD definition would take more than 30 secs and throws 504 error.
+        But still the CCD definition will eventually get imported without any issues.
+        So, the 504 error code can be tolerated. */
         if (e instanceof ImportException importException) {
             return importException.getHttpStatusCode() == HttpStatus.GATEWAY_TIMEOUT.value();
         }
