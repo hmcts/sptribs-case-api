@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -94,7 +95,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
 
         if (!StringUtils.isEmpty(caseData.getListing().getReadOnlyHearingVenueName())) {
@@ -118,7 +119,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker updated record listing callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
         if (null != caseData.getListing()
             && null != caseData.getListing().getNumberOfDays()
@@ -139,10 +140,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        var data = details.getData();
-        var cicCase = data.getCicCase();
+        final CaseData caseData = details.getData();
+        final CicCase cicCase = caseData.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
-        String caseNumber = data.getHyphenatedCaseRef();
+        String caseNumber = caseData.getHyphenatedCaseRef();
 
         try {
             if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {

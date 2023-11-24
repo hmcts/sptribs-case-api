@@ -92,7 +92,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
 
