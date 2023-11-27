@@ -1,14 +1,12 @@
 package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
-import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -23,10 +21,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_MIGRATE_CASE_FLAGS = "system-migrate-case-flags";
-    //public static final String SYSTEM_MIGRATE_CASE_FLAGS = "system-migrate-old-hearing";
-
-    @Autowired
-    private HearingService hearingService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -60,12 +54,14 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             .roleOnCase(null)
             .build());
 
-        data.setSubjectFlags(Flags.builder()
-            .details(new ArrayList<>())
-            .partyName(data.getCicCase().getFullName())
-            .roleOnCase("subject")
-            .build()
-        );
+        if (null != data.getCicCase().getFullName()) {
+            data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getFullName())
+                .roleOnCase("subject")
+                .build()
+            );
+        }
 
         if (null != data.getCicCase().getApplicantFullName()) {
             data.setApplicantFlags(Flags.builder()

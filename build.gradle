@@ -326,9 +326,7 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/common/event/CreateTestCase.java',
   '**/uk/gov/hmcts/sptribs/CaseApiApplication.java',
   '**/uk/gov/hmcts/sptribs/notification/GetAllTemplatesFromNotify.java',
-  '**/uk/gov/hmcts/sptribs/common/config/**',
-  '**/uk/gov/hmcts/sptribs/systemupdate/schedule/migration/SystemMigrateCaseFlagsTask.java',
-  '**/uk/gov/hmcts/sptribs/systemupdate/event/SystemMigrateCaseFlags.java'
+  '**/uk/gov/hmcts/sptribs/common/config/**'
 ]
 
 sonarqube {

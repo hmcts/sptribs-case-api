@@ -110,13 +110,13 @@ async function main(taskName, cnpFluxPath, schedule, env) {
   const chartConfig = getChartConfig(taskName, cronName, schedule);
 
   await Promise.all([
-    writeFile(cronDirectory + `${env}-01.yaml`, clusterOverride),
+    writeFile(cronDirectory + `${env}-00.yaml`, clusterOverride),
     writeFile(cronDirectory + cronName + ".yaml", chartConfig),
   ]);
 
   const updatedOverlay = clusterOverlay
                           .replace("bases:", "bases:\n" + `- ../../../namespaces/sptribs/${cronName}/${cronName}.yaml`)
-                          .replace("patchesStrategicMerge:", "patchesStrategicMerge:\n" + `- ../../../namespaces/sptribs/${cronName}/${env}-01.yaml`);
+                          .replace("patchesStrategicMerge:", "patchesStrategicMerge:\n" + `- ../../../namespaces/sptribs/${cronName}/${env}-00.yaml`);
 
   writeFile(cnpFluxPath + clusterOverlayPath, updatedOverlay);
   console.log(`Added ${taskName} to cnp-flux-config.`);
@@ -125,7 +125,7 @@ async function main(taskName, cnpFluxPath, schedule, env) {
 const [exec, scriptPath, taskName, cnpFluxPath, schedule] = process.argv;
 
 if (taskName && cnpFluxPath && schedule) {
-  for (const env of ["aat", "ithc", "perftest", "demo", "preview"]) {
+  for (const env of ["aat", "ithc", "perftest", "demo"]) {
     main(taskName, cnpFluxPath, schedule, env).catch(e => console.error(e));
   }
 } else {

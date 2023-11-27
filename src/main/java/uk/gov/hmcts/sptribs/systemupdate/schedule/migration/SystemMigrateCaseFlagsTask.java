@@ -16,12 +16,10 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
 
 @Component
@@ -41,10 +39,6 @@ public class SystemMigrateCaseFlagsTask implements Runnable {
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
 
-    public static final String PRONOUNCED_DATE = "coGrantedDate";
-
-    private static final String FINAL_ORDER_OVERDUE_FLAG = "isFinalOrderOverdue";
-
     @Override
     public void run() {
         log.info("Migrate case flags scheduled task started");
@@ -52,29 +46,20 @@ public class SystemMigrateCaseFlagsTask implements Runnable {
         final User user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String overdueDate = formatter.format(LocalDate.now().minusDays(7));
-
         try {
             final BoolQueryBuilder query =
                 boolQuery()
                     .must(boolQuery()
-                        .must(matchQuery("reference", 1699100726058557L))
+                        .mustNot(existsQuery("data.subjectFlags"))
                     )
-
-                /*.must(
-                   boolQuery()
-                         .should(boolQuery().must(rangeQuery(String.format(DATA, PRONOUNCED_DATE)).lt(overdueDate)))
-                )
-                .mustNot(matchQuery(String.format(DATA, FINAL_ORDER_OVERDUE_FLAG), YesOrNo.YES))*/
                 ;
 
             log.info("Query:" + query.toString());
             log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
-            final List<CaseDetails> casesInAwaitingFinalOrderState =
-                ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth, State.CaseManagement);
-            log.info("Cases:" + casesInAwaitingFinalOrderState.size());
-            for (final CaseDetails caseDetails : casesInAwaitingFinalOrderState) {
+            final List<CaseDetails> casesNeedsCaseFlagsMigration =
+                ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);
+            log.info("Cases:" + casesNeedsCaseFlagsMigration.size());
+            for (final CaseDetails caseDetails : casesNeedsCaseFlagsMigration) {
                 triggerMigrateFieldsForEligibleCases(user, serviceAuth, caseDetails);
             }
 
