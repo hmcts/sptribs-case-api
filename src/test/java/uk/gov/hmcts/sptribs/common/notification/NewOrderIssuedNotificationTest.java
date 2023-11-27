@@ -46,7 +46,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -68,7 +68,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -91,7 +91,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -132,7 +132,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -154,7 +154,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -177,7 +177,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -201,7 +201,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -242,7 +242,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -264,7 +264,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -287,7 +287,7 @@ public class NewOrderIssuedNotificationTest {
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-        data.getCicCase().setLastSelectedOrder(document);
+        data.getCicCase().setSelectedOrder(document);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
