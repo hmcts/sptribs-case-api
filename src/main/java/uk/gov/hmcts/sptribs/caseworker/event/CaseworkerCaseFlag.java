@@ -39,7 +39,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
-    @Value("${feature.case-flags.enabled}")
+    @Value("${toggle.enable_case_flags}")
     private boolean caseFlagsEnabled;
 
     @Autowired

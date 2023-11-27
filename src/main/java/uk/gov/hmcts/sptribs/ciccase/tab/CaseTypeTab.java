@@ -27,7 +27,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-file-view-and-document-management.enabled}")
     private boolean caseFileViewAndDocumentManagementEnabled;
 
-    @Value("${feature.case-flags.enabled}")
+    @Value("${toggle.enable_case_flags}")
     private boolean caseFlagsEnabled;
 
     @Value("${feature.bundling.enabled}")
