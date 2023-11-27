@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.common.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.Set;
 
@@ -30,6 +32,8 @@ class CreateTestCaseTest {
     @InjectMocks
     private CreateTestCase createTestCase;
 
+    @Mock
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @InjectMocks
     private SelectParties selectParties;
