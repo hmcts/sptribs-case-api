@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.migration;
 
+import feign.FeignException;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
@@ -19,9 +21,11 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
@@ -72,6 +76,29 @@ class SystemMigrateCaseFlagsTaskTest {
 
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
             .thenReturn(caseDetailsList);
+
+        task.run();
+
+        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldThrowExceptionIWhenTriggerSystemMigrateCaseFlags() {
+        final CaseDetails caseDetails1 = mock(CaseDetails.class);
+        final CaseDetails caseDetails2 = mock(CaseDetails.class);
+
+
+        final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
+
+        when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
+        when(caseDetails2.getId()).thenReturn(2L);
+
+        when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
+            .thenReturn(caseDetailsList);
+        doThrow(new CcdManagementException(GATEWAY_TIMEOUT.value(), "Failed processing of case", mock(FeignException.class)))
+            .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
+
 
         task.run();
 
