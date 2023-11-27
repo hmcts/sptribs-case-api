@@ -91,12 +91,11 @@ SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-aat.service.core-com
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
   enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
+  enable_case_links: ${ENABLE_CASE-LINKS:false}
 
 feature:
   contact-parties:
     enabled: ${CONTACT_PARTIES_FEATURE:true}
-  link-case:
-    enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
   case-file-view-and-document-management:

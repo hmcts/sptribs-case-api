@@ -30,7 +30,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
-    @Value("${feature.link-case.enabled}")
+    @Value("${toggle.enable_case_links}")
     private boolean caseLinkEnabled;
 
     @Value("${feature.bundling.enabled}")

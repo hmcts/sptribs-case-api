@@ -39,7 +39,7 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
-    @Value("${feature.link-case.enabled}")
+    @Value("${toggle.enable_case_links}")
     private boolean linkCaseEnabled;
 
     @Autowired
