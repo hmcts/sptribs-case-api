@@ -327,6 +327,7 @@ def generateDefinitions() {
 def setFeatureFlags(environment) {
   if (environment =~ /preview|demo|perftest/) {
     env.CONTACT_PARTIES_FEATURE = true
+    env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = true
@@ -334,6 +335,7 @@ def setFeatureFlags(environment) {
     env.SECURITY_CLASSIFICATION = true
   } else if (environment =~ /aat/) {
     env.CONTACT_PARTIES_FEATURE = true
+    env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
@@ -341,6 +343,7 @@ def setFeatureFlags(environment) {
     env.SECURITY_CLASSIFICATION = false
   } else if (environment =~ /prod/) {
     env.CONTACT_PARTIES_FEATURE = true
+    env.LINK_CASE_FEATURE = false
     env.CASE_FLAGS_FEATURE = false
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = false
