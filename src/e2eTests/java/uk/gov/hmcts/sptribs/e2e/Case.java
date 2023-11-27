@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
@@ -187,10 +188,12 @@ public class Case {
             .hasText("Upload tribunal forms", textOptionsWithTimeout(30000));
         clickButton(page, "Add new");
         page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
-        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").fill(documentDescription);
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
+        page.waitForSelector("//span[contains(text(), 'Uploading...')]",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
+        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").fill(documentDescription);
         clickButton(page, "Continue");
 
         // Fill further details form
