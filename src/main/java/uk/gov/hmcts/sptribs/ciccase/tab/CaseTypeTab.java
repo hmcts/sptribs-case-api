@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -17,7 +18,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-
 
 
 @Component
@@ -38,7 +38,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
-        buildFlagsTab(configBuilder);
         buildStateTab(configBuilder);
         buildNotesTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
@@ -60,10 +59,15 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        /*configBuilder.tab("caseFlagView", "Case  flags")
-            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getFlagLauncher1, null, "#ARGUMENT(READ)");*/
+        configBuilder.tab("caseFlags", "Case Flags")
+            .forRoles(AC_CASEFLAGS_VIEWER, SUPER_USER,
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
+            .field(CaseData::getCaseFlags, ALWAYS_HIDE)
+            .field(CaseData::getSubjectFlags, ALWAYS_HIDE)
+            .field(CaseData::getApplicantFlags, ALWAYS_HIDE)
+            .field(CaseData::getRepresentativeFlags, ALWAYS_HIDE);
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -142,17 +146,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
             .field(CaseData::getMessages);
-    }
-
-    /*private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("bundles", "Bundles")
-            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getCaseBundles);
-    }*/
-
-    private void buildFlagsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
     }
 
     private void buildCaseDetailsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

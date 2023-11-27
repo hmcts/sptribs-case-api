@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -61,16 +63,33 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+
+    @CCD(
+        label = "Launch the Flags screen",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLauncher flagLauncher;
+
+    @CCD(
+        label = "Case name Hmcts Internal",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNameHmctsInternal;
+
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Case Flags")
     private Flags caseFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Subject")
     private Flags subjectFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Representative")
     private Flags representativeFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Applicant")
     private Flags applicantFlags;
 
     @JsonUnwrapped(prefix = "all")
