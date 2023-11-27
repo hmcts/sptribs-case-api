@@ -50,8 +50,8 @@ public class SystemMigrateCaseFlagsTask implements Runnable {
                 boolQuery()
                     .must(boolQuery()
                         .must(matchQuery("reference", 1688978122333564L))
-                    )
-                ; //temporary query change to test for single record
+                    );
+            // TODO : change query to process all the records
 
             log.info("Query:" + query.toString());
             log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
