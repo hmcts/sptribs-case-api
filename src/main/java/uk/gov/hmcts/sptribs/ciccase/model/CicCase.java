@@ -202,8 +202,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
-    private Document lastSelectedOrder;
+    private Document selectedOrder;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -274,7 +273,7 @@ public class CicCase {
     private CaseCategory caseCategory;
 
     @CCD(
-        label = "CCase sub-category",
+        label = "Case sub-category",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "CaseSubcategory"
@@ -791,6 +790,5 @@ public class CicCase {
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";
         applicantEmailAddress = "";
-
     }
 }
