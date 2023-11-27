@@ -80,15 +80,9 @@ public class CicCase {
     )
     private String linkCaseOtherDescription;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLink>> caseLinks;
-
     @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ComponentLauncher linkedCasesComponentLauncher;
-
 
     @CCD(
         label = "Preview order",
@@ -226,7 +220,7 @@ public class CicCase {
     private CaseCategory caseCategory;
 
     @CCD(
-        label = "CCase sub-category",
+        label = "Case sub-category",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "CaseSubcategory"
