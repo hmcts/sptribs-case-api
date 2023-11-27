@@ -21,6 +21,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,8 +54,8 @@ class SystemMigrateCaseFlagsTaskTest {
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(boolQuery()
-            .mustNot(existsQuery("data.subjectFlags"))
-        );
+            .must(matchQuery("reference", 1688978122333564L))
+        ); //temporary query change to test for single record
 
     @BeforeEach
     void setUp() {

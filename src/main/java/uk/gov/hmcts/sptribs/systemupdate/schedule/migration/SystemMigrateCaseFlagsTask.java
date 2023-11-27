@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
 
 @Component
@@ -49,9 +50,9 @@ public class SystemMigrateCaseFlagsTask implements Runnable {
             final BoolQueryBuilder query =
                 boolQuery()
                     .must(boolQuery()
-                        .mustNot(existsQuery("data.subjectFlags"))
+                        .must(matchQuery("reference", 1688978122333564L))
                     )
-                ;
+                ; //temporary query change to test for single record
 
             log.info("Query:" + query.toString());
             log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
