@@ -203,7 +203,7 @@ public class Hearing {
         Assertions.assertEquals(AwaitingHearing.label, newCase.getCaseStatus());
     }
 
-    public void createHearingSummary() {
+    public void createHearingSummary(String judge, String panelMember) {
         Case newCase = new Case(page);
         newCase.startNextStepAction(CreateSummary);
 
@@ -225,10 +225,10 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel(judge));
         getRadioButtonByLabel(page, "Yes").click();
         clickButton(page, "Add new");
-        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel(panelMember));
         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
@@ -270,7 +270,7 @@ public class Hearing {
         Assertions.assertEquals(AwaitingOutcome.label, newCase.getCaseStatus());
     }
 
-    public void editHearingSummary() {
+    public void editHearingSummary(String judge, String panelMember) {
         Case newCase = new Case(page);
         newCase.startNextStepAction(EditSummary);
 
@@ -297,9 +297,9 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+        page.selectOption("#judge", new SelectOption().setLabel(judge));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel(panelMember));
         getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 
