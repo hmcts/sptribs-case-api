@@ -50,8 +50,8 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
             .page("hearingOptionsHearingDetails")
             .pageLabel("Hearing Details")
             .complex(CaseData::getListing)
-                .optional(Listing::getHearingVenues)
-                .optional(Listing::getVenueNotListedOption)
+                .optional(Listing::getHearingVenues, "venueNotListedOption!=\"VenueNotListed\"")
+                .optionalWithLabel(Listing::getVenueNotListedOption, " ")
                 .optional(Listing::getRoomAtVenue)
                 .optional(Listing::getAddlInstr)
                 .optional(Listing::getHearingFormat)
@@ -76,6 +76,12 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
 
         final CaseData caseData = details.getData();
         final CaseData caseDataBefore = detailsBefore.getData();
+
+        if (isNull(caseData.getListing().getRegionList())) {
+            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+                .data(caseData)
+                .build();
+        }
 
         // for edit journey we need to ensure region list is reset if chosen region is changed
         // for edit journey we need to ensure previously entered venue value is retained

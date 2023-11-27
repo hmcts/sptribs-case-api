@@ -85,6 +85,7 @@ public class Listing {
     private DynamicList regionList;
 
     @CCD(
+        label = "Is venue listed?",
         typeOverride = MultiSelectList,
         typeParameterOverride = "VenueNotListed",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

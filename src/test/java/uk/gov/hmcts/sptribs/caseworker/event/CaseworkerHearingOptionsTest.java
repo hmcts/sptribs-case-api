@@ -56,6 +56,24 @@ public class CaseworkerHearingOptionsTest {
     }
 
     @Test
+    void shouldNotPopulateHearingVenuesDataIfPresentNoRegionSelected() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        caseData.setListing(Listing.builder().build());
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.midEvent(caseDetails, caseDetails);
+
+        //Then
+        verifyNoInteractions(recordListHelper);
+        assertThat(response.getData().getListing().getSelectedRegionVal()).isNull();
+        assertThat(response.getData().getListing().getHearingVenues()).isNull();
+    }
+
+    @Test
     void shouldPopulateHearingVenuesDataWithPreviouslySelectedValuesIfPresent() {
         //Given
         final CaseData caseDataBefore = caseData();
