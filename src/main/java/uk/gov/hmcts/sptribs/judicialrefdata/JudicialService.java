@@ -43,8 +43,6 @@ public class JudicialService {
     @Value("${toggle.enable_jrd_api_v2}")
     private boolean enableJrdApiV2;
 
-    public DynamicList getAllUsers() {
-
     public DynamicList getAllUsers(CaseData caseData) {
         final var users = getUsers();
         final var judges = populateJudgesList(users);

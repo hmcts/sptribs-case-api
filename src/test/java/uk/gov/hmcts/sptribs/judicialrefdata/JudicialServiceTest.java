@@ -30,7 +30,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
 class JudicialServiceTest {
@@ -88,9 +88,6 @@ class JudicialServiceTest {
 
     @Test
     void shouldReturnEmptyDynamicListWhenListFromJudicialRefDataCallIsNull() {
-        //Given
-        var caseData = CaseData.builder().build();
-
         //When
         ReflectionTestUtils.setField(judicialService, "enableJrdApiV2", false);
 
@@ -100,7 +97,7 @@ class JudicialServiceTest {
             TEST_SERVICE_AUTH_TOKEN,
             TEST_AUTHORIZATION_TOKEN,
             new JudicialUsersRequest("ST_CIC"))).thenReturn(null);
-        DynamicList regionList = judicialService.getAllUsers(caseData);
+        DynamicList regionList = judicialService.getAllUsers(caseData());
 
         //Then
         assertThat(regionList.getListItems()).isEmpty();
@@ -109,9 +106,20 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenExceptionFromJudicialRefDataCall() {
         //Given
-        var caseData = CaseData.builder().build();
+        ReflectionTestUtils.setField(judicialService, "enableJrdApiV2", false);
 
-        DynamicList regionList = judicialService.getAllUsers();
+        //When
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+
+        doThrow(FeignException.class)
+            .when(judicialClient).getUserProfiles(
+                TEST_SERVICE_AUTH_TOKEN,
+                TEST_AUTHORIZATION_TOKEN,
+                new JudicialUsersRequest("ST_CIC")
+            );
+
+        DynamicList regionList = judicialService.getAllUsers(caseData());
 
         //Then
         assertThat(regionList.getListItems()).isEmpty();
@@ -142,13 +150,6 @@ class JudicialServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        doThrow(FeignException.class)
-            .when(judicialClient).getUserProfiles(
-                TEST_SERVICE_AUTH_TOKEN,
-                TEST_AUTHORIZATION_TOKEN,
-                new JudicialUsersRequest("ST_CIC")
-            );
-        DynamicList regionList = judicialService.getAllUsers(caseData);
 
         when(judicialClient.getUserProfilesV2(
             TEST_SERVICE_AUTH_TOKEN,
@@ -156,7 +157,7 @@ class JudicialServiceTest {
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC"))).thenReturn(responseEntity);
 
-        DynamicList userList = judicialService.getAllUsers();
+        DynamicList userList = judicialService.getAllUsers(caseData());
 
         //Then
         assertThat(userList).isNotNull();
@@ -181,7 +182,7 @@ class JudicialServiceTest {
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC"))).thenReturn(null);
 
-        DynamicList regionList = judicialService.getAllUsers();
+        DynamicList regionList = judicialService.getAllUsers(caseData());
 
         //Then
         assertThat(regionList.getListItems()).isEmpty();
