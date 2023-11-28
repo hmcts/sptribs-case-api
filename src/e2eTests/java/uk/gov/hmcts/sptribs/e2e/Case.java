@@ -67,6 +67,8 @@ public class Case {
     public String createCase(String... args) {
 
         // Select case filters
+        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         clickLink(page, "Create case");
         assertThat(page.locator("h1"))
             .hasText("Create Case", textOptionsWithTimeout(60000));
@@ -171,13 +173,14 @@ public class Case {
         // Fill contact preferences form
         assertThat(page.locator("h1"))
             .hasText("Who should receive information about the case?", textOptionsWithTimeout(60000));
-        getCheckBoxByLabel(page, "Subject").first().check();
+        page.locator("#cicCaseSubjectCIC-SubjectCIC").check();
         if (page.isVisible("#cicCaseApplicantCIC-ApplicantCIC")) {
-            getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
+            page.locator("#cicCaseApplicantCIC-ApplicantCIC").check();
         }
         if (page.isVisible("#cicCaseRepresentativeCIC-RepresentativeCIC")) {
-            getCheckBoxByLabel(page, "Representative").check();
+            page.locator("#cicCaseRepresentativeCIC-RepresentativeCIC").check();
         }
+        page.locator("div h1").click();
         clickButton(page, "Continue");
 
         // Upload tribunals form
