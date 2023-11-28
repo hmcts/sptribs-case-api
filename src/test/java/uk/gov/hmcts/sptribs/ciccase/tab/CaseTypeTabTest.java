@@ -45,7 +45,6 @@ public class CaseTypeTabTest {
         Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> bundlingTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         Tab.TabBuilder<CaseData, UserRole> messagesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> caseReferralTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
 
         when(configBuilder.tab("summary", "Summary")).thenReturn(summaryTabBuilder);
         when(configBuilder.tab("state", "State")).thenReturn(stateTabBuilder);
@@ -59,7 +58,6 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("caseFileView", "Case file view")).thenReturn(caseCategoryTabBuilder);
         when(configBuilder.tab("bundles", "Bundles")).thenReturn(bundlingTabBuilder);
         when(configBuilder.tab("messages", "Messages")).thenReturn(messagesTabBuilder);
-        when(configBuilder.tab("caseReferrals", "Case Referrals")).thenReturn(caseReferralTabBuilder);
 
         //When
         caseTypeTab.configure(configBuilder);
@@ -73,7 +71,6 @@ public class CaseTypeTabTest {
         Tab<CaseData, UserRole> caseCategoryTab = caseCategoryTabBuilder.build();
         Tab<CaseData, UserRole> messages = messagesTabBuilder.build();
         Tab<CaseData, UserRole> bundlingTab = bundlingTabBuilder.build();
-        Tab<CaseData, UserRole> caseReferralTab = caseReferralTabBuilder.build();
 
         //Then
         assertThat(summaryTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
@@ -84,7 +81,5 @@ public class CaseTypeTabTest {
         assertThat(cicaDetailsTab.getFields()).extracting(TabField::getId).contains("CICA Details");
         assertThat(caseCategoryTab.getFields()).extracting(TabField::getDisplayContextParameter).isNotNull();
         assertThat(messages.getFields()).extracting(TabField::getId).isNotNull();
-        assertThat(caseReferralTab.getFields()).extracting(TabField::getId).contains("Referral to Judge");
-        assertThat(caseReferralTab.getFields()).extracting(TabField::getId).contains("Referral to Legal Officer");
     }
 }

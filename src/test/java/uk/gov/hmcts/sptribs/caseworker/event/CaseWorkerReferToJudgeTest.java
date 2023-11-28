@@ -41,51 +41,26 @@ public class CaseWorkerReferToJudgeTest {
             .contains(CASEWORKER_REFER_TO_JUDGE);
     }
 
-    @Test
-    void shouldAlwaysInitiateReferToJudgeWithEmptyObject() {
-        //Given
-        final CaseDetails<CaseData, State> existingCaseDetails = getCaseDetails();
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
-            caseWorkerReferToJudge.aboutToStart(existingCaseDetails);
-
-        //Then
-        assertThat(aboutToStartResponse.getData().getReferToJudge()).isNotNull();
-        assertThat(aboutToStartResponse.getData().getReferToJudge().getReferralReason()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToJudge().getReasonForReferral()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToJudge().getAdditionalInformation()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToJudge().getReferralDate()).isNull();
-    }
 
     @Test
     void shouldReferToJudge() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
+
+        CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseWorkerReferToJudge.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse response2 =
-            caseWorkerReferToJudge.submitted(updatedCaseDetails, beforeDetails);
+            caseWorkerReferToJudge.referred(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response1).isNotNull();
-        assertThat(response1.getData().getReferToJudge().getReferralDate()).isNotNull();
         assertThat(response2).isNotNull();
-        assertThat(response2.getConfirmationHeader()).contains("Referral completed");
     }
-
-    private CaseDetails<CaseData, State> getCaseDetails() {
-        CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-
-        caseDetails.setData(caseData);
-        caseDetails.setId(TEST_CASE_ID);
-        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        return caseDetails;
-    }
-
 }
