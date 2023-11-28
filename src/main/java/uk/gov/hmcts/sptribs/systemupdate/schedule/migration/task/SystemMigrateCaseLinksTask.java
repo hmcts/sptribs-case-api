@@ -53,12 +53,8 @@ public class SystemMigrateCaseLinksTask implements Runnable {
             //TODO: Update query to get all the cases that needs migration
 
             log.info("Query:" + query.toString());
-            final List<CaseDetails> casesInAwaitingFinalOrderState =
-                ccdSearchService.searchForAllCasesWithQuery(query, userDetails, serviceAuthorisation);
-            log.info("Cases:" + casesInAwaitingFinalOrderState.size());
-            for (final CaseDetails caseDetails : casesInAwaitingFinalOrderState) {
-                triggerMigrateFieldsForEligibleCases(userDetails, serviceAuthorisation, caseDetails);
-            }
+
+            triggerMigrateTask(userDetails, serviceAuthorisation, query);
 
             log.info("Migrate Case Links task complete.");
         } catch (final CcdSearchCaseException e) {
@@ -67,6 +63,15 @@ public class SystemMigrateCaseLinksTask implements Runnable {
             log.info("Migrate Case Links task stopping "
                 + "due to conflict with another running task"
             );
+        }
+    }
+
+    private void triggerMigrateTask(User userDetails, String serviceAuthorisation, BoolQueryBuilder query) {
+        final List<CaseDetails> cases =
+            ccdSearchService.searchForAllCasesWithQuery(query, userDetails, serviceAuthorisation);
+        log.info("Cases:" + cases.size());
+        for (final CaseDetails caseDetails : cases) {
+            triggerMigrateFieldsForEligibleCases(userDetails, serviceAuthorisation, caseDetails);
         }
     }
 
