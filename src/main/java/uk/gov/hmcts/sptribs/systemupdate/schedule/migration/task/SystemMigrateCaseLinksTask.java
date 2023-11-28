@@ -45,17 +45,7 @@ public class SystemMigrateCaseLinksTask implements Runnable {
         final String serviceAuthorisation = authTokenGenerator.generate();
 
         try {
-            final BoolQueryBuilder query =
-                boolQuery()
-                    .must(boolQuery()
-                        .must(matchQuery("reference", 1699100726058557L))
-                    );
-            //TODO: Update query to get all the cases that needs migration
-
-            log.info("Query:" + query.toString());
-
-            triggerMigrateTask(userDetails, serviceAuthorisation, query);
-
+            migrateCases(userDetails, serviceAuthorisation);
             log.info("Migrate Case Links task complete.");
         } catch (final CcdSearchCaseException e) {
             log.error("Migrate Case Links task stopped after search error", e);
@@ -66,11 +56,19 @@ public class SystemMigrateCaseLinksTask implements Runnable {
         }
     }
 
-    private void triggerMigrateTask(User userDetails, String serviceAuthorisation, BoolQueryBuilder query) {
-        final List<CaseDetails> cases =
-            ccdSearchService.searchForAllCasesWithQuery(query, userDetails, serviceAuthorisation);
-        log.info("Cases:" + cases.size());
-        for (final CaseDetails caseDetails : cases) {
+    private void migrateCases(User userDetails, String serviceAuthorisation) {
+        //TODO: Update query to get all the cases that needs migration
+        final BoolQueryBuilder boolQueryBuilder =
+            boolQuery()
+                .must(boolQuery()
+                    .must(matchQuery("reference", 1699100726058557L))
+                );
+        log.info("Query:" + boolQueryBuilder.toString());
+
+        final List<CaseDetails> caseList =
+            ccdSearchService.searchForAllCasesWithQuery(boolQueryBuilder, userDetails, serviceAuthorisation);
+        log.info("Cases:" + caseList.size());
+        for (final CaseDetails caseDetails : caseList) {
             triggerMigrateFieldsForEligibleCases(userDetails, serviceAuthorisation, caseDetails);
         }
     }
