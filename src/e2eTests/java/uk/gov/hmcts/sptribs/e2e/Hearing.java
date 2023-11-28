@@ -450,7 +450,7 @@ public class Hearing {
         page.waitForSelector("#judge",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
         var elements = page.querySelectorAll("#judge option");
-        Assertions.assertTrue(elements.size() > 1, "Judges list is not loaded");
+        Assertions.assertTrue(elements.size() > 1, "Judges dropdown list is empty");
         return getRandomOptionFromTheList(elements);
     }
 
@@ -458,7 +458,7 @@ public class Hearing {
         page.waitForSelector("#memberList_0_name",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
         var elements = page.querySelectorAll("#memberList_0_name option");
-        Assertions.assertTrue(elements.size() > 1, "Panel members list is not loaded");
+        Assertions.assertTrue(elements.size() > 1, "Panel members dropdown list is empty");
         return getRandomOptionFromTheList(elements);
     }
 
