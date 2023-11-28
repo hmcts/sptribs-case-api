@@ -90,7 +90,7 @@ public class Case {
         Calendar date = DateHelpers.getYesterdaysDate();
         getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
         getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
-        getTextBoxByLabel(page, "Year").fill(valueOf(date.get(Calendar.YEAR)));
+        getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
         clickButton(page, "Continue");
 
         // Fill identified parties form
