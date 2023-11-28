@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
@@ -42,10 +41,8 @@ public class SystemMigrateCaseLinksTask implements Runnable {
     public void run() {
         log.info("Migrate case links scheduled task started");
 
-        final User user = idamService.retrieveSystemUpdateUserDetails();
-        final String serviceAuth = authTokenGenerator.generate();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        final User userDetails = idamService.retrieveSystemUpdateUserDetails();
+        final String serviceAuthorisation = authTokenGenerator.generate();
 
         try {
             final BoolQueryBuilder query =
@@ -57,17 +54,17 @@ public class SystemMigrateCaseLinksTask implements Runnable {
 
             log.info("Query:" + query.toString());
             final List<CaseDetails> casesInAwaitingFinalOrderState =
-                ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);
+                ccdSearchService.searchForAllCasesWithQuery(query, userDetails, serviceAuthorisation);
             log.info("Cases:" + casesInAwaitingFinalOrderState.size());
             for (final CaseDetails caseDetails : casesInAwaitingFinalOrderState) {
-                triggerMigrateFieldsForEligibleCases(user, serviceAuth, caseDetails);
+                triggerMigrateFieldsForEligibleCases(userDetails, serviceAuthorisation, caseDetails);
             }
 
-            log.info("Migrate fields scheduled task complete.");
+            log.info("Migrate Case Links task complete.");
         } catch (final CcdSearchCaseException e) {
-            log.error("Migrate fields schedule task stopped after search error", e);
+            log.error("Migrate Case Links task stopped after search error", e);
         } catch (final CcdConflictException e) {
-            log.info("Migrate fields schedule task stopping "
+            log.info("Migrate Case Links task stopping "
                 + "due to conflict with another running task"
             );
         }
@@ -75,7 +72,7 @@ public class SystemMigrateCaseLinksTask implements Runnable {
 
     private void triggerMigrateFieldsForEligibleCases(User user, String serviceAuth, CaseDetails caseDetails) {
         try {
-            log.info("Submitting Migrate Fields Event for Case {}", caseDetails.getId());
+            log.info("Submitting Case Links Event for Case {}", caseDetails.getId());
             ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_MIGRATE_CASE_LINKS, user, serviceAuth);
         } catch (final CcdManagementException e) {
             log.error("Submit event failed for case id: {}, continuing to next case", caseDetails.getId());
