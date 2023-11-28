@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
