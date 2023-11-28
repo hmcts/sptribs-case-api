@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -53,9 +54,8 @@ class SystemMigrateCaseFlagsTaskTest {
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(boolQuery()
-            .must(matchQuery("reference", 1688978122333564L))
+            .mustNot(existsQuery("data.subjectFlags"))
         );
-    // TODO : change query to process all the records
 
     @BeforeEach
     void setUp() {
