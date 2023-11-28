@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
@@ -41,10 +39,6 @@ public class SystemMigrateCaseLinksTask implements Runnable {
     @Autowired
     private AuthTokenGenerator authTokenGenerator;
 
-    public static final String PRONOUNCED_DATE = "coGrantedDate";
-
-    private static final String FINAL_ORDER_OVERDUE_FLAG = "isFinalOrderOverdue";
-
     @Override
     public void run() {
         log.info("Migrate case links scheduled task started");
@@ -53,26 +47,18 @@ public class SystemMigrateCaseLinksTask implements Runnable {
         final String serviceAuth = authTokenGenerator.generate();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String overdueDate = formatter.format(LocalDate.now().minusDays(7));
 
         try {
             final BoolQueryBuilder query =
                 boolQuery()
                     .must(boolQuery()
                         .must(matchQuery("reference", 1699100726058557L))
-                    )
-
-                /*.must(
-                   boolQuery()
-                         .should(boolQuery().must(rangeQuery(String.format(DATA, PRONOUNCED_DATE)).lt(overdueDate)))
-                )
-                .mustNot(matchQuery(String.format(DATA, FINAL_ORDER_OVERDUE_FLAG), YesOrNo.YES))*/
-                ;
+                    );
+            //TODO: Update query to get all the cases that needs migration
 
             log.info("Query:" + query.toString());
-            log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
             final List<CaseDetails> casesInAwaitingFinalOrderState =
-                ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth, State.CaseManagement);
+                ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);
             log.info("Cases:" + casesInAwaitingFinalOrderState.size());
             for (final CaseDetails caseDetails : casesInAwaitingFinalOrderState) {
                 triggerMigrateFieldsForEligibleCases(user, serviceAuth, caseDetails);
