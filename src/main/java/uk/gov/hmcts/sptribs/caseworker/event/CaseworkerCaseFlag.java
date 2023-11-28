@@ -37,7 +37,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final String ALWAYS_HIDE = "[STATE] = \"ALWAYS_HIDE\"";
+    private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
@@ -57,12 +57,14 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-            .name("Create case flags")
+            .name("Create Flag")
             .showSummary()
-            .description("Create case flags")
+            .description("Create Flag")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
-            .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN)
+            .grant(CREATE_READ_UPDATE, AC_CASEFLAGS_ADMIN, SUPER_USER,
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -86,7 +88,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        log.info("Create case flags aboutToSubmit callback invoked for Case Id: {}", details.getId());
+        log.info("Create Case flags about to Submit invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
@@ -100,8 +102,8 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse flagCreated(CaseDetails<CaseData, State> details,
                                                  CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
-            .build();
+                .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
+                .build();
     }
 
 

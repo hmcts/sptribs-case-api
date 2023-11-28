@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -65,6 +66,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
+
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
