@@ -30,7 +30,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
