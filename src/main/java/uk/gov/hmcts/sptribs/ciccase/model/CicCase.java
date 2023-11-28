@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
+import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -29,7 +32,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.common.model.Status;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
@@ -76,13 +78,13 @@ public class CicCase {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLinks>> caseLinks;
+    private List<ListValue<CaseLink>> caseLinks;
 
     @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ComponentLauncher linkedCasesComponentLauncher;
 
-  @CCD(
+    @CCD(
         label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         categoryID = "TD"
