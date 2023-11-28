@@ -11,6 +11,9 @@ azure:
 
 test-url: ${TEST_URL:http://localhost:4013}
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 uk:
   gov:
     notify:
@@ -90,6 +93,7 @@ SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-aat.service.core-com
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
+  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
 
 feature:
   contact-parties:

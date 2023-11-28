@@ -8,7 +8,7 @@ public enum Actions {
     ManageFlags("Flags: Manage flags"),
     CancelHearing("Hearings: Cancel hearing"),
     CreateListing("Hearings: Create listing"),
-    CreateSummary("Hearings: Create summary"),
+    CreateSummary("Hearings:Create summary"),
     EditListing("Hearings: Edit listing"),
     EditSummary("Hearings: Edit summary"),
     PostponeHearing("Hearings: Postpone hearing"),
