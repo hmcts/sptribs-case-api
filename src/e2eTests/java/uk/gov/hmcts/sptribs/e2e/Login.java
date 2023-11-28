@@ -111,6 +111,6 @@ public class Login {
     }
 
     public void loginAsStCitizen1User() {
-        loginAs(getenv("DSS_CITIZEN_USER"));
+        loginAsDssUser(getenv("DSS_CITIZEN_USER"));
     }
 }
