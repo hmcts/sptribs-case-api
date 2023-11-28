@@ -71,7 +71,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private SubmissionService submissionService;
 
     @Autowired
-    private CcdSupplementaryDataService coreCaseApiService;
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
@@ -129,6 +129,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         initialiseFlags(data);
 
+        initialiseFlags(data);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .state(submittedDetails.getState())
@@ -144,7 +146,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         String claimNumber = data.getHyphenatedCaseRef();
         try {
             sendApplicationReceivedNotification(claimNumber, data);
-            coreCaseApiService.submitSupplementaryDataRequestToCcd(claimNumber);
         } catch (Exception notificationException) {
             log.error("Create case notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -164,12 +165,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .roleOnCase(null)
             .build());
 
-        data.setSubjectFlags(Flags.builder()
-            .details(new ArrayList<>())
-            .partyName(data.getCicCase().getFullName())
-            .roleOnCase("subject")
-            .build()
-        );
+
+        if (null != data.getCicCase().getFullName()) {
+            data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getFullName())
+                .roleOnCase("subject")
+                .build()
+            );
+        }
 
         if (null != data.getCicCase().getApplicantFullName()) {
             data.setApplicantFlags(Flags.builder()
@@ -192,7 +196,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private void setSupplementaryData(Long caseId) {
         try {
-            coreCaseApiService.submitSupplementaryDataToCcd(caseId.toString());
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
         } catch (Exception exception) {
             log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
         }

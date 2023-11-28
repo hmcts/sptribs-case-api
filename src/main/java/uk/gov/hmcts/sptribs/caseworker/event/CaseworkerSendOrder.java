@@ -128,6 +128,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
+        updateSelectedOrder(caseData.getCicCase(), order);
+        updateCicCaseOrderList(caseData, order);
 
         setDefaultLastSelectedOrderFlag(caseData.getCicCase());
         updateLastSelectedOrder(order);
@@ -221,15 +223,12 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     }
 
-    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
-                                          CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Send order notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
-                .build();
+    private void updateSelectedOrder(CicCase cicCase, Order order) {
+        if (order.getDraftOrder() != null) {
+            cicCase.setSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
+        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+            cicCase.setSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
 
         return SubmittedCallbackResponse.builder()
@@ -264,6 +263,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 .forEach(orderListValue -> orderListValue.getValue().setIsLastSelectedOrder(YesOrNo.NO));
         }
         //Once Notification is sent, nullify the last selected order
-        //cicCase.setLastSelectedOrder(null);
+        caseData.getCicCase().setSelectedOrder(null);
     }
 }

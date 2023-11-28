@@ -121,9 +121,9 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     private Map<String, String> getUploadedDocumentIds(CaseData caseData) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, String> uploadedDocuments = new HashMap<>();
-        Document lastSelectedOrder = getLastSelectedOrder(cicCase);
-        if (null != lastSelectedOrder) {
-            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(lastSelectedOrder.getUrl(), "/"));
+        if (null != cicCase.getSelectedOrder()) {
+            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getSelectedOrder().getUrl(), "/"));
+
         }
 
         return uploadedDocuments;
