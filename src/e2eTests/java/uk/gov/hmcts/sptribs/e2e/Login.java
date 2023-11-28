@@ -83,7 +83,7 @@ public class Login {
     }
 
     public void loginAsStTest1User() {
-        loginAs("st-test1@mailinator.com");
+        loginAs(getenv("SENIOR_LEGAL_OFFICER"));
     }
 
     public void loginAsHearingCentreTL() {
