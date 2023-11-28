@@ -12,6 +12,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueFinalDecision;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class IssueFinalDecisionTests extends Base {
@@ -26,7 +27,9 @@ public class IssueFinalDecisionTests extends Base {
         newCase.buildCase();
         Hearing hearing = new Hearing(page);
         hearing.createListing();
-        hearing.createHearingSummary();
+        String judge = "Carys Cotton";
+        String panelMember = "Dr Aaron Owens";
+        hearing.createHearingSummary(judge, panelMember);
         newCase.startNextStepAction(IssueFinalDecision);
         assertThat(page.locator("h1"))
             .hasText("Create a final decision notice", textOptionsWithTimeout(60000));
@@ -49,11 +52,11 @@ public class IssueFinalDecisionTests extends Base {
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("h1"))
             .hasText("Select recipients", textOptionsWithTimeout(60000));
-        page.getByLabel("Subject").check();
-        page.getByLabel("Representative").check();
-        page.getByLabel("Respondent").check();
+        getCheckBoxByLabel(page, "Subject").check();
+        getCheckBoxByLabel(page, "Representative").check();
+        getCheckBoxByLabel(page, "Respondent").check();
         PageHelpers.clickButton(page, "Continue");
-        assertThat(page.locator("h2"))
+        assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
         assertThat(page.locator("ccd-markdown markdown h1"))

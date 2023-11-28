@@ -4,6 +4,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.e2e.Base.CASE_API_BASE_URL;
 import static uk.gov.hmcts.sptribs.e2e.Base.DSS_BASE_URL;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -98,6 +99,6 @@ public class Login {
     }
 
     public void loginAsStCitizen1User() {
-        loginAsDssUser("st-citizen1@mailinator.com");
+        loginAsDssUser(getenv("DSS_CITIZEN_USER"));
     }
 }
