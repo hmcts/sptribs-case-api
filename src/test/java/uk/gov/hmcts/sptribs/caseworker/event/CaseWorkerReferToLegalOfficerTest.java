@@ -29,6 +29,7 @@ class CaseWorkerReferToLegalOfficerTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
+
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
@@ -42,50 +43,23 @@ class CaseWorkerReferToLegalOfficerTest {
     }
 
     @Test
-    void shouldAlwaysInitiateReferToLegalOfficerWithEmptyObject() {
-        //Given
-        final CaseDetails<CaseData, State> existingCaseDetails = getCaseDetails();
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
-            caseWorkerReferToLegalOfficer.aboutToStart(existingCaseDetails);
-
-        //Then
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer()).isNotNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getReferralReason()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getReasonForReferral()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getAdditionalInformation()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getReferralDate()).isNull();
-    }
-
-    @Test
     void shouldReferToLegalOfficer() {
         //Given
-        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
+        CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse response2 =
-            caseWorkerReferToLegalOfficer.submitted(updatedCaseDetails, beforeDetails);
+            caseWorkerReferToLegalOfficer.referred(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response1).isNotNull();
-        assertThat(response1.getData().getReferToLegalOfficer().getReferralDate()).isNotNull();
-        assertThat(response2).isNotNull();
         assertThat(response2.getConfirmationHeader()).contains("Referral completed");
     }
-
-    private CaseDetails<CaseData, State> getCaseDetails() {
-        CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-
-        caseDetails.setData(caseData);
-        caseDetails.setId(TEST_CASE_ID);
-        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        return caseDetails;
-    }
-
 }
