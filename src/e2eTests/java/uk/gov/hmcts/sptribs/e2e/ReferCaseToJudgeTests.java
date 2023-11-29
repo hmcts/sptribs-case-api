@@ -5,6 +5,7 @@ import com.microsoft.playwright.options.SelectOption;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
@@ -31,6 +32,7 @@ public class ReferCaseToJudgeTests extends Base {
         assertThat(page.locator("h1")).hasText(Actions.ReferCaseToJudge.label, textOptionsWithTimeout(60000));
     }
 
+    @Order(1)
     @RepeatedIfExceptionsTest
     public void caseworkerShouldAbleToReferCaseToJudge() {
         page.selectOption("#referToJudgeReferralReason",
@@ -50,6 +52,7 @@ public class ReferCaseToJudgeTests extends Base {
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
+    @Order(2)
     @RepeatedIfExceptionsTest
     public void errorInvalidCaseStatusReferCaseToJudge() {
         page.selectOption("#referToJudgeReferralReason",
