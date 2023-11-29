@@ -80,13 +80,7 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
         final CaseData caseDataBefore = detailsBefore.getData();
 
         if (isNull(caseData.getListing().getRegionList())) {
-            final DynamicList emptyHearingVenuesDynamicList =
-                DynamicList
-                    .builder()
-                    .listItems(emptyList())
-                    .build();
-
-            caseData.getListing().setHearingVenues(emptyHearingVenuesDynamicList);
+            caseData.getListing().setHearingVenues(resetHearingVenuesDynamicList());
             caseData.getListing().setHearingVenuesMessage(null);
 
             return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -113,8 +107,22 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
+        final CaseData caseData = details.getData();
+
+        if (!caseData.getListing().getVenueNotListedOption().isEmpty()) {
+            caseData.getListing().setHearingVenues(resetHearingVenuesDynamicList());
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
             .state(ReadyToList)
+            .build();
+    }
+
+    private DynamicList resetHearingVenuesDynamicList() {
+        return DynamicList
+            .builder()
+            .listItems(emptyList())
             .build();
     }
 }

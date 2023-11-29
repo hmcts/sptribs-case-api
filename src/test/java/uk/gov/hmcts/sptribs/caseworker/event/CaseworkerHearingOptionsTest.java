@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_HEARING_OPTIONS;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
+import static uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed.VENUE_NOT_LISTED;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -246,7 +248,11 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldChangeStateOnAboutToSubmitIfCurrentStateIsCaseManagement() {
         //Given
+        final CaseData caseData = caseData();
+        caseData.getListing().setHearingVenues(getMockedHearingVenueData());
+        caseData.getListing().setVenueNotListedOption(Set.of());
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
         caseDetails.setState(CaseManagement);
 
         //When
@@ -260,7 +266,11 @@ public class CaseworkerHearingOptionsTest {
     @Test
     void shouldNotChangeStateOnAboutToSubmitIfCurrentStateIsReadyToList() {
         //Given
+        final CaseData caseData = caseData();
+        caseData.getListing().setHearingVenues(getMockedHearingVenueData());
+        caseData.getListing().setVenueNotListedOption(Set.of());
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
         caseDetails.setState(ReadyToList);
 
         //When
@@ -269,5 +279,47 @@ public class CaseworkerHearingOptionsTest {
 
         //Then
         assertThat(response.getState()).isEqualTo(ReadyToList);
+    }
+
+    @Test
+    void shouldClearHearingVenuesOnAboutToSubmitIfVenueNotListedCheckboxIsSelected() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.getListing().setHearingVenues(getMockedHearingVenueData());
+        caseData.getListing().setVenueNotListedOption(Set.of(VENUE_NOT_LISTED));
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        final DynamicList expectedHearingVenuesDynamicList = DynamicList
+            .builder()
+            .listItems(emptyList())
+            .build();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getData().getListing().getHearingVenues())
+            .isEqualTo(expectedHearingVenuesDynamicList);
+    }
+
+    @Test
+    void shouldNotClearHearingVenuesOnAboutToSubmitIfVenueNotListedCheckboxIsNotSelected() {
+        //Given
+        final CaseData caseData = caseData();
+        final DynamicList hearingVenues = getMockedHearingVenueData();
+        caseData.getListing().setHearingVenues(hearingVenues);
+        caseData.getListing().setVenueNotListedOption(Set.of());
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.aboutToSubmit(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getData().getListing().getHearingVenues())
+            .isEqualTo(hearingVenues);
     }
 }
