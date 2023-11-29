@@ -49,7 +49,6 @@ public class Listing {
     )
     private String selectedRegionId;
 
-
     @CCD(
         label = "Hearing type",
         typeOverride = FixedRadioList,

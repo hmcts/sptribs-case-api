@@ -402,6 +402,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String judicialId;
+
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
@@ -416,7 +419,6 @@ public class CaseData {
         return "";
 
     }
-
 
     @JsonIgnore
     public Listing getLatestCompletedHearing() {

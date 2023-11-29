@@ -116,7 +116,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         var caseData = details.getData();
 
         caseData.getListing().setHearingStatus(Complete);
-        caseData.getListing().getSummary().setJudicialId(judicialService.populateJudicialId(caseData));
+        caseData.setJudicialId(judicialService.populateJudicialId(caseData));
+        caseData.getListing().getSummary().setJudgeList(null);
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
 

@@ -115,7 +115,7 @@ public class JudicialService {
         UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
         Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
             .map(ListValue::getValue)
-            .filter(j -> selectedJudgeUuid.equals(UUID.fromString(j.getUuid())))
+            .filter(j -> UUID.fromString(j.getUuid()).equals(selectedJudgeUuid))
             .findFirst()
             .map(Judge::getPersonalCode);
 

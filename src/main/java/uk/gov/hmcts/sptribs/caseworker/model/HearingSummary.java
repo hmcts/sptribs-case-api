@@ -38,12 +38,6 @@ public class HearingSummary {
     private DynamicList judge;
 
     @CCD(
-        label = "Judicial ID of judge hearing the case",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String judicialId;
-
-    @CCD(
         label = "Information about Judges stored in dynamic list",
         typeOverride = Collection,
         typeParameterOverride = "Judge",

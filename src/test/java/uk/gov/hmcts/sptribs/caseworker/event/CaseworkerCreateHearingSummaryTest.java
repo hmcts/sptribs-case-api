@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 
@@ -78,7 +79,7 @@ class CaseworkerCreateHearingSummaryTest {
         updatedCaseDetails.setData(caseData);
 
         when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
-        when(judicialService.getAllUsers(caseData)).thenReturn(null);
+        when(judicialService.getAllUsers(caseData)).thenReturn(getDynamicList());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
@@ -123,10 +124,12 @@ class CaseworkerCreateHearingSummaryTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getListing().getHearingStatus())
             .isEqualTo(HearingState.Complete);
-        assertThat(response.getData().getListing().getSummary().getJudicialId())
+        assertThat(response.getData().getJudicialId())
             .isEqualTo("personal_code");
         assertThat(response.getData().getListing())
             .isEqualTo(recordListing);
+        assertThat(response.getData().getListing().getSummary().getJudgeList())
+            .isNull();
     }
 
     @Test
