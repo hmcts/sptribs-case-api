@@ -9,6 +9,7 @@ java:
     CASE_DATA_STORE_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
+    ENABLE_JRD_API_V2: true
 
   keyVaults:
     sptribs:
