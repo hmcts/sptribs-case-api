@@ -302,7 +302,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("roomAtVenue")
             .field("addlInstr")
             .field("hearingFormat")
-            .field("shortNotice");
+            .field("shortNotice")
 
             .field(CaseData::getHearingList);
     }
