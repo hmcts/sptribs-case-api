@@ -26,6 +26,9 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseLinks.SYS
 public class SystemMigrateCaseLinksTask implements Runnable {
 
     @Autowired
+    private AuthTokenGenerator authTokenGenerator;
+
+    @Autowired
     private CcdSearchService ccdSearchService;
 
     @Autowired
@@ -33,9 +36,6 @@ public class SystemMigrateCaseLinksTask implements Runnable {
 
     @Autowired
     private IdamService idamService;
-
-    @Autowired
-    private AuthTokenGenerator authTokenGenerator;
 
     @Override
     public void run() {
@@ -68,18 +68,18 @@ public class SystemMigrateCaseLinksTask implements Runnable {
             ccdSearchService.searchForAllCasesWithQuery(boolQueryBuilder, userDetails, serviceAuthorisation);
         log.info("Cases:" + caseList.size());
         for (final CaseDetails caseDetails : caseList) {
-            triggerMigrateForOldCases(userDetails, serviceAuthorisation, caseDetails);
+            triggerMigrateForOldCases(SYSTEM_MIGRATE_CASE_LINKS, userDetails, serviceAuthorisation, caseDetails.getId());
         }
     }
 
-    private void triggerMigrateForOldCases(User user, String serviceAuth, CaseDetails caseDetails) {
+    private void triggerMigrateForOldCases(String eventName, User user, String serviceAuth, Long caseId) {
         try {
-            log.info("Submitting Case Links Event for Case {}", caseDetails.getId());
-            ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_MIGRATE_CASE_LINKS, user, serviceAuth);
+            log.info("Submitting Case Links Event for Case {}", caseId);
+            ccdUpdateService.submitEvent(caseId, eventName, user, serviceAuth);
         } catch (final CcdManagementException e) {
-            log.error("Submit event failed for case id: {}, continuing to next case", caseDetails.getId());
+            log.error("Submit event failed for case id: {}, continuing to next case", caseId);
         } catch (final IllegalArgumentException e) {
-            log.error("Deserialization failed for case id: {}, continuing to next case", caseDetails.getId());
+            log.error("Deserialization failed for case id: {}, continuing to next case", caseId);
         }
     }
 }
