@@ -57,7 +57,6 @@ public class SystemMigrateCaseLinksTask implements Runnable {
     }
 
     private void migrateCases(User userDetails, String serviceAuthorisation) {
-        //TODO: Update query to get all the cases that needs migration
         final BoolQueryBuilder boolQueryBuilder =
             boolQuery()
                 .must(boolQuery()
@@ -69,11 +68,11 @@ public class SystemMigrateCaseLinksTask implements Runnable {
             ccdSearchService.searchForAllCasesWithQuery(boolQueryBuilder, userDetails, serviceAuthorisation);
         log.info("Cases:" + caseList.size());
         for (final CaseDetails caseDetails : caseList) {
-            triggerMigrateFieldsForEligibleCases(userDetails, serviceAuthorisation, caseDetails);
+            triggerMigrateForOldCases(userDetails, serviceAuthorisation, caseDetails);
         }
     }
 
-    private void triggerMigrateFieldsForEligibleCases(User user, String serviceAuth, CaseDetails caseDetails) {
+    private void triggerMigrateForOldCases(User user, String serviceAuth, CaseDetails caseDetails) {
         try {
             log.info("Submitting Case Links Event for Case {}", caseDetails.getId());
             ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_MIGRATE_CASE_LINKS, user, serviceAuth);
