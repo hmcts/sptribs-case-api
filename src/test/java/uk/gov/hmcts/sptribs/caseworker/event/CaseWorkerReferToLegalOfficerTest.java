@@ -42,23 +42,6 @@ class CaseWorkerReferToLegalOfficerTest {
     }
 
     @Test
-    void shouldAlwaysInitiateReferToLegalOfficerWithEmptyObject() {
-        //Given
-        final CaseDetails<CaseData, State> existingCaseDetails = getCaseDetails();
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
-            caseWorkerReferToLegalOfficer.aboutToStart(existingCaseDetails);
-
-        //Then
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer()).isNotNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getReferralReason()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getReasonForReferral()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getAdditionalInformation()).isNull();
-        assertThat(aboutToStartResponse.getData().getReferToLegalOfficer().getReferralDate()).isNull();
-    }
-
-    @Test
     void shouldReferToLegalOfficer() {
         //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
@@ -68,7 +51,7 @@ class CaseWorkerReferToLegalOfficerTest {
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse response2 =
-            caseWorkerReferToLegalOfficer.submitted(updatedCaseDetails, beforeDetails);
+            caseWorkerReferToLegalOfficer.referred(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response1).isNotNull();
