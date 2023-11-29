@@ -27,7 +27,7 @@ public class ManageOrderDueDateTests extends Base {
     private void createCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         newCase = new Case(page);
         newCase.createCase();
     }

@@ -20,7 +20,7 @@ public class EditCicaCaseDetailsTests extends Base {
     public void respondentShouldBeAbleToAddEditCicDetails() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         final String caseNumber = newCase.createCase(Representative);
         newCase.buildCase();

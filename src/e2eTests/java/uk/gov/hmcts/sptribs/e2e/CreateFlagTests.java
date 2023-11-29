@@ -14,7 +14,7 @@ public class CreateFlagTests extends Base {
     public void caseWorkedShouldBeAbleToCreateCaseLevelFlag() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
@@ -25,7 +25,7 @@ public class CreateFlagTests extends Base {
     public void caseWorkedShouldBeAbleToCreatePartyLevelFlag() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase(SubjectEmail, ApplicantEmail, RepresentativePost);
         newCase.buildCase();
@@ -36,7 +36,7 @@ public class CreateFlagTests extends Base {
     public void caseWorkerShouldBeAbleToDoManageFlags() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();

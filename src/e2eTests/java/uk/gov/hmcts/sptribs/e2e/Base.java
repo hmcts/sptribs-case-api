@@ -86,7 +86,7 @@ public abstract class Base {
 
     protected Case createAndBuildCase(Page page, CasePartyContactPreference... parties) {
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
 
         Case newCase = new Case(page);
         newCase.createCase(parties);

@@ -145,7 +145,7 @@ public class HearingJourneyTests extends Base {
         final String caseNumber = newDssCase.createCase("representative");
         clickLink(page, "Sign out");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         page.navigate(getCaseUrl(caseNumber));
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));

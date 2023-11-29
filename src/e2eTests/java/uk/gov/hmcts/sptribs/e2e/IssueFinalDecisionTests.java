@@ -22,7 +22,7 @@ public class IssueFinalDecisionTests extends Base {
     public void caseWorkerShouldBeAbleToIssueFinalDecision() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase(Representative);
         newCase.buildCase();

@@ -22,7 +22,7 @@ public class IssueADecisionTests extends Base {
     public void caseWorkerShouldIssueADecision() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase(Representative);
         newCase.buildCase();

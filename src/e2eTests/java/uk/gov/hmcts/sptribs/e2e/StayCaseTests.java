@@ -22,7 +22,7 @@ public class StayCaseTests extends Base {
     public void caseWorkerShouldBeAbleToAddStayToCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase(Representative);
         newCase.buildCase();
@@ -34,7 +34,7 @@ public class StayCaseTests extends Base {
     public void caseWorkerShouldBeAbleEditStayToCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
@@ -66,7 +66,7 @@ public class StayCaseTests extends Base {
     public void caseworkerShouldBeAbleToRemoveStayCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();

@@ -13,7 +13,7 @@ public class LinkCaseTests extends Base {
     void linkTwoCasesTogetherTest() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
 
         Case case1 = new Case(page);
         String caseId1 = createAndBuild(case1, page);
@@ -28,7 +28,7 @@ public class LinkCaseTests extends Base {
     void unlinkCasesTest() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsCaseWorker();
+        login.loginAsLegalOfficer();
 
         Case case1 = new Case(page);
         String caseId1 = createAndBuild(case1, page);
