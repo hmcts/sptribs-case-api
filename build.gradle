@@ -64,6 +64,14 @@ sourceSets {
       srcDir file('src/e2eTests/java')
     }
  }
+  contractTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/contractTest/java')
+    }
+    resources.srcDir file('src/contactTest/resources')
+  }
 }
 
 ext{
@@ -94,6 +102,8 @@ configurations {
   cftlibTestRuntime.extendsFrom testRuntime
   e2eTestsImplementation.extendsFrom testImplementation
   e2eTestsRuntime.extendsFrom testRuntime
+  contractTestImplementation.extendsFrom testImplementation
+  contractTestRuntime.extendsFrom testRuntime
 }
 
 
@@ -134,6 +144,13 @@ task integration(type: Test) {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
+}
+
+task contract(type: Test, description: 'Runs the pact contract tests.', group: 'Verification') {
+  description = "Runs the consumer Pact tests"
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
 }
 
 task e2eTestInPrev(type: Test) {
@@ -429,7 +446,10 @@ def versions = [
   junit             : '5.10.1',
   junitPlatform     : '1.10.1',
   lombok            : '1.18.30',
-  springBoot        : springBoot.class.package.implementationVersion
+  springBoot        : springBoot.class.package.implementationVersion,
+  pact_version       : '4.1.38',
+  serenity           : '3.6.22',
+  restAssured     : '5.3.1'
 ]
 
 ext["rest-assured.version"] = '4.5.0'
@@ -445,6 +465,18 @@ ext.libraries = [
 ]
 
 dependencies {
+
+  modules {
+    module("org.codehaus.groovy:groovy") {
+      replacedBy("org.apache.groovy:groovy", "conflicts in current rest-assured version")
+    }
+    module("org.codehaus.groovy:groovy-xml") {
+      replacedBy("org.apache.groovy:groovy-xml", "conflicts in current rest-assured version")
+    }
+    module("org.codehaus.groovy:groovy-json") {
+      replacedBy("org.apache.groovy:groovy-json", "conflicts in current rest-assured version")
+    }
+  }
 // uncomment for local version
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 
@@ -534,6 +566,25 @@ dependencies {
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.40.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
+
+  //PACT testing
+  /*contractTestImplementation group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
+  contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+  contractTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'*/
+  //pact contract testing
+
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-model', version: '3.6.15'
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+  contractTestImplementation (group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity) {
+    exclude group: "org.apache.groovy", module: "groovy"
+    exclude group: "org.apache.groovy", module: "groovy-xml"
+  }
+
+  contractTestImplementation sourceSets.main.runtimeClasspath
+  contractTestImplementation sourceSets.test.runtimeClasspath
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
