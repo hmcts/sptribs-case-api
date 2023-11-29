@@ -20,6 +20,7 @@
   "roomAtVenue": "G.01",
   "cicCaseRespondentOrganisation": "CICA",
   "addlInstr": "Ground floor",
+  "venueNotListedOption": [],
   "hearingVenues": {
     "value": {
       "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",

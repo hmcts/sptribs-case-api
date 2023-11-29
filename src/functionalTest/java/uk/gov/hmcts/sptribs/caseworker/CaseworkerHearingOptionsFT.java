@@ -31,7 +31,6 @@ public class CaseworkerHearingOptionsFT extends FunctionalTestSuite {
     private static final String MID_EVENT_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-hearing-options-mid-event.json";
 
-
     private static final String ABOUT_TO_START_RESPONSE =
         "classpath:responses/response-caseworker-hearing-options-about-to-start.json";
     private static final String MID_EVENT_RESPONSE =
