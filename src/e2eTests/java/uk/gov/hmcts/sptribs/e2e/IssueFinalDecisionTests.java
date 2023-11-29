@@ -27,9 +27,7 @@ public class IssueFinalDecisionTests extends Base {
         newCase.buildCase();
         Hearing hearing = new Hearing(page);
         hearing.createListing();
-        String judge = "Carys Cotton";
-        String panelMember = "Dr Aaron Owens";
-        hearing.createHearingSummary(judge, panelMember);
+        hearing.createHearingSummary();
         newCase.startNextStepAction(IssueFinalDecision);
         assertThat(page.locator("h1"))
             .hasText("Create a final decision notice", textOptionsWithTimeout(60000));
