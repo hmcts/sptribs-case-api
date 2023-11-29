@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.hmcts.sptribs.testutil.PrdLocationWireMock;
 
 import java.util.List;
+import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -52,6 +53,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedHearingVenueData;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -97,6 +99,9 @@ public class CaseworkerHearingOptionsIT {
     @Test
     void shouldTransitionStateToReadyToListWhenPreStateIsCaseManagementAboutToSubmit() throws Exception {
         final CaseData caseData = caseData();
+        final DynamicList hearingVenues = getMockedHearingVenueData();
+        caseData.getListing().setHearingVenues(hearingVenues);
+        caseData.getListing().setVenueNotListedOption(Set.of());
         final CallbackRequest callbackRequest = callbackRequest(caseData, CASEWORKER_HEARING_OPTIONS);
         callbackRequest.getCaseDetails().setState(CaseManagement.getName());
 
@@ -115,6 +120,9 @@ public class CaseworkerHearingOptionsIT {
     @Test
     void shouldNotTransitionStateWhenPreStateIsReadyToListAboutToSubmit() throws Exception {
         final CaseData caseData = caseData();
+        final DynamicList hearingVenues = getMockedHearingVenueData();
+        caseData.getListing().setHearingVenues(hearingVenues);
+        caseData.getListing().setVenueNotListedOption(Set.of());
         final CallbackRequest callbackRequest = callbackRequest(caseData, CASEWORKER_HEARING_OPTIONS);
         callbackRequest.getCaseDetails().setState(ReadyToList.getName());
 
