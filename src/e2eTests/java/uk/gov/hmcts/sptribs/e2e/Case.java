@@ -48,9 +48,6 @@ public class Case {
 
     public static final String SELECT_A_VALUE = "--Select a value--";
     private final Page page;
-    private final String documentCategory = "A - Application Form";
-    private final String documentDescription = "This is a test document uploaded during create case journey";
-    private final String documentName = "sample_file.pdf";
 
     public Case(Page page) {
         this.page = page;
@@ -70,6 +67,8 @@ public class Case {
     public String createCase(String... args) {
 
         // Select case filters
+        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         clickLink(page, "Create case");
         assertThat(page.locator("h1"))
             .hasText("Create Case", textOptionsWithTimeout(60000));
@@ -173,32 +172,36 @@ public class Case {
 
         // Fill contact preferences form
         assertThat(page.locator("h1"))
-            .hasText("Who should receive information about the case?", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Subject").first().check();
+            .hasText("Who should receive information about the case?", textOptionsWithTimeout(60000));
+        page.locator("#cicCaseSubjectCIC-SubjectCIC").check();
         if (page.isVisible("#cicCaseApplicantCIC-ApplicantCIC")) {
-            getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
+            page.locator("#cicCaseApplicantCIC-ApplicantCIC").check();
         }
         if (page.isVisible("#cicCaseRepresentativeCIC-RepresentativeCIC")) {
-            getCheckBoxByLabel(page, "Representative").check();
+            page.locator("#cicCaseRepresentativeCIC-RepresentativeCIC").check();
         }
+        page.locator("div h1").click();
         clickButton(page, "Continue");
 
         // Upload tribunals form
         assertThat(page.locator("h1"))
-            .hasText("Upload tribunal forms", textOptionsWithTimeout(30000));
+            .hasText("Upload tribunal forms", textOptionsWithTimeout(60000));
         clickButton(page, "Add new");
+        String documentCategory = "A - Application Form";
         page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
+        String documentName = "sample_file.pdf";
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
         page.waitForSelector("//span[contains(text(), 'Uploading...')]",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
+        String documentDescription = "This is a test document uploaded during create case journey";
         page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").fill(documentDescription);
         clickButton(page, "Continue");
 
         // Fill further details form
         assertThat(page.locator("h1"))
-            .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
+            .hasText("Enter further details about this case", textOptionsWithTimeout(60000));
         page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
         page.selectOption("#cicCaseRegionCIC", new SelectOption().setLabel("London"));
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
@@ -211,7 +214,7 @@ public class Case {
         // Check your answers form
         page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(30000));
         assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
+            .hasText("Check your answers", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
 
         // Case created confirmation screen
