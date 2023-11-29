@@ -128,7 +128,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
-        updateLastSelectedOrder(caseData.getCicCase(), order);
+        updateSelectedOrder(caseData.getCicCase(), order);
         updateCicCaseOrderList(caseData, order);
 
         caseData.getCicCase().setOrderIssuingType(null);
@@ -217,12 +217,12 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         }
     }
 
-    private void updateLastSelectedOrder(CicCase cicCase, Order order) {
+    private void updateSelectedOrder(CicCase cicCase, Order order) {
         if (order.getDraftOrder() != null) {
-            cicCase.setLastSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
+            cicCase.setSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
         } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
             updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            cicCase.setLastSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
+            cicCase.setSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
     }
 
@@ -244,6 +244,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         }
 
         //Once Notification is sent, nullify the last selected order
-        caseData.getCicCase().setLastSelectedOrder(null);
+        caseData.getCicCase().setSelectedOrder(null);
     }
 }
