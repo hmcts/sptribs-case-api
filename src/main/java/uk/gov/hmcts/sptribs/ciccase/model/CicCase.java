@@ -18,6 +18,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
@@ -78,7 +79,7 @@ public class CicCase {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = Collection,
         typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLink>> caseLinks;
+    private List<ListValue<CaseLinks>> caseLinks;
 
     @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
