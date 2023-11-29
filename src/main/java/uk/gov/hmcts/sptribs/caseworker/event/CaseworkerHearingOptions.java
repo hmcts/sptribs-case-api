@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_HEARING_OPTIONS;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -78,6 +80,15 @@ public class CaseworkerHearingOptions implements CCDConfig<CaseData, State, User
         final CaseData caseDataBefore = detailsBefore.getData();
 
         if (isNull(caseData.getListing().getRegionList())) {
+            final DynamicList emptyHearingVenuesDynamicList =
+                DynamicList
+                    .builder()
+                    .listItems(emptyList())
+                    .build();
+
+            caseData.getListing().setHearingVenues(emptyHearingVenuesDynamicList);
+            caseData.getListing().setHearingVenuesMessage(null);
+
             return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)
                 .build();

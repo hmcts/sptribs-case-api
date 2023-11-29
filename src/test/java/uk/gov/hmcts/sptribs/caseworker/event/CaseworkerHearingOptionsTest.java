@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -56,12 +57,18 @@ public class CaseworkerHearingOptionsTest {
     }
 
     @Test
-    void shouldNotPopulateHearingVenuesDataIfPresentNoRegionSelected() {
+    void shouldNotPopulateHearingVenuesDataIfNoRegionSelected() {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = caseData();
         caseData.setListing(Listing.builder().build());
         caseDetails.setData(caseData);
+
+        final DynamicList expectedHearingVenuesList =
+            DynamicList
+                .builder()
+                .listItems(emptyList())
+                .build();
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -70,7 +77,37 @@ public class CaseworkerHearingOptionsTest {
         //Then
         verifyNoInteractions(recordListHelper);
         assertThat(response.getData().getListing().getSelectedRegionVal()).isNull();
-        assertThat(response.getData().getListing().getHearingVenues()).isNull();
+        assertThat(response.getData().getListing().getHearingVenues()).isEqualTo(expectedHearingVenuesList);
+    }
+
+    @Test
+    void shouldClearHearingVenuesDataIfChosenRegionValueUnselected() {
+        //Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        caseData.setListing(
+            Listing.builder()
+                .hearingVenues(getMockedHearingVenueData())
+                .hearingVenuesMessage("Hearing venues message")
+                .build()
+        );
+        caseDetails.setData(caseData);
+
+        final DynamicList expectedHearingVenuesList =
+            DynamicList
+                .builder()
+                .listItems(emptyList())
+                .build();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerHearingOptions.midEvent(caseDetails, caseDetails);
+
+        //Then
+        verifyNoInteractions(recordListHelper);
+        assertThat(response.getData().getListing().getSelectedRegionVal()).isNull();
+        assertThat(response.getData().getListing().getHearingVenuesMessage()).isNull();
+        assertThat(response.getData().getListing().getHearingVenues()).isEqualTo(expectedHearingVenuesList);
     }
 
     @Test
