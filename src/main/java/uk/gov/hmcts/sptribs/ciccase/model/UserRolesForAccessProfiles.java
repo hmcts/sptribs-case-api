@@ -22,7 +22,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     ST_CIC_JUDGE("idam:caseworker-st_cic-judge", "CRU"),
     ST_CIC_RESPONDENT("idam:caseworker-st_cic-respondent", "CRU"),
     CITIZEN_CIC("idam:citizen", "CRU"),
-    HMCTS_ADMIN("idam:hmcts-admin", "CRU"),
 
     // Below are the Access Profiles for the Idam Roles
     CIC_SUPER_USER("caseworker-sptribs-superuser", "CRU"),
@@ -37,8 +36,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AC_CASEWORKER("caseworker", "CRU"),
     AC_CITIZEN("citizen", "CRU"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
-    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
-    AP_HMCTS_ADMIN("hmcts-admin", "CRU");
+    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R");
 
     @JsonValue
     private final String role;
