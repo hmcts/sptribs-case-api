@@ -80,15 +80,9 @@ public class CicCase {
     )
     private String linkCaseOtherDescription;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLink>> caseLinks;
-
     @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ComponentLauncher linkedCasesComponentLauncher;
-
 
     @CCD(
         label = "Preview order",
@@ -154,8 +148,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
-    private Document lastSelectedOrder;
+    private Document selectedOrder;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -770,6 +763,5 @@ public class CicCase {
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";
         applicantEmailAddress = "";
-
     }
 }
