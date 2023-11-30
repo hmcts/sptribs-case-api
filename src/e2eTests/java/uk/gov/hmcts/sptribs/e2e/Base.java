@@ -72,7 +72,8 @@ public abstract class Base {
         page = context.newPage();
         page.setDefaultTimeout(30000);
         page.setDefaultNavigationTimeout(30000);
-        CASE_API_BASE_URL = getenv("CASE_API_BASE_URL") == null ? CASE_API_AAT_URL : getenv("CASE_API_BASE_URL");
+        String url = getenv("CASE_API_BASE_URL");
+        CASE_API_BASE_URL = url == null || url.equals("null") ? CASE_API_AAT_URL : url;
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(120000));
     }
 
