@@ -292,11 +292,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseCancelHearingAdditionalDetail",  "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"")
 
             .label("Listing details", null, "#### Listing details")
-            .field(CaseData::getHearingList)
-
-            //TODO: remove after testing in preview completed
-            .label("Judicial ID", "judicialId!=\"\"", "#### Judicial ID Temporary testing")
-            .field("judicialId");
+            .field(CaseData::getHearingList);
     }
 
     private void buildCaseReferralTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
