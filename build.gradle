@@ -466,12 +466,6 @@ ext.libraries = [
 
 dependencies {
 
-  implementation 'org.notninja:verifier:0.3.0'
-  implementation 'com.eed3si9n.verify:verify_native0.4_2.11:1.0.0'
-//  implementation 'au.com.dius:pact-jvm-consumer-junit_2.10:2.4.20'
-//  implementation 'au.com.dius:pact-jvm-consumer-junit_2.11:3.5.24'
-//  implementation 'au.com.dius:pact-jvm-consumer-junit_2.12:3.6.15'
-  implementation 'au.com.dius:pact-jvm-consumer-junit:4.0.10'
   modules {
     module("org.codehaus.groovy:groovy") {
       replacedBy("org.apache.groovy:groovy", "conflicts in current rest-assured version")

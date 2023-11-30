@@ -1,7 +1,18 @@
 package uk.gov.hmcts.sptribs.consumer;
 
-import  au.com.dius.pact.consumer.dsl.DslPart;
-import feign.Request.HttpMethod;
+import au.com.dius.pact.consumer.MockServer;
+import au.com.dius.pact.consumer.junit5.PactTestFor;
+import com.google.common.collect.Maps;
+import io.restassured.RestAssured;
+import io.restassured.config.EncoderConfig;
+import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
+import net.serenitybdd.rest.SerenityRest;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
@@ -14,6 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Map;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @Provider("bundling-client")
@@ -27,48 +42,52 @@ public class BundlingClientPactTest {
     private static final String ENDPOINT = "/api/new-bundle";
 
 
+    @BeforeEach
+    public void setUp() {
+        RestAssured.defaultParser = Parser.JSON;
+        RestAssured.config().encoderConfig(new EncoderConfig("UTF-8", "UTF-8"));
+    }
 
+    @Pact(provider = "em_api", consumer = "sptribs-case-api")
+    public RequestResponsePact executeCreateEvidenceBundleIdAndGet200Response(PactDslWithProvider builder) {
 
-    @Pact(provider = "bundling-client", consumer = "your-consumer")
-    public RequestResponsePact createBundlePact(PactDslWithProvider builder) {
-
-        Map<String, String> headers = com.google.common.collect.Maps.newHashMap();
-        headers.put(org.springframework.http.HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-        headers.put(org.springframework.http.HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+        headers.put(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.put("ServiceAuthorization", AUTHORIZATION_TOKEN);
 
-
-        DslPart body = new PactDslJsonBody()
-            .stringValue("status", "success")
-            .stringValue("message", "Bundle created successfully");
         return builder
-            .uponReceiving("A request to create a bundle")
-            .path("/api/new-bundle")
-            .method(HttpMethod.POST.toString())
-            .headers("Content-Type", MediaType.APPLICATION_JSON_VALUE, "Service-Authorization",
-                "your-service-auth", "Authorization", "your-authorization")
-            .body(body)
+            .given("EM successfully returns OK Status")
+            .uponReceiving("Provider receives a POST request from an SPTribs CASE API")
+            .path(ENDPOINT)
+            .method(org.springframework.http.HttpMethod.POST.toString())
+            .headers(headers)
             .willRespondWith()
-            .status(200)
-            .body(body)
+            .status(HttpStatus.OK.value())
+            .body(new PactDslJsonBody()
+                .stringType("id", "12345"))
             .toPact();
     }
 
 
-
     @Test
-    @au.com.dius.pact.consumer.junit5.PactTestFor(providerName = "bundling-client")
-    public void testCreateBundle(au.com.dius.pact.consumer.MockServer mockServer) {
-        Map<String, String> headers = com.google.common.collect.Maps.newHashMap();
-        headers.put(org.springframework.http.HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-        headers.put(org.springframework.http.HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+    @PactTestFor(pactMethod = "executeCreateEvidenceBundleIdAndGet200Response")
+    public void should_post_to_Evidence_bundle_and_receive_code_with_200_response(MockServer mockServer) throws JSONException {
+
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+        headers.put(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.put("ServiceAuthorization", AUTHORIZATION_TOKEN);
-        org.springframework.util.MultiValueMap<String, String> body = new org.springframework.util.LinkedMultiValueMap<>();
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("response_type", "bundleCaseData");
+        body.add("redirect_uri", ENDPOINT);
+
         String actualResponseBody =
-            net.serenitybdd.rest.SerenityRest
+            SerenityRest
                 .given()
                 .headers(headers)
-                .contentType(io.restassured.http.ContentType.URLENC)
+                .contentType(ContentType.URLENC)
                 .formParams(body)
                 .when()
                 .post(mockServer.getUrl() + ENDPOINT)
@@ -77,17 +96,13 @@ public class BundlingClientPactTest {
                 .and()
                 .extract()
                 .asString();
-         try {
-         java.net.http.HttpResponse response = org.apache.http.client.fluent.Request.Post("/api/new-bundle")
-         .bodyString("{key: value}", ContentType.APPLICATION_JSON)
-         .execute()
-             .returnResponse();
 
-         } catch (Exception e) {
+        assertThat(actualResponseBody).isNotNull();
 
-         e.printStackTrace();
-         }
+        JSONObject response = new JSONObject(actualResponseBody);
+        assertThat(response.get("id").toString()).isNotBlank();
     }
+
 
     }
 
