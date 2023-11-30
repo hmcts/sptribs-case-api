@@ -466,9 +466,6 @@ ext.libraries = [
 
 dependencies {
 
-  implementation 'org.notninja:verifier:0.3.0'
-  implementation 'com.eed3si9n.verify:verify_native0.4_2.11:1.0.0'
-  implementation 'au.com.dius:pact-jvm-consumer-junit:4.0.10'
   modules {
     module("org.codehaus.groovy:groovy") {
       replacedBy("org.apache.groovy:groovy", "conflicts in current rest-assured version")
@@ -578,8 +575,7 @@ dependencies {
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-model', version: '3.6.15'
-  //contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
-  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.1.38'
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
   contractTestImplementation (group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity) {
