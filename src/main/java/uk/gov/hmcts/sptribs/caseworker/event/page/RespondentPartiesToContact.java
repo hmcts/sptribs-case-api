@@ -23,7 +23,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SU
 public class RespondentPartiesToContact implements CcdPageConfiguration {
 
     private static final String RECIPIENT_LABEL = "Contact parties recipient";
-    private static final String R_LABEL = "Contact parties recipient";
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
 
 
@@ -39,8 +38,10 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .done()
             .complex(CaseData::getContactParties)
             .optional(ContactParties::getSubjectContactParties)
-            .optionalWithoutDefaultValue(ContactParties::getApplicantContactParties, "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
-            .optionalWithoutDefaultValue(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ", R_LABEL)
+            .optionalWithoutDefaultValue(ContactParties::getApplicantContactParties,
+                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
+            .optionalWithoutDefaultValue(ContactParties::getRepresentativeContactParties,
+                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .optionalWithLabel(ContactParties::getTribunal, RECIPIENT_LABEL)
             .done()
             .complex(CaseData::getCicCase)
