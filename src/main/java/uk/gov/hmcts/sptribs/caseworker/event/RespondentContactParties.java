@@ -115,7 +115,6 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
