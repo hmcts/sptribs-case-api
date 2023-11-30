@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
 
 import java.util.ArrayList;
