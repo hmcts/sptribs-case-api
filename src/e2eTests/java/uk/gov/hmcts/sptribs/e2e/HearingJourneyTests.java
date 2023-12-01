@@ -5,6 +5,8 @@ import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 
+import java.util.HashMap;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.DssSubmitted;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.visibleOptionsWithTimeout;
@@ -37,7 +39,7 @@ public class HearingJourneyTests extends Base {
         createAndBuildCase(page);
 
         Hearing hearing = createListing(page);
-        hearing.createHearingSummary();
+        final HashMap<String, String> map = hearing.createHearingSummary();
         getTabByText(page, "Hearings").click();
         assertThat(page.locator("h4").first()).hasText("Listing details");
         String hearingStatus = getValueFromTableWithinHearingsTabFor(page, "Hearing Status");
@@ -46,10 +48,10 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Case management", hearingType);
         String hearingFormat = getValueFromTableWithinHearingsTabFor(page, "Hearing format");
         Assertions.assertEquals("Face to Face", hearingFormat);
-        String judge = getValueFromTableWithinHearingsTabFor(page, "Which judge heard the case?");
-        Assertions.assertEquals("Chetan Lad", judge);
-        String panelMember = getValueFromTableWithinHearingsTabFor(page, "Name of the panel member");
-        Assertions.assertEquals("Joe Bloggs", panelMember);
+        String displayedJudge = getValueFromTableWithinHearingsTabFor(page, "Which judge heard the case?");
+        Assertions.assertEquals(map.get("judge"), displayedJudge);
+        String displayedPanelMember = getValueFromTableWithinHearingsTabFor(page, "Name of the panel member");
+        Assertions.assertEquals(map.get("panelMember"), displayedPanelMember);
         String otherAttendee = getValueFromTableWithinHearingsTabFor(page, "Who was this other attendee?");
         Assertions.assertEquals("Special officer", otherAttendee);
     }
@@ -60,7 +62,7 @@ public class HearingJourneyTests extends Base {
         createEditAndBuildDssCase(page);
 
         Hearing hearing = createListing(page);
-        hearing.createHearingSummary();
+        final HashMap<String, String> map = hearing.createHearingSummary();
         getTabByText(page, "Hearings").click();
         assertThat(page.locator("h4").first()).hasText("Listing details");
         String hearingStatus = getValueFromTableWithinHearingsTabFor(page, "Hearing Status");
@@ -69,10 +71,10 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Case management", hearingType);
         String hearingFormat = getValueFromTableWithinHearingsTabFor(page, "Hearing format");
         Assertions.assertEquals("Face to Face", hearingFormat);
-        String judge = getValueFromTableWithinHearingsTabFor(page, "Which judge heard the case?");
-        Assertions.assertEquals("Chetan Lad", judge);
-        String panelMember = getValueFromTableWithinHearingsTabFor(page, "Name of the panel member");
-        Assertions.assertEquals("Joe Bloggs", panelMember);
+        String displayedJudge = getValueFromTableWithinHearingsTabFor(page, "Which judge heard the case?");
+        Assertions.assertEquals(map.get("judge"), displayedJudge);
+        String displayedPanelMember = getValueFromTableWithinHearingsTabFor(page, "Name of the panel member");
+        Assertions.assertEquals(map.get("panelMember"), displayedPanelMember);
         String otherAttendee = getValueFromTableWithinHearingsTabFor(page, "Who was this other attendee?");
         Assertions.assertEquals("Special officer", otherAttendee);
     }
@@ -84,7 +86,7 @@ public class HearingJourneyTests extends Base {
 
         Hearing hearing = createListing(page);
         hearing.createHearingSummary();
-        hearing.editHearingSummary();
+        final HashMap<String, String> map =  hearing.editHearingSummary();
         getTabByText(page, "Hearings").click();
         assertThat(page.locator("h4").first()).hasText("Listing details");
         String hearingStatus = getValueFromTableWithinHearingsTabFor(page, "Hearing Status");
@@ -93,10 +95,10 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Final", hearingType);
         String hearingFormat = getValueFromTableWithinHearingsTabFor(page, "Hearing format");
         Assertions.assertEquals("Hybrid", hearingFormat);
-        String judge = getValueFromTableWithinHearingsTabFor(page, "Which judge heard the case?");
-        Assertions.assertEquals("Chetan Lad", judge);
-        String panelMember = getValueFromTableWithinHearingsTabFor(page, "Name of the panel member");
-        Assertions.assertEquals("Joe Bloggs", panelMember);
+        String displayedJudge = getValueFromTableWithinHearingsTabFor(page, "Which judge heard the case?");
+        Assertions.assertEquals(map.get("judge"), displayedJudge);
+        String displayedPanelMember = getValueFromTableWithinHearingsTabFor(page, "Name of the panel member");
+        Assertions.assertEquals(map.get("panelMember"), displayedPanelMember);
         String otherAttendee = getValueFromTableWithinHearingsTabFor(page, "Who was this other attendee?");
         Assertions.assertEquals("Special officer", otherAttendee);
     }

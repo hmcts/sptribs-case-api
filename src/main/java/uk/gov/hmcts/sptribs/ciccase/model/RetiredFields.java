@@ -5,8 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.elasticsearch.common.TriConsumer;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.FlagType;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
@@ -27,6 +31,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class RetiredFields {
     @CCD(label = "Case data version", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private int dataVersion;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonIgnore
+    private Document cicCaseLastSelectedOrder;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private List<ListValue<Bundle>> cicBundles;
@@ -60,6 +70,51 @@ public class RetiredFields {
         typeOverride = TextArea
     )
     private String cicCasePostponeAdditionalInformation;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for Appellant flags",
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> cicCaseAppellantFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for Case flags",
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> cicCaseCaseFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for Respondent flags",
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> cicCaseRespondentFlags;
+
+    @CCD(
+        label = "Retired field for Flag Type",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagType cicCaseFlagType;
+
+    @CCD(
+        label = "Retired field for flagAdditionalDetail",
+        regex = "^.{0,200}$",
+        hint = "You can enter up to 200 characters",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String cicCaseFlagAdditionalDetail;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for flag type"
+    )
+    private String cicCaseFlagOtherDescription;
+
+    @CCD(
+        label = "Retired field for flagLevel",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLevel cicCaseFlagLevel;
 
     @CCD(
         label = "Retired field for link case number",

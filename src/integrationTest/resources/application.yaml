@@ -8,6 +8,9 @@ springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 uk:
   gov:
     notify:
@@ -40,6 +43,10 @@ s2s-authorised:
 location:
   api:
     baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
+
+flagType:
+  api:
+    baseUrl: ${FLAGTYPE_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
 
 judicial:
   api:

@@ -14,14 +14,12 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
+import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
@@ -56,54 +54,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> appellantFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> caseFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> respondentFlags;
-
-    @JsonUnwrapped(prefix = "flagLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher flagLauncher;
-
-    @CCD(
-        label = "Flag Type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagType flagType;
-
-    @CCD(
-        label = "Explain why you are creating this flag.\n"
-            + "Do not include any sensitive information such as personal details.",
-        regex = "^.{0,200}$",
-        hint = "You can enter up to 200 characters",
-        typeOverride = TextArea,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String flagAdditionalDetail;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Enter a flag type"
-    )
-    private String flagOtherDescription;
-
-
-    @CCD(
-        label = "Why is a stay being added to this case?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagLevel flagLevel;
 
     @CCD(
         label = "Preview order",
@@ -172,8 +122,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
-    private Document lastSelectedOrder;
+    private Document selectedOrder;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -761,6 +710,5 @@ public class CicCase {
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";
         applicantEmailAddress = "";
-
     }
 }

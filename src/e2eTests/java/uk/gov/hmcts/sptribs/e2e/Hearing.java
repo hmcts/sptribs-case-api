@@ -1,14 +1,18 @@
 package uk.gov.hmcts.sptribs.e2e;
 
+import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CancelHearing;
@@ -203,7 +207,7 @@ public class Hearing {
         Assertions.assertEquals(AwaitingHearing.label, newCase.getCaseStatus());
     }
 
-    public void createHearingSummary() {
+    public HashMap<String, String> createHearingSummary() {
         Case newCase = new Case(page);
         newCase.startNextStepAction(CreateSummary);
 
@@ -225,17 +229,22 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+        HashMap<String, String> map = new HashMap<>();
+        String judge = getRandomNameFromJudgesList(page);
+        map.put("judge", judge);
+        page.selectOption("#judge", new SelectOption().setLabel(judge));
         getRadioButtonByLabel(page, "Yes").click();
         clickButton(page, "Add new");
-        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+        String panelMember = getRandomNameFromPanelMembersList(page);
+        map.put("panelMember", panelMember);
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel(panelMember));
         getRadioButtonByLabel(page, "Full member").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees second form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Appellant").first().check();
+        page.locator("#roles-appellant").check();
         getCheckBoxByLabel(page, "Observer").check();
         getCheckBoxByLabel(page, "Other").check();
         getTextBoxByLabel(page, "Who was this other attendee?").fill("Special officer");
@@ -268,9 +277,10 @@ public class Hearing {
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals(AwaitingOutcome.label, newCase.getCaseStatus());
+        return map;
     }
 
-    public void editHearingSummary() {
+    public HashMap<String, String> editHearingSummary() {
         Case newCase = new Case(page);
         newCase.startNextStepAction(EditSummary);
 
@@ -297,16 +307,21 @@ public class Hearing {
         // Fill Hearing attendees form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        page.selectOption("#judge", new SelectOption().setLabel("Chetan Lad"));
+        HashMap<String, String> map = new HashMap<>();
+        String judge = getRandomNameFromJudgesList(page);
+        map.put("judge", judge);
+        page.selectOption("#judge", new SelectOption().setLabel(judge));
         getRadioButtonByLabel(page, "Yes").click();
-        page.selectOption("#memberList_0_name", new SelectOption().setLabel("Joe Bloggs"));
+        String panelMember = getRandomNameFromPanelMembersList(page);
+        map.put("panelMember", panelMember);
+        page.selectOption("#memberList_0_name", new SelectOption().setLabel(panelMember));
         getRadioButtonByLabel(page, "Observer").click();
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Hearing attendees second form
         assertThat(page.locator("h1"))
             .hasText("Hearing attendees", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Appellant").first().check();
+        page.locator("#roles-appellant").check();
         getCheckBoxByLabel(page, "Observer").check();
         getCheckBoxByLabel(page, "Other").check();
         getTextBoxByLabel(page, "Who was this other attendee?").fill("Special officer");
@@ -338,6 +353,7 @@ public class Hearing {
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals(AwaitingOutcome.label, newCase.getCaseStatus());
+        return map;
     }
 
     public void cancelHearing() {
@@ -428,5 +444,30 @@ public class Hearing {
         }
         getCheckBoxByLabel(page, "Respondent").check();
         clickButton(page, "Continue");
+    }
+
+    private String getRandomNameFromJudgesList(Page page) {
+        page.waitForSelector("#judge",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
+        var elements = page.querySelectorAll("#judge option");
+        Assertions.assertTrue(elements.size() > 1, "Judges dropdown list is empty");
+        return getRandomOptionFromTheList(elements);
+    }
+
+    private String getRandomNameFromPanelMembersList(Page page) {
+        page.waitForSelector("#memberList_0_name",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
+        var elements = page.querySelectorAll("#memberList_0_name option");
+        Assertions.assertTrue(elements.size() > 1, "Panel members dropdown list is empty");
+        return getRandomOptionFromTheList(elements);
+    }
+
+    private String getRandomOptionFromTheList(List<ElementHandle> list) {
+        var elements = list.subList(1, list.size());
+        return (String) elements.stream()
+            .skip(new Random().nextInt(elements.size()))
+            .findFirst()
+            .map(ElementHandle::textContent)
+            .orElse("");
     }
 }
