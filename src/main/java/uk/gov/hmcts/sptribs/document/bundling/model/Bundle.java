@@ -29,11 +29,13 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @AllArgsConstructor
 public class Bundle {
     @CCD(
-        label = "Bundle ID"
+        label = "Bundle ID",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String id;
     @CCD(
-        label = "Config used for bundle"
+        label = "Config used for bundle",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String title;
     @CCD(
