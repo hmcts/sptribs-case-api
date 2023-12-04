@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.systemupdate.event;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -20,12 +22,16 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@Setter
 public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_MIGRATE_CASE_FLAGS = "system-migrate-case-flags";
 
     @Autowired
     private CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    @Value("${feature.migration.enabled}")
+    private boolean migrationFlagEnabled;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -41,11 +47,14 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Migrating case flags for case Id: {}", details.getId());
 
-        CaseData data = details.getData();
-        initialiseFlags(data);
-        setSupplementaryData(details.getId());
+        if (migrationFlagEnabled) {
+            log.info("Migrating case flags for case Id: {}", details.getId());
+
+            CaseData data = details.getData();
+            initialiseFlags(data);
+            setSupplementaryData(details.getId());
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())

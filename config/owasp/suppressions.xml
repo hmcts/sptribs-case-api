@@ -164,7 +164,7 @@
     <cve>CVE-2023-44487</cve>
   </suppress>
   <suppress>
-    <notes>pkg:maven/org.bouncycastle/bcprov-jdk15on</notes>
+    <notes>pkg:maven/org.bouncycastle/bcprov-jdk15on@1.70</notes>
     <cve>CVE-2023-33202</cve>
   </suppress>
 </suppressions>
