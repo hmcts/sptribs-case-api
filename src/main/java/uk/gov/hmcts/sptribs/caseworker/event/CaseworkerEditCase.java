@@ -135,7 +135,8 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .build());
         }
 
-        if (null != data.getSubjectFlags() && Objects.isNull(data.getSubjectFlags().getDetails())) {
+        if (Objects.isNull(data.getSubjectFlags())
+            || (null != data.getSubjectFlags() && Objects.isNull(data.getSubjectFlags().getDetails()))) {
             data.setSubjectFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
@@ -144,7 +145,8 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             );
         }
 
-        if (null != data.getApplicantFlags() && Objects.isNull(data.getApplicantFlags().getDetails())) {
+        if (Objects.isNull(data.getApplicantFlags())
+            || (null != data.getApplicantFlags() && Objects.isNull(data.getApplicantFlags().getDetails()))) {
             if (null != data.getCicCase().getApplicantFullName()) {
                 data.setApplicantFlags(Flags.builder()
                     .details(new ArrayList<>())
@@ -155,7 +157,8 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             }
         }
 
-        if (null != data.getRepresentativeFlags() && Objects.isNull(data.getRepresentativeFlags().getDetails())) {
+        if (Objects.isNull(data.getRepresentativeFlags())
+            || (null != data.getRepresentativeFlags() && Objects.isNull(data.getRepresentativeFlags().getDetails()))) {
             if (null != data.getCicCase().getRepresentativeFullName()) {
                 data.setRepresentativeFlags(Flags.builder()
                     .details(new ArrayList<>())

@@ -243,6 +243,7 @@ class CaseworkerEditCaseTest {
         //Given
         final CaseData afterData = caseData();
         final CaseData beforeData = caseData();
+
         Set<NotificationParties> beforeNotificationParties = new HashSet<>();
         beforeNotificationParties.add(NotificationParties.SUBJECT);
         beforeNotificationParties.add(NotificationParties.APPLICANT);
@@ -253,6 +254,7 @@ class CaseworkerEditCaseTest {
         parties.add(PartiesCIC.REPRESENTATIVE);
         final CicCase beforeCicCase = CicCase.builder()
             .applicantContactDetailsPreference(ContactPreferenceType.POST)
+            .fullName(TEST_FIRST_NAME)
             .applicantFullName(APPLICANT_FIRST_NAME)
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .representativeFullName(TEST_FIRST_NAME)
@@ -263,6 +265,9 @@ class CaseworkerEditCaseTest {
         newParties.add(PartiesCIC.SUBJECT);
         final CicCase newCicCase = CicCase.builder()
             .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
             .build();
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
@@ -278,7 +283,7 @@ class CaseworkerEditCaseTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse submittedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
 
         //Then
