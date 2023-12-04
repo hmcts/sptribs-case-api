@@ -22,7 +22,7 @@ public class SystemMigrateCaseLinks implements CCDConfig<CaseData, State, UserRo
 
     public static final String SYSTEM_MIGRATE_CASE_LINKS = "system-migrate-case-links";
 
-    @Value("${feature.case-links-migration.enabled}")
+    @Value("${feature.migration.enabled}")
     private boolean caseLinksMigrationEnabled;
 
     @Override

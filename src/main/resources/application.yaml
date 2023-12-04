@@ -196,8 +196,6 @@ feature:
     enabled: ${CASE_FLAGS_FEATURE:false}
   migration:
     enabled: ${MIGRATION_ENABLED:false}
-  case-links-migration:
-    enabled: ${CASE_LINKS_MIGRATION_ENABLED:false}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
