@@ -29,7 +29,6 @@ class CaseWorkerReferToLegalOfficerTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
@@ -45,12 +44,8 @@ class CaseWorkerReferToLegalOfficerTest {
     @Test
     void shouldReferToLegalOfficer() {
         //Given
-        CaseData caseData = caseData();
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
@@ -60,6 +55,20 @@ class CaseWorkerReferToLegalOfficerTest {
 
         //Then
         assertThat(response1).isNotNull();
+        assertThat(response1.getData().getReferToLegalOfficer().getReferralDate()).isNotNull();
+        assertThat(response2).isNotNull();
         assertThat(response2.getConfirmationHeader()).contains("Referral completed");
     }
+
+    private CaseDetails<CaseData, State> getCaseDetails() {
+        CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+
+        caseDetails.setData(caseData);
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        return caseDetails;
+    }
+
 }
