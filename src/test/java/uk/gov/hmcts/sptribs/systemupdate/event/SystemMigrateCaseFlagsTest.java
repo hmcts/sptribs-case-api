@@ -40,7 +40,7 @@ class SystemMigrateCaseFlagsTest {
     }
 
     @Test
-    void shouldSuccessfullyUpdateCaseFlags() {
+    void shouldSuccessfullyUpdateCaseFlagsWhenToggleIsOn() {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
@@ -57,6 +57,7 @@ class SystemMigrateCaseFlagsTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
+        systemMigrateCaseFlags.setMigrationFlagEnabled(true);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
@@ -67,4 +68,35 @@ class SystemMigrateCaseFlagsTest {
         assertThat(response.getData().getRepresentativeFlags()).isNotNull();
         assertThat(response.getData().getApplicantFlags()).isNotNull();
     }
+
+    @Test
+    void shouldSuccessfullyUpdateCaseFlagsWhenToggleIsOff() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(TEST_FIRST_NAME)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .build();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
+        systemMigrateCaseFlags.setMigrationFlagEnabled(false);
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNull();
+        assertThat(response.getData().getSubjectFlags()).isNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
+        assertThat(response.getData().getApplicantFlags()).isNull();
+    }
+
 }
