@@ -2,8 +2,10 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
+import com.microsoft.playwright.options.WaitForSelectorState;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.e2e.Base.CASE_API_BASE_URL;
 import static uk.gov.hmcts.sptribs.e2e.Base.DSS_BASE_URL;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -46,6 +48,8 @@ public class Login {
         page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(120000));
         page.waitForFunction("selector => document.querySelector(selector).options.length > 0",
             "#wb-jurisdiction", functionOptionsWithTimeout(120000));
+        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
     }
 
     private void enterCredentialsAndClickSignIn(String user) {
@@ -82,7 +86,7 @@ public class Login {
     }
 
     public void loginAsStTest1User() {
-        loginAs("st-test1@mailinator.com");
+        loginAs(getenv("SENIOR_LEGAL_OFFICER"));
     }
 
     public void loginAsHearingCentreTL() {
@@ -98,6 +102,6 @@ public class Login {
     }
 
     public void loginAsStCitizen1User() {
-        loginAsDssUser("st-citizen1@mailinator.com");
+        loginAsDssUser(getenv("DSS_CITIZEN_USER"));
     }
 }

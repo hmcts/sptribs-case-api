@@ -169,10 +169,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .label("LabelCloseCaseUploadDoc",
                 """
                     Please upload copies of any information or evidence that you want to add to this case.
-                    <h3>Files should be:</h3>
-                    uploaded separately and not in one large file
-                    a maximum of 100MB in size (larger files must be split)
-                    labelled clearly, e.g. applicant-name-decision-notice.pdf
+                    Files should be:
+                    *  uploaded separately, not one large file
+                    *  a maximum of 100MB in size (larger files must be split)
+                    *  select the appropriate category from case file view
                     """)
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")

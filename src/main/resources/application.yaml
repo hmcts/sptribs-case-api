@@ -1,6 +1,9 @@
 server:
   port: 4013
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 management:
   endpoint:
     health:
@@ -109,11 +112,6 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
-flagType:
-  api:
-    baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
-
-
 bundling:
   api:
     baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
@@ -216,4 +214,3 @@ caseinfo:
         dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC
-
