@@ -96,10 +96,6 @@ public class Login {
     public void loginAsSeniorJudge() {
         loginAs(getenv("SENIOR_JUDGE"));
     }
-  
-    public void loginAsStTest1User() {
-        loginAs(getenv("SENIOR_LEGAL_OFFICER"));
-    }
 
     public void loginAsHearingCentreTL() {
         loginAs(getenv("HEARING_CENTRAL_TEAM_LEAD"));
