@@ -49,10 +49,12 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 CaseStayed)
             .name("Refer case to judge")
             .showSummary()
+            .showEventNotes()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::referred)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -81,6 +83,5 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
             .confirmationHeader("# Referral completed")
             .build();
     }
-
 
 }
