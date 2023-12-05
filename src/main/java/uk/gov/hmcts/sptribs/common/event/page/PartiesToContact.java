@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 
@@ -55,14 +55,14 @@ public class PartiesToContact implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         if (cicCase != null) {
-            if (CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-                && CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())
-                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            if (isEmpty(cicCase.getNotifyPartySubject())
+                && isEmpty(cicCase.getNotifyPartyRepresentative())
+                && isEmpty(cicCase.getNotifyPartyApplicant())
+                && isEmpty(cicCase.getNotifyPartyRespondent())) {
                 errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
             } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
                 || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
-                && !CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+                && !isEmpty(cicCase.getNotifyPartySubject())) {
                 errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
             }
         }

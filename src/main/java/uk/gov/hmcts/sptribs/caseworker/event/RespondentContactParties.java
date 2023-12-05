@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -122,8 +122,8 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-        CaseData data = details.getData();
-        String caseNumber = data.getHyphenatedCaseRef();
+        final CaseData data = details.getData();
+        final String caseNumber = data.getHyphenatedCaseRef();
 
         try {
             sendContactPartiesNotification(details, data, caseNumber);
@@ -142,20 +142,20 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     }
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CaseData data, String caseNumber) {
-        ContactParties contactParties = data.getContactParties();
-        CaseData caseData = details.getData();
+        final ContactParties contactParties = data.getContactParties();
+        final CaseData caseData = details.getData();
 
         if (contactParties != null) {
-            if (!CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
+            if (!isEmpty(contactParties.getSubjectContactParties())) {
                 contactPartiesNotification.sendToSubject(caseData, caseNumber);
             }
-            if (!CollectionUtils.isEmpty(contactParties.getRepresentativeContactParties())) {
+            if (!isEmpty(contactParties.getRepresentativeContactParties())) {
                 contactPartiesNotification.sendToRepresentative(caseData, caseNumber);
             }
-            if (!CollectionUtils.isEmpty(contactParties.getApplicantContactParties())) {
+            if (!isEmpty(contactParties.getApplicantContactParties())) {
                 contactPartiesNotification.sendToApplicant(caseData, caseNumber);
             }
-            if (!CollectionUtils.isEmpty(contactParties.getTribunal())) {
+            if (!isEmpty(contactParties.getTribunal())) {
                 contactPartiesNotification.sendToTribunal(caseData, caseNumber);
             }
         }
