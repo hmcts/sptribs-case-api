@@ -212,55 +212,55 @@ withPipeline(type, product, component) {
         setFeatureFlags(env.ENVIRONMENT)
     }
 
-    afterSuccess('functionalTest:aat') {
+  /*afterSuccess('functionalTest:aat') {
 
-        try {
+      try {
+        builder.gradle('e2eTests')
+      } finally {
+
+         publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/e2eTests",
+            reportFiles          : "index.html",
+            reportName           : "E2E Tests Report"
+         ]
+      }
+
+      env.ENVIRONMENT="prod"
+      env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
+      env.CCD_DEF_NAME="prod"
+      env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
+      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
+      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
+      env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
+      env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
+      env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+      setFeatureFlags(env.ENVIRONMENT)
+
+      builder.gradle('generateCCDConfig --rerun-tasks')
+
+      generateDefinitions()
+  }
+
+ afterSuccess('functionalTest:preview') {
+
+      try {
           builder.gradle('e2eTests')
-        } finally {
+      } finally {
 
-           publishHTML target: [
-              allowMissing         : true,
-              alwaysLinkToLastBuild: true,
-              keepAll              : true,
-              reportDir            : "build/reports/tests/e2eTests",
-              reportFiles          : "index.html",
-              reportName           : "E2E Tests Report"
-           ]
-        }
-
-        env.ENVIRONMENT="prod"
-        env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
-        env.CCD_DEF_NAME="prod"
-        env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
-        env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
-        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-        env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-        env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
-        env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-        env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-        setFeatureFlags(env.ENVIRONMENT)
-
-        builder.gradle('generateCCDConfig --rerun-tasks')
-
-        generateDefinitions()
-    }
-
-  /* afterSuccess('functionalTest:preview') {
-
-        try {
-            builder.gradle('e2eTests')
-        } finally {
-
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/e2eTests",
-                    reportFiles          : "index.html",
-                    reportName           : "E2E Tests Report"
-            ]
-        }
-    }*/
+          publishHTML target: [
+                  allowMissing         : true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll              : true,
+                  reportDir            : "build/reports/tests/e2eTests",
+                  reportFiles          : "index.html",
+                  reportName           : "E2E Tests Report"
+          ]
+      }
+  }*/
 
 
         onDemo {
