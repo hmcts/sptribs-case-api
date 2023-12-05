@@ -15,7 +15,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MANAGE_CASE_FLAG;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -46,7 +49,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
     public void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_MANAGE_CASE_FLAG)
-            .forStates(POST_SUBMISSION_STATES)
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
             .name("Manage Flags")
             .description("Manage Flags")
             .showSummary()
