@@ -21,7 +21,7 @@ plugins {
   id 'idea'
   id 'pmd'
   id 'jacoco'
-  id 'org.owasp.dependencycheck' version '9.0.1'
+  id 'org.owasp.dependencycheck' version '9.0.2'
   id 'org.sonarqube' version '4.4.1.3373'
   id 'io.spring.dependency-management' version '1.1.4'
   id 'org.springframework.boot' version '2.7.18'
@@ -451,7 +451,7 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.11') {
+  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.8.0-ccd-5072.1') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
     exclude group: 'com.google.guava', module: 'guava'
     exclude group: 'org.apache.poi', module: 'poi-ooxml'
