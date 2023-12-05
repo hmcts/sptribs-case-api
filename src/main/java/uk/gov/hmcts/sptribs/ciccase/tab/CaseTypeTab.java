@@ -29,12 +29,11 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
-    @Value("${feature.bundling.enabled}")
-    private boolean bundlingEnabled;
-
     @Value("${feature.link-case.enabled}")
     private boolean caseLinkEnabled;
 
+    @Value("${feature.bundling.enabled}")
+    private boolean bundlingEnabled;
 
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
 
@@ -53,8 +52,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCaseFileViewTab(configBuilder);
         buildMessagesTab(configBuilder);
         buildCaseFlagTab(configBuilder);
-        buildCaseLinkTab(configBuilder);
         buildCaseReferralTab(configBuilder);
+        buildCaseLinkTab(configBuilder);
     }
 
     private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -62,7 +61,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             doBuildCaseFlagTab(configBuilder);
         }
     }
-
 
     private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (caseLinkEnabled) {
@@ -78,7 +76,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getCaseNameHmctsInternal, null, null)
             .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
     }
-
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")

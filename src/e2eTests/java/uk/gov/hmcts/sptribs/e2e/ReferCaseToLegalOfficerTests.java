@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -14,24 +13,12 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class ReferCaseToLegalOfficerTests extends Base {
-    private Page page;
-    private Case newCase;
-
-    @BeforeEach
-    void startReferCaseToLegalOfficerJourney() {
-        page = getPage();
-        Login login = new Login(page);
-        login.loginAsHearingCentreTL();
-        newCase = new Case(page);
-        newCase.createCase();
-        newCase.buildCase();
-        newCase.startNextStepAction(ReferCaseToLegalOfficer);
-        assertThat(page.locator("h1")).hasText(ReferCaseToLegalOfficer.label, textOptionsWithTimeout(60000));
-    }
 
     @Order(1)
     @RepeatedIfExceptionsTest
     void referCaseToLegalOfficerTest() {
+        Page page = getPage();
+        startReferCaseToLegalOfficerJourney(page);
         assertThat(page.locator("h1")).hasText("Refer case to legal officer", textOptionsWithTimeout(60000));
         page.selectOption("#referToLegalOfficerReferralReason", "Other");
         getTextBoxByLabel(page, "Reason for referral").fill("TEST");
@@ -46,15 +33,28 @@ public class ReferCaseToLegalOfficerTests extends Base {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
+        Case newCase = new Case(page);
         assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
     @Order(2)
     @RepeatedIfExceptionsTest
     public void errorInvalidCaseStatusReferCaseToLegalOfficer() {
+        Page page = getPage();
+        startReferCaseToLegalOfficerJourney(page);
         page.selectOption("#referToLegalOfficerReferralReason", "Reinstatement request");
         clickButton(page, "Continue");
         assertThat(page.locator("#errors li"))
             .hasText("The case state is incompatible with the selected referral reason", textOptionsWithTimeout(30000));
+    }
+
+    private void startReferCaseToLegalOfficerJourney(Page page) {
+        Login login = new Login(page);
+        login.loginAsHearingCentreTL();
+        Case newCase = new Case(page);
+        newCase.createCase();
+        newCase.buildCase();
+        newCase.startNextStepAction(ReferCaseToLegalOfficer);
+        assertThat(page.locator("h1")).hasText(ReferCaseToLegalOfficer.label, textOptionsWithTimeout(60000));
     }
 }
