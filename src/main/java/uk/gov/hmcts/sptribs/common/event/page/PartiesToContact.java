@@ -6,6 +6,7 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -14,12 +15,14 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
+
 @Slf4j
 @Component
 public class PartiesToContact implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
-    private static final String RESPONDENT = "[EVENT]=\"RESPONDENT_CONTACT_PARTIES\"";
     private static final String RECIPIENT_LABEL = "Contact parties recipient";
 
     @Override
@@ -51,11 +54,17 @@ public class PartiesToContact implements CcdPageConfiguration {
         final CicCase cicCase = data.getCicCase();
         final List<String> errors = new ArrayList<>();
 
-        if (null != data.getContactParties() && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            errors.add("Which parties do you want to contact is required.");
+        if (cicCase != null) {
+            if (CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+                && CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())
+                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+                errors.add(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
+            } else if ((cicCase.getCaseSubcategory() == CaseSubcategory.FATAL
+                || cicCase.getCaseSubcategory() == CaseSubcategory.MINOR)
+                && !CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+                errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
