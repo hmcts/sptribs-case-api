@@ -5,12 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.elasticsearch.common.TriConsumer;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.FlagType;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
+import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -112,6 +115,30 @@ public class RetiredFields {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private FlagLevel cicCaseFlagLevel;
+
+    @CCD(
+        label = "Retired field for link case number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseLink cicCaseLinkCaseNumber;
+
+    @CCD(
+        label = "Retired field for linkCaseReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private LinkCaseReason cicCaseLinkCaseReason;
+
+    @CCD(
+        label = "Retired field for Other Description",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String cicCaseLinkCaseOtherDescription;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for CaseLinks",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseLinks")
+    private List<ListValue<CaseLinks>> cicCaseCaseLinks;
 
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {

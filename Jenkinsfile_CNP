@@ -336,7 +336,7 @@ def setFeatureFlags(environment) {
     env.MIGRATION_ENABLED = true
   } else if (environment =~ /aat/) {
     env.CONTACT_PARTIES_FEATURE = true
-    env.LINK_CASE_FEATURE = false
+    env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
