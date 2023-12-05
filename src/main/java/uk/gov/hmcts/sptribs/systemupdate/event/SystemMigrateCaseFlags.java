@@ -57,10 +57,6 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             setSupplementaryData(details.getId());
         }
 
-        CaseData data = details.getData();
-        initialiseFlags(data);
-        setSupplementaryData(details.getId());
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
             .build();
