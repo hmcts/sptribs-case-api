@@ -35,7 +35,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.bundling.enabled}")
     private boolean bundlingEnabled;
 
-
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
 
     @Override
@@ -63,7 +62,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         }
     }
 
-
     private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (caseLinkEnabled) {
             doBuildCaseLinkTab(configBuilder);
@@ -78,7 +76,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getCaseNameHmctsInternal, null, null)
             .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
     }
-
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")

@@ -24,6 +24,7 @@ public class DssCaseTests extends Base {
         login.loginAsStCitizen1User();
         final String caseNumber = newDssCase.createCase("representative");
         clickLink(page, "Sign out");
+        login.refreshPageWhenServerErrorIsDisplayed();
         assertH1Heading(page, "Submit a First-tier Tribunal form");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
         login.loginAsLegalOfficer();
@@ -43,6 +44,7 @@ public class DssCaseTests extends Base {
         login.loginAsStCitizen1User();
         final String caseNumber = newDssCase.createCase("representative", "pcq");
         clickLink(page, "Sign out");
+        login.refreshPageWhenServerErrorIsDisplayed();
         assertH1Heading(page, "Submit a First-tier Tribunal form");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
         login.loginAsLegalOfficer();

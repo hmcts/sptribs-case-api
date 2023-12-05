@@ -129,8 +129,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         initialiseFlags(data);
 
-        initialiseFlags(data);
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .state(submittedDetails.getState())
@@ -164,7 +162,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .partyName(null)
             .roleOnCase(null)
             .build());
-
 
         if (null != data.getCicCase().getFullName()) {
             data.setSubjectFlags(Flags.builder()

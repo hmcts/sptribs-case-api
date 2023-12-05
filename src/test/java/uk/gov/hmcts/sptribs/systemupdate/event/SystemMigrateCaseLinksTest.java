@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseLinks.SYSTEM_MIGRATE_CASE_LINKS;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -24,28 +24,27 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(SpringExtension.class)
-class SystemMigrateCaseFlagsTest {
+class SystemMigrateCaseLinksTest {
     @InjectMocks
-    private SystemMigrateCaseFlags systemMigrateCaseFlags;
+    private SystemMigrateCaseLinks systemMigrateCaseLinks;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        systemMigrateCaseFlags.configure(configBuilder);
+        systemMigrateCaseLinks.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(SYSTEM_MIGRATE_CASE_FLAGS);
+            .contains(SYSTEM_MIGRATE_CASE_LINKS);
     }
 
     @Test
-    void shouldSuccessfullyUpdateCaseFlagsWhenToggleIsOn() {
+    void shouldSuccessfullyUpdateCaseLinksWithToggleOn() {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
-            .applicantFullName(TEST_FIRST_NAME)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
         caseData.setCicCase(cicCase);
@@ -55,27 +54,23 @@ class SystemMigrateCaseFlagsTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(true);
 
         //When
-        systemMigrateCaseFlags.setMigrationFlagEnabled(true);
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            systemMigrateCaseLinks.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData()).isNotNull();
-        assertThat(response.getData().getCaseFlags()).isNotNull();
-        assertThat(response.getData().getSubjectFlags()).isNotNull();
-        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
-        assertThat(response.getData().getApplicantFlags()).isNotNull();
+        assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
     }
 
     @Test
-    void shouldSuccessfullyUpdateCaseFlagsWhenToggleIsOff() {
+    void shouldSuccessfullyUpdateCaseLinksWithToggleOff() {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
-            .applicantFullName(TEST_FIRST_NAME)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
         caseData.setCicCase(cicCase);
@@ -85,18 +80,14 @@ class SystemMigrateCaseFlagsTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(false);
 
         //When
-        systemMigrateCaseFlags.setMigrationFlagEnabled(false);
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            systemMigrateCaseLinks.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData()).isNotNull();
-        assertThat(response.getData().getCaseFlags()).isNull();
-        assertThat(response.getData().getSubjectFlags()).isNull();
-        assertThat(response.getData().getRepresentativeFlags()).isNull();
-        assertThat(response.getData().getApplicantFlags()).isNull();
+        assertThat(response.getData().getCaseNameHmctsInternal()).isNull();
     }
-
 }

@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -12,26 +11,20 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
-import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
-import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -59,33 +52,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 public class CicCase {
 
     @CCD(
-        label = "Enter case number",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CaseLink linkCaseNumber;
-
-    @CCD(
-        label = "Why should these cases be linked?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private LinkCaseReason linkCaseReason;
-
-    @CCD(
-        label = "Other Description",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String linkCaseOtherDescription;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLinks>> caseLinks;
-
-    @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher linkedCasesComponentLauncher;
-
-    @CCD(
         label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         categoryID = "TD"
@@ -100,7 +66,7 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
-        label = "Template",
+        label = "",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList flagDynamicList;
@@ -110,21 +76,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList orderDynamicList;
-
-    @CCD(
-        label = "Postpone Reason",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "PostponeReason",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private PostponeReason postponeReason;
-
-    @CCD(
-        label = "Enter any other important information about this postponement",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = TextArea
-    )
-    private String postponeAdditionalInformation;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
