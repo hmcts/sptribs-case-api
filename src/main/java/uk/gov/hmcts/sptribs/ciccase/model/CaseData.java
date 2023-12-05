@@ -306,7 +306,7 @@ public class CaseData {
         label = "Messages",
         typeOverride = Collection,
         typeParameterOverride = "DssMessage",
-        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private List<ListValue<DssMessage>> messages;
 
@@ -355,7 +355,7 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class})
     private DssCaseData dssCaseData = new DssCaseData();
 
     @CCD(
