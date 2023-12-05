@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.FlagType;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
 import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
@@ -138,7 +137,7 @@ public class RetiredFields {
         label = "Retired field for CaseLinks",
         typeOverride = Collection,
         typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLinks>> cicCaseCaseLinks;
+    private List<ListValue<CaseLink>> cicCaseCaseLinks;
 
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
