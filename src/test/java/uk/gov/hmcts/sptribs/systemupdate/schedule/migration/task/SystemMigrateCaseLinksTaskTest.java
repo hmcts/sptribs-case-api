@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,9 +53,8 @@ class SystemMigrateCaseLinksTaskTest {
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(boolQuery()
-            .must(matchQuery("reference", 1699100726058557L))
+            .mustNot(existsQuery("data.caseNameHmctsInternal"))
         );
-    // TODO : change query to process all the records
 
     @BeforeEach
     void setUp() {
