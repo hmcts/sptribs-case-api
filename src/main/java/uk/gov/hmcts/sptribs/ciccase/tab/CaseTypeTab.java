@@ -29,6 +29,9 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
+    @Value("${feature.link-case.enabled}")
+    private boolean caseLinkEnabled;
+
     @Value("${feature.bundling.enabled}")
     private boolean bundlingEnabled;
 
@@ -50,12 +53,28 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildMessagesTab(configBuilder);
         buildCaseFlagTab(configBuilder);
         buildCaseReferralTab(configBuilder);
+        buildCaseLinkTab(configBuilder);
     }
 
     private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (caseFlagsEnabled) {
             doBuildCaseFlagTab(configBuilder);
         }
+    }
+
+    private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (caseLinkEnabled) {
+            doBuildCaseLinkTab(configBuilder);
+        }
+    }
+
+    private void doBuildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseLinks", "Linked cases")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
+            .field(CaseData::getCaseNameHmctsInternal, null, null)
+            .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
     }
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
