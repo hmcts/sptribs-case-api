@@ -4,7 +4,6 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
@@ -17,24 +16,11 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class ReferCaseToJudgeTests extends Base {
 
-    private Page page;
-    private Case newCase;
-
-    @BeforeEach
-    void startReferCaseToJudgeJourney() {
-        page = getPage();
-        Login login = new Login(page);
-        login.loginAsHearingCentreTL();
-        newCase = new Case(page);
-        newCase.createCase();
-        newCase.buildCase();
-        newCase.startNextStepAction(Actions.ReferCaseToJudge);
-        assertThat(page.locator("h1")).hasText(Actions.ReferCaseToJudge.label, textOptionsWithTimeout(60000));
-    }
-
     @Order(1)
     @RepeatedIfExceptionsTest
     public void caseworkerShouldAbleToReferCaseToJudge() {
+        Page page = getPage();
+        startReferCaseToJudgeJourney(page);
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Time extension request"));
         PageHelpers.clickButton(page, "Continue");
@@ -49,17 +35,30 @@ public class ReferCaseToJudgeTests extends Base {
         clickButton(page, "Close and Return to case details");
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
+        Case newCase = new Case(page);
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
     @Order(2)
     @RepeatedIfExceptionsTest
     public void errorInvalidCaseStatusReferCaseToJudge() {
+        Page page = getPage();
+        startReferCaseToJudgeJourney(page);
         page.selectOption("#referToJudgeReferralReason",
             new SelectOption().setLabel("Reinstatement request"));
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("#errors li"))
             .hasText("The case state is incompatible with the selected referral reason", textOptionsWithTimeout(30000));
+    }
+
+    private void startReferCaseToJudgeJourney(Page page) {
+        Login login = new Login(page);
+        login.loginAsHearingCentreTL();
+        Case newCase = new Case(page);
+        newCase.createCase();
+        newCase.buildCase();
+        newCase.startNextStepAction(Actions.ReferCaseToJudge);
+        assertThat(page.locator("h1")).hasText(Actions.ReferCaseToJudge.label, textOptionsWithTimeout(60000));
     }
 }
 
