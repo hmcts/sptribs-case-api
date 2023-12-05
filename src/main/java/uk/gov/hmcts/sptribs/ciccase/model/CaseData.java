@@ -81,20 +81,6 @@ public class CaseData {
     @JsonProperty("LinkedCasesComponentLauncher")
     private ComponentLauncher linkedCasesComponentLauncher;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        label = "Linked Cases",
-        typeParameterOverride = "CaseLink")
-    @Builder.Default
-    private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
-
-    @CCD(
-        label = "Component Launcher (for displaying Linked Cases data)",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonProperty("LinkedCasesComponentLauncher")
-    private ComponentLauncher linkedCasesComponentLauncher;
-
     @CCD(
         label = "Launch the Flags screen",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseFlagsAccess.class}
