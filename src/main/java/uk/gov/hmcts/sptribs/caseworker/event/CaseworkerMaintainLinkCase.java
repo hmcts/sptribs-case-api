@@ -14,15 +14,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.CaseLinkedNotification;
+import uk.gov.hmcts.sptribs.common.notification.CaseUnlinkedNotification;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER_ADMIN_PROFILE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -35,7 +34,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
@@ -43,19 +42,19 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     private boolean linkCaseEnabled;
 
     @Autowired
-    CaseLinkedNotification caseLinkedNotification;
+    CaseUnlinkedNotification caseUnlinkedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (linkCaseEnabled) {
             new PageBuilder(configBuilder
-                .event(CASEWORKER_LINK_CASE)
+                .event(CASEWORKER_MAINTAIN_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Link cases")
-                .description("To link related cases")
-                .submittedCallback(this::submitted)
+                .name("Manage case links")
+                .submittedCallback(this::linkUpdated)
+                .description("To maintain linked cases")
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, CASEWORKER_ADMIN_PROFILE,
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
@@ -65,49 +64,47 @@ public class CaseWorkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
                     ST_CIC_JUDGE))
-                .page("createCaseLink")
-                .pageLabel("Case Link")
+                .page("maintainCaseLink")
+                .pageLabel("Maintain Case Link")
                 .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
                 .optional(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
-
+                    null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
         }
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        String claimNumber = data.getHyphenatedCaseRef();
+    public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,
+                                                 CaseDetails<CaseData, State> beforeDetails) {
+        CaseData data = details.getData();
+
         try {
-            linkedCaseNotification(claimNumber, data);
+            unLinkedCaseNotification(data.getHyphenatedCaseRef(), data);
         } catch (Exception notificationException) {
             log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case Link created %n"))
+                .confirmationHeader(format("# Case Link updated %n"))
                 .build();
         }
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Link created %n"))
 
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Case Link updated %n"))
             .build();
     }
 
 
-    private void linkedCaseNotification(String caseNumber, CaseData data) {
+    private void unLinkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
-            caseLinkedNotification.sendToSubject(data, caseNumber);
+        if (null != cicCase.getSubjectCIC() && !cicCase.getSubjectCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
-            caseLinkedNotification.sendToApplicant(data, caseNumber);
+        if (null != cicCase.getApplicantCIC() && !cicCase.getApplicantCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
-            caseLinkedNotification.sendToRepresentative(data, caseNumber);
+        if (null != cicCase.getRepresentativeCIC() && !cicCase.getRepresentativeCIC().isEmpty()) {
+            caseUnlinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }
-
 
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseParty;
@@ -61,9 +62,6 @@ public class Case {
 
     public static final String SELECT_A_VALUE = "--Select a value--";
     private final Page page;
-    private final String documentCategory = "A - Application Form";
-    private final String documentDescription = "This is a test document uploaded during create case journey";
-    private final String documentName = "sample_doc_file_3.doc";
 
     public Case(Page page) {
         this.page = page;
@@ -87,6 +85,8 @@ public class Case {
 
     public String createCase(CasePartyContactPreference... caseParties) {
         // Select case filters
+        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         clickLink(page, "Create case");
         assertThat(page.locator("h1"))
             .hasText("Create Case", textOptionsWithTimeout(60000));
@@ -100,8 +100,9 @@ public class Case {
         // Select case categories
         assertThat(page.locator("h1"))
             .hasText("Case categorisation", textOptionsWithTimeout(30000));
-        page.selectOption("#cicCaseCaseCategory", new SelectOption().setLabel("Assessment"));
-        page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Sexual Abuse"));
+        page.selectOption("#cicCaseCaseCategory", new SelectOption().setLabel("Assessment")); // Available options: Assessment, Eligibility
+        page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Medical Re-opening"));
+
         clickButton(page, "Continue");
 
         // Fill date case received form
@@ -186,30 +187,39 @@ public class Case {
 
         // Fill contact preferences form
         assertThat(page.locator("h1"))
-            .hasText("Who should receive information about the case?", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Subject").first().check();
+            .hasText("Who should receive information about the case?", textOptionsWithTimeout(60000));
+        page.locator("#cicCaseSubjectCIC-SubjectCIC").check();
         if (page.isVisible("#cicCaseApplicantCIC-ApplicantCIC")) {
-            getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
+            page.locator("#cicCaseApplicantCIC-ApplicantCIC").check();
         }
         if (page.isVisible("#cicCaseRepresentativeCIC-RepresentativeCIC")) {
-            getCheckBoxByLabel(page, "Representative").check();
+            page.locator("#cicCaseRepresentativeCIC-RepresentativeCIC").check();
         }
+        page.locator("div h1").click();
         clickButton(page, "Continue");
 
         // Upload tribunals form
         assertThat(page.locator("h1"))
-            .hasText("Upload tribunal forms", textOptionsWithTimeout(30000));
+            .hasText("Upload tribunal forms", textOptionsWithTimeout(60000));
         clickButton(page, "Add new");
+        String documentCategory = "A - Application Form";
         page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
-        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").fill(documentDescription);
+
+        String documentName = "sample_file.pdf";
+
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
+        page.waitForSelector("//span[contains(text(), 'Uploading...')]",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
-            "button[aria-label='Cancel upload']", functionOptionsWithTimeout(30000));
+            "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
+        String documentDescription = "This is a test document uploaded during create case journey";
+        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").fill(documentDescription);
+
         clickButton(page, "Continue");
 
         // Fill further details form
         assertThat(page.locator("h1"))
-            .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
+            .hasText("Enter further details about this case", textOptionsWithTimeout(60000));
         page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
         page.selectOption("#cicCaseRegionCIC", new SelectOption().setLabel("London"));
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
@@ -222,7 +232,7 @@ public class Case {
         // Check your answers form
         page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(30000));
         assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
+            .hasText("Check your answers", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
 
         // Case created confirmation screen
@@ -498,8 +508,10 @@ public class Case {
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Select recipients", textOptionsWithTimeout(30000));
-        page.getByLabel("Subject", new Page.GetByLabelOptions().setExact(true)).check();
-        page.getByLabel("Respondent").check();
+
+        getCheckBoxByLabel(page, "Subject").check();
+        getCheckBoxByLabel(page, "Respondent").check();
+
         clickButton(page, "Continue");
         assertThat(page.locator("h2.heading-h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
@@ -522,7 +534,8 @@ public class Case {
         clickButton(page, "Continue");
         getTextBoxByLabel(page, "Order signature").fill("Tribunal Judge Farrelly");
         clickButton(page, "Continue");
-        assertThat(page.locator("a.ng-star-inserted").last())
+
+        assertThat(page.locator("ccd-read-document-field a.ng-star-inserted"))
             .containsText(" Order--[Subject", containsTextOptionsWithTimeout(60000));
         assertThat(page.locator("a.ng-star-inserted").last())
             .containsText(".pdf", containsTextOptionsWithTimeout(60000));

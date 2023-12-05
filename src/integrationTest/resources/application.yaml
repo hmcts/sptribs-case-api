@@ -44,6 +44,10 @@ location:
   api:
     baseUrl: ${LOCATION_API_URL:http://rd-location-ref-api-aat.service.core-compute-aat.internal}
 
+flagType:
+  api:
+    baseUrl: ${FLAGTYPE_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
 judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
@@ -110,6 +114,8 @@ feature:
     enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
+  migration:
+    enabled: ${MIGRATION_ENABLED:false}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:

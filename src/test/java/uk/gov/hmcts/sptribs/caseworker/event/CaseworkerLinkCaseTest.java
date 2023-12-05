@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.CaseUnlinkedNotification;
+import uk.gov.hmcts.sptribs.common.notification.CaseLinkedNotification;
 
 import java.util.Set;
 
@@ -29,47 +29,47 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_LINK_CASE;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerMaintainLinkCaseTest {
+class CaseworkerLinkCaseTest {
     @InjectMocks
-    private CaseWorkerMaintainLinkCase caseWorkerMaintainLinkCase;
+    private CaseworkerLinkCase caseWorkerLinkCase;
 
     @Mock
-    private CaseUnlinkedNotification caseUnlinkedNotification;
+    private CaseLinkedNotification caseLinkedNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseWorkerMaintainLinkCase.setLinkCaseEnabled(true);
+        caseWorkerLinkCase.setLinkCaseEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseWorkerMaintainLinkCase.configure(configBuilder);
+        caseWorkerLinkCase.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_MAINTAIN_LINK_CASE);
+            .contains(CASEWORKER_LINK_CASE);
     }
 
     @Test
-    void shouldNotConfigureMaintainLinkCaseIfFeatureFlagFalse() {
+    void shouldNotConfigureLinkCaseIfFeatureFlagFalse() {
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
-        caseWorkerMaintainLinkCase.configure(configBuilder);
+        caseWorkerLinkCase.configure(configBuilder);
 
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_MAINTAIN_LINK_CASE);
+            .doesNotContain(CASEWORKER_LINK_CASE);
     }
 
     @Test
-    void shouldSuccessfullyStayTheCase() {
+    void shouldSuccessfullyAddLinksToCase() {
         //Given
         final CaseData caseData = caseData();
         CicCase cicCase = new CicCase();
@@ -84,15 +84,16 @@ class CaseWorkerMaintainLinkCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        doNothing().when(caseUnlinkedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseUnlinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseUnlinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
+        doNothing().when(caseLinkedNotification).sendToSubject(any(CaseData.class), eq(null));
+        doNothing().when(caseLinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
+        doNothing().when(caseLinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
 
         SubmittedCallbackResponse response =
-            caseWorkerMaintainLinkCase.linkUpdated(updatedCaseDetails, beforeDetails);
+            caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader().contains("Case Link created")).isTrue();
 
     }
 
