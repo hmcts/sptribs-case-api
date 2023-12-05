@@ -62,7 +62,6 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-systemupdate",
             "caseworker-sptribs",
             "caseworker-sptribs-cic-courtadmin",
-            "citizen-sptribs-cic-dss",
             "caseworker-st_cic",
             "caseworker-sptribs-cic-caseofficer",
             "caseworker-sptribs-cic-districtregistrar",
@@ -83,8 +82,6 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-st_cic-senior-judge",
             "caseworker-st_cic-judge",
             "caseworker-st_cic-respondent",
-            "caseworker-admin",
-            "hmcts-admin",
             "caseflags-admin",
             "caseflags-viewer",
             "citizen"

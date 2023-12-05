@@ -14,15 +14,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.CaseUnlinkedNotification;
+import uk.gov.hmcts.sptribs.common.notification.CaseLinkedNotification;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_MAINTAIN_LINK_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER_ADMIN_PROFILE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -35,7 +34,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
@@ -43,20 +42,20 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     private boolean linkCaseEnabled;
 
     @Autowired
-    CaseUnlinkedNotification caseUnlinkedNotification;
+    CaseLinkedNotification caseLinkedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (linkCaseEnabled) {
             new PageBuilder(configBuilder
-                .event(CASEWORKER_MAINTAIN_LINK_CASE)
+                .event(CASEWORKER_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Manage case links")
-                .submittedCallback(this::linkUpdated)
-                .description("To maintain linked cases")
+                .name("Link cases")
+                .description("To link related cases")
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, CASEWORKER_ADMIN_PROFILE)
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
                     ST_CIC_SENIOR_CASEWORKER,
@@ -65,46 +64,49 @@ public class CaseWorkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
                     ST_CIC_JUDGE))
-                .page("maintainCaseLink")
-                .pageLabel("Maintain Case Link")
+                .page("createCaseLink")
+                .pageLabel("Case Link")
                 .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
                 .optional(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
+                    null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
+
         }
     }
 
-    public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,
-                                                 CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        String claimNumber = data.getHyphenatedCaseRef();
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+        CaseData data = details.getData();
+
         try {
-            unLinkedCaseNotification(claimNumber, data);
+            linkedCaseNotification(data.getHyphenatedCaseRef(), data);
         } catch (Exception notificationException) {
             log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case Link updated %n"))
+                .confirmationHeader(format("# Case Link created %n"))
                 .build();
         }
+
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case Link updated %n"))
+            .confirmationHeader(format("# Case Link created %n"))
             .build();
     }
 
 
-    private void unLinkedCaseNotification(String caseNumber, CaseData data) {
+    private void linkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
-            caseUnlinkedNotification.sendToSubject(data, caseNumber);
+        if (null != cicCase.getSubjectCIC() && !cicCase.getSubjectCIC().isEmpty()) {
+            caseLinkedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
-            caseUnlinkedNotification.sendToApplicant(data, caseNumber);
+        if (null != cicCase.getApplicantCIC() && !cicCase.getApplicantCIC().isEmpty()) {
+            caseLinkedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
-            caseUnlinkedNotification.sendToRepresentative(data, caseNumber);
+        if (null != cicCase.getRepresentativeCIC() && !cicCase.getRepresentativeCIC().isEmpty()) {
+            caseLinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }
+
 
 }
