@@ -14,6 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.time.LocalDate;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REFER_TO_LEGAL_OFFICER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -33,9 +35,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State, UserRole> {
 
-
     private final ReferToLegalOfficerReason referToLegalOfficerReason = new ReferToLegalOfficerReason();
-
     private final ReferToLegalOfficerAdditionalInfo referToLegalOfficerAdditionalInfo = new ReferToLegalOfficerAdditionalInfo();
 
     @Override
@@ -45,10 +45,12 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
             .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
             .name("Refer case to legal officer")
             .showSummary()
+            .showEventNotes()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::referred)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                  ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -66,7 +68,9 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker refer case to legal officer for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        CaseData caseData = details.getData();
+        caseData.getReferToLegalOfficer().setReferralDate(LocalDate.now());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

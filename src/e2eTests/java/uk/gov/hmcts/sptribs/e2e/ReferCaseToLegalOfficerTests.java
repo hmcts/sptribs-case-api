@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,6 +29,7 @@ public class ReferCaseToLegalOfficerTests extends Base {
         assertThat(page.locator("h1")).hasText(ReferCaseToLegalOfficer.label, textOptionsWithTimeout(60000));
     }
 
+    @Order(1)
     @RepeatedIfExceptionsTest
     void referCaseToLegalOfficerTest() {
         assertThat(page.locator("h1")).hasText("Refer case to legal officer", textOptionsWithTimeout(60000));
@@ -47,6 +49,7 @@ public class ReferCaseToLegalOfficerTests extends Base {
         assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
+    @Order(2)
     @RepeatedIfExceptionsTest
     public void errorInvalidCaseStatusReferCaseToLegalOfficer() {
         page.selectOption("#referToLegalOfficerReferralReason", "Reinstatement request");

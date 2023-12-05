@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
@@ -18,7 +17,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
 
 @Component
@@ -49,12 +48,9 @@ public class SystemMigrateCaseFlagsTask implements Runnable {
             final BoolQueryBuilder query =
                 boolQuery()
                     .must(boolQuery()
-                        .must(matchQuery("reference", 1688978122333564L))
+                        .mustNot(existsQuery("data.subjectFlags"))
                     );
-            // TODO : change query to process all the records
 
-            log.info("Query:" + query.toString());
-            log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
             final List<CaseDetails> casesNeedsCaseFlagsMigration =
                 ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);
             log.info("Cases:" + casesNeedsCaseFlagsMigration.size());
