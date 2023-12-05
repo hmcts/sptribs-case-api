@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseLinks.SYSTEM_MIGRATE_CASE_LINKS;
 
 @Component
@@ -60,7 +60,7 @@ public class SystemMigrateCaseLinksTask implements Runnable {
         final BoolQueryBuilder boolQueryBuilder =
             boolQuery()
                 .must(boolQuery()
-                    .must(matchQuery("reference", 1699100726058557L))
+                    .mustNot(existsQuery("data.caseNameHmctsInternal"))
                 );
         log.info("Query:" + boolQueryBuilder.toString());
 
