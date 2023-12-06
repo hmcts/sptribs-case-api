@@ -318,21 +318,18 @@ public class CicCase {
         label = "Tribunal name ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
-    @Builder.Default
     private String tribunalName = "First-tier Tribunal (CIC)";
 
     @CCD(
         label = "Tribunal organisation ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
-    @Builder.Default
     private String tribunalOrganisation = "Criminal Injuries Compensation";
 
     @CCD(
         label = "Tribunal email  ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
-    @Builder.Default
     private String tribunalEmail = "CIC.enquiries@justice.gov.uk";
 
     @CCD(
