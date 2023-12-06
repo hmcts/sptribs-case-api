@@ -35,26 +35,26 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder
-            .event(SYSTEM_MIGRATE_CASE_FLAGS)
-            .forAllStates()
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .name("Migrate case flags")
-            .description("Migrate case flags for old cases")
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEMUPDATE);
+        if (migrationFlagEnabled) {
+            configBuilder
+                .event(SYSTEM_MIGRATE_CASE_FLAGS)
+                .forAllStates()
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .name("Migrate case flags")
+                .description("Migrate case flags for old cases")
+                .grant(CREATE_READ_UPDATE_DELETE, SYSTEMUPDATE);
+        }
 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
-        if (migrationFlagEnabled) {
-            log.info("Migrating case flags for case Id: {}", details.getId());
+        log.info("Migrating case flags for case Id: {}", details.getId());
 
-            CaseData data = details.getData();
-            initialiseFlags(data);
-            setSupplementaryData(details.getId());
-        }
+        CaseData data = details.getData();
+        initialiseFlags(data);
+        setSupplementaryData(details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
