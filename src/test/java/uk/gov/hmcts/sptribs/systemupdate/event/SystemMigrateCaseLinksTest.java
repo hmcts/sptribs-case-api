@@ -29,9 +29,10 @@ class SystemMigrateCaseLinksTest {
     private SystemMigrateCaseLinks systemMigrateCaseLinks;
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() {
+    void shouldAddConfigurationToConfigBuilderWithToggleOn() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(true);
         systemMigrateCaseLinks.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
@@ -40,7 +41,19 @@ class SystemMigrateCaseLinksTest {
     }
 
     @Test
-    void shouldSuccessfullyUpdateCaseLinksWithToggleOn() {
+    void shouldAddConfigurationToConfigBuilderWithToggleOff() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(false);
+        systemMigrateCaseLinks.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .doesNotContain(SYSTEM_MIGRATE_CASE_LINKS);
+    }
+
+    @Test
+    void shouldSuccessfullyUpdateCaseLinks() {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
@@ -54,7 +67,6 @@ class SystemMigrateCaseLinksTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(true);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -65,29 +77,4 @@ class SystemMigrateCaseLinksTest {
         assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
     }
 
-    @Test
-    void shouldSuccessfullyUpdateCaseLinksWithToggleOff() {
-        //Given
-        final CaseData caseData = caseData();
-        final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .build();
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        beforeDetails.setData(caseData);
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(false);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            systemMigrateCaseLinks.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response.getData()).isNotNull();
-        assertThat(response.getData().getCaseNameHmctsInternal()).isNull();
-    }
 }
