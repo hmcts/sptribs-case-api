@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
@@ -131,7 +131,7 @@ public final class DocumentListUtil {
         Stream.ofNullable(caseData.getHearingList())
             .flatMap(Collection::stream)
             .map(ListValue::getValue)
-            .filter(hearing -> !isNull(hearing.getSummary()) && isNotEmpty(hearing.getSummary().getRecFile()))
+            .filter(hearing -> !isNull(hearing.getSummary()) && !isEmpty(hearing.getSummary().getRecFile()))
             .map(Listing::getSummary)
             .map(HearingSummary::getRecFile)
             .flatMap(Collection::stream)
