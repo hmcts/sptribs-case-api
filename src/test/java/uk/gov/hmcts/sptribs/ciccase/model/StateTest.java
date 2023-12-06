@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 import static java.util.Arrays.stream;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,9 +17,6 @@ class StateTest {
             .sorted((o1, o2) -> getCcdName(o1).compareToIgnoreCase(getCcdName(o2)))
             .toList()
             .toArray(new State[State.values().length]);
-
-        System.out.println(Arrays.toString(State.values()));
-        System.out.println(Arrays.toString(sortedStates));
 
         assertThat(State.values()).containsExactly(sortedStates);
     }
