@@ -114,9 +114,9 @@ feature:
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
   migration:
-    enabled: ${MIGRATION_ENABLED:false}
+    enabled: ${MIGRATION_ENABLED:true}
   case-file-view:
-    enabled: ${CASE_FILE_VIEW_FEATURE:false}
+    enabled: ${CASE_FILE_VIEW_FEATURE:true}
   document-management:
     enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
