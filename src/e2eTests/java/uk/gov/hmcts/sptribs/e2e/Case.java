@@ -6,6 +6,7 @@ import com.microsoft.playwright.options.SelectOption;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
 import uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlag;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
@@ -93,6 +95,7 @@ public class Case {
         getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
         getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
         getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
+        page.waitForSelector("fieldset span.error-message", new Page.WaitForSelectorOptions().setState(WaitForSelectorState.HIDDEN));
         clickButton(page, "Continue");
 
         // Fill identified parties form
@@ -429,27 +432,71 @@ public class Case {
         getTextBoxByLabel(page, "Postcode/Zipcode").fill("SW11 1PD");
     }
 
-    public void createCaseFlag() {
+    public void createFlagForParties(CaseParties... parties) {
+        Arrays.stream(parties).map(Enum::name).forEach(this::createCaseFlag);
+    }
+
+    public void createCaseLevelFlag() {
+        createCaseFlag("Case level");
+    }
+
+    public void createCaseFlag(String flagLevel) {
         startNextStepAction(CreateFlag);
-        assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(60000));
-        assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, "Case").click();
-        clickButton(page, "Continue");
-        getCheckBoxByLabel(page, "Subject").check();
-        clickButton(page, "Continue");
+
+        // Select flag level
+        assertThat(page.locator("h1").last()).hasText("Where should this flag be added?", textOptionsWithTimeout(60000));
+        getRadioButtonByLabel(page, flagLevel).click();
+        clickButton(page, "Next");
+
+        // Select flag type
         getRadioButtonByLabel(page, "Other").click();
-        page.getByLabel("Enter a flag type").click();
-        page.getByLabel("Enter a flag type").fill("test flag");
-        clickButton(page, "Continue");
-        assertThat(page.locator("h2"))
-            .hasText("Add comments for this flag (Optional)",textOptionsWithTimeout(30000));
-        clickButton(page, "Continue");
+        getTextBoxByLabel(page, "Enter a flag type").type("test flag");
+        clickButton(page, "Next");
+
+        // Enter flag comments
+        page.locator("#flagComments").type("Test Flag Comment");
+        clickButton(page, "Next");
+
+        // Review flag details screen
         assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
+            .hasText("Review flag details", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
+
+        // Flag created confirmation screen
         assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Case Flag created", textOptionsWithTimeout(60000));
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+            .hasText("Flag created", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+    }
+
+    public void updateCaseLevelFlag() {
+        startNextStepAction(ManageFlag);
+
+        // Select flag to manage
+        assertThat(page.locator("h1").last()).hasText("Manage case flags", textOptionsWithTimeout(60000));
+        getRadioButtonByLabel(page, "Case level").click();
+        clickButton(page, "Next");
+
+        // Select to make flag inactive
+        clickButton(page, "Make inactive");
+        page.locator("#flagComments").type("Test Manage case flag, making the flag inactive");
+        clickButton(page, "Next");
+
+        // Review flag details screen
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Review flag details", textOptionsWithTimeout(60000));
+        clickButton(page, "Save and continue");
+
+        // Flag created confirmation screen
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Flag updated", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals(CaseManagement.label, getCaseStatus());
