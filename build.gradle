@@ -21,13 +21,13 @@ plugins {
   id 'idea'
   id 'pmd'
   id 'jacoco'
-  id 'org.owasp.dependencycheck' version '9.0.1'
+  id 'org.owasp.dependencycheck' version '9.0.2'
   id 'org.sonarqube' version '4.4.1.3373'
   id 'io.spring.dependency-management' version '1.1.4'
   id 'org.springframework.boot' version '2.7.18'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk'  version '5.5.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.928'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.940'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -297,12 +297,11 @@ task highLevelDataSetup(type: JavaExec) {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
-  // The line below prevents the build from failing if the Fortify scan detects issues
-  ignoreExitValue = true
 }
+
 checkstyle {
   maxWarnings = 0
   toolVersion = '9.3'
@@ -451,7 +450,7 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.7.11') {
+  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.8.0-ccd-5072.1') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
     exclude group: 'com.google.guava', module: 'guava'
     exclude group: 'org.apache.poi', module: 'poi-ooxml'
@@ -483,7 +482,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.7'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.8'
-  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '4.1.0-RELEASE'
+  implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '4.1.1-RELEASE'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.1.1'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
   implementation group: 'org.json', name: 'json', version: '20231013'
@@ -511,7 +510,7 @@ dependencies {
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.1'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.simplify4u', name: 'slf4j-mock', version: '2.3.0'
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.1'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.40.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
