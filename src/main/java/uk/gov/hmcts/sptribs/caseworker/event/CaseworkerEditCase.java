@@ -52,9 +52,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editFurtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
-    @Autowired
     private final SubmissionService submissionService;
-
+    
+    @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
     }
@@ -141,32 +141,26 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
                 .roleOnCase("subject")
-                .build()
-            );
+                .build());
         }
 
         if (Objects.isNull(data.getApplicantFlags())
-            || (null != data.getApplicantFlags() && Objects.isNull(data.getApplicantFlags().getDetails()))) {
-            if (null != data.getCicCase().getApplicantFullName()) {
-                data.setApplicantFlags(Flags.builder()
-                    .details(new ArrayList<>())
-                    .partyName(data.getCicCase().getApplicantFullName())
-                    .roleOnCase("applicant")
-                    .build()
-                );
-            }
+            || (data.getApplicantFlags() != null && Objects.isNull(data.getApplicantFlags().getDetails()))
+            && (data.getCicCase().getApplicantFullName() != null)) {
+            data.setApplicantFlags(Flags.builder().details(new ArrayList<>())
+                .partyName(data.getCicCase().getApplicantFullName())
+                .roleOnCase("applicant")
+                .build());
         }
 
         if (Objects.isNull(data.getRepresentativeFlags())
-            || (null != data.getRepresentativeFlags() && Objects.isNull(data.getRepresentativeFlags().getDetails()))) {
-            if (null != data.getCicCase().getRepresentativeFullName()) {
+            || (data.getRepresentativeFlags() != null && Objects.isNull(data.getRepresentativeFlags().getDetails()))
+            &&  (data.getCicCase().getRepresentativeFullName() != null)) {
                 data.setRepresentativeFlags(Flags.builder()
                     .details(new ArrayList<>())
                     .partyName(data.getCicCase().getRepresentativeFullName())
                     .roleOnCase("Representative")
-                    .build()
-                );
-            }
+                    .build());
         }
     }
 }
