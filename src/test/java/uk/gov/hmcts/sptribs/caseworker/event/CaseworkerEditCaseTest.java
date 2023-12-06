@@ -76,6 +76,10 @@ class CaseworkerEditCaseTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
         beforeDetails.setState(State.DSS_Submitted);
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.APPLICANT);
+        caseData.getCicCase().setPartiesCIC(parties);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -98,6 +102,10 @@ class CaseworkerEditCaseTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.APPLICANT);
+        caseData.getCicCase().setPartiesCIC(parties);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseClosed);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -214,8 +222,12 @@ class CaseworkerEditCaseTest {
             .regionCIC(RegionCIC.SCOTLAND)
             .build();
 
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.APPLICANT);
         final CicCase newCicCase = CicCase.builder()
             .regionCIC(RegionCIC.LONDON)
+            .partiesCIC(parties)
             .build();
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
@@ -264,6 +276,7 @@ class CaseworkerEditCaseTest {
             .build();
         Set<PartiesCIC> newParties = new HashSet<>();
         newParties.add(PartiesCIC.SUBJECT);
+        newParties.add(PartiesCIC.APPLICANT);
         final CicCase newCicCase = CicCase.builder()
             .partiesCIC(newParties)
             .fullName(TEST_FIRST_NAME)
@@ -292,7 +305,7 @@ class CaseworkerEditCaseTest {
         assertThat(response.getData().getCaseFlags()).isNotNull();
         assertThat(response.getData().getSubjectFlags()).isNotNull();
         assertThat(response.getData().getApplicantFlags()).isNotNull();
-        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
     }
 
     @Test
@@ -351,7 +364,7 @@ class CaseworkerEditCaseTest {
         assertThat(response.getData()).isNotNull();
         assertThat(response.getData().getCaseFlags()).isNotNull();
         assertThat(response.getData().getSubjectFlags()).isNotNull();
-        assertThat(response.getData().getApplicantFlags()).isNotNull();
-        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
     }
 }
