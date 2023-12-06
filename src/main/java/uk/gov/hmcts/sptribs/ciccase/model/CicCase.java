@@ -315,22 +315,22 @@ public class CicCase {
     private String respondentEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
-        label = "Tribunal name ",
+        label = "Tribunal name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
-    private String tribunalName = "First-tier Tribunal (CIC)";
+    private String tribunalName;
 
     @CCD(
-        label = "Tribunal organisation ",
+        label = "Tribunal organisation",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
-    private String tribunalOrganisation = "Criminal Injuries Compensation";
+    private String tribunalOrganisation;
 
     @CCD(
-        label = "Tribunal email  ",
+        label = "Tribunal email",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
-    private String tribunalEmail = "CIC.enquiries@justice.gov.uk";
+    private String tribunalEmail;
 
     @CCD(
         label = "Subject's full name",
