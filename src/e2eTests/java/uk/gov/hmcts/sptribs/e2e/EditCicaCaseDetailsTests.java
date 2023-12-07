@@ -3,10 +3,10 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.EditCicaCaseDetails;
-import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -22,7 +22,7 @@ public class EditCicaCaseDetailsTests extends Base {
         Login login = new Login(page);
         login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        final String caseNumber = newCase.createCase(Representative);
+        final String caseNumber = newCase.createCase(CaseParties.Representative.label);
         newCase.buildCase();
         clickLink(page, "Sign out");
         login.loginAsStRespondentUser();
