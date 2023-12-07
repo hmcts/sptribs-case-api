@@ -4,12 +4,12 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueDecision;
-import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -24,7 +24,7 @@ public class IssueADecisionTests extends Base {
         Login login = new Login(page);
         login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase(Representative);
+        newCase.createCase(CaseParties.Representative.label);
         newCase.buildCase();
         Hearing hearing = new Hearing(page);
         hearing.createListing();
