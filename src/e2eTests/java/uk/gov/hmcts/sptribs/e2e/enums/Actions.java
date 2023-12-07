@@ -2,11 +2,10 @@ package uk.gov.hmcts.sptribs.e2e.enums;
 
 public enum Actions {
     AddNote("Case: Add note"),
-    CicaContactParties("Case: CICA Contact parties"),
     ContactParties("Case: Contact parties"),
     EditCase("Case: Edit case"),
     CreateFlag("Create case flags"),
-    ManageFlags("Manage case flags"),
+    ManageFlag("Manage case flags"),
     CancelHearing("Hearings: Cancel hearing"),
     CreateListing("Hearings: Create listing"),
     CreateSummary("Hearings:Create summary"),
