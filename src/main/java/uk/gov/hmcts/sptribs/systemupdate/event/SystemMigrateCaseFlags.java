@@ -27,12 +27,16 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
 
     public static final String SYSTEM_MIGRATE_CASE_FLAGS = "system-migrate-case-flags";
 
-    @Autowired
     private CcdSupplementaryDataService ccdSupplementaryDataService;
-
+    
     @Value("${feature.migration.enabled}")
     private boolean migrationFlagEnabled;
-
+    
+    
+    @Autowired
+    public SystemMigrateCaseFlags(CcdSupplementaryDataService ccdSupplementaryDataService) {
+        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+    }
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
