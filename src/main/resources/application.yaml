@@ -199,7 +199,7 @@ feature:
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
   migration:
-    enabled: ${MIGRATION_ENABLED:false}
+    enabled: ${MIGRATION_ENABLED:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
