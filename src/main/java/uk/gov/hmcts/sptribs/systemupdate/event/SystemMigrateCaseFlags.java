@@ -51,10 +51,10 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
         if (migrationFlagEnabled) {
-          log.info("Migrating case flags for case Id: {}", details.getId());
-          CaseData data = details.getData();
-          initialiseFlags(data);
-          setSupplementaryData(details.getId());
+            log.info("Migrating case flags for case Id: {}", details.getId());
+            CaseData data = details.getData();
+            initialiseFlags(data);
+            setSupplementaryData(details.getId());
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
