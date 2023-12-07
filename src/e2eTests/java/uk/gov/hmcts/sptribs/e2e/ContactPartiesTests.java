@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Order;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CicaContactParties;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ContactParties;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
@@ -58,8 +57,8 @@ public class ContactPartiesTests extends Base {
         assertThat(page.locator("ccd-markdown markdown h3").first())
             .hasText("Case number: " + caseNumber, textOptionsWithTimeout(60000));
 
-        newCase.startNextStepAction(CicaContactParties);
-        completeContactPartiesJourney(page, CicaContactParties);
+        newCase.startNextStepAction(ContactParties);
+        completeContactPartiesJourney(page, ContactParties);
         Assertions.assertEquals(CaseManagement.label, newCase.getCaseStatus());
     }
 
@@ -67,7 +66,7 @@ public class ContactPartiesTests extends Base {
         assertThat(page.locator("h1")).hasText("Documents to include", textOptionsWithTimeout(60000));
         getCheckBoxByLabel(page, "sample_file.pdf").check();
         clickButton(page, "Continue");
-        if (parties.equals(CicaContactParties)) {
+        if (parties.equals(ContactParties)) {
             assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(60000));
         } else {
             assertThat(page.locator("h1")).hasText("Contact Parties", textOptionsWithTimeout(60000));

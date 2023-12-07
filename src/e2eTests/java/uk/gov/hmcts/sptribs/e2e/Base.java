@@ -89,7 +89,7 @@ public abstract class Base {
         login.loginAsLegalOfficer();
 
         Case newCase = new Case(page);
-        newCase.createCase(parties);
+        newCase.createCase("representative");
         newCase.buildCase();
         return newCase;
     }
