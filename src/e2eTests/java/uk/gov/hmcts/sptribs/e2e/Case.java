@@ -28,10 +28,10 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCase;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCases;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageCaseLinks;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageLinks;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
@@ -672,7 +672,7 @@ public class Case {
 
     public void linkCase(String caseId1, String caseId2) {
         openCase(caseId1);
-        startNextStepAction(LinkCase);
+        startNextStepAction(LinkCases);
         assertThat(page.locator("h1"))
             .hasText("Before you start", textOptionsWithTimeout(60000));
         clickButton(page, "Next");
@@ -697,7 +697,7 @@ public class Case {
 
     public void unlinkCase(String caseId1, String caseId2) {
         openCase(caseId1);
-        startNextStepAction(ManageLinks);
+        startNextStepAction(ManageCaseLinks);
         assertThat(page.locator("h1"))
             .hasText("Before you start", textOptionsWithTimeout(60000));
         clickButton(page, "Next");
