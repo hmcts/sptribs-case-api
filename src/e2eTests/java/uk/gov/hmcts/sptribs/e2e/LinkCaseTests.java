@@ -3,23 +3,22 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
 
-import java.util.regex.Matcher;
-
-import static java.util.regex.Pattern.compile;
 
 public class LinkCaseTests extends Base {
 
     @RepeatedIfExceptionsTest
-    void linkTwoCasesTogetherTest() {
+    void linkCasesTest() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsLegalOfficer();
+        login.loginAsStTest1User();
 
         Case case1 = new Case(page);
-        String caseId1 = createAndBuild(case1, page);
+        String caseId1 = case1.createCase();
+        case1.buildCase();
 
         Case case2 = new Case(page);
-        String caseId2 = createAndBuild(case2, page);
+        String caseId2 = case1.createCase();
+        case2.buildCase();
 
         case2.linkCase(caseId1, caseId2);
     }
@@ -28,26 +27,18 @@ public class LinkCaseTests extends Base {
     void unlinkCasesTest() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsLegalOfficer();
+        login.loginAsStTest1User();
 
         Case case1 = new Case(page);
-        String caseId1 = createAndBuild(case1, page);
+        String caseId1 = case1.createCase();
+        case1.buildCase();
 
         Case case2 = new Case(page);
-        String caseId2 = createAndBuild(case2, page);
+        String caseId2 = case2.createCase();
+        case2.buildCase();
+
 
         case2.linkCase(caseId1, caseId2);
         case2.unlinkCase(caseId1, caseId2);
-    }
-
-    private String createAndBuild(Case newCase, Page page) {
-        newCase.createCase();
-        newCase.buildCase();
-        Matcher m = compile("\\d+").matcher(page.url());
-        String caseId1 = null;
-        if (m.find()) {
-            caseId1 = m.group(0);
-        }
-        return caseId1;
     }
 }
