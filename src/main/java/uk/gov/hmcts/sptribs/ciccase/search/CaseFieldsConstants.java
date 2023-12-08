@@ -3,37 +3,48 @@ package uk.gov.hmcts.sptribs.ciccase.search;
 public final class CaseFieldsConstants {
     //Fields
     public static final String SUBJECT_NAME = "cicCaseFullName";
-    public static final String HEARING_DATE = "firstHearingDate";
     public static final String SUBJECT_DATE_OF_BIRTH = "cicCaseDateOfBirth";
-    public static final String REPRESENTATIVE_REFERENCE = "cicCaseRepresentativeReference";
     public static final String SUBJECT_ADDRESS = "cicCaseAddress";
+    public static final String SUBJECT_EMAIL = "cicCaseEmail";
+    public static final String SUBJECT_PHONE_NUMBER = "cicCasePhoneNumber";
+
+    public static final String HEARING_DATE = "firstHearingDate";
     public static final String HEARING_LOCATION = "hearingVenueName";
+
     public static final String CASE_CATEGORY = "cicCaseCaseCategory";
     public static final String CASE_SUBCATEGORY = "cicCaseCaseSubcategory";
-    public static final String APPLICANT_NAME = "cicCaseApplicantFullName";
-    public static final String APPLICANT_EMAIL = "cicCaseApplicantEmailAddress";
-    public static final String APPLICANT_DATE_OF_BIRTH = "cicCaseApplicantDateOfBirth";
-    public static final String CCD_REFERENCE = "[CASE_REFERENCE]";
+    public static final String CASE_DETAILS = "case-details";
     public static final String CASE_STATE = "[STATE]";
+    public static final String CCD_REFERENCE = "[CASE_REFERENCE]";
     public static final String CASE_REGION = "cicCaseRegionCIC";
+    public static final String CASE_STATE_LABEL = "LabelState";
+    public static final String CASE_RECEIVED_DATE = "cicCaseCaseReceivedDate";
+    public static final String CASE_CLAIM_LINKED = "cicCaseClaimLinkedToCic";
     public static final String DUE_DATE = "cicCaseFirstDueDate";
     public static final String SCHEME = "cicCaseSchemeCic";
     public static final String LAST_MODIFIED_DATE = "[LAST_MODIFIED_DATE]";
     public static final String LAST_STATE_MODIFIED_DATE = "[LAST_STATE_MODIFIED_DATE]";
-    public static final String SUBJECT_EMAIL = "cicCaseEmail";
-    public static final String SUBJECT_PHONE_NUMBER = "cicCasePhoneNumber";
-    public static final String CASE_DETAILS = "case-details";
-    public static final String CASE_STATE_LABEL = "LabelState";
+    public static final String CASE_CICA_REFERENCE = "cicCaseCicaReferenceNumber";
+
+    public static final String APPLICANT_DETAILS = "applicantDetails";
+    public static final String APPLICANT_NAME = "cicCaseApplicantFullName";
+    public static final String APPLICANT_EMAIL = "cicCaseApplicantEmailAddress";
+    public static final String APPLICANT_DATE_OF_BIRTH = "cicCaseApplicantDateOfBirth";
+    public static final String APPLICANT_ADDRESS = "cicCaseApplicantAddress";
+    public static final String APPLICANT_PHONE_NUMBER = "cicCaseApplicantPhoneNumber";
+    public static final String APPLICANT_CONTACT_PREFERENCE = "cicCaseApplicantContactDetailsPreference";
+    
     public static final String REPRESENTATIVE_DETAILS = "representativeDetails";
+    public static final String REPRESENTATIVE_REFERENCE = "cicCaseRepresentativeReference";
     public static final String REPRESENTATIVE_QUALIFIED = "cicCaseIsRepresentativeQualified";
-    public static final String CASE_RECEIVED_DATE = "cicCaseCaseReceivedDate";
-    public static final String CASE_CLAIM_LINKED = "cicCaseClaimLinkedToCic";
     public static final String REPRESENTATIVE_ORG = "cicCaseRepresentativeOrgName";
     public static final String REPRESENTATIVE_FULLNAME = "cicCaseRepresentativeFullName";
     public static final String REPRESENTATIVE_PHONE_NUMBER = "cicCaseRepresentativePhoneNumber";
     public static final String REPRESENTATIVE_EMAIL = "cicCaseRepresentativeEmailAddress";
     public static final String REPRESENTATIVE_PRESENT = "cicCaseIsRepresentativePresent";
     public static final String REPRESENTATIVE_ADDRESS = "cicCaseRepresentativeAddress";
+    public static final String REPRESENTATIVE_CONTACT_PREFERENCE = "cicCaseRepresentativeContactDetailsPreference";
+
     public static final String STAY_DETAILS = "stayDetails";
     public static final String IS_STAYED = "stayIsCaseStayed";
     public static final String STAY_REASON = "stayStayReason";
@@ -44,7 +55,6 @@ public final class CaseFieldsConstants {
     public static final String REMOVE_STAY_REASON = "removeStayStayRemoveReason";
     public static final String REMOVE_STAY_OTHER_DESCRIPTION = "removeStayStayRemoveOtherDescription";
     public static final String REMOVE_STAY_ADDITIONAL_DETAIL = "removeStayAdditionalDetail";
-    public static final String CASE_CICA_REFERENCE = "cicCaseCicaReferenceNumber";
     
     //Conditions
     public static final String COND_REPRESENTATIVE_NOT_EMPTY = "cicCaseRepresentativeFullName!=\"\"";

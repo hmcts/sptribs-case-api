@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -83,10 +82,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
-            .field(CaseData::getCaseFlags, CaseFieldsConstants.COND_ALWAYS_HIDE_STAY_REASON)
-            .field(CaseData::getSubjectFlags, CaseFieldsConstants.COND_ALWAYS_HIDE_STAY_REASON)
-            .field(CaseData::getApplicantFlags, CaseFieldsConstants.COND_ALWAYS_HIDE_STAY_REASON)
-            .field(CaseData::getRepresentativeFlags, CaseFieldsConstants.COND_ALWAYS_HIDE_STAY_REASON);
+            .field(CaseData::getCaseFlags, COND_ALWAYS_HIDE_STAY_REASON)
+            .field(CaseData::getSubjectFlags, COND_ALWAYS_HIDE_STAY_REASON)
+            .field(CaseData::getApplicantFlags, COND_ALWAYS_HIDE_STAY_REASON)
+            .field(CaseData::getRepresentativeFlags, COND_ALWAYS_HIDE_STAY_REASON);
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -188,23 +187,23 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(SUBJECT_PHONE_NUMBER)
             .field(SUBJECT_ADDRESS)
             .field("cicCaseSubjectCIC")
-            .label("applicantDetails", COND_REPRESENTATIVE_NOT_EMPTY, "### Representative Details")
+            .label(APPLICANT_DETAILS, COND_REPRESENTATIVE_NOT_EMPTY, "### Representative Details")
             .field("cicCaseRepresentativeCIC")
-            .field("cicCaseRepresentativeFullName")
-            .field("cicCaseRepresentativeOrgName")
+            .field(REPRESENTATIVE_FULLNAME)
+            .field(REPRESENTATIVE_ORG)
             .field(REPRESENTATIVE_ADDRESS)
-            .field("cicCaseRepresentativePhoneNumber")
-            .field("cicCaseRepresentativeEmailAddress")
-            .field("cicCaseRepresentativeReference")
-            .field("cicCaseIsRepresentativeQualified", COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
-            .field("cicCaseRepresentativeContactDetailsPreference", COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
-            .label("applicantDetails", COND_APPLICANT_FULL_NAME_NOT_EMPTY, "### Applicant Details")
+            .field(REPRESENTATIVE_PHONE_NUMBER)
+            .field(REPRESENTATIVE_EMAIL)
+            .field(REPRESENTATIVE_REFERENCE)
+            .field(REPRESENTATIVE_QUALIFIED, COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
+            .field(REPRESENTATIVE_CONTACT_PREFERENCE, COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
+            .label(APPLICANT_DETAILS, COND_APPLICANT_FULL_NAME_NOT_EMPTY, "### Applicant Details")
             .field(APPLICANT_NAME)
             .field(APPLICANT_DATE_OF_BIRTH, COND_APPLICANT_FULL_NAME_NOT_EMPTY)
-            .field("cicCaseApplicantPhoneNumber")
-            .field("cicCaseApplicantContactDetailsPreference", COND_APPLICANT_FULL_NAME_NOT_EMPTY)
+            .field(APPLICANT_PHONE_NUMBER)
+            .field(APPLICANT_CONTACT_PREFERENCE, COND_APPLICANT_FULL_NAME_NOT_EMPTY)
             .field(APPLICANT_EMAIL) 
-            .field("cicCaseApplicantAddress");
+            .field(APPLICANT_ADDRESS);
     }
 
     private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -221,19 +220,19 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("Applicant's details", COND_APPLICANT_FULL_NAME_NOT_EMPTY, "### Applicant's details")
             .field(APPLICANT_NAME)
             .field(APPLICANT_EMAIL)
-            .field("cicCaseApplicantPhoneNumber")
+            .field(APPLICANT_PHONE_NUMBER)
             .field(APPLICANT_DATE_OF_BIRTH, COND_APPLICANT_FULL_NAME_NOT_EMPTY)
-            .field("cicCaseApplicantContactDetailsPreference", COND_APPLICANT_FULL_NAME_NOT_EMPTY)
-            .field("cicCaseApplicantAddress")
+            .field(APPLICANT_CONTACT_PREFERENCE, COND_APPLICANT_FULL_NAME_NOT_EMPTY)
+            .field(APPLICANT_ADDRESS)
             .label("Representative's details", COND_REPRESENTATIVE_NOT_EMPTY, "### Representative's details")
-            .field("cicCaseRepresentativeFullName")
-            .field("cicCaseRepresentativeOrgName")
+            .field(REPRESENTATIVE_FULLNAME)
+            .field(REPRESENTATIVE_ORG)
             .field(REPRESENTATIVE_ADDRESS)
-            .field("cicCaseRepresentativePhoneNumber")
-            .field("cicCaseRepresentativeEmailAddress")
-            .field("cicCaseRepresentativeReference")
-            .field("cicCaseIsRepresentativeQualified", COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
-            .field("cicCaseRepresentativeContactDetailsPreference", COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
+            .field(REPRESENTATIVE_PHONE_NUMBER)
+            .field(REPRESENTATIVE_EMAIL)
+            .field(REPRESENTATIVE_REFERENCE)
+            .field(REPRESENTATIVE_QUALIFIED, COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
+            .field(REPRESENTATIVE_CONTACT_PREFERENCE, COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY)
             .field(REPRESENTATIVE_ADDRESS)
             .label("Respondent's details", null, "### Respondent's details")
             .field("cicCaseRespondentName")
@@ -278,37 +277,36 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("hearings", "Hearings")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .label("Listing details", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY, "#### Listing details")
+            .field("hearingStatus", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("hearingType", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("hearingFormat", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("hearingVenueNameAndAddress", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("roomAtVenue", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("date", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("session", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("hearingTime", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("videoCallLink", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("importantInfoDetails", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .field("cicCaseHearingNotificationParties", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
 
-            .label("Listing details",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY, "#### Listing details")
-            .field("hearingStatus",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingType",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingFormat",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingVenueNameAndAddress",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("roomAtVenue",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("date",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("session",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("hearingTime",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("videoCallLink",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("importantInfoDetails",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
-            .field("cicCaseHearingNotificationParties",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
+            .label("Hearing summary", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY, "#### Hearing summary")
+            .field("judge", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("isFullPanel", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("memberList", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("roles", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("others", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("outcome", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("recFile", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("recDesc", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
 
-            .label("Hearing summary",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY, "#### Hearing summary")
-            .field("judge",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("isFullPanel",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("memberList",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("roles",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("others",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("outcome",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("recFile",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("recDesc",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .label("Postponement summary", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY, "#### Postponement summary")
+            .field("cicCasePostponeReason", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
+            .field("cicCasePostponeAdditionalInformation", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
 
-            .label("Postponement summary", CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY, "#### Postponement summary")
-            .field("cicCasePostponeReason",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
-            .field("cicCasePostponeAdditionalInformation",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
-
-            .label("Cancellation summary", CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY, "#### Cancellation summary")
-            .field("cicCaseHearingCancellationReason",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
-            .field("cicCaseCancelHearingAdditionalDetail",  CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
+            .label("Cancellation summary", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY, "#### Cancellation summary")
+            .field("cicCaseHearingCancellationReason", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
+            .field("cicCaseCancelHearingAdditionalDetail", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
 
             .label("Listing details", null, "#### Listing details")
             .field(CaseData::getHearingList);
