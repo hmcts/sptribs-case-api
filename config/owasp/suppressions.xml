@@ -4,8 +4,4 @@
     <notes>pkg:maven/org.bouncycastle/bcprov-jdk15on@1.70</notes>
     <cve>CVE-2023-33202</cve>
   </suppress>
-  <suppress>
-    <notes>cpe:2.3:a:qos:logback</notes>
-    <cve>CVE-2023-6378</cve>
-  </suppress>
 </suppressions>

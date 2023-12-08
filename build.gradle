@@ -460,6 +460,8 @@ dependencies {
   implementation 'io.swagger:swagger-annotations:1.6.12'
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
   implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.19'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.2'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.2'
@@ -672,7 +674,7 @@ task installChromium(type: JavaExec) {
   // group = "Execution"
   // description = "Run the main class with JavaExecTask"
   classpath = sourceSets.cftlibTest.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', 'chromium']
 }
 
@@ -680,19 +682,19 @@ tasks.cftlibTest.dependsOn(installChromium)
 
 task installBrowser(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', 'chromium']
 }
 
 task installFirefox(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', 'firefox']
 }
 
 task installMsEdge(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', '--force', 'msedge']
 }
 
