@@ -156,11 +156,11 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         if (Objects.isNull(data.getRepresentativeFlags())
             || (data.getRepresentativeFlags() != null && Objects.isNull(data.getRepresentativeFlags().getDetails()))
             &&  (data.getCicCase().getRepresentativeFullName() != null)) {
-                data.setRepresentativeFlags(Flags.builder()
-                    .details(new ArrayList<>())
-                    .partyName(data.getCicCase().getRepresentativeFullName())
-                    .roleOnCase("Representative")
-                    .build());
+            data.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getRepresentativeFullName())
+                .roleOnCase("Representative")
+                .build());
         }
     }
 }

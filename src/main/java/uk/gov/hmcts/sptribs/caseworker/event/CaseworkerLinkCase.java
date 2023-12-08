@@ -44,7 +44,7 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     private final CaseLinkedNotification caseLinkedNotification;
     
     @Autowired
-    public CaseworkerLinkCase(CaseLinkedNotification caseLinkedNotification){
+    public CaseworkerLinkCase(CaseLinkedNotification caseLinkedNotification) {
         this.caseLinkedNotification = caseLinkedNotification;
     }
 

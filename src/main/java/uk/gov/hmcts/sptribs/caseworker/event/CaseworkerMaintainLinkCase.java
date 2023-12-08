@@ -44,7 +44,7 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     private final CaseUnlinkedNotification caseUnlinkedNotification;
     
     @Autowired
-    public CaseworkerMaintainLinkCase(CaseUnlinkedNotification caseUnlinkedNotification){
+    public CaseworkerMaintainLinkCase(CaseUnlinkedNotification caseUnlinkedNotification) {
         this.caseUnlinkedNotification = caseUnlinkedNotification;
     }
 

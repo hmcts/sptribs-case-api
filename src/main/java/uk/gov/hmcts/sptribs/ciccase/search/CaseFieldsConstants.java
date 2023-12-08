@@ -61,8 +61,10 @@ public final class CaseFieldsConstants {
     public static final String COND_ALWAYS_HIDE_STAY_REASON = "stayStayReason=\"NEVER_SHOW\"";
     public static final String COND_IS_CASE_STAYED = "stayIsCaseStayed=\"Yes\"";
     public static final String COND_IS_NOT_CASE_STAYED = "stayIsCaseStayed=\"No\"";
-    public static final String COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY = "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"";
-    public static final String COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY = "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"";
+    public static final String COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY 
+        = "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"";
+    public static final String COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY 
+        = "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"";
     public static final String COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY = "hearingList!=\"*\" AND isFullPanel!=\"\"";
     public static final String COND_APPLICANT_FULL_NAME_NOT_EMPTY = "cicCaseApplicantFullName!=\"\"";
     public static final String COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY = "hearingList!=\"*\" AND hearingType!=\"\"";

@@ -37,6 +37,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
     public SystemMigrateCaseFlags(CcdSupplementaryDataService ccdSupplementaryDataService) {
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
     }
+    
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
