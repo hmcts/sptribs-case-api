@@ -620,7 +620,7 @@ ccd {
 }
 
 bootWithCCD {
-    environment 'XUI_JURISDICTIONS', 'ST_CIC,ST_SEND,ST_PHL,ST_CS,ST_MH'
+    environment 'XUI_JURISDICTIONS', 'ST_CIC'
     group = 'ccd tasks'
     dependsOn(loadEnvSecrets)
 
@@ -648,7 +648,7 @@ cftlibTest {
     'junit.jupiter.execution.parallel.mode.default': 'same_thread',
     'junit.jupiter.execution.parallel.mode.classes.default': 'concurrent',
   ])
-  environment 'XUI_JURISDICTIONS', 'ST_CIC,ST_SEND,ST_PHL,ST_CS,ST_MH'
+  environment 'XUI_JURISDICTIONS', 'ST_CIC'
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'RD_PROFESSIONAL_API_URL', 'http://host.docker.internal:8765'
   environment 'PRD_API_BASEURL', 'http://localhost:8765'
