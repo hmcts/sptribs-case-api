@@ -21,7 +21,8 @@ public class CaseworkerCreateHearingSummaryFT extends uk.gov.hmcts.sptribs.testu
         // When
         io.restassured.response.Response
             response =
-            triggerCallback(caseData, uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY, ABOUT_TO_SUBMIT_URL);
+            triggerCallback(caseData,
+                uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY, ABOUT_TO_SUBMIT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         // Then

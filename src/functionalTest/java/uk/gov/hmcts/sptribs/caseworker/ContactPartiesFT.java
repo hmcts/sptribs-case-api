@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
@@ -21,7 +22,8 @@ public class ContactPartiesFT extends FunctionalTestSuite {
 
         // When
         io.restassured.response.Response
-            response = triggerCallback(caseData, uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES, ABOUT_TO_SUBMIT_URL);
+            response = triggerCallback(caseData,
+            uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES, ABOUT_TO_SUBMIT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         // Then
