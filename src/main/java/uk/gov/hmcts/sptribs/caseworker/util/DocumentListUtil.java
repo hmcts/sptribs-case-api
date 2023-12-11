@@ -27,6 +27,10 @@ public final class DocumentListUtil {
 
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {
+        return buildListValues(prepareList(data));
+    }
+
     private static List<CaseworkerCICDocument> prepareList(CaseData data) {
         List<CaseworkerCICDocument> docList = new ArrayList<>();
         docList.addAll(getOrderDocuments(data.getCicCase()));
