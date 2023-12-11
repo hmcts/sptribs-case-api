@@ -245,7 +245,7 @@ withPipeline(type, product, component) {
         generateDefinitions()
     }
 
-  /* afterSuccess('functionalTest:preview') {
+   afterSuccess('functionalTest:preview') {
 
         try {
             builder.gradle('e2eTests')
@@ -255,12 +255,12 @@ withPipeline(type, product, component) {
                     allowMissing         : true,
                     alwaysLinkToLastBuild: true,
                     keepAll              : true,
-                    reportDir            : "build/reports/tests/e2eTests",
+                    reportDir            : "build/reports/tests/functional",
                     reportFiles          : "index.html",
                     reportName           : "E2E Tests Report"
             ]
         }
-    }*/
+    }
 
 
         onDemo {
