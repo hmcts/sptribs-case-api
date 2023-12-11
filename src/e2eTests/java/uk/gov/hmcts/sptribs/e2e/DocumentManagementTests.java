@@ -1,54 +1,95 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.options.SelectOption;
-import org.junit.jupiter.api.Disabled;
-
-import java.nio.file.Paths;
+import io.github.artsok.RepeatedIfExceptionsTest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Order;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.AmendDocuments;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.RemoveDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.functionOptionsWithTimeout;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseNumber;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 
 public class DocumentManagementTests extends Base {
 
-    @Disabled
+    private final String documentCategory = "A - Notice of Appeal";
+    private final String documentDescription = "This is a test to upload document";
+    private final String documentName = "sample_pdf_file_3.pdf";
+
+    @Order(1)
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToUploadDocuments() {
         Page page = getPage();
-        Case newCase = createAndBuildCase(page);
+        Case newCase = createAndBuildCase(page, Representative);
+
         newCase.startNextStepAction(UploadDocuments);
+        DocumentManagement docManagement = new DocumentManagement(page);
+        docManagement.uploadDocuments(documentCategory, documentDescription, documentName);
 
-        assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(60000));
-        uploadDocuments(page);
-        clickButton(page, "Continue");
-
-        assertThat(page.locator(".check-your-answers h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(60000));
-        clickButton(page, "Save and continue");
-
-        assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Case Updated", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
+        getTabByText(page, "Case Documents").click();
+        assertThat(page.locator("h4").first()).hasText("Case Documents");
+        Assertions.assertEquals(documentCategory, getValueFromTableWithinCaseDocumentsTabFor(page, "Document Category"));
+        Assertions.assertEquals(documentDescription, getValueFromTableWithinCaseDocumentsTabFor(page, "Description"));
+        Assertions.assertEquals(documentName, getValueFromTableWithinCaseDocumentsTabFor(page, "File"));
     }
 
-    private Case createAndBuildCase(Page page) {
+    @Order(2)
+    @RepeatedIfExceptionsTest
+    public void seniorCaseWorkerShouldBeAbleToAmendDocuments() {
+        Page page = getPage();
+        Case newCase = createAndBuildCase(page, Representative);
+
+        newCase.startNextStepAction(UploadDocuments);
+        DocumentManagement docManagement = new DocumentManagement(page);
+        docManagement.uploadDocuments(documentCategory, documentDescription, documentName);
+
+        newCase.startNextStepAction(AmendDocuments);
+        String amendedDocumentCategory = "A - Correspondence from the CICA";
+        String amendedDocumentDescription = "This is a test to amend document";
+        docManagement.amendDocument(amendedDocumentCategory, amendedDocumentDescription, documentName);
+
+        getTabByText(page, "Case Documents").click();
+        assertThat(page.locator("h4").first()).hasText("Case Documents");
+        Assertions.assertEquals(amendedDocumentCategory, getValueFromTableWithinCaseDocumentsTabFor(page, "Document Category"));
+        Assertions.assertEquals(amendedDocumentDescription, getValueFromTableWithinCaseDocumentsTabFor(page, "Description"));
+        Assertions.assertEquals(documentName, getValueFromTableWithinCaseDocumentsTabFor(page, "File"));
+    }
+
+    @Order(3)
+    @RepeatedIfExceptionsTest
+    public void seniorJudgeShouldBeAbleToRemoveDocuments() {
+        Page page = getPage();
+        Case newCase = createAndBuildCase(page, Representative);
+        final String caseNumber = getCaseNumber(page);
+
+        newCase.startNextStepAction(UploadDocuments);
+        String documentToBeRemovedCategory = "C - Hospital records";
+        String documentToBeRemovedDescription = "This is a test to remove document";
+        DocumentManagement docManagement = new DocumentManagement(page);
+        docManagement.uploadDocuments(documentToBeRemovedCategory, documentToBeRemovedDescription, documentName);
+
+        clickLink(page, "Sign out");
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsSeniorJudge();
+        page.navigate(getCaseUrl(caseNumber));
+        assertThat(page.locator("ccd-markdown markdown h3").first())
+            .hasText("Case number: " + caseNumber, textOptionsWithTimeout(60000));
 
-        Case newCase = new Case(page);
-        newCase.createCase("representative");
-        newCase.buildCase();
-        return newCase;
+        newCase.startNextStepAction(RemoveDocuments);
+        docManagement.removeDocument(documentToBeRemovedCategory, documentToBeRemovedDescription, documentName);
+
+        getTabByText(page, "Case Documents").click();
+        assertThat(page.locator("h4").first()).hasText("Case Documents");
+        assertThat(page.locator("//span[contains(text(), '" + documentToBeRemovedCategory + "')]")).isHidden();
     }
 
-    private void uploadDocuments(Page page) {
-        clickButton(page, "Add new");
-        page.selectOption("#caseworkerCICDocument_0_documentCategory", new SelectOption().setLabel("Tribunal Direction"));
-        page.locator("#caseworkerCICDocument_0_documentEmailContent").fill("This is a test document");
-        page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/sample_file.pdf"));
-        page.waitForFunction("selector => document.querySelector(selector).disabled === true",
-            "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
+    private String getValueFromTableWithinCaseDocumentsTabFor(Page page, String rowHeader) {
+        return page.locator("table.collection-field-table th:has-text(\"" + rowHeader + "\") + td").last().textContent().trim();
     }
 }

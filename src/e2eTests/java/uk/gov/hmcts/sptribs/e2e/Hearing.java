@@ -331,6 +331,7 @@ public class Hearing {
         assertThat(page.locator("h1"))
             .hasText("Hearing outcome", textOptionsWithTimeout(30000));
         getRadioButtonByLabel(page, "Allowed").click();
+
         PageHelpers.clickButton(page, "Continue");
 
         // Fill Upload hearing recording form

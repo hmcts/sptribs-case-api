@@ -169,7 +169,6 @@ class CaseworkerContactPartiesTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
-
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
     }
@@ -274,7 +273,6 @@ class CaseworkerContactPartiesTest {
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
-
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
@@ -307,7 +305,6 @@ class CaseworkerContactPartiesTest {
 
         doThrow(NotificationException.class)
             .when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-
         SubmittedCallbackResponse response =
             caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
 
@@ -330,7 +327,6 @@ class CaseworkerContactPartiesTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
-        caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -349,15 +345,15 @@ class CaseworkerContactPartiesTest {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .address(SUBJECT_ADDRESS)
-            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+                .fullName(TEST_FIRST_NAME)
+                .address(SUBJECT_ADDRESS)
+                .applicantEmailAddress(TEST_APPLICANT_EMAIL)
+                .representativeFullName(TEST_SOLICITOR_NAME)
+                .representativeAddress(SOLICITOR_ADDRESS)
+                .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+                .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+                .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         final ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
@@ -375,9 +371,42 @@ class CaseworkerContactPartiesTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
+                contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getErrors()).hasSize(1);
     }
+
+
+    @Test
+    void shouldRunAboutToStart() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        updatedCaseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
+        assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
+
+    }
 }
+

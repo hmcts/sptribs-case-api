@@ -147,5 +147,4 @@ class CaseworkerManageCaseFlagTest {
         assertThat(response.getData().getCicCase().getSubjectCIC().contains(SubjectCIC.SUBJECT)).isTrue();
 
     }
-
 }

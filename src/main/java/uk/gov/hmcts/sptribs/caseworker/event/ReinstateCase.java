@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -28,8 +29,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
@@ -64,9 +67,18 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::reinstated)
             .showSummary()
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE)
+        );
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -85,31 +97,33 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
     public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
                                                 CaseDetails<CaseData, State> beforeDetails) {
-
-        sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-
-        var cicCase = details.getData().getCicCase();
+        try {
+            sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Case Reinstate notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case Reinstate notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
-                + ". %n## %s ", MessageUtil.generateSimpleMessage(cicCase)))
+                + ". %n## %s ", MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 
     private void sendCaseReinstatedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getNotifyPartySubject().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
             caseReinstatedNotification.sendToSubject(data, caseNumber);
         }
-
-        if (!cicCase.getNotifyPartyRepresentative().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseReinstatedNotification.sendToRepresentative(data, caseNumber);
         }
-
-        if (!cicCase.getNotifyPartyRespondent().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             caseReinstatedNotification.sendToRespondent(data, caseNumber);
         }
-        if (!cicCase.getNotifyPartyApplicant().isEmpty()) {
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
             caseReinstatedNotification.sendToApplicant(data, caseNumber);
         }
     }

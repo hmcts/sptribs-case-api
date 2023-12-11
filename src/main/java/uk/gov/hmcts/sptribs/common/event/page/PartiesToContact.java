@@ -50,12 +50,10 @@ public class PartiesToContact implements CcdPageConfiguration {
         final CicCase cicCase = data.getCicCase();
         final List<String> errors = new ArrayList<>();
 
-
         if (null != data.getContactParties() && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
             && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
             && CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())
             && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-
             errors.add("Which parties do you want to contact is required.");
         }
 

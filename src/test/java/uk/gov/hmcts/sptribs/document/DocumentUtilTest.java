@@ -162,7 +162,7 @@ class DocumentUtilTest {
     void shouldValidateDecisionDocumentFormat() {
         //When
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename("file.txt").build())
+            .documentLink(Document.builder().filename("file.sql").build())
             .documentEmailContent("some email content")
             .build();
 

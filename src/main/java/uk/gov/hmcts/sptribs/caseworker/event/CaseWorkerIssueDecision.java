@@ -42,6 +42,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DECISION_FILE;
 
@@ -80,7 +81,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
         issueDecisionNotice.addTo(pageBuilder);
@@ -137,7 +138,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         var caseData = details.getData();
         var decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
-        if (null != decisionDocument) {
+        if (null != decisionDocument && null != decisionDocument.getDocumentLink()) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
         }
 
@@ -149,8 +150,14 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-
-        sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        try {
+            sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Issue a decision notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Issue a decision notification failed %n## Please resend the notification"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Decision notice issued %n## %s",
@@ -178,11 +185,9 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
-
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
-
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }

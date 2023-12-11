@@ -79,7 +79,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .optional(CaseData::getSubjectFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getApplicantFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getRepresentativeFlags, ALWAYS_HIDE, true, true)
-            .mandatory(CaseData::getFlagLauncher,
+            .optional(CaseData::getFlagLauncher,
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
 
@@ -92,6 +92,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
         var caseData = details.getData();
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())

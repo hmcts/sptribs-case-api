@@ -69,6 +69,9 @@ class CicSubmitCaseEventTest {
     private CicSubmitCaseEvent cicSubmitCaseEvent;
 
     @Mock
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
+    @Mock
     private AddSystemUpdateRole addSystemUpdateRole;
 
     @Mock
@@ -102,7 +105,6 @@ class CicSubmitCaseEventTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
-        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
         when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
             .thenReturn(List.of(CITIZEN_CIC));
 
@@ -155,6 +157,9 @@ class CicSubmitCaseEventTest {
 
         //Then
         Assertions.assertEquals(State.DSS_Submitted, aboutToSubmitResponse.getState());
+        assertThat(aboutToSubmitResponse.getData().getDssAnswer1()).isEqualTo("case_data.dssCaseDataSubjectFullName");
+        assertThat(aboutToSubmitResponse.getData().getDssAnswer3()).isEqualTo("case_data.dssCaseDataSubjectDateOfBirth");
+
     }
 
     @Test

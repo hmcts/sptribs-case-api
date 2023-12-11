@@ -29,7 +29,7 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
             .pageLabel("Upload an order")
             .label("LabelPageNameUploadOrder","")
             .pageShowConditions(map)
-            .label("uploadMessage", "Upload a copy of the document you wish to be added to case file view")
+            .label("uploadMessage", "Upload a copy of the order that you want to issue as part of this case")
             .label("uploadLimits", """
                 The order should be:
                  *  uploaded separately, not one large file

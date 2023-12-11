@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Disabled;
 import java.util.HashMap;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.DssSubmitted;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.visibleOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
@@ -19,7 +20,7 @@ public class HearingJourneyTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToEditListingAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         hearing.editListing();
@@ -36,7 +37,7 @@ public class HearingJourneyTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToCreateHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         final HashMap<String, String> map = hearing.createHearingSummary();
@@ -82,7 +83,7 @@ public class HearingJourneyTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToEditHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         hearing.createHearingSummary();
@@ -105,9 +106,9 @@ public class HearingJourneyTests extends Base {
 
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToPostponeHearingAndViewDetailsInHearingTab() {
-
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
+
         Hearing hearing = createListing(page);
         hearing.postponeHearing();
         getTabByText(page, "Hearings").click();
@@ -125,7 +126,7 @@ public class HearingJourneyTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToCancelHearingAndViewDetailsInHearingTab() {
         Page page = getPage();
-        createAndBuildCase(page);
+        createAndBuildCase(page, Representative);
 
         Hearing hearing = createListing(page);
         hearing.cancelHearing();
@@ -135,14 +136,6 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Cancelled", hearingStatus);
     }
 
-    private void createAndBuildCase(Page page) {
-        Login login = new Login(page);
-        login.loginAsStTest1User();
-
-        Case newCase = new Case(page);
-        newCase.createCase("representative");
-        newCase.buildCase();
-    }
 
     private void createEditAndBuildDssCase(Page page) {
         DssCase newDssCase = new DssCase(page);
@@ -152,12 +145,12 @@ public class HearingJourneyTests extends Base {
         final String caseNumber = newDssCase.createCase("representative");
         clickLink(page, "Sign out");
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         page.navigate(getCaseUrl(caseNumber));
         Case dssCase = new Case(page);
         assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));
         Assertions.assertEquals(DssSubmitted.label, dssCase.getCaseStatus());
-        //dssCase.editDssCase("representative","applicant"); // TODO: to fix - Santoshini
+        //dssCase.editDssCase("representative","applicant");
         dssCase.buildCase();
     }
 

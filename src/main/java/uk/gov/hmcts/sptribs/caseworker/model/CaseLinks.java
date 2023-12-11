@@ -45,3 +45,4 @@ public class CaseLinks {
     )
     private String caseType;
 }
+

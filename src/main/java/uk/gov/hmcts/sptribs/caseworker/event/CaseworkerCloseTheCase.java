@@ -34,14 +34,17 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
@@ -92,9 +95,17 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::closed)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -128,8 +139,14 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
         String message = MessageUtil.generateSimpleMessage(details.getData().getCicCase(), "Case closed",
             "Use 'Reinstate case' if this case needs to be reopened in the future.");
-        sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-
+        try {
+            sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Case close notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case close notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(message)
             .build();
@@ -169,11 +186,14 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .label("LabelCloseCaseUploadDoc",
                 """
                     Please upload copies of any information or evidence that you want to add to this case.
-                    Files should be:
-                    *  uploaded separately, not one large file
-                    *  a maximum of 100MB in size (larger files must be split)
-                    *  select the appropriate category from case file view
+                    <h3>Files should be:</h3>
+                    uploaded separately and not in one large file
+                    a maximum of 100MB in size (larger files must be split)
+                    labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                    Note: If the remove button is disabled, please refresh the page to remove attachments
                     """)
+
+
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();

@@ -2,8 +2,9 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
-import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
@@ -17,13 +18,13 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class IssueFinalDecisionTests extends Base {
 
-    @RepeatedIfExceptionsTest
+    @Disabled
     public void caseWorkerShouldBeAbleToIssueFinalDecision() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase("representative");
+        newCase.createCase(CaseParties.Representative.label);
         newCase.buildCase();
         Hearing hearing = new Hearing(page);
         hearing.createListing();

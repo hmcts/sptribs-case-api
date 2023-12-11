@@ -99,6 +99,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+
         var caseData = details.getData();
         OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
@@ -134,9 +135,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
-
         caseData.getCicCase().setOrderTemplateIssued(null);
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)

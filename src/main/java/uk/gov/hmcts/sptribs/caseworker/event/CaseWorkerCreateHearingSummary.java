@@ -72,7 +72,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::summaryCreated)
-                .grant(CREATE_READ_UPDATE,
+                .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
                 .grantHistoryOnly(

@@ -99,7 +99,6 @@ class CaseworkerCaseFlagTest {
 
         assertThat(submittedCallbackResponse).isNotNull();
         assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
-
     }
 
     @Test
@@ -125,6 +124,7 @@ class CaseworkerCaseFlagTest {
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
+
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getApplicantCIC()).isNotEmpty();
@@ -132,7 +132,6 @@ class CaseworkerCaseFlagTest {
 
         assertThat(submittedCallbackResponse).isNotNull();
         assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
-
     }
 
     @Test
@@ -167,5 +166,4 @@ class CaseworkerCaseFlagTest {
         assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
     }
-
 }

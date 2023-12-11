@@ -52,6 +52,11 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
+refdata_common:
+  api:
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
+
 bundling:
   api:
     baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
@@ -66,7 +71,8 @@ core_case_data:
     page_size: 100
 
 case-api:
-  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:https://manage-case.aat.platform.hmcts.net}
+
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
@@ -113,7 +119,7 @@ feature:
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
   bundling:
-    enabled: ${BUNDLING_FEATURE:false}
+    enabled: ${BUNDLING_FEATURE:true}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:false}
   security-classification:
@@ -127,6 +133,6 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
-        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
+        dssUpdateEvent: caseworker-update-dss-application
       caseTypeOfApplication:
         - CIC

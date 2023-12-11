@@ -31,7 +31,6 @@ public class CcdSupplementaryDataService {
     @Autowired
     private AuthorisationService authorisationService;
 
-
     public void submitSupplementaryDataToCcd(String caseId) {
 
         Map<String, Map<String, Map<String, Object>>> supplementaryDataUpdates = new HashMap<>();
@@ -52,6 +51,7 @@ public class CcdSupplementaryDataService {
                 caseFlagsConfiguration.getHmctsId())));
 
         final User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
+
         coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(),
             caseId,

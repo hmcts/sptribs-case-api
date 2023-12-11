@@ -35,6 +35,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
 
 
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
+
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
@@ -86,12 +87,10 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             .state(details.getState())
             .data(caseData)
             .build();
-
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Flag updated")
             .build();

@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeApplicant;
+import static uk.gov.hmcts.sptribs.caseworker.util.CheckRequiredUtil.checkNullSubjectRepresentativeRespondent;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
@@ -31,7 +31,7 @@ public final class EventUtil {
     public static List<String> checkRecipient(CaseData data) {
         final List<String> errors = new ArrayList<>();
 
-        if (checkNullSubjectRepresentativeApplicant(data)) {
+        if (checkNullSubjectRepresentativeRespondent(data)) {
             errors.add(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
         } else if ((data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
             || data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
@@ -122,6 +122,8 @@ public final class EventUtil {
             mainContent = DocmosisTemplateConstants.STRIKE_OUT_WARNING_MAIN_CONTENT;
         } else if (order == OrderTemplate.CIC13_PRO_FORMA_SUMMONS) {
             mainContent = DocmosisTemplateConstants.PRO_FORMA_MAIN_CONTENT;
+        } else if (order == OrderTemplate.CIC3_RULE_27) {
+            mainContent = DocmosisTemplateConstants.RULE27_MAIN_CONTENT;
         }
         return mainContent;
     }
@@ -142,5 +144,14 @@ public final class EventUtil {
         return listValues;
     }
 
+    public static void setDssMetaDataForCaseApiCase(CaseData data) {
+        data.setDssQuestion1("Full Name");
+        data.setDssQuestion3("Date of Birth");
+        data.setDssHeaderDetails("Subject of this case");
+
+        data.setDssAnswer1("case_data.cicCaseFullName");
+        data.setDssAnswer3("case_data.cicCaseDateOfBirth");
+
+    }
 
 }

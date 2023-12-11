@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -43,7 +44,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
-
 
 @Data
 @AllArgsConstructor
@@ -88,14 +88,12 @@ public class CicCase {
     )
     private DynamicList hearingSummaryList;
 
-
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "ContactPartiesCIC",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<ContactPartiesCIC> contactPartiesCIC;
-
 
     @CCD(
         label = "How would you like to issue an order?",
@@ -108,7 +106,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
-
 
     @CCD(
         label = "Due Date",
@@ -296,7 +293,6 @@ public class CicCase {
     )
     private String reinstateAdditionalDetail;
 
-
     @CCD(
         label = "Respondent name ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -317,6 +313,27 @@ public class CicCase {
     )
     @Builder.Default
     private String respondentEmail = "appeals.team@cica.gov.uk";
+
+    @CCD(
+        label = "Tribunal name ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalName = "First-tier Tribunal (CIC)";
+
+    @CCD(
+        label = "Tribunal organisation ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalOrganisation = "Criminal Injuries Compensation";
+
+    @CCD(
+        label = "Tribunal email  ",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String tribunalEmail = "CIC.enquiries@justice.gov.uk";
 
     @CCD(
         label = "Subject's full name",
@@ -344,7 +361,6 @@ public class CicCase {
     )
     private String email;
 
-
     @CCD(
         label = "Subject's date of birth",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -352,13 +368,11 @@ public class CicCase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
-
     @CCD(
         label = "What is subject's contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactPreferenceType;
-
 
     @CCD(
         label = "Scheme",
@@ -484,7 +498,6 @@ public class CicCase {
     )
     private YesOrNo representativeDetailsObjects;
 
-
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -516,7 +529,6 @@ public class CicCase {
     )
     private String caseNumber;
 
-
     @CCD(
         label = "Is there a representative?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -537,7 +549,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
-
 
     @CCD(
         label = "Decision Documents",
@@ -594,6 +605,11 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    private NotificationResponse tribunalNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private NotificationResponse resNotificationResponse;
 
     @CCD(
@@ -630,6 +646,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String firstDueDate;
+
+
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String eventName;
 
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;

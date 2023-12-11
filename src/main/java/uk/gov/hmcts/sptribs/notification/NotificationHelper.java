@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -34,7 +33,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
@@ -81,6 +80,12 @@ public class NotificationHelper {
     public Map<String, Object> getRespondentCommonVars(String caseNumber, CicCase cicCase) {
         Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getRespondentName());
+        return templateVars;
+    }
+
+    public Map<String, Object> getTribunalCommonVars(String caseNumber, CicCase cicCase) {
+        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        templateVars.put(CONTACT_NAME, cicCase.getTribunalName());
         return templateVars;
     }
 
@@ -131,15 +136,15 @@ public class NotificationHelper {
 
         if (isVideoFormat(listing) || isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
-        } else if (listing.getSelectedVenue() != null) {
+        } else if (null != listing.getSelectedVenue()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getSelectedVenue());
-        } else if (listing.getHearingVenueNameAndAddress() != null) {
+        } else if (null != listing.getHearingVenueNameAndAddress()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getHearingVenueNameAndAddress());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
         }
 
-        if (listing.getAddlInstr() != null) {
+        if (null != listing.getAddlInstr()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, listing.getAddlInstr());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, " ");
@@ -180,7 +185,7 @@ public class NotificationHelper {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (!isEmpty(documentList.getValue())) {
+        if (documentList != null && !documentList.getValue().isEmpty()) {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
@@ -189,28 +194,16 @@ public class NotificationHelper {
                 uploadedDocuments.put(CASE_DOCUMENT + count,
                     StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
                         "/"));
-
-                final String message = String.format(
-                    "Document when Available: %d, %s with value %s",
-                    count,
-                    uploadedDocuments.get(DOC_AVAILABLE + count),
-                    uploadedDocuments.get(CASE_DOCUMENT + count)
-                );
-                LOG.info(message);
+                LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                    uploadedDocuments.get(CASE_DOCUMENT + count));
             }
         }
         while (count < docAttachLimit) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
-            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_STRING);
-
-            final String message = String.format(
-                "Document not Available: %d, %s with value %s",
-                count,
-                uploadedDocuments.get(DOC_AVAILABLE + count),
-                uploadedDocuments.get(CASE_DOCUMENT + count)
-            );
-            LOG.info(message);
+            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_PLACEHOLDER);
+            LOG.info("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                uploadedDocuments.get(CASE_DOCUMENT + count));
         }
 
         return uploadedDocuments;

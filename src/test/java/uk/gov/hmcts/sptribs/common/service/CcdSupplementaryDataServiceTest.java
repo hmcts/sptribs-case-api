@@ -57,6 +57,7 @@ public class CcdSupplementaryDataServiceTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(user.getAuthToken()).thenReturn("token");
+      
         //When
         coreCaseApiService.submitSupplementaryDataRequestToCcd(TEST_CASE_ID.toString());
 

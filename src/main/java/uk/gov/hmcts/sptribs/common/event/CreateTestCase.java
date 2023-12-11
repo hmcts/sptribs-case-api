@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -120,7 +121,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
-
+        EventUtil.setDssMetaDataForCaseApiCase(data);
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
@@ -221,6 +222,5 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             data.getCicCase().setIsRepresentativePresent(YesOrNo.NO);
         }
     }
-
 
 }

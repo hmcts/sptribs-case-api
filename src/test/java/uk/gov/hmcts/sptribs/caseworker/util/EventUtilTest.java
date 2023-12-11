@@ -223,6 +223,19 @@ public class EventUtilTest {
     }
 
     @Test
+    void shouldSuccessfullyGetOrderMainContentRule27() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC3_RULE_27;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(RULE27_MAIN_CONTENT);
+
+    }
+
+    @Test
     void shouldSuccessfullyGetOrderMainContentMedicalDmiReports() {
         //Given
         final OrderTemplate orderTemplate = OrderTemplate.CIC7_ME_DMI_REPORTS;
@@ -338,5 +351,24 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
+
+    }
+
+    @Test
+    void shouldSuccessfullySetDSSMetadata() {
+        //Given
+        final CaseData data = new CaseData();
+
+        //When
+        EventUtil.setDssMetaDataForCaseApiCase(data);
+
+        //Then
+        assertThat(data.getDssQuestion1()).isEqualTo("Full Name");
+        assertThat(data.getDssQuestion3()).isEqualTo("Date of Birth");
+        assertThat(data.getDssHeaderDetails()).isEqualTo("Subject of this case");
+
+        assertThat(data.getDssAnswer1()).isEqualTo("case_data.cicCaseFullName");
+        assertThat(data.getDssAnswer3()).isEqualTo("case_data.cicCaseDateOfBirth");
+
     }
 }

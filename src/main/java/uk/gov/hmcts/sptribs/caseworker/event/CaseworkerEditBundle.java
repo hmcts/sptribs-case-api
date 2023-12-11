@@ -18,7 +18,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -42,10 +45,19 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
             .forStates(BUNDLE_STATES)
             .name("Bundle: Edit a bundle")
             .description("Bundle: Edit a bundle")
+            .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER))
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE))
             .page("editBundle")
             .pageLabel("Edit a bundle")
             .done();
@@ -58,7 +70,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-
+        log.info("Caseworker Edit bundle case_data for Case Id: {}. {}", details.getId(), details.getData());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

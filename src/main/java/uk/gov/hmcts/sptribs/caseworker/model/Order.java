@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,8 +38,6 @@ public class Order {
         typeParameterOverride = "CICDocument",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    // TODO: Same filename as Order document, so will be categorised with same name as in CicCase.orderFile
-    //- Santoshini to confirm with Ben
     private List<ListValue<CICDocument>> uploadedFile;
 
     @CCD(
@@ -73,6 +72,7 @@ public class Order {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonIgnore
     private YesOrNo isLastSelectedOrder;
 
 }
