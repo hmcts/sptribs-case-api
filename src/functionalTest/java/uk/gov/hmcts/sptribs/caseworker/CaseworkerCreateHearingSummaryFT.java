@@ -15,7 +15,7 @@ public class CaseworkerCreateHearingSummaryFT extends uk.gov.hmcts.sptribs.testu
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
 
     @org.junit.jupiter.api.Test
-    public void shouldSuccessfullySaveDraftOrder() throws java.io.IOException {
+    public void shouldSuccessfullyCreateHearingSummary() throws java.io.IOException {
         // Given
         final java.util.Map<String, Object> caseData = caseData(REQUEST);
 
