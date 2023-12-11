@@ -26,7 +26,6 @@ public class CaseworkerCreateDraftOrderFT extends uk.gov.hmcts.sptribs.testutil.
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         // Then
-        // response.then().statusCode(OK.value());
 
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
