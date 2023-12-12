@@ -71,7 +71,7 @@ ccd:
     java:
       imagePullPolicy: Always
       environment:
-        CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: false
+        CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
