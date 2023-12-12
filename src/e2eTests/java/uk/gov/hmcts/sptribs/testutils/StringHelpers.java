@@ -7,7 +7,7 @@ public class StringHelpers {
     private StringHelpers() {
     }
 
-    private static final String CHAR_LIST = "abcdefghijklmnopqrstuvwxyz1234567890";
+    private static final String CHAR_LIST = "abcdefghijklmnopqrstuvwxyz";
 
     public static String getRandomString(int length) {
         Random random = new Random();
