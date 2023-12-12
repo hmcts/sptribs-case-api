@@ -381,7 +381,7 @@ dependencyUpdates {
 
 dependencyManagement {
   dependencies {
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'
+    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.77'
 
     dependencySet(group: 'com.google.guava', version: '32.1.3-jre') {
       entry 'guava'
