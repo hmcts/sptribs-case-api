@@ -2,11 +2,7 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
-import uk.gov.hmcts.sptribs.e2e.enums.CaseParty;
-
-import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.ApplicantEmail;
-import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.RepresentativePost;
-import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.SubjectEmail;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 
 public class CreateFlagTests extends Base {
 
@@ -27,9 +23,9 @@ public class CreateFlagTests extends Base {
         Login login = new Login(page);
         login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase(SubjectEmail, ApplicantEmail, RepresentativePost);
+        newCase.createCase(CaseParties.Subject.label, CaseParties.Applicant.label, CaseParties.Representative.label);
         newCase.buildCase();
-        newCase.createFlagForParties(CaseParty.Subject, CaseParty.Applicant, CaseParty.Representative);
+        newCase.createFlagForParties(CaseParties.Subject, CaseParties.Applicant, CaseParties.Representative);
     }
 
     @RepeatedIfExceptionsTest
@@ -41,7 +37,7 @@ public class CreateFlagTests extends Base {
         newCase.createCase();
         newCase.buildCase();
         newCase.createCaseLevelFlag();
-        newCase.updateCaseLevelFlags();
+        newCase.updateCaseLevelFlag();
     }
 }
 
