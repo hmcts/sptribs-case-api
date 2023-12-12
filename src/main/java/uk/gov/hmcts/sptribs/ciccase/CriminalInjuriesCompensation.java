@@ -41,7 +41,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
 
 
         // to shutter the service within xui uncomment this line
-        // configBuilder.shutterService();
+        configBuilder.shutterService();
         log.info("Building definition for " + System.getenv().getOrDefault("ENVIRONMENT", ""));
     }
 }
