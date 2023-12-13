@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -34,6 +36,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -63,6 +66,19 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
+    @CCD(access = {CaseLinksDefaultAccess.class},
+        typeOverride = Collection,
+        label = "Linked Cases",
+        typeParameterOverride = "CaseLink")
+    @Builder.Default
+    private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
+
+    @CCD(
+        label = "Component Launcher (for displaying Linked Cases data)",
+        access = {CaseLinksDefaultAccess.class}
+    )
+    @JsonProperty("LinkedCasesComponentLauncher")
+    private ComponentLauncher linkedCasesComponentLauncher;
 
     @CCD(
         label = "Launch the Flags screen",
