@@ -1,0 +1,24 @@
+{
+  "data": {
+    "caseLinks": [],
+    "allCaseworkerCICDocument": [],
+    "newCaseworkerCICDocument": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "cicCaseHearingNotificationParties": [],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingStatus": "Postponed",
+    "hearingList": [],
+    "hyphenatedCaseRef": "1234-5678-9012-3456",
+    "closedDayCount": "",
+    "currentEvent": "",
+    "firstHearingDate": "",
+    "dataVersion": 0
+  },
+  "state": "CaseManagement"
+}
