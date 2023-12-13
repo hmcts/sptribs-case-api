@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
@@ -18,21 +17,25 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
-public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
+public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
 
     @Test
-    public void shouldSuccessfullyCreateDraftOrder() throws Exception {
+    public void shouldContactOnePartyAfterCaseSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
-        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
+        final io.restassured.response.Response response = triggerCallback(caseData,
+            EventConstants.CASEWORKER_CONTACT_PARTIES, ABOUT_TO_SUBMIT_URL);
+        int statusCode = response.getStatusCode();
+        // Log the actual response
+        String stringResponse = response.asString();
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
-        assertThatJson(response.asString())
+        assertThatJson(stringResponse)
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(
-                "classpath:responses/response-caseworker-create-draft-about-to-submit.json"
+                "classpath:responses/response-caseworker-contact-parties-about-to-submit.json"
             )));
     }
 }
