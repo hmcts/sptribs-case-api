@@ -130,6 +130,8 @@ class CaseworkerCreateHearingSummaryTest {
             .isEqualTo(recordListing);
         assertThat(response.getData().getListing().getSummary().getJudgeList())
             .isNull();
+        assertThat(response.getData().getListing().getSummary().getMemberList())
+            .isNull();
     }
 
     @Test
