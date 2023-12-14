@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocumen
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -79,9 +80,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .description("Document management: Amend")
             .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN)
+            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -98,42 +97,6 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         amendDocuments.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var data = details.getData();
-        var cicCase = data.getCicCase();
-
-        CaseworkerCICDocument selectedDocument = cicCase.getSelectedDocument();
-        String selectedDocumentType = cicCase.getSelectedDocumentType();
-
-        switch (selectedDocumentType) {
-            case CASE_TYPE:
-                updateCaseDocumentList(cicCase.getApplicantDocumentsUploaded(), selectedDocument);
-                break;
-            case REINSTATE_TYPE:
-                updateCaseDocumentList(cicCase.getReinstateDocuments(), selectedDocument);
-                break;
-            case DOC_MGMT_TYPE:
-                updateCaseDocumentList(data.getAllDocManagement().getCaseworkerCICDocument(), selectedDocument);
-                break;
-            case CLOSE_CASE_TYPE:
-                updateCaseDocumentList(data.getCloseCase().getDocuments(), selectedDocument);
-                break;
-            case HEARING_SUMMARY_TYPE:
-                updateCaseDocumentList(data.getLatestCompletedHearing().getSummary().getRecFile(), selectedDocument);
-                break;
-            default:
-                break;
-        }
-        cicCase.setSelectedDocument(null);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .build();
-
-    }
-
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         var caseData = details.getData();
         var cicCase = caseData.getCicCase();
@@ -146,11 +109,39 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .build();
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
+        final CicCase cicCase = caseData.getCicCase();
+        final CaseworkerCICDocument selectedDocument = cicCase.getSelectedDocument();
+        final String selectedDocumentType = cicCase.getSelectedDocumentType();
+
+        switch (selectedDocumentType) {
+            case CASE_TYPE ->
+                updateCaseDocumentList(cicCase.getApplicantDocumentsUploaded(), selectedDocument);
+            case REINSTATE_TYPE ->
+                updateCaseDocumentList(cicCase.getReinstateDocuments(), selectedDocument);
+            case DOC_MGMT_TYPE ->
+                updateCaseDocumentList(caseData.getAllDocManagement().getCaseworkerCICDocument(), selectedDocument);
+            case CLOSE_CASE_TYPE ->
+                updateCaseDocumentList(caseData.getCloseCase().getDocuments(), selectedDocument);
+            case HEARING_SUMMARY_TYPE ->
+                updateCaseDocumentList(caseData.getLatestCompletedHearing().getSummary().getRecFile(), selectedDocument);
+        }
+
+        cicCase.setSelectedDocument(null);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+
+    }
+
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Document Updated")
             .build();
     }
-
 }
