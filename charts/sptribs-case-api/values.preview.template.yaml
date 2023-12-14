@@ -71,7 +71,7 @@ ccd:
     java:
       imagePullPolicy: Always
       environment:
-        CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: false
+        CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
@@ -342,7 +342,7 @@ ccd-case-document-am-api:
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
     environment:
-      CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,dg_docassembly_api,bulk_scan_orchestrator,sptribs_case_api
+      CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
