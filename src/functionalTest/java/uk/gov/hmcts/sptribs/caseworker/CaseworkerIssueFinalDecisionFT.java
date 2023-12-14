@@ -22,7 +22,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
 
     @Test
-    public void shouldCaseworkerSuccessfullyIssueADecision() throws Exception {
+    public void shouldCaseworkerSuccessfullyIssueFinalDecision() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final io.restassured.response.Response response =
