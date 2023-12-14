@@ -17,7 +17,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
-public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
+public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
 
@@ -26,7 +26,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final io.restassured.response.Response response =
-            triggerCallback(caseData, EventConstants.CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL);
+            triggerCallback(caseData, EventConstants.CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL);
         // Log the actual response
         String stringResponse = response.asString();
         System.out.println("Received response body: " + stringResponse);
@@ -35,7 +35,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(
-                "classpath:responses/response-caseworker-issue-decisions-about-to-submit.json"
+                "classpath:responses/response-caseworker-issue-final-decisions-about-to-submit.json"
             )));
     }
 }
