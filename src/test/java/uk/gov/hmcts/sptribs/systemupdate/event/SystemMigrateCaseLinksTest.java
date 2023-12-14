@@ -1,87 +1,80 @@
-package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseLinks.SYSTEM_MIGRATE_CASE_LINKS;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_LINK_CASE;
 
-@ExtendWith(MockitoExtension.class)
-class CaseWorkerLinkCaseTest {
+@ExtendWith(SpringExtension.class)
+class SystemMigrateCaseLinksTest {
     @InjectMocks
-    private CaseWorkerLinkCase caseWorkerLinkCase;
+    private SystemMigrateCaseLinks systemMigrateCaseLinks;
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() {
-        //Given
-        caseWorkerLinkCase.setLinkCaseEnabled(true);
+    void shouldAddConfigurationToConfigBuilderWithToggleOn() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
-        caseWorkerLinkCase.configure(configBuilder);
+        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(true);
+        systemMigrateCaseLinks.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CASEWORKER_LINK_CASE);
+            .contains(SYSTEM_MIGRATE_CASE_LINKS);
     }
 
     @Test
-    void shouldNotConfigureLinkCaseIfFeatureFlagFalse() {
-        //Given
+    void shouldAddConfigurationToConfigBuilderWithToggleOff() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
-        caseWorkerLinkCase.configure(configBuilder);
+        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(false);
+        systemMigrateCaseLinks.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_LINK_CASE);
+            .doesNotContain(SYSTEM_MIGRATE_CASE_LINKS);
     }
 
     @Test
-    void shouldAdd2LinksToCase() {
+    void shouldSuccessfullyUpdateCaseLinks() {
         //Given
-        CicCase cicCase = CicCase.builder()
-            .linkCaseNumber(new CaseLink())
-            .linkCaseReason(LinkCaseReason.CASE_CONSOLIDATED)
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .fullName(TEST_FIRST_NAME)
+            .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
-        CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
-            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse submitted = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseWorkerLinkCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            systemMigrateCaseLinks.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response1).isNotNull();
-        assertThat(response2).isNotNull();
-        assertThat(submitted).isNotNull();
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
     }
+
 }
