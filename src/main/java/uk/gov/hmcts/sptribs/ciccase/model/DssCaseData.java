@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenDocumentAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.common.MappableObject;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
@@ -126,7 +127,7 @@ public class DssCaseData implements MappableObject {
         label = "Tribunal form uploaded documents",
         typeOverride = Collection,
         typeParameterOverride = "EdgeCaseDocument",
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
     private List<ListValue<EdgeCaseDocument>> tribunalFormDocuments;
 
@@ -134,7 +135,7 @@ public class DssCaseData implements MappableObject {
         label = "Supporting uploaded documents",
         typeOverride = Collection,
         typeParameterOverride = "EdgeCaseDocument",
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
     private List<ListValue<EdgeCaseDocument>> supportingDocuments;
 
@@ -142,7 +143,7 @@ public class DssCaseData implements MappableObject {
         label = "Other information uploaded documents",
         typeOverride = Collection,
         typeParameterOverride = "EdgeCaseDocument",
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
     private List<ListValue<EdgeCaseDocument>> otherInfoDocuments;
 
@@ -157,5 +158,4 @@ public class DssCaseData implements MappableObject {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isRepresentativePresent;
-
 }
