@@ -27,7 +27,7 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
 
         final io.restassured.response.Response response = triggerCallback(caseData,
             EventConstants.CASEWORKER_CONTACT_PARTIES, ABOUT_TO_SUBMIT_URL);
-        
+
         // Log the actual response
         String stringResponse = response.asString();
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
