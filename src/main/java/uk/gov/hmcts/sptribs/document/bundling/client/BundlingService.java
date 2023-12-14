@@ -72,7 +72,11 @@ public class BundlingService {
         }
     }
 
-    public List<MultiBundleConfig> getMultiBundleConfig() {
+    public MultiBundleConfig getMultiBundleConfig() {
+        return MultiBundleConfig.builder().value(BUNDLE_FILE_NAME).build();
+    }
+
+    public List<MultiBundleConfig> getMultiBundleConfigs() {
         return List.of(MultiBundleConfig.builder().value(BUNDLE_FILE_NAME).build());
     }
 

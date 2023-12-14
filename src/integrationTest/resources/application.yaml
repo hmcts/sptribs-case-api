@@ -120,7 +120,7 @@ feature:
   document-management:
     enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling:
-    enabled: ${BUNDLING_FEATURE:false}
+    enabled: ${BUNDLING_FEATURE:true}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:false}
   security-classification:
