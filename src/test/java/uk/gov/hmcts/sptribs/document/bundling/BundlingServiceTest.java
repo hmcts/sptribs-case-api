@@ -67,6 +67,7 @@ public class BundlingServiceTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
@@ -149,7 +150,7 @@ public class BundlingServiceTest {
     @Test
     void shouldGenerateMultiBundleConfig() {
         //When
-        List<MultiBundleConfig> result = bundlingService.getMultiBundleConfig();
+        List<MultiBundleConfig> result = bundlingService.getMultiBundleConfigs();
 
         //Then
         assertThat(result).hasSize(1);
@@ -165,6 +166,7 @@ public class BundlingServiceTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
