@@ -28,10 +28,10 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCase;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCases;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageCaseLinks;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlag;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageLinks;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
@@ -202,7 +202,8 @@ public class Case {
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
         String documentDescription = "This is a test document uploaded during create case journey";
-        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").fill(documentDescription);
+        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").type(documentDescription);
+        page.locator("//h2[contains(text(), 'File Attachments')]").click();
         clickButton(page, "Continue");
 
         // Fill further details form
@@ -477,7 +478,7 @@ public class Case {
     }
 
     public void updateCaseLevelFlag() {
-        startNextStepAction(ManageFlag);
+        startNextStepAction(ManageFlags);
 
         // Select flag to manage
         assertThat(page.locator("h1").last()).hasText("Manage case flags", textOptionsWithTimeout(60000));
@@ -671,7 +672,7 @@ public class Case {
 
     public void linkCase(String caseId1, String caseId2) {
         openCase(caseId1);
-        startNextStepAction(LinkCase);
+        startNextStepAction(LinkCases);
         assertThat(page.locator("h1"))
             .hasText("Before you start", textOptionsWithTimeout(60000));
         clickButton(page, "Next");
@@ -696,7 +697,7 @@ public class Case {
 
     public void unlinkCase(String caseId1, String caseId2) {
         openCase(caseId1);
-        startNextStepAction(ManageLinks);
+        startNextStepAction(ManageCaseLinks);
         assertThat(page.locator("h1"))
             .hasText("Before you start", textOptionsWithTimeout(60000));
         clickButton(page, "Next");
@@ -729,5 +730,4 @@ public class Case {
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
     }
-
 }
