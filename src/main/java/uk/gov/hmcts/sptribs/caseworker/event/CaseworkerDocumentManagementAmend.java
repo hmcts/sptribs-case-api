@@ -141,7 +141,6 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
-
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
