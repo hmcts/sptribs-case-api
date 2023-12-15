@@ -31,7 +31,7 @@ public class CaseworkerReferCaseToLegalOfficerFT extends FunctionalTestSuite {
 
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse( 
+            .isEqualTo(json(expectedResponse(
                 "classpath:responses/response-caseworker-refer-cases-to-legal-officer-about-to-submit.json"
             )));
     }
