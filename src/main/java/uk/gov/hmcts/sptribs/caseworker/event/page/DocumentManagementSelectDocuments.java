@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -14,8 +12,9 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 
@@ -29,45 +28,34 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
             .label("LabelSelectCaseDocuments", "")
             .label("LabelSelectCaseDocumentsWarning", "")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getAmendDocumentList)
+                .mandatory(CicCase::getAmendDocumentList)
             .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
 
-        setSelectedDocuments(data);
+        final CaseData data = details.getData();
+        setSelectedDocument(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 
-    private void setSelectedDocuments(CaseData data) {
-        var cicCase = data.getCicCase();
-        DynamicList documentList = cicCase.getAmendDocumentList();
-        List<ListValue<CaseworkerCICDocument>> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(data);
-        CaseworkerCICDocument selectedDocument = null;
-        String selectedDocumentType = null;
+    private void setSelectedDocument(CaseData data) {
+        final CicCase cicCase = data.getCicCase();
+        final DynamicList documentList = cicCase.getAmendDocumentList();
+        final String selectedDocumentLabel = documentList.getValue().getLabel();
 
-        if (!ObjectUtils.isEmpty(documentList.getValue())) {
-            String selectedDocumentURL = documentList.getValue().getLabel();
+        Optional<CaseworkerCICDocument> selectedDocument =
+            Stream.ofNullable(DocumentListUtil.getAllCaseDocuments(data))
+                .flatMap(Collection::stream)
+                .map(ListValue::getValue)
+                .filter(document -> selectedDocumentLabel.contains(document.getDocumentLink().getFilename()))
+                .findFirst();
 
-            for (ListValue<CaseworkerCICDocument> documentListValue : allCaseDocuments) {
-                String[] labels = selectedDocumentURL.split(DOUBLE_HYPHEN);
-                String url = documentListValue.getValue().getDocumentLink().getUrl();
-                if (ArrayUtils.isNotEmpty(labels) && labels[2].equals(url)) {
-                    selectedDocument = documentListValue.getValue();
-                    selectedDocumentType = labels[0];
-                }
-            }
-
-            cicCase.setSelectedDocument(selectedDocument);
-            cicCase.setSelectedDocumentType(selectedDocumentType);
-        }
+        selectedDocument.ifPresent(cicCase::setSelectedDocument);
+        cicCase.setSelectedDocumentType(selectedDocumentLabel.split(DOUBLE_HYPHEN)[0]);
     }
-
 }
