@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
 import java.util.TimeZone;
 
 @SpringBootApplication(
-    exclude = {CoreCaseDataClientAutoConfiguration.class},
     scanBasePackages = {"uk.gov.hmcts.ccd.sdk", "uk.gov.hmcts.sptribs", "uk.gov.hmcts.reform.ccd.document"}
 
 )
