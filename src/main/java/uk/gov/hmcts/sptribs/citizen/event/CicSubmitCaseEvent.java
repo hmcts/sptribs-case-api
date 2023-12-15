@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -151,7 +152,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
                 var listValue = ListValue
                     .<DssMessage>builder()
-                    .id("1")
+                    .id(UUID.randomUUID().toString())
                     .value(message)
                     .build();
 
