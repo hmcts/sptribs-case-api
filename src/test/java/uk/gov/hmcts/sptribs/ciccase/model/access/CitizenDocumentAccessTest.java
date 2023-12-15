@@ -11,26 +11,22 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 
-class SystemUpdateAndSuperUserAccessTest {
+public class CitizenDocumentAccessTest {
 
     @Test
-    void shouldGrantSystemUpdateAndSuperUserAccess() {
+    void shouldGrantCitizenDocumentAccess() {
         //When
-        final SetMultimap<HasRole, Permission> grants = new SystemUpdateAndSuperUserAccess().getGrants();
+        final SetMultimap<HasRole, Permission> grants = new CitizenDocumentAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(7)
+            .hasSize(4)
             .contains(
-                entry(SUPER_USER, C),
-                entry(SUPER_USER, R),
-                entry(SUPER_USER, U),
-                entry(SUPER_USER, D),
-                entry(SYSTEMUPDATE, C),
-                entry(SYSTEMUPDATE, R),
-                entry(SYSTEMUPDATE, U)
+                entry(CITIZEN_CIC, C),
+                entry(CITIZEN_CIC, R),
+                entry(CITIZEN_CIC, U),
+                entry(CITIZEN_CIC, D)
             );
     }
 }
