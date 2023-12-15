@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -14,9 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -38,14 +34,12 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
 
+        final CaseData data = details.getData();
         setSelectedDocument(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 
@@ -53,13 +47,13 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
         final CicCase cicCase = data.getCicCase();
         final DynamicList documentList = cicCase.getAmendDocumentList();
         final String selectedDocumentLabel = documentList.getValue().getLabel();
-        final List<ListValue<CaseworkerCICDocument>> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(data);
 
-        Optional<CaseworkerCICDocument> selectedDocument = Stream.ofNullable(allCaseDocuments)
-            .flatMap(Collection::stream)
-            .map(ListValue::getValue)
-            .filter(document -> selectedDocumentLabel.contains(document.getDocumentLink().getFilename()))
-            .findFirst();
+        Optional<CaseworkerCICDocument> selectedDocument =
+            Stream.ofNullable(DocumentListUtil.getAllCaseDocuments(data))
+                .flatMap(Collection::stream)
+                .map(ListValue::getValue)
+                .filter(document -> selectedDocumentLabel.contains(document.getDocumentLink().getFilename()))
+                .findFirst();
 
         selectedDocument.ifPresent(cicCase::setSelectedDocument);
         cicCase.setSelectedDocumentType(selectedDocumentLabel.split(DOUBLE_HYPHEN)[0]);

@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -128,6 +129,11 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 updateCaseDocumentList(caseData.getCloseCase().getDocuments(), selectedDocument);
             case HEARING_SUMMARY_TYPE ->
                 updateCaseDocumentList(caseData.getLatestCompletedHearing().getSummary().getRecFile(), selectedDocument);
+            default -> {
+                return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+                    .errors(singletonList("Invalid document type, please try again"))
+                    .build();
+            }
         }
 
         cicCase.setSelectedDocument(null);
