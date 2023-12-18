@@ -24,7 +24,6 @@ public class IssueDecisionUploadNoticeTest {
 
     @Test
     void shouldValidateUploadedDocument() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("file.txt").build()).build();
@@ -34,10 +33,8 @@ public class IssueDecisionUploadNoticeTest {
             .build();
         caseDetails.setData(caseData);
 
-        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
-        //Then
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
     }
 }

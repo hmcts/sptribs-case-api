@@ -22,7 +22,6 @@ public class CaseUploadDocumentsTest {
 
     @Test
     void shouldValidateUploadedDocument() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList())
@@ -32,10 +31,8 @@ public class CaseUploadDocumentsTest {
             .build();
         caseDetails.setData(caseData);
 
-        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(caseDetails, caseDetails);
 
-        //Then
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
     }
 }

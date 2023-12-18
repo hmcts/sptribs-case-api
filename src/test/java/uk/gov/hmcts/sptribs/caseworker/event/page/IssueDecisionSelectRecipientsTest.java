@@ -25,7 +25,6 @@ public class IssueDecisionSelectRecipientsTest {
 
     @Test
     void shouldBeSuccessfulForValidRecipients() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
@@ -37,10 +36,8 @@ public class IssueDecisionSelectRecipientsTest {
             .build();
         caseDetails.setData(caseData);
 
-        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
 
-        //Then
         assertThat(response.getData().getCicCase().getNotifyPartySubject().contains(Set.of(SubjectCIC.SUBJECT))).isFalse();
     }
 

@@ -23,7 +23,6 @@ public class CloseCaseSelectRecipientsTest {
 
     @Test
     void shouldBeSuccessfulForValidRecipients() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
@@ -33,25 +32,20 @@ public class CloseCaseSelectRecipientsTest {
             .build();
         caseDetails.setData(caseData);
 
-        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
 
-        //Then
         assertThat(response.getErrors()).hasSize(0);
     }
 
     @Test
     void shouldBeInvalidIfNoRecipientsSelected() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
             .build();
         caseDetails.setData(caseData);
 
-        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
 
-        //Then
         assertThat(response.getErrors()).hasSize(1);
     }
 }

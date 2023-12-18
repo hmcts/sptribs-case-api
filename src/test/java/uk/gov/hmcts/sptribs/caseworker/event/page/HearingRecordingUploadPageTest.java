@@ -30,7 +30,6 @@ public class HearingRecordingUploadPageTest {
 
     @Test
     void shouldValidateUploadedDocument() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final Listing listing = getRecordListing();
         List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("xml");
@@ -42,16 +41,13 @@ public class HearingRecordingUploadPageTest {
             .build();
         caseDetails.setData(caseData);
 
-        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
-        //Then
         assertThat(response.getErrors()).hasSize(1);
     }
 
     @Test
     void shouldValidateUploadedDocumentWithoutCategoryWithoutDesc() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final Listing listing = getRecordListing();
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
@@ -78,7 +74,6 @@ public class HearingRecordingUploadPageTest {
 
     @Test
     void shouldValidateUploadedDocumentWithoutDoc() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final Listing listing = getRecordListing();
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
@@ -97,10 +92,8 @@ public class HearingRecordingUploadPageTest {
             .build();
         caseDetails.setData(caseData);
 
-        //When
         final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
-        //Then
         assertThat(response.getErrors()).hasSize(1);
     }
 }
