@@ -359,6 +359,18 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("cicCaseCancelHearingAdditionalDetail", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
 
             .label("Listing details", null, "#### Listing details")
+
+            .field(CaseData::getHearingList)
+
+            .label("Hearing options",
+                "hearingVenues!=\"\" OR roomAtVenue!=\"\" OR addlInstr!=\"\" OR hearingFormat!=\"\" OR shortNotice!=\"\"",
+                "#### Hearing summary")
+            .field("hearingVenues")
+            .field("roomAtVenue")
+            .field("addlInstr")
+            .field("hearingFormat")
+            .field("shortNotice")
+
             .field(CaseData::getHearingList);
     }
 

@@ -42,7 +42,7 @@ public class HearingVenues implements CcdPageConfiguration {
                     + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_RECORD_LISTING + "\")")
             .readonly(Listing::getReadOnlyHearingVenueName,
                 CURRENT_EVENT + CASEWORKER_CREATE_HEARING_SUMMARY + "\"" + " OR " + CURRENT_EVENT + CASEWORKER_EDIT_HEARING_SUMMARY + "\"")
-            .optional(Listing::getVenueNotListedOption)
+            .optionalWithLabel(Listing::getVenueNotListedOption, " ")
             .mandatory(Listing::getHearingVenueNameAndAddress, "venueNotListedOption= \"VenueNotListed\"")
             .optional(Listing::getRoomAtVenue)
             .optional(Listing::getAddlInstr,
