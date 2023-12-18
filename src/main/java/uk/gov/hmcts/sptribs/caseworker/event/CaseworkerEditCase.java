@@ -55,9 +55,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editFurtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
-    @Autowired
     private final SubmissionService submissionService;
-
+    
+    @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
     }
@@ -152,8 +152,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
                 .roleOnCase("subject")
-                .build()
-            );
+                .build());
         }
 
         updateApplicantFlags(data);
