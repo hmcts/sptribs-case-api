@@ -19,7 +19,9 @@ import static java.util.EnumSet.allOf;
 import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
-import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.*;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 
@@ -27,21 +29,21 @@ public class ReferToJudgeReason implements CcdPageConfiguration {
 
     private final Map<ReferralReason, Set<State>> permittedStatesByReason =
         Map.ofEntries(
-            new SimpleEntry<>(ReferralReason.CORRECTIONS, of(State.CaseClosed)),
-            new SimpleEntry<>(ReferralReason.LISTED_CASE, of(State.AwaitingHearing)),
-            new SimpleEntry<>(ReferralReason.LISTED_CASE_WITHIN_5_DAYS, of(State.AwaitingHearing)),
-            new SimpleEntry<>(ReferralReason.LISTING_DIRECTIONS, complementOf(of(State.AwaitingHearing))),
+            new SimpleEntry<>(CORRECTIONS, of(CaseClosed)),
+            new SimpleEntry<>(LISTED_CASE, of(AwaitingHearing)),
+            new SimpleEntry<>(LISTED_CASE_WITHIN_5_DAYS, of(AwaitingHearing)),
+            new SimpleEntry<>(LISTING_DIRECTIONS, complementOf(of(AwaitingHearing))),
             new SimpleEntry<>(NEW_CASE, of(Submitted,CaseManagement)),
-            new SimpleEntry<>(ReferralReason.POSTPONEMENT_REQUEST, of(State.AwaitingHearing)),
-            new SimpleEntry<>(ReferralReason.REINSTATEMENT_REQUEST, of(State.CaseClosed)),
-            new SimpleEntry<>(ReferralReason.RULE_27_REQUEST, complementOf(of(State.CaseClosed))),
-            new SimpleEntry<>(ReferralReason.SET_ASIDE_REQUEST, of(State.CaseClosed)),
-            new SimpleEntry<>(ReferralReason.STAY_REQUEST, complementOf(of(State.CaseClosed))),
-            new SimpleEntry<>(ReferralReason.STRIKE_OUT_REQUEST, complementOf(of(State.CaseClosed))),
-            new SimpleEntry<>(ReferralReason.TIME_EXTENSION_REQUEST, complementOf(of(State.CaseClosed))),
-            new SimpleEntry<>(ReferralReason.WITHDRAWAL_REQUEST, complementOf(of(State.CaseClosed))),
-            new SimpleEntry<>(ReferralReason.WRITTEN_REASONS_REQUEST, of(State.CaseClosed)),
-            new SimpleEntry<>(ReferralReason.OTHER, allOf(State.class))
+            new SimpleEntry<>(POSTPONEMENT_REQUEST, of(AwaitingHearing)),
+            new SimpleEntry<>(REINSTATEMENT_REQUEST, of(CaseClosed)),
+            new SimpleEntry<>(RULE_27_REQUEST, complementOf(of(CaseClosed))),
+            new SimpleEntry<>(SET_ASIDE_REQUEST, of(CaseClosed)),
+            new SimpleEntry<>(STAY_REQUEST, complementOf(of(CaseClosed))),
+            new SimpleEntry<>(STRIKE_OUT_REQUEST, complementOf(of(CaseClosed))),
+            new SimpleEntry<>(TIME_EXTENSION_REQUEST, complementOf(of(CaseClosed))),
+            new SimpleEntry<>(WITHDRAWAL_REQUEST, complementOf(of(CaseClosed))),
+            new SimpleEntry<>(WRITTEN_REASONS_REQUEST, of(CaseClosed)),
+            new SimpleEntry<>(OTHER, allOf(State.class))
         );
 
     @Override
