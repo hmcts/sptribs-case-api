@@ -19,7 +19,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 
-public class CaseLinksDefaultAccessTest {
+class CaseLinksDefaultAccessTest {
     @Test
     void shouldGrantDefaultAccess() {
         //When

@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
@@ -59,7 +58,7 @@ public class OrderService {
                 .stream()
                 .sorted()
                 .map(order -> DynamicListElement.builder().label(order).code(UUID.randomUUID()).build())
-                .collect(Collectors.toList());
+                .toList();
 
             return DynamicList
                 .builder()
