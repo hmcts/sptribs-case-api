@@ -72,6 +72,16 @@ public final class DocumentListUtil {
             .build();
     }
 
+    private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
+        return docList
+            .stream()
+            .filter(CaseworkerCICDocument::isDocumentValid)
+            .map(doc -> DynamicListElement.builder()
+                .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
+                    + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
+    }
+
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data) {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
@@ -89,16 +99,6 @@ public final class DocumentListUtil {
             .listItems(dynamicListElements)
             .value(new ArrayList<>())
             .build();
-    }
-
-    private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
-        return docList
-            .stream()
-            .filter(CaseworkerCICDocument::isDocumentValid)
-            .map(doc -> DynamicListElement.builder()
-                .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
-                    + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
     }
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
