@@ -314,7 +314,7 @@ public class CicCase {
     @Builder.Default
     private String respondentEmail = "appeals.team@cica.gov.uk";
 
-    @CCD(
+    /*@CCD(
         label = "Tribunal name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
@@ -330,7 +330,7 @@ public class CicCase {
         label = "Tribunal email",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
-    private String tribunalEmail;
+    private String tribunalEmail;*/
 
     @CCD(
         label = "Subject's full name",

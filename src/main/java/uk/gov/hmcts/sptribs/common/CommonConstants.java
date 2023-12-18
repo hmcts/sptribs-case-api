@@ -1,5 +1,9 @@
 package uk.gov.hmcts.sptribs.common;
 
+import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+
 public final class CommonConstants {
 
     public static final String EMPTY_PLACEHOLDER = "";
@@ -62,6 +66,10 @@ public final class CommonConstants {
         + "not more than 50 Chars";
     public static final String BUNDLE_DESCRIPTION_FIELD_LENGTH_ERROR_MSG = "Bundle Description should not contain "
         + "more than 255 Chars";
+
+    public static final String TRIBUNAL_NAME_VALUE = "First-tier Tribunal (CIC)";
+    public static final String TRIBUNAL_ORG_VALUE = "Criminal Injuries Compensation";
+    public static final String TRIBUNAL_EMAIL_VALUE = "CIC.enquiries@justice.gov.uk";
 
     private CommonConstants() {
     }

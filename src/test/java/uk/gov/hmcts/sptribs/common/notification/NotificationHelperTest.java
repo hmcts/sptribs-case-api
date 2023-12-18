@@ -175,7 +175,6 @@ public class NotificationHelperTest {
     void shouldGetTribunalCommonVars() {
         // Given
         CicCase cicCase = CicCase.builder()
-            .tribunalName("tribunal name")
             .build();
 
         // When
