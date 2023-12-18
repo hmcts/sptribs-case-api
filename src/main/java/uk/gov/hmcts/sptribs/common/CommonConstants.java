@@ -1,9 +1,5 @@
 package uk.gov.hmcts.sptribs.common;
 
-import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-
 public final class CommonConstants {
 
     public static final String EMPTY_PLACEHOLDER = "";
