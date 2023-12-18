@@ -187,7 +187,6 @@ class ContactPartiesNotificationTest {
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
             .documentList(getDynamicMultiSelectDocumentList()).build();
         data.setContactPartiesDocuments(contactPartiesDocuments);
-        data.getCicCase().setTribunalName("respFullName");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))

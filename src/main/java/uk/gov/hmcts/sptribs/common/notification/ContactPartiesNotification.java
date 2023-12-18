@@ -18,6 +18,9 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
+
 
 @Component
 @Slf4j
@@ -131,21 +134,21 @@ public class ContactPartiesNotification implements PartiesNotification {
     public void sendToTribunal(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsTribunal = notificationHelper.getTribunalCommonVars(caseNumber, cicCase);
-        templateVarsTribunal.put(CommonConstants.CIC_CASE_TRIBUNAL_NAME, caseData.getCicCase().getTribunalName());
+        templateVarsTribunal.put(CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE);
         templateVarsTribunal.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         // Send Email
         if (!ObjectUtils.isEmpty(caseData.getContactPartiesDocuments().getDocumentList())) {
 
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getTribunalEmail(),
+            NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(TRIBUNAL_EMAIL_VALUE,
                 templateVarsTribunal,
                 uploadedDocuments,
                 TemplateName.CONTACT_PARTIES_EMAIL);
             cicCase.setTribunalNotificationResponse(notificationResponse);
         } else {
             NotificationResponse notificationResponse = sendEmailNotification(templateVarsTribunal,
-                cicCase.getTribunalEmail(), TemplateName.CONTACT_PARTIES_EMAIL);
+                TRIBUNAL_EMAIL_VALUE, TemplateName.CONTACT_PARTIES_EMAIL);
             cicCase.setTribunalNotificationResponse(notificationResponse);
         }
     }

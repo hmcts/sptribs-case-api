@@ -40,6 +40,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
@@ -86,7 +87,7 @@ public class NotificationHelper {
 
     public Map<String, Object> getTribunalCommonVars(String caseNumber, CicCase cicCase) {
         Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
-        templateVars.put(CONTACT_NAME, cicCase.getTribunalName());
+        templateVars.put(CONTACT_NAME, TRIBUNAL_NAME_VALUE);
         return templateVars;
     }
 

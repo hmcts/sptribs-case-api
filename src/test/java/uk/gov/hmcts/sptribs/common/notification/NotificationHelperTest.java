@@ -175,14 +175,13 @@ public class NotificationHelperTest {
     void shouldGetTribunalCommonVars() {
         // Given
         CicCase cicCase = CicCase.builder()
-            .tribunalName("tribunal name")
             .build();
 
         // When
         Map<String, Object> commonVars = notificationHelper.getTribunalCommonVars("case number", cicCase);
 
         // Then
-        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("tribunal name");
+        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("First-tier Tribunal (CIC)");
     }
 
     @Test
