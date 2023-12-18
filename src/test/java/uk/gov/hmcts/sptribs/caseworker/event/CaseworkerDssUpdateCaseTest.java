@@ -62,6 +62,7 @@ public class CaseworkerDssUpdateCaseTest {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        caseworkerDssUpdateCase.setDssUpdateCaseEnabled(true);
 
         caseworkerDssUpdateCase.configure(configBuilder);
 
