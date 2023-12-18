@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -13,7 +15,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
-import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -48,11 +50,17 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
+@Setter
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+
+    @Value("${feature.dss-frontend.enabled}")
+    private boolean dssSubmitCaseEnabled;
 
     @Autowired
     private HttpServletRequest request;
@@ -63,12 +71,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
-    @Autowired
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        if (dssSubmitCaseEnabled) {
+            doConfigure(configBuilder);
+        }
+    }
 
+    private void doConfigure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getSubmitEvent())
@@ -76,7 +86,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .name("Submit case (cic)")
             .description("Application submit (cic)")
             .retries(120, 120)
-            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR).grantHistoryOnly(
+            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN_CIC)
+            .grant(CREATE_READ_UPDATE, SYSTEMUPDATE, CREATOR)
+            .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
@@ -93,11 +105,10 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
         var dssData = details.getData().getDssCaseData();
-        String caseNumber = data.getHyphenatedCaseRef();
-        EventUtil.setDssMetaData(data);
-        setDssMetaData(data);
         CaseData caseData = getCaseData(data, dssData);
-        sendApplicationReceivedNotification(caseNumber, data);
+
+        setDssMetaData(data);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
@@ -106,9 +117,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     private void setDssMetaData(CaseData data) {
         data.setDssQuestion1("Full Name");
-        data.setDssQuestion3("Date of Birth");
+        data.setDssQuestion2("Date of Birth");
         data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
-        data.setDssAnswer3("case_data.dssCaseDataSubjectDateOfBirth");
+        data.setDssAnswer2("case_data.dssCaseDataSubjectDateOfBirth");
         data.setDssHeaderDetails("Subject of this case");
     }
 
@@ -160,7 +171,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
                 var listValue = ListValue
                     .<DssMessage>builder()
-                    .id("1")
+                    .id(UUID.randomUUID().toString())
                     .value(message)
                     .build();
 
@@ -203,20 +214,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         caseData.setDssCaseData(dssCaseData);
         return caseData;
-    }
-
-
-    private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
-
-        DssCaseData dssCaseData = data.getDssCaseData();
-
-        if (!dssCaseData.getSubjectFullName().isEmpty()) {
-            dssApplicationReceivedNotification.sendToSubject(data, caseNumber);
-        }
-
-        if (null != data.getDssCaseData().getRepresentativeFullName()) {
-            dssApplicationReceivedNotification.sendToRepresentative(data, caseNumber);
-        }
     }
 
 
