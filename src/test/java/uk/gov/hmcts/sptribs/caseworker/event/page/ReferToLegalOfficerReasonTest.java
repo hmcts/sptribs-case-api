@@ -12,7 +12,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.*;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 
 @ExtendWith(MockitoExtension.class)
 class ReferToLegalOfficerReasonTest {
@@ -26,7 +29,7 @@ class ReferToLegalOfficerReasonTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseData.getReferToLegalOfficer().setReferralReason(ReferralReason.POSTPONEMENT_REQUEST);
-        caseDetails.setState(State.AwaitingHearing);
+        caseDetails.setState(AwaitingHearing);
         caseDetails.setData(caseData);
 
         // When
@@ -43,7 +46,7 @@ class ReferToLegalOfficerReasonTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseData.getReferToLegalOfficer().setReferralReason(ReferralReason.POSTPONEMENT_REQUEST);
-        caseDetails.setState(State.CaseClosed);
+        caseDetails.setState(CaseClosed);
         caseDetails.setData(caseData);
 
         // When
