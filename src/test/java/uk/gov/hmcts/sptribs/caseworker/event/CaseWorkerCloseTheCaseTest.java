@@ -86,7 +86,7 @@ class CaseWorkerCloseTheCaseTest {
             .build();
         updatedCaseDetails.setData(caseData);
         DynamicList userList = new DynamicList();
-        when(judicialService.getAllUsers()).thenReturn(userList);
+        when(judicialService.getAllUsers(caseData)).thenReturn(userList);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.aboutToStart(updatedCaseDetails);
