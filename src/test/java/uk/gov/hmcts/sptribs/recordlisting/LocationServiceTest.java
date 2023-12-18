@@ -124,4 +124,14 @@ class LocationServiceTest {
         //Then
         assertThat(regionList.getListItems()).isEmpty();
     }
+
+    @Test
+    void shouldReturnRegionIdIfSelectedRegionIsValid() {
+        assertThat(locationService.getRegionId("1-region")).isEqualTo("1");
+    }
+
+    @Test
+    void shouldReturnNullIfSelectedRegionIsNull() {
+        assertThat(locationService.getRegionId(null)).isNull();
+    }
 }

@@ -67,6 +67,13 @@ public class LocationService {
         return new Region[0];
     }
 
+    public String getRegionId(String selectedRegion) {
+        String[] values = selectedRegion != null
+            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
+            : null;
+        return values != null && values.length > 0 ? values[0] : null;
+    }
+
     private HearingVenue[] getCourtVenues(String regionId) {
 
         try {

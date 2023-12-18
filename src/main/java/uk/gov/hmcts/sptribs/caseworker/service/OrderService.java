@@ -59,7 +59,7 @@ public class OrderService {
                 .stream()
                 .sorted()
                 .map(order -> DynamicListElement.builder().label(order).code(UUID.randomUUID()).build())
-                .collect(Collectors.toList());
+                .toList();
 
             return DynamicList
                 .builder()

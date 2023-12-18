@@ -18,7 +18,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthorisationServiceTest {
+class AuthorisationServiceTest {
     @InjectMocks
     private AuthorisationService authorisationService;
 
