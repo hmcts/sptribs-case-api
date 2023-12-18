@@ -64,7 +64,6 @@ public final class CommonConstants {
         + "more than 255 Chars";
 
     public static final String TRIBUNAL_NAME_VALUE = "First-tier Tribunal (CIC)";
-    public static final String TRIBUNAL_ORG_VALUE = "Criminal Injuries Compensation";
     public static final String TRIBUNAL_EMAIL_VALUE = "CIC.enquiries@justice.gov.uk";
 
     private CommonConstants() {
