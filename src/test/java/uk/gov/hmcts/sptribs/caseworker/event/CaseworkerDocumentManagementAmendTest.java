@@ -10,22 +10,17 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +30,6 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,12 +94,14 @@ class CaseworkerDocumentManagementAmendTest {
         AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
             caseworkerDocumentManagementAmend.aboutToStart(updatedCaseDetails);
 
+        final CaseworkerCICDocument caseworkerCICDocument = getCaseworkerCICDocument();
         cicCase.getAmendDocumentList().setValue(getDynamicListItems());
-        cicCase.getApplicantDocumentsUploaded().get(0).setValue(getCaseworkerCICDocument());
+        cicCase.getApplicantDocumentsUploaded().get(0).setValue(caseworkerCICDocument);
         AboutToStartOrSubmitResponse<CaseData, State> midResponse =
             selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(midResponse.getData().getCicCase().getSelectedDocument()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getSelectedDocument()).isEqualTo(caseworkerCICDocument);
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -251,36 +247,35 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(documentMgmtResponse).isNotNull();
     }
 
+    @Test
+    void shouldReturnErrorWhenDocumentTypeIsNotValid() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.getListing().getSummary().setRecFile(getCaseworkerCICDocumentList());
+        final CicCase cicCase = CicCase.builder().build();
+        caseData.setCicCase(cicCase);
+        cicCase.setSelectedDocument(getCaseworkerCICDocument());
+        cicCase.setSelectedDocumentType("Invalid_Type");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerDocumentManagementAmend.aboutToSubmit(caseDetails, caseDetails);
+
+        //Then
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors().size()).isEqualTo(1);
+        assertThat(response.getErrors()).contains("Invalid document type, please try again");
+    }
+
     private Document getDocumentData() {
         return Document.builder()
             .filename("test.pdf")
             .binaryUrl("http://url/")
             .url("http://url/")
             .build();
-    }
-
-    private CICDocument getCicDocumentData() {
-        return CICDocument.builder()
-            .documentEmailContent("email content")
-            .documentLink(getDocumentData())
-            .build();
-    }
-
-    private List<ListValue<Order>> getOrderTemplateDocumentList() {
-        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-            .templateGeneratedDocument(getDocumentData())
-            .build();
-        Order order = Order.builder().draftOrder(draftOrderCIC).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        return List.of(orderListValue);
-    }
-
-    private List<ListValue<Order>> getOrderList() {
-        Order order = Order.builder().uploadedFile(getCICDocumentList()).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        return List.of(orderListValue);
     }
 
     private CaseworkerCICDocument getCaseworkerCICDocument() {
@@ -294,7 +289,7 @@ class CaseworkerDocumentManagementAmendTest {
     private DynamicListElement getDynamicListItems() {
         return DynamicListElement
             .builder()
-            .label("CASE--test-pdf--http://url/")
+            .label("CASE--test.pdf--http://url/")
             .code(UUID.randomUUID())
             .build();
     }

@@ -28,8 +28,15 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Bundle {
-
+    @CCD(
+        label = "Bundle ID",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String id;
+    @CCD(
+        label = "Config used for bundle",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private String title;
     @CCD(
         label = "Description",
@@ -39,22 +46,26 @@ public class Bundle {
     private String description;
 
     @CCD(
+        label = "Stitched Document",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document stitchedDocument;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Bundled Documents",
         typeOverride = Collection,
         typeParameterOverride = "BundleDocument")
     private List<ListValue<BundleDocument>> documents;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Bundle Folders",
         typeOverride = Collection,
         typeParameterOverride = "BundleFolder")
     private List<ListValue<BundleFolder>> folders;
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Pagination Style",
         typeOverride = FixedList,
         typeParameterOverride = "BundlePaginationStyle"
     )
@@ -62,12 +73,14 @@ public class Bundle {
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Page Number Format",
         typeOverride = FixedList,
         typeParameterOverride = "PageNumberFormat"
     )
     private PageNumberFormat pageNumberFormat = PageNumberFormat.numberOfPages;
 
     @CCD(
+        label = "Error from stitching service",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchingFailureMessage;
@@ -78,52 +91,63 @@ public class Bundle {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private DocumentImage documentImage;
 
+
     @CCD(
+        label = "Stitch status",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String stitchStatus;
 
     @CCD(
+        label = "Is this the bundle you want to amend?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo eligibleForStitching;
 
     @CCD(
+        label = "Is this the bundle you want to clone?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo eligibleForCloning;
 
     @CCD(
+        label = "Should this bundle have coversheets separating each document?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo hasCoversheets;
 
     @CCD(
+        label = "Does this bundle have a table of contents?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo hasTableOfContents;
 
     @CCD(
+        label = "Should this bundle have coversheets separating each folder?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo hasFolderCoversheets;
 
     @CCD(
+        label = "Should this bundle be notified by email?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo enableEmailNotification;
 
     @CCD(
+        label = "Name of the PDF file",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fileName;
 
     @CCD(
+        label = "Identifier of the PDF file",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String fileNameIdentifier;
 
     @CCD(
+        label = "Cover page template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String coverpageTemplate;

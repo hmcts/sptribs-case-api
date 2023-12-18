@@ -27,7 +27,7 @@ plugins {
   id 'org.springframework.boot' version '2.7.18'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk'  version '5.5.0'
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.940'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.947'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -297,12 +297,11 @@ task highLevelDataSetup(type: JavaExec) {
 }
 
 task fortifyScan(type: JavaExec)  {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
-  // The line below prevents the build from failing if the Fortify scan detects issues
-  ignoreExitValue = true
 }
+
 checkstyle {
   maxWarnings = 0
   toolVersion = '9.3'
@@ -451,7 +450,7 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.8.0-ccd-5072.1') {
+  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.8.0-ccd-5072.3') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
     exclude group: 'com.google.guava', module: 'guava'
     exclude group: 'org.apache.poi', module: 'poi-ooxml'
@@ -461,6 +460,8 @@ dependencies {
   implementation 'io.swagger:swagger-annotations:1.6.12'
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
   implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.19'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.13'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.13'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.2'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.2'
@@ -673,7 +674,7 @@ task installChromium(type: JavaExec) {
   // group = "Execution"
   // description = "Run the main class with JavaExecTask"
   classpath = sourceSets.cftlibTest.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', 'chromium']
 }
 
@@ -681,27 +682,26 @@ tasks.cftlibTest.dependsOn(installChromium)
 
 task installBrowser(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', 'chromium']
 }
 
 task installFirefox(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', 'firefox']
 }
 
 task installMsEdge(type: JavaExec) {
   classpath = sourceSets.e2eTests.runtimeClasspath
-  main = 'com.microsoft.playwright.CLI'
+  mainClass.set('com.microsoft.playwright.CLI')
   args = ['install', '--force', 'msedge']
 }
 
 tasks.e2eTests.dependsOn(installBrowser)
 tasks.e2eTestsNightlyFirefox.dependsOn(installFirefox)
-tasks.e2eTestsNightlyMsEdge.dependsOn(installMsEdge)
 
-def E2E_MAX_PARALLEL_FORKS = 2
+def E2E_MAX_PARALLEL_FORKS = 3
 def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
 
 tasks.withType(Test).configureEach {

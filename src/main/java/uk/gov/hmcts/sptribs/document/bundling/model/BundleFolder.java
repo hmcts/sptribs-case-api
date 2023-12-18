@@ -22,21 +22,25 @@ import java.util.List;
 public class BundleFolder {
 
     @CCD(
+        label = "Folder Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String name;
 
     @CCD(
+        label = "Folder Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<BundleDocument>> documents;
 
     @CCD(
+        label = "Sub Folders",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<BundleSubFolder>> folders;
 
     @CCD(
+        label = "Sort Index",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private int sortIndex;
