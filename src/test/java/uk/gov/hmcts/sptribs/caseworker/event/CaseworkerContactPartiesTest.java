@@ -35,6 +35,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -195,7 +196,7 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Which parties do you want to contact is required.");
+        assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
 
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
 
@@ -204,7 +205,6 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Respondent");
     }
-
 
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeparation() {
@@ -377,7 +377,6 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getErrors()).hasSize(1);
     }
 
-
     @Test
     void shouldRunAboutToStart() {
         //Given
@@ -406,7 +405,7 @@ class CaseworkerContactPartiesTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
-
     }
+
 }
 
