@@ -127,6 +127,13 @@ public enum State {
     NewCaseReceived("NewCaseReceived"),
 
     @CCD(
+        label = "Ready to list",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    ReadyToList("ReadyToList"),
+
+    @CCD(
         label = "Rule 27",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
