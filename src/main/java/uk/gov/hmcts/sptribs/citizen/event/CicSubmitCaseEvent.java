@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -51,6 +52,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
@@ -84,7 +86,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .name("Submit case (cic)")
             .description("Application submit (cic)")
             .retries(120, 120)
-            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, SYSTEMUPDATE, CREATOR).grantHistoryOnly(
+            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN_CIC)
+            .grant(CREATE_READ_UPDATE, SYSTEMUPDATE, CREATOR)
+            .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
@@ -167,7 +171,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
                 var listValue = ListValue
                     .<DssMessage>builder()
-                    .id("1")
+                    .id(UUID.randomUUID().toString())
                     .value(message)
                     .build();
 

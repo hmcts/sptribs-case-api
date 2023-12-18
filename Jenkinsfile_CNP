@@ -214,7 +214,7 @@ withPipeline(type, product, component) {
 
     afterSuccess('functionalTest:aat') {
 
-       /* try {
+       try {
          builder.gradle('e2eTests')
        } finally {
 
@@ -226,7 +226,7 @@ withPipeline(type, product, component) {
              reportFiles          : "index.html",
              reportName           : "E2E Tests Report"
           ]
-       } */
+       }
 
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
@@ -349,7 +349,7 @@ def setFeatureFlags(environment) {
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.BUNDLING_FEATURE = false
-    env.DSS_FRONTEND_FEATURE = false
+    env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
   }

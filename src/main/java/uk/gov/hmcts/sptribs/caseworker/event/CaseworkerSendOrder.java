@@ -46,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -82,7 +83,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
-            .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
+            .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
             .name("Orders: Send order")
             .description("Orders: Send order")
             .showSummary()
