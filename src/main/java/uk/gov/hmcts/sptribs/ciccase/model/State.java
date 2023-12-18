@@ -19,6 +19,7 @@ public enum State {
         access = {DefaultStateAccess.class}
     )
     Rejected("Rejected"),
+
     @CCD(
         label = "Application completed",
         hint = "### Case number: ${hyphenatedCaseRef}",
@@ -75,13 +76,19 @@ public enum State {
     )
     NewCaseReceived("NewCaseReceived"),
 
-
     @CCD(
         label = "Case management",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
     CaseManagement("CaseManagement"),
+
+    @CCD(
+        label = "Ready to list",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    ReadyToList("ReadyToList"),
 
     @CCD(
         label = "Awaiting hearing",
@@ -97,7 +104,6 @@ public enum State {
     )
     AwaitingOutcome("AwaitingOutcome"),
 
-
     @CCD(
         label = "Case closed",
         hint = "### Case number: ${hyphenatedCaseRef}",
@@ -105,14 +111,12 @@ public enum State {
     )
     CaseClosed("CaseClosed"),
 
-
     @CCD(
         label = "Case stayed",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
     CaseStayed("CaseStayed");
-
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,

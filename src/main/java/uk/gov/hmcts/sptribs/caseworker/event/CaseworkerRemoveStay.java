@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REMOVE_STAY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -50,7 +51,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
     public PageBuilder remove(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_REMOVE_STAY)
-            .forStates(CaseStayed)
+            .forStates(CaseStayed, ReadyToList)
             .name("Stays: Remove stay")
             .showSummary(true)
             .description("Stays: Remove stay")
