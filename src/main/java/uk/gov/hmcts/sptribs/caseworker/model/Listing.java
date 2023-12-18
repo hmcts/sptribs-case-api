@@ -67,6 +67,12 @@ public class Listing {
     private HearingFormat hearingFormat;
 
     @CCD(
+        label = "Case eligible for a short notice hearing?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo shortNotice;
+
+    @CCD(
         label = "Hearing venue",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -79,6 +85,7 @@ public class Listing {
     private DynamicList regionList;
 
     @CCD(
+        label = "Is venue listed?",
         typeOverride = MultiSelectList,
         typeParameterOverride = "VenueNotListed",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -226,5 +233,4 @@ public class Listing {
     public String getSelectedVenue() {
         return this.getHearingVenues() != null ? this.getHearingVenues().getValue().getLabel() : null;
     }
-
 }
