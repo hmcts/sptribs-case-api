@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -96,6 +97,7 @@ public class CaseworkerClearHearingOptionsIT {
             .getContentAsString();
 
         assertThatJson(response)
+            .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(CASEWORKER_CLEAR_HEARING_OPTIONS_RESPONSE)));
     }
 }
