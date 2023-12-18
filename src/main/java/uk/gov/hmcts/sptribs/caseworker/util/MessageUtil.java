@@ -15,7 +15,6 @@ public final class MessageUtil {
     private static final String RESPONDENT = "Respondent";
     private static final String SUBJECT = "Subject";
     private static final String APPLICANT = "Applicant";
-
     private static final String TRIBUNAL = "Tribunal";
 
     private static final String COMMA_SPACE = ", ";
@@ -26,9 +25,7 @@ public final class MessageUtil {
     public static String generateSimpleMessage(String header, String footer) {
         String message = format("# %s", header);
         if (StringUtils.hasText(footer)) {
-            StringBuilder sb = new StringBuilder(message);
-            sb.append(format(" %n## %s", footer));
-            message = sb.toString();
+            message = message + format(" %n## %s", footer);
         }
         return message;
     }
@@ -37,9 +34,7 @@ public final class MessageUtil {
         final String notificationMessage = generateSimpleMessage(cicCase);
         String message = format("# %s %n## %s", header, notificationMessage);
         if (StringUtils.hasText(footer)) {
-            StringBuilder sb = new StringBuilder(message);
-            sb.append(format(" %n## %s", footer));
-            message = sb.toString();
+            message = message + format(" %n## %s", footer);
         }
         return message;
     }
@@ -87,6 +82,9 @@ public final class MessageUtil {
 
         if (!CollectionUtils.isEmpty(contactParties.getSubjectContactParties())) {
             message.append(SUBJECT + COMMA_SPACE);
+        }
+        if (!CollectionUtils.isEmpty(contactParties.getApplicantContactParties())) {
+            message.append(APPLICANT + COMMA_SPACE);
         }
         if (!CollectionUtils.isEmpty(contactParties.getRespondent())) {
             message.append(RESPONDENT + COMMA_SPACE);
