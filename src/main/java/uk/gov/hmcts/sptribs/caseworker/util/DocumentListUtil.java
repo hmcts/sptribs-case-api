@@ -72,6 +72,25 @@ public final class DocumentListUtil {
             .build();
     }
 
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data) {
+        List<CaseworkerCICDocument> docList = prepareList(data);
+
+        List<DynamicListElement> dynamicListElements = docList
+            .stream()
+            .filter(CaseworkerCICDocument::isDocumentValid)
+            .map(doc ->
+                DynamicListElement.builder()
+                    .label(doc.getDocumentCategory().getLabel() + "--" + doc.getDocumentLink().getFilename())
+                    .code(UUID.randomUUID()).build())
+            .toList();
+
+        return DynamicMultiSelectList
+            .builder()
+            .listItems(dynamicListElements)
+            .value(new ArrayList<>())
+            .build();
+    }
+
     private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
         return docList
             .stream()
@@ -84,10 +103,16 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        String apiUrl = baseUrl + "documents/%s/binary";
+        String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            createDocumentList(apiUrl, dynamicListElements, doc);
+            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
+                "/");
+            String url = String.format(apiUrl, documentId);
+            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + url + ")").code(UUID.randomUUID()).build();
+            dynamicListElements.add(element);
         }
 
         return DynamicMultiSelectList
