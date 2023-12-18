@@ -1,0 +1,59 @@
+{
+  "data": {
+    "allCaseworkerCICDocument": [],
+    "newCaseworkerCICDocument": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "cicBundles": [],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "regionList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1-London"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "10-Northern Ireland"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "11-Scotland"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "12-National"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2-Midlands"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "3-North East"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "4-North West"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "5-South East"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "6-South West"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "7-Wales"
+        }
+      ]
+    },
+    "hearingSummaryExists": "YES",
+    "closedDayCount": ""
+  }
+}
