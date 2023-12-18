@@ -31,17 +31,22 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION
 @Slf4j
 public class JudicialService {
 
-    @Autowired
     private HttpServletRequest httpServletRequest;
 
-    @Autowired
     private AuthTokenGenerator authTokenGenerator;
-
-    @Autowired
+    
     private JudicialClient judicialClient;
-
+    
     @Value("${toggle.enable_jrd_api_v2}")
     private boolean enableJrdApiV2;
+    
+    @Autowired
+    public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
+            JudicialClient judicialClient) {
+        this.httpServletRequest = httpServletRequest;
+        this.authTokenGenerator = authTokenGenerator;
+        this.judicialClient = judicialClient;
+    }
 
     public DynamicList getAllUsers(CaseData caseData) {
         final var users = getUsers();
