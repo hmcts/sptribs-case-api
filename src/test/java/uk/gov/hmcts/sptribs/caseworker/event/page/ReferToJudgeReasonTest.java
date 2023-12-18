@@ -12,8 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ReferToJudgeReasonTest {
@@ -84,4 +83,22 @@ public class ReferToJudgeReasonTest {
         // Then
         assertThat(response.getErrors()).hasSize(0);
     }
+
+    @Test
+    void shouldReturnErrorForInvalidStateReasonNewCase() {
+        // Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        caseData.getReferToJudge().setReferralReason(NEW_CASE);
+        caseDetails.setState(AwaitingHearing);
+        caseDetails.setData(caseData);
+
+        // When
+        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+
+        // Then
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().get(0).equals("The case state is incompatible with the selected referral reason"));
+    }
 }
+
