@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REMOVE_STAY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -120,15 +121,15 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
     private void sendCaseUnStayedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
+        if (!isEmpty(cicCase.getSubjectCIC())) {
             caseUnstayedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
+        if (!isEmpty(cicCase.getApplicantCIC())) {
             caseUnstayedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+        if (!isEmpty(cicCase.getRepresentativeCIC())) {
             caseUnstayedNotification.sendToRepresentative(data, caseNumber);
         }
     }
