@@ -109,6 +109,7 @@ class CicSubmitCaseEventTest {
             .thenReturn(List.of(CITIZEN_CIC));
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
 
         cicSubmitCaseEvent.configure(configBuilder);
 
