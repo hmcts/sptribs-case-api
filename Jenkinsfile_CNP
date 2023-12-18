@@ -389,7 +389,7 @@ def setFeatureFlags(environment) {
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.BUNDLING_FEATURE = false
-    env.DSS_FRONTEND_FEATURE = false
+    env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
   }
