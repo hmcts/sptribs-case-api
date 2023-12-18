@@ -19,6 +19,11 @@ import static java.util.EnumSet.allOf;
 import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
+import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
+
+
 
 public class ReferToLegalOfficerReason implements CcdPageConfiguration {
 
@@ -28,7 +33,7 @@ public class ReferToLegalOfficerReason implements CcdPageConfiguration {
             new AbstractMap.SimpleEntry<>(ReferralReason.LISTED_CASE, of(State.AwaitingHearing)),
             new AbstractMap.SimpleEntry<>(ReferralReason.LISTED_CASE_WITHIN_5_DAYS, of(State.AwaitingHearing)),
             new AbstractMap.SimpleEntry<>(ReferralReason.LISTING_DIRECTIONS, complementOf(of(State.AwaitingHearing))),
-            new AbstractMap.SimpleEntry<>(ReferralReason.NEW_CASE, of(State.Submitted)),
+            new AbstractMap.SimpleEntry<>(NEW_CASE, of(Submitted, CaseManagement)),
             new AbstractMap.SimpleEntry<>(ReferralReason.POSTPONEMENT_REQUEST, of(State.AwaitingHearing)),
             new AbstractMap.SimpleEntry<>(ReferralReason.REINSTATEMENT_REQUEST, of(State.CaseClosed)),
             new AbstractMap.SimpleEntry<>(ReferralReason.RULE_27_REQUEST, complementOf(of(State.CaseClosed))),
