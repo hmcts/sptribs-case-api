@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Comparator.comparing;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
@@ -34,12 +34,12 @@ public class JudicialService {
     private HttpServletRequest httpServletRequest;
 
     private AuthTokenGenerator authTokenGenerator;
-    
+
     private JudicialClient judicialClient;
-    
+
     @Value("${toggle.enable_jrd_api_v2}")
     private boolean enableJrdApiV2;
-    
+
     @Autowired
     public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
             JudicialClient judicialClient) {
@@ -73,7 +73,7 @@ public class JudicialService {
                         JudicialUsersRequest.builder()
                             .ccdServiceName(ST_CIC_JURISDICTION)
                             .build());
-            if (CollectionUtils.isEmpty(list)) {
+            if (isEmpty(list)) {
                 return new ArrayList<>();
             }
             return list;

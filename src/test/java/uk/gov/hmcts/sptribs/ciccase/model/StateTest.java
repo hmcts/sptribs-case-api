@@ -6,22 +6,19 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import java.lang.reflect.Field;
 
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
-//import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class StateTest {
 
-    //TODO: will be activated after deletion of old states and arranging state orders
     @Test
     void shouldBeInAlphabeticalOrderByCcdName() {
 
         final State[] sortedStates = stream(State.values())
             .sorted((o1, o2) -> getCcdName(o1).compareToIgnoreCase(getCcdName(o2)))
-            .collect(toList())
+            .toList()
             .toArray(new State[State.values().length]);
 
-        //assertThat(State.values()).containsExactly(sortedStates);
-
+        assertThat(State.values()).containsExactly(sortedStates);
     }
 
     private String getCcdName(State state) {
