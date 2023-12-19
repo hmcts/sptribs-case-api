@@ -37,7 +37,6 @@ import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.WRITTEN_REASO
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 
 
 

@@ -71,23 +71,7 @@ public class ReferToJudgeReasonTest {
         // Then
         assertThat(response.getErrors()).hasSize(0);
     }
-
-    @Test
-    void shouldReturnNoErrorForValidStateReasonNewSubmittedState() {
-        // Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        caseData.getReferToJudge().setReferralReason(NEW_CASE);
-        caseDetails.setState(Submitted);
-        caseDetails.setData(caseData);
-
-        // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
-
-        // Then
-        assertThat(response.getErrors()).hasSize(0);
-    }
-
+    
     @Test
     void shouldReturnErrorForInvalidStateReasonNewCase() {
         // Given

@@ -74,22 +74,6 @@ class ReferToLegalOfficerReasonTest {
     }
 
     @Test
-    void shouldReturnNoErrorForValidStateReasonNewSubmittedState() {
-        // Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        caseData.getReferToLegalOfficer().setReferralReason(NEW_CASE);
-        caseDetails.setState(Submitted);
-        caseDetails.setData(caseData);
-
-        // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToLegalOfficerReason.midEvent(caseDetails, caseDetails);
-
-        // Then
-        assertThat(response.getErrors()).hasSize(0);
-    }
-
-    @Test
     void shouldReturnErrorForInvalidStateReasonNewCase() {
         // Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
