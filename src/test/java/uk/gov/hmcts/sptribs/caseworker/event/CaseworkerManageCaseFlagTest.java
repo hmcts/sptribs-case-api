@@ -88,7 +88,7 @@ class CaseworkerManageCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getApplicantCIC()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getApplicantCIC().contains(ApplicantCIC.APPLICANT_CIC)).isTrue();
+        assertThat(response.getData().getCicCase().getApplicantCIC()).contains(ApplicantCIC.APPLICANT_CIC);
 
     }
 
@@ -116,7 +116,7 @@ class CaseworkerManageCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getRepresentativeCIC()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getRepresentativeCIC().contains(RepresentativeCIC.REPRESENTATIVE)).isTrue();
+        assertThat(response.getData().getCicCase().getRepresentativeCIC()).contains(RepresentativeCIC.REPRESENTATIVE);
 
     }
 
@@ -144,7 +144,7 @@ class CaseworkerManageCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getSubjectCIC()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getSubjectCIC().contains(SubjectCIC.SUBJECT)).isTrue();
+        assertThat(response.getData().getCicCase().getSubjectCIC()).contains(SubjectCIC.SUBJECT);
 
     }
 
