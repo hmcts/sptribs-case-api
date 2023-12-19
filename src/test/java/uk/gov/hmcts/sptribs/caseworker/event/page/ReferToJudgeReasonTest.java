@@ -15,6 +15,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 
 @ExtendWith(MockitoExtension.class)
 public class ReferToJudgeReasonTest {
@@ -61,6 +62,22 @@ public class ReferToJudgeReasonTest {
         final CaseData caseData = CaseData.builder().build();
         caseData.getReferToJudge().setReferralReason(NEW_CASE);
         caseDetails.setState(CaseManagement);
+        caseDetails.setData(caseData);
+
+        // When
+        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+
+        // Then
+        assertThat(response.getErrors()).hasSize(0);
+    }
+
+    @Test
+    void shouldReturnNoErrorForValidStateReasonNewCaseSubmittedState() {
+        // Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        caseData.getReferToJudge().setReferralReason(NEW_CASE);
+        caseDetails.setState(Submitted);
         caseDetails.setData(caseData);
 
         // When

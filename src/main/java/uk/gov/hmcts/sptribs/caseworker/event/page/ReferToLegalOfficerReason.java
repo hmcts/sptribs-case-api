@@ -37,6 +37,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.WRITTEN_REASO
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 
 
 
@@ -48,7 +49,7 @@ public class ReferToLegalOfficerReason implements CcdPageConfiguration {
             new AbstractMap.SimpleEntry<>(LISTED_CASE, of(AwaitingHearing)),
             new AbstractMap.SimpleEntry<>(LISTED_CASE_WITHIN_5_DAYS, of(AwaitingHearing)),
             new AbstractMap.SimpleEntry<>(LISTING_DIRECTIONS, complementOf(of(AwaitingHearing))),
-            new AbstractMap.SimpleEntry<>(NEW_CASE, of(CaseManagement)),
+            new AbstractMap.SimpleEntry<>(NEW_CASE, of(Submitted, CaseManagement)),
             new AbstractMap.SimpleEntry<>(POSTPONEMENT_REQUEST, of(AwaitingHearing)),
             new AbstractMap.SimpleEntry<>(REINSTATEMENT_REQUEST, of(CaseClosed)),
             new AbstractMap.SimpleEntry<>(RULE_27_REQUEST, complementOf(of(CaseClosed))),
