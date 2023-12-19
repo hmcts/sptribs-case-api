@@ -245,22 +245,22 @@ withPipeline(type, product, component) {
         generateDefinitions()
     }
 
-//   afterSuccess('functionalTest:preview') {
-//
-//        try {
-//            builder.gradle('e2eTests')
-//        } finally {
-//
-//            publishHTML target: [
-//                    allowMissing         : true,
-//                    alwaysLinkToLastBuild: true,
-//                    keepAll              : true,
-//                    reportDir            : "build/reports/tests/functional",
-//                    reportFiles          : "index.html",
-//                    reportName           : "E2E Tests Report"
-//            ]
-//        }
-//    }
+/*   afterSuccess('functionalTest:preview') {
+
+        try {
+            builder.gradle('e2eTests')
+        } finally {
+
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/functional",
+                    reportFiles          : "index.html",
+                    reportName           : "E2E Tests Report"
+            ]
+        }
+    }*/
 
 
         onDemo {
