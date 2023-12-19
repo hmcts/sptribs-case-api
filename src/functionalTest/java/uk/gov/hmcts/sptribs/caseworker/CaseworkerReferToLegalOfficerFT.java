@@ -24,9 +24,9 @@ public class CaseworkerReferToLegalOfficerFT extends uk.gov.hmcts.sptribs.testut
     private static final String REQUEST_SUBMITTED =
         "classpath:request/casedata/ccd-callback-casedata-refer-cases-to-legal-officer-submitted.json";
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void shouldRaiseErrorIfLegalOfficerDetailsAreNull() throws Exception {
-        final java.util.Map<String, Object> caseData = caseData(REQUEST);
+        final Map<String, Object> caseData = caseData(REQUEST);
 
         final io.restassured.response.Response response =
             triggerCallback(caseData, EventConstants.CASEWORKER_REFER_TO_LEGAL_OFFICER, ABOUT_TO_SUBMIT_URL);
@@ -40,14 +40,12 @@ public class CaseworkerReferToLegalOfficerFT extends uk.gov.hmcts.sptribs.testut
     }
 
     @Test
-    public void shouldReceiveNoticeWhenSubmittedIsInvoked() throws Exception {
+    public void shouldSubmitCaseSuccessfullyWhenReferToLegalOfficer() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
         final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_REFER_TO_LEGAL_OFFICER, SUBMITTED_URL);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
-        // notes.date value is compared using ${json-unit.any-string}
-        // assertion will fail if the above value is missing
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(
