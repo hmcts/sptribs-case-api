@@ -15,8 +15,6 @@ import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
-
 
 @ExtendWith(MockitoExtension.class)
 public class ReferToJudgeReasonTest {
@@ -71,7 +69,7 @@ public class ReferToJudgeReasonTest {
         // Then
         assertThat(response.getErrors()).hasSize(0);
     }
-    
+
     @Test
     void shouldReturnErrorForInvalidStateReasonNewCase() {
         // Given
