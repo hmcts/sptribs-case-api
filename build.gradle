@@ -700,6 +700,7 @@ task installMsEdge(type: JavaExec) {
 
 tasks.e2eTests.dependsOn(installBrowser)
 tasks.e2eTestsNightlyFirefox.dependsOn(installFirefox)
+tasks.e2eTestsNightlyMsEdge.dependsOn(installMsEdge)
 
 def E2E_MAX_PARALLEL_FORKS = 3
 def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
