@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.document;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,10 +22,10 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithInvalidFileFormat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentListWithFileFormat;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentUtilTest {
@@ -39,6 +38,12 @@ class DocumentUtilTest {
     private static final String FILENAME = "filename";
     private static final String BINARY_URL = "binaryUrl";
     private static final String CATEGORY_ID = "categoryId";
+
+    private static final String JPG_FILE = "file.jpg";
+    private static final String PDF_FILE = "file.pdf";
+    private static final String DOCX_FILE = "file.docx";
+    private static final String INVALID_FILE = "file.xyz";
+    private static final String EMAIL_CONTENT = "Test Email Content";
 
     @Test
     void shouldConvertFromDocumentInfoToDocument() {
@@ -56,135 +61,8 @@ class DocumentUtilTest {
     }
 
     @Test
-    void shouldValidateCICDocumentFormat() {
-        //When
-        List<ListValue<CICDocument>> documentList = getCICDocumentListWithInvalidFileFormat();
-        List<String> errors = DocumentUtil.validateDocumentFormat(documentList);
-
-        //Then
-        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
-    }
-
-    @Test
-    void shouldValidateCaseworkerCICDocumentFormatValid() {
-        //When
-        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
-            .build();
-        List<String> errors = DocumentUtil.validateCICDocumentFormat(doc);
-
-        //Then
-        assertThat(errors).hasSize(1);
-    }
-
-    @Test
-    void shouldValidateOneCaseworkerCICDocumentFormatValid() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("docx");
-        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
-
-        //Then
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void shouldValidateAllChecksCaseworkerCICDocumentFormatValid() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("docx");
-        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
-
-        //Then
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
-    void shouldValidateAllChecksCaseworkerCICDocumentFormatValidEmptyDocument() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentEmailContent("some email content")
-            .build();
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
-        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
-
-        //Then
-        assertThat(errors).hasSize(1);
-    }
-
-    @Test
-    void shouldValidateAllChecksCaseworkerCICDocumentFormatValidEmptyDesc() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().filename("file.pdf").build())
-            .build();
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
-        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
-
-        //Then
-        assertThat(errors).hasSize(1);
-    }
-
-    @Test
-    void shouldValidateAllChecksCaseworkerCICDocumentFormatValidEmptyDescEmptyCategory() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename("file.pdf").build())
-            .build();
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
-        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
-
-        //Then
-        assertThat(errors).hasSize(2);
-    }
-
-    @Test
-    void shouldValidateCaseworkerCICDocumentFormatInvalid() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("xml");
-        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
-
-        //Then
-        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
-    }
-
-    @Test
-    void shouldValidateDecisionDocumentFormat() {
-        //When
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename("file.txt").build())
-            .documentEmailContent("some email content")
-            .build();
-
-        List<String> errors = DocumentUtil.validateDecisionDocumentFormat(document);
-
-        //Then
-        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
-    }
-
-    @Test
-    void shouldUpdateCategoryToCaseworkerDocument() {
-        //When
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentListWithFileFormat("docx");
-        updateCategoryToCaseworkerDocument(documentList);
-
-        //Then
-        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo("L");
-    }
-
-    @Test
-    void shouldUpdateCategoryToCaseworkerDocumentNull() {
-        //When
+    void shouldNotUpdateCategoryWhenCaseworkerDocumentIsNull() {
+        //Given
         List<ListValue<CaseworkerCICDocument>> documentList = null;
 
         //Then
@@ -192,24 +70,332 @@ class DocumentUtilTest {
     }
 
     @Test
-    void shouldUpdateCategoryToDocument() {
-        //When
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
-        String categoryId = "1";
-        updateCategoryToDocument(documentList, categoryId);
+    void shouldNotUpdateCategoryWhenCaseworkerDocumentIsEmpty() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
 
         //Then
-        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(categoryId);
+        assertDoesNotThrow(() -> updateCategoryToCaseworkerDocument(documentList));
+        assertThat(documentList).hasSize(0);
     }
 
     @Test
-    void shouldUpdateCategoryToDocumentNull() {
-        //When
-        List<ListValue<CICDocument>> documentList = null;
-        String categoryId = "1";
+    void shouldNotUpdateCategoryWhenCaseworkerCICDocumentIsNull() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(null);
 
         //Then
-        assertDoesNotThrow(() -> updateCategoryToDocument(documentList, categoryId));
+        assertDoesNotThrow(() -> updateCategoryToCaseworkerDocument(documentList));
+    }
+
+    @Test
+    void shouldUpdateCategoryToCaseworkerDocument() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList(DOCX_FILE);
+
+        //When
+        updateCategoryToCaseworkerDocument(documentList);
+
+        //Then
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(DocumentType.LINKED_DOCS.getCategory());
+    }
+
+    @Test
+    void shouldUpdateCategoryToCaseworkerDocuments() {
+        //Given
+        ListValue<CaseworkerCICDocument> document1 = getCaseworkerCICDocument(DOCX_FILE);
+        ListValue<CaseworkerCICDocument> document2 = getCaseworkerCICDocument(PDF_FILE);
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(document1);
+        documentList.add(null);
+        documentList.add(document2);
+
+        //When
+        updateCategoryToCaseworkerDocument(documentList);
+
+        //Then
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(DocumentType.LINKED_DOCS.getCategory());
+        assertThat(documentList.get(1)).isNull();
+        assertThat(documentList.get(2).getValue().getDocumentLink().getCategoryId()).isEqualTo(DocumentType.LINKED_DOCS.getCategory());
+    }
+
+    @Test
+    void shouldNotUpdateCategoryWhenDocumentIsNull() {
+        //Given
+        List<ListValue<CICDocument>> documentList = null;
+
+        //Then
+        assertDoesNotThrow(() -> updateCategoryToDocument(documentList, CATEGORY_ID));
+    }
+
+    @Test
+    void shouldNotUpdateCategoryWhenDocumentIsEmpty() {
+        //Given
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+
+        //Then
+        assertDoesNotThrow(() -> updateCategoryToDocument(documentList, CATEGORY_ID));
+        assertThat(documentList).hasSize(0);
+    }
+
+    @Test
+    void shouldNotUpdateCategoryWhenCICDocumentIsNull() {
+        //Given
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        documentList.add(null);
+
+        //Then
+        assertDoesNotThrow(() -> updateCategoryToDocument(documentList, CATEGORY_ID));
+    }
+
+    @Test
+    void shouldUpdateCategoryToDocument() {
+        //Given
+        List<ListValue<CICDocument>> documentList = getCICDocumentList(PDF_FILE);
+
+        //When
+        updateCategoryToDocument(documentList, CATEGORY_ID);
+
+        //Then
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(CATEGORY_ID);
+    }
+
+    @Test
+    void shouldUpdateCategoryToDocuments() {
+        //Given
+        ListValue<CICDocument> document1 = getCICDocument(PDF_FILE);
+        ListValue<CICDocument> document2 = getCICDocument(JPG_FILE);
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        documentList.add(document1);
+        documentList.add(null);
+        documentList.add(document2);
+
+        //When
+        updateCategoryToDocument(documentList, CATEGORY_ID);
+
+        //Then
+        assertThat(documentList.get(0).getValue().getDocumentLink().getCategoryId()).isEqualTo(CATEGORY_ID);
+        assertThat(documentList.get(1)).isNull();
+        assertThat(documentList.get(2).getValue().getDocumentLink().getCategoryId()).isEqualTo(CATEGORY_ID);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenDocumentListIsNull() {
+        //Given
+        List<String> errors = DocumentUtil.validateDocumentFormat(null);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenDocumentListIsEmpty() {
+        //Given
+        List<String> errors = DocumentUtil.validateDocumentFormat(new ArrayList<>());
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenDocumentIsNull() {
+        //Given
+        ListValue<CICDocument> document = getCICDocument(INVALID_FILE);
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        documentList.add(document);
+        documentList.add(null);
+
+        //When
+        List<String> errors = DocumentUtil.validateDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldNotReturnErrorsForValidDocument() {
+        //Given
+        List<ListValue<CICDocument>> documentList = getCICDocumentList(PDF_FILE);
+
+        //When
+        List<String> errors = DocumentUtil.validateDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldNotReturnErrorsForValidDocuments() {
+        //Given
+        ListValue<CICDocument> document1 = getCICDocument(PDF_FILE);
+        ListValue<CICDocument> document2 = getCICDocument(JPG_FILE);
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        documentList.add(document1);
+        documentList.add(document2);
+
+        //When
+        List<String> errors = DocumentUtil.validateDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldReturnErrorsForInvalidDocument() {
+        //Given
+        List<ListValue<CICDocument>> documentList = getCICDocumentList(INVALID_FILE);
+
+        //When
+        List<String> errors = DocumentUtil.validateDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsForInvalidDocuments() {
+        //Given
+        ListValue<CICDocument> document1 = getCICDocument(PDF_FILE);
+        ListValue<CICDocument> document2 = getCICDocument(INVALID_FILE);
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        documentList.add(document1);
+        documentList.add(document2);
+
+        //When
+        List<String> errors = DocumentUtil.validateDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenCaseworkerCICDocumentListIsNull() {
+        //Given
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(null);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenCaseworkerCICDocumentListIsEmpty() {
+        //Given
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(new ArrayList<>());
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenCaseworkerCICDocumentIsNull() {
+        //Given
+        ListValue<CaseworkerCICDocument> document = getCaseworkerCICDocument(INVALID_FILE);
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(document);
+        documentList.add(null);
+
+        //When
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldNotReturnErrorsForValidCaseworkerCICDocument() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList(PDF_FILE);
+
+        //When
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldNotReturnErrorsForValidCaseworkerCICDocuments() {
+        //Given
+        ListValue<CaseworkerCICDocument> document1 = getCaseworkerCICDocument(PDF_FILE);
+        ListValue<CaseworkerCICDocument> document2 = getCaseworkerCICDocument(DOCX_FILE);
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(document1);
+        documentList.add(document2);
+
+        //When
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldReturnErrorsForInvalidCaseworkerCICDocument() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList(INVALID_FILE);
+
+        //When
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsForInvalidCaseworkerCICDocuments() {
+        //Given
+        ListValue<CaseworkerCICDocument> document1 = getCaseworkerCICDocument(PDF_FILE);
+        ListValue<CaseworkerCICDocument> document2 = getCaseworkerCICDocument(INVALID_FILE);
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(document1);
+        documentList.add(document2);
+
+        //When
+        List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenDecisionDocumentIsNull() {
+        //When
+        List<String> errors = DocumentUtil.validateDecisionDocumentFormat(null);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenDecisionDocumentIsValid() {
+        //Given
+        final CICDocument document = createCICDocument(PDF_FILE);
+
+        //When
+        List<String> errors = DocumentUtil.validateDecisionDocumentFormat(document);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenDecisionDocumentIsInvalid() {
+        //Given
+        final CICDocument document = createCICDocument(INVALID_FILE);
+
+        //When
+        List<String> errors = DocumentUtil.validateDecisionDocumentFormat(document);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
     @Test
@@ -217,7 +403,7 @@ class DocumentUtilTest {
         //Given
         final CaseData caseData = caseData();
         DocumentManagement documentManagement = DocumentManagement.builder()
-            .caseworkerCICDocument(getCaseworkerCICDocumentList())
+            .caseworkerCICDocument(getCaseworkerCICDocumentList(PDF_FILE))
             .build();
         caseData.setAllDocManagement(documentManagement);
 
@@ -228,6 +414,108 @@ class DocumentUtilTest {
         assertThat(caseData.getAllDocManagement().getCaseworkerCICDocument()).hasSize(1);
     }
 
+    @Test
+    void shouldNotReturnErrorsWhenUploadedDocumentIsNull() {
+        //When
+        List<String> errors = DocumentUtil.validateUploadedDocuments(null);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenUploadedDocumentIsEmpty() {
+        //When
+        List<String> errors = DocumentUtil.validateUploadedDocuments(new ArrayList<>());
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldNotReturnErrorsForValidUploadedDocuments() {
+        //Given
+        ListValue<CaseworkerCICDocument> document1 = getCaseworkerCICDocument(PDF_FILE);
+        ListValue<CaseworkerCICDocument> document2 = getCaseworkerCICDocument(DOCX_FILE);
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(document1);
+        documentList.add(document2);
+
+        //When
+        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
+
+        //Then
+        assertThat(errors).hasSize(0);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenUploadedDocumentIsMissingLink() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = createCaseworkerCICDocumentList(false, null, true, true);
+
+        //When
+        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("Please attach the document");
+    }
+
+    @Test
+    void shouldReturnErrorsWhenUploadedDocumentIsMissingEmailContent() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = createCaseworkerCICDocumentList(true, PDF_FILE, false, true);
+
+        //When
+        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("Description is mandatory for each document");
+    }
+
+    @Test
+    void shouldReturnErrorsWhenUploadedDocumentIsMissingCategory() {
+        //Given
+        List<ListValue<CaseworkerCICDocument>> documentList = createCaseworkerCICDocumentList(true, PDF_FILE, true, false);
+
+        //When
+        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
+
+        //Then
+        assertThat(errors).hasSize(1);
+        assertThat(errors).contains("Category is mandatory for each document");
+    }
+
+    @Test
+    void shouldReturnErrorsForInvalidUploadedDocuments() {
+        //Given
+        final CaseworkerCICDocument document1 = createCaseworkerCICDocument(true, PDF_FILE, false, true);
+        final CaseworkerCICDocument document2 = createCaseworkerCICDocument(true, PDF_FILE, true, false);
+        final CaseworkerCICDocument document3 = createCaseworkerCICDocument(false, null, true, true);
+
+        ListValue<CaseworkerCICDocument> documentListValue1 = new ListValue<>();
+        documentListValue1.setValue(document1);
+        ListValue<CaseworkerCICDocument> documentListValue2 = new ListValue<>();
+        documentListValue2.setValue(document2);
+        ListValue<CaseworkerCICDocument> documentListValue3 = new ListValue<>();
+        documentListValue3.setValue(document3);
+
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(documentListValue1);
+        documentList.add(documentListValue2);
+        documentList.add(documentListValue3);
+
+        //When
+        List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
+
+        //Then
+        assertThat(errors).hasSize(3);
+        assertThat(errors).contains("Description is mandatory for each document");
+        assertThat(errors).contains("Category is mandatory for each document");
+        assertThat(errors).contains("Please attach the document");
+    }
+
     private DocumentInfo documentInfo() {
         return new DocumentInfo(
             DOC_URL,
@@ -235,6 +523,45 @@ class DocumentUtilTest {
             DOC_BINARY_URL,
             CATEGORY_ID_VAL
         );
+    }
+
+    private CICDocument createCICDocument(String fileName) {
+        return CICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentEmailContent(EMAIL_CONTENT)
+            .build();
+    }
+
+    private CaseworkerCICDocument createCaseworkerCICDocument(Boolean includeLink, String fileName,
+                                                              Boolean includeContent, Boolean includeCategory) {
+        CaseworkerCICDocument document = new CaseworkerCICDocument();
+
+        if (includeLink && fileName != null) {
+            document.setDocumentLink(Document.builder().filename(fileName).build());
+        }
+
+        if (includeContent) {
+            document.setDocumentEmailContent(EMAIL_CONTENT);
+        }
+
+        if (includeCategory) {
+            document.setDocumentCategory(DocumentType.LINKED_DOCS);
+        }
+
+        return document;
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> createCaseworkerCICDocumentList(Boolean includeLink, String fileName,
+                                                              Boolean includeContent, Boolean includeCategory) {
+        CaseworkerCICDocument document = createCaseworkerCICDocument(includeLink, fileName, includeContent, includeCategory);
+
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(documentListValue);
+
+        return documentList;
     }
 
 }
