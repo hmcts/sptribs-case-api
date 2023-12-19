@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest
 public class CaseworkerCloseCaseFT extends FunctionalTestSuite {
 
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-close-the-case-about-to-start.json";
 
     @Test
     public void shouldCaseworkerCloseCaseSuccessfully() throws Exception {
