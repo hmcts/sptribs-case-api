@@ -30,6 +30,9 @@ em-ccdorc:
 em-stitching:
   enabled: false
 
+sptribs-frontend:
+  enabled: false
+
 java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'
