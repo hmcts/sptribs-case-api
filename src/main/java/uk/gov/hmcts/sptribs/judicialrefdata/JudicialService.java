@@ -22,8 +22,10 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Comparator.comparing;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
@@ -117,6 +119,10 @@ public class JudicialService {
     }
 
     public String populateJudicialId(CaseData caseData) {
+        if (isNull(caseData.getListing().getSummary().getJudge())) {
+            return EMPTY_STRING;
+        }
+
         UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
         Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
             .map(ListValue::getValue)
@@ -124,6 +130,6 @@ public class JudicialService {
             .findFirst()
             .map(Judge::getPersonalCode);
 
-        return judgeJudicialId.orElse("");
+        return judgeJudicialId.orElse(EMPTY_STRING);
     }
 }
