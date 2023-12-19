@@ -372,7 +372,6 @@ public class TestDataHelper {
             .build();
     }
 
-
     public static DynamicList getMockedHearingVenueData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
@@ -386,10 +385,31 @@ public class TestDataHelper {
             .build();
     }
 
-    public static List<ListValue<CICDocument>> getCICDocumentList() {
+    public static ListValue<CICDocument> getCICDocument(String fileName) {
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        return documentListValue;
+    }
+
+    public static ListValue<CaseworkerCICDocument> getCaseworkerCICDocument(String fileName) {
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        return documentListValue;
+    }
+
+    public static List<ListValue<CICDocument>> getCICDocumentList(String fileName) {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().build())
+            .documentLink(Document.builder().filename(fileName).build())
             .documentEmailContent("some email content")
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
@@ -398,9 +418,9 @@ public class TestDataHelper {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList() {
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName) {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename("test.pdf").build())
+            .documentLink(Document.builder().filename(fileName).build())
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();
@@ -408,31 +428,6 @@ public class TestDataHelper {
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
         documentList.add(caseworkerCICDocumentListValue);
-        return documentList;
-    }
-
-    public static List<ListValue<CICDocument>> getCICDocumentListWithInvalidFileFormat() {
-        List<ListValue<CICDocument>> documentList = new ArrayList<>();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename("file.txt").build())
-            .documentEmailContent("some email content")
-            .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
-        return documentList;
-    }
-
-    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithFileFormat(String format) {
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename("file." + format).build())
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentEmailContent("some email content")
-            .build();
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
         return documentList;
     }
 
