@@ -35,7 +35,7 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_REFER_TO_LEGAL_OFFICER)
-            .forStates(CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed, Submitted)
+            .forStates(CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
             .name("Refer case to legal officer")
             .showSummary()
             .showEventNotes()
