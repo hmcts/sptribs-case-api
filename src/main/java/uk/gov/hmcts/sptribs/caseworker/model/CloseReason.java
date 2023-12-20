@@ -4,30 +4,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.api.HasLabel;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 @Getter
 @AllArgsConstructor
 public enum CloseReason implements HasLabel {
 
     @JsonProperty("caseWithdrawn")
-    Withdrawn("caseWithdrawn","Case Withdrawn"),
+    Withdrawn(State.Withdrawn,"Case Withdrawn"),
 
     @JsonProperty("caseRejected")
-    Rejected("Rejected","Case Rejected"),
+    Rejected(State.Rejected,"Case Rejected"),
 
     @JsonProperty("caseStrikeOut")
-    StrikeOut("StrikeOut","Case Strike Out"),
+    StrikeOut(State.StrikeOut,"Case Strike Out"),
 
     @JsonProperty("caseConcession")
-    Concession("Concession","Case Concession"),
+    Concession(State.Concession,"Case Concession"),
 
     @JsonProperty("consentOrder")
-    ConsentOrder("ConsentOrder", "Consent Order"),
+    ConsentOrder(State.ConsentOrder, "Consent Order"),
 
     @JsonProperty("rule27")
-    Rule27("Rule27", "Rule 27");
+    Rule27(State.Rule27, "Rule 27");
 
-    private final String name;
+    private final State type;
     private final String label;
 
 }

@@ -50,7 +50,7 @@ public class DocumentClient {
                 HttpMethod.GET, requestEntity,
                 byte[].class
             );
-            log.info("Authorization: " + authorisation + " Service: " + serviceAuth);
+
             log.debug("Result of {} metadata call: {}", documentId, document);
 
             return document;

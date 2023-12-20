@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
 import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -21,7 +22,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
@@ -72,18 +72,18 @@ public class CaseData {
         label = "Linked Cases",
         typeParameterOverride = "CaseLink")
     @Builder.Default
-    private List<ListValue<CaseLinks>> caseLinks = new ArrayList<>();
+    private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
 
     @CCD(
         label = "Component Launcher (for displaying Linked Cases data)",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CaseLinksDefaultAccess.class}
     )
     @JsonProperty("LinkedCasesComponentLauncher")
     private ComponentLauncher linkedCasesComponentLauncher;
 
     @CCD(
         label = "Launch the Flags screen",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseFlagsAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private FlagLauncher flagLauncher;
 

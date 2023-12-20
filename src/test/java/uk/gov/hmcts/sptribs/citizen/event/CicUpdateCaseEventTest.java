@@ -67,6 +67,7 @@ class CicUpdateCaseEventTest {
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
+        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
 
     }
 

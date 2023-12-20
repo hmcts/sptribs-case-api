@@ -144,12 +144,5 @@ public final class EventUtil {
         return listValues;
     }
 
-    public static void setDssMetaData(CaseData data) {
-        data.setDssQuestion1("Full Name");
-        data.setDssQuestion3("Date of Birth");
-        data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
-        data.setDssAnswer3("case_data.dssCaseDataSubjectDateOfBirth");
-        data.setDssHeaderDetails("Subject of this case");
-    }
 
 }
