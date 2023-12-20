@@ -27,7 +27,7 @@ public class SendOrdersTests extends Base {
     private void createCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsLegalOfficer();
+        login.loginAsCaseWorker();
         newCase = new Case(page);
         newCase.createCase();
     }

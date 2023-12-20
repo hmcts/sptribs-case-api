@@ -84,7 +84,7 @@ class CaseworkerDocumentManagementAmendTest {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .applicantDocumentsUploaded(getCaseworkerCICDocumentList())
+            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -223,7 +223,7 @@ class CaseworkerDocumentManagementAmendTest {
     void shouldSuccessfullyAmendHearingSummaryDocuments() {
         //Given
         final CaseData caseData = caseData();
-        caseData.getListing().getSummary().setRecFile(getCaseworkerCICDocumentList());
+        caseData.getListing().getSummary().setRecFile(getCaseworkerCICDocumentList("file.pdf"));
         final CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);
 
@@ -277,7 +277,7 @@ class CaseworkerDocumentManagementAmendTest {
     }
 
     private List<ListValue<Order>> getOrderList() {
-        Order order = Order.builder().uploadedFile(getCICDocumentList()).build();
+        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
         ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         return List.of(orderListValue);

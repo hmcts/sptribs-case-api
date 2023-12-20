@@ -113,7 +113,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
 
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
         caseData.getCloseCase().setRejectionName(judicialUsersDynamicList);
         caseData.getCloseCase().setStrikeOutName(judicialUsersDynamicList);
 
