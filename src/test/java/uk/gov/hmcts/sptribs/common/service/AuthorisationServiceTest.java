@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.common.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,6 +9,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -18,7 +19,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
-class AuthorisationServiceTest {
+public class AuthorisationServiceTest {
     @InjectMocks
     private AuthorisationService authorisationService;
 

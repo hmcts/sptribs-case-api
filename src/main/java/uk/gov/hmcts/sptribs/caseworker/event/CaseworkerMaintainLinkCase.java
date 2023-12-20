@@ -41,12 +41,8 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
-    private final CaseUnlinkedNotification caseUnlinkedNotification;
-    
     @Autowired
-    public CaseworkerMaintainLinkCase(CaseUnlinkedNotification caseUnlinkedNotification) {
-        this.caseUnlinkedNotification = caseUnlinkedNotification;
-    }
+    CaseUnlinkedNotification caseUnlinkedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

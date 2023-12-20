@@ -23,7 +23,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
@@ -58,7 +57,6 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                 Submitted,
                 NewCaseReceived,
                 CaseManagement,
-                ReadyToList,
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,

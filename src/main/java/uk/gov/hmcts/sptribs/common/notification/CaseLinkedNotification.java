@@ -19,15 +19,11 @@ import java.util.Map;
 @Slf4j
 public class CaseLinkedNotification implements PartiesNotification {
 
+    @Autowired
     private NotificationServiceCIC notificationService;
 
-    private NotificationHelper notificationHelper;
-    
     @Autowired
-    public CaseLinkedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
-    }
+    private NotificationHelper notificationHelper;
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {

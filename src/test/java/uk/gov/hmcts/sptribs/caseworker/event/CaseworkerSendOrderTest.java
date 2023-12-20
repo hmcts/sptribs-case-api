@@ -292,7 +292,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -349,7 +349,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -415,7 +415,7 @@ class CaseworkerSendOrderTest {
         draftOrderList.add(firstValue);
         draftOrderList.add(secondValue);
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(draftOrderList)
@@ -484,7 +484,7 @@ class CaseworkerSendOrderTest {
             .build();
         draftOrderCICList.add(listValue);
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
+        List<ListValue<CICDocument>> documentList = getCICDocumentList();
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderDynamicList(dynamicList)

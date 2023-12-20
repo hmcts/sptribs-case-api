@@ -7,6 +7,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
+import java.util.stream.Collectors;
+
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.SearchInputFields.SEARCH_FIELD_LIST;
 
@@ -16,6 +18,7 @@ public class WorkBasketInputFields implements CCDConfig<CaseData, State, UserRol
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.workBasketInputFields()
-            .fields(SEARCH_FIELD_LIST.stream().filter(i -> !i.getId().equals(CASE_STATE)).toList());
+            .fields(SEARCH_FIELD_LIST.stream().filter(i -> !i.getId().equals(CASE_STATE))
+                .collect(Collectors.toList()));
     }
 }

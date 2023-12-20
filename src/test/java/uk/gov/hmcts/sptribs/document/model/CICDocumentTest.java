@@ -1,41 +1,117 @@
 package uk.gov.hmcts.sptribs.document.model;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 
-class CICDocumentTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-        "test.pdf",
-        "test.tif",
-        "test.tiff",
-        "test.jpg",
-        "test.jpeg",
-        "test.png",
-        "test.mp3",
-        "test.m4a"
-    })
-    void shouldCheckDocumentIsValid(String filename) {
+public class CICDocumentTest {
+
+    @Test
+    public void shouldCheckPdfDocumentIsValid() {
         CICDocument document = CICDocument.builder()
             .documentEmailContent("Dear sir/madam, here is an email.")
-            .documentLink(Document.builder().filename(filename).build())
+            .documentLink(Document.builder().filename("test.pdf").build())
             .build();
 
-        Assertions.assertTrue(document.isDocumentValid());
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
     }
 
     @Test
-    void shouldCheckDocxDocumentIsInvalid() {
+    public void shouldCheckTifDocumentIsValid() {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename("test.tif").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldCheckTiffDocumentIsValid() {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename("test.tiff").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldCheckJpgDocumentIsValid() {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename("test.jpg").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldCheckJpegDocumentIsValid() {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename("test.jpeg").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldCheckPngDocumentIsValid() {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename("test.png").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldCheckMp3DocumentIsValid() {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename("test.mp3").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldCheckM4aDocumentIsValid() {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename("test.m4a").build())
+            .build();
+
+        boolean result = document.isDocumentValid();
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void shouldCheckDocxDocumentIsInvalid() {
         CICDocument document = CICDocument.builder()
             .documentEmailContent("Dear sir/madam, here is an email.")
             .documentLink(Document.builder().filename("test.docx").build())
             .build();
 
-        Assertions.assertFalse(document.isDocumentValid());
-    }
+        boolean result = document.isDocumentValid();
 
+        assertThat(result).isFalse();
+    }
 }

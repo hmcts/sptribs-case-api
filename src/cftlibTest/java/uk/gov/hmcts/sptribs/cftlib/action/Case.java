@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.cftlib.util.StringHelpers;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.cftlib.util.AssertionHelpers.textOptionsWithTimeout;
@@ -77,7 +78,7 @@ public class Case {
             .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
         getCheckBoxByLabel(page, "Subject").first().check();
 
-        List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
+        List<String> options = Arrays.stream(args).map(String::toLowerCase).collect(Collectors.toList());
         if (options.contains("representative")) {
             getCheckBoxByLabel(page, "Representative").check();
         }

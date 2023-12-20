@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.common.config.interceptors;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +9,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
@@ -25,6 +25,7 @@ public class RequestInterceptor implements HandlerInterceptor {
     @Value("#{'${s2s-authorised.services}'.split(',')}")
     private List<String> authorisedServices;
 
+    @Override
     public boolean preHandle(
         HttpServletRequest request,
         HttpServletResponse response,

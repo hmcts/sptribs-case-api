@@ -5,20 +5,15 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
@@ -51,11 +46,10 @@ public final class DocumentListUtil {
         List<DynamicListElement> dynamicListElements = docList
             .stream()
             .filter(CaseworkerCICDocument::isDocumentValid)
-            .map(doc ->
-                DynamicListElement.builder()
-                    .label(doc.getDocumentCategory().getLabel() + "--" + doc.getDocumentLink().getFilename())
-                    .code(UUID.randomUUID()).build())
-            .toList();
+            .map(doc -> DynamicListElement.builder().label(doc.getDocumentLink().getFilename()
+                + "--" + doc.getDocumentLink().getUrl()
+                + "-- " + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
 
         return DynamicMultiSelectList
             .builder()
@@ -127,16 +121,12 @@ public final class DocumentListUtil {
 
     private static List<CaseworkerCICDocument> getHearingSummaryDocuments(CaseData caseData) {
         List<CaseworkerCICDocument> hearingSummaryDocs = new ArrayList<>();
-
-        Stream.ofNullable(caseData.getHearingList())
-            .flatMap(Collection::stream)
-            .map(ListValue::getValue)
-            .filter(hearing -> !isNull(hearing.getSummary()) && !isEmpty(hearing.getSummary().getRecFile()))
-            .map(Listing::getSummary)
-            .map(HearingSummary::getRecFile)
-            .flatMap(Collection::stream)
-            .forEach(recFile -> hearingSummaryDocs.add(recFile.getValue()));
-
+        if (null != caseData.getListing() && null != caseData.getListing().getSummary()
+            && !CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getListing().getSummary().getRecFile()) {
+                hearingSummaryDocs.add(document.getValue());
+            }
+        }
         return hearingSummaryDocs;
     }
 

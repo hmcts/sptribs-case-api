@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -94,18 +92,14 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-
-        final CaseData caseData = details.getData();
+        var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
-
         if (!StringUtils.isEmpty(caseData.getListing().getReadOnlyHearingVenueName())) {
             caseData.getListing().setHearingVenueNameAndAddress(null);
         }
-
-        if (isNull(caseData.getListing().getRegionList())) {
+        if (caseData.getListing().getRegionList() == null) {
             recordListHelper.regionData(caseData);
         }
-
         DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -119,7 +113,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker updated record listing callback invoked for Case Id: {}", details.getId());
 
-        final CaseData caseData = details.getData();
+        var caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
         if (null != caseData.getListing()
             && null != caseData.getListing().getNumberOfDays()
@@ -140,11 +134,10 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
-        final CicCase cicCase = caseData.getCicCase();
+        var data = details.getData();
+        var cicCase = data.getCicCase();
         Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
-        String caseNumber = caseData.getHyphenatedCaseRef();
-
+        String caseNumber = data.getHyphenatedCaseRef();
         try {
             if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
                 listingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
@@ -161,7 +154,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
                 .confirmationHeader(format("# Update listing notification failed %n## Please resend the notification"))
                 .build();
         }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Listing record updated %n##  If any changes are made to this hearing, "
                     + " remember to make those changes in this listing record. %n## %s",
@@ -184,7 +176,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         final CaseData caseData = details.getData();
         final CaseData caseDataBefore = detailsBefore.getData();
 
-        recordListHelper.populateVenuesData(caseData);
+        recordListHelper.populatedVenuesData(caseData);
 
         if (null != caseDataBefore.getListing().getReadOnlyHearingVenueName()
             && null != caseData.getListing().getSelectedRegionVal()
@@ -198,4 +190,5 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .data(caseData)
             .build();
     }
+
 }

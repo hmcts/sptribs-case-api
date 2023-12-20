@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class DynamicListUtil {
     private DynamicListUtil() {
@@ -19,7 +20,7 @@ public final class DynamicListUtil {
             .stream()
             .sorted()
             .map(summary -> DynamicListElement.builder().label(summary).code(UUID.randomUUID()).build())
-            .toList();
+            .collect(Collectors.toList());
 
         return DynamicList
             .builder()
@@ -32,7 +33,7 @@ public final class DynamicListUtil {
             .stream()
             .sorted()
             .map(hearing -> DynamicListElement.builder().label(hearing).code(UUID.randomUUID()).build())
-            .toList();
+            .collect(Collectors.toList());
 
         return DynamicList
             .builder()

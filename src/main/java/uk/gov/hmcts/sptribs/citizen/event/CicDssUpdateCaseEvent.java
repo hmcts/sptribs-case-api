@@ -25,7 +25,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
@@ -53,8 +52,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
             .name("DSS Update case (cic)")
             .description("Application DSS Update (cic)")
             .retries(120, 120)
-            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN_CIC)
-            .grant(CREATE_READ_UPDATE, SYSTEMUPDATE)
+            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, SYSTEMUPDATE)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,

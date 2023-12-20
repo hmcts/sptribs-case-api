@@ -93,7 +93,7 @@ class CaseworkerMaintainLinkCaseTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getConfirmationHeader()).contains("Case Link updated");
+        assertThat(response.getConfirmationHeader().contains("Case Link updated")).isTrue();
 
     }
 

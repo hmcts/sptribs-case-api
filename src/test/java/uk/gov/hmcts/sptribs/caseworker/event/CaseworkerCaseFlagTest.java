@@ -95,10 +95,10 @@ class CaseworkerCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getRepresentativeCIC()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getRepresentativeCIC()).contains(RepresentativeCIC.REPRESENTATIVE);
+        assertThat(response.getData().getCicCase().getRepresentativeCIC().contains(RepresentativeCIC.REPRESENTATIVE)).isTrue();
 
         assertThat(submittedCallbackResponse).isNotNull();
-        assertThat(submittedCallbackResponse.getConfirmationHeader()).contains("Flag created");
+        assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
     }
 
@@ -128,10 +128,10 @@ class CaseworkerCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getApplicantCIC()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getApplicantCIC()).contains(ApplicantCIC.APPLICANT_CIC);
+        assertThat(response.getData().getCicCase().getApplicantCIC().contains(ApplicantCIC.APPLICANT_CIC)).isTrue();
 
         assertThat(submittedCallbackResponse).isNotNull();
-        assertThat(submittedCallbackResponse.getConfirmationHeader()).contains("Flag created");
+        assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
     }
 
@@ -161,10 +161,10 @@ class CaseworkerCaseFlagTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getSubjectCIC()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getSubjectCIC()).contains(SubjectCIC.SUBJECT);
+        assertThat(response.getData().getCicCase().getSubjectCIC().contains(SubjectCIC.SUBJECT)).isTrue();
 
         assertThat(submittedCallbackResponse).isNotNull();
-        assertThat(submittedCallbackResponse.getConfirmationHeader()).contains("Flag created");
+        assertThat(submittedCallbackResponse.getConfirmationHeader().contains("Flag created")).isTrue();
 
     }
 

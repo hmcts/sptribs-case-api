@@ -69,7 +69,7 @@ public class CaseworkerDocumentManagementTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
-            .caseworkerCICDocument(getCaseworkerCICDocumentList("file.pdf"))
+            .caseworkerCICDocument(getCaseworkerCICDocumentList())
             .build();
         caseData.setAllDocManagement(documentManagement);
         beforeDetails.setData(caseData);

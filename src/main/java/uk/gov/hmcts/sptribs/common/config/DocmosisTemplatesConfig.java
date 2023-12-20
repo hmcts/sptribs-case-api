@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.common.config;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -9,6 +8,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 @Component
 @ConfigurationProperties(prefix = "docmosis")

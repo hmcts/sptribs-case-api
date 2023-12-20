@@ -66,14 +66,6 @@ class WorkBasketInputFieldsTest {
                 tuple("cicCaseRepresentativeReference",
                     "Representative Reference",
                     null,
-                    null),
-                tuple("hearingFormat",
-                    "Hearing Format",
-                    null,
-                    null),
-                tuple("shortNotice",
-                    "Short Notice",
-                    null,
                     null)
             );
     }

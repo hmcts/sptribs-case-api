@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
