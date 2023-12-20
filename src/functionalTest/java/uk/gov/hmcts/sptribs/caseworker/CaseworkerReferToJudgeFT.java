@@ -46,7 +46,7 @@ public class CaseworkerReferToJudgeFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
         final Response response = triggerCallback(caseData,
-           EventConstants.CASEWORKER_REFER_TO_JUDGE, SUBMITTED_URL);
+            EventConstants.CASEWORKER_REFER_TO_JUDGE, SUBMITTED_URL);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
