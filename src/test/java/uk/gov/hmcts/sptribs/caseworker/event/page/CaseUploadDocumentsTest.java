@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
@@ -38,14 +39,15 @@ public class CaseUploadDocumentsTest {
             .build();
         caseDetails.setData(caseData);
 
-        try (MockedStatic<DocumentUtil> utilities = Mockito.mockStatic(DocumentUtil.class)) {
-            utilities.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
+        try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
+            mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
                 .thenReturn(Collections.emptyList());
             
             final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(caseDetails, caseDetails);
         
-            utilities.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
+            mockedDocumentUtils.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
             assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
+            assertTrue(response.getErrors().isEmpty());
         }
 
     }
