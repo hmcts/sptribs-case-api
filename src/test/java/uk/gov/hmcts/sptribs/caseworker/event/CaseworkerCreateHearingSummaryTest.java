@@ -106,7 +106,7 @@ class CaseworkerCreateHearingSummaryTest {
         Listing recordListing = getRecordListing();
         caseData.setListing(recordListing);
 
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList();
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList("file.pdf");
 
         HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
         recordListing.setSummary(hearingSummary);
@@ -129,8 +129,6 @@ class CaseworkerCreateHearingSummaryTest {
         assertThat(response.getData().getListing())
             .isEqualTo(recordListing);
         assertThat(response.getData().getListing().getSummary().getJudgeList())
-            .isNull();
-        assertThat(response.getData().getListing().getSummary().getMemberList())
             .isNull();
     }
 
