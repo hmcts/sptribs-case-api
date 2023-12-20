@@ -18,7 +18,7 @@ public class ContactPartiesTests extends Base {
     public void caseWorkerShouldBeAbleToConnectContactParties() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase("representative");
         newCase.buildCase();
