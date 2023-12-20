@@ -25,7 +25,7 @@ public class CaseworkerReferToLegalOfficerFT extends uk.gov.hmcts.sptribs.testut
         "classpath:request/casedata/ccd-callback-casedata-refer-cases-to-legal-officer-submitted.json";
 
     @Test
-    public void shouldRaiseErrorIfLegalOfficerDetailsAreNull() throws Exception {
+    public void shouldCaseworkerReferCaseToLegalOfficerSeccessfully() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final io.restassured.response.Response response =
@@ -41,7 +41,7 @@ public class CaseworkerReferToLegalOfficerFT extends uk.gov.hmcts.sptribs.testut
     }
 
     @Test
-    public void shouldSubmitCaseSuccessfullyWhenReferToLegalOfficer() throws Exception {
+    public void shouldLegalOfficerSubmitCaseSuccessfully() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
         final Response response = triggerCallback(caseData,
