@@ -93,7 +93,7 @@ class CaseworkerLinkCaseTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getConfirmationHeader().contains("Case Link created")).isTrue();
+        assertThat(response.getConfirmationHeader()).contains("Case Link created");
 
     }
 

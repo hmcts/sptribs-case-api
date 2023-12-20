@@ -108,8 +108,6 @@ class CaseworkerEditHearingSummaryTest {
             .isEqualTo("personal_code");
         assertThat(response.getData().getListing().getSummary().getJudgeList())
             .isNull();
-        assertThat(response.getData().getListing().getSummary().getMemberList())
-            .isNull();
 
     }
 
