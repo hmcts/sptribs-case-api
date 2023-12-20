@@ -31,7 +31,7 @@ public class CaseUploadDocumentsTest {
     void shouldValidateUploadedDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
-            .applicantDocumentsUploaded(getCaseworkerCICDocumentList())
+            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
