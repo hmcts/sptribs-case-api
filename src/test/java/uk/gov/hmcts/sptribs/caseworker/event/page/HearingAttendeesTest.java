@@ -16,9 +16,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import java.util.List;
 import java.util.UUID;
 
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
 public class HearingAttendeesTest {
