@@ -48,7 +48,6 @@ public class CaseworkerReferToLegalOfficerFT extends uk.gov.hmcts.sptribs.testut
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(REQUEST_SUBMITTED
-               // "classpath:responses/response-caseworker-refer-cases-to-legal-officer-submitted.json"
             )));
     }
 }
