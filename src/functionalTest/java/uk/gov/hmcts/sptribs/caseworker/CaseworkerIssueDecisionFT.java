@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
-import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
