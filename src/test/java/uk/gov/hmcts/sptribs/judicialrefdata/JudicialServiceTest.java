@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -301,6 +301,46 @@ class JudicialServiceTest {
                                     .build()
                             )
                             .judgeList(Collections.emptyList())
+                            .build()
+                    )
+                    .build()
+            )
+            .build();
+
+        String result = judicialService.populateJudicialId(caseData);
+
+        assertThat(result).isEqualTo("");
+    }
+
+    @Test
+    void shouldPopulateJudicialIdAsEmptyStringWhenJudgeIsNull() {
+        UUID selectedJudgeUuid = UUID.randomUUID();
+        CaseData caseData = CaseData.builder()
+            .listing(
+                Listing.builder()
+                    .summary(
+                        HearingSummary.builder()
+                            .judgeList(List.of(
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(UUID.randomUUID().toString())
+                                            .build())
+                                    .build(),
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(selectedJudgeUuid.toString())
+                                            .personalCode("mr judges personal code")
+                                            .build())
+                                    .build(),
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(UUID.randomUUID().toString())
+                                            .build())
+                                    .build()
+                            ))
                             .build()
                     )
                     .build()
