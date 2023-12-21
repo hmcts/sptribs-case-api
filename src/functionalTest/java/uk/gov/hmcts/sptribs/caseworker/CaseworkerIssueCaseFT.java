@@ -26,7 +26,7 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-issue-cases-submitted.json";
 
     @Test
-    public void shouldUpdateCaseDataWithNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+    public void shouldCaseworkerSubmitAndIssueCaseSuccessfullyWhenThereIsNoError() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final io.restassured.response.Response response =
@@ -44,7 +44,7 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldCaseworkerSubmitAndIssueCaseSuccessfully() throws Exception {
+    public void shouldCaseworkerIssueCaseSuccessfully() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
         final Response response = triggerCallback(caseData,
