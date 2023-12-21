@@ -24,7 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
