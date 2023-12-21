@@ -588,7 +588,7 @@ public class CicCase {
     private String days;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private NotificationResponse subjectNotifyList;
 
@@ -598,7 +598,7 @@ public class CicCase {
     private NotificationResponse appNotificationResponse;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private NotificationResponse repNotificationResponse;
 
