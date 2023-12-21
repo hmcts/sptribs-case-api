@@ -29,7 +29,7 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
     public void shouldCaseworkerSubmitAndIssueCaseSuccessfullyWhenThereIsNoError() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
-        final io.restassured.response.Response response =
+        final Response response =
             triggerCallback(caseData, EventConstants.CASEWORKER_ISSUE_CASE, ABOUT_TO_SUBMIT_URL);
         // Log the actual response
         String stringResponse = response.asString();
