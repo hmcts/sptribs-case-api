@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -180,7 +179,7 @@ public class NotificationHelper {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (!isEmpty(documentList.getValue())) {
+        if (documentList != null && !documentList.getValue().isEmpty()) {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
@@ -190,27 +189,16 @@ public class NotificationHelper {
                     StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
                         "/"));
 
-                final String message = String.format(
-                    "Document when Available: %d, %s with value %s",
-                    count,
-                    uploadedDocuments.get(DOC_AVAILABLE + count),
-                    uploadedDocuments.get(CASE_DOCUMENT + count)
-                );
-                LOG.info(message);
+                LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                    uploadedDocuments.get(CASE_DOCUMENT + count));
             }
         }
         while (count < docAttachLimit) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
             uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_STRING);
-
-            final String message = String.format(
-                "Document not Available: %d, %s with value %s",
-                count,
-                uploadedDocuments.get(DOC_AVAILABLE + count),
-                uploadedDocuments.get(CASE_DOCUMENT + count)
-            );
-            LOG.info(message);
+            LOG.info("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                uploadedDocuments.get(CASE_DOCUMENT + count));
         }
 
         return uploadedDocuments;
