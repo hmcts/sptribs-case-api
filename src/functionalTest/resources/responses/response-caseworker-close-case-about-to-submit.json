@@ -1,92 +1,21 @@
 {
   "data": {
-    "notes": [
-      {
-        "id": "1",
-        "value": {
-          "date": "2023-12-21",
-          "note": "Notes",
-          "author": "Cic Casey"
-        }
-      }
-    ],
-    "caseFlags": {
-      "details": []
-    },
     "caseLinks": [],
-    "caseBundles": [],
-    "dataVersion": 0,
-    "hearingList": [],
-    "subjectFlags": {
-      "details": [],
-      "partyName": "Test Case 2112",
-      "roleOnCase": "subject"
-    },
-    "securityClass": "PUBLIC",
-    "cicCaseAddress": {
-      "County": "",
-      "Country": "United Kingdom",
-      "PostCode": "G21 3NG",
-      "PostTown": "Glasgow",
-      "AddressLine1": "84 Menzies Road",
-      "AddressLine2": "",
-      "AddressLine3": ""
-    },
-    "closeDocuments": [],
-    "closedDayCount": "",
-    "contactParties": {},
-    "cicCaseFullName": "Test Case 2112",
-    "cicCaseRegionCIC": "London",
-    "cicCaseSchemeCic": "Year2001",
-    "firstHearingDate": "",
-    "stayIsCaseStayed": "No",
-    "cicCasePartiesCIC": [
-      "SubjectCIC"
-    ],
-    "cicCaseSubjectCIC": [
-      "SubjectCIC"
-    ],
-    "hyphenatedCaseRef": "1703-1655-0792-6573",
-    "cicCaseDateOfBirth": "1990-02-02",
-    "cicCaseCaseCategory": "Assessment",
-    "cicCaseFirstDueDate": "",
-    "editCicaCaseDetails": {},
-    "closeCloseCaseReason": "caseWithdrawn",
-    "caseNameHmctsInternal": "Test Case 2112",
-    "cicCaseRespondentName": "Appeals team",
-    "closeAdditionalDetail": "message",
-    "cicCaseCaseSubcategory": "MedicalReOpening",
-    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "cicCaseCaseReceivedDate": "2023-02-02",
-    "cicCaseClaimLinkedToCic": "No",
-    "closeWithdrawalFullName": "San 123",
     "allCaseworkerCICDocument": [],
     "newCaseworkerCICDocument": [],
-    "cicCaseFormReceivedInTime": "No",
-    "cicCaseNotifyPartySubject": [
-      "SubjectCIC"
-    ],
-    "closeWithdrawalRequestDate": "2023-02-01",
-    "cicCaseMissedTheDeadLineCic": "No",
-    "cicCaseContactPreferenceType": "Post",
-    "cicCaseNotifyPartyRespondent": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "cicCaseRespondentName": "Appeals team",
     "cicCaseRespondentOrganisation": "CICA",
-    "cicCaseIsRepresentativePresent": "No",
-    "cicCaseCompensationClaimLinkCIC": "No",
-    "cicCaseApplicantDocumentsUploaded": [
-      {
-        "id": "774b8b81-1c0d-4a08-943b-a037136d8d33",
-        "value": {
-          "documentLink": {
-            "category_id": "TD",
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2872a575-1e8d-4c1d-9b16-7c7826221e3d",
-            "document_filename": "test.pdf",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2872a575-1e8d-4c1d-9b16-7c7826221e3d/binary"
-          },
-          "documentCategory": "Direction / decision notices",
-          "documentEmailContent": "dd"
-        }
-      }
-    ]
-  }
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingList": [],
+    "hyphenatedCaseRef": "1234-5678-9012-3456",
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0
+  },
+  "state": "CaseClosed"
 }
