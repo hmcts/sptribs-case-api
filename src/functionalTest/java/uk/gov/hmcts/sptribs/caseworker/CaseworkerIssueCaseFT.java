@@ -42,5 +42,5 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
                 "classpath:responses/response-caseworker-issue-cases-about-to-submit.json"
             )));
     }
-    
+
 }
