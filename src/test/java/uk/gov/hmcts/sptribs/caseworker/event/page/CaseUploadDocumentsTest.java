@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,27 +29,36 @@ public class CaseUploadDocumentsTest {
     @InjectMocks
     private CaseUploadDocuments caseUploadDocuments;
 
-    @Test
-    void shouldValidateUploadedDocument() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+    private CaseDetails<CaseData, State> caseDetails;
+
+    @BeforeEach
+    void setUp() {
+        this.caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
-        caseDetails.setData(caseData);
-
+        this.caseDetails.setData(caseData);
+    }
+    @Test
+    void shouldValidateUploadedDocument() {
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
+        assertTrue(response.getErrors().isEmpty());
+    }
+    
+    @Test
+    void verifyValidateUpdateDocumentsCalledOnce() {
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
             mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
             
-            final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(caseDetails, caseDetails);
+            caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
         
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
-            assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
-            assertTrue(response.getErrors().isEmpty());
         }
-
+        
     }
 }
