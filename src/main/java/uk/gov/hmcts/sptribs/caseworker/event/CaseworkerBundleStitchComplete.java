@@ -34,7 +34,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
     @Autowired
     BundlingService bundlingService;
 
-    @Value("${feature.bundling.enabled}")
+    @Value("${feature.bundling-stitch.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -52,9 +52,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
             .description("Bundle: Async Stitching Comp")
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grant(CREATE_READ_UPDATE, SUPER_USER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
