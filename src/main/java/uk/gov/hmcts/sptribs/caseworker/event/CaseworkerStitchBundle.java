@@ -29,7 +29,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.bundling-stitch.enabled}")
+    @Value("${feature.bundling.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -47,7 +47,9 @@ public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRo
             .description("Bundle: Stitch a bundle")
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE, SUPER_USER)
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,

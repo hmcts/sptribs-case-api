@@ -202,14 +202,8 @@ feature:
     enabled: ${MIGRATION_ENABLED:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
-  bundling-create:
-    enabled: ${CREATE_BUNDLING_FEATURE:true}
-  bundling-edit:
-    enabled: ${EDIT_BUNDLING_FEATURE:true}
-  bundling-clone:
-    enabled: ${CLONE_BUNDLING_FEATURE:true}
-  bundling-stitch:
-    enabled: ${STITCH_BUNDLING_FEATURE:true}
+  bundling:
+    enabled: ${BUNDLING_FEATURE:true}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:

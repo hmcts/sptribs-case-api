@@ -32,7 +32,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     @Value("${feature.link-case.enabled}")
     private boolean caseLinkEnabled;
 
-    @Value("${feature.bundling-create.enabled}")
+    @Value("${feature.bundling.enabled}")
     private boolean bundlingEnabled;
 
     private static final String ALWAYS_HIDE = "stayStayReason=\"NEVER_SHOW\"";
