@@ -336,7 +336,10 @@ def setFeatureFlags(environment) {
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = false
+    env.CLONE_BUNDLING_FEATURE = false
+    env.STITCH_BUNDLING_FEATURE = false
     env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = true
     env.MIGRATION_ENABLED = true
@@ -346,7 +349,10 @@ def setFeatureFlags(environment) {
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
-    env.BUNDLING_FEATURE = false
+    env.CREATE_BUNDLING_FEATURE = false
+    env.EDIT_BUNDLING_FEATURE = false
+    env.CLONE_BUNDLING_FEATURE = false
+    env.STITCH_BUNDLING_FEATURE = false
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
   } else if (environment =~ /prod/) {
@@ -354,7 +360,10 @@ def setFeatureFlags(environment) {
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = false
+    env.CREATE_BUNDLING_FEATURE = false
+    env.EDIT_BUNDLING_FEATURE = false
+    env.CLONE_BUNDLING_FEATURE = false
+    env.STITCH_BUNDLING_FEATURE = false
     env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
