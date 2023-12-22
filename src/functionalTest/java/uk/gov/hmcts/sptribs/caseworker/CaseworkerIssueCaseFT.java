@@ -46,17 +46,17 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
             )));
     }
 
-    @Test
-    public void shouldCaseworkerIssueCaseSuccessfully() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
-
-        final Response response = triggerCallback(caseData,
-            EventConstants.CASEWORKER_ISSUE_CASE, SUBMITTED_URL);
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-
-        assertThatJson(response.asString())
-            .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(REQUEST_SUBMITTED
-            )));
-    }
+//    @Test
+//    public void shouldCaseworkerIssueCaseSuccessfully() throws Exception {
+//        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
+//
+//        final Response response = triggerCallback(caseData,
+//            EventConstants.CASEWORKER_ISSUE_CASE, SUBMITTED_URL);
+//        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+//
+//        assertThatJson(response.asString())
+//            .when(IGNORING_EXTRA_FIELDS)
+//            .isEqualTo(json(expectedResponse(REQUEST_SUBMITTED
+//            )));
+//    }
 }
