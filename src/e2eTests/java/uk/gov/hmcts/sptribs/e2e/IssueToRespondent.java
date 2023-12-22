@@ -17,7 +17,7 @@ public class IssueToRespondent extends Base {
     public void caseWorkerShouldAbleToManageIssueToRespondent() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase("representative");
         newCase.buildCase();
