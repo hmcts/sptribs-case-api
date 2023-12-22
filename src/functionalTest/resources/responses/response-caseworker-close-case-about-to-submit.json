@@ -50,7 +50,7 @@
   "cicCaseCaseCategory": "Assessment",
   "cicCaseFirstDueDate": "",
   "editCicaCaseDetails": {},
-  "closeCloseCaseReasonINVALID": "caseWithdrawn",
+  "closeCloseCaseReason": "caseWithdrawn",
   "caseNameHmctsInternal": "Test Case 2112",
   "cicCaseRespondentName": "Appeals team",
   "closeAdditionalDetail": "message",

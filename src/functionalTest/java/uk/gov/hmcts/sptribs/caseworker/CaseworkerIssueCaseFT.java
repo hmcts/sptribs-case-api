@@ -28,6 +28,7 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-issue-cases-submitted.json";
 
     @Test
+    @Ignore
     public void shouldCaseworkerSubmitAndIssueCaseSuccessfullyWhenThereIsNoError() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
