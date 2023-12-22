@@ -29,7 +29,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.event.CreateTestCase.TEST_CREATE;
+import static uk.gov.hmcts.sptribs.common.event.CreateCase.TEST_CREATE;
 
 @TestPropertySource("classpath:application.yaml")
 public abstract class FunctionalTestSuite {
