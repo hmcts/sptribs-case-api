@@ -45,7 +45,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     @Autowired
     BundlingService bundlingService;
 
-    @Value("${feature.bundling.enabled}")
+    @Value("${feature.bundling-create.enabled}")
     private boolean bundlingEnabled;
 
     @Override
