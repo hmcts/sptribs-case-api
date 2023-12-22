@@ -20,8 +20,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
-//    private static final String REQUEST_SUBMITTED =
-//        "classpath:request/casedata/ccd-callback-casedata-issue-decision-submitted.json";
 
     @Test
     public void shouldCaseworkerSuccessfullyIssueADecision() throws Exception {
@@ -41,17 +39,5 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
             )));
     }
 
-//    @Test
-//    public void shouldCaseworkerIssueDecisionSuccessfully() throws Exception {
-//        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
-//
-//        final Response response = triggerCallback(caseData,
-//            EventConstants.CASEWORKER_ISSUE_DECISION, SUBMITTED_URL);
-//        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-//
-//        assertThatJson(response.asString())
-//            .when(IGNORING_EXTRA_FIELDS)
-//            .isEqualTo(json(expectedResponse(REQUEST_SUBMITTED
-//            )));
-//    }
+
 }
