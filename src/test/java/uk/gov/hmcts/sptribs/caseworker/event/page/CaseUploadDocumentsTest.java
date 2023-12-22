@@ -60,6 +60,5 @@ public class CaseUploadDocumentsTest {
         
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
         }
-        
     }
 }

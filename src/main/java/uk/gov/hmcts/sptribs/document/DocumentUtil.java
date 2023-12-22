@@ -94,7 +94,7 @@ public final class DocumentUtil {
 
         if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (null == documentListValue.getValue().getDocumentLink()) {
+                if (documentListValue.getValue().getDocumentLink() == null) {
                     errors.add("Please attach the document");
                 } else {
                     errors.addAll(validateCaseworkerCICDocumentFormat(List.of(documentListValue)));
@@ -102,7 +102,7 @@ public final class DocumentUtil {
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                         errors.add("Description is mandatory for each document");
                     }
-                    if (null == documentListValue.getValue().getDocumentCategory()) {
+                    if (documentListValue.getValue().getDocumentCategory() == null) {
                         errors.add("Category is mandatory for each document");
                     }
                 }
