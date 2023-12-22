@@ -48,9 +48,9 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
         List<String> errors = new ArrayList<>();
-        if (null != uploadedDocuments) {
+        if (uploadedDocuments != null) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (null == documentListValue.getValue().getDocumentLink()) {
+                if (documentListValue.getValue().getDocumentLink() == null) {
                     errors.add("Please attach the document");
                 } else {
                     if (!documentListValue.getValue().isDocumentValid("mp3")) {
@@ -59,7 +59,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                         errors.add("Description is mandatory for each document");
                     }
-                    if (null == documentListValue.getValue().getDocumentCategory()) {
+                    if (documentListValue.getValue().getDocumentCategory() == null) {
                         errors.add("Category is mandatory for each document");
                     }
                 }

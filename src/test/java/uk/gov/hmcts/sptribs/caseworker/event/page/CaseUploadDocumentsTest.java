@@ -34,26 +34,27 @@ public class CaseUploadDocumentsTest {
     @BeforeEach
     void setUp() {
         this.caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder()
+        CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
             .build();
-        final CaseData caseData = CaseData.builder()
+        CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         this.caseDetails.setData(caseData);
     }
+
     @Test
-    void shouldValidateUploadedDocument() {
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
+    void midEventReturnsNoErrorsWithUploadedDocuments() {
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
         assertTrue(response.getErrors().isEmpty());
     }
     
     @Test
-    void verifyValidateUpdateDocumentsCalledOnce() {
+    void midEventValidatesUploadedDocuments() {
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
             mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
-            .thenReturn(Collections.emptyList());
+                .thenReturn(Collections.emptyList());
             
             caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
         
