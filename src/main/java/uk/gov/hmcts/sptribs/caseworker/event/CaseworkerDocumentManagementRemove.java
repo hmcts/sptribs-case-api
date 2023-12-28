@@ -13,9 +13,12 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+
+import java.util.ArrayList;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -76,22 +79,24 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
-        var cicCase = caseData.getCicCase();
+        final CaseData caseData = details.getData();
+        final CicCase cicCase = caseData.getCicCase();
+
         cicCase.setFinalDecisionDocumentList(DocumentListUtil.getAllFinalDecisionDocuments(caseData));
         cicCase.setDecisionDocumentList(DocumentListUtil.getAllDecisionDocuments(caseData));
         cicCase.setOrderDocumentList(DocumentListUtil.getAllOrderDocuments(caseData.getCicCase()));
         caseData.setCicCase(cicCase);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+        final CaseData caseData = details.getData();
+        caseData.getCicCase().setRemovedDocumentList(new ArrayList<>());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -104,6 +109,5 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .confirmationHeader("# Case Updated")
             .build();
     }
-
 
 }
