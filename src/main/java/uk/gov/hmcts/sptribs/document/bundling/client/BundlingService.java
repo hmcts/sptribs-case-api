@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -212,7 +213,7 @@ public class BundlingService {
     }
 
     private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap) {
-        if (CollectionUtils.isEmpty(objectLinkedHashMap)) {
+        if (ObjectUtils.isEmpty(objectLinkedHashMap.get(STITCHED_DOCUMENT))) {
             return null;
         }
 
