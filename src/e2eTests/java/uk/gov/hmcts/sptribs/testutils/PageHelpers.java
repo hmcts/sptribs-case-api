@@ -81,4 +81,10 @@ public class PageHelpers {
     public static void clickLink(Page page, String linkText) {
         page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(linkText)).click();
     }
+
+    public static String getCaseNumber(Page page) {
+        String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
+        return page.locator("ccd-markdown markdown h3")
+            .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
+    }
 }
