@@ -218,11 +218,11 @@ public class BundlingService {
 
         LinkedHashMap stitchedDocMap = (LinkedHashMap) objectLinkedHashMap.get(STITCHED_DOCUMENT);
         Document stitchedDocument = Document.builder()
-            .url(null != stitchedDocMap.get(DOCUMENT_URL)
+            .url(null != stitchedDocMap && null != stitchedDocMap.get(DOCUMENT_URL)
                 ? stitchedDocMap.get(DOCUMENT_URL).toString() : "")
-            .binaryUrl(null != stitchedDocMap.get(DOCUMENT_BINARY_URL)
+            .binaryUrl(null != stitchedDocMap && null != stitchedDocMap.get(DOCUMENT_BINARY_URL)
                 ? stitchedDocMap.get(DOCUMENT_BINARY_URL).toString() : "")
-            .filename(null != stitchedDocMap.get(DOCUMENT_FILENAME)
+            .filename(null != stitchedDocMap && null != stitchedDocMap.get(DOCUMENT_FILENAME)
                 ? stitchedDocMap.get(DOCUMENT_FILENAME).toString() : "")
             .build();
 
