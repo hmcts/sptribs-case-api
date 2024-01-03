@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -71,11 +70,16 @@ public class BundlingServiceTest {
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
-        bundleMap.put("stitchedDocument", new Document());
         bundleMap.put("paginationStyle", BundlePaginationStyle.off);
         bundleMap.put("pageNumberFormat", PageNumberFormat.numberOfPages);
         bundleMap.put("stitchingFailureMessage", "1");
         bundleMap.put("stitchingStatus", "1");
+        LinkedHashMap<String, Object> stitchedDocMap = new LinkedHashMap<>();
+        stitchedDocMap.put("document_url", "http://url/documents/id");
+        stitchedDocMap.put("document_filename", "test.pdf");
+        stitchedDocMap.put("document_binary_url", "http://url/documents/id");
+        bundleMap.put("stitchedDocument", stitchedDocMap);
+
         LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
         folder.put("name", "name");
         folder.put("sortIndex", 1);
@@ -170,11 +174,17 @@ public class BundlingServiceTest {
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
-        bundleMap.put("stitchedDocument", new Document());
         bundleMap.put("paginationStyle", BundlePaginationStyle.off);
         bundleMap.put("pageNumberFormat", PageNumberFormat.numberOfPages);
         bundleMap.put("stitchingFailureMessage", "1");
         bundleMap.put("stitchingStatus", "1");
+
+        LinkedHashMap<String, Object> stitchedDocMap = new LinkedHashMap<>();
+        stitchedDocMap.put("document_url", "http://url/documents/id");
+        stitchedDocMap.put("document_filename", "test.pdf");
+        stitchedDocMap.put("document_binary_url", "http://url/documents/id");
+        bundleMap.put("stitchedDocument", stitchedDocMap);
+
         LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
         folder.put("name", "name");
         folder.put("sortIndex", 1);
