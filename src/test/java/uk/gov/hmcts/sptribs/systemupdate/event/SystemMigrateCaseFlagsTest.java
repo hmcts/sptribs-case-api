@@ -29,14 +29,26 @@ class SystemMigrateCaseFlagsTest {
     private SystemMigrateCaseFlags systemMigrateCaseFlags;
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() {
+    void shouldAddConfigurationToConfigBuilderWithToggleOn() {
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        systemMigrateCaseFlags.setMigrationFlagEnabled(true);
+        systemMigrateCaseFlags.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::getId)
+            .contains(SYSTEM_MIGRATE_CASE_FLAGS);
+    }
+
+    @Test
+    void shouldAddConfigurationToConfigBuilderWithToggleOff() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         systemMigrateCaseFlags.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(SYSTEM_MIGRATE_CASE_FLAGS);
+            .doesNotContain(SYSTEM_MIGRATE_CASE_FLAGS);
     }
 
     @Test
@@ -67,4 +79,5 @@ class SystemMigrateCaseFlagsTest {
         assertThat(response.getData().getRepresentativeFlags()).isNotNull();
         assertThat(response.getData().getApplicantFlags()).isNotNull();
     }
+
 }
