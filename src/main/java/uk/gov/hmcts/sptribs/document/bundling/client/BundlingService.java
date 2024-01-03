@@ -158,24 +158,23 @@ public class BundlingService {
 
     private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
         List<Bundle> bundleList = new ArrayList<>();
-        List<BundleFolder> folders = new ArrayList<>();
         Optional.ofNullable(response).ifPresent(list ->
             list.forEach(res -> {
                 LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
                 Bundle bundle = buildBundle(objectLinkedHashMap);
 
-                buildBundleFolders(folders, objectLinkedHashMap);
+                bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
                 if (null != objectLinkedHashMap.get(DOCUMENTS)) {
                     bundle.setDocuments(buildBundleDocumentListValues(getDocuments(objectLinkedHashMap)));
                 }
-                bundle.setFolders(buildBundleFolderListValues(folders));
                 bundleList.add(bundle);
             }));
 
         return bundleList;
     }
 
-    private void buildBundleFolders(List<BundleFolder> folders, LinkedHashMap<String, Object> objectLinkedHashMap) {
+    private List<BundleFolder> buildBundleFolders(LinkedHashMap<String, Object> objectLinkedHashMap) {
+        List<BundleFolder> folders = new ArrayList<>();
         if (null != objectLinkedHashMap.get(FOLDERS)) {
             List<LinkedHashMap<String, Object>> responseFolders
                 = (List<LinkedHashMap<String, Object>>) objectLinkedHashMap.get(FOLDERS);
@@ -192,6 +191,7 @@ public class BundlingService {
             }
 
         }
+        return folders;
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
