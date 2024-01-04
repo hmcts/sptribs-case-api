@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
@@ -190,16 +191,15 @@ class CaseworkerIssueCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerIssueCase.aboutToStart(updatedCaseDetails);
-
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerIssueCase.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCaseIssue().getDocumentList()).isNotNull();
-        assertThat(response.getData().getCaseIssue().getDocumentList().getListItems()).hasSize(1);
+        DynamicMultiSelectList documentList = response.getData().getCaseIssue().getDocumentList();
+        assertThat(documentList).isNotNull();
+        assertThat(documentList.getListItems()).hasSize(1);
+        assertThat(documentList.getListItems().get(0).getLabel()).isEqualTo("[name.pdf A - Application Form](nulldocuments//binary)");
     }
 
     @Test
