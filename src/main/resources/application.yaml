@@ -116,6 +116,10 @@ bundling:
   api:
     baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-demo.service.core-compute-demo.internal}
 
+refdata_common:
+  api:
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
 flagType:
   api:
     baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
