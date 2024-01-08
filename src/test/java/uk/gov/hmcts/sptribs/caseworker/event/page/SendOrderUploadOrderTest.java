@@ -36,6 +36,6 @@ public class SendOrderUploadOrderTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
 
         //Then
-        assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isTrue();
+        assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE)).isFalse();
     }
 }

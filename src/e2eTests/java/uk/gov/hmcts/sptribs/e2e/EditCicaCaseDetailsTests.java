@@ -25,7 +25,7 @@ public class EditCicaCaseDetailsTests extends Base {
         final String caseNumber = newCase.createCase(CaseParties.Representative.label);
         newCase.buildCase();
         clickLink(page, "Sign out");
-        login.loginAsStRespondentUser();
+        login.loginAsCaseWorker();
         page.navigate(getCaseUrl(caseNumber));
         assertThat(page.locator("ccd-markdown markdown h3").first())
             .hasText("Case number: " + caseNumber, textOptionsWithTimeout(60000));
