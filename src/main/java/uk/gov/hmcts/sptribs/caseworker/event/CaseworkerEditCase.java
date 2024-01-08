@@ -33,6 +33,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -55,9 +56,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editFurtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
-    @Autowired
     private final SubmissionService submissionService;
-
+    
+    @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
     }
@@ -78,7 +79,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
-            .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
             .description("Case: Edit case")
             .showSummary()
@@ -152,8 +153,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
                 .roleOnCase("subject")
-                .build()
-            );
+                .build());
         }
 
         updateApplicantFlags(data);

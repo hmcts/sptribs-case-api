@@ -54,6 +54,7 @@ class GlobalExceptionHandlerTest {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
         final FeignException feignException = mock(FeignException.class);
+        when(feignException.status()).thenReturn(500);
 
         //When
         final ResponseEntity<Object> actualResponse =
