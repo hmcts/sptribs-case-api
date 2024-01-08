@@ -223,8 +223,9 @@ public class NotificationHelper {
 
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
         String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
-        String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
-        int lastIndex = (hearingDateTimeArr != null ? hearingDateTimeArr.length : 0) > 0 ? hearingDateTimeArr.length - 1 : 0;
+        String[] hearingDateTimeArr = (selectedHearingDateTime != null) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
+        int arrayLength = hearingDateTimeArr != null ? hearingDateTimeArr.length : 0;
+        int lastIndex = arrayLength > 0 ? hearingDateTimeArr.length - 1 : 0;
         String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
             ? hearingDateTimeArr[lastIndex].substring(0, hearingDateTimeArr[lastIndex].lastIndexOf(SPACE))
             : null;

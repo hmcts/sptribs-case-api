@@ -40,7 +40,6 @@ class RecordListHelperTest {
     @Mock
     private LocationService locationService;
 
-
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
         //Given
@@ -58,13 +57,10 @@ class RecordListHelperTest {
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
         recordListHelper.regionData(caseData);
 
-
         //Then
         assertThat(caseData.getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
         assertThat(caseData.getListing().getRegionList().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
-
-
     }
 
     @Test
@@ -79,8 +75,9 @@ class RecordListHelperTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        when(locationService.getRegionId("1-region")).thenReturn("1");
         when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
-        recordListHelper.populatedVenuesData(caseData);
+        recordListHelper.populateVenuesData(caseData);
 
         //Then
         assertThat(caseData.getListing().getHearingVenues()
@@ -88,8 +85,6 @@ class RecordListHelperTest {
         assertThat(caseData.getListing().getHearingVenues().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
-
-
     }
 
     @Test
@@ -110,7 +105,6 @@ class RecordListHelperTest {
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).isNotNull();
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).isNotNull();
     }
-
 
     @Test
     void shouldSuccessfullyAddNotificationParties() {
@@ -191,9 +185,9 @@ class RecordListHelperTest {
             .build();
         CaseData data = caseData();
         caseData().setListing(listing);
+
         Listing result = recordListHelper.saveSummary(data);
 
         assertThat(result).isNotNull();
     }
-
 }
