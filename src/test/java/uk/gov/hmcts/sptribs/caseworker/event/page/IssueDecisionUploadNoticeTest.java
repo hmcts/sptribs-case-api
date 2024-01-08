@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,52 +28,50 @@ public class IssueDecisionUploadNoticeTest {
 
     @InjectMocks
     private IssueDecisionUploadNotice issueDecisionUploadNotice;
-    private CaseDetails<CaseData, State> caseDetails;
     private Document invalidDocumentType = Document.builder().filename("file.txt").build();
     private Document validDocumentType = Document.builder().filename("file.pdf").build();
 
-    @BeforeEach
-    void setUp() {
-        this.caseDetails = new CaseDetails<>();
-    }
-
     @Test
     void midEventReturnsErrorForInvalidDocumentType() {
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CICDocument doc = CICDocument.builder().documentLink(invalidDocumentType).build();
         CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(this.caseDetails, this.caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
 
     @Test
     void midEventReturnsNoErrorsForValidDocumentType() {
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
         CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(this.caseDetails, this.caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
 
     @Test
     void midEventReturnsErrorWhenDocumentNull() {
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(CaseData.builder().build());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(this.caseDetails, this.caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
 
     @Test
     void midEventValidatesDecisionDocumentFormat() {
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
         CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
@@ -84,7 +81,7 @@ public class IssueDecisionUploadNoticeTest {
             mockedDocumentUtils.when(() -> DocumentUtil.validateDecisionDocumentFormat(any(CICDocument.class)))
                 .thenReturn(Collections.emptyList());
             
-            issueDecisionUploadNotice.midEvent(this.caseDetails, this.caseDetails);
+            issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
         
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateDecisionDocumentFormat(any(CICDocument.class)), times(1));
         }

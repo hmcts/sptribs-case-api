@@ -37,7 +37,7 @@ class ReferToLegalOfficerReasonTest {
 
 
     @Test
-    void shouldReturnErrorIfReasonIsInRightState() {
+    void shouldReturnErrorIfReasonIsInWrongState() {
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();

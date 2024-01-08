@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,16 +29,10 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @InjectMocks
     private SelectRecipientsHelper selectRecipients;
-    private CaseDetails<CaseData, State> caseDetails;
-
-    @BeforeEach
-    void setUp() {
-        this.caseDetails = new CaseDetails<>();
-    }
 
     @Test
     void midEventIsSuccessfulForValidRecipients() {
-        this.caseDetails = new CaseDetails<>();
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
         CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
 
@@ -47,16 +40,16 @@ public class IssueFinalDecisionSelectRecipientsTest {
             .caseIssueFinalDecision(finalDecision)
             .cicCase(cicCase)
             .build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(this.caseDetails, this.caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
         assertThat(response.getData().getCicCase().getNotifyPartySubject().contains(SubjectCIC.SUBJECT));
         assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
     void midEventReturnsErrorsForMissingRecipient() {
-        this.caseDetails = new CaseDetails<>();
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
         CicCase cicCase = CicCase.builder().build();
 
@@ -64,9 +57,9 @@ public class IssueFinalDecisionSelectRecipientsTest {
             .caseIssueFinalDecision(finalDecision)
             .cicCase(cicCase)
             .build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(this.caseDetails, this.caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
         
         assertNull(response.getData().getCicCase().getNotifyPartySubject());
         assertNull(response.getData().getCicCase().getNotifyPartyRepresentative());
@@ -77,6 +70,7 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventIsSuccessfulForRepresentative() {
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         Set<RepresentativeCIC> representativeCICSet = new HashSet<>();
         representativeCICSet.add(RepresentativeCIC.REPRESENTATIVE);
         CicCase cicCase = CicCase.builder()
@@ -96,13 +90,14 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventChecksRecipients() {
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CaseData caseData = CaseData.builder().build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))
                 .thenReturn(Collections.emptyList());
             
-            selectRecipients.midEvent(this.caseDetails, this.caseDetails);
+            selectRecipients.midEvent(caseDetails, caseDetails);
             
             mockedEventUtils.verify(() -> EventUtil.checkRecipient(caseData), times(1));
         }
