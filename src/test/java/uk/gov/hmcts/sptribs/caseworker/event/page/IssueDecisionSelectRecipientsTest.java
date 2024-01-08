@@ -31,14 +31,15 @@ public class IssueDecisionSelectRecipientsTest {
     @Test
     void midEventReturnsNoErrors() {
         CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-        .build();
+        CicCase cicCase = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
         CaseIssueDecision issueDecision = CaseIssueDecision.builder().build();
         
         CaseData caseData = CaseData.builder()
-        .caseIssueDecision(issueDecision)
-        .cicCase(cicCase)
-        .build();
+            .caseIssueDecision(issueDecision)
+            .cicCase(cicCase)
+            .build();
         caseDetails.setData(caseData);
         
         AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
@@ -53,8 +54,8 @@ public class IssueDecisionSelectRecipientsTest {
         CaseIssueDecision decision = CaseIssueDecision.builder().build();
         
         CaseData caseData = CaseData.builder()
-        .caseIssueDecision(decision)
-        .build();
+            .caseIssueDecision(decision)
+            .build();
         caseDetails.setData(caseData);
         
         AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);

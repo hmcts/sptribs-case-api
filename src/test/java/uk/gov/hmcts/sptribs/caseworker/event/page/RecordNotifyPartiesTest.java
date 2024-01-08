@@ -33,8 +33,8 @@ public class RecordNotifyPartiesTest {
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
         
         final CaseData caseData = CaseData.builder()
-        .cicCase(cicCase)
-        .build();
+            .cicCase(cicCase)
+            .build();
         caseDetails.setData(caseData);
         
         final AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
@@ -48,8 +48,8 @@ public class RecordNotifyPartiesTest {
         final CicCase cicCase = CicCase.builder().build();
         
         final CaseData caseData = CaseData.builder()
-        .cicCase(cicCase)
-        .build();
+            .cicCase(cicCase)
+            .build();
         caseDetails.setData(caseData);
         
         final AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);

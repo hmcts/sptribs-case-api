@@ -41,7 +41,7 @@ public class ManageSelectOrdersTest {
     
     @Test
     void midEventCompletesSucessfully() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         final Order order = Order.builder()
             .dueDateList(List.of(this.mockListValueDateModel))
@@ -65,19 +65,19 @@ public class ManageSelectOrdersTest {
 
     @Test
     void midEventReturnsErrorWhenNoSelectedOrder() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         final Order order = Order.builder()
-        .dueDateList(List.of(this.mockListValueDateModel))
-        .draftOrder(new DraftOrderCIC())
-        .build();
+            .dueDateList(List.of(this.mockListValueDateModel))
+            .draftOrder(new DraftOrderCIC())
+            .build();
         ListValue<Order> listValue = new ListValue<>();
         listValue.setValue(order);
         listValue.setId("0");
         final CicCase cicCase = CicCase.builder()
-        .orderList(List.of(listValue))
-        .orderDynamicList(this.dynamicListUnlabelled)
-        .build();
+            .orderList(List.of(listValue))
+            .orderDynamicList(this.dynamicListUnlabelled)
+            .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
         

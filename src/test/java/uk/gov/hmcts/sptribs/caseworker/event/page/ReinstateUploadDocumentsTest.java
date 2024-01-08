@@ -13,14 +13,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
-
-import java.util.Collections;
 
 @ExtendWith(MockitoExtension.class)
 public class ReinstateUploadDocumentsTest {
@@ -30,7 +30,7 @@ public class ReinstateUploadDocumentsTest {
     
     @Test
     void midEventReturnsNoErrorsWithUploadedDocuments() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(getCaseworkerCICDocumentList("file.pdf"))
             .build();
@@ -45,13 +45,13 @@ public class ReinstateUploadDocumentsTest {
     
     @Test
     void midEventReturnsErrorWithWrongDocumentType() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
-        .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
-        .build();
+            .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
+            .build();
         CaseData caseData = CaseData.builder()
-        .cicCase(cicCase)
-        .build();
+            .cicCase(cicCase)
+            .build();
         caseDetails.setData(caseData);
         final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
         
@@ -60,7 +60,7 @@ public class ReinstateUploadDocumentsTest {
     
     @Test
     void midEventValidatesUploadedDocuments() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
             .build();
