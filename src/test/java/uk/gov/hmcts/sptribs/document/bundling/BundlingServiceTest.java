@@ -162,6 +162,15 @@ public class BundlingServiceTest {
     }
 
     @Test
+    void shouldGenerateSingleMultiBundleConfig() {
+        //When
+        MultiBundleConfig result = bundlingService.getMultiBundleConfig();
+
+        //Then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
     void shouldCreateBundleListValues() {
         //Given
         final CaseData caseData = caseData();
