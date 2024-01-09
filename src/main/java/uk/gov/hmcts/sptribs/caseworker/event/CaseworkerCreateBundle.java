@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -58,7 +59,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CREATE_BUNDLE)
-            .forStates(BUNDLE_STATES)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Create a bundle")
             .description("Bundle: Create a bundle")
             .aboutToSubmitCallback(this::aboutToSubmit)

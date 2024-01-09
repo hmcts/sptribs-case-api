@@ -14,7 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.EDIT_BUNDLE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -42,7 +43,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(EDIT_BUNDLE)
-            .forStates(BUNDLE_STATES)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Edit a bundle")
             .description("Bundle: Edit a bundle")
             .showSummary()
