@@ -60,9 +60,9 @@ public class HearingAttendees implements CcdPageConfiguration {
         // Retain members list for edit journey
         if (!isNull(caseDataBefore.getListing().getSummary().getMemberList())){
             caseData.getListing().getSummary().setMemberList(caseDataBefore.getListing().getSummary().getMemberList());
-            caseData.getListing().getSummary().getMemberList().setValue(
-                caseDataBefore.getListing().getSummary().getMemberList().getValue()
-            );
+//            caseData.getListing().getSummary().getMemberList().setValue(
+//                caseDataBefore.getListing().getSummary().getMemberList().getValue()
+//            );
         } else {
             DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
             caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
