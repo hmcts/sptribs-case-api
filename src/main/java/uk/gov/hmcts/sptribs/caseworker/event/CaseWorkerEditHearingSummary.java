@@ -28,7 +28,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
+//import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -95,8 +95,8 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setHearingSummaryList(hearingService.getCompletedHearingDynamicList(caseData));
 
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
-        caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
-        caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
+        //caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
+        //caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
