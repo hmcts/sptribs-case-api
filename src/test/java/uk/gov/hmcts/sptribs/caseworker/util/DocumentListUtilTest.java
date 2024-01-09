@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -50,10 +51,67 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, "");
 
         //Then
         assertThat(result).isNotNull();
+
+    }
+
+    @Test
+    void shouldGenerateContactPartiesDocList() {
+        //Given
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.mp3").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+        final CaseData caseData = CaseData.builder().build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+        //When
+        DynamicMultiSelectList result = DocumentListUtil.prepareContactPartiesDocumentList(caseData, "");
+
+        //Then
+        Assertions.assertTrue(result.getListItems().isEmpty());
+
+    }
+
+    @Test
+    void shouldGenerateSelectedAmendDocList() {
+        //Given
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .newDocManagement(documentManagement)
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+        //When
+
+        //Then
+        //assertThat(result).isNotNull();
 
     }
 
@@ -77,8 +135,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
-
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, "");
         //Then
         assertThat(result).isNotNull();
     }
@@ -100,7 +157,7 @@ public class DocumentListUtilTest {
         caseData.setCloseCase(CloseCase.builder().documents(listValueList).build());
         details.setData(caseData);
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, "");
 
         //Then
         assertThat(result).isNotNull();
@@ -124,8 +181,7 @@ public class DocumentListUtilTest {
         details.setData(caseData);
 
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData,"");
-
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, "");
         //Then
         assertThat(result).isNotNull();
     }
@@ -153,7 +209,7 @@ public class DocumentListUtilTest {
         details.setData(caseData);
 
         //When
-        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, "");
 
         //Then
         assertThat(result).isNotNull();

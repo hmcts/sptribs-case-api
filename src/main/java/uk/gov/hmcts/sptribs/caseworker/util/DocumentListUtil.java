@@ -85,11 +85,6 @@ public final class DocumentListUtil {
             .build();
     }
 
-
-    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {
-        return buildListValues(prepareList(data));
-    }
-
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getReinstateDocuments())) {
