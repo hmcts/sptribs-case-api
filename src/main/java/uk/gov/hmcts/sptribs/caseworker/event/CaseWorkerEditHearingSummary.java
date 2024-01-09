@@ -94,9 +94,9 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         }
         caseData.getCicCase().setHearingSummaryList(hearingService.getCompletedHearingDynamicList(caseData));
 
-//        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
-//        caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
-//        caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
+        caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
+        caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
