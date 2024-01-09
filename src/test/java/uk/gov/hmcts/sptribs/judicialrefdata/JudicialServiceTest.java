@@ -49,7 +49,6 @@ class JudicialServiceTest {
 
     @Test
     void shouldPopulateUserDynamicList() {
-        //Given
         ReflectionTestUtils.setField(judicialService, "enableJrdApiV2", false);
 
         var userResponse1 = UserProfileRefreshResponse
@@ -65,7 +64,6 @@ class JudicialServiceTest {
         List<UserProfileRefreshResponse> responseEntity = List.of(userResponse1, userResponse2);
         var caseData = CaseData.builder().build();
 
-        //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(judicialClient.getUserProfiles(
@@ -74,7 +72,6 @@ class JudicialServiceTest {
             new JudicialUsersRequest("ST_CIC"))).thenReturn(responseEntity);
         DynamicList userList = judicialService.getAllUsers(caseData);
 
-        //Then
         assertThat(userList).isNotNull();
         assertThat(caseData.getListing().getSummary().getJudgeList()).isNotNull();
         assertThat(caseData.getListing().getSummary().getJudgeList()).hasSize(2);
@@ -88,7 +85,6 @@ class JudicialServiceTest {
 
     @Test
     void shouldReturnEmptyDynamicListWhenListFromJudicialRefDataCallIsNull() {
-        //When
         ReflectionTestUtils.setField(judicialService, "enableJrdApiV2", false);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -99,16 +95,13 @@ class JudicialServiceTest {
             new JudicialUsersRequest("ST_CIC"))).thenReturn(null);
         DynamicList regionList = judicialService.getAllUsers(caseData());
 
-        //Then
         assertThat(regionList.getListItems()).isEmpty();
     }
 
     @Test
     void shouldReturnEmptyDynamicListWhenExceptionFromJudicialRefDataCall() {
-        //Given
         ReflectionTestUtils.setField(judicialService, "enableJrdApiV2", false);
 
-        //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
@@ -121,7 +114,6 @@ class JudicialServiceTest {
 
         DynamicList regionList = judicialService.getAllUsers(caseData());
 
-        //Then
         assertThat(regionList.getListItems()).isEmpty();
         verify(judicialClient).getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,
@@ -132,7 +124,6 @@ class JudicialServiceTest {
 
     @Test
     void shouldPopulateUserDynamicListUsingRefDataV2API() {
-        //Given
         ReflectionTestUtils.setField(judicialService, "enableJrdApiV2", true);
 
         var userResponse1 = UserProfileRefreshResponse
@@ -147,7 +138,6 @@ class JudicialServiceTest {
             .build();
         List<UserProfileRefreshResponse> responseEntity = List.of(userResponse1, userResponse2);
 
-        //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
@@ -159,7 +149,6 @@ class JudicialServiceTest {
 
         DynamicList userList = judicialService.getAllUsers(caseData());
 
-        //Then
         assertThat(userList).isNotNull();
         verify(judicialClient).getUserProfilesV2(
             TEST_SERVICE_AUTH_TOKEN,
@@ -171,7 +160,6 @@ class JudicialServiceTest {
 
     @Test
     void shouldReturnEmptyDynamicListWhenExceptionFromJudicialRefDataV2Call() {
-        //When
         ReflectionTestUtils.setField(judicialService, "enableJrdApiV2", true);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -184,7 +172,6 @@ class JudicialServiceTest {
 
         DynamicList regionList = judicialService.getAllUsers(caseData());
 
-        //Then
         assertThat(regionList.getListItems()).isEmpty();
         verify(judicialClient).getUserProfilesV2(
             TEST_SERVICE_AUTH_TOKEN,

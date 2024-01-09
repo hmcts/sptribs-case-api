@@ -34,11 +34,9 @@ public class IdamServiceTest {
 
     @Test
     public void shouldRetrieveUserWhenValidAuthorizationTokenIsPassed() {
-        //Given
         when(idamClient.getUserDetails(SYSTEM_UPDATE_AUTH_TOKEN))
             .thenReturn(userDetails());
 
-        //When&Then
         assertThatCode(() -> idamService.retrieveUser(SYSTEM_UPDATE_AUTH_TOKEN))
             .doesNotThrowAnyException();
 
@@ -48,7 +46,6 @@ public class IdamServiceTest {
 
     @Test
     public void shouldThrowFeignUnauthorizedExceptionWhenInValidAuthorizationTokenIsPassed() {
-        //When&Then
         doThrow(feignException(401, "Failed to retrieve Idam user"))
             .when(idamClient).getUserDetails("Bearer invalid_token");
 
@@ -59,7 +56,6 @@ public class IdamServiceTest {
 
     @Test
     public void shouldNotThrowExceptionAndRetrieveSystemUpdateUserSuccessfully() {
-        //Given
         setSystemUserCredentials();
 
         when(idamClient.getAccessToken(TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_SYSTEM_USER_PASSWORD))
@@ -68,7 +64,6 @@ public class IdamServiceTest {
         when(idamClient.getUserDetails(SYSTEM_UPDATE_AUTH_TOKEN))
             .thenReturn(userDetails());
 
-        //When&Then
         assertThatCode(() -> idamService.retrieveSystemUpdateUserDetails())
             .doesNotThrowAnyException();
 
@@ -79,13 +74,11 @@ public class IdamServiceTest {
 
     @Test
     public void shouldThrowFeignUnauthorizedExceptionWhenSystemUpdateUserCredentialsAreInvalid() {
-        //Given
         setSystemUserCredentials();
 
         doThrow(feignException(401, "Failed to retrieve Idam user"))
             .when(idamClient).getAccessToken(TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_SYSTEM_USER_PASSWORD);
 
-        //When&Then
         assertThatThrownBy(() -> idamService.retrieveSystemUpdateUserDetails())
             .isExactlyInstanceOf(FeignException.Unauthorized.class)
             .hasMessageContaining("Failed to retrieve Idam user");
