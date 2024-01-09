@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
