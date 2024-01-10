@@ -209,7 +209,7 @@ feature:
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:
-    enabled: ${SECURITY_CLASSIFICATION:false}
+    enabled: ${SECURITY_CLASSIFICATION:true}
 
 caseinfo:
   apps:
