@@ -27,6 +27,7 @@ This API handles callbacks from CCD for the Criminal Injuries Compensation (CIC)
 
 ### Building the application
 
+
 The project uses [Gradle](https://gradle.org) as a build tool. It already contains
 `./gradlew` wrapper script, so there's no need to install gradle.
 
