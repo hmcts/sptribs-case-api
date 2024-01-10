@@ -186,9 +186,6 @@ ccd:
       userProfileDatabasePassword: hmcts
       userProfileDatabaseName: user-profile
 
-  postgresql:
-    persistence:
-      enabled: false
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
@@ -383,8 +380,10 @@ ccd-case-document-am-api:
     environment:
       CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
       IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_CCD: DEBUG
     autoscaling:
@@ -402,13 +401,16 @@ xui-webapp:
     devmemoryLimits: 1024Mi
     environment:
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
-      SERVICES_DOCUMENTS_API_V2: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
+      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
       FEATURE_REDIS_ENABLED: false
+      FEATURE_APP_INSIGHTS_ENABLED: true
       NODE_OPTIONS: --max-old-space-size=900
+      HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
 
 xui-mo-webapp:
   enabled: true
@@ -420,10 +422,11 @@ xui-mo-webapp:
     environment:
       MANAGE_CASE_LINK: https://xui-${SERVICE_FQDN}/cases
       MANAGE_ORG_LINK: https://xui-mo-${SERVICE_FQDN}
-      SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
 
 sptribs-frontend:
   enabled: true
@@ -435,7 +438,7 @@ sptribs-frontend:
     image: hmctspublic.azurecr.io/sptribs/frontend:latest #pr-xxxx
     ingressHost: frontend-${SERVICE_FQDN}
     environment:
-      CCD_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       SKIP_DIV_CASE_CHECK: true
 
 aac-manage-case-assignment:
@@ -454,9 +457,10 @@ aac-manage-case-assignment:
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,sptribs_frontend,sptribs_ccd_submission,finrem_case_orchestration
-      CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store-api
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
     autoscaling:
       enabled: false
 
