@@ -94,11 +94,17 @@ public class Login {
         loginAs(getenv("LEGAL_OFFICER"));
     }
 
-    public void loginAsSeniorCaseWorker() { loginAs(getenv("SENIOR_LEGAL_OFFICER")); }
+    public void loginAsSeniorCaseWorker() {
+        loginAs(getenv("SENIOR_LEGAL_OFFICER"));
+    }
 
-    public void loginAsSeniorJudge() { loginAs(getenv("SENIOR_JUDGE")); }
+    public void loginAsSeniorJudge() {
+        loginAs(getenv("SENIOR_JUDGE"));
+    }
 
-    public void loginAsHearingCentreTL() { getenv("HEARING_CENTRAL_TEAM_LEAD"); }
+    public void loginAsHearingCentreTL() {
+        getenv("HEARING_CENTRAL_TEAM_LEAD");
+    }
 
     public void loginAsStJudge2User() {
         getenv("JUDGE");
@@ -108,7 +114,9 @@ public class Login {
         getenv("SUPER_USER");
     }
 
-    public void loginAsStRespondentUser() { loginAs(getenv("RESPONDENT")); }
+    public void loginAsStRespondentUser() {
+        loginAs(getenv("RESPONDENT"));
+    }
 
     public void loginAsStCitizen1User() {
         loginAsDssUser(getenv("DSS_CITIZEN_USER"));

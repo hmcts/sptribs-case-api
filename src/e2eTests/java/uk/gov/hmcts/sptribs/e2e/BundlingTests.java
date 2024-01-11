@@ -14,9 +14,9 @@ import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.containsTextOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getInnerTextContentFromTableFor;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getInnerTextContentFromTableFor;
 
 public class BundlingTests extends Base {
 
@@ -60,17 +60,17 @@ public class BundlingTests extends Base {
         return newCase;
     }
 
-    private boolean isBundleCreated(Page page){
+    private boolean isBundleCreated(Page page) {
         boolean bundleCreated = false;
         long timeout = 60000;
         int pollingInterval = 1000;
         long startTime = System.currentTimeMillis();
         Login login = new Login(page);
 
-        while(System.currentTimeMillis() - startTime  < timeout) {
+        while (System.currentTimeMillis() - startTime  < timeout) {
             login.refreshPageWhenServerErrorIsDisplayed();
             boolean stitchedDocumentVisible = page.locator("//table//th/span[contains(text(), 'Stitched Document')]").isVisible();
-            if(stitchedDocumentVisible) {
+            if (stitchedDocumentVisible) {
                 String innerText = getInnerTextContentFromTableFor(page, "Stitched Document");
                 bundleCreated = Objects.equals(innerText, "-cicBundle.pdf");
                 break;
