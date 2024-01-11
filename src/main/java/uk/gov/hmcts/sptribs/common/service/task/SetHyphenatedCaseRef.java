@@ -13,9 +13,9 @@ public class SetHyphenatedCaseRef implements CaseTask {
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
-        if (caseDetails != null &&
-            caseDetails.getData() != null &&
-            caseDetails.getId() != null) {
+        if (caseDetails != null
+            && caseDetails.getData() != null
+            && caseDetails.getId() != null) {
             caseDetails.getData().setHyphenatedCaseRef(caseDetails.getData().formatCaseRef(caseDetails.getId()));
         }
 
