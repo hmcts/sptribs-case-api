@@ -189,7 +189,7 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
-  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:true}
+  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
 
 feature:
   contact-parties:
