@@ -91,7 +91,7 @@ public class Login {
     }
 
     public void loginAsCaseWorker() {
-        loginAs(getenv("SENIOR_LEGAL_OFFICER"));
+        loginAs(getenv("LEGAL_OFFICER"));
     }
 
     public void loginAsSeniorCaseWorker() { loginAs(getenv("SENIOR_LEGAL_OFFICER")); }

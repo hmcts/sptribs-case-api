@@ -70,6 +70,10 @@ public class PageHelpers {
         return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
     }
 
+    public static String getInnerTextContentFromTableFor(Page page, String rowHeader) {
+        return page.locator("th:has-text(\"" + rowHeader + "\") + td").innerText();
+    }
+
     public static String getCaseStatus(Page page) {
         return page.locator("th:has-text(\"EndState\") + td").textContent();
     }

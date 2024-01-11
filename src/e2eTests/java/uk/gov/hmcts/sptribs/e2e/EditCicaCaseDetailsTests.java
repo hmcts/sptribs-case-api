@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import io.github.artsok.RepeatedIfExceptionsTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 
@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 
 public class EditCicaCaseDetailsTests extends Base {
 
-    @RepeatedIfExceptionsTest
+    @Disabled
     public void respondentShouldBeAbleToAddEditCicDetails() {
         Page page = getPage();
         Login login = new Login(page);

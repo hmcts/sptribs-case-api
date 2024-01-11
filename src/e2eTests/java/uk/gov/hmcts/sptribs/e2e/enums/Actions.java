@@ -4,6 +4,7 @@ public enum Actions {
     AddNote("Case: Add note"),
     ContactParties("Case: Contact parties"),
     EditCase("Case: Edit case"),
+    CreateABundle("Bundle: Create a bundle"),
     CreateFlag("Create Flag"),
     ManageFlags("Manage Flags"),
     CancelHearing("Hearings: Cancel hearing"),
@@ -30,7 +31,7 @@ public enum Actions {
     TestChangeState("Test change state"),
     ReferCaseToJudge("Refer case to judge"),
     ReferCaseToLegalOfficer("Refer case to legal officer"),
-    UploadDocuments("Document Management: Upload"),
+    UploadDocuments("Document management: Upload"),
     AmendDocuments("Document management: Amend"),
     RemoveDocuments("Document management: Remove");
 

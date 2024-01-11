@@ -195,7 +195,7 @@ public class Case {
         clickButton(page, "Add new");
         String documentCategory = "A - Application Form";
         page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
-        String documentName = "sample_file.pdf";
+        String documentName = "sample_A_application_document.pdf";
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
         page.waitForSelector("//span[contains(text(), 'Uploading...')]",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));

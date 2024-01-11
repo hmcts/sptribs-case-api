@@ -97,6 +97,6 @@ public class DocumentManagement {
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
         page.locator("#newCaseworkerCICDocument_0_documentEmailContent").type(documentDescription);
-        page.locator("//h2[contains(text(), 'Documents')]").click();
+        page.locator("//div[contains(@id, 'newCaseworkerCICDocument')]//h2[contains(text(), 'Documents')]").click();
     }
 }

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
@@ -11,8 +10,6 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.AmendDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.RemoveDocuments;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.UploadDocuments;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
-import static uk.gov.hmcts.sptribs.testutils.PageHelpers.functionOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickLink;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseNumber;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCaseUrl;
@@ -20,9 +17,9 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTabByText;
 
 public class DocumentManagementTests extends Base {
 
-    private final String documentCategory = "A - Notice of Appeal";
+    private final String documentCategory = "B - Police evidence";
     private final String documentDescription = "This is a test to upload document";
-    private final String documentName = "sample_pdf_file_3.pdf";
+    private final String documentName = "sample_B_police_evidence_document.pdf";
 
     @Order(1)
     @Disabled
@@ -53,15 +50,16 @@ public class DocumentManagementTests extends Base {
         docManagement.uploadDocuments(documentCategory, documentDescription, documentName);
 
         newCase.startNextStepAction(AmendDocuments);
-        String amendedDocumentCategory = "A - Correspondence from the CICA";
+        String amendedDocumentCategory = "E - Care plan";
         String amendedDocumentDescription = "This is a test to amend document";
-        docManagement.amendDocument(amendedDocumentCategory, amendedDocumentDescription, documentName);
+        String amendedDocumentName = "sample_E_care_plan_records_document.pdf";
+        docManagement.amendDocument(amendedDocumentCategory, amendedDocumentDescription, amendedDocumentName);
 
         getTabByText(page, "Case Documents").click();
         assertThat(page.locator("h4").first()).hasText("Case Documents");
         Assertions.assertEquals(amendedDocumentCategory, getValueFromTableWithinCaseDocumentsTabFor(page, "Document Category"));
         Assertions.assertEquals(amendedDocumentDescription, getValueFromTableWithinCaseDocumentsTabFor(page, "Description"));
-        Assertions.assertEquals(documentName, getValueFromTableWithinCaseDocumentsTabFor(page, "File"));
+        Assertions.assertEquals(amendedDocumentName, getValueFromTableWithinCaseDocumentsTabFor(page, "File"));
     }
 
     @Order(3)
@@ -72,10 +70,11 @@ public class DocumentManagementTests extends Base {
         final String caseNumber = getCaseNumber(page);
 
         newCase.startNextStepAction(UploadDocuments);
-        String documentToBeRemovedCategory = "C - Hospital records";
+        String documentToBeRemovedCategory = "L - Linked docs";
         String documentToBeRemovedDescription = "This is a test to remove document";
+        String nameOfDocumentToBeRemoved = "sample_L_linked_docs_records_document.docx";
         DocumentManagement docManagement = new DocumentManagement(page);
-        docManagement.uploadDocuments(documentToBeRemovedCategory, documentToBeRemovedDescription, documentName);
+        docManagement.uploadDocuments(documentToBeRemovedCategory, documentToBeRemovedDescription, nameOfDocumentToBeRemoved);
 
         clickLink(page, "Sign out");
         Login login = new Login(page);
@@ -85,7 +84,7 @@ public class DocumentManagementTests extends Base {
             .hasText("Case number: " + caseNumber, textOptionsWithTimeout(60000));
 
         newCase.startNextStepAction(RemoveDocuments);
-        docManagement.removeDocument(documentToBeRemovedCategory, documentToBeRemovedDescription, documentName);
+        docManagement.removeDocument(documentToBeRemovedCategory, documentToBeRemovedDescription, nameOfDocumentToBeRemoved);
 
         getTabByText(page, "Case Documents").click();
         assertThat(page.locator("h4").first()).hasText("Case Documents");

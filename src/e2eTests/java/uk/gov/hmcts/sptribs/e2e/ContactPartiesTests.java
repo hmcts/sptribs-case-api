@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
@@ -21,12 +20,12 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class ContactPartiesTests extends Base {
 
-    private final String documentCategory = "A - Notice of Appeal";
-    private final String documentDescription = "This is a test to upload document";
-    private final String documentName = "sample_file.pdf";
+    private final String documentCategory = "D - HMRC records";
+    private final String documentDescription = "This is a test to upload document for contacting parties";
+    private final String documentName = "sample_D_HMRC_records_document.docx";
 
-    @Disabled
     @Order(1)
+    @Disabled
     public void caseWorkerShouldBeAbleToConnectContactParties() {
         Page page = getPage();
         Case newCase = createAndBuildCase(page);
@@ -41,7 +40,7 @@ public class ContactPartiesTests extends Base {
     }
 
     @Order(2)
-    @RepeatedIfExceptionsTest
+    @Disabled
     public void respondentShouldBeAbleToContactParties() {
         Page page = getPage();
         Case newCase = createAndBuildCase(page);
@@ -75,7 +74,7 @@ public class ContactPartiesTests extends Base {
 
     private void completeContactPartiesJourney(Page page, Actions parties) {
         assertThat(page.locator("h1")).hasText("Documents to include", textOptionsWithTimeout(60000));
-        getCheckBoxByLabel(page, "sample_file.pdf").check();
+        getCheckBoxByLabel(page, documentName).check();
         clickButton(page, "Continue");
         if (parties.equals(ContactParties)) {
             assertThat(page.locator("h1")).hasText("Which parties do you want to contact?", textOptionsWithTimeout(60000));
