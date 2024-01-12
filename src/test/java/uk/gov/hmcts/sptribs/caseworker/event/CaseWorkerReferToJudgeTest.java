@@ -42,6 +42,23 @@ public class CaseWorkerReferToJudgeTest {
     }
 
     @Test
+    void shouldAlwaysInitiateReferToJudgeWithEmptyObject() {
+        //Given
+        final CaseDetails<CaseData, State> existingCaseDetails = getCaseDetails();
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
+            caseWorkerReferToJudge.aboutToStart(existingCaseDetails);
+
+        //Then
+        assertThat(aboutToStartResponse.getData().getReferToJudge()).isNotNull();
+        assertThat(aboutToStartResponse.getData().getReferToJudge().getReferralReason()).isNull();
+        assertThat(aboutToStartResponse.getData().getReferToJudge().getReasonForReferral()).isNull();
+        assertThat(aboutToStartResponse.getData().getReferToJudge().getAdditionalInformation()).isNull();
+        assertThat(aboutToStartResponse.getData().getReferToJudge().getReferralDate()).isNull();
+    }
+
+    @Test
     void shouldReferToJudge() {
         //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
@@ -51,7 +68,7 @@ public class CaseWorkerReferToJudgeTest {
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseWorkerReferToJudge.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse response2 =
-            caseWorkerReferToJudge.referred(updatedCaseDetails, beforeDetails);
+            caseWorkerReferToJudge.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response1).isNotNull();
