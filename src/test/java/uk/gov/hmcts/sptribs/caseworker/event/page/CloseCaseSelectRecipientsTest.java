@@ -30,12 +30,12 @@ public class CloseCaseSelectRecipientsTest {
 
     @Test
     void midEventIsSuccessfulForValidRecipients() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
         
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -46,8 +46,8 @@ public class CloseCaseSelectRecipientsTest {
     
     @Test
     void midEventIsInvalidIfNoRecipientsSelected() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
         
         AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
@@ -61,8 +61,8 @@ public class CloseCaseSelectRecipientsTest {
     
     @Test
     void midEventChecksRecipients() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))

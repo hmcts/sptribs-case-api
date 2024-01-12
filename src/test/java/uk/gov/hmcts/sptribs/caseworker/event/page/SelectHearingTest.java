@@ -41,17 +41,14 @@ class SelectHearingTest {
 
     @Test
     void shouldReturnHearingSelected() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         List<ListValue<Listing>> listValueList = new ArrayList<>();
 
-        // A Final Listing
         ListValue<Listing> finalListingListValue = new ListValue<>();
         finalListingListValue.setValue(getRecordListing());
         finalListingListValue.setId("Final 10:00");
         listValueList.add(finalListingListValue);
 
-        // A Case Management listing
         Listing caseManagementListing = getRecordListing();
         caseManagementListing.setHearingType(HearingType.CASE_MANAGEMENT);
         ListValue<Listing> caseManagementListingListValue = new ListValue<>();
@@ -62,17 +59,15 @@ class SelectHearingTest {
         when(cicCaseHearingLabel.getLabel()).thenReturn("Final 10:00");
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
         when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
+
         CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(cicCase);
         caseData.setListing(caseManagementListing);
         caseData.setHearingList(listValueList);
         caseDetails.setData(caseData);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
 
-        //Then
-        // Have replaced Case Management Listing with Final Listing
         Assertions.assertEquals(response.getData().getListing(), finalListingListValue.getValue());
     }
 

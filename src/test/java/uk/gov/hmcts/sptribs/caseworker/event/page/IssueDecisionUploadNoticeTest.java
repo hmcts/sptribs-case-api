@@ -28,14 +28,16 @@ public class IssueDecisionUploadNoticeTest {
 
     @InjectMocks
     private IssueDecisionUploadNotice issueDecisionUploadNotice;
+    
     private Document invalidDocumentType = Document.builder().filename("file.txt").build();
+    
     private Document validDocumentType = Document.builder().filename("file.pdf").build();
 
     @Test
     void midEventReturnsErrorForInvalidDocumentType() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CICDocument doc = CICDocument.builder().documentLink(invalidDocumentType).build();
-        CaseData caseData = CaseData.builder()
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CICDocument doc = CICDocument.builder().documentLink(invalidDocumentType).build();
+        final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);
@@ -47,9 +49,9 @@ public class IssueDecisionUploadNoticeTest {
 
     @Test
     void midEventReturnsNoErrorsForValidDocumentType() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
-        CaseData caseData = CaseData.builder()
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
+        final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);
@@ -61,7 +63,7 @@ public class IssueDecisionUploadNoticeTest {
 
     @Test
     void midEventReturnsErrorWhenDocumentNull() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(CaseData.builder().build());
 
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
@@ -71,9 +73,9 @@ public class IssueDecisionUploadNoticeTest {
 
     @Test
     void midEventValidatesDecisionDocumentFormat() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
-        CaseData caseData = CaseData.builder()
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CICDocument doc = CICDocument.builder().documentLink(validDocumentType).build();
+        final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .build();
         caseDetails.setData(caseData);

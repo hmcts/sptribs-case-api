@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
@@ -21,13 +21,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class IssueDecisionSelectTemplateTest {
+public class IssueFinalDecisionSelectTemplateTest {
     
     @InjectMocks
-    private IssueDecisionSelectTemplate issueDecisionSelectTemplate;
+    private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
 
     @Mock
-    private CaseIssueDecision caseIssueDecision;
+    private CaseIssueFinalDecision caseIssueFinalDecision;
     
     private DecisionTemplate decisionTemplate = DecisionTemplate.ELIGIBILITY;
     
@@ -35,13 +35,13 @@ public class IssueDecisionSelectTemplateTest {
     void midEventCorrectlySetsDecisionTemplate() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
-            .caseIssueDecision(caseIssueDecision)
+            .caseIssueFinalDecision(caseIssueFinalDecision)
             .build();
         
-        when(caseIssueDecision.getIssueDecisionTemplate()).thenReturn(decisionTemplate);
+        when(caseIssueFinalDecision.getDecisionTemplate()).thenReturn(decisionTemplate);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
         assertThat(response.getData().getDecisionMainContent().equals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT));
     }
 
@@ -49,17 +49,17 @@ public class IssueDecisionSelectTemplateTest {
     void validateGetMainContentIsCalledOnce() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
-            .caseIssueDecision(caseIssueDecision)
+            .caseIssueFinalDecision(caseIssueFinalDecision)
             .build();
         
-        when(caseIssueDecision.getIssueDecisionTemplate()).thenReturn(decisionTemplate);
+        when(caseIssueFinalDecision.getDecisionTemplate()).thenReturn(decisionTemplate);
         caseDetails.setData(caseData);
 
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.getMainContent(decisionTemplate))
                 .thenReturn(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT);
             
-            issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+            issueFinalDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
             
             mockedEventUtils.verify(() ->  EventUtil.getMainContent(decisionTemplate), times(1));
         }

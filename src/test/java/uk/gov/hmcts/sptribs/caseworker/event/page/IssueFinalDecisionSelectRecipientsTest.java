@@ -32,11 +32,11 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventIsSuccessfulForValidRecipients() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
-        CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
+        final CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
 
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .caseIssueFinalDecision(finalDecision)
             .cicCase(cicCase)
             .build();
@@ -49,11 +49,11 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventReturnsErrorsForMissingRecipient() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
-        CicCase cicCase = CicCase.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseIssueFinalDecision finalDecision = CaseIssueFinalDecision.builder().build();
+        final CicCase cicCase = CicCase.builder().build();
 
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .caseIssueFinalDecision(finalDecision)
             .cicCase(cicCase)
             .build();
@@ -70,14 +70,14 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventIsSuccessfulForRepresentative() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         Set<RepresentativeCIC> representativeCICSet = new HashSet<>();
         representativeCICSet.add(RepresentativeCIC.REPRESENTATIVE);
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(representativeCICSet)
             .representativeCIC(representativeCICSet).build();
 
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -90,8 +90,8 @@ public class IssueFinalDecisionSelectRecipientsTest {
 
     @Test
     void midEventChecksRecipients() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))

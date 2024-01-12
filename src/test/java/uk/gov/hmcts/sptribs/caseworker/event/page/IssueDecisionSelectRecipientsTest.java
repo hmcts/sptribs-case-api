@@ -30,13 +30,13 @@ public class IssueDecisionSelectRecipientsTest {
 
     @Test
     void midEventReturnsNoErrors() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
-        CaseIssueDecision issueDecision = CaseIssueDecision.builder().build();
+        final CaseIssueDecision issueDecision = CaseIssueDecision.builder().build();
         
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .caseIssueDecision(issueDecision)
             .cicCase(cicCase)
             .build();
@@ -50,10 +50,10 @@ public class IssueDecisionSelectRecipientsTest {
     
     @Test
     void midEventReturnsErrorsForMissingRecipient() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseIssueDecision decision = CaseIssueDecision.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseIssueDecision decision = CaseIssueDecision.builder().build();
         
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .caseIssueDecision(decision)
             .build();
         caseDetails.setData(caseData);
@@ -69,8 +69,8 @@ public class IssueDecisionSelectRecipientsTest {
     
     @Test
     void midEventChecksRecipients() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))

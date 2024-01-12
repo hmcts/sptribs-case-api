@@ -29,7 +29,7 @@ public class RecordNotifyPartiesTest {
 
     @Test
     void shouldBeSuccessfulForValidRecipients() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
         
         final CaseData caseData = CaseData.builder()
@@ -44,7 +44,7 @@ public class RecordNotifyPartiesTest {
     
     @Test
     void shouldBeInvalidIfNoRecipientsSelected() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
         
         final CaseData caseData = CaseData.builder()
@@ -63,8 +63,8 @@ public class RecordNotifyPartiesTest {
     
     @Test
     void midEventChecksRecipients() {
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))

@@ -17,17 +17,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 
 @ExtendWith(MockitoExtension.class)
-public class IssueCaseNotifyPartiesTest {
+public class PostponeHearingNotifyPartiesTest {
     
     @InjectMocks
-    private IssueCaseNotifyParties issueCaseNotifyParties;
+    private PostponeHearingNotifyParties postponeHearingNotifyParties;
 
     @Test
     void testMidEventReturnsErrorForNoRecipients() {
@@ -35,9 +34,9 @@ public class IssueCaseNotifyPartiesTest {
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
         
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         assertFalse(response.getErrors().isEmpty());
-        assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
+        assertThat(response.getErrors()).contains("At least one party must be selected.");
     }
 
     @Test
@@ -52,7 +51,7 @@ public class IssueCaseNotifyPartiesTest {
             .build();
         caseDetails.setData(caseData);
         
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         assertTrue(response.getErrors().isEmpty());
     }
         
@@ -62,7 +61,7 @@ public class IssueCaseNotifyPartiesTest {
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
         
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         
         assertNull(response.getData().getCicCase().getNotifyPartySubject());
         assertNull(response.getData().getCicCase().getNotifyPartyRepresentative());
@@ -87,7 +86,7 @@ public class IssueCaseNotifyPartiesTest {
             mockedCheckRequiredUtils.when(() -> CheckRequiredUtil.checkNullSubjectRepresentativeRespondent(caseData))
                 .thenReturn(true);
             
-            issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
+            postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         
             mockedCheckRequiredUtils.verify(() ->  CheckRequiredUtil.checkNullSubjectRepresentativeRespondent(caseData), times(1));
         }

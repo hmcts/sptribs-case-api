@@ -26,13 +26,13 @@ public class ContactPartiesSelectDocumentTest {
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
     
     @Mock
-    ContactPartiesDocuments contactPartiesDocuments;
+    private ContactPartiesDocuments contactPartiesDocuments;
 
     @Mock
-    DynamicMultiSelectList dynamicMultiSelectList;
+    private DynamicMultiSelectList dynamicMultiSelectList;
 
     @Mock
-    List<DynamicListElement> dynamicList; 
+    private List<DynamicListElement> dynamicList; 
 
     @Test
     void midEventIsSuccessful() {

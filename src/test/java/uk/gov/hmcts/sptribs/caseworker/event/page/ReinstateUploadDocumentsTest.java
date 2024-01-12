@@ -31,10 +31,10 @@ public class ReinstateUploadDocumentsTest {
     @Test
     void midEventReturnsNoErrorsWithUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(getCaseworkerCICDocumentList("file.pdf"))
             .build();
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -46,10 +46,10 @@ public class ReinstateUploadDocumentsTest {
     @Test
     void midEventReturnsErrorWithWrongDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
             .build();
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
@@ -61,10 +61,10 @@ public class ReinstateUploadDocumentsTest {
     @Test
     void midEventValidatesUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
             .build();
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);

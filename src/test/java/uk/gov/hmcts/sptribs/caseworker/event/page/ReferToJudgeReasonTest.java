@@ -20,33 +20,28 @@ public class ReferToJudgeReasonTest {
 
     @Test
     void shouldReturnNoErrorIfValidStateForReason() {
-        // Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseData.getReferToJudge().setReferralReason(ReferralReason.CORRECTIONS);
         caseDetails.setState(State.CaseClosed);
         caseDetails.setData(caseData);
 
-        // When
         AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
-        // Then
         assertThat(response.getErrors()).hasSize(0);
     }
 
     @Test
     void shouldReturnErrorIfInvalidStateForReason() {
-        // Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseData.getReferToJudge().setReferralReason(ReferralReason.CORRECTIONS);
         caseDetails.setState(State.CaseManagement);
         caseDetails.setData(caseData);
 
-        // When
         AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
-        // Then
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().contains("The case state is incompatible with the selected referral reason"));
     }
 }

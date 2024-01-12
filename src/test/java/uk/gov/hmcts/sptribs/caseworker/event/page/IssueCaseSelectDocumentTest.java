@@ -39,8 +39,8 @@ public class IssueCaseSelectDocumentTest {
         when(documentList.size()).thenReturn(6);
         
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
-        CaseData caseData = CaseData.builder()
+        final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
+        final CaseData caseData = CaseData.builder()
             .caseIssue(caseIssue)
             .build();
         caseDetails.setData(caseData);
@@ -56,8 +56,8 @@ public class IssueCaseSelectDocumentTest {
         when(dynamicMultiSelectList.getValue()).thenReturn(Collections.emptyList());
         
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
-        CaseData caseData = CaseData.builder()
+        final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
+        final CaseData caseData = CaseData.builder()
             .caseIssue(caseIssue)
             .build();
         caseDetails.setData(caseData);
@@ -74,8 +74,8 @@ public class IssueCaseSelectDocumentTest {
         when(documentList.size()).thenReturn(3);
         
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
-        CaseData caseData = CaseData.builder()
+        final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
+        final CaseData caseData = CaseData.builder()
             .caseIssue(caseIssue)
             .build();
         caseDetails.setData(caseData);

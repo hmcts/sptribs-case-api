@@ -27,10 +27,8 @@ class ReferToLegalOfficerReasonTest {
         caseDetails.setState(State.AwaitingHearing);
         caseDetails.setData(caseData);
 
-        // When
         AboutToStartOrSubmitResponse<CaseData, State> response = referToLegalOfficerReason.midEvent(caseDetails, caseDetails);
 
-        // Then
         assertThat(response.getErrors()).hasSize(0);
 
     }
@@ -45,11 +43,10 @@ class ReferToLegalOfficerReasonTest {
         caseDetails.setState(State.CaseClosed);
         caseDetails.setData(caseData);
 
-        // When
         AboutToStartOrSubmitResponse<CaseData, State> response = referToLegalOfficerReason.midEvent(caseDetails, caseDetails);
 
-        // Then
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().contains("The case state is incompatible with the selected referral reason"));
 
     }
 
