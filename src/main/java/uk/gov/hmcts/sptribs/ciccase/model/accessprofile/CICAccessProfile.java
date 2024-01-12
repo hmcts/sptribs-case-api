@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.ciccase.model.accessprofile;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -10,11 +12,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationD
 
 @Component
 @Slf4j
+@Setter
 public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationData, State, UserRolesForAccessProfiles> {
+
+    @Value("${feature.access-profiles.enabled}")
+    private boolean bundlingEnabled;
 
     @Override
     public void configure(final ConfigBuilder<CriminalInjuriesCompensationData, State, UserRolesForAccessProfiles> configBuilder) {
+        if (bundlingEnabled) {
+            doConfigure(configBuilder);
+        }
+    }
 
+    private void doConfigure(ConfigBuilder<CriminalInjuriesCompensationData, State, UserRolesForAccessProfiles> configBuilder) {
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SUPER_USER)
             .accessProfiles(UserRolesForAccessProfiles.CIC_SUPER_USER.getRole(),
                 UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
