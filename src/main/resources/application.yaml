@@ -203,13 +203,13 @@ feature:
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling-create:
-    enabled: ${CREATE_BUNDLING_FEATURE:true}
+    enabled: ${CREATE_BUNDLING_FEATURE:false}
   bundling-edit:
-    enabled: ${EDIT_BUNDLING_FEATURE:true}
+    enabled: ${EDIT_BUNDLING_FEATURE:false}
   bundling-clone:
-    enabled: ${CLONE_BUNDLING_FEATURE:true}
+    enabled: ${CLONE_BUNDLING_FEATURE:false}
   bundling-stitch:
-    enabled: ${STITCH_BUNDLING_FEATURE:true}
+    enabled: ${STITCH_BUNDLING_FEATURE:false}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:
