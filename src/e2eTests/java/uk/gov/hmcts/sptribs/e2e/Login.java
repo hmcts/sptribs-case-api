@@ -103,15 +103,15 @@ public class Login {
     }
 
     public void loginAsHearingCentreTL() {
-        getenv("HEARING_CENTRAL_TEAM_LEAD");
+        loginAs(getenv("HEARING_CENTRAL_TEAM_LEAD"));
     }
 
     public void loginAsStJudge2User() {
-        getenv("JUDGE");
+        loginAs(getenv("JUDGE"));
     }
 
     public void loginAsStSuperUser() {
-        getenv("SUPER_USER");
+        loginAs(getenv("SUPER_USER"));
     }
 
     public void loginAsStRespondentUser() {
