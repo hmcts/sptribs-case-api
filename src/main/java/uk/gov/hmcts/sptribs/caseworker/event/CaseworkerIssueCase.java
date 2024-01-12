@@ -99,8 +99,9 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
         }
-
-        caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n## %s",
