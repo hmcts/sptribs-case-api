@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.document.bundling.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -72,14 +70,6 @@ public class BundlingService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
 
-            ObjectMapper mapper = new ObjectMapper();
-            String responseString = null;
-            try {
-                responseString = mapper.writeValueAsString(response);
-            } catch (JsonProcessingException e) {
-                log.error("Error converting json to string", e.getMessage());
-            }
-            log.info("response {}", responseString);
             return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
         } catch (FeignException exception) {
             log.error("Unable to create bundle {}",
