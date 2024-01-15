@@ -20,21 +20,25 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 public class BundleDocument {
 
     @CCD(
+        label = "Document Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String name;
 
     @CCD(
+        label = "Short Description",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String description;
 
     @CCD(
+        label = "Sort Index",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private int sortIndex;
 
     @CCD(
+        label = "Source Document",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document sourceDocument;
