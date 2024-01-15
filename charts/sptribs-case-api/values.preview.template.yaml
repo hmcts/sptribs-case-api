@@ -6,9 +6,15 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    CASE_DATA_STORE_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
-    CASE_DOCUMENT_AM_BASEURL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+    CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
+    CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
+    BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
+    POSTGRES_HOST: ${SERVICE_NAME}-postgresql
+    POSTGRES_NAME: sptribs-case-api
+    POSTGRES_USERNAME: hmcts
+    POSTGRES_PASSWORD: hmcts
+    POSTGRES_CONNECTION_OPTIONS: ""
 
   keyVaults:
     sptribs:
@@ -30,12 +36,37 @@ java:
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
 
+  postgresql:
+    enabled: true
+    image:
+      tag: '11.6.0'
+    primary:
+      persistence:
+        enabled: false
+      resources:
+        requests:
+          cpu: 25m
+      initdb:
+        scripts:
+          init.sql: |
+            CREATE DATABASE "sptribs-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+            CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+    auth:
+      username: hmcts
+      password: hmcts
+
 ccd:
   ccd:
     definitionImporter:
       enabled: false
     apiGatewayWeb:
       enabled: true
+    postgresql:
+      enabled: false
     s2s:
       enabled: false
     elastic:
@@ -58,6 +89,7 @@ ccd:
   ccd-api-gateway-web:
     nodejs:
       disableKeyVaults: true
+      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66e26b9-20231116094420
       imagePullPolicy: Always
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
@@ -73,10 +105,12 @@ ccd:
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DATA_STORE_DB_USERNAME: hmcts
+        DATA_STORE_DB_PASSWORD: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
         LOG_CALLBACK_DETAILS: "*"
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,em_ccd_orchestrator
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,fpl_case_service,finrem_case_orchestration,iac,sptribs_frontend,civil_service,sptribs_case_api
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
@@ -85,10 +119,12 @@ ccd:
         CCD_DOCUMENT_URL_PATTERN: ^https?://(((?:api-gateway\.preprod\.dm\.reform\.hmcts\.net|dm-store-aat\.service\.core-compute-aat\.internal(?::\d+)?)\/documents\/[A-Za-z0-9-]+(?:\/binary)?)|(em-hrs-api-aat\.service\.core-compute-aat\.internal(?::\d+)?\/hearing-recordings\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\/segments\/[0-9]))
         IDAM_API_BASE_URL: https://idam-api.aat.platform.hmcts.net
         IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
-        CASE_DOCUMENT_AM_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+        OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+        CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
+        ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
@@ -97,7 +133,7 @@ ccd:
     java:
       disableKeyVaults: true
       environment:
-        CCD_DATA_STORE_URL: http://${SERVICE_NAME}-ccd-data-store-api
+        CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
 
   ccd-definition-store-api:
@@ -112,6 +148,9 @@ ccd:
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
       autoscaling:
+        enabled: false
+    postgresql:
+      persistence:
         enabled: false
 
   ccd-user-profile-api:
@@ -147,9 +186,6 @@ ccd:
       userProfileDatabasePassword: hmcts
       userProfileDatabaseName: user-profile
 
-  postgresql:
-    persistence:
-      enabled: false
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
@@ -344,9 +380,12 @@ ccd-case-document-am-api:
     environment:
       CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend
       DM_STORE_BASE_URL: http://dm-store-aat.service.core-compute-aat.internal
-      CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
       IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
+      OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
       IDAM_S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_CCD: DEBUG
     autoscaling:
       enabled: false
 
@@ -362,13 +401,16 @@ xui-webapp:
     devmemoryLimits: 1024Mi
     environment:
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
-      SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
-      SERVICES_DOCUMENTS_API_V2: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-case-document-am-api
+      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
+      SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
       FEATURE_REDIS_ENABLED: false
+      FEATURE_APP_INSIGHTS_ENABLED: true
       NODE_OPTIONS: --max-old-space-size=900
+      HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
 
 xui-mo-webapp:
   enabled: true
@@ -380,10 +422,11 @@ xui-mo-webapp:
     environment:
       MANAGE_CASE_LINK: https://xui-${SERVICE_FQDN}/cases
       MANAGE_ORG_LINK: https://xui-mo-${SERVICE_FQDN}
-      SERVICES_CCD_DATA_STORE_API: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_MCA_PROXY_API: http://aac-${SERVICE_FQDN}
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
 
 sptribs-frontend:
   enabled: true
@@ -395,7 +438,7 @@ sptribs-frontend:
     image: hmctspublic.azurecr.io/sptribs/frontend:latest #pr-xxxx
     ingressHost: frontend-${SERVICE_FQDN}
     environment:
-      CCD_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
       SKIP_DIV_CASE_CHECK: true
 
 aac-manage-case-assignment:
@@ -414,9 +457,10 @@ aac-manage-case-assignment:
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,sptribs_frontend,sptribs_ccd_submission,finrem_case_orchestration
-      CCD_DATA_STORE_API_BASE_URL: http://sptribs-case-api-pr-${CHANGE_ID}-ccd-data-store-api
+      CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
       CCD_DEFINITION_STORE_API_BASE_URL: http://${SERVICE_NAME}-ccd-definition-store-api
       PRD_HOST: http://rd-professional-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
     autoscaling:
       enabled: false
 
@@ -428,4 +472,46 @@ idam-pr:
       - https://xui-${SERVICE_FQDN}/oauth2/callback
     XUIMO:
       - https://xui-mo-${SERVICE_FQDN}/oauth2/callback
+
+em-ccdorc:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
+    image: hmctspublic.azurecr.io/em/ccdorc:latest
+    ingressHost: em-ccdorc-${SERVICE_FQDN}
+    environment:
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+      OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
+      S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
+      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
+      CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
+      CALLBACK_HTTP_SCHEME: https
+      LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
+
+em-stitching:
+  enabled: true
+  java:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-em-stitching
+    image: hmctspublic.azurecr.io/em/stitching:latest
+    ingressHost: em-stitching-${SERVICE_FQDN}
+    environment:
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+      OPEN_ID_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net/o
+      S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+      CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
+      SPRING_DATASOURCE_NAME: emstitch
+      SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
+      SPRING_DATASOURCE_PORT: 5432
+      SPRING_DATASOURCE_USERNAME: hmcts
+      SPRING_DATASOURCE_PASSWORD: hmcts
+      ENABLE_DB_MIGRATE: true
+      RUN_DB_MIGRATION_ON_STARTUP: true
+      FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
+      LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
 

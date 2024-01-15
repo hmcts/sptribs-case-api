@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -34,6 +36,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole> {
+
+    @Value("${case-api.url}")
+    private String baseUrl;
 
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
@@ -60,9 +65,9 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData);
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
         caseData.getCaseIssue().setDocumentList(documentList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -70,11 +75,9 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+        final CaseData caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -83,8 +86,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
 
     public SubmittedCallbackResponse issued(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        var cicCase = data.getCicCase();
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
@@ -104,4 +107,5 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
+
 }
