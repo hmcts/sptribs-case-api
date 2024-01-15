@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -77,7 +78,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var roles = new ArrayList<UserRole>();
+        final List<UserRole> roles = new ArrayList<>();
         final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
         roles.add(SOLICITOR);
         roles.add(COURT_ADMIN_CIC);
@@ -118,8 +119,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var submittedDetails = submissionService.submitApplication(details);
-        CaseData data = submittedDetails.getData();
+
+        final CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
+        final CaseData data = submittedDetails.getData();
 
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
@@ -136,7 +138,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
+        final CaseData data = details.getData();
 
         setSupplementaryData(details.getId());
 

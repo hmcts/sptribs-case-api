@@ -51,9 +51,11 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
+
         caseData.setHyphenatedCaseRef(details.getData().formatCaseRef(details.getId()));
         setIsRepresentativePresent(caseData);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Draft)

@@ -48,7 +48,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .description("Stays: Create/edit stay")
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::stayed)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE))
@@ -63,7 +63,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         if (details.getState() != CaseStayed) {
             caseData.getCaseStay().setStayReason(null);
             caseData.getCaseStay().setExpirationDate(null);
@@ -76,12 +76,12 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
-        var caseData = details.getData();
+
+        final CaseData caseData = details.getData();
         caseData.getCaseStay().setIsCaseStayed(YesOrNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -90,10 +90,11 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .build();
     }
 
-    public SubmittedCallbackResponse stayed(CaseDetails<CaseData, State> details,
-                                            CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        String claimNumber = data.getHyphenatedCaseRef();
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData data = details.getData();
+        final String claimNumber = data.getHyphenatedCaseRef();
 
         sendCaseStayedNotification(claimNumber, data);
 

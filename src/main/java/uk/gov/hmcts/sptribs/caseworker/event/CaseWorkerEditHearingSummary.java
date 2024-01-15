@@ -84,7 +84,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_HEARING_SUMMARY);
         if (null != caseData.getListing().getSummary() && null != caseData.getListing().getHearingFormat()) {
             caseData.getListing().setHearingSummaryExists("YES");
@@ -105,7 +105,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.getListing().getSummary().setJudgeList(null);
 

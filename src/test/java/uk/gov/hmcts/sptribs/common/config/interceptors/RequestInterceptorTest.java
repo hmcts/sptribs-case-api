@@ -42,8 +42,8 @@ class RequestInterceptorTest {
         when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
             .thenReturn("ccd_data");
 
-        var request = mock(HttpServletRequest.class);
-        var response = mock(HttpServletResponse.class);
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        final HttpServletResponse response = mock(HttpServletResponse.class);
 
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
@@ -56,11 +56,12 @@ class RequestInterceptorTest {
     @Test
     void shouldNotAppendBearerPrefixWhenServiceAuthIncludesBearerPrefix() {
         //Given
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        final HttpServletResponse response = mock(HttpServletResponse.class);
+
         when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
             .thenReturn("ccd_data");
 
-        var request = mock(HttpServletRequest.class);
-        var response = mock(HttpServletResponse.class);
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(AUTH_TOKEN_WITH_BEARER_PREFIX);
 
         //When&Then

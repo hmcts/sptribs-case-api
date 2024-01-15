@@ -104,7 +104,7 @@ class CaseworkerRemoveStayTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.stayRemoved(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.submitted(updatedCaseDetails, beforeDetails);
 
 
         //Then
@@ -139,7 +139,7 @@ class CaseworkerRemoveStayTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.stayRemoved(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.submitted(updatedCaseDetails, beforeDetails);
 
 
         //Then
