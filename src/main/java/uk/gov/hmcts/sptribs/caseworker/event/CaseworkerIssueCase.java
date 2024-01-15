@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -90,16 +90,16 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         final CicCase cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+        if (!isEmpty(cicCase.getNotifyPartySubject())) {
             caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+        if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
             caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+        if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+        if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
             caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
