@@ -55,13 +55,10 @@ class CaseworkerAddNoteTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerAddNote.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ADD_NOTE);

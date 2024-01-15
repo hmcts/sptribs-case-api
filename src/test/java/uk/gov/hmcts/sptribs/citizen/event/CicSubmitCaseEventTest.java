@@ -101,7 +101,6 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-
         cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
         when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
             .thenReturn(List.of(CITIZEN_CIC));
@@ -147,19 +146,16 @@ class CicSubmitCaseEventTest {
 
         cicSubmitCaseEvent.configure(configBuilder);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
             beforeCaseDetails
         );
 
-        //Then
         Assertions.assertEquals(State.DSS_Submitted, aboutToSubmitResponse.getState());
     }
 
     @Test
     void shouldUpdateCaseDetails() {
-        //Given
         EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
         ListValue<EdgeCaseDocument> listValue = new ListValue<>();
@@ -187,11 +183,10 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setData(caseData);
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-        //When
+
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);

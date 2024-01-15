@@ -54,7 +54,6 @@ public class CicDssUpdateCaseEventTest {
         eventsConfig.setDssUpdateEvent("citizen-cic-dssUpdate-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-
     }
 
     @Test

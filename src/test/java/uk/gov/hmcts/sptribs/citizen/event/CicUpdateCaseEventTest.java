@@ -67,7 +67,6 @@ class CicUpdateCaseEventTest {
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-
     }
 
     @Test
@@ -92,7 +91,6 @@ class CicUpdateCaseEventTest {
 
     @Test
     void shouldUpdateCaseDetails() {
-        //Given
         EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
         ListValue<EdgeCaseDocument> listValue = new ListValue<>();
@@ -119,11 +117,9 @@ class CicUpdateCaseEventTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             cicUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response1).isNotNull();
     }
 }
