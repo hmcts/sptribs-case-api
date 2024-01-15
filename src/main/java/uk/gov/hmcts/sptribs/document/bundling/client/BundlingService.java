@@ -72,14 +72,6 @@ public class BundlingService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
 
-            ObjectMapper mapper = new ObjectMapper();
-            String responseString = null;
-            try {
-                responseString = mapper.writeValueAsString(response);
-            } catch (JsonProcessingException e) {
-                log.error("Error converting json to string", e.getMessage());
-            }
-            log.info("response {}", responseString);
             return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
         } catch (FeignException exception) {
             log.error("Unable to create bundle {}",
