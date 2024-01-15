@@ -215,7 +215,7 @@ feature:
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:true}
   access-profiles:
-    enabled: ${ACCESS_PROFILES_ENABLED:true}
+    enabled: ${ACCESS_PROFILES_ENABLED:false}
 
 caseinfo:
   apps:

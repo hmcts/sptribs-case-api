@@ -343,7 +343,7 @@ def setFeatureFlags(environment) {
     env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = true
     env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = false
   } else if (environment =~ /aat/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = true
@@ -356,7 +356,7 @@ def setFeatureFlags(environment) {
     env.STITCH_BUNDLING_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = false
   } else if (environment =~ /prod/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = true
@@ -369,6 +369,6 @@ def setFeatureFlags(environment) {
     env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = false
   }
 }
