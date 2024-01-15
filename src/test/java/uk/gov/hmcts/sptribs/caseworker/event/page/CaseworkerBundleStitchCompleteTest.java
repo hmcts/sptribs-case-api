@@ -1,84 +1,76 @@
-package uk.gov.hmcts.sptribs.systemupdate.event;
+package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.CaseworkerBundleStitchComplete;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
-@ExtendWith(SpringExtension.class)
-class SystemMigrateCaseFlagsTest {
+@ExtendWith(MockitoExtension.class)
+public class CaseworkerBundleStitchCompleteTest {
+
     @InjectMocks
-    private SystemMigrateCaseFlags systemMigrateCaseFlags;
+    private CaseworkerBundleStitchComplete caseworkerBundleStitchComplete;
 
     @Test
-    void shouldAddConfigurationToConfigBuilderWithToggleOn() {
+    void shouldAddConfigurationToConfigBuilder() throws Exception {
+        //Given
+        caseworkerBundleStitchComplete.setBundlingEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        systemMigrateCaseFlags.setMigrationFlagEnabled(true);
-        systemMigrateCaseFlags.configure(configBuilder);
+        //When
+        caseworkerBundleStitchComplete.configure(configBuilder);
 
+        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(SYSTEM_MIGRATE_CASE_FLAGS);
+            .contains(ASYNC_STITCH_COMPLETE);
     }
 
     @Test
-    void shouldAddConfigurationToConfigBuilderWithToggleOff() {
+    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() throws Exception {
+        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        systemMigrateCaseFlags.configure(configBuilder);
+        //When
+        caseworkerBundleStitchComplete.configure(configBuilder);
 
+        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .doesNotContain(SYSTEM_MIGRATE_CASE_FLAGS);
+            .doesNotContain(ASYNC_STITCH_COMPLETE);
     }
 
     @Test
-    void shouldSuccessfullyUpdateCaseFlags() {
+    public void shouldSuccessfullyStitchBundle() {
         //Given
         final CaseData caseData = caseData();
-        final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .applicantFullName(TEST_FIRST_NAME)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .build();
-        caseData.setCicCase(cicCase);
+
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        systemMigrateCaseFlags.setMigrationFlagEnabled(true);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            caseworkerBundleStitchComplete.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         //Then
         assertThat(response.getData()).isNotNull();
-        assertThat(response.getData().getCaseFlags()).isNotNull();
-        assertThat(response.getData().getSubjectFlags()).isNotNull();
-        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
-        assertThat(response.getData().getApplicantFlags()).isNotNull();
     }
-
 }
