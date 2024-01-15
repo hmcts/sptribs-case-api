@@ -60,7 +60,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
             .grantHistoryOnly(SUPER_USER, SOLICITOR, SYSTEMUPDATE, CITIZEN_CIC))
             .page("Create test case")
-            .mandatoryWithLabel(CaseData::getStateToTransitionApplicationTo, "Case state")
+            .mandatoryWithLabel(CaseData::getCaseStatus, "Case state")
             .done();
     }
 
@@ -79,7 +79,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(details.getData().getStateToTransitionApplicationTo())
+            .state(details.getData().getCaseStatus())
             .build();
     }
 }

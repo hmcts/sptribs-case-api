@@ -49,7 +49,7 @@ public class CreateTestCaseTest {
     void shouldMoveCaseIntoChosenStateAndCreateTestCase() throws JsonProcessingException {
         final CaseData caseData =
             CaseData.builder()
-                .stateToTransitionApplicationTo(CaseManagement)
+                .caseStatus(CaseManagement)
                 .build();
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();

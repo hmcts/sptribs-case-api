@@ -168,6 +168,8 @@ public class CaseData {
 
     @CCD(
         label = "Case Status",
+        typeOverride = FixedList,
+        typeParameterOverride = "State",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private State caseStatus;
@@ -452,14 +454,6 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
-
-    @CCD(
-        label = "State to transition test case to",
-        typeOverride = FixedList,
-        typeParameterOverride = "State",
-        access = {DefaultAccess.class}
-    )
-    private State stateToTransitionApplicationTo;
 
     public String getFirstHearingDate() {
 
