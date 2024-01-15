@@ -311,4 +311,44 @@ class JudicialServiceTest {
 
         assertThat(result).isEqualTo("");
     }
+
+    @Test
+    void shouldPopulateJudicialIdAsEmptyStringWhenJudgeIsNull() {
+        UUID selectedJudgeUuid = UUID.randomUUID();
+        CaseData caseData = CaseData.builder()
+            .listing(
+                Listing.builder()
+                    .summary(
+                        HearingSummary.builder()
+                            .judgeList(List.of(
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(UUID.randomUUID().toString())
+                                            .build())
+                                    .build(),
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(selectedJudgeUuid.toString())
+                                            .personalCode("mr judges personal code")
+                                            .build())
+                                    .build(),
+                                ListValue.<Judge>builder()
+                                    .value(
+                                        Judge.builder()
+                                            .uuid(UUID.randomUUID().toString())
+                                            .build())
+                                    .build()
+                            ))
+                            .build()
+                    )
+                    .build()
+            )
+            .build();
+
+        String result = judicialService.populateJudicialId(caseData);
+
+        assertThat(result).isEqualTo("");
+    }
 }

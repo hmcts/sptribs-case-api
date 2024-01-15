@@ -90,20 +90,32 @@ public class Login {
 
     }
 
-    public void loginAsStTest1User() {
+    public void loginAsCaseWorker() {
+        loginAs(getenv("LEGAL_OFFICER"));
+    }
+
+    public void loginAsSeniorCaseWorker() {
         loginAs(getenv("SENIOR_LEGAL_OFFICER"));
     }
 
+    public void loginAsSeniorJudge() {
+        loginAs(getenv("SENIOR_JUDGE"));
+    }
+
     public void loginAsHearingCentreTL() {
-        loginAs("st-hearingcentretl@mailinator.com");
+        loginAs(getenv("HEARING_CENTRAL_TEAM_LEAD"));
     }
 
     public void loginAsStJudge2User() {
-        loginAs("st-judge2@mailinator.com");
+        loginAs(getenv("JUDGE"));
     }
 
     public void loginAsStSuperUser() {
-        loginAs("st-super@mailinator.com");
+        loginAs(getenv("SUPER_USER"));
+    }
+
+    public void loginAsStRespondentUser() {
+        loginAs(getenv("RESPONDENT"));
     }
 
     public void loginAsStCitizen1User() {
