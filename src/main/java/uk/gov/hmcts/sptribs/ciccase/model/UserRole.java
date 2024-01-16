@@ -17,9 +17,6 @@ public enum UserRole implements HasRole {
     CREATOR("[CREATOR]", "D"),
 
     // CIC User roles
-    COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "D"),
-    CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "D"),
-    DISTRICT_REGISTRAR_CIC("caseworker-sptribs-cic-districtregistrar", "D"),
     DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "D"),
     RESPONDENT_CIC("caseworker-sptribs-cic-respondent", "D"),
 
