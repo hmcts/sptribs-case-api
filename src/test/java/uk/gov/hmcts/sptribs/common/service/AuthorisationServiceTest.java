@@ -14,8 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorisationServiceTest {
@@ -34,44 +33,58 @@ class AuthorisationServiceTest {
     @Mock
     private User user;
 
-    @Test
-    void shouldGetAuthorisation() {
-        //Given
+    private static final String TEST_TOKEN = "token";
+    private static final String TEST_BEARER_TOKEN = BEARER + TEST_TOKEN;
 
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+    @Test
+    void shouldAddBearerTokenToAuthorisation() {
+        //Given
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_TOKEN);
         when(idamService.retrieveUser(any())).thenReturn(user);
-        when(user.getAuthToken()).thenReturn("token");
+        when(user.getAuthToken()).thenReturn(TEST_TOKEN);
+
         //When
         String response = authorisationService.getAuthorisation();
 
         //Then
-        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(TEST_BEARER_TOKEN);
     }
 
     @Test
-    void shouldGetAuthorisationStartingBearer() {
+    void shouldNotAddBearerTokenToAuthorisation() {
         //Given
-
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_BEARER_TOKEN);
         when(idamService.retrieveUser(any())).thenReturn(user);
-        when(user.getAuthToken()).thenReturn("Bearer token");
+        when(user.getAuthToken()).thenReturn(TEST_BEARER_TOKEN);
+
         //When
         String response = authorisationService.getAuthorisation();
 
         //Then
-        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(TEST_BEARER_TOKEN);
     }
 
     @Test
-    void shouldGetServiceAuth() {
+    void shouldRemoveBearerTokenFromServiceAuthorisation() {
         //Given
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_BEARER_TOKEN);
 
         //When
         String response = authorisationService.getServiceAuthorization();
 
         //Then
-        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(TEST_TOKEN);
+    }
+
+    @Test
+    void shouldNotRemoveBearerTokenFromServiceAuthorisation() {
+        //Given
+        when(authTokenGenerator.generate()).thenReturn(TEST_TOKEN);
+
+        //When
+        String response = authorisationService.getServiceAuthorization();
+
+        //Then
+        assertThat(response).isEqualTo(TEST_TOKEN);
     }
 }
