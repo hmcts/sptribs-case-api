@@ -18,9 +18,9 @@ public class AuthorisationService {
     private IdamService idamService;
 
     private HttpServletRequest httpServletRequest;
-    
+
     private AuthTokenGenerator authTokenGenerator;
-    
+
     @Autowired
     public AuthorisationService(IdamService idamService, HttpServletRequest httpServletRequest,
             AuthTokenGenerator authTokenGenerator) {

@@ -35,7 +35,7 @@ class SubmissionServiceTest {
         when(setStateAfterSubmission.apply(caseDetails)).thenReturn(caseDetails);
 
         //When
-        final CaseDetails<CaseData, State> result = submissionService.submitApplication(caseDetails);
+        submissionService.submitApplication(caseDetails);
 
         //Then
         verify(setHyphenatedCaseRef).apply(caseDetails);
