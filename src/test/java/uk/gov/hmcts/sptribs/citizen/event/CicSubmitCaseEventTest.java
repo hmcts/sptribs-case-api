@@ -10,10 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -40,10 +37,9 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -58,10 +54,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class CicSubmitCaseEventTest {
     final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
@@ -96,14 +89,11 @@ class CicSubmitCaseEventTest {
         eventsConfig.setSubmitEvent("citizen-cic-submit-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-
     }
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
-        when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
-            .thenReturn(List.of(CITIZEN_CIC));
+        setField(cicSubmitCaseEvent, "dssSubmitCaseEnabled", true);
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
@@ -137,12 +127,6 @@ class CicSubmitCaseEventTest {
         caseDetails.getData().getDssCaseData().setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
         caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
         caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
-
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-
-        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         cicSubmitCaseEvent.configure(configBuilder);
 
@@ -184,14 +168,14 @@ class CicSubmitCaseEventTest {
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response1).isNotNull();
-        assertThat(response1.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
-        assertThat(response1.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
             .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
     }
 }

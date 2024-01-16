@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -57,6 +58,8 @@ class CaseWorkerCaseBuiltTest {
 
         //Then
         assertThat(response).isNotNull();
+        assertThat(response.getState().equals(CaseManagement));
         assertThat(stayedResponse).isNotNull();
+        assertThat(stayedResponse.getConfirmationHeader().contains("# Case built successful"));
     }
 }

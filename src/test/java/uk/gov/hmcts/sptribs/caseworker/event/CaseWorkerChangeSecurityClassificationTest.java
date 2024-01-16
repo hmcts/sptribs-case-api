@@ -46,14 +46,11 @@ class CaseWorkerChangeSecurityClassificationTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         caseworkerChangeSecurityClassification.setSecurityClassificationEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerChangeSecurityClassification.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CHANGE_SECURITY_CLASS);
@@ -61,8 +58,6 @@ class CaseWorkerChangeSecurityClassificationTest {
 
     @Test
     void shouldAdd2LinksToCase() {
-        //Given
-
         CaseData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -70,20 +65,19 @@ class CaseWorkerChangeSecurityClassificationTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        //When
+        
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseworkerChangeSecurityClassification.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submitted = caseworkerChangeSecurityClassification.submitted(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response1).isNotNull();
+        assertThat(response1.getSecurityClassification().equals(SecurityClass.PRIVATE.name()));
         assertThat(submitted).isNotNull();
+        assertThat(submitted.getConfirmationHeader()).contains("Security classification changed");
     }
 
     @Test
     void shouldCheckRolesSuccessfully() {
-        //Given
-
         CaseData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -94,18 +88,15 @@ class CaseWorkerChangeSecurityClassificationTest {
         User user = TestDataHelper.getUserWithSeniorJudge();
         when(request.getHeader(any())).thenReturn("listing");
         when(idamService.retrieveUser(any())).thenReturn(user);
-        //When
+       
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response1.getErrors()).hasSize(0);
     }
-
+    
     @Test
     void shouldFailIfInsufficientRolesForSecurityClass() {
-        //Given
-
         CaseData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -116,11 +107,11 @@ class CaseWorkerChangeSecurityClassificationTest {
         User user = TestDataHelper.getUser();
         when(request.getHeader(any())).thenReturn("listing");
         when(idamService.retrieveUser(any())).thenReturn(user);
-        //When
+        
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
-
-        //Then
+        
         assertThat(response1.getErrors()).hasSize(1);
+        assertThat(response1.getErrors()).contains("You do not have permission to change the case to the selected Security Classification");
     }
 }

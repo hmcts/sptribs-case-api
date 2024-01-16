@@ -6,10 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -30,7 +27,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -41,10 +40,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class CicUpdateCaseEventTest {
     @InjectMocks
     private CicUpdateCaseEvent cicUpdateCaseEvent;
@@ -72,8 +68,8 @@ class CicUpdateCaseEventTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
+        setField(cicUpdateCaseEvent, "dssUpdateCaseEnabled", true);
+        
         when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
 
         cicUpdateCaseEvent.configure(configBuilder);
@@ -90,7 +86,7 @@ class CicUpdateCaseEventTest {
     }
 
     @Test
-    void shouldUpdateCaseDetails() {
+    void aboutToSubmitShouldUpdateCaseDetails() {
         EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
         ListValue<EdgeCaseDocument> listValue = new ListValue<>();
@@ -117,9 +113,11 @@ class CicUpdateCaseEventTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        AboutToStartOrSubmitResponse<CaseData, State> response =
             cicUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response1).isNotNull();
+        assertThat(response).isNotNull();
+        assertThat(response.getData().equals(caseData));
+        assertNotEquals(response.getData(), beforeDetails.getData());
     }
 }
