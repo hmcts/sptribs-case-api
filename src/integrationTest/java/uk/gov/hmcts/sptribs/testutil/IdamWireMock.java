@@ -20,8 +20,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER_EMAIL;
 
 public final class IdamWireMock {
 
-
-    public static final String COURT_ADMIN_CIC = "caseworker-sptribs-cic-courtadmin";
+    public static final String ST_CIC_CASEWORKER = "caseworker-st_cic-caseworker";
 
     private static final WireMockServer IDAM_SERVER = new WireMockServer(wireMockConfig().dynamicPort());
 
