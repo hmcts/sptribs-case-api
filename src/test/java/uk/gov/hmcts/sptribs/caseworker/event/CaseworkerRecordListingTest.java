@@ -210,13 +210,6 @@ class CaseworkerRecordListingTest {
         assertThat(response.getData().getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
     }
 
-    private CicCase getMockCicCase() {
-        return CicCase.builder().fullName("fullName").notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .representativeFullName("repFullName").notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .respondentName("respName").notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
-    }
-
-
     private DynamicList getMockedRegionData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()

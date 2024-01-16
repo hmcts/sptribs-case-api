@@ -66,8 +66,6 @@ class CaseDataTest {
 
     @Test
     void shouldGetCompletedHearingDate() {
-        //When
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         LocalDate now = LocalDate.now();
         Listing listing = Listing.builder().hearingStatus(HearingState.Complete).date(now).build();
         ListValue<Listing> listingListValue = new ListValue<>();
@@ -81,5 +79,6 @@ class CaseDataTest {
 
         //Then
         assertThat(result).isNotNull();
+        assertThat(result.getDate().equals(now));        
     }
 }

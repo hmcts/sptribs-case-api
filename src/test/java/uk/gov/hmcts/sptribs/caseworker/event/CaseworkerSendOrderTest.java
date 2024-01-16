@@ -212,6 +212,7 @@ class CaseworkerSendOrderTest {
             .isNotNull();
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
             .isEqualTo(SENT + COLON + "aa--bb--cc");
+        assertThat(sent.getConfirmationHeader().contains("Order sent"));
     }
 
     @Test
@@ -276,6 +277,7 @@ class CaseworkerSendOrderTest {
             .isNotNull();
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
             .isEqualTo(SENT + COLON + "aa--bb--cc");
+        assertThat(sent.getConfirmationHeader().contains("Order sent"));
     }
 
     @Test
@@ -327,7 +329,7 @@ class CaseworkerSendOrderTest {
         SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent).isNotNull();
+        assertThat(sent.getConfirmationHeader().contains("Order sent"));
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
@@ -382,7 +384,7 @@ class CaseworkerSendOrderTest {
         SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent).isNotNull();
+        assertThat(sent.getConfirmationHeader().contains("Order sent"));
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
@@ -451,7 +453,7 @@ class CaseworkerSendOrderTest {
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent).isNotNull();
+        assertThat(sent.getConfirmationHeader().contains("Order sent"));
         assertThat(response).isNotNull();
         assertThat(response2.getData().getCicCase().getOrderList()).hasSize(2);
     }
@@ -497,11 +499,10 @@ class CaseworkerSendOrderTest {
         caseDetails.setData(caseData);
 
         // When
-        caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
 
         // Then
-        assertThat(caseDetails.getData().getCicCase().getDraftOrderDynamicList().getListItems()
-            .contains(OrderTemplate.CIC6_GENERAL_DIRECTIONS));
+        assertThat(response.getData().getCicCase().getDraftOrderCICList().equals(draftOrderCICList));
     }
 
     @Test

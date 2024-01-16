@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,8 +44,6 @@ class OrderServiceTest {
 
     @Mock
     private HttpServletRequest request;
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Test
     void shouldPopulateOrderDynamicList() {
