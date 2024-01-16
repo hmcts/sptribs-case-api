@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.ITEventConstants.CASEWORKER_ISSUE_CASE;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
@@ -71,7 +71,7 @@ class CaseworkerIssueCaseIT {
         final CaseData caseData = caseData();
         caseData.setCaseIssue(new CaseIssue());
 
-        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, COURT_ADMIN_CIC);
+        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
         mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)

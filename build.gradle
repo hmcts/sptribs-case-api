@@ -27,6 +27,7 @@ plugins {
   id 'org.springframework.boot' version '3.2.0'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk'  version '5.5.0'
+  id "au.com.dius.pact" version "4.3.10"
   id 'com.github.hmcts.rse-cft-lib' version '0.19.980'
 }
 
@@ -48,7 +49,6 @@ sourceSets {
       srcDir file('src/functionalTest/java')
     }
   }
-
   integrationTest {
     java {
       compileClasspath += main.output
@@ -56,8 +56,15 @@ sourceSets {
       srcDir file('src/integrationTest/java')
     }
   }
-
- e2eTests {
+  contractTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/contractTest/java')
+    }
+    resources.srcDir file('src/contractTest/resources')
+  }
+  e2eTests {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
@@ -430,6 +437,7 @@ def versions = [
   junit             : '5.10.1',
   junitPlatform     : '1.10.1',
   lombok            : '1.18.30',
+  pact              : '4.1.34',
   springBoot        : springBoot.class.package.implementationVersion
 ]
 
@@ -467,7 +475,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.0.1'
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.1'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.22.0'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.22.0'
@@ -526,7 +534,17 @@ dependencies {
   e2eTestsImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
-  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.0.0'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.1'
+
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.41'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.41'
+  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.1'
+  contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.1'
+  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.1'
+  contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.10.1'
+
+  contractTestImplementation sourceSets.main.runtimeClasspath
+  contractTestImplementation sourceSets.test.runtimeClasspath
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
@@ -711,3 +729,34 @@ tasks.withType(Test).configureEach {
 configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
+
+rootProject.tasks.named("processContractTestResources") {
+  duplicatesStrategy = 'include'
+}
+
+project.ext {
+  pactVersion = getCheckedOutGitCommitHash()
+}
+
+pact {
+  publish {
+    pactDirectory = 'pacts'
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'https://pact-broker.platform.hmcts.net/'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: getCheckedOutGitCommitHash(), 'latest']
+    version = project.pactVersion
+  }
+}
+
+task runAndPublishConsumerPactTests(type: Test){
+  logger.lifecycle("Runs consumer pact tests")
+  systemProperty 'pact.rootDir', "pacts"
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+static def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
