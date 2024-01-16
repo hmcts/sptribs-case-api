@@ -22,10 +22,11 @@ public class InvalidResourceExceptionTest {
     void testInvalidResourceExceptionWithMessage() throws Exception {
 
         String message = TEST_RESOURCE_NOT_FOUND;
-        InvalidResourceException exeception = new InvalidResourceException(TEST_RESOURCE_NOT_FOUND);
+        Exception cause = new Exception();
+        InvalidResourceException exception = new InvalidResourceException(TEST_RESOURCE_NOT_FOUND);
 
-        assertEquals(message, exeception.getMessage());
-        assertNull(exeception.getCause());
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getCause());
 
     }
 
@@ -34,10 +35,10 @@ public class InvalidResourceExceptionTest {
 
         String message = TEST_RESOURCE_NOT_FOUND;
         Exception cause = new Exception();
-        InvalidResourceException exeception = new InvalidResourceException(TEST_RESOURCE_NOT_FOUND, cause);
+        InvalidResourceException exception = new InvalidResourceException(TEST_RESOURCE_NOT_FOUND, cause);
 
-        assertEquals(message, exeception.getMessage());
-        assertEquals(cause, exeception.getCause());
+        assertEquals(message, exception.getMessage());
+        assertEquals(cause, exception.getCause());
 
     }
 }
