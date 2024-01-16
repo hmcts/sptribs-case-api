@@ -26,6 +26,10 @@ public class CcdSupplementaryDataService {
 
     private AuthorisationService authorisationService;
 
+    private static final String SUPPLEMENTARY_FIELD = "supplementary_data_updates";
+    private static final String SERVICE_ID_FIELD = "HMCTSServiceId";
+    private static final String SET_OPERATION = "$set";
+
     @Autowired
     public CcdSupplementaryDataService(IdamService idamService, AuthTokenGenerator authTokenGenerator,
             CoreCaseDataApi coreCaseDataApi, CaseFlagsConfiguration caseFlagsConfiguration,
@@ -38,10 +42,9 @@ public class CcdSupplementaryDataService {
     }
 
     public void submitSupplementaryDataToCcd(String caseId) {
-
         Map<String, Map<String, Map<String, Object>>> supplementaryDataUpdates = new HashMap<>();
-        supplementaryDataUpdates.put("supplementary_data_updates",
-            singletonMap("$set", singletonMap("HMCTSServiceId",
+        supplementaryDataUpdates.put(SUPPLEMENTARY_FIELD,
+            singletonMap(SET_OPERATION, singletonMap(SERVICE_ID_FIELD,
                 caseFlagsConfiguration.getHmctsId())));
 
         coreCaseDataApi.submitSupplementaryData(authorisationService.getAuthorisation(),
@@ -52,8 +55,8 @@ public class CcdSupplementaryDataService {
 
     public void submitSupplementaryDataRequestToCcd(String caseId) {
         Map<String, Map<String, Map<String, Object>>> supplementaryDataRequest = new HashMap<>();
-        supplementaryDataRequest.put("supplementary_data_request",
-            singletonMap("$set", singletonMap("HMCTSServiceId",
+        supplementaryDataRequest.put(SUPPLEMENTARY_FIELD,
+            singletonMap(SET_OPERATION, singletonMap(SERVICE_ID_FIELD,
                 caseFlagsConfiguration.getHmctsId())));
 
         final User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
