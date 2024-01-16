@@ -49,7 +49,8 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,
-                CaseStayed)
+                CaseStayed
+            )
             .name("Refer case to judge")
             .showSummary()
             .showEventNotes()

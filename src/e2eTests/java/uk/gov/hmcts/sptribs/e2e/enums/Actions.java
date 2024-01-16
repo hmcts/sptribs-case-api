@@ -4,6 +4,7 @@ public enum Actions {
     AddNote("Case: Add note"),
     ContactParties("Case: Contact parties"),
     EditCase("Case: Edit case"),
+    CreateABundle("Bundle: Create a bundle"),
     CreateFlag("Create Flag"),
     ManageFlags("Manage Flags"),
     CancelHearing("Hearings: Cancel hearing"),

@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -92,12 +93,14 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
-        var cicCase = caseData.getCicCase();
+        final CaseData caseData = details.getData();
+        final CicCase cicCase = caseData.getCicCase();
+
         cicCase.setFinalDecisionDocumentList(DocumentListUtil.getAllFinalDecisionDocuments(caseData));
         cicCase.setDecisionDocumentList(DocumentListUtil.getAllDecisionDocuments(caseData));
         cicCase.setOrderDocumentList(DocumentListUtil.getAllOrderDocuments(caseData.getCicCase()));
         caseData.setCicCase(cicCase);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -122,6 +125,5 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .confirmationHeader("# Case Updated")
             .build();
     }
-
 
 }

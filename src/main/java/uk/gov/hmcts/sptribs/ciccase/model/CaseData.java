@@ -172,7 +172,6 @@ public class CaseData {
     )
     private State caseStatus;
 
-
     @CCD(
         label = "CCD Case Reference",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

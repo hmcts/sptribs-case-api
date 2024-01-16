@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -45,7 +45,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     @Autowired
     BundlingService bundlingService;
 
-    @Value("${feature.bundling.enabled}")
+    @Value("${feature.bundling-create.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -58,7 +58,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CREATE_BUNDLE)
-            .forStates(BUNDLE_STATES)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Create a bundle")
             .description("Bundle: Create a bundle")
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -93,15 +93,14 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
         }
         caseData.setCaseDocuments(abstractCaseworkerCICDocumentList);
-        ObjectMapper objectMapper = new ObjectMapper();
-        log.info("Case Documents attached to caseData: {}", objectMapper.writeValueAsString(caseData.getCaseDocuments()));
+
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
         caseData.setCaseNumber(String.valueOf(details.getId()));
         caseData.setSubjectRepFullName(caseData.getCicCase().getFullName());
         caseData.setSchemeLabel(caseData.getCicCase().getSchemeCic() != null ? caseData.getCicCase().getSchemeCic().getLabel() : "");
         details.setData(caseData);
-        log.info("Caseworker Create bundle case_data for Case Id: {}. {}", details.getId(), details.getData());
+
         Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
         BundleCallback bundleCallback = new BundleCallback(callback);
 

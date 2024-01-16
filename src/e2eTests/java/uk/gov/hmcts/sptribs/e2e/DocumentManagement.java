@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
+import com.microsoft.playwright.options.WaitForSelectorState;
+import org.junit.jupiter.api.Assertions;
 
 import java.nio.file.Paths;
 
@@ -42,10 +44,9 @@ public class DocumentManagement {
         clickButton(page, "Continue");
 
         assertThat(page.locator("h1")).hasText("Amend case documents", textOptionsWithTimeout(60000));
-        String amendedDocumentCategory = "A - Correspondence from the CICA";
         page.selectOption("#cicCaseSelectedDocument_documentCategory", new SelectOption().setLabel(documentCategory));
-        String amendedDocumentDescription = "This is a test to amend document";
-        page.locator("#cicCaseSelectedDocument_documentEmailContent").fill(documentDescription);
+        page.locator("#cicCaseSelectedDocument_documentEmailContent").type(documentDescription);
+        page.locator("//h2[contains(text(), 'Documents')]").click();
         clickButton(page, "Continue");
 
         assertThat(page.locator(".check-your-answers h2.heading-h2"))
@@ -57,12 +58,45 @@ public class DocumentManagement {
         clickButton(page, "Close and Return to case details");
     }
 
+    public void removeDocument(String documentCategory, String documentDescription, String documentName) {
+        assertThat(page.locator("h1")).hasText("Show case documents", textOptionsWithTimeout(60000));
+        String documentRemoveSelector = "//div[@class='form-group'][.//div//a[contains(text(), '"
+            + documentName + "')]]//button[text()='Remove']";
+
+        page.locator(documentRemoveSelector).click();
+        page.locator("ccd-remove-dialog button[title='Remove']").click();
+        page.waitForSelector(documentRemoveSelector, new Page.WaitForSelectorOptions().setState(WaitForSelectorState.HIDDEN));
+        clickButton(page, "Continue");
+
+        assertThat(page.locator("h1")).hasText("Removed documents", textOptionsWithTimeout(60000));
+        String displayedDocumentCategory =
+            page.locator("//ccd-field-read-label[.//dt[text()='Document Category']]//ccd-read-fixed-list-field/span").textContent().trim();
+        String displayedDescription =
+            page.locator("//ccd-field-read-label[.//dt[text()='Description']]//ccd-read-text-area-field/span").textContent().trim();
+        String displayedFileName =
+            page.locator("//ccd-field-read-label[.//dt[text()='File']]//ccd-read-document-field/a").textContent().trim();
+        Assertions.assertEquals(documentCategory, displayedDocumentCategory);
+        Assertions.assertEquals(documentDescription, displayedDescription);
+        Assertions.assertEquals(documentName, displayedFileName);
+        clickButton(page, "Submit");
+
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Case Updated", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+    }
+
     private void uploadDocument(Page page, String documentCategory, String documentDescription, String documentName) {
         clickButton(page, "Add new");
         page.selectOption("#newCaseworkerCICDocument_0_documentCategory", new SelectOption().setLabel(documentCategory));
-        page.locator("#newCaseworkerCICDocument_0_documentEmailContent").fill(documentDescription);
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
+        page.waitForSelector("//span[contains(text(), 'Uploading...')]",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
+        page.locator("#newCaseworkerCICDocument_0_documentEmailContent").type(documentDescription);
+        page.locator("//div[contains(@id, 'newCaseworkerCICDocument')]//h2[contains(text(), 'Documents')]").click();
     }
 }

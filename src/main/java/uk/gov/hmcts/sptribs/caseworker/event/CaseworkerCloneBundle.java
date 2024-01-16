@@ -14,7 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CLONE_BUNDLE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.bundling.enabled}")
+    @Value("${feature.bundling-clone.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -42,14 +43,12 @@ public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRol
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CLONE_BUNDLE)
-            .forStates(BUNDLE_STATES)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Clone a bundle")
             .description("Bundle: Clone a bundle")
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grant(CREATE_READ_UPDATE, SUPER_USER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -70,8 +69,6 @@ public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRol
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-
-        log.info("Caseworker Clone bundle case_data for Case Id: {}. {}", details.getId(), details.getData());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
