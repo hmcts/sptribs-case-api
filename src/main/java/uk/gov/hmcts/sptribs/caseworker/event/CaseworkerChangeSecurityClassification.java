@@ -70,8 +70,8 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_SENIOR_CASEWORKER, ST_CIC_SENIOR_JUDGE)
+            .grant(CREATE_READ_UPDATE,
+                ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
