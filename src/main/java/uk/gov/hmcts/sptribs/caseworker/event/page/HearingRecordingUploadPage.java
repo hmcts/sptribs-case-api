@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -48,9 +50,9 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
         List<String> errors = new ArrayList<>();
-        if (uploadedDocuments != null) {
+        if (!CollectionUtils.isEmpty(uploadedDocuments)) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (documentListValue.getValue().getDocumentLink() == null) {
+                if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
                 } else {
                     if (!documentListValue.getValue().isDocumentValid("mp3")) {
@@ -59,7 +61,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                         errors.add("Description is mandatory for each document");
                     }
-                    if (documentListValue.getValue().getDocumentCategory() == null) {
+                    if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentCategory())) {
                         errors.add("Category is mandatory for each document");
                     }
                 }

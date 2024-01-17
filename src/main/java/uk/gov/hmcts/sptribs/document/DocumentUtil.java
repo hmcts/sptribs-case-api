@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.document;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -92,9 +94,9 @@ public final class DocumentUtil {
     public static List<String> validateUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
         List<String> errors = new ArrayList<>();
 
-        if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
+        if (!CollectionUtils.isEmpty(uploadedDocuments)) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (documentListValue.getValue().getDocumentLink() == null) {
+                if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
                 } else {
                     errors.addAll(validateCaseworkerCICDocumentFormat(List.of(documentListValue)));
@@ -102,7 +104,7 @@ public final class DocumentUtil {
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                         errors.add("Description is mandatory for each document");
                     }
-                    if (documentListValue.getValue().getDocumentCategory() == null) {
+                    if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentCategory())) {
                         errors.add("Category is mandatory for each document");
                     }
                 }
