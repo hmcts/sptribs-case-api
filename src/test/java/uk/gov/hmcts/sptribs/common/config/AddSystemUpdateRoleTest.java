@@ -11,10 +11,10 @@ import java.util.List;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
 @ExtendWith(MockitoExtension.class)
 public class AddSystemUpdateRoleTest {
@@ -27,11 +27,11 @@ public class AddSystemUpdateRoleTest {
         //When
         List<UserRole> actualRoles =
             withEnvironmentVariable("ENVIRONMENT", "aat")
-                .execute(() -> addSystemUpdateRole.addIfConfiguredForEnvironment(List.of(CITIZEN_CIC))
+                .execute(() -> addSystemUpdateRole.addIfConfiguredForEnvironment(List.of(CITIZEN))
                 );
 
         //Then
-        assertThat(actualRoles).containsExactlyInAnyOrder(CITIZEN_CIC, SYSTEMUPDATE);
+        assertThat(actualRoles).containsExactlyInAnyOrder(CITIZEN, SYSTEM_UPDATE);
     }
 
     @Test
@@ -39,11 +39,11 @@ public class AddSystemUpdateRoleTest {
         //When
         List<UserRole> actualRoles =
             withEnvironmentVariable("ENVIRONMENT", "demo")
-                .execute(() -> addSystemUpdateRole.addIfConfiguredForEnvironment(List.of(CITIZEN_CIC))
+                .execute(() -> addSystemUpdateRole.addIfConfiguredForEnvironment(List.of(CITIZEN))
                 );
 
         //Then
-        assertThat(actualRoles).containsExactly(CITIZEN_CIC);
+        assertThat(actualRoles).containsExactly(CITIZEN);
     }
 
     @Test
@@ -51,11 +51,11 @@ public class AddSystemUpdateRoleTest {
         //When
         List<UserRole> actualRoles =
             withEnvironmentVariable("ENVIRONMENT", "Aat")
-                .execute(() -> addSystemUpdateRole.addIfConfiguredForEnvironment(List.of(CREATOR, SOLICITOR))
+                .execute(() -> addSystemUpdateRole.addIfConfiguredForEnvironment(List.of(CREATOR, CASEWORKER))
                 );
 
         //Then
-        assertThat(actualRoles).containsExactlyInAnyOrder(CREATOR, SOLICITOR, SYSTEMUPDATE);
+        assertThat(actualRoles).containsExactlyInAnyOrder(CREATOR, CASEWORKER, SYSTEM_UPDATE);
     }
 
 }

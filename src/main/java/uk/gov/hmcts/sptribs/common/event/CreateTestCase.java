@@ -38,7 +38,7 @@ import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -78,7 +78,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         var roles = new ArrayList<UserRole>();
         final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
-        roles.add(SOLICITOR);
+        roles.add(CASEWORKER);
         roles.add(ST_CIC_CASEWORKER);
         roles.add(ST_CIC_SENIOR_CASEWORKER);
         roles.add(ST_CIC_HEARING_CENTRE_ADMIN);
