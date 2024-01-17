@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
 @Slf4j
@@ -25,16 +26,24 @@ public class RequestInterceptor implements HandlerInterceptor {
     @Value("#{'${s2s-authorised.services}'.split(',')}")
     private List<String> authorisedServices;
 
-    public boolean preHandle(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        Object handler
-    ) {
+    private static final String NO_AUTH_SERVICE_LIST = "List of authorised services is not yet configured";
+    private static final String TOKEN_MISSING = "Service authorization token is missing";
+
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (authorisedServices == null || authorisedServices.isEmpty()) {
+            log.error(NO_AUTH_SERVICE_LIST);
+            throw new UnAuthorisedServiceException(NO_AUTH_SERVICE_LIST);
+        }
 
         String serviceAuthToken = request.getHeader(SERVICE_AUTHORIZATION);
+        if (serviceAuthToken == null) {
+            log.error(TOKEN_MISSING);
+            throw new UnAuthorisedServiceException(TOKEN_MISSING);
+        }
+
         String serviceName;
-        if (serviceAuthToken != null && !serviceAuthToken.contains("Bearer")) {
-            serviceName = tokenValidator.getServiceName("Bearer " + serviceAuthToken);
+        if (!serviceAuthToken.startsWith(BEARER_PREFIX)) {
+            serviceName = tokenValidator.getServiceName(BEARER_PREFIX + serviceAuthToken);
         } else {
             serviceName = tokenValidator.getServiceName(serviceAuthToken);
         }
@@ -43,6 +52,7 @@ public class RequestInterceptor implements HandlerInterceptor {
             log.error("Service {} not allowed to trigger save and sign out callback ", serviceName);
             throw new UnAuthorisedServiceException("Service " + serviceName + " not in configured list for accessing callback");
         }
+
         return true;
     }
 }
