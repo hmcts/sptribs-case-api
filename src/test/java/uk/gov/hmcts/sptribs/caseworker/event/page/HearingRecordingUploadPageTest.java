@@ -30,20 +30,20 @@ public class HearingRecordingUploadPageTest {
     private HearingRecordingUploadPage hearingRecordingUploadPage;
     private CaseDetails<CaseData, State> caseDetails;
     private Listing listing;
-    private List<ListValue<CaseworkerCICDocument>> documentList;  
+    private List<ListValue<CaseworkerCICDocument>> documentList;
 
     @BeforeEach
     void setUp() {
         this.caseDetails = new CaseDetails<>();
         this.listing = getRecordListing();
     }
-    
+
     @Test
     void midEventReturnsNoErrors() {
         this.documentList = getCaseworkerCICDocumentList("file.mp3");
         HearingSummary hearingSummary = HearingSummary.builder().recFile(this.documentList).build();
         this.listing.setSummary(hearingSummary);
-        
+
         CaseData caseData = CaseData.builder()
             .listing(this.listing)
             .build();
@@ -68,9 +68,9 @@ public class HearingRecordingUploadPageTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors().get(0).contains("Please attach a mp3 document"));
+        assertThat(response.getErrors().get(0)).contains("Please attach a mp3 document");
     }
-    
+
     @Test
     void midEventReturnsErrorForMissingDescription() {
         this.documentList = new ArrayList<>();
@@ -80,20 +80,20 @@ public class HearingRecordingUploadPageTest {
             .build();
         ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        
+
         this.documentList.add(documentListValue);
         HearingSummary hearingSummary = HearingSummary.builder().recFile(this.documentList).build();
         this.listing.setSummary(hearingSummary);
-        
+
         CaseData caseData = CaseData.builder()
             .listing(this.listing)
             .build();
         this.caseDetails.setData(caseData);
-        
+
         AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(this.caseDetails, this.caseDetails);
-        
+
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors().get(0).contains("Description is mandatory for each document"));
+        assertThat(response.getErrors().get(0)).contains("Description is mandatory for each document");
     }
 
     @Test
@@ -117,6 +117,6 @@ public class HearingRecordingUploadPageTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(this.caseDetails, this.caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors().get(0).contains("Please attach the document"));
+        assertThat(response.getErrors().get(0)).contains("Please attach the document");
     }
 }
