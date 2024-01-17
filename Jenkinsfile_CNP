@@ -393,7 +393,7 @@ def setFeatureFlags(environment) {
     env.EDIT_BUNDLING_FEATURE = true
     env.CLONE_BUNDLING_FEATURE = true
     env.STITCH_BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = false
+    env.SECURITY_CLASSIFICATION = true
     env.MIGRATION_ENABLED = true
   } else if (environment =~ /prod/) {
     env.CONTACT_PARTIES_FEATURE = true
