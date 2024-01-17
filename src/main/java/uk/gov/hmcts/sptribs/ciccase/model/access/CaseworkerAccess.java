@@ -6,8 +6,8 @@ import uk.gov.hmcts.ccd.sdk.api.HasAccessControl;
 import uk.gov.hmcts.ccd.sdk.api.HasRole;
 import uk.gov.hmcts.ccd.sdk.api.Permission;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 

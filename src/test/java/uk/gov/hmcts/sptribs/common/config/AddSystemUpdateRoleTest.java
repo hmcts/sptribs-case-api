@@ -11,9 +11,9 @@ import java.util.List;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
 @ExtendWith(MockitoExtension.class)
