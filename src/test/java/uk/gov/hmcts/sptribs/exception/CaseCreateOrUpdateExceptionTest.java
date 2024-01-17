@@ -55,7 +55,7 @@ class CaseCreateOrUpdateExceptionTest {
             caseManagementController.createCase(createCaseTestAuth, dssCaseData);
         });
 
-        assertTrue(exception.getMessage().contains(CASE_CREATE_FAILURE_MSG), String.valueOf(true));
+        assertTrue(exception.getMessage().contains(CASE_CREATE_FAILURE_MSG));
     }
 
     @Test
@@ -71,6 +71,6 @@ class CaseCreateOrUpdateExceptionTest {
             caseManagementService.createCase(updateCaseTestAuth, caseData);
         });
 
-        assertTrue(exception.getMessage().contains(CASE_UPDATE_FAILURE_MSG), String.valueOf(true));
+        assertTrue(exception.getMessage().contains(CASE_UPDATE_FAILURE_MSG));
     }
 }
