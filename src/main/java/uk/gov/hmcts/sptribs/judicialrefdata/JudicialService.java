@@ -64,7 +64,6 @@ public class JudicialService {
 
         String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
 
-
         try {
             List<UserProfileRefreshResponse> list =
                 enableJrdApiV2
