@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,36 +31,36 @@ public class RecordNotifyPartiesTest {
     void shouldBeSuccessfulForValidRecipients() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().notifyPartySubject(Set.of(SubjectCIC.SUBJECT)).build();
-        
+
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
-        
+
         final AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
-        
+
         assertThat(response.getErrors()).isEmpty();
     }
-    
+
     @Test
     void shouldBeInvalidIfNoRecipientsSelected() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
-        
+
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
-        
+
         final AboutToStartOrSubmitResponse<CaseData, State> response = notifyParties.midEvent(caseDetails, caseDetails);
-        
+
         assertNull(response.getData().getCicCase().getNotifyPartySubject());
         assertNull(response.getData().getCicCase().getNotifyPartyRepresentative());
         assertNull(response.getData().getCicCase().getNotifyPartyRespondent());
         assertNull(response.getData().getCicCase().getNotifyPartyApplicant());
         assertThat(response.getErrors()).hasSize(1);
     }
-    
+
     @Test
     void midEventChecksRecipients() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -69,9 +69,9 @@ public class RecordNotifyPartiesTest {
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))
                 .thenReturn(Collections.emptyList());
-            
+
             notifyParties.midEvent(caseDetails, caseDetails);
-            
+
             mockedEventUtils.verify(() ->  EventUtil.checkRecipient(caseData), times(1));
         }
     }

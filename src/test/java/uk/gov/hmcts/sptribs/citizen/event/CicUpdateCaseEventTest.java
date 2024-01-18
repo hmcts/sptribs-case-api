@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -59,7 +59,7 @@ class CicUpdateCaseEventTest {
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
 
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
@@ -69,7 +69,7 @@ class CicUpdateCaseEventTest {
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         setField(cicUpdateCaseEvent, "dssUpdateCaseEnabled", true);
-        
+
         when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
 
         cicUpdateCaseEvent.configure(configBuilder);
@@ -87,11 +87,11 @@ class CicUpdateCaseEventTest {
 
     @Test
     void aboutToSubmitShouldUpdateCaseDetails() {
-        EdgeCaseDocument dssDoc = new EdgeCaseDocument();
+        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
-        ListValue<EdgeCaseDocument> listValue = new ListValue<>();
+        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
         listValue.setValue(dssDoc);
-        DssCaseData dssCaseData = DssCaseData.builder()
+        final DssCaseData dssCaseData = DssCaseData.builder()
             .caseTypeOfApplication(CASE_DATA_CIC_ID)
             .otherInfoDocuments(List.of(listValue))
             .supportingDocuments(List.of(listValue))
@@ -103,8 +103,8 @@ class CicUpdateCaseEventTest {
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
 
-        CicCase cicCase = CicCase.builder().build();
-        CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -117,7 +117,7 @@ class CicUpdateCaseEventTest {
             cicUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response).isNotNull();
-        assertThat(response.getData().equals(caseData));
+        assertThat(response.getData()).isEqualTo(caseData);
         assertNotEquals(response.getData(), beforeDetails.getData());
     }
 }

@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,8 +42,8 @@ public class IssueFinalDecisionSelectRecipientsTest {
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
-        assertThat(response.getData().getCicCase().getNotifyPartySubject().contains(SubjectCIC.SUBJECT));
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
+        assertThat(response.getData().getCicCase().getNotifyPartySubject()).contains(SubjectCIC.SUBJECT);
         assertThat(response.getErrors()).isEmpty();
     }
 
@@ -59,8 +59,8 @@ public class IssueFinalDecisionSelectRecipientsTest {
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
-        
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
+
         assertNull(response.getData().getCicCase().getNotifyPartySubject());
         assertNull(response.getData().getCicCase().getNotifyPartyRepresentative());
         assertNull(response.getData().getCicCase().getNotifyPartyRespondent());
@@ -83,8 +83,8 @@ public class IssueFinalDecisionSelectRecipientsTest {
         caseDetails.setData(caseData);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = selectRecipients.midEvent(caseDetails, caseDetails);
-        
-        assertThat(response.getData().getCicCase().getNotifyPartyRepresentative().contains(RepresentativeCIC.REPRESENTATIVE));
+
+        assertThat(response.getData().getCicCase().getNotifyPartyRepresentative()).contains(RepresentativeCIC.REPRESENTATIVE);
         assertThat(response.getErrors()).isEmpty();
     }
 
@@ -96,9 +96,9 @@ public class IssueFinalDecisionSelectRecipientsTest {
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.checkRecipient(caseData))
                 .thenReturn(Collections.emptyList());
-            
+
             selectRecipients.midEvent(caseDetails, caseDetails);
-            
+
             mockedEventUtils.verify(() -> EventUtil.checkRecipient(caseData), times(1));
         }
     }

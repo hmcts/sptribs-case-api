@@ -22,27 +22,27 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class IssueFinalDecisionSelectTemplateTest {
-    
+
     @InjectMocks
     private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
 
     @Mock
     private CaseIssueFinalDecision caseIssueFinalDecision;
-    
-    private DecisionTemplate decisionTemplate = DecisionTemplate.ELIGIBILITY;
-    
+
+    private final DecisionTemplate decisionTemplate = DecisionTemplate.ELIGIBILITY;
+
     @Test
     void midEventCorrectlySetsDecisionTemplate() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
             .caseIssueFinalDecision(caseIssueFinalDecision)
             .build();
-        
+
         when(caseIssueFinalDecision.getDecisionTemplate()).thenReturn(decisionTemplate);
         caseDetails.setData(caseData);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
-        assertThat(response.getData().getDecisionMainContent().equals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT));
+        assertThat(response.getData().getDecisionMainContent()).isEqualTo(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT);
     }
 
     @Test
@@ -51,16 +51,16 @@ public class IssueFinalDecisionSelectTemplateTest {
         final CaseData caseData = CaseData.builder()
             .caseIssueFinalDecision(caseIssueFinalDecision)
             .build();
-        
+
         when(caseIssueFinalDecision.getDecisionTemplate()).thenReturn(decisionTemplate);
         caseDetails.setData(caseData);
 
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.getMainContent(decisionTemplate))
                 .thenReturn(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT);
-            
+
             issueFinalDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
-            
+
             mockedEventUtils.verify(() ->  EventUtil.getMainContent(decisionTemplate), times(1));
         }
     }

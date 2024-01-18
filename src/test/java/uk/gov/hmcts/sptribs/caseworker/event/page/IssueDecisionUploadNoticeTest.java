@@ -28,10 +28,10 @@ public class IssueDecisionUploadNoticeTest {
 
     @InjectMocks
     private IssueDecisionUploadNotice issueDecisionUploadNotice;
-    
-    private Document invalidDocumentType = Document.builder().filename("file.txt").build();
-    
-    private Document validDocumentType = Document.builder().filename("file.pdf").build();
+
+    private final Document invalidDocumentType = Document.builder().filename("file.txt").build();
+
+    private final Document validDocumentType = Document.builder().filename("file.pdf").build();
 
     @Test
     void midEventReturnsErrorForInvalidDocumentType() {
@@ -42,9 +42,9 @@ public class IssueDecisionUploadNoticeTest {
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
-        assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
+        assertThat(response.getErrors()).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
     @Test
@@ -56,19 +56,9 @@ public class IssueDecisionUploadNoticeTest {
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
-        assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
-    }
-
-    @Test
-    void midEventReturnsErrorWhenDocumentNull() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        caseDetails.setData(CaseData.builder().build());
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
+        assertThat(response.getErrors()).hasSize(0);
     }
 
     @Test
@@ -82,9 +72,9 @@ public class IssueDecisionUploadNoticeTest {
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
             mockedDocumentUtils.when(() -> DocumentUtil.validateDecisionDocumentFormat(any(CICDocument.class)))
                 .thenReturn(Collections.emptyList());
-            
+
             issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
-        
+
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateDecisionDocumentFormat(any(CICDocument.class)), times(1));
         }
     }

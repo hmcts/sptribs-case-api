@@ -18,7 +18,7 @@ import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
@@ -34,10 +34,10 @@ public class CaseUploadDocumentsTest {
     @BeforeEach
     void setUp() {
         this.caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
             .build();
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         this.caseDetails.setData(caseData);
@@ -45,19 +45,19 @@ public class CaseUploadDocumentsTest {
 
     @Test
     void midEventReturnsNoErrorsWithUploadedDocuments() {
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
         assertTrue(response.getErrors().isEmpty());
     }
-    
+
     @Test
     void midEventValidatesUploadedDocuments() {
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
             mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
                 .thenReturn(Collections.emptyList());
-            
+
             caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
-        
+
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
         }
     }

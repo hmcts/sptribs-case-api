@@ -85,7 +85,7 @@ class CicSubmitCaseEventTest {
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setSubmitEvent("citizen-cic-submit-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
@@ -108,7 +108,7 @@ class CicSubmitCaseEventTest {
     @Test
     void shouldSubmitEventThroughAboutToSubmit() throws IOException {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
 
         final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
@@ -117,8 +117,8 @@ class CicSubmitCaseEventTest {
         beforeCaseDetails.setId(TEST_CASE_ID);
         beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
         caseDetails.setData(caseData);
         caseDetails.setState(State.Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -130,7 +130,7 @@ class CicSubmitCaseEventTest {
 
         cicSubmitCaseEvent.configure(configBuilder);
 
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
+        final AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
             beforeCaseDetails
         );
@@ -140,11 +140,11 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldUpdateCaseDetails() {
-        EdgeCaseDocument dssDoc = new EdgeCaseDocument();
+        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
-        ListValue<EdgeCaseDocument> listValue = new ListValue<>();
+        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
         listValue.setValue(dssDoc);
-        DssCaseData dssCaseData = DssCaseData.builder()
+        final DssCaseData dssCaseData = DssCaseData.builder()
             .caseTypeOfApplication(CASE_DATA_CIC_ID)
             .otherInfoDocuments(List.of(listValue))
             .supportingDocuments(List.of(listValue))
@@ -156,8 +156,8 @@ class CicSubmitCaseEventTest {
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
 
-        CicCase cicCase = CicCase.builder().build();
-        CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -168,7 +168,7 @@ class CicSubmitCaseEventTest {
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response).isNotNull();

@@ -31,7 +31,7 @@ public class ReferToJudgeReasonTest {
         caseDetails.setState(CaseClosed);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(0);
     }
@@ -44,10 +44,10 @@ public class ReferToJudgeReasonTest {
         caseDetails.setState(CaseManagement);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors().contains("The case state is incompatible with the selected referral reason"));
+        assertThat(response.getErrors()).contains("The case state is incompatible with the selected referral reason");
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ReferToJudgeReasonTest {
         caseDetails.setData(caseData);
 
         // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         // Then
         assertThat(response.getErrors()).hasSize(0);
@@ -76,7 +76,7 @@ public class ReferToJudgeReasonTest {
         caseDetails.setData(caseData);
 
         // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         // Then
         assertThat(response.getErrors()).hasSize(0);
@@ -92,11 +92,11 @@ public class ReferToJudgeReasonTest {
         caseDetails.setData(caseData);
 
         // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         // Then
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors().get(0).equals("The case state is incompatible with the selected referral reason"));
+        assertThat(response.getErrors().get(0)).isEqualTo("The case state is incompatible with the selected referral reason");
     }
 }
 

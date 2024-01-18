@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 public class ManageSelectOrdersTest {
@@ -30,24 +30,21 @@ public class ManageSelectOrdersTest {
     private ManageSelectOrders manageSelectOrders;
 
     @Mock
-    private ListValue<Order> mockListValueOrder;
-
-    @Mock
     private ListValue<DateModel> mockListValueDateModel;
 
     private final DynamicList dynamicListLabelled = createDynamicList("0");
 
     private final DynamicList dynamicListUnlabelled = createDynamicList("");
-    
+
     @Test
-    void midEventCompletesSucessfully() {
+    void midEventCompletesSuccessfully() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         final Order order = Order.builder()
             .dueDateList(List.of(this.mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
             .build();
-        ListValue<Order> listValue = new ListValue<>();
+        final ListValue<Order> listValue = new ListValue<>();
         listValue.setValue(order);
         listValue.setId("0");
         final CicCase cicCase = CicCase.builder()
@@ -57,10 +54,10 @@ public class ManageSelectOrdersTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
         assertNotNull(cicCase.getOrderDueDates());
-        assertThat(cicCase.getOrderDueDates().equals(List.of(this.mockListValueDateModel)));
-        assertThat(response.getErrors().isEmpty());
+        assertThat(cicCase.getOrderDueDates()).isEqualTo(List.of(this.mockListValueDateModel));
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
@@ -71,7 +68,7 @@ public class ManageSelectOrdersTest {
             .dueDateList(List.of(this.mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
             .build();
-        ListValue<Order> listValue = new ListValue<>();
+        final ListValue<Order> listValue = new ListValue<>();
         listValue.setValue(order);
         listValue.setId("0");
         final CicCase cicCase = CicCase.builder()
@@ -80,12 +77,12 @@ public class ManageSelectOrdersTest {
             .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
-        
-        AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Please select and order to manage");
     }
-    
+
     private DynamicList createDynamicList(String label) {
         final DynamicListElement listItem = DynamicListElement
             .builder()

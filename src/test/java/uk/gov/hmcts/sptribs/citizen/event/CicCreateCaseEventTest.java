@@ -55,8 +55,8 @@ class CicCreateCaseEventTest {
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
-        
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setCreateEvent("citizen-cic-create-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
@@ -78,18 +78,18 @@ class CicCreateCaseEventTest {
 
     @Test
     void shouldChangeCaseStateWhenAboutToSubmit() {
-        CaseDetails<CaseData, State> details = new CaseDetails<>();
-        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
         details.setId(TEST_CASE_ID);
-        CaseData caseData = caseData();
+        final CaseData caseData = caseData();
         details.setData(caseData);
-        
-        AboutToStartOrSubmitResponse<CaseData, State> response = cicCreateCaseEvent.aboutToSubmit(
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = cicCreateCaseEvent.aboutToSubmit(
             details,
             beforeDetails
             );
-            
+
         assertThat(response.getState()).isEqualTo(State.DSS_Draft);
     }
 }

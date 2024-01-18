@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
@@ -27,7 +27,7 @@ public class ReinstateUploadDocumentsTest {
 
     @InjectMocks
     private ReinstateUploadDocuments reinstateUploadDocuments;
-    
+
     @Test
     void midEventReturnsNoErrorsWithUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -38,11 +38,11 @@ public class ReinstateUploadDocumentsTest {
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
         assertThat(response.getData().getCicCase().getReinstateDocuments()).isNotNull();
         assertTrue(response.getErrors().isEmpty());
     }
-    
+
     @Test
     void midEventReturnsErrorWithWrongDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -54,10 +54,10 @@ public class ReinstateUploadDocumentsTest {
             .build();
         caseDetails.setData(caseData);
         final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
-        
+
         assertTrue(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
-    
+
     @Test
     void midEventValidatesUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -71,9 +71,9 @@ public class ReinstateUploadDocumentsTest {
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
             mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
                 .thenReturn(Collections.emptyList());
-            
+
             reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
-        
+
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
         }
     }

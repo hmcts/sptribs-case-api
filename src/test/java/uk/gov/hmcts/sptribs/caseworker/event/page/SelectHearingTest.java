@@ -42,16 +42,16 @@ class SelectHearingTest {
     @Test
     void shouldReturnHearingSelected() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        List<ListValue<Listing>> listValueList = new ArrayList<>();
+        final List<ListValue<Listing>> listValueList = new ArrayList<>();
 
-        ListValue<Listing> finalListingListValue = new ListValue<>();
+        final ListValue<Listing> finalListingListValue = new ListValue<>();
         finalListingListValue.setValue(getRecordListing());
         finalListingListValue.setId("Final 10:00");
         listValueList.add(finalListingListValue);
 
-        Listing caseManagementListing = getRecordListing();
+        final Listing caseManagementListing = getRecordListing();
         caseManagementListing.setHearingType(HearingType.CASE_MANAGEMENT);
-        ListValue<Listing> caseManagementListingListValue = new ListValue<>();
+        final ListValue<Listing> caseManagementListingListValue = new ListValue<>();
         caseManagementListingListValue.setValue(caseManagementListing);
         caseManagementListingListValue.setId("Case Management 10:00");
         listValueList.add(caseManagementListingListValue);
@@ -60,13 +60,13 @@ class SelectHearingTest {
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
         when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
 
-        CaseData caseData = CaseData.builder().build();
+        final CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(cicCase);
         caseData.setListing(caseManagementListing);
         caseData.setHearingList(listValueList);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
 
         Assertions.assertEquals(response.getData().getListing(), finalListingListValue.getValue());
     }

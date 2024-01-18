@@ -86,10 +86,10 @@ class CaseWorkerCloseTheCaseTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-        DynamicList userList = new DynamicList();
+        final DynamicList userList = new DynamicList();
         when(judicialService.getAllUsers(caseData)).thenReturn(userList);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.aboutToStart(updatedCaseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getCloseCase().getRejectionName()).isEqualTo(userList);
@@ -106,15 +106,15 @@ class CaseWorkerCloseTheCaseTest {
             .documentEmailContent("some email content")
             .documentCategory(DocumentType.LINKED_DOCS)
             .build();
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        final List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
         documentList.add(caseworkerCICDocumentListValue);
 
-        CloseCase closeCase = CloseCase.builder().documents(documentList).build();
+        final CloseCase closeCase = CloseCase.builder().documents(documentList).build();
         caseData.setCloseCase(closeCase);
 
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .email(TEST_SUBJECT_EMAIL)
             .applicantFullName(APPLICANT_FIRST_NAME)
@@ -137,10 +137,10 @@ class CaseWorkerCloseTheCaseTest {
 
         //When
         assertThat(caseData.getCaseStatus()).isEqualTo(State.CaseManagement);
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        SubmittedCallbackResponse closedCase =
+        final SubmittedCallbackResponse closedCase =
             caseworkerCloseTheCase.closed(updatedCaseDetails, beforeDetails);
 
         //Then
@@ -152,7 +152,7 @@ class CaseWorkerCloseTheCaseTest {
     @Test
     void shouldReturnErrorForInvalidUploadedDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
+        final CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
         final CaseData caseData = CaseData.builder()
             .closeCase(closeCase)
             .build();
@@ -160,13 +160,13 @@ class CaseWorkerCloseTheCaseTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerCloseTheCase.midEvent(caseDetails, caseDetails);
 
-        assert (response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
+        assertThat(response.getErrors()).contains(DOCUMENT_VALIDATION_MESSAGE);
     }
 
     @Test
-    void midEventValidatesUploadedDocuments() {
+    void midEventShouldValidateUploadedDocumentsOnce() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
+        final CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
         final CaseData caseData = CaseData.builder()
             .closeCase(closeCase)
             .build();
@@ -174,9 +174,9 @@ class CaseWorkerCloseTheCaseTest {
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
             mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
                 .thenReturn(Collections.emptyList());
-            
+
             caseworkerCloseTheCase.midEvent(caseDetails, caseDetails);
-        
+
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
         }
     }

@@ -31,7 +31,7 @@ public class SendOrderUploadOrderTest {
     @Test
     void midEventReturnsErrorWithWrongDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .orderFile(getCICDocumentList("file.txt"))
             .build();
         final CaseData caseData = CaseData.builder()
@@ -54,11 +54,13 @@ public class SendOrderUploadOrderTest {
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
+
         assertFalse(response.getData().getCicCase().getOrderFile().isEmpty());
         assertTrue(response.getErrors().isEmpty());
     }
-    
+
     @Test
     void midEventValidatesUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -72,9 +74,9 @@ public class SendOrderUploadOrderTest {
         try (MockedStatic<DocumentUtil> mockedDocumentUtils = Mockito.mockStatic(DocumentUtil.class)) {
             mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
                 .thenReturn(Collections.emptyList());
-            
+
             sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
-        
+
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateDocumentFormat(anyList()), times(1));
         }
     }

@@ -16,15 +16,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ContactPartiesSelectDocumentTest {
-    
+
     @InjectMocks
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
-    
+
     @Mock
     private ContactPartiesDocuments contactPartiesDocuments;
 
@@ -32,7 +32,7 @@ public class ContactPartiesSelectDocumentTest {
     private DynamicMultiSelectList dynamicMultiSelectList;
 
     @Mock
-    private List<DynamicListElement> dynamicList; 
+    private List<DynamicListElement> dynamicList;
 
     @Test
     void midEventIsSuccessful() {
@@ -44,8 +44,8 @@ public class ContactPartiesSelectDocumentTest {
         when(contactPartiesDocuments.getDocumentList()).thenReturn(this.dynamicMultiSelectList);
         when(dynamicMultiSelectList.getValue()).thenReturn(dynamicList);
         when(dynamicList.size()).thenReturn(10);
-    
-        AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
         assertTrue(response.getErrors().isEmpty());
     }
 
@@ -60,7 +60,7 @@ public class ContactPartiesSelectDocumentTest {
         when(dynamicMultiSelectList.getValue()).thenReturn(dynamicList);
         when(dynamicList.size()).thenReturn(11);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Select up to 10 documents");
     }

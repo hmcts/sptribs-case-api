@@ -17,14 +17,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 public class PostponeHearingNotifyPartiesTest {
-    
+
     @InjectMocks
     private PostponeHearingNotifyParties postponeHearingNotifyParties;
 
@@ -33,8 +33,8 @@ public class PostponeHearingNotifyPartiesTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
-        
-        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         assertFalse(response.getErrors().isEmpty());
         assertThat(response.getErrors()).contains("At least one party must be selected.");
     }
@@ -45,38 +45,38 @@ public class PostponeHearingNotifyPartiesTest {
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
-        
+
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
-        
-        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
         assertTrue(response.getErrors().isEmpty());
     }
-        
+
     @Test
     void midEventIsInvalidIfNoRecipientsSelected() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
-        
-        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
-        
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+
         assertNull(response.getData().getCicCase().getNotifyPartySubject());
         assertNull(response.getData().getCicCase().getNotifyPartyRepresentative());
         assertNull(response.getData().getCicCase().getNotifyPartyRespondent());
         assertNull(response.getData().getCicCase().getNotifyPartyApplicant());
         assertThat(response.getErrors()).hasSize(1);
     }
-        
+
     @Test
     void validateCheckNullRepresentativeRespondedIsCalledOnce() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();
-        
+
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
@@ -85,9 +85,9 @@ public class PostponeHearingNotifyPartiesTest {
         try (MockedStatic<CheckRequiredUtil> mockedCheckRequiredUtils = Mockito.mockStatic(CheckRequiredUtil.class)) {
             mockedCheckRequiredUtils.when(() -> CheckRequiredUtil.checkNullSubjectRepresentativeRespondent(caseData))
                 .thenReturn(true);
-            
+
             postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
-        
+
             mockedCheckRequiredUtils.verify(() ->  CheckRequiredUtil.checkNullSubjectRepresentativeRespondent(caseData), times(1));
         }
     }

@@ -22,27 +22,27 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class IssueDecisionSelectTemplateTest {
-    
+
     @InjectMocks
     private IssueDecisionSelectTemplate issueDecisionSelectTemplate;
 
     @Mock
     private CaseIssueDecision caseIssueDecision;
-    
-    private DecisionTemplate decisionTemplate = DecisionTemplate.ELIGIBILITY;
-    
+
+    private final DecisionTemplate decisionTemplate = DecisionTemplate.ELIGIBILITY;
+
     @Test
     void midEventCorrectlySetsDecisionTemplate() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(caseIssueDecision)
             .build();
-        
+
         when(caseIssueDecision.getIssueDecisionTemplate()).thenReturn(decisionTemplate);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
-        assertThat(response.getData().getDecisionMainContent().equals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT));
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
+        assertThat(response.getData().getDecisionMainContent()).isEqualTo(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT);
     }
 
     @Test
@@ -51,16 +51,16 @@ public class IssueDecisionSelectTemplateTest {
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(caseIssueDecision)
             .build();
-        
+
         when(caseIssueDecision.getIssueDecisionTemplate()).thenReturn(decisionTemplate);
         caseDetails.setData(caseData);
 
         try (MockedStatic<EventUtil> mockedEventUtils = Mockito.mockStatic(EventUtil.class)) {
             mockedEventUtils.when(() -> EventUtil.getMainContent(decisionTemplate))
                 .thenReturn(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT);
-            
+
             issueDecisionSelectTemplate.midEvent(caseDetails, caseDetails);
-            
+
             mockedEventUtils.verify(() ->  EventUtil.getMainContent(decisionTemplate), times(1));
         }
     }
