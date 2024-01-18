@@ -20,7 +20,14 @@ class CICDocumentTest {
         "test.m4a",
         "test.mp4",
         "test.msg",
-        "test.eml"
+        "test.eml",
+        "test.csv",
+        "test.txt",
+        "test.rtf",
+        "test.xlsx",
+        "test.docx",
+        "test.doc",
+        "test.xls"
     })
     void shouldCheckDocumentIsValid(String filename) {
         CICDocument document = CICDocument.builder()
@@ -50,13 +57,20 @@ class CICDocumentTest {
             .build();
 
         Assertions.assertTrue(document.isDocumentValid());
+
+        document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is doc file.")
+            .documentLink(Document.builder().filename("test.docx").build())
+            .build();
+
+        Assertions.assertTrue(document.isDocumentValid());
     }
 
     @Test
     void shouldCheckDocxDocumentIsInvalid() {
         CICDocument document = CICDocument.builder()
             .documentEmailContent("Dear sir/madam, here is an email.")
-            .documentLink(Document.builder().filename("test.docx").build())
+            .documentLink(Document.builder().filename("test.uml").build())
             .build();
 
         Assertions.assertFalse(document.isDocumentValid());
