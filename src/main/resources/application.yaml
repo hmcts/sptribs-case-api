@@ -216,6 +216,8 @@ feature:
     enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:true}
+  access-profiles:
+    enabled: ${ACCESS_PROFILES_ENABLED:true}
 
 caseinfo:
   apps:
