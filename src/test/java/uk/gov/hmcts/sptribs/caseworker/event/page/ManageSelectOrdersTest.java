@@ -41,7 +41,7 @@ public class ManageSelectOrdersTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         final Order order = Order.builder()
-            .dueDateList(List.of(this.mockListValueDateModel))
+            .dueDateList(List.of(mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
             .build();
         final ListValue<Order> listValue = new ListValue<>();
@@ -49,14 +49,14 @@ public class ManageSelectOrdersTest {
         listValue.setId("0");
         final CicCase cicCase = CicCase.builder()
             .orderList(List.of(listValue))
-            .orderDynamicList(this.dynamicListLabelled)
+            .orderDynamicList(dynamicListLabelled)
             .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
         assertNotNull(cicCase.getOrderDueDates());
-        assertThat(cicCase.getOrderDueDates()).isEqualTo(List.of(this.mockListValueDateModel));
+        assertThat(cicCase.getOrderDueDates()).isEqualTo(List.of(mockListValueDateModel));
         assertThat(response.getErrors()).isEmpty();
     }
 
@@ -65,7 +65,7 @@ public class ManageSelectOrdersTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         final Order order = Order.builder()
-            .dueDateList(List.of(this.mockListValueDateModel))
+            .dueDateList(List.of(mockListValueDateModel))
             .draftOrder(new DraftOrderCIC())
             .build();
         final ListValue<Order> listValue = new ListValue<>();
@@ -73,7 +73,7 @@ public class ManageSelectOrdersTest {
         listValue.setId("0");
         final CicCase cicCase = CicCase.builder()
             .orderList(List.of(listValue))
-            .orderDynamicList(this.dynamicListUnlabelled)
+            .orderDynamicList(dynamicListUnlabelled)
             .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);

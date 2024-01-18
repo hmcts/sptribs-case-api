@@ -41,7 +41,7 @@ public class ContactPartiesSelectDocumentTest {
             .contactPartiesDocuments(contactPartiesDocuments)
             .build();
         caseDetails.setData(caseData);
-        when(contactPartiesDocuments.getDocumentList()).thenReturn(this.dynamicMultiSelectList);
+        when(contactPartiesDocuments.getDocumentList()).thenReturn(dynamicMultiSelectList);
         when(dynamicMultiSelectList.getValue()).thenReturn(dynamicList);
         when(dynamicList.size()).thenReturn(10);
 
@@ -56,7 +56,7 @@ public class ContactPartiesSelectDocumentTest {
             .contactPartiesDocuments(contactPartiesDocuments)
             .build();
         caseDetails.setData(caseData);
-        when(contactPartiesDocuments.getDocumentList()).thenReturn(this.dynamicMultiSelectList);
+        when(contactPartiesDocuments.getDocumentList()).thenReturn(dynamicMultiSelectList);
         when(dynamicMultiSelectList.getValue()).thenReturn(dynamicList);
         when(dynamicList.size()).thenReturn(11);
 

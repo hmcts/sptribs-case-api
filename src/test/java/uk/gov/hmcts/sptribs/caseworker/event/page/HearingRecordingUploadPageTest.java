@@ -34,20 +34,20 @@ public class HearingRecordingUploadPageTest {
 
     @BeforeEach
     void setUp() {
-        this.caseDetails = new CaseDetails<>();
-        this.listing = getRecordListing();
+        caseDetails = new CaseDetails<>();
+        listing = getRecordListing();
     }
 
     @Test
     void midEventReturnsNoErrors() {
-        this.documentList = getCaseworkerCICDocumentList("file.mp3");
-        final HearingSummary hearingSummary = HearingSummary.builder().recFile(this.documentList).build();
-        this.listing.setSummary(hearingSummary);
+        documentList = getCaseworkerCICDocumentList("file.mp3");
+        final HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
 
         final CaseData caseData = CaseData.builder()
-            .listing(this.listing)
+            .listing(listing)
             .build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).hasSize(0);
@@ -56,14 +56,14 @@ public class HearingRecordingUploadPageTest {
     @Test
     void midEventReturnsErrorForInvalidDocumentType() {
         //try to upload .xml (non-supported)
-        this.documentList = getCaseworkerCICDocumentList("file.xml");
-        final HearingSummary hearingSummary = HearingSummary.builder().recFile(this.documentList).build();
-        this.listing.setSummary(hearingSummary);
+        documentList = getCaseworkerCICDocumentList("file.xml");
+        final HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
 
         final CaseData caseData = CaseData.builder()
-            .listing(this.listing)
+            .listing(listing)
             .build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
@@ -73,7 +73,7 @@ public class HearingRecordingUploadPageTest {
 
     @Test
     void midEventReturnsErrorForMissingDescription() {
-        this.documentList = new ArrayList<>();
+        documentList = new ArrayList<>();
         final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().filename("file.mp3").build())
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -81,16 +81,16 @@ public class HearingRecordingUploadPageTest {
         final ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
-        this.documentList.add(documentListValue);
-        final HearingSummary hearingSummary = HearingSummary.builder().recFile(this.documentList).build();
-        this.listing.setSummary(hearingSummary);
+        documentList.add(documentListValue);
+        final HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
 
         final CaseData caseData = CaseData.builder()
-            .listing(this.listing)
+            .listing(listing)
             .build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(this.caseDetails, this.caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().get(0)).contains("Description is mandatory for each document");
@@ -98,24 +98,24 @@ public class HearingRecordingUploadPageTest {
 
     @Test
     void midEventReturnsErrorForMissingDocumentLink() {
-        this.documentList = new ArrayList<>();
+        documentList = new ArrayList<>();
         final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();
         final ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        this.documentList.add(documentListValue);
-        final HearingSummary hearingSummary = HearingSummary.builder().recFile(this.documentList).build();
-        this.listing.setSummary(hearingSummary);
+        documentList.add(documentListValue);
+        final HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
 
         final CaseData caseData = CaseData.builder()
-            .listing(this.listing)
+            .listing(listing)
             .build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
-            hearingRecordingUploadPage.midEvent(this.caseDetails, this.caseDetails);
+            hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().get(0)).contains("Please attach the document");

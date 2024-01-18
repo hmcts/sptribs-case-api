@@ -33,19 +33,19 @@ public class CaseUploadDocumentsTest {
 
     @BeforeEach
     void setUp() {
-        this.caseDetails = new CaseDetails<>();
+        caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
-        this.caseDetails.setData(caseData);
+        caseDetails.setData(caseData);
     }
 
     @Test
     void midEventReturnsNoErrorsWithUploadedDocuments() {
-        final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(caseDetails, caseDetails);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
         assertTrue(response.getErrors().isEmpty());
     }
@@ -56,7 +56,7 @@ public class CaseUploadDocumentsTest {
             mockedDocumentUtils.when(() -> DocumentUtil.validateUploadedDocuments(anyList()))
                 .thenReturn(Collections.emptyList());
 
-            caseUploadDocuments.midEvent(this.caseDetails, this.caseDetails);
+            caseUploadDocuments.midEvent(caseDetails, caseDetails);
 
             mockedDocumentUtils.verify(() ->  DocumentUtil.validateUploadedDocuments(anyList()), times(1));
         }
