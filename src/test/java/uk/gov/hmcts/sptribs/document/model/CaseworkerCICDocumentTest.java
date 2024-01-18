@@ -40,6 +40,20 @@ class CaseworkerCICDocumentTest {
             .build();
 
         assertTrue(document.isDocumentValid());
+
+        document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().filename("test.msg").build())
+            .build();
+
+        assertTrue(document.isDocumentValid());
+
+        document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .documentLink(Document.builder().filename("test.eml").build())
+            .build();
+
+        assertTrue(document.isDocumentValid());
     }
 
     @Test
