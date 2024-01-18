@@ -84,7 +84,7 @@ class CaseworkerDocumentManagementAmendTest {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
+            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", DocumentType.APPLICATION_FORM))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -294,7 +294,7 @@ class CaseworkerDocumentManagementAmendTest {
     private DynamicListElement getDynamicListItems() {
         return DynamicListElement
             .builder()
-            .label("CASE--test-pdf--http://url/")
+            .label("CASE--test.pdf--A - Application Form")
             .code(UUID.randomUUID())
             .build();
     }

@@ -58,8 +58,9 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
 
             for (ListValue<CaseworkerCICDocument> documentListValue : allCaseDocuments) {
                 String[] labels = selectedDocumentURL.split(DOUBLE_HYPHEN);
-                String url = documentListValue.getValue().getDocumentLink().getUrl();
-                if (ArrayUtils.isNotEmpty(labels) && labels[2].equals(url)) {
+                String documentTypeLabel = documentListValue.getValue().getDocumentCategory().getLabel();
+                String filename = documentListValue.getValue().getDocumentLink().getFilename();
+                if (ArrayUtils.isNotEmpty(labels) && labels[1].equals(filename) && labels[2].equals(documentTypeLabel)) {
                     selectedDocument = documentListValue.getValue();
                     selectedDocumentType = labels[0];
                 }
