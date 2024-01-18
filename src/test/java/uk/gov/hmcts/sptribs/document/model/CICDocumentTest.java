@@ -27,7 +27,7 @@ class CICDocumentTest {
         "test.xlsx",
         "test.docx",
         "test.doc",
-        "test.xls",
+        "test.xls"
     })
     void shouldCheckDocumentIsValid(String filename) {
         CICDocument document = CICDocument.builder()
