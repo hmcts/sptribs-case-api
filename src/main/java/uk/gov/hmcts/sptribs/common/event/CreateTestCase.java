@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.model.SecurityClassification;
+import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -119,7 +119,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         CaseData data = submittedDetails.getData();
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
-        data.setSecurityClassification(SecurityClassification.PUBLIC);
+        data.setSecurityClass(SecurityClass.PUBLIC);
         data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
 
         initialiseFlags(data);

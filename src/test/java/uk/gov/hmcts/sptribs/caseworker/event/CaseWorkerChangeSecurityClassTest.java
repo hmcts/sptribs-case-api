@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.caseworker.model.SecurityClassification;
+import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -31,7 +31,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CHANGE_SECURITY_CLASS;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerChangeSecurityClassificationTest {
+class CaseWorkerChangeSecurityClassTest {
     @InjectMocks
     private CaseworkerChangeSecurityClassification caseworkerChangeSecurityClassification;
 
@@ -64,7 +64,7 @@ class CaseWorkerChangeSecurityClassificationTest {
         //Given
 
         CaseData caseData = caseData();
-        caseData.setSecurityClassification(SecurityClassification.PRIVATE);
+        caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -85,7 +85,7 @@ class CaseWorkerChangeSecurityClassificationTest {
         //Given
 
         CaseData caseData = caseData();
-        caseData.setSecurityClassification(SecurityClassification.PRIVATE);
+        caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -107,7 +107,7 @@ class CaseWorkerChangeSecurityClassificationTest {
         //Given
 
         CaseData caseData = caseData();
-        caseData.setSecurityClassification(SecurityClassification.PRIVATE);
+        caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);

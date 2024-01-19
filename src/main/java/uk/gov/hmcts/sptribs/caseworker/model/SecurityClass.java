@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @RequiredArgsConstructor
 @Getter
-public enum SecurityClassification implements HasLabel {
+public enum SecurityClass implements HasLabel {
 
     @JsonProperty("PUBLIC")
     PUBLIC("PUBLIC", new String[] {
