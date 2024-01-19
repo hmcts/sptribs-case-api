@@ -59,18 +59,25 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldGenerateContactPartiesDocList() {
+    void shouldGenerateEmptyContactPartiesDocList() {
         //Given
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
-        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+        CaseworkerCICDocument mp3Doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.mp3").build())
             .build();
-        ListValue<CaseworkerCICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
+        CaseworkerCICDocument mp4Doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.mp4").build())
+            .build();
+        ListValue<CaseworkerCICDocument> mp3listValue = new ListValue<>();
+        mp3listValue.setValue(mp3Doc);
+        listValueList.add(mp3listValue);
+        ListValue<CaseworkerCICDocument> mp4listValue = new ListValue<>();
+        mp4listValue.setValue(mp4Doc);
+        listValueList.add(mp4listValue);
         CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
@@ -82,6 +89,40 @@ public class DocumentListUtilTest {
 
         //Then
         Assertions.assertTrue(result.getListItems().isEmpty());
+
+    }
+
+    @Test
+    void shouldGenerateNonEmptyContactPartiesDocList() {
+        //Given
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument pdfDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
+            .build();
+        CaseworkerCICDocument docxDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.docx").build())
+            .build();
+        ListValue<CaseworkerCICDocument> pdflistValue = new ListValue<>();
+        pdflistValue.setValue(pdfDoc);
+        listValueList.add(pdflistValue);
+        ListValue<CaseworkerCICDocument> docxlistValue = new ListValue<>();
+        docxlistValue.setValue(docxDoc);
+        listValueList.add(docxlistValue);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+        final CaseData caseData = CaseData.builder().build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+        //When
+        DynamicMultiSelectList result = DocumentListUtil.prepareContactPartiesDocumentList(caseData, "");
+
+        //Then
+        Assertions.assertEquals(2, result.getListItems().size());
 
     }
 

@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesAllowedFileTypes;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -131,10 +132,9 @@ public final class DocumentListUtil {
         for (CaseworkerCICDocument doc : docList) {
             String fileName = doc.getDocumentLink().getFilename();
             String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-            if (fileExtension.equals("mp3")) {
-                continue;
+            if (ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension)) {
+                createDocumentList(apiUrl, dynamicListElements, doc);
             }
-            createDocumentList(apiUrl, dynamicListElements, doc);
         }
 
         return DynamicMultiSelectList
