@@ -38,7 +38,6 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -81,7 +80,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         final List<UserRole> roles = new ArrayList<>();
         final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
         roles.add(SOLICITOR);
-        roles.add(COURT_ADMIN_CIC);
         roles.add(ST_CIC_CASEWORKER);
         roles.add(ST_CIC_SENIOR_CASEWORKER);
         roles.add(ST_CIC_HEARING_CENTRE_ADMIN);
@@ -89,7 +87,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         roles.add(ST_CIC_SENIOR_JUDGE);
         if (!env.contains(ENVIRONMENT_PROD)) {
             roles.add(SUPER_USER);
-            roles.add(COURT_ADMIN_CIC);
             roles.add(DISTRICT_JUDGE_CIC);
         }
 
