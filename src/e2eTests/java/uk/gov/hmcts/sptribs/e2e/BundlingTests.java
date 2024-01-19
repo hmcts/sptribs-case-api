@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 
 import java.util.Objects;
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 public class BundlingTests extends Base {
 
     @Order(1)
-    @Disabled
+    @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToCreateBundle() {
         Page page = getPage();
         Case newCase = createAndBuildCase(page);
