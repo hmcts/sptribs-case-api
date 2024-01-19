@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,14 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_TEST_AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.DOCUMENT_DELETE_FAILURE_MSG;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_CONTENT_TYPE;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_FILE_TYPE;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCESS;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 
@@ -45,9 +39,16 @@ class DocumentManagementControllerTest {
     @Mock
     DocumentManagementService documentManagementService;
 
+    private AutoCloseable closeableMocks;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        closeableMocks = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        closeableMocks.close();
     }
 
     @Test

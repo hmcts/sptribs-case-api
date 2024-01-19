@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -13,10 +14,17 @@ class RootControllerTest {
     @Mock
     private RootController rootController;
 
+    private  AutoCloseable closeableMocks;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        closeableMocks = MockitoAnnotations.openMocks(this);
         rootController = new RootController();
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        closeableMocks.close();
     }
 
     @Test
