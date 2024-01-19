@@ -64,7 +64,7 @@ public class JudicialService {
             List<UserProfileRefreshResponse> list =
                 judicialClient.getUserProfiles(
                     authTokenGenerator.generate(),
-                    httpServletRequest.getHeader(AUTHORIZATION),
+                    authToken,
                     ACCEPT_VALUE,
                     JudicialUsersRequest.builder()
                         .ccdServiceName(ST_CIC_JURISDICTION)
