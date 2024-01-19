@@ -12,7 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.model.SecurityClassification;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -88,7 +88,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        String securityClassification = caseData.getSecurityClass().getLabel();
+        String securityClassification = caseData.getSecurityClassification().getLabel();
         Map<String, Object> dataClassification = caseDataService.getDataClassification(details.getId().toString());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -107,7 +107,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
     private void changeSecurityClass(PageBuilder pageBuilder) {
         pageBuilder.page("changeSecurityClass", this::midEvent)
             .pageLabel("Security classification selection")
-            .mandatory(CaseData::getSecurityClass);
+            .mandatory(CaseData::getSecurityClassification);
 
     }
 
@@ -120,7 +120,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         var caseData = details.getData();
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        if (!checkAvailableForNewClass(user, caseData.getSecurityClass())) {
+        if (!checkAvailableForNewClass(user, caseData.getSecurityClassification())) {
             errors.add("You do not have permission to change the case to the selected Security Classification");
         }
 
@@ -131,7 +131,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
 
     }
 
-    private boolean checkAvailableForNewClass(User user, SecurityClass newClass) {
+    private boolean checkAvailableForNewClass(User user, SecurityClassification newClass) {
         List<String> roles = user.getUserDetails().getRoles();
         return Arrays.stream(newClass.getPermittedRoles()).anyMatch(role -> roles.contains(role));
     }

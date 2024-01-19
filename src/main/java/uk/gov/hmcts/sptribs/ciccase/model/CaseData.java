@@ -34,7 +34,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.model.SecurityClassification;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -148,7 +148,7 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedRadioList,
         typeParameterOverride = "SecurityClass")
-    private SecurityClass securityClass;
+    private SecurityClassification securityClassification;
 
     @Builder.Default
     @CCD(label = "Bundles",
