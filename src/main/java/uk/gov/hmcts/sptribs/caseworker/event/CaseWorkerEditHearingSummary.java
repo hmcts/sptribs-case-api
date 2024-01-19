@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
@@ -92,9 +91,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
             caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");
         }
         caseData.getCicCase().setHearingSummaryList(hearingService.getCompletedHearingDynamicList(caseData));
-
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
-        caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

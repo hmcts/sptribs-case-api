@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,8 +68,6 @@ class CaseworkerEditHearingSummaryTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
-
-        when(judicialService.getAllUsers(caseData)).thenReturn(getDynamicList());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerEditHearingSummary.aboutToStart(updatedCaseDetails);
