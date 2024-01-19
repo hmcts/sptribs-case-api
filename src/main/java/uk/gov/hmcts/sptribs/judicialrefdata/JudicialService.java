@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
@@ -56,7 +57,6 @@ public class JudicialService {
         caseData.getListing().getSummary().setJudgeList(judges);
         return populateUsersDynamicList(judges);
     }
-
 
     private List<UserProfileRefreshResponse> getUsers() {
         try {

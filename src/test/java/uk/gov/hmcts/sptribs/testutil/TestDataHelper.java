@@ -431,6 +431,19 @@ public class TestDataHelper {
         return documentList;
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName, DocumentType category) {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(category)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
     public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList() {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
             .documentLink(Document.builder()

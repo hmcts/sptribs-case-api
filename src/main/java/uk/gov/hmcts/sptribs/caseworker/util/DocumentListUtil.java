@@ -53,12 +53,66 @@ public final class DocumentListUtil {
         return docList;
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {
+        return buildListValues(prepareList(data));
+    }
+
+    public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+
+        dynamicListElements.addAll(getDynamicListElements(getCaseDocs(data.getCicCase()), CASE_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getReinstateDocuments(data.getCicCase()), REINSTATE_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getDocumentManagementDocs(data), DOC_MGMT_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getCloseCaseDocuments(data), CLOSE_CASE_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getHearingSummaryDocuments(data), HEARING_SUMMARY_TYPE));
+
+        return DynamicList
+            .builder()
+            .listItems(dynamicListElements)
+            .build();
+    }
+
+    private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
+        return docList
+            .stream()
+            .filter(CaseworkerCICDocument::isDocumentValid)
+            .map(doc -> DynamicListElement.builder()
+                .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
+                    + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
+            .collect(Collectors.toList());
+    }
+
+    public static DynamicMultiSelectList prepareDocumentList(final CaseData data) {
+        List<CaseworkerCICDocument> docList = prepareList(data);
+
+        List<DynamicListElement> dynamicListElements = docList
+            .stream()
+            .filter(CaseworkerCICDocument::isDocumentValid)
+            .map(doc ->
+                DynamicListElement.builder()
+                    .label(doc.getDocumentCategory().getLabel() + "--" + doc.getDocumentLink().getFilename())
+                    .code(UUID.randomUUID()).build())
+            .toList();
+
+        return DynamicMultiSelectList
+            .builder()
+            .listItems(dynamicListElements)
+            .value(new ArrayList<>())
+            .build();
+    }
+
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        String apiUrl = baseUrl + "documents/%s/binary";
+        String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            createDocumentList(apiUrl, dynamicListElements, doc);
+            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
+                "/");
+            String url = String.format(apiUrl, documentId);
+            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + url + ")").code(UUID.randomUUID()).build();
+            dynamicListElements.add(element);
         }
 
         return DynamicMultiSelectList
@@ -90,24 +144,6 @@ public final class DocumentListUtil {
             .build();
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {
-        return buildListValues(prepareList(data));
-    }
-
-    public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
-        List<DynamicListElement> dynamicListElements = new ArrayList<>();
-
-        dynamicListElements.addAll(getDynamicListElements(getCaseDocs(data.getCicCase()), CASE_TYPE));
-        dynamicListElements.addAll(getDynamicListElements(getReinstateDocuments(data.getCicCase()), REINSTATE_TYPE));
-        dynamicListElements.addAll(getDynamicListElements(getDocumentManagementDocs(data), DOC_MGMT_TYPE));
-        dynamicListElements.addAll(getDynamicListElements(getCloseCaseDocuments(data), CLOSE_CASE_TYPE));
-        dynamicListElements.addAll(getDynamicListElements(getHearingSummaryDocuments(data), HEARING_SUMMARY_TYPE));
-
-        return DynamicList
-            .builder()
-            .listItems(dynamicListElements)
-            .build();
-    }
 
     private static void createDocumentList(String apiUrl, List<DynamicListElement> dynamicListElements, CaseworkerCICDocument doc) {
         String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
@@ -119,16 +155,6 @@ public final class DocumentListUtil {
         dynamicListElements.add(element);
     }
 
-    private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
-        return docList
-            .stream()
-            .filter(CaseworkerCICDocument::isDocumentValid)
-            .map(doc -> DynamicListElement.builder()
-                .label(fileType + DOUBLE_HYPHEN + doc.getDocumentLink().getFilename()
-                    + DOUBLE_HYPHEN + doc.getDocumentLink().getUrl()
-                    + DOUBLE_HYPHEN + doc.getDocumentCategory().getLabel()).code(UUID.randomUUID()).build())
-            .collect(Collectors.toList());
-    }
 
     private static List<CaseworkerCICDocument> getReinstateDocuments(CicCase cicCase) {
         List<CaseworkerCICDocument> reinstateDocList = new ArrayList<>();
