@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
@@ -38,12 +38,15 @@ public class JudicialService {
 
     private JudicialClient judicialClient;
 
+    private IdamService idamService;
+
     @Autowired
     public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
-            JudicialClient judicialClient) {
+            JudicialClient judicialClient, IdamService idamService) {
         this.httpServletRequest = httpServletRequest;
         this.authTokenGenerator = authTokenGenerator;
         this.judicialClient = judicialClient;
+        this.idamService = idamService;
     }
 
     public DynamicList getAllUsers(CaseData caseData) {
@@ -54,6 +57,8 @@ public class JudicialService {
     }
 
     private List<UserProfileRefreshResponse> getUsers() {
+
+        String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
 
         try {
             List<UserProfileRefreshResponse> list =

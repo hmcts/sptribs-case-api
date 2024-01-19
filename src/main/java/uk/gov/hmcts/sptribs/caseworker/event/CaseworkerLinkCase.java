@@ -21,6 +21,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LIN
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -42,7 +43,7 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     private boolean linkCaseEnabled;
 
     private final CaseLinkedNotification caseLinkedNotification;
-    
+
     @Autowired
     public CaseworkerLinkCase(CaseLinkedNotification caseLinkedNotification) {
         this.caseLinkedNotification = caseLinkedNotification;
@@ -53,7 +54,7 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
         if (linkCaseEnabled) {
             new PageBuilder(configBuilder
                 .event(CASEWORKER_LINK_CASE)
-                .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+                .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
                 .name("Link cases")
                 .description("To link related cases")
                 .submittedCallback(this::submitted)
