@@ -1,9 +1,7 @@
-
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -36,6 +36,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
@@ -49,7 +50,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
-
 @Component
 @Slf4j
 @Setter
@@ -60,7 +60,6 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     @Value("${case_document_am.url}")
     private String baseUrl;
-
 
     @Autowired
     private ContactPartiesNotification contactPartiesNotification;
@@ -76,6 +75,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                     Submitted,
                     NewCaseReceived,
                     CaseManagement,
+                    ReadyToList,
                     AwaitingHearing,
                     AwaitingOutcome,
                     CaseClosed,
@@ -102,9 +102,10 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
         caseData.getCicCase().setNotifyPartyMessage("");
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -115,7 +116,6 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
 
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
@@ -124,8 +124,9 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        String caseNumber = data.getHyphenatedCaseRef();
+        final CaseData data = details.getData();
+        final String caseNumber = data.getHyphenatedCaseRef();
+
         try {
             sendContactPartiesNotification(details, data, caseNumber);
         } catch (Exception notificationException) {
@@ -134,26 +135,31 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                 .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the notification"))
                 .build();
         }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Message sent %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getContactParties())
+                MessageUtil.generateSimpleMessage(data.getContactParties())
             ))
             .build();
-
     }
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CaseData data, String caseNumber) {
-        if (!CollectionUtils.isEmpty(data.getContactParties().getSubjectContactParties())) {
-            contactPartiesNotification.sendToSubject(details.getData(), caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(data.getContactParties().getRepresentativeContactParties())) {
-            contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(data.getContactParties().getApplicantContactParties())) {
-            contactPartiesNotification.sendToApplicant(details.getData(), caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(data.getContactParties().getTribunal())) {
-            contactPartiesNotification.sendToTribunal(details.getData(), caseNumber);
+        final ContactParties contactParties = data.getContactParties();
+        final CaseData caseData = details.getData();
+
+        if (contactParties != null) {
+            if (!isEmpty(contactParties.getSubjectContactParties())) {
+                contactPartiesNotification.sendToSubject(caseData, caseNumber);
+            }
+            if (!isEmpty(contactParties.getRepresentativeContactParties())) {
+                contactPartiesNotification.sendToRepresentative(caseData, caseNumber);
+            }
+            if (!isEmpty(contactParties.getApplicantContactParties())) {
+                contactPartiesNotification.sendToApplicant(caseData, caseNumber);
+            }
+            if (!isEmpty(contactParties.getTribunal())) {
+                contactPartiesNotification.sendToTribunal(caseData, caseNumber);
+            }
         }
     }
 

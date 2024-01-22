@@ -7,13 +7,14 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.List;
 
 public final class CaseDocumentListUtil {
+
     private CaseDocumentListUtil() {
     }
 
     public static void updateCaseDocumentList(List<ListValue<CaseworkerCICDocument>> documents, CaseworkerCICDocument selectedDocument) {
         if (!CollectionUtils.isEmpty(documents)) {
             for (ListValue<CaseworkerCICDocument> document : documents) {
-                if (selectedDocument.getDocumentLink().getUrl().equals(document.getValue().getDocumentLink().getUrl())) {
+                if (document.getValue().getDocumentLink().getUrl().equals(selectedDocument.getDocumentLink().getUrl())) {
                     document.getValue().setDocumentCategory(selectedDocument.getDocumentCategory());
                     document.getValue().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
                     document.getValue().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());

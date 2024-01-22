@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.recordlisting;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
 import uk.gov.hmcts.sptribs.recordlisting.model.Region;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -123,5 +123,15 @@ class LocationServiceTest {
 
         //Then
         assertThat(regionList.getListItems()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnRegionIdIfSelectedRegionIsValid() {
+        assertThat(locationService.getRegionId("1-region")).isEqualTo("1");
+    }
+
+    @Test
+    void shouldReturnNullIfSelectedRegionIsNull() {
+        assertThat(locationService.getRegionId(null)).isNull();
     }
 }

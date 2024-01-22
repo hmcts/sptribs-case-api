@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderAddDraftOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
@@ -47,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -83,7 +83,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
-            .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
+            .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
             .name("Orders: Send order")
             .description("Orders: Send order")
             .showSummary()
@@ -128,71 +128,69 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
+        updateSelectedOrder(caseData.getCicCase(), order);
+        updateCicCaseOrderList(caseData, order);
 
-        setDefaultLastSelectedOrderFlag(caseData.getCicCase());
-        updateLastSelectedOrder(order);
-        addToList(caseData, order);
-        if (selectedDraftOrder != null) {
-            rearrangeLists(caseData, selectedDynamicDraft, selectedDraftOrder);
+        caseData.getCicCase().setOrderIssuingType(null);
+        caseData.getCicCase().setOrderFile(null);
+        caseData.getCicCase().setOrderReminderYesOrNo(null);
+        caseData.getCicCase().setOrderReminderDays(null);
+
+        if (null != selectedDraftOrder) {
+            DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+            List<DynamicListElement> newElements = new ArrayList<>();
+            for (DynamicListElement element : dynamicList.getListItems()) {
+                if (!element.getLabel().equals(selectedDynamicDraft)) {
+                    newElements.add(element);
+                }
+            }
+            caseData.getCicCase().setDraftOrderDynamicList(DynamicList
+                .builder()
+                .listItems(newElements)
+                .build());
+            List<ListValue<DraftOrderCIC>> draftList = new ArrayList<>();
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
+                if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
+                    var listValue = ListValue
+                        .<DraftOrderCIC>builder()
+                        .value(draftValue.getValue())
+                        .build();
+
+                    draftList.add(0, listValue); // always add new note as first element so that it is displayed on top
+
+                    draftList.forEach(
+                        caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+                }
+            }
+            caseData.getCicCase().setDraftOrderCICList(draftList);
         }
-        nullifyRelatedObjects(caseData);
+
+        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
             .build();
     }
 
-    private void updateLastSelectedOrder(Order order) {
-        if (order.getDraftOrder() != null) {
-            order.setIsLastSelectedOrder(YesOrNo.YES);
-        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            order.setIsLastSelectedOrder(YesOrNo.YES);
-        } else {
-            order.setIsLastSelectedOrder(YesOrNo.NO);
+    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
+                                          CaseDetails<CaseData, State> beforeDetails) {
+        try {
+            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
+                .build();
         }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Order sent %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
+            .build();
     }
 
-    private void nullifyRelatedObjects(CaseData caseData) {
-        caseData.getCicCase().setOrderIssuingType(null);
-        caseData.getCicCase().setOrderFile(null);
-        caseData.getCicCase().setOrderReminderYesOrNo(null);
-        caseData.getCicCase().setOrderReminderDays(null);
-        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
-    }
-
-    private void rearrangeLists(CaseData caseData, String selectedDynamicDraft, DraftOrderCIC selectedDraftOrder) {
-        DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
-        List<DynamicListElement> newElements = new ArrayList<>();
-        for (DynamicListElement element : dynamicList.getListItems()) {
-            if (!element.getLabel().equals(selectedDynamicDraft)) {
-                newElements.add(element);
-            }
-        }
-        caseData.getCicCase().setDraftOrderDynamicList(DynamicList
-            .builder()
-            .listItems(newElements)
-            .build());
-        List<ListValue<DraftOrderCIC>> draftList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
-            if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
-                var listValue = ListValue
-                    .<DraftOrderCIC>builder()
-                    .value(draftValue.getValue())
-                    .build();
-
-                draftList.add(0, listValue); // always add new note as first element so that it is displayed on top
-
-                draftList.forEach(
-                    caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-            }
-        }
-        caseData.getCicCase().setDraftOrderCICList(draftList);
-    }
-
-    private void addToList(CaseData caseData, Order order) {
-
+    private void updateCicCaseOrderList(CaseData caseData, Order order) {
         if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
@@ -216,26 +214,16 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
             caseData.getCicCase().getOrderList().forEach(
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-
         }
-
     }
 
-    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
-                                          CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Send order notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
-                .build();
+    private void updateSelectedOrder(CicCase cicCase, Order order) {
+        if (order.getDraftOrder() != null) {
+            cicCase.setSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
+        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+            cicCase.setSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Order sent %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
-            .build();
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
@@ -255,15 +243,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
         }
 
-    }
-
-    private void setDefaultLastSelectedOrderFlag(CicCase cicCase) {
-        if (!CollectionUtils.isEmpty(cicCase.getOrderList())) {
-            cicCase.getOrderList()
-                .stream()
-                .forEach(orderListValue -> orderListValue.getValue().setIsLastSelectedOrder(YesOrNo.NO));
-        }
         //Once Notification is sent, nullify the last selected order
-        //cicCase.setLastSelectedOrder(null);
+        caseData.getCicCase().setSelectedOrder(null);
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -8,7 +9,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.ExtendedCaseDetails;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
