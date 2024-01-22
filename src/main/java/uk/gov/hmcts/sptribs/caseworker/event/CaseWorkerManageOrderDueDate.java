@@ -27,6 +27,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -52,7 +53,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_AMEND_DUE_DATE)
-                .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
+                .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
                 .name("Orders: Manage due date")
                 .description("Orders: Manage due date")
                 .showSummary()

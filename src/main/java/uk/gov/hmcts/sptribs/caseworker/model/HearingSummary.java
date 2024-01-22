@@ -38,6 +38,14 @@ public class HearingSummary {
     private DynamicList judge;
 
     @CCD(
+        label = "Information about Judges stored in dynamic list",
+        typeOverride = Collection,
+        typeParameterOverride = "Judge",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<Judge>> judgeList;
+
+    @CCD(
         label = "panel member Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -112,5 +120,5 @@ public class HearingSummary {
         typeParameterOverride = "CaseworkerCICDocument",
         access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<CaseworkerCICDocument>>  recFile;
+    private List<ListValue<CaseworkerCICDocument>> recFile;
 }

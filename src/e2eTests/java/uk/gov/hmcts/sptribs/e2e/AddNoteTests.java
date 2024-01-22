@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.AddNote;
-import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
+import static uk.gov.hmcts.sptribs.e2e.enums.CaseParties.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
@@ -18,12 +18,16 @@ public class AddNoteTests extends Base {
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToAddNote() {
         Page page = getPage();
-        Case newCase = createAndBuildCase(page, Representative);
-
+        Login login = new Login(page);
+        login.loginAsCaseWorker();
+        Case newCase = new Case(page);
+        newCase.createCase(Representative.label);
+        newCase.buildCase();
         newCase.startNextStepAction(AddNote);
         assertThat(page.locator("h1")).hasText("Add case notes", textOptionsWithTimeout(60000));
         String noteText = "This is a test to add note";
-        getTextBoxByLabel(page, "Add a case note").fill(noteText);
+        getTextBoxByLabel(page, "Add a case note").type(noteText);
+        page.locator("div h1").click();
         clickButton(page, "Submit");
 
         assertThat(page.locator("h2.heading-h2").first())
@@ -34,4 +38,3 @@ public class AddNoteTests extends Base {
         Assertions.assertEquals(noteText, page.locator("ccd-read-text-area-field span").textContent());
     }
 }
-

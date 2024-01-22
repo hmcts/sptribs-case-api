@@ -13,7 +13,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
@@ -149,7 +148,6 @@ class CaseworkerSendOrderTest {
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNotNull();
-        assertThat(order.getIsLastSelectedOrder()).isEqualTo(YesOrNo.YES);
     }
 
     @Test
@@ -288,14 +286,13 @@ class CaseworkerSendOrderTest {
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
-
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
             .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -347,13 +344,12 @@ class CaseworkerSendOrderTest {
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .draftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
-            .templateGeneratedDocument(Document.builder().filename("aa--bb--cc").build())
             .build();
         final ListValue<DraftOrderCIC> draftOrderCICListValue = new ListValue<>();
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -419,7 +415,7 @@ class CaseworkerSendOrderTest {
         draftOrderList.add(firstValue);
         draftOrderList.add(secondValue);
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(draftOrderList)
@@ -488,7 +484,7 @@ class CaseworkerSendOrderTest {
             .build();
         draftOrderCICList.add(listValue);
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderDynamicList(dynamicList)

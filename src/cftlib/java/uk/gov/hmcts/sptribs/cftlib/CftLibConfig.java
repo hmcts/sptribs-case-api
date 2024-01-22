@@ -45,16 +45,6 @@ public class CftLibConfig implements CFTLibConfigurer {
             lib.createIdamUser(p.getKey(), p.getValue().toArray(new String[0]));
             lib.createProfile(p.getKey(), CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
                 CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.CARE_STANDARDS.getJurisdictionId(),
-                CcdServiceCode.ST_CS.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.MENTAL_HEALTH.getJurisdictionId(),
-                CcdServiceCode.ST_MH.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.PRIMARY_HEALTH_LISTS.getJurisdictionId(),
-                CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
-                CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
-                CcdServiceCode.ST_DD.getCaseType().getCaseTypeName(), state);
         }
 
         lib.createRoles(
@@ -62,7 +52,6 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-sptribs-systemupdate",
             "caseworker-sptribs",
             "caseworker-sptribs-cic-courtadmin",
-            "citizen-sptribs-cic-dss",
             "caseworker-st_cic",
             "caseworker-sptribs-cic-caseofficer",
             "caseworker-sptribs-cic-districtregistrar",
@@ -83,8 +72,6 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-st_cic-senior-judge",
             "caseworker-st_cic-judge",
             "caseworker-st_cic-respondent",
-            "caseworker-admin",
-            "hmcts-admin",
             "caseflags-admin",
             "caseflags-viewer",
             "citizen"
@@ -95,12 +82,7 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.configureRoleAssignments(json);
 
         configWriter.generateAllCaseTypesToJSON(new File(BUILD_DEFINITIONS));
-        // Load the JSON definitions for each caseType.
+        // Load the JSON definitions for ST_CIC caseType.
         lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CS.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_DD.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_MH.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName()));
     }
 }

@@ -18,7 +18,6 @@ import java.util.Set;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

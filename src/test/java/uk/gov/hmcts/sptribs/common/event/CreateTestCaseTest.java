@@ -33,7 +33,7 @@ class CreateTestCaseTest {
     private CreateTestCase createTestCase;
 
     @Mock
-    private CcdSupplementaryDataService coreCaseApiService;
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @InjectMocks
     private SelectParties selectParties;

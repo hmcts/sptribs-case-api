@@ -4,15 +4,16 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 import uk.gov.hmcts.sptribs.testutils.StringHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.IssueFinalDecision;
-import static uk.gov.hmcts.sptribs.e2e.enums.CasePartyContactPreference.Representative;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class IssueFinalDecisionTests extends Base {
@@ -23,7 +24,7 @@ public class IssueFinalDecisionTests extends Base {
         Login login = new Login(page);
         login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase(Representative);
+        newCase.createCase(CaseParties.Representative.label);
         newCase.buildCase();
         Hearing hearing = new Hearing(page);
         hearing.createListing();
@@ -50,9 +51,9 @@ public class IssueFinalDecisionTests extends Base {
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("h1"))
             .hasText("Select recipients", textOptionsWithTimeout(60000));
-        page.getByLabel("Subject").check();
-        page.getByLabel("Representative").check();
-        page.getByLabel("Respondent").check();
+        getCheckBoxByLabel(page, "Subject").check();
+        getCheckBoxByLabel(page, "Representative").check();
+        getCheckBoxByLabel(page, "Respondent").check();
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(60000));

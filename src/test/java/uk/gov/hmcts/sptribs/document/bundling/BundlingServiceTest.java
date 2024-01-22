@@ -1,13 +1,13 @@
 package uk.gov.hmcts.sptribs.document.bundling;
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -67,14 +66,20 @@ public class BundlingServiceTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
-        bundleMap.put("stitchedDocument", new Document());
         bundleMap.put("paginationStyle", BundlePaginationStyle.off);
         bundleMap.put("pageNumberFormat", PageNumberFormat.numberOfPages);
         bundleMap.put("stitchingFailureMessage", "1");
         bundleMap.put("stitchingStatus", "1");
+        LinkedHashMap<String, Object> stitchedDocMap = new LinkedHashMap<>();
+        stitchedDocMap.put("document_url", "http://url/documents/id");
+        stitchedDocMap.put("document_filename", "test.pdf");
+        stitchedDocMap.put("document_binary_url", "http://url/documents/id");
+        bundleMap.put("stitchedDocument", stitchedDocMap);
+
         LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
         folder.put("name", "name");
         folder.put("sortIndex", 1);
@@ -147,9 +152,18 @@ public class BundlingServiceTest {
     }
 
     @Test
+    void shouldGenerateSingleMultiBundleConfig() {
+        //When
+        MultiBundleConfig result = bundlingService.getMultiBundleConfig();
+
+        //Then
+        assertThat(result.getValue()).isNotNull();
+    }
+
+    @Test
     void shouldGenerateMultiBundleConfig() {
         //When
-        List<MultiBundleConfig> result = bundlingService.getMultiBundleConfig();
+        List<MultiBundleConfig> result = bundlingService.getMultiBundleConfigs();
 
         //Then
         assertThat(result).hasSize(1);
@@ -165,14 +179,21 @@ public class BundlingServiceTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
 
         LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("id", "1");
-        bundleMap.put("stitchedDocument", new Document());
         bundleMap.put("paginationStyle", BundlePaginationStyle.off);
         bundleMap.put("pageNumberFormat", PageNumberFormat.numberOfPages);
         bundleMap.put("stitchingFailureMessage", "1");
         bundleMap.put("stitchingStatus", "1");
+
+        LinkedHashMap<String, Object> stitchedDocMap = new LinkedHashMap<>();
+        stitchedDocMap.put("document_url", "http://url/documents/id");
+        stitchedDocMap.put("document_filename", "test.pdf");
+        stitchedDocMap.put("document_binary_url", "http://url/documents/id");
+        bundleMap.put("stitchedDocument", stitchedDocMap);
+
         LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
         folder.put("name", "name");
         folder.put("sortIndex", 1);
