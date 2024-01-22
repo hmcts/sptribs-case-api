@@ -101,27 +101,26 @@ class CaseManagementControllerTest {
         assertThat(testPreUpdResponse).isNotNull();
         assertEquals(TEST_CASE_EMAIL_ADDRESS, dssCaseData.getSubjectEmailAddress());
 
-        final CaseData caseDataUpdate = (CaseData) testPreUpdResponse.getCaseData().get(CASE_DATA_CIC_ID);
-        caseDataUpdate.getDssCaseData().setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        final DssCaseData caseDataUpdate = (DssCaseData) testPreUpdResponse.getCaseData().get(CASE_DATA_CIC_ID);
+        caseDataUpdate.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
 
         final ResponseEntity<?> postUpdateCaseResponse = caseManagementController.updateCase(
             TEST_CASE_ID,
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
-            caseDataUpdate.getDssCaseData()
+            caseDataUpdate
         );
 
         final CaseResponse caseDataUpdateResponse = (CaseResponse) (postUpdateCaseResponse.getBody());
+        assertThat(caseDataUpdateResponse).isNotNull();
 
-        final CaseData caseDataUpdatedFromResponse = (CaseData) (caseDataUpdateResponse.getCaseData().get(CASE_DATA_CIC_ID));
+        final DssCaseData caseDataUpdatedFromResponse = (DssCaseData) (caseDataUpdateResponse.getCaseData().get(CASE_DATA_CIC_ID));
 
         assertEquals(
-            caseDataUpdatedFromResponse.getDssCaseData().getSubjectEmailAddress(),
-            caseDataUpdate.getDssCaseData().getSubjectEmailAddress()
+            caseDataUpdatedFromResponse.getSubjectEmailAddress(),
+            caseDataUpdate.getSubjectEmailAddress()
         );
-        assertEquals(TEST_UPDATE_CASE_EMAIL_ADDRESS, caseDataUpdate.getDssCaseData().getSubjectEmailAddress());
-
-        assertNotNull(testPreUpdResponse);
+        assertEquals(TEST_UPDATE_CASE_EMAIL_ADDRESS, caseDataUpdate.getSubjectEmailAddress());
         assertEquals(HttpStatus.OK, postUpdateCaseResponse.getStatusCode());
     }
 
