@@ -94,7 +94,7 @@ public class BundlingService {
         AtomicInteger listValueIndex = new AtomicInteger(0);
         List<ListValue<Bundle>> newList = new ArrayList<>();
         for (Bundle doc : bundleList) {
-            var listValue = ListValue
+            ListValue<Bundle> listValue = ListValue
                 .<Bundle>builder()
                 .value(doc)
                 .build();
@@ -114,7 +114,7 @@ public class BundlingService {
         List<ListValue<BundleFolder>> newList = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleFolder doc : bundleList) {
-            var listValue = ListValue
+            ListValue<BundleFolder> listValue = ListValue
                 .<BundleFolder>builder()
                 .value(doc)
                 .build();
@@ -134,7 +134,7 @@ public class BundlingService {
         List<ListValue<BundleDocument>> newList = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleDocument doc : bundleList) {
-            var listValue = ListValue
+            final ListValue<BundleDocument> listValue = ListValue
                 .<BundleDocument>builder()
                 .value(doc)
                 .build();

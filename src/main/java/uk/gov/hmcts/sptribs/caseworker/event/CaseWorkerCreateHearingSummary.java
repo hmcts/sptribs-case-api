@@ -94,7 +94,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CREATE_HEARING_SUMMARY);
 
         DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
@@ -113,7 +113,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         caseData.getListing().setHearingStatus(Complete);
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));

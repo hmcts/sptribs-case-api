@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.Map;
@@ -36,7 +37,7 @@ public class CaseDataDocumentService {
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = caseworkerUser.getAuthToken();
 
-        final var documentInfo = docAssemblyService.renderDocument(
+        final DocumentInfo documentInfo = docAssemblyService.renderDocument(
             templateContent,
             caseId,
             authorisation,

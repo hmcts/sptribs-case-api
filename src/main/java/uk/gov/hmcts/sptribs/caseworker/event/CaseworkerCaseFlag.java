@@ -91,7 +91,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     ) {
         log.info("Create Case flags about to Submit invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
