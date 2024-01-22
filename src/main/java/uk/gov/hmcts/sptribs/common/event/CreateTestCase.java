@@ -63,6 +63,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_PROD = "prod";
     public static final String TEST_CREATE = "caseworker-create-case";
 
+    public static final String GLASGOW_TRIBUNALS_CENTRE = "366559";
+    public static final String REGION = "11";
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private static final CcdPageConfiguration selectParties = new SelectParties();
@@ -125,6 +127,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+
         final String GLASGOW_TRIBUNALS_CENTRE = "366559";
         final String REGION = "11";
 
