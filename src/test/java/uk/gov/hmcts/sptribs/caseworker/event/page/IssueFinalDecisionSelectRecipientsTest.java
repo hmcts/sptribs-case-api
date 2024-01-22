@@ -10,11 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,6 +19,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.times;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 
 @ExtendWith(MockitoExtension.class)
 public class IssueFinalDecisionSelectRecipientsTest {
@@ -66,6 +63,7 @@ public class IssueFinalDecisionSelectRecipientsTest {
         assertNull(response.getData().getCicCase().getNotifyPartyRespondent());
         assertNull(response.getData().getCicCase().getNotifyPartyApplicant());
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
     }
 
     @Test

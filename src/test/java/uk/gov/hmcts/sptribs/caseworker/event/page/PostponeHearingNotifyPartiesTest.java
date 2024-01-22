@@ -68,6 +68,7 @@ public class PostponeHearingNotifyPartiesTest {
         assertNull(response.getData().getCicCase().getNotifyPartyRespondent());
         assertNull(response.getData().getCicCase().getNotifyPartyApplicant());
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("At least one party must be selected.");
     }
 
     @Test

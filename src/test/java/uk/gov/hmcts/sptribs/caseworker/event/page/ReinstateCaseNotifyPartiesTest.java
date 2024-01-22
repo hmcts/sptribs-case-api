@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
+
 
 @ExtendWith(MockitoExtension.class)
 class ReinstateCaseNotifyPartiesTest {
@@ -55,6 +57,7 @@ class ReinstateCaseNotifyPartiesTest {
         assertNull(response.getData().getCicCase().getNotifyPartyRespondent());
         assertNull(response.getData().getCicCase().getNotifyPartyApplicant());
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
     }
 
     @Test

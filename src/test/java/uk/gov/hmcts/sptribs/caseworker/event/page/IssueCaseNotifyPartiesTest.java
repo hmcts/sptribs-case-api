@@ -69,6 +69,7 @@ public class IssueCaseNotifyPartiesTest {
         assertNull(response.getData().getCicCase().getNotifyPartyRespondent());
         assertNull(response.getData().getCicCase().getNotifyPartyApplicant());
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
     }
 
     @Test
