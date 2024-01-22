@@ -21,6 +21,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CAS
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASE_FLAGS_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -56,7 +57,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
-            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
             .name("Create Flag")
             .showSummary()
             .description("Create Flag")
@@ -90,7 +91,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     ) {
         log.info("Create Case flags about to Submit invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
