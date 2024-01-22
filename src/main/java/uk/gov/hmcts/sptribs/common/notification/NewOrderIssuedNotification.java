@@ -4,11 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -81,6 +76,24 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
+    @Override
+    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+
+        NotificationResponse notificationResponse;
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
+
+            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getApplicantEmailAddress(),
+                uploadedDocuments, templateVars);
+        } else {
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
+            notificationResponse = sendLetterNotification(templateVars);
+        }
+        cicCase.setAppNotificationResponse(notificationResponse);
+    }
+
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
                                                                      Map<String, String> uploadedDocuments,
                                                                      final Map<String, Object> templateVars) {
@@ -103,28 +116,10 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     private Map<String, String> getUploadedDocumentIds(CaseData caseData) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, String> uploadedDocuments = new HashMap<>();
-        Document lastSelectedOrder = getLastSelectedOrder(cicCase);
-        if (null != lastSelectedOrder) {
-            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(lastSelectedOrder.getUrl(), "/"));
+        if (null != cicCase.getSelectedOrder()) {
+            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getSelectedOrder().getUrl(), "/"));
         }
 
         return uploadedDocuments;
     }
-
-    private Document getLastSelectedOrder(CicCase cicCase) {
-        Document lastSelectedOrder = null;
-        for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
-            Order order = orderListValue.getValue();
-            if (YesOrNo.YES.equals(order.getIsLastSelectedOrder())) {
-                if (null != order.getDraftOrder()) {
-                    lastSelectedOrder = order.getDraftOrder().getTemplateGeneratedDocument();
-                } else if (null != order.getUploadedFile()
-                    && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-                    lastSelectedOrder = order.getUploadedFile().get(0).getValue().getDocumentLink();
-                }
-            }
-        }
-        return lastSelectedOrder;
-    }
-
 }

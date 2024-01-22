@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
@@ -20,9 +19,12 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_STAY_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -43,13 +45,13 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_STAY_THE_CASE)
-            .forStates(CaseManagement, CaseStayed)
+            .forStates(CaseManagement, ReadyToList, CaseStayed)
             .name("Stays: Create/edit stay")
             .showSummary()
             .description("Stays: Create/edit stay")
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::stayed)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
@@ -72,12 +74,15 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+
+        final CaseData caseData = details.getData();
+        final CaseStay caseStay = caseData.getCaseStay();
+
         if (details.getState() != CaseStayed) {
-            caseData.getCaseStay().setStayReason(null);
-            caseData.getCaseStay().setExpirationDate(null);
-            caseData.getCaseStay().setAdditionalDetail(null);
-            caseData.getCaseStay().setFlagType(null);
+            caseStay.setStayReason(null);
+            caseStay.setExpirationDate(null);
+            caseStay.setAdditionalDetail(null);
+            caseStay.setFlagType(null);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -85,13 +90,13 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
-        var caseData = details.getData();
-        caseData.getCaseStay().setIsCaseStayed(YesOrNo.YES);
+
+        final CaseData caseData = details.getData();
+        caseData.getCaseStay().setIsCaseStayed(YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -99,12 +104,14 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .build();
     }
 
-    public SubmittedCallbackResponse stayed(CaseDetails<CaseData, State> details,
-                                            CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        String claimNumber = data.getHyphenatedCaseRef();
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
         try {
-            sendCaseStayedNotification(claimNumber, data);
+            sendCaseStayedNotification(caseReference, caseData);
         } catch (Exception notificationException) {
             log.error("Case stay notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -114,23 +121,23 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Stay Added to Case %n## %s",
-                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(data.getCicCase()))))
+                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(caseData.getCicCase()))))
             .build();
     }
 
-    private void sendCaseStayedNotification(String caseNumber, CaseData data) {
-        CicCase cicCase = data.getCicCase();
+    private void sendCaseStayedNotification(String caseReference, CaseData caseData) {
+        final CicCase cicCase = caseData.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
-            caseStayedNotification.sendToSubject(data, caseNumber);
+        if (!isEmpty(cicCase.getSubjectCIC())) {
+            caseStayedNotification.sendToSubject(caseData, caseReference);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
-            caseStayedNotification.sendToApplicant(data, caseNumber);
+        if (!isEmpty(cicCase.getApplicantCIC())) {
+            caseStayedNotification.sendToApplicant(caseData, caseReference);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
-            caseStayedNotification.sendToRepresentative(data, caseNumber);
+        if (!isEmpty(cicCase.getRepresentativeCIC())) {
+            caseStayedNotification.sendToRepresentative(caseData, caseReference);
         }
     }
 }

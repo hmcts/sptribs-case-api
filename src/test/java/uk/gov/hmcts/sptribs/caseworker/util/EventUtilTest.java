@@ -6,11 +6,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
@@ -99,7 +102,6 @@ public class EventUtilTest {
         assertThat(result).isNull();
     }
 
-
     @Test
     void shouldSuccessfullyParseHyphen() {
         //Given
@@ -122,9 +124,7 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ELIGIBILITY_MAIN_CONTENT);
-
     }
-
 
     @Test
     void shouldSuccessfullyGetMainContentQuantum() {
@@ -136,7 +136,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(QUANTUM_MAIN_CONTENT);
-
     }
 
     @Test
@@ -149,7 +148,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEmpty();
-
     }
 
     @Test
@@ -162,7 +160,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(RULE27_MAIN_CONTENT);
-
     }
 
     @Test
@@ -175,7 +172,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_NOTICE_MAIN_CONTENT);
-
     }
 
     @Test
@@ -188,7 +184,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
-
     }
 
     @Test
@@ -201,7 +196,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
-
     }
 
     @Test
@@ -214,7 +208,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
-
     }
 
     @Test
@@ -227,7 +220,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
-
     }
 
     @Test
@@ -253,7 +245,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
-
     }
 
     @Test
@@ -266,7 +257,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
-
     }
 
     @Test
@@ -279,7 +269,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
-
     }
 
     @Test
@@ -292,7 +281,18 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
+    }
 
+    @Test
+    void shouldSuccessfullyGetOrderMainContentLOGeneralDirection() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC14_LO_GENERAL_DIRECTIONS;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -305,7 +305,70 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckRecipients() {
+        //Given
+        final CaseData data = new CaseData();
+
+        //When
+        List<String> result = EventUtil.checkRecipient(data);
+
+        //Then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckRecipientsMinor() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.MINOR)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
+        final CaseData data = new CaseData();
+        data.setCicCase(cicCase);
+
+        //When
+        List<String> result = EventUtil.checkRecipient(data);
+
+        //Then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckRecipientsFatal() {
+        //Given
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(CaseSubcategory.FATAL)
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
+        final CaseData data = new CaseData();
+        data.setCicCase(cicCase);
+
+        //When
+        List<String> result = EventUtil.checkRecipient(data);
+
+        //Then
+        assertThat(result).isNotNull();
 
     }
 
+    @Test
+    void shouldSuccessfullySetDSSMetadata() {
+        //Given
+        final CaseData data = new CaseData();
+
+        //When
+        EventUtil.setDssMetaDataForCaseApiCase(data);
+
+        //Then
+        assertThat(data.getDssQuestion1()).isEqualTo("Full Name");
+        assertThat(data.getDssQuestion3()).isEqualTo("Date of Birth");
+        assertThat(data.getDssHeaderDetails()).isEqualTo("Subject of this case");
+
+        assertThat(data.getDssAnswer1()).isEqualTo("case_data.cicCaseFullName");
+        assertThat(data.getDssAnswer3()).isEqualTo("case_data.cicCaseDateOfBirth");
+
+    }
 }

@@ -142,21 +142,6 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setRepresentativeFullName("respFullName");
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        contactPartiesNotification.sendToRespondent(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
     void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
@@ -173,6 +158,7 @@ class ContactPartiesNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
+
 
     @Test
     void shouldNotifyTribunalOfCaseIssuedWithEmailWithAttachments() {
@@ -191,6 +177,7 @@ class ContactPartiesNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
+
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();

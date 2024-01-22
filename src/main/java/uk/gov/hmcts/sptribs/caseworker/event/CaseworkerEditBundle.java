@@ -29,7 +29,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.bundling.enabled}")
+    @Value("${feature.bundling-edit.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -47,9 +47,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
             .description("Bundle: Edit a bundle")
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grant(CREATE_READ_UPDATE, SUPER_USER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -70,7 +68,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         var caseData = details.getData();
-
+        log.info("Caseworker Edit bundle case_data for Case Id: {}. {}", details.getId(), details.getData());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

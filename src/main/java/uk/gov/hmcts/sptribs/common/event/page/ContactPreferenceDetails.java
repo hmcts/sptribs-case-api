@@ -4,6 +4,7 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -11,6 +12,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MINOR_FATAL_SUBJECT_ERROR_MESSAGE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 
 
 public class ContactPreferenceDetails implements CcdPageConfiguration {
@@ -37,7 +41,11 @@ public class ContactPreferenceDetails implements CcdPageConfiguration {
         if (null != data.getCicCase() && CollectionUtils.isEmpty(data.getCicCase().getSubjectCIC())
             && CollectionUtils.isEmpty(data.getCicCase().getRepresentativeCIC())
             && CollectionUtils.isEmpty(data.getCicCase().getApplicantCIC())) {
-            errors.add("One field must be selected.");
+            errors.add(SELECT_AT_LEAST_ONE_ERROR_MESSAGE);
+        } else if ((data.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
+            || data.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
+            && !CollectionUtils.isEmpty(data.getCicCase().getSubjectCIC())) {
+            errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

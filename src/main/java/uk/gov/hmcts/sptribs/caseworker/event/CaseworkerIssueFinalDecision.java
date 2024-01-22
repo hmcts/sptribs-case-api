@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
@@ -123,7 +123,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 Upload a copy of the decision notice that you want to add to this case.
                   *  <h3>The decision notice should be:</h3>
                   *  a maximum of 100MB in size (larger files must be split)
-                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf
+                  *  labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                  Note: If the remove button is disabled, please refresh the page to remove attachments
                 """
             )
             .complex(CaseData::getCaseIssueFinalDecision)
@@ -225,12 +226,17 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 messageLine2.append("Respondent, ");
                 caseFinalDecisionIssuedNotification.sendToRespondent(details.getData(), caseNumber);
             }
+            if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+                messageLine2.append("Applicant ");
+                caseFinalDecisionIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+            }
         } catch (Exception notificationException) {
             log.error("Issue final decision notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
                 .build();
         }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))

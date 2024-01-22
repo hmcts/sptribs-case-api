@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
@@ -73,8 +75,12 @@ class CaseworkerEditCaseTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
+        beforeDetails.setState(State.DSS_Submitted);
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.APPLICANT);
+        caseData.getCicCase().setPartiesCIC(parties);
         updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setState(State.DSS_Submitted);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
@@ -96,6 +102,10 @@ class CaseworkerEditCaseTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         beforeDetails.setData(caseData);
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.APPLICANT);
+        caseData.getCicCase().setPartiesCIC(parties);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseClosed);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -151,11 +161,11 @@ class CaseworkerEditCaseTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse editedResponse = caseworkerEditCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData()).isNotNull();
-        assertThat(stayedResponse).isNotNull();
+        assertThat(editedResponse).isNotNull();
     }
 
     @Test
@@ -212,8 +222,12 @@ class CaseworkerEditCaseTest {
             .regionCIC(RegionCIC.SCOTLAND)
             .build();
 
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.APPLICANT);
         final CicCase newCicCase = CicCase.builder()
             .regionCIC(RegionCIC.LONDON)
+            .partiesCIC(parties)
             .build();
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
@@ -235,5 +249,343 @@ class CaseworkerEditCaseTest {
         assertThat(response.getData()).isNotNull();
         assertThat(response.getData().getCicCase().getRegionCIC().getLabel()).isEqualTo(RegionCIC.LONDON.getLabel());
         assertThat(editedResponse).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsWithNullCaseFlags() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setCicCase(newCicCase);
+        afterData.setCaseFlags(null);
+        beforeData.setCicCase(beforeCicCase);
+        afterData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsWithApplicant() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        newParties.add(PartiesCIC.APPLICANT);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setCicCase(newCicCase);
+        beforeData.setCicCase(beforeCicCase);
+        afterData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsWithNullApplicantDetails() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        newParties.add(PartiesCIC.APPLICANT);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setApplicantFlags(Flags.builder().build());
+        afterData.setCicCase(newCicCase);
+        beforeData.setCicCase(beforeCicCase);
+        afterData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsScenarioWIthRepresentative() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        newParties.add(PartiesCIC.REPRESENTATIVE);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setCicCase(newCicCase);
+        afterData.setCaseFlags(Flags.builder().build());
+        afterData.setSubjectFlags(Flags.builder().build());
+        afterData.setApplicantFlags(Flags.builder().build());
+        afterData.setRepresentativeFlags(Flags.builder().build());
+
+        beforeData.setCicCase(beforeCicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsWithNullRepresentativeAndApplicant() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        newParties.add(PartiesCIC.APPLICANT);
+        newParties.add(PartiesCIC.REPRESENTATIVE);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setCicCase(newCicCase);
+        afterData.setSubjectFlags(Flags.builder().build());
+        afterData.setApplicantFlags(null);
+        afterData.setRepresentativeFlags(null);
+
+        beforeData.setCicCase(beforeCicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsWithOnlySubject() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setCicCase(newCicCase);
+        afterData.setSubjectFlags(Flags.builder().build());
+        afterData.setApplicantFlags(Flags.builder().build());
+        afterData.setRepresentativeFlags(Flags.builder().build());
+
+        beforeData.setCicCase(beforeCicCase);
+        afterData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsWithNullSubjectFlags() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setCicCase(newCicCase);
+        afterData.setSubjectFlags(null);
+        afterData.setApplicantFlags(Flags.builder().build());
+        afterData.setRepresentativeFlags(Flags.builder().build());
+
+        beforeData.setCicCase(beforeCicCase);
+        afterData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyInitialiseFlagsWithSubjectFlagsPresent() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .build();
+        Set<PartiesCIC> newParties = new HashSet<>();
+        newParties.add(PartiesCIC.SUBJECT);
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(newParties)
+            .fullName(TEST_FIRST_NAME)
+            .applicantFullName(APPLICANT_FIRST_NAME)
+            .representativeFullName(TEST_FIRST_NAME)
+            .build();
+        afterData.setCicCase(newCicCase);
+        afterData.setSubjectFlags(Flags.builder().build());
+        afterData.setApplicantFlags(Flags.builder().build());
+        afterData.setRepresentativeFlags(Flags.builder().build());
+
+        beforeData.setCicCase(beforeCicCase);
+        afterData.setNote("This is a test note");
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getApplicantFlags()).isNull();
+        assertThat(response.getData().getRepresentativeFlags()).isNull();
     }
 }

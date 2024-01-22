@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
+import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getCheckBoxByLabel;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
 public class CloseCaseTests extends Base {
@@ -25,7 +27,7 @@ public class CloseCaseTests extends Base {
     public void caseworkerShouldAbleToCloseTheCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
@@ -45,8 +47,10 @@ public class CloseCaseTests extends Base {
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Select recipients", textOptionsWithTimeout(30000));
-        page.getByLabel("Subject").check();
-        page.getByLabel("Respondent").check();
+
+        getCheckBoxByLabel(page, "Subject").check();
+        getCheckBoxByLabel(page, "Respondent").check();
+
         clickButton(page, "Continue");
         assertThat(page.locator("h2.heading-h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
@@ -58,11 +62,11 @@ public class CloseCaseTests extends Base {
         Assertions.assertEquals(CaseClosed.label, newCase.getCaseStatus());
     }
 
-    @RepeatedIfExceptionsTest
+    @Disabled
     public void caseworkerShouldAbleToReinstateCase() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();

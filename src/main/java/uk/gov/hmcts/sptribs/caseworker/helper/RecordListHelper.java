@@ -15,13 +15,10 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.parseHyphen;
 
 @Service
@@ -40,14 +37,13 @@ public class RecordListHelper {
             ? "Unable to retrieve Region data"
             : null;
         caseData.getListing().setRegionsMessage(regionMessage);
-        caseData.setCurrentEvent(CASEWORKER_EDIT_RECORD_LISTING);
     }
 
 
-    public void populatedVenuesData(CaseData caseData) {
+    public void populateVenuesData(CaseData caseData) {
 
         String selectedRegion = caseData.getListing().getSelectedRegionVal();
-        String regionId = getRegionId(selectedRegion);
+        String regionId = locationService.getRegionId(selectedRegion);
 
         if (null != regionId) {
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
@@ -57,18 +53,8 @@ public class RecordListHelper {
                 ? "Unable to retrieve Hearing Venues data"
                 : null;
             caseData.getListing().setHearingVenuesMessage(hearingVenueMessage);
-
         }
-
     }
-
-    private String getRegionId(String selectedRegion) {
-        String[] values = selectedRegion != null
-            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
-            : null;
-        return values != null && values.length > 0 ? values[0] : null;
-    }
-
 
     public boolean checkNullCondition(CicCase cicCase) {
         return null != cicCase
@@ -89,6 +75,9 @@ public class RecordListHelper {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            partiesSet.add(NotificationParties.APPLICANT);
+        }
 
         caseData.getCicCase().setHearingNotificationParties(partiesSet);
     }
@@ -101,7 +90,6 @@ public class RecordListHelper {
         }
         return errors;
     }
-
 
     public void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")

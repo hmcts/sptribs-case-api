@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -12,23 +13,19 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.common.links.LinkReasonClient;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
-import uk.gov.hmcts.sptribs.flag.refdata.FlagTypeClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
 import uk.gov.hmcts.sptribs.recordlisting.LocationClient;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
 
 import java.util.TimeZone;
-import javax.annotation.PostConstruct;
 
 @SpringBootApplication(
-    exclude = {CoreCaseDataClientAutoConfiguration.class},
     scanBasePackages = {"uk.gov.hmcts.ccd.sdk", "uk.gov.hmcts.sptribs", "uk.gov.hmcts.reform.ccd.document"}
 
 )
@@ -45,8 +42,7 @@ import javax.annotation.PostConstruct;
         CaseAssignmentApi.class,
         CaseDocumentClientApi.class,
         BundlingClient.class,
-        LinkReasonClient.class,
-        FlagTypeClient.class
+        LinkReasonClient.class
     }
 )
 @EnableScheduling

@@ -31,10 +31,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
+
     @Autowired
     BundlingService bundlingService;
 
-    @Value("${feature.bundling.enabled}")
+    @Value("${feature.bundling-stitch.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -50,6 +52,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
             .forStates(BUNDLE_STATES)
             .name("Bundle: Async Stitching Comp")
             .description("Bundle: Async Stitching Comp")
+            .showCondition(ALWAYS_HIDE)
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, SUPER_USER,

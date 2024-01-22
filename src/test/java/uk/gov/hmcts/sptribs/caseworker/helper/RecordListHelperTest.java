@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -39,7 +40,6 @@ class RecordListHelperTest {
     @Mock
     private LocationService locationService;
 
-
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
         //Given
@@ -57,13 +57,10 @@ class RecordListHelperTest {
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
         recordListHelper.regionData(caseData);
 
-
         //Then
         assertThat(caseData.getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
         assertThat(caseData.getListing().getRegionList().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
-
-
     }
 
     @Test
@@ -78,8 +75,9 @@ class RecordListHelperTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        when(locationService.getRegionId("1-region")).thenReturn("1");
         when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
-        recordListHelper.populatedVenuesData(caseData);
+        recordListHelper.populateVenuesData(caseData);
 
         //Then
         assertThat(caseData.getListing().getHearingVenues()
@@ -87,8 +85,6 @@ class RecordListHelperTest {
         assertThat(caseData.getListing().getHearingVenues().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
-
-
     }
 
     @Test
@@ -110,7 +106,6 @@ class RecordListHelperTest {
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).isNotNull();
     }
 
-
     @Test
     void shouldSuccessfullyAddNotificationParties() {
         final CaseData caseData = caseData();
@@ -119,6 +114,7 @@ class RecordListHelperTest {
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
         caseData.getCicCase().setNotifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.getCicCase().setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
+        caseData.getCicCase().setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
 
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -126,10 +122,11 @@ class RecordListHelperTest {
 
         recordListHelper.getNotificationParties(caseData);
 
-        assertThat(caseData.getCicCase().getHearingNotificationParties()).hasSize(3);
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).hasSize(4);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.REPRESENTATIVE);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.RESPONDENT);
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.APPLICANT);
         assertThat(caseData.getCicCase()).isNotNull();
     }
 
@@ -188,9 +185,9 @@ class RecordListHelperTest {
             .build();
         CaseData data = caseData();
         caseData().setListing(listing);
+
         Listing result = recordListHelper.saveSummary(data);
 
         assertThat(result).isNotNull();
     }
-
 }

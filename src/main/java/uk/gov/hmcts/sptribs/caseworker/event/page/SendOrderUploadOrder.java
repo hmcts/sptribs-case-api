@@ -32,8 +32,9 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
             .label("uploadMessage", "Upload a copy of the order that you want to issue as part of this case")
             .label("uploadLimits", """
                 The order should be:
+                 *  uploaded separately, not one large file
                  *  a maximum of 100MB in size (larger files must be split)
-                 *  labelled clearly, e.g. applicant-name-decision-notice.pdf"""
+                 *  select the appropriate category from case file view"""
             )
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getOrderFile)

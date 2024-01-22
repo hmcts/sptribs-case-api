@@ -126,6 +126,41 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
+    @Test
+    void shouldNotifyApplicantWithEmail() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        caseWithdrawnNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyApplicantWithPost() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
+        data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
+
+        //When
+        when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        caseWithdrawnNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
+    }
+
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")

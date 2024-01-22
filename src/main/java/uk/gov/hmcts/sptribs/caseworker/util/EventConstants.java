@@ -8,7 +8,7 @@ public final class EventConstants {
     public static final String HYPHEN = "-";
     public static final String DOUBLE_HYPHEN = "--";
     public static final String SPACE = " ";
-    public static final String SEMICOLON = " :";
+    public static final String COLON = " :";
     public static final String CURRENT_EVENT = "currentEvent = \"";
 
     public static final String DRAFT = "DRAFT";
@@ -47,6 +47,8 @@ public final class EventConstants {
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     public static final String CASEWORKER_STAY_THE_CASE = "caseworker-stay-the-case";
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
+    public static final String CASEWORKER_HEARING_OPTIONS = "caseworker-hearing-options";
+    public static final String CASEWORKER_CLEAR_HEARING_OPTIONS = "caseworker-clear-hearing-options";
     public static final String TEST_CHANGE_STATE = "change-state";
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
     public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";

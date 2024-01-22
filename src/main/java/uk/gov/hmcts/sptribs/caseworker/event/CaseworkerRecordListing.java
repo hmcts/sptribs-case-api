@@ -2,19 +2,20 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
@@ -27,25 +28,28 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
 @Slf4j
 public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRole> {
+
+    private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
 
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
@@ -67,24 +71,16 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_RECORD_LISTING)
-            .forStates(CaseManagement)
+            .forStates(CaseManagement, ReadyToList)
             .name("Hearings: Create listing")
             .description("Hearings: Create listing")
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
+            .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE));
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
 
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
@@ -95,22 +91,20 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
-        caseData.setListing(new Listing());
-        DynamicList regionList = locationService.getAllRegions();
-        caseData.getListing().setRegionList(regionList);
 
-        String regionMessage = regionList == null || regionList.getListItems().isEmpty()
-            ? "Unable to retrieve Region data"
-            : null;
-        caseData.getListing().setRegionsMessage(regionMessage);
+        final CaseData caseData = details.getData();
+
+        log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
+
+        caseData.setListing(new Listing());
+        recordListHelper.regionData(caseData);
         caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
+
+        log.info("AboutToStart output event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)
             .build();
     }
-
 
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -124,7 +118,20 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             caseData.getListing().setAdditionalHearingDate(null);
         }
 
-        recordListHelper.getNotificationParties(caseData);
+        Set<NotificationParties> partiesSet = new HashSet<>();
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+            partiesSet.add(NotificationParties.SUBJECT);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+            partiesSet.add(NotificationParties.REPRESENTATIVE);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+            partiesSet.add(NotificationParties.RESPONDENT);
+        }
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            partiesSet.add(NotificationParties.APPLICANT);
+        }
+        caseData.getCicCase().setHearingNotificationParties(partiesSet);
 
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
@@ -153,6 +160,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
                 listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
             }
+            if (notificationPartiesSet.contains(NotificationParties.APPLICANT)) {
+                listingCreatedNotification.sendToApplicant(details.getData(), caseNumber);
+            }
         } catch (Exception notificationException) {
             log.error("Create listing notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -169,7 +179,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData caseData = details.getData();
 
-        recordListHelper.populatedVenuesData(caseData);
+        if (isNull(caseData.getListing().getHearingVenues())) {
+            recordListHelper.populateVenuesData(caseData);
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -184,7 +197,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .optional(Listing::getRegionList)
             .done();
     }
-
 
     private void addRemoteHearingInfo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation")
@@ -208,6 +220,22 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     of anyone who should be excluded from attending this hearing.
                     """)
             .optional(Listing::getImportantInfoDetails)
+            .readonly(Listing::getPostponeReason, ALWAYS_HIDE)
+            .readonly(Listing::getPostponeAdditionalInformation, ALWAYS_HIDE)
+            .readonly(Listing::getHearingCancellationReason, ALWAYS_HIDE)
+            .readonly(Listing::getCancelHearingAdditionalDetail, ALWAYS_HIDE)
+            .complex(Listing::getSummary)
+            .readonly(HearingSummary::getJudge, ALWAYS_HIDE)
+            .readonly(HearingSummary::getIsFullPanel, ALWAYS_HIDE)
+            .readonly(HearingSummary::getMemberList, ALWAYS_HIDE)
+            .readonly(HearingSummary::getOutcome, ALWAYS_HIDE)
+            .readonly(HearingSummary::getAdjournmentReasons, ALWAYS_HIDE)
+            .readonly(HearingSummary::getOthers, ALWAYS_HIDE)
+            .readonly(HearingSummary::getOtherDetailsOfAdjournment, ALWAYS_HIDE)
+            .readonly(HearingSummary::getRecFile, ALWAYS_HIDE)
+            .readonly(HearingSummary::getRecDesc, ALWAYS_HIDE)
+            .readonly(HearingSummary::getRoles, ALWAYS_HIDE)
+            .readonly(HearingSummary::getSubjectName, ALWAYS_HIDE)
             .done();
     }
 

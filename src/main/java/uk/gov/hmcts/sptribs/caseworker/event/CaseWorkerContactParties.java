@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
@@ -83,6 +85,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                     Submitted,
                     NewCaseReceived,
                     CaseManagement,
+                    ReadyToList,
                     AwaitingHearing,
                     AwaitingOutcome,
                     CaseClosed,
@@ -109,10 +112,10 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData,baseUrl);
+        caseData.setContactParties(new ContactParties());
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
-
+        caseData.getCicCase().setNotifyPartyMessage("");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -147,7 +150,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Message sent %n## %s",
-                MessageUtil.generateSimpleMessage(data.getCicCase())
+                MessageUtil.generateSimpleMessage(cicCase)
             ))
             .build();
     }
@@ -166,5 +169,4 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
         }
     }
-
 }

@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DocumentManagementUtil {
@@ -70,19 +71,13 @@ public final class DocumentManagementUtil {
     }
 
     public static List<ListValue<CaseworkerCICDocument>> buildListValues(List<CaseworkerCICDocument> docList) {
-        List<ListValue<CaseworkerCICDocument>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (CaseworkerCICDocument doc : docList) {
-            var listValue = ListValue
+        return docList.stream()
+            .map(doc -> ListValue
                 .<CaseworkerCICDocument>builder()
+                .id(UUID.randomUUID().toString())
                 .value(doc)
-                .build();
-
-            newList.add(0, listValue);
-            newList.forEach(
-                document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-        return newList;
+                .build())
+            .toList();
     }
 
 

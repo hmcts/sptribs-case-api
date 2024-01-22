@@ -38,6 +38,7 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -88,7 +89,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CLOSE_THE_CASE)
-            .forStates(CaseManagement)
+            .forStates(CaseManagement, ReadyToList)
             .name("Case: Close case")
             .showSummary()
             .description("Close the case")
@@ -112,7 +113,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         var caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
 
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
         caseData.getCloseCase().setRejectionName(judicialUsersDynamicList);
         caseData.getCloseCase().setStrikeOutName(judicialUsersDynamicList);
 
@@ -174,6 +175,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
         }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
+        }
     }
 
     private void uploadDocuments(PageBuilder pageBuilder) {
@@ -186,8 +190,11 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                     <h3>Files should be:</h3>
                     uploaded separately and not in one large file
                     a maximum of 100MB in size (larger files must be split)
-                    labelled clearly, e.g. applicant-name-decision-notice.pdf
+                    labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                    Note: If the remove button is disabled, please refresh the page to remove attachments
                     """)
+
+
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();

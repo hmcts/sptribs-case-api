@@ -1,6 +1,9 @@
 server:
   port: 4013
 
+case-flags:
+  supplementary-data:
+    hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 management:
   endpoint:
     health:
@@ -43,7 +46,6 @@ uk:
           respondentName: 'Appeals Team'
           respondentOrganisation: 'CICA'
           respondentEmail: appeals.team@cica.gov.uk
-
           tribunalName: 'First-tier Tribunal (CIC)'
           tribunalOrganisation: 'CICA'
           tribunalEmail: CIC.enquiries@justice.gov.uk
@@ -54,6 +56,8 @@ uk:
           CASE_REINSTATED_POST: '313e8992-8538-4485-a461-a244cc893bb3'
           CASE_STAYED_EMAIL: 'ce3e6749-0400-47fd-aa96-33e348c860ad'
           CASE_STAYED_POST: '23e1153e-c95c-4630-83eb-b0a272908e94'
+          CASE_UNLINKED_EMAIL: 'e19b7d26-2a5b-4275-ae40-f0309f6a30ff'
+          CASE_UNLINKED_POST: 'c6703270-58d1-40bf-aca0-b968356fe952'
           CASE_UNSTAYED_EMAIL: '46f69c0d-5114-4319-a8e0-dd2cad1ecac4'
           CASE_UNSTAYED_POST: 'a3c51a6e-b686-4ade-af32-fd62cc0d7451'
           DECISION_ISSUED_EMAIL: 'e8edb80a-6924-4247-aa33-178c28251120'
@@ -78,6 +82,9 @@ uk:
           CASE_WITHDRAWN_POST: '54fe1990-2213-4bcb-9027-7b595cd9db12'
           NEW_ORDER_ISSUED_EMAIL: 'e451a469-e61d-4daf-95c3-e405448ececf'
           NEW_ORDER_ISSUED_POST: '797e62bd-a1d4-4a6a-b15d-ddd642d2b14b'
+          CASE_LINKED_EMAIL: '8af9efba-9861-4663-8305-0a378def1e46'
+          CASE_LINKED_POST: 'd69207af-ed64-4a60-b0a3-224d429d8b17'
+
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
@@ -94,8 +101,8 @@ idam:
     url: ${IDAM_API_BASEURL:http://localhost:5000}
 
   systemupdate:
-    username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
-    password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
+    username: ${IDAM_SYSTEM_UPDATE_USERNAME:st-test1@mailinator.com}
+    password: ${IDAM_SYSTEM_UPDATE_PASSWORD:Pa55w0rd11}
 
 location:
   api:
@@ -105,14 +112,17 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
+bundling:
+  api:
+    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-demo.service.core-compute-demo.internal}
+
 refdata_common:
   api:
     baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
 
-
-bundling:
+flagType:
   api:
-    baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-demo.service.core-compute-demo.internal}
+    baseUrl: ${FLAGTYPE_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
 s2s:
   stub: false
@@ -124,7 +134,7 @@ core_case_data:
   api:
     url: ${CASE_DATA_STORE_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
   search:
-    page_size: ${CCD_SEARCH_PAGE_SIZE:100}
+    page_size: ${CCD_SEARCH_PAGE_SIZE:250}
 
 docmosis:
   templates:
@@ -145,6 +155,7 @@ docmosis:
       CIC8_ME_Joint_Instruction: ST-CIC-STD-ENG-CIC8_ME_Joint_Instruction.docx
       CIC10_Strike_Out_Warning: ST-CIC-STD-ENG-CIC10_Strike_Out_Warning.docx
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
+      CIC14_LO_General_Directions: ST-CIC-STD-ENG-CIC14_Legal_Officer_General_Directions.docx
       CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
 
 
@@ -182,6 +193,7 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
+  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
 
 feature:
   contact-parties:
@@ -190,10 +202,20 @@ feature:
     enabled: ${LINK_CASE_FEATURE:true}
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
+  migration:
+    enabled: ${MIGRATION_ENABLED:true}
   case-file-view-and-document-management:
     enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
-  bundling:
-    enabled: ${BUNDLING_FEATURE:true}
+  bundling-create:
+    enabled: ${CREATE_BUNDLING_FEATURE:true}
+  bundling-edit:
+    enabled: ${EDIT_BUNDLING_FEATURE:true}
+  bundling-clone:
+    enabled: ${CLONE_BUNDLING_FEATURE:true}
+  bundling-stitch:
+    enabled: ${STITCH_BUNDLING_FEATURE:true}
+  dss-frontend:
+    enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
 
@@ -205,6 +227,6 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
+        dssUpdateEvent: caseworker-update-dss-application
       caseTypeOfApplication:
         - CIC
-

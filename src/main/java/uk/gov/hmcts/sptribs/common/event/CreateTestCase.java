@@ -2,15 +2,18 @@ package uk.gov.hmcts.sptribs.common.event;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -27,6 +30,7 @@ import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
@@ -65,6 +69,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Autowired
     private SubmissionService submissionService;
+
+    @Autowired
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
@@ -114,10 +121,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         var submittedDetails = submissionService.submitApplication(details);
         CaseData data = submittedDetails.getData();
-
+        EventUtil.setDssMetaDataForCaseApiCase(data);
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+        data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
+
+        initialiseFlags(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -128,6 +138,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         var data = details.getData();
+
+        setSupplementaryData(details.getId());
+
         String claimNumber = data.getHyphenatedCaseRef();
         try {
             sendApplicationReceivedNotification(claimNumber, data);
@@ -143,18 +156,61 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .build();
     }
 
+    private void initialiseFlags(CaseData data) {
+        data.setCaseFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .partyName(null)
+            .roleOnCase(null)
+            .build());
+
+        if (null != data.getCicCase().getFullName()) {
+            data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getFullName())
+                .roleOnCase("subject")
+                .build()
+            );
+        }
+
+        if (null != data.getCicCase().getApplicantFullName()) {
+            data.setApplicantFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getApplicantFullName())
+                .roleOnCase("applicant")
+                .build()
+            );
+        }
+
+        if (null != data.getCicCase().getRepresentativeFullName()) {
+            data.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getRepresentativeFullName())
+                .roleOnCase("Representative")
+                .build()
+            );
+        }
+    }
+
+    private void setSupplementaryData(Long caseId) {
+        try {
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
+    }
+
     private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getSubjectCIC().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cicCase.getSubjectCIC())) {
             applicationReceivedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (!cicCase.getApplicantCIC().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cicCase.getApplicantCIC())) {
             applicationReceivedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (!cicCase.getRepresentativeCIC().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cicCase.getRepresentativeCIC())) {
             applicationReceivedNotification.sendToRepresentative(data, caseNumber);
         }
     }
@@ -166,6 +222,5 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             data.getCicCase().setIsRepresentativePresent(YesOrNo.NO);
         }
     }
-
 
 }
