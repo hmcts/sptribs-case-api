@@ -16,20 +16,26 @@ import static java.util.Collections.singletonMap;
 @Service
 public class CcdSupplementaryDataService {
 
-    @Autowired
     private IdamService idamService;
 
-    @Autowired
     private AuthTokenGenerator authTokenGenerator;
 
-    @Autowired
     private CoreCaseDataApi coreCaseDataApi;
 
-    @Autowired
     private CaseFlagsConfiguration caseFlagsConfiguration;
 
-    @Autowired
     private AuthorisationService authorisationService;
+
+    @Autowired
+    public CcdSupplementaryDataService(IdamService idamService, AuthTokenGenerator authTokenGenerator,
+            CoreCaseDataApi coreCaseDataApi, CaseFlagsConfiguration caseFlagsConfiguration,
+            AuthorisationService authorisationService) {
+        this.idamService = idamService;
+        this.authTokenGenerator = authTokenGenerator;
+        this.coreCaseDataApi = coreCaseDataApi;
+        this.caseFlagsConfiguration = caseFlagsConfiguration;
+        this.authorisationService = authorisationService;
+    }
 
     public void submitSupplementaryDataToCcd(String caseId) {
 
@@ -51,7 +57,6 @@ public class CcdSupplementaryDataService {
                 caseFlagsConfiguration.getHmctsId())));
 
         final User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
-
         coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(),
             caseId,

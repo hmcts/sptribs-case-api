@@ -5,7 +5,6 @@ import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
-import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -24,7 +23,8 @@ public class StayCaseTests extends Base {
         Login login = new Login(page);
         login.loginAsCaseWorker();
         Case newCase = new Case(page);
-        newCase.createCase(CaseParties.Representative.label);
+        newCase.createCase();
+        newCase.createCase("applicant", "representative");
         newCase.buildCase();
         newCase.addStayToCase();
     }
@@ -52,9 +52,8 @@ public class StayCaseTests extends Base {
         page.getByLabel("Provide additional details (Optional)").fill("Additional info for create stay case run time");
         clickButton(page, "Continue");
         clickButton(page, "Save and continue");
-        assertThat(page.locator("ccd-markdown markdown h1")).hasText("Stay Added to Case",textOptionsWithTimeout(60000));
-        assertThat(page.locator("ccd-markdown markdown h2"))
-            .hasText("A notification has been sent to: Subject",textOptionsWithTimeout(30000));
+        assertThat(page.locator("h1:has-text('Stay Added to Case')")).isVisible();
+        assertThat(page.locator("h2")).hasText("A notification has been sent to: Subject",textOptionsWithTimeout(30000));
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
         page.getByRole(AriaRole.TAB, new Page.GetByRoleOptions().setName("State")).getByText("State").click();
         page.waitForSelector("h4", PageHelpers.selectorOptionsWithTimeout(60000));

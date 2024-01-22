@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document.bundling.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.CASE_BUNDLES;
@@ -158,24 +158,23 @@ public class BundlingService {
 
     private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
         List<Bundle> bundleList = new ArrayList<>();
-        List<BundleFolder> folders = new ArrayList<>();
         Optional.ofNullable(response).ifPresent(list ->
             list.forEach(res -> {
                 LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
                 Bundle bundle = buildBundle(objectLinkedHashMap);
 
-                buildBundleFolders(folders, objectLinkedHashMap);
+                bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
                 if (null != objectLinkedHashMap.get(DOCUMENTS)) {
                     bundle.setDocuments(buildBundleDocumentListValues(getDocuments(objectLinkedHashMap)));
                 }
-                bundle.setFolders(buildBundleFolderListValues(folders));
                 bundleList.add(bundle);
             }));
 
         return bundleList;
     }
 
-    private void buildBundleFolders(List<BundleFolder> folders, LinkedHashMap<String, Object> objectLinkedHashMap) {
+    private List<BundleFolder> buildBundleFolders(LinkedHashMap<String, Object> objectLinkedHashMap) {
+        List<BundleFolder> folders = new ArrayList<>();
         if (null != objectLinkedHashMap.get(FOLDERS)) {
             List<LinkedHashMap<String, Object>> responseFolders
                 = (List<LinkedHashMap<String, Object>>) objectLinkedHashMap.get(FOLDERS);
@@ -192,6 +191,7 @@ public class BundlingService {
             }
 
         }
+        return folders;
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {

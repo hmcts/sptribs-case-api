@@ -8,21 +8,12 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
-import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
-import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
-import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -30,6 +21,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
@@ -42,11 +34,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
-import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
 @Component
 @Slf4j
@@ -56,9 +44,6 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
     @Value("${feature.case-file-view-and-document-management.enabled}")
     private boolean caseFileViewAndDocumentManagementEnabled;
 
-    private static final CcdPageConfiguration selectDocuments = new DocumentManagementSelectDocuments();
-    private static final CcdPageConfiguration amendDocuments = new DocumentManagementAmendDocuments();
-
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (caseFileViewAndDocumentManagementEnabled) {
             doConfigure(configBuilder);
@@ -66,13 +51,14 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
     }
 
     public void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
+        new PageBuilder(configBuilder
             .event(CASEWORKER_DOCUMENT_MANAGEMENT_AMEND)
             .forStates(Withdrawn,
                 Rejected,
                 Submitted,
                 NewCaseReceived,
                 CaseManagement,
+                ReadyToList,
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,
@@ -81,72 +67,32 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             .description("Document management: Amend")
             .showSummary()
             .grant(CREATE_READ_UPDATE_DELETE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE)
-            .aboutToStartCallback(this::aboutToStart)
+            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_CASEWORKER)
+            .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
-        selectDocuments.addTo(pageBuilder);
-        amendDocuments.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
         var caseData = details.getData();
-        var cicCase = caseData.getCicCase();
 
-        DynamicList documentList = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
-        cicCase.setAmendDocumentList(documentList);
+        updateCategoryToCaseworkerDocument(caseData.getAllDocManagement().getCaseworkerCICDocument());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
-    }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
-
-        final CaseData caseData = details.getData();
-        final CicCase cicCase = caseData.getCicCase();
-        final CaseworkerCICDocument selectedDocument = cicCase.getSelectedDocument();
-        final String selectedDocumentType = cicCase.getSelectedDocumentType();
-
-        switch (selectedDocumentType) {
-            case CASE_TYPE ->
-                updateCaseDocumentList(cicCase.getApplicantDocumentsUploaded(), selectedDocument);
-            case REINSTATE_TYPE ->
-                updateCaseDocumentList(cicCase.getReinstateDocuments(), selectedDocument);
-            case DOC_MGMT_TYPE ->
-                updateCaseDocumentList(caseData.getAllDocManagement().getCaseworkerCICDocument(), selectedDocument);
-            case CLOSE_CASE_TYPE ->
-                updateCaseDocumentList(caseData.getCloseCase().getDocuments(), selectedDocument);
-            case HEARING_SUMMARY_TYPE ->
-                updateCaseDocumentList(caseData.getLatestCompletedHearing().getSummary().getRecFile(), selectedDocument);
-            default -> {
-                return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                    .errors(singletonList("Invalid document type, please try again"))
-                    .build();
-            }
-        }
-
-        cicCase.setSelectedDocument(null);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Document Updated")
+            .confirmationHeader("# Case updated")
             .build();
     }
+
 }
