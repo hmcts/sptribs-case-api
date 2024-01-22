@@ -23,7 +23,7 @@ public final class DocumentManagementUtil {
         if (CollectionUtils.isEmpty(cicCase.getRemovedDocumentList())) {
             List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            ListValue<CaseworkerCICDocument> listValue = ListValue
                 .<CaseworkerCICDocument>builder()
                 .id("1")
                 .value(caseworkerCICDocument)
@@ -34,7 +34,7 @@ public final class DocumentManagementUtil {
             cicCase.setRemovedDocumentList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<CaseworkerCICDocument> listValue = ListValue
                 .<CaseworkerCICDocument>builder()
                 .value(caseworkerCICDocument)
                 .build();
