@@ -46,6 +46,7 @@ public class CaseworkerDssUpdateCase implements CCDConfig<CaseData, State, UserR
             .forAllStates()
             .name("DSS Update case (cic)")
             .description("Application DSS Update (cic)")
+            .publishToCamunda()
             .retries(120, 120)
             .grant(Permissions.CREATE_READ_UPDATE, CITIZEN_CIC, SYSTEMUPDATE)
             .grantHistoryOnly(

@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -91,6 +92,16 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String caseNameHmctsInternal;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList caseManagementCategory;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseLocation caseManagementLocation;
 
     @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Case Flags")
@@ -254,7 +265,7 @@ public class CaseData {
 
     @CCD(
         label = "Case number",
-        access = {CaseworkerAccess.class}
+        access = {DefaultAccess.class, CaseworkerAccess.class}
     )
     private String hyphenatedCaseRef;
 
@@ -412,12 +423,15 @@ public class CaseData {
     )
     private YesOrNo hasDssNotificationSent;
 
-
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String firstHearingDate;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
+
+    @CCD(access = {DefaultAccess.class})
+    @JsonUnwrapped
+    private RetiredFields retiredFields;
 
     public String getFirstHearingDate() {
 
@@ -430,10 +444,6 @@ public class CaseData {
 
     }
 
-    @JsonIgnore
-    public Listing getListing() {
-        return listing;
-    }
 
     @JsonIgnore
     public Listing getLatestCompletedHearing() {
@@ -474,7 +484,6 @@ public class CaseData {
         }
         return "";
     }
-
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

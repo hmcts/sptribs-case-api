@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -19,12 +21,14 @@ public class CICDocument {
 
     @CCD(
         label = "Description",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String documentEmailContent;
 
     @CCD(
-        label = "File"
+        label = "File",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document documentLink;
 
@@ -39,7 +43,7 @@ public class CICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        String regex = "pdf,csv,txt,rtf,xlsx,docx,doc,xls";
+        String regex = ".pdf,.tif,.tiff,.jpg,.jpeg,.png,.mp3,.m4a,.csv,.txt,.rtf,.xlsx,.docx,.doc,.xls";
         String fileName = this.documentLink.getFilename();
         String fileExtension = StringUtils.substringAfter(fileName, ".");
 

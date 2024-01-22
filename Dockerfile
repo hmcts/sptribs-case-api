@@ -1,7 +1,7 @@
-ARG APP_INSIGHTS_AGENT_VERSION=3.2.6
-# Application image
+# renovate: datasource=github-releases depName=microsoft/ApplicationInsights-Java
+ARG APP_INSIGHTS_AGENT_VERSION=3.4.18
 
-FROM hmctspublic.azurecr.io/base/java:17-distroless
+FROM hmctspublic.azurecr.io/base/java:21-distroless
 
 COPY build/libs/sptribs-case-api.jar /opt/app/
 COPY lib/applicationinsights.json /opt/app/

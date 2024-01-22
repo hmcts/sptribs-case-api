@@ -205,6 +205,7 @@ public class TestDataHelper {
         listing.setVideoCallLink("");
         listing.setDate(LocalDate.now());
         listing.setHearingTime("10:00");
+        listing.setDate(LocalDate.of(2023, 04, 21));
         listing.setHearingStatus(HearingState.Listed);
         return listing;
     }
@@ -395,7 +396,7 @@ public class TestDataHelper {
     public static List<ListValue<CICDocument>> getCICDocumentListWithInvalidFileFormat() {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename("file.png").build())
+            .documentLink(Document.builder().filename("file.sql").build())
             .documentEmailContent("some email content")
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();

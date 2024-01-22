@@ -17,6 +17,5 @@ public class ReferToLegalOfficerAdditionalInfo implements CcdPageConfiguration {
             .done()
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getReferralTypeForWA);
-
     }
 }
