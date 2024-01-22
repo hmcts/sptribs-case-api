@@ -120,4 +120,29 @@ public class HearingRecordingUploadPageTest {
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().get(0)).contains("Please attach the document");
     }
+
+    @Test
+    void midEventReturnsErrorForMissingCategory() {
+        documentList = new ArrayList<>();
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename("file.mp3").build())
+            .documentEmailContent("some email content")
+            .build();
+        final ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+
+        documentList.add(documentListValue);
+        final HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
+
+        final CaseData caseData = CaseData.builder()
+            .listing(listing)
+            .build();
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().get(0)).contains("Category is mandatory for each document");
+    }
 }
