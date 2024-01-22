@@ -25,7 +25,7 @@ public class CaseUploadDocumentsTest {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
-            .applicantDocumentsUploaded(getCaseworkerCICDocumentList())
+            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
