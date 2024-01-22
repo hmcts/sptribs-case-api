@@ -23,7 +23,10 @@ public enum CloseReason implements HasLabel {
     Concession(State.Concession,"Case Concession"),
 
     @JsonProperty("consentOrder")
-    ConsentOrder(State.ConsentOrder, "Consent Order");
+    ConsentOrder(State.ConsentOrder, "Consent Order"),
+
+    @JsonProperty("rule27")
+    Rule27(State.Rule27, "Rule 27");
 
     private final State type;
     private final String label;

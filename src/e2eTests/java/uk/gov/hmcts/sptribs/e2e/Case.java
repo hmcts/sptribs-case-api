@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.e2e;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Assertions;
 import uk.gov.hmcts.sptribs.e2e.enums.Actions;
+import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseState;
 import uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate;
 import uk.gov.hmcts.sptribs.testutils.DateHelpers;
@@ -18,6 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.BuildCase;
@@ -25,7 +28,10 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCases;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageCaseLinks;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
+import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.TestChangeState;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseClosed;
@@ -66,6 +72,8 @@ public class Case {
     public String createCase(String... args) {
 
         // Select case filters
+        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         clickLink(page, "Create case");
         assertThat(page.locator("h1"))
             .hasText("Create Case", textOptionsWithTimeout(60000));
@@ -80,7 +88,7 @@ public class Case {
         assertThat(page.locator("h1"))
             .hasText("Case categorisation", textOptionsWithTimeout(30000));
         page.selectOption("#cicCaseCaseCategory", new SelectOption().setLabel("Assessment")); // Available options: Assessment, Eligibility
-        page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Fatal")); // Available options: Fatal, Sexual Abuse, Other
+        page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Medical Re-opening"));
         clickButton(page, "Continue");
 
         // Fill date case received form
@@ -90,6 +98,7 @@ public class Case {
         getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
         getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
         getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
+        page.waitForSelector("fieldset span.error-message", new Page.WaitForSelectorOptions().setState(WaitForSelectorState.HIDDEN));
         clickButton(page, "Continue");
 
         // Fill identified parties form
@@ -169,37 +178,50 @@ public class Case {
 
         // Fill contact preferences form
         assertThat(page.locator("h1"))
-            .hasText("Who should receive information about the case?", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Subject").first().check();
+            .hasText("Who should receive information about the case?", textOptionsWithTimeout(60000));
+        page.locator("#cicCaseSubjectCIC-SubjectCIC").check();
         if (page.isVisible("#cicCaseApplicantCIC-ApplicantCIC")) {
-            getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
+            page.locator("#cicCaseApplicantCIC-ApplicantCIC").check();
         }
         if (page.isVisible("#cicCaseRepresentativeCIC-RepresentativeCIC")) {
-            getCheckBoxByLabel(page, "Representative").check();
+            page.locator("#cicCaseRepresentativeCIC-RepresentativeCIC").check();
         }
+        page.locator("div h1").click();
         clickButton(page, "Continue");
 
         // Upload tribunals form
         assertThat(page.locator("h1"))
-            .hasText("Upload tribunal forms", textOptionsWithTimeout(30000));
+            .hasText("Upload tribunal forms", textOptionsWithTimeout(60000));
+        clickButton(page, "Add new");
+        String documentCategory = "A - Application Form";
+        page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
+        String documentName = "sample_A_application_document.pdf";
+        page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
+        page.waitForSelector("//span[contains(text(), 'Uploading...')]",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
+        page.waitForFunction("selector => document.querySelector(selector).disabled === true",
+            "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
+        String documentDescription = "This is a test document uploaded during create case journey";
+        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").type(documentDescription);
+        page.locator("//h2[contains(text(), 'File Attachments')]").click();
         clickButton(page, "Continue");
 
         // Fill further details form
         assertThat(page.locator("h1"))
-            .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
+            .hasText("Enter further details about this case", textOptionsWithTimeout(60000));
         page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
+        page.selectOption("#cicCaseRegionCIC", new SelectOption().setLabel("London"));
         page.locator("#cicCaseClaimLinkedToCic_Yes").click();
         getTextBoxByLabel(page, "CICA reference number").fill("CICATestReference");
         page.locator("#cicCaseCompensationClaimLinkCIC_Yes").click();
-        getTextBoxByLabel(page, "Police Authority Management Incident").fill("PAMITestReference");
-        page.locator("#cicCaseFormReceivedInTime_Yes").click();
+        page.locator("#cicCaseFormReceivedInTime_No").click();
         page.locator("#cicCaseMissedTheDeadLineCic_Yes").click();
         clickButton(page, "Continue");
 
         // Check your answers form
         page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(30000));
         assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
+            .hasText("Check your answers", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
 
         // Case created confirmation screen
@@ -414,27 +436,71 @@ public class Case {
         getTextBoxByLabel(page, "Postcode/Zipcode").fill("SW11 1PD");
     }
 
-    public void createCaseFlag() {
+    public void createFlagForParties(CaseParties... parties) {
+        Arrays.stream(parties).map(Enum::name).forEach(this::createCaseFlag);
+    }
+
+    public void createCaseLevelFlag() {
+        createCaseFlag("Case level");
+    }
+
+    public void createCaseFlag(String flagLevel) {
         startNextStepAction(CreateFlag);
-        assertThat(page.locator("h1")).hasText("Flags: Create flag",textOptionsWithTimeout(60000));
-        assertThat(page.locator("h2")).hasText("Where should this flag be added?",textOptionsWithTimeout(30000));
-        getRadioButtonByLabel(page, "Case").click();
-        clickButton(page, "Continue");
-        getCheckBoxByLabel(page, "Subject").check();
-        clickButton(page, "Continue");
+
+        // Select flag level
+        assertThat(page.locator("h1").last()).hasText("Where should this flag be added?", textOptionsWithTimeout(60000));
+        getRadioButtonByLabel(page, flagLevel).click();
+        clickButton(page, "Next");
+
+        // Select flag type
         getRadioButtonByLabel(page, "Other").click();
-        page.getByLabel("Enter a flag type").click();
-        page.getByLabel("Enter a flag type").fill("test flag");
-        clickButton(page, "Continue");
-        assertThat(page.locator("h2"))
-            .hasText("Add comments for this flag (Optional)",textOptionsWithTimeout(30000));
-        clickButton(page, "Continue");
+        getTextBoxByLabel(page, "Enter a flag type").type("test flag");
+        clickButton(page, "Next");
+
+        // Enter flag comments
+        page.locator("#flagComments").type("Test Flag Comment");
+        clickButton(page, "Next");
+
+        // Review flag details screen
         assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
+            .hasText("Review flag details", textOptionsWithTimeout(60000));
         clickButton(page, "Save and continue");
+
+        // Flag created confirmation screen
         assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Case Flag created", textOptionsWithTimeout(60000));
-        page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Close and Return to case details")).click();
+            .hasText("Flag created", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+    }
+
+    public void updateCaseLevelFlag() {
+        startNextStepAction(ManageFlags);
+
+        // Select flag to manage
+        assertThat(page.locator("h1").last()).hasText("Manage case flags", textOptionsWithTimeout(60000));
+        getRadioButtonByLabel(page, "Case level").click();
+        clickButton(page, "Next");
+
+        // Select to make flag inactive
+        clickButton(page, "Make inactive");
+        page.locator("#flagComments").type("Test Manage case flag, making the flag inactive");
+        clickButton(page, "Next");
+
+        // Review flag details screen
+        assertThat(page.locator("h2.heading-h2"))
+            .hasText("Review flag details", textOptionsWithTimeout(60000));
+        clickButton(page, "Save and continue");
+
+        // Flag created confirmation screen
+        assertThat(page.locator("ccd-markdown markdown h1"))
+            .hasText("Flag updated", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+
+        // Case details screen
         assertThat(page.locator("h2.heading-h2").first())
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals(CaseManagement.label, getCaseStatus());
@@ -457,8 +523,8 @@ public class Case {
         assertThat(page.locator("h1")).hasText("Upload case documents", textOptionsWithTimeout(30000));
         clickButton(page, "Continue");
         assertThat(page.locator("h1")).hasText("Select recipients", textOptionsWithTimeout(30000));
-        page.getByLabel("Subject").check();
-        page.getByLabel("Respondent").check();
+        getCheckBoxByLabel(page, "Subject").check();
+        getCheckBoxByLabel(page, "Respondent").check();
         clickButton(page, "Continue");
         assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
@@ -495,8 +561,8 @@ public class Case {
         clickButton(page, "Continue");
         getTextBoxByLabel(page, "Order signature").fill("Tribunal Judge Farrelly");
         clickButton(page, "Continue");
-        assertThat(page.locator("a.ng-star-inserted").last())
-            .containsText(" Order-[Subject", containsTextOptionsWithTimeout(60000));
+        assertThat(page.locator("ccd-read-document-field a.ng-star-inserted"))
+            .containsText(" Order--[Subject", containsTextOptionsWithTimeout(60000));
         assertThat(page.locator("a.ng-star-inserted").last())
             .containsText(".pdf", containsTextOptionsWithTimeout(60000));
         clickButton(page, "Continue");
@@ -602,5 +668,66 @@ public class Case {
             .hasText("History", textOptionsWithTimeout(60000));
         assertThat(page.locator("tr a").first())
             .hasText(ManageDueDate.label, textOptionsWithTimeout(60000));
+    }
+
+    public void linkCase(String caseId1, String caseId2) {
+        openCase(caseId1);
+        startNextStepAction(LinkCases);
+        assertThat(page.locator("h1"))
+            .hasText("Before you start", textOptionsWithTimeout(60000));
+        clickButton(page, "Next");
+        assertThat(page.locator("h1"))
+            .hasText("Select a case you want to link to this case", textOptionsWithTimeout(60000));
+        page.locator("#caseNumber input").fill(caseId2);
+        page.getByLabel("Bail").check();
+        clickButton(page, "Propose case link");
+        page.waitForSelector("//td/span[contains(text(), 'Bail')]",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
+        clickButton(page, "Next");
+        assertThat(page.locator("h1"))
+            .hasText("Check your answers", textOptionsWithTimeout(60000));
+        clickButton(page, "Submit");
+        assertThat(page.locator("h1").last())
+            .hasText("Case Link created", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+    }
+
+    public void unlinkCase(String caseId1, String caseId2) {
+        openCase(caseId1);
+        startNextStepAction(ManageCaseLinks);
+        assertThat(page.locator("h1"))
+            .hasText("Before you start", textOptionsWithTimeout(60000));
+        clickButton(page, "Next");
+        assertThat(page.locator("h1").last())
+            .hasText("Select the cases you want to unlink from this case", textOptionsWithTimeout(60000));
+        page.locator(format("#case-reference-%s", caseId2.replace("-", ""))).check();
+        clickButton(page, "Next");
+        assertThat(page.locator("h1").last())
+            .hasText("Check your answers", textOptionsWithTimeout(60000));
+        clickButton(page, "Submit");
+        assertThat(page.locator("h1").last())
+            .hasText("Case Link updated", textOptionsWithTimeout(60000));
+        clickButton(page, "Close and Return to case details");
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
+        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
+    }
+
+    private void openCase(String caseId) {
+        clickLink(page, "Find Case");
+        page.selectOption("#s-jurisdiction", new SelectOption().setLabel("CIC"));
+        page.selectOption("#s-case-type", new SelectOption().setLabel("CIC"));
+        page.locator("input[id*=CASE_REFERENCE]").fill(caseId);
+        clickButton(page, "Apply");
+        String selector = "//ccd-read-text-field/span[contains(text(), '" + caseId + "')]";
+        page.waitForSelector(selector, new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
+        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED).setTimeout(60000));
+        page.locator(selector).click();
+        assertThat(page.locator("h2.heading-h2").first())
+            .hasText("History", textOptionsWithTimeout(60000));
     }
 }

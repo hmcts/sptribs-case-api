@@ -1,8 +1,9 @@
 #!groovy
-import uk.gov.hmcts.contino.AppPipelineConfig
-import uk.gov.hmcts.contino.GithubAPI
+
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GradleBuilder
 import uk.gov.hmcts.contino.MetricsPublisher
 
@@ -54,6 +55,7 @@ def secrets = [
 def pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
 
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 withPipeline(type, product, component) {
     enableAksStagingDeployment()
@@ -61,7 +63,7 @@ withPipeline(type, product, component) {
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
     enableSlackNotifications('#special-tribunals-builds')
-    MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component )
+    MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
       if(params.environment != 'prod') {
         enableHighLevelDataSetup()
@@ -105,6 +107,15 @@ withPipeline(type, product, component) {
       reportDir            : "build/reports/checkstyle",
       reportFiles          : "integrationTest.html",
       reportName           : "Checkstyle Integration Test Report"
+    ]
+
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "build/reports/tests/integration",
+      reportFiles          : "index.html",
+      reportName           : "Integration Tests Report"
     ]
 
     publishHTML target: [
@@ -186,42 +197,42 @@ withPipeline(type, product, component) {
       env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-
-
-
-
+      env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
 
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
     onMaster {
-        env.ENVIRONMENT="aat"
-        env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-        env.CCD_DEF_NAME="aat"
-        env.ELASTIC_SEARCH_ENABLED=true
-        env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-        env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-        setCommonEnvVariables()
-        setFeatureFlags(env.ENVIRONMENT)
+      env.ENVIRONMENT="aat"
+      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+      env.CCD_DEF_NAME="aat"
+      env.ELASTIC_SEARCH_ENABLED=true
+      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      setCommonEnvVariables()
+      setFeatureFlags(env.ENVIRONMENT)
+
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
     afterSuccess('functionalTest:aat') {
 
-        /*try {
-          builder.gradle('e2eTests')
-        } finally {
+       try {
+         builder.gradle('e2eTests')
+       } finally {
 
-           publishHTML target: [
-              allowMissing         : true,
-              alwaysLinkToLastBuild: true,
-              keepAll              : true,
-              reportDir            : "build/reports/tests/e2eTests",
-              reportFiles          : "index.html",
-              reportName           : "E2E Tests Report"
-           ]
-        }*/
+          publishHTML target: [
+             allowMissing         : true,
+             alwaysLinkToLastBuild: true,
+             keepAll              : true,
+             reportDir            : "build/reports/tests/e2eTests",
+             reportFiles          : "index.html",
+             reportName           : "E2E Tests Report"
+          ]
+       }
 
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
@@ -240,8 +251,25 @@ withPipeline(type, product, component) {
         generateDefinitions()
     }
 
+  /* afterSuccess('functionalTest:preview') {
 
-    onDemo {
+        try {
+            builder.gradle('e2eTests')
+        } finally {
+
+            publishHTML target: [
+                    allowMissing         : true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : "build/reports/tests/e2eTests",
+                    reportFiles          : "index.html",
+                    reportName           : "E2E Tests Report"
+            ]
+        }
+    }*/
+
+
+        onDemo {
       env.ENVIRONMENT="demo"
       env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
       env.CCD_DEF_NAME = "demo"
@@ -308,21 +336,39 @@ def setFeatureFlags(environment) {
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
+    env.SECURITY_CLASSIFICATION = true
+    env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
   } else if (environment =~ /aat/) {
-    env.CONTACT_PARTIES_FEATURE = false
-    env.LINK_CASE_FEATURE = false
-    env.CASE_FLAGS_FEATURE = false
+    env.CONTACT_PARTIES_FEATURE = true
+    env.LINK_CASE_FEATURE = true
+    env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = false
     env.DSS_FRONTEND_FEATURE = true
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
+    env.SECURITY_CLASSIFICATION = false
+    env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
   } else if (environment =~ /prod/) {
-    env.CONTACT_PARTIES_FEATURE = false
-    env.LINK_CASE_FEATURE = false
-    env.CASE_FLAGS_FEATURE = false
+    env.CONTACT_PARTIES_FEATURE = true
+    env.LINK_CASE_FEATURE = true
+    env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = false
-    env.DSS_FRONTEND_FEATURE = false
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
+    env.DSS_FRONTEND_FEATURE = true
+    env.SECURITY_CLASSIFICATION = false
+    env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
   }
 }

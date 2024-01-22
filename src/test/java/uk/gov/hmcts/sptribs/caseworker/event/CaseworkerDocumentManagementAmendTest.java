@@ -59,13 +59,13 @@ class CaseworkerDocumentManagementAmendTest {
     }
 
     @Test
-    void shouldSuccessfullyAddDocument() {
+    void shouldSuccessfullyAmendCaseDocument() {
         //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
-            .caseworkerCICDocument(getCaseworkerCICDocumentList())
+            .caseworkerCICDocument(getCaseworkerCICDocumentList("file.pdf"))
             .build();
         caseData.setAllDocManagement(documentManagement);
         beforeDetails.setData(caseData);

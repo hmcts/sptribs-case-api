@@ -37,7 +37,8 @@ public class CloseCase {
 
     @CCD(
         label = "Provide additional details",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String additionalDetail;
 
@@ -85,6 +86,13 @@ public class CloseCase {
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate consentOrderDate;
+
+    @CCD(
+        label = "What was the date of Rule 27 decision?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate rule27DecisionDate;
 
     @CCD(
         label = "Who made the decision to strike out the case?",

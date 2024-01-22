@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
@@ -175,7 +175,7 @@ public class NotificationServiceCIC {
                 jsonObject = NotificationClient.prepareUpload(fileContents);
             }
         } catch (NotificationClientException e) {
-            log.error("unable to upload file to Notification -", e.getMessage());
+            log.error("Unable to upload file to Notification - {}", e.getMessage());
             throw new NotificationException(e);
         }
 

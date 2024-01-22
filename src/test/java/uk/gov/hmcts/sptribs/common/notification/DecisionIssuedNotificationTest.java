@@ -252,6 +252,52 @@ public class DecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
     }
 
+    @Test
+    void shouldNotifyApplicantWithEmail() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+
+        final UUID uuid = UUID.randomUUID();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
+            .documentEmailContent("content")
+            .build();
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
+            .decisionDocument(document)
+            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
+        data.setCaseIssueDecision(caseIssueDecision);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
+        decisionIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyApplicantWithPost() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
+        data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
+
+        //When
+        when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        decisionIssuedNotification.sendToApplicant(data, "CN1");
+
+        //Then
+        verify(notificationService).sendLetter(any(NotificationRequest.class));
+    }
+
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")

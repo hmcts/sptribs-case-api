@@ -37,7 +37,6 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
-
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
                 uploadedDocuments, templateVars);
         } else {
@@ -72,7 +71,6 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
         Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
-
         NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
             uploadedDocuments, respondentTemplateVars);
         cicCase.setResNotificationResponse(notificationResponse);
@@ -119,10 +117,12 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     private Map<String, String> getUploadedDocumentIds(CaseData caseData) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, String> uploadedDocuments = new HashMap<>();
-        if (null != cicCase.getLastSelectedOrder()) {
-            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getLastSelectedOrder().getUrl(), "/"));
+        if (null != cicCase.getSelectedOrder()) {
+            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getSelectedOrder().getUrl(), "/"));
+
         }
 
         return uploadedDocuments;
     }
+
 }

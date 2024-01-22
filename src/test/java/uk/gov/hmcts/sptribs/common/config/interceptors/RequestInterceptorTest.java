@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.common.config.interceptors;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,22 +10,28 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
+import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
 class RequestInterceptorTest {
 
-    private static final String AUTH_TOKEN_WITH_BEARER_PREFIX = "Bearer " + TEST_AUTHORIZATION_TOKEN;
+    private static final String AUTH_TOKEN_WITH_BEARER_PREFIX = BEARER + TEST_AUTHORIZATION_TOKEN;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private HttpServletResponse response;
 
     @Mock
     private AuthTokenValidator validator;
@@ -33,39 +41,79 @@ class RequestInterceptorTest {
 
     @BeforeEach
     public void setUp() {
-        setField(requestInterceptor, "authorisedServices", List.of("ccd_data"));
+        setField(requestInterceptor, "authorisedServices", List.of("ccd_data", "test_service"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAuthorisedServiceListIsNull() {
+        //Given
+        setField(requestInterceptor, "authorisedServices",null);
+
+        //When
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+            .isExactlyInstanceOf(UnAuthorisedServiceException.class)
+            .hasMessageContaining("List of authorised services is not yet configured");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAuthorisedServiceListIsEmpty() {
+        //Given
+        setField(requestInterceptor, "authorisedServices", new ArrayList<>());
+
+        //When
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+            .isExactlyInstanceOf(UnAuthorisedServiceException.class)
+            .hasMessageContaining("List of authorised services is not yet configured");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenServiceAuthTokenIsMissing() {
+        //Given
+        when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(null);
+
+        //When
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+            .isExactlyInstanceOf(UnAuthorisedServiceException.class)
+            .hasMessageContaining("Service authorization token is missing");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTheCallingServiceIsNotAuthorised() {
+        //Given
+        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX)).thenReturn("fake_service");
+        when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+
+        //When
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+            .isExactlyInstanceOf(UnAuthorisedServiceException.class)
+            .hasMessageContaining("Service fake_service not in configured list for accessing callback");
     }
 
     @Test
     void shouldAppendBearerPrefixWhenServiceAuthDoesNotIncludeBearerPrefix() {
         //Given
-        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
-            .thenReturn("ccd_data");
-
-        var request = mock(HttpServletRequest.class);
-        var response = mock(HttpServletResponse.class);
-
+        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX)).thenReturn("ccd_data");
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
-        //When&Then
-        assertThat(requestInterceptor.preHandle(request, response, null)).isTrue();
+        //When
+        Boolean result = requestInterceptor.preHandle(request, response, new Object());
 
+        //Then
+        assertThat(result).isTrue();
         verify(validator).getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX);
     }
 
     @Test
     void shouldNotAppendBearerPrefixWhenServiceAuthIncludesBearerPrefix() {
         //Given
-        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX))
-            .thenReturn("ccd_data");
-
-        var request = mock(HttpServletRequest.class);
-        var response = mock(HttpServletResponse.class);
+        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX)).thenReturn("ccd_data");
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(AUTH_TOKEN_WITH_BEARER_PREFIX);
 
-        //When&Then
-        assertThat(requestInterceptor.preHandle(request, response, null)).isTrue();
+        //When
+        Boolean result = requestInterceptor.preHandle(request, response, new Object());
 
+        //Then
+        assertThat(result).isTrue();
         verify(validator).getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX);
     }
 }

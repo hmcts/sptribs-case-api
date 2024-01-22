@@ -43,7 +43,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             .readonly(CicCase::getFinalDecisionDocumentList)
             .readonly(CicCase::getDecisionDocumentList)
             .done()
-            .complex(CaseData::getListing)
+            .complex(CaseData::getLatestCompletedHearing)
             .complex(Listing::getSummary)
             .readonlyWithLabel(HearingSummary::getRecFile, "Hearing Summary Documents")
             .done();
@@ -57,7 +57,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             List<ListValue<CaseworkerCICDocument>> removedDocumentList = new ArrayList<>();
             data.getCicCase().setRemovedDocumentList(removedDocumentList);
         }
-        var newCaseData = removeEvaluatedListDoc(data, oldData);
+        final CaseData newCaseData = removeEvaluatedListDoc(data, oldData);
         final List<String> errors = new ArrayList<>();
         if (CollectionUtils.isEmpty(newCaseData.getCicCase().getRemovedDocumentList())) {
             errors.add("Please remove at least one document to continue");

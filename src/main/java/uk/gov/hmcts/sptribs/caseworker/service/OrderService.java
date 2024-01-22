@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 
 @Service
 @Slf4j
@@ -36,8 +37,6 @@ public class OrderService {
 
     @Autowired
     private HttpServletRequest request;
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public DynamicList getOrderDynamicList(final CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
@@ -59,7 +58,7 @@ public class OrderService {
                 .stream()
                 .sorted()
                 .map(order -> DynamicListElement.builder().label(order).code(UUID.randomUUID()).build())
-                .collect(Collectors.toList());
+                .toList();
 
             return DynamicList
                 .builder()
@@ -69,9 +68,9 @@ public class OrderService {
         return null;
     }
 
-    public CaseData generateOrderFile(CaseData caseData, Long caseId) {
+    public CaseData generateOrderFile(CaseData caseData, Long caseId, String date) {
         String subjectName = caseData.getCicCase().getFullName();
-        final String filename = "Order-[" + subjectName + "]-" + LocalDateTime.now().format(formatter);
+        final String filename = DRAFT + COLON + "Order" + DOUBLE_HYPHEN + "[" + subjectName + "]" + DOUBLE_HYPHEN + date;
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             previewDraftOrderTemplateContent.apply(caseData, caseId),

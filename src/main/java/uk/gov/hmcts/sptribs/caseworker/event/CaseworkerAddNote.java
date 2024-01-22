@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,12 +22,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ADD_NOTE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -51,7 +50,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_ADD_NOTE)
-            .forStates(POST_SUBMISSION_STATES_WITH_WITHDRAWN_AND_REJECTED)
+            .forAllStates()
             .name("Case: Add note")
             .description("Case: Add note")
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -72,11 +71,11 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
 
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         String note = caseData.getNote();
 
-        var caseNote = new CaseNote();
+        final CaseNote caseNote = new CaseNote();
         caseNote.setNote(note);
         caseNote.setDate(LocalDate.now(clock));
         caseNote.setAuthor(caseworkerUser.getUserDetails().getFullName());
@@ -84,7 +83,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
         if (isEmpty(caseData.getNotes())) {
             List<ListValue<CaseNote>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            final ListValue<CaseNote> listValue = ListValue
                 .<CaseNote>builder()
                 .id("1")
                 .value(caseNote)
@@ -95,7 +94,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
             caseData.setNotes(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            final ListValue<CaseNote> listValue = ListValue
                 .<CaseNote>builder()
                 .value(caseNote)
                 .build();

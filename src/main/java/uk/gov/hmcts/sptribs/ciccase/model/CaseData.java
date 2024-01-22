@@ -3,13 +3,19 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
@@ -20,6 +26,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
@@ -28,19 +35,27 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.bundling.Bundle;
+import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
+import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -51,6 +66,48 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CaseData {
+
+    @CCD(access = {CaseLinksDefaultAccess.class},
+        typeOverride = Collection,
+        label = "Linked Cases",
+        typeParameterOverride = "CaseLink")
+    @Builder.Default
+    private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
+
+    @CCD(
+        label = "Component Launcher (for displaying Linked Cases data)",
+        access = {CaseLinksDefaultAccess.class}
+    )
+    @JsonProperty("LinkedCasesComponentLauncher")
+    private ComponentLauncher linkedCasesComponentLauncher;
+
+    @CCD(
+        label = "Launch the Flags screen",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLauncher flagLauncher;
+
+    @CCD(
+        label = "Case name Hmcts Internal",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNameHmctsInternal;
+
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Case Flags")
+    private Flags caseFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Subject")
+    private Flags subjectFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Representative")
+    private Flags representativeFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Applicant")
+    private Flags applicantFlags;
 
     @JsonUnwrapped(prefix = "all")
     @Builder.Default
@@ -93,8 +150,10 @@ public class CaseData {
     private SecurityClass securityClass;
 
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private List<ListValue<Bundle>> cicBundles = new ArrayList<>();
+    @CCD(label = "Bundles",
+         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
@@ -112,6 +171,40 @@ public class CaseData {
     )
     private State caseStatus;
 
+    @CCD(
+        label = "CCD Case Reference",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNumber;
+
+    @CCD(
+        label = "SubjectRepFullName",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String subjectRepFullName;
+
+    @CCD(
+        label = "Scheme Label",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String schemeLabel;
+
+    @CCD(
+        label = "Bundle Configuration",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private MultiBundleConfig bundleConfiguration;
+
+    @CCD(
+        label = "Multi Bundle Configuration",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<MultiBundleConfig> multiBundleConfiguration;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> caseDocuments;
 
     @CCD(
         label = "Hearing Date",
@@ -151,11 +244,27 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseBuilt caseBuilt = new CaseBuilt();
 
-
     @JsonUnwrapped
-    @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
     private Listing listing = new Listing();
+
+    @JsonUnwrapped(prefix = "nh")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private Listing nextListedHearing = new Listing();
+
+    @JsonUnwrapped(prefix = "lh")
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @Builder.Default
+    private Listing latestCompletedHearing = new Listing();
+
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Listings",
+        typeOverride = Collection,
+        typeParameterOverride = "Listing")
+    private List<ListValue<Listing>> hearingList = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "removeStay")
     @Builder.Default
@@ -172,7 +281,7 @@ public class CaseData {
 
     @CCD(
         label = "Case number",
-        access = {CaseworkerAccess.class}
+        access = {DefaultAccess.class, CaseworkerAccess.class}
     )
     private String hyphenatedCaseRef;
 
@@ -232,6 +341,11 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseIssue caseIssue = new CaseIssue();
+
+    @JsonUnwrapped(prefix = "contactPartiesDocuments")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
 
     @JsonUnwrapped(prefix = "caseIssueDecision")
     @Builder.Default
@@ -319,6 +433,75 @@ public class CaseData {
         access = { DefaultAccess.class}
     )
     private String dssHeaderDetails;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private YesOrNo hasDssNotificationSent;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String firstHearingDate;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String hearingVenueName;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String judicialId;
+
+    @CCD(access = {DefaultAccess.class})
+    @JsonUnwrapped
+    private RetiredFields retiredFields;
+
+    public String getFirstHearingDate() {
+
+        Listing nextListing = getNextListedHearing();
+        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+        if (!ObjectUtils.isEmpty(nextListing) && !ObjectUtils.isEmpty(nextListing.getDate())) {
+            return dateFormatter.format(nextListing.getDate());
+        }
+        return "";
+
+    }
+
+    @JsonIgnore
+    public Listing getLatestCompletedHearing() {
+
+        Listing completedHearing = new Listing();
+        LocalDate latest = LocalDate.MIN;
+        for (ListValue<Listing> listingValueList : hearingList) {
+            if (listingValueList.getValue().getDate().isAfter(latest)) {
+                latest = listingValueList.getValue().getDate();
+                completedHearing = listingValueList.getValue();
+            }
+        }
+
+        return completedHearing;
+    }
+
+    @JsonIgnore
+    public Listing getNextListedHearing() {
+        Listing nextListing = new Listing();
+
+        LocalDate compare = LocalDate.MAX;
+        if (!CollectionUtils.isEmpty(hearingList)) {
+            for (ListValue<Listing> listingValueList : hearingList) {
+                if (listingValueList.getValue().getHearingStatus() == HearingState.Listed
+                    && listingValueList.getValue().getDate().isBefore(compare)) {
+                    compare = listingValueList.getValue().getDate();
+                    nextListing = listingValueList.getValue();
+                }
+            }
+        }
+        return nextListing;
+    }
+
+    public String getHearingVenueName() {
+        Listing nextListing = getNextListedHearing();
+        if (!ObjectUtils.isEmpty(nextListing)) {
+            return nextListing.getHearingVenueNameAndAddress();
+        }
+        return "";
+    }
 
     @JsonIgnore
     public String formatCaseRef(long caseId) {

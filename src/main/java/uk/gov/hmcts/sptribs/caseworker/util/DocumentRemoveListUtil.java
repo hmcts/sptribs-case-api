@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeDecisionDoc;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeFinalDecisionDoc;
@@ -10,6 +11,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.removeO
 
 
 public final class DocumentRemoveListUtil {
+
     private DocumentRemoveListUtil() {
 
     }
@@ -17,7 +19,7 @@ public final class DocumentRemoveListUtil {
     public static CaseData removeEvaluatedListDoc(CaseData caseData, CaseData oldData) {
         removeDecisionDoc(caseData, oldData);
         removeFinalDecisionDoc(caseData, oldData);
-        var cic = caseData.getCicCase();
+        final CicCase cic = caseData.getCicCase();
         removeOrderDoc(cic, oldData.getCicCase());
         if (!CollectionUtils.isEmpty(oldData.getAllDocManagement().getCaseworkerCICDocument())
             && (CollectionUtils.isEmpty(caseData.getAllDocManagement().getCaseworkerCICDocument())
@@ -41,11 +43,16 @@ public final class DocumentRemoveListUtil {
             || cic.getApplicantDocumentsUploaded().size() < oldData.getCicCase().getApplicantDocumentsUploaded().size())) {
             checkLists(caseData, oldData.getCicCase().getApplicantDocumentsUploaded(), cic.getApplicantDocumentsUploaded());
         }
-        if (!CollectionUtils.isEmpty(oldData.getListing().getSummary().getRecFile())
-            && (CollectionUtils.isEmpty(caseData.getListing().getSummary().getRecFile())
-            || caseData.getListing().getSummary().getRecFile().size() < oldData.getListing().getSummary().getRecFile().size())) {
-            checkLists(caseData, oldData.getListing().getSummary().getRecFile(), caseData.getListing().getSummary().getRecFile());
+
+        if (!CollectionUtils.isEmpty(oldData.getLatestCompletedHearing().getSummary().getRecFile())
+            && (CollectionUtils.isEmpty(caseData.getLatestCompletedHearing().getSummary().getRecFile())
+            || caseData.getLatestCompletedHearing().getSummary().getRecFile().size()
+            < oldData.getLatestCompletedHearing().getSummary().getRecFile().size())) {
+            checkLists(caseData, oldData.getLatestCompletedHearing().getSummary().getRecFile(),
+                caseData.getLatestCompletedHearing().getSummary().getRecFile());
         }
+
+
         return caseData;
     }
 

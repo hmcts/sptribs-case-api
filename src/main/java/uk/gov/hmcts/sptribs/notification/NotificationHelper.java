@@ -1,8 +1,13 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -11,8 +16,10 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -22,17 +29,24 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_4;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CASE_DOCUMENT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
-
+import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
+import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
 @Component
 public class NotificationHelper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationHelper.class);
 
     public Map<String, Object> commonTemplateVars(final CicCase cicCase, final String caseNumber) {
         final Map<String, Object> templateVars = new HashMap<>();
@@ -117,46 +131,89 @@ public class NotificationHelper {
 
         if (isVideoFormat(listing) || isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
-        } else
-            if (null != listing.getSelectedVenue()) {
-                templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getSelectedVenue());
-            } else
-                if (null != listing.getHearingVenueNameAndAddress()) {
-                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getHearingVenueNameAndAddress());
-                } else {
-                    templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
-                }
+        } else if (listing.getSelectedVenue() != null) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getSelectedVenue());
+        } else if (listing.getHearingVenueNameAndAddress() != null) {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getHearingVenueNameAndAddress());
+        } else {
+            templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
+        }
 
-        if (null != listing.getAddlInstr()) {
+        if (listing.getAddlInstr() != null) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, listing.getAddlInstr());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, " ");
         }
-        if (null != listing.getVideoCallLink()) {
+
+        if (listing.getVideoCallLink() != null) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
         }
-        if (null != listing.getConferenceCallNumber()) {
+
+        if (listing.getConferenceCallNumber() != null) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, listing.getConferenceCallNumber());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
         }
+
         if (isVideoFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
         }
+
         if (isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL, false);
         }
+
         if (isFaceToFaceFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false);
         }
+    }
+
+    public Map<String, String> buildDocumentList(DynamicMultiSelectList documentList, int docAttachLimit) {
+        Map<String, String> uploadedDocuments = new HashMap<>();
+
+        int count = 0;
+        if (!isEmpty(documentList.getValue())) {
+            List<DynamicListElement> documents = documentList.getValue();
+            for (DynamicListElement element : documents) {
+                count++;
+                String[] labels = element.getLabel().split(MARKUP_SEPARATOR);
+                uploadedDocuments.put(DOC_AVAILABLE + count, YES);
+                uploadedDocuments.put(CASE_DOCUMENT + count,
+                    StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
+                        "/"));
+
+                final String message = String.format(
+                    "Document when Available: %d, %s with value %s",
+                    count,
+                    uploadedDocuments.get(DOC_AVAILABLE + count),
+                    uploadedDocuments.get(CASE_DOCUMENT + count)
+                );
+                LOG.info(message);
+            }
+        }
+        while (count < docAttachLimit) {
+            count++;
+            uploadedDocuments.put(DOC_AVAILABLE + count, NO);
+            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_STRING);
+
+            final String message = String.format(
+                "Document not Available: %d, %s with value %s",
+                count,
+                uploadedDocuments.get(DOC_AVAILABLE + count),
+                uploadedDocuments.get(CASE_DOCUMENT + count)
+            );
+            LOG.info(message);
+        }
+
+        return uploadedDocuments;
     }
 
     private boolean isFaceToFaceFormat(Listing listing) {
@@ -173,12 +230,14 @@ public class NotificationHelper {
 
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
         String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
-        String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
-        String hearingDate = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(0, hearingDateTimeArr[1].lastIndexOf(SPACE))
+        String[] hearingDateTimeArr = (selectedHearingDateTime != null) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
+        int arrayLength = hearingDateTimeArr != null ? hearingDateTimeArr.length : 0;
+        int lastIndex = arrayLength > 0 ? hearingDateTimeArr.length - 1 : 0;
+        String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+            ? hearingDateTimeArr[lastIndex].substring(0, hearingDateTimeArr[lastIndex].lastIndexOf(SPACE))
             : null;
-        String hearingTime = null != hearingDateTimeArr && ArrayUtils.isNotEmpty(hearingDateTimeArr)
-            ? hearingDateTimeArr[1].substring(hearingDateTimeArr[1].lastIndexOf(SPACE) + 1)
+        String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+            ? hearingDateTimeArr[lastIndex].substring(hearingDateTimeArr[lastIndex].lastIndexOf(SPACE) + 1)
             : null;
 
         templateVars.put(HEARING_DATE, hearingDate);

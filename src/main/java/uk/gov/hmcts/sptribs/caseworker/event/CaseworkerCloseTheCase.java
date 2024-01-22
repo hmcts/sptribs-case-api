@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConcessionDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseConsentOrder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRejectionDetails;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseRule27;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseStrikeOutDetails;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CloseCaseWarning;
@@ -36,6 +37,7 @@ import java.util.List;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -43,7 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 @Component
 @Slf4j
@@ -56,6 +58,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private static final CcdPageConfiguration closeCaseConcessionDetails = new CloseCaseConcessionDetails();
     private static final CcdPageConfiguration closeCaseStrikeOutDetails = new CloseCaseStrikeOutDetails();
     private static final CcdPageConfiguration closeCaseConsentOrder = new CloseCaseConsentOrder();
+    private static final CcdPageConfiguration closeCaseRule27 = new CloseCaseRule27();
     private static final CcdPageConfiguration closeCaseSelectRecipients = new CloseCaseSelectRecipients();
 
     @Autowired
@@ -67,7 +70,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
-        var pageBuilder = closeCase(configBuilder);
+        final PageBuilder pageBuilder = closeCase(configBuilder);
         closeCaseWarning.addTo(pageBuilder);
         closeCaseReasonSelect.addTo(pageBuilder);
         closeCaseWithdrawalDetails.addTo(pageBuilder);
@@ -75,6 +78,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         closeCaseConcessionDetails.addTo(pageBuilder);
         closeCaseStrikeOutDetails.addTo(pageBuilder);
         closeCaseConsentOrder.addTo(pageBuilder);
+        closeCaseRule27.addTo(pageBuilder);
         uploadDocuments(pageBuilder);
         closeCaseSelectRecipients.addTo(pageBuilder);
     }
@@ -82,7 +86,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_CLOSE_THE_CASE)
-            .forStates(CaseManagement)
+            .forStates(CaseManagement, ReadyToList)
             .name("Case: Close case")
             .showSummary()
             .description("Close the case")
@@ -95,10 +99,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
 
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
         caseData.getCloseCase().setRejectionName(judicialUsersDynamicList);
         caseData.getCloseCase().setStrikeOutName(judicialUsersDynamicList);
 
@@ -112,7 +116,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -122,6 +126,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
+
         String message = MessageUtil.generateSimpleMessage(details.getData().getCicCase(), "Case closed",
             "Use 'Reinstate case' if this case needs to be reopened in the future.");
         sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
@@ -135,8 +140,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
-        final List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
-
+        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
@@ -154,6 +158,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
         }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
+        }
     }
 
     private void uploadDocuments(PageBuilder pageBuilder) {
@@ -163,10 +170,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .label("LabelCloseCaseUploadDoc",
                 """
                     Please upload copies of any information or evidence that you want to add to this case.
-                    <h3>Files should be:</h3>
-                    uploaded separately and not in one large file
-                    a maximum of 100MB in size (larger files must be split)
-                    labelled clearly, e.g. applicant-name-decision-notice.pdf
+                    Files should be:
+                    *  uploaded separately, not one large file
+                    *  a maximum of 100MB in size (larger files must be split)
+                    *  select the appropriate category from case file view
                     """)
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")

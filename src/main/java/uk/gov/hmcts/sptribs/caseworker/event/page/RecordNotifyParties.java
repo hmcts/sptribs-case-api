@@ -13,7 +13,7 @@ import java.util.List;
 
 public class RecordNotifyParties implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "hearingType=\"NEVER_SHOW\"";
+    private static final String ALWAYS_HIDE = "LabelNotifyParties=\"NEVER_SHOW\"";
     private static final String RECIPIENT_LABEL = "Listing information recipient";
 
     @Override
