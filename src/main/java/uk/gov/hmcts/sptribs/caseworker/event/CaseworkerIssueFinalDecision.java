@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTempla
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -104,7 +105,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         caseData.setDecisionSignature("");
 
@@ -145,16 +146,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
 
-        CaseData caseData = details.getData();
-        var finalDecision = caseData.getCaseIssueFinalDecision();
-
+        final CaseData caseData = details.getData();
+        final CaseIssueFinalDecision finalDecision = caseData.getCaseIssueFinalDecision();
         final Long caseId = details.getId();
-
         final String filename = FINAL_DECISION_FILE + LocalDateTime.now().format(formatter);
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
@@ -188,8 +185,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
-        var finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
+        final CaseData caseData = details.getData();
+        final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
 
         if (null != finalDecisionDocument) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
@@ -203,9 +200,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        var cicCase = data.getCicCase();
-        String caseNumber = data.getHyphenatedCaseRef();
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
+        final String caseNumber = data.getHyphenatedCaseRef();
 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);

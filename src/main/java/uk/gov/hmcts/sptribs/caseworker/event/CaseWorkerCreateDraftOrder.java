@@ -96,24 +96,26 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
-        OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
+        final OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
         String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
         addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
+
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
-        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
-        if (isEmpty(caseData.getCicCase().getDraftOrderCICList())) {
-            List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
+
+        if (isEmpty(caseData.getCicCase().getDraftOrderCICList())) {
+            final List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
+
+            final ListValue<DraftOrderCIC> listValue = ListValue
                 .<DraftOrderCIC>builder()
                 .id("1")
                 .value(draftOrderCIC)
@@ -124,7 +126,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             caseData.getCicCase().setDraftOrderCICList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<DraftOrderCIC> listValue = ListValue
                 .<DraftOrderCIC>builder()
                 .value(draftOrderCIC)
                 .build();
@@ -171,7 +173,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
-        var caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
+        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

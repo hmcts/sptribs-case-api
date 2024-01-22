@@ -82,7 +82,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
         caseData.setCurrentEvent(CASEWORKER_POSTPONE_HEARING);
@@ -96,7 +96,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker postpone hearing callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         recordListHelper.getNotificationParties(caseData);
         caseData.setCurrentEvent("");

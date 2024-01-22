@@ -15,17 +15,16 @@ public class AddSystemUpdateRole {
 
     public List<UserRole> addIfConfiguredForEnvironment(List<UserRole> userRoles) {
         List<UserRole> existingRoles = new ArrayList<>(userRoles);
-        String environment = System.getenv().getOrDefault("ENVIRONMENT", null);
 
-        if (null != environment && environment.equalsIgnoreCase(ENVIRONMENT_AAT)) {
+        if (isEnvironmentAat()) {
             existingRoles.add(SYSTEMUPDATE);
         }
 
         return existingRoles;
     }
 
-    public boolean isEnvironmentAat() {
-        String environment = System.getenv().getOrDefault("ENVIRONMENT", null);
-        return null != environment && environment.equalsIgnoreCase(ENVIRONMENT_AAT);
+    private boolean isEnvironmentAat() {
+        final String currentEnv = System.getenv().getOrDefault("ENVIRONMENT", null);
+        return null != currentEnv && currentEnv.equalsIgnoreCase(ENVIRONMENT_AAT);
     }
 }
