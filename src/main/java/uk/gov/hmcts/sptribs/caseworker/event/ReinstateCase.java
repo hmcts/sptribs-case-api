@@ -48,7 +48,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
-        var pageBuilder = reinstateCase(configBuilder);
+        final PageBuilder pageBuilder = reinstateCase(configBuilder);
         reinstateWarning.addTo(pageBuilder);
         reinstateReason.addTo(pageBuilder);
         reinstateDocuments.addTo(pageBuilder);
@@ -74,7 +74,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         updateCategoryToCaseworkerDocument(caseData.getCicCase().getReinstateDocuments());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -88,7 +88,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
         sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
 
-        var cicCase = details.getData().getCicCase();
+        final CicCase cicCase = details.getData().getCicCase();
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
                 + ". %n## %s ", MessageUtil.generateSimpleMessage(cicCase)))

@@ -92,7 +92,7 @@ class LocationServiceTest {
     @Test
     void shouldPopulateHearingVenueDynamicListWithMissingCourtAddress() {
         //Given
-        var hearingVenueResponse = HearingVenue
+        final HearingVenue hearingVenueResponse = HearingVenue
             .builder()
             .regionId("1")
             .courtName("courtName")
@@ -104,6 +104,7 @@ class LocationServiceTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y"))
             .thenReturn(List.of(hearingVenueResponse));
+
         DynamicList hearingVenueList = locationService.getHearingVenuesByRegion("1");
 
         //Then

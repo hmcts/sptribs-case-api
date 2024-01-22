@@ -28,7 +28,7 @@ public class SetFailedMigrationVersionToZero implements CaseTask {
         Map<String, Object> mappedData = objectMapper.convertValue(caseDetails.getData(), new TypeReference<>() {});
         mappedData.put("dataVersion", HIGHEST_PRIORITY);
 
-        final var convertedData = objectMapper.convertValue(mappedData, CaseData.class);
+        final CaseData convertedData = objectMapper.convertValue(mappedData, CaseData.class);
         caseDetails.setData(convertedData);
 
         return caseDetails;

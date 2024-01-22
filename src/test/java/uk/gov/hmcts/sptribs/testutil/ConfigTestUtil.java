@@ -103,7 +103,7 @@ public final class ConfigTestUtil {
         final ConfigBuilderImpl<T, S, R> configBuilder) throws IllegalAccessException {
         final List<SearchBuilder> searchInputFields =
             (List<SearchBuilder>) getValueIncludingSuperclasses(fieldName, configBuilder);
-        final var searchInputBuilder = searchInputFields.get(0);
+        final SearchBuilder searchInputBuilder = searchInputFields.get(0);
         return searchInputBuilder.build();
     }
 
@@ -114,7 +114,7 @@ public final class ConfigTestUtil {
 
         final List<SearchBuilder> workBasketInputFields =
             (List<SearchBuilder>) getValueIncludingSuperclasses(fieldName, configBuilder);
-        final var workBasketBuilder = workBasketInputFields.get(0);
+        final SearchBuilder workBasketBuilder = workBasketInputFields.get(0);
         return workBasketBuilder.build();
     }
 
