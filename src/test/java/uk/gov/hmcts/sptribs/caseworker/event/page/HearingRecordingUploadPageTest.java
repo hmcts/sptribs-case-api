@@ -50,7 +50,7 @@ public class HearingRecordingUploadPageTest {
         caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
-        assertThat(response.getErrors()).hasSize(0);
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test

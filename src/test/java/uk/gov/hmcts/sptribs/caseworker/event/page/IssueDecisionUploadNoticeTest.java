@@ -58,7 +58,7 @@ public class IssueDecisionUploadNoticeTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = issueDecisionUploadNotice.midEvent(caseDetails, caseDetails);
 
-        assertThat(response.getErrors()).hasSize(0);
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test

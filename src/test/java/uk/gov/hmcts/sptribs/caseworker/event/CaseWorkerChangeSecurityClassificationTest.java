@@ -93,7 +93,7 @@ class CaseWorkerChangeSecurityClassificationTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getErrors()).hasSize(0);
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test

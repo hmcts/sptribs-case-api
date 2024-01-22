@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_ERROR_MESSAGE;
 
 @ExtendWith(MockitoExtension.class)
-public class IssueCaseNotifyPartiesTest {
+class IssueCaseNotifyPartiesTest {
 
     @InjectMocks
     private IssueCaseNotifyParties issueCaseNotifyParties;

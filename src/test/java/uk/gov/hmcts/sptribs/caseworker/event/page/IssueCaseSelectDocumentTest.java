@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class IssueCaseSelectDocumentTest {
+class IssueCaseSelectDocumentTest {
 
     @InjectMocks
     private IssueCaseSelectDocument issueCaseSelectDocument;

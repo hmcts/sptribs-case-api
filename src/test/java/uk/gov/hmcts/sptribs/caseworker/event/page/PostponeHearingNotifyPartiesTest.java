@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-public class PostponeHearingNotifyPartiesTest {
+class PostponeHearingNotifyPartiesTest {
 
     @InjectMocks
     private PostponeHearingNotifyParties postponeHearingNotifyParties;

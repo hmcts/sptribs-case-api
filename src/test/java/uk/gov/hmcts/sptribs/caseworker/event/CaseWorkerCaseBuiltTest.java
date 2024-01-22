@@ -59,7 +59,7 @@ class CaseWorkerCaseBuiltTest {
 
         //Then
         assertThat(response).isNotNull();
-        assertEquals(response.getState(), CaseManagement);
+        assertEquals(CaseManagement, response.getState());
         assertThat(stayedResponse).isNotNull();
         assertThat(stayedResponse.getConfirmationHeader()).contains("# Case built successful");
     }
