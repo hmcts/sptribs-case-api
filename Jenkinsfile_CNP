@@ -3,6 +3,7 @@
 @Library("Infrastructure")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GradleBuilder
 import uk.gov.hmcts.contino.MetricsPublisher
 
@@ -54,6 +55,7 @@ def secrets = [
 def pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
 
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 withPipeline(type, product, component) {
     enableAksStagingDeployment()
@@ -198,18 +200,22 @@ withPipeline(type, product, component) {
       env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
+
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
     onMaster {
-        env.ENVIRONMENT="aat"
-        env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-        env.CCD_DEF_NAME="aat"
-        env.ELASTIC_SEARCH_ENABLED=true
-        env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-        env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-        setCommonEnvVariables()
-        setFeatureFlags(env.ENVIRONMENT)
+      env.ENVIRONMENT="aat"
+      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+      env.CCD_DEF_NAME="aat"
+      env.ELASTIC_SEARCH_ENABLED=true
+      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      setCommonEnvVariables()
+      setFeatureFlags(env.ENVIRONMENT)
+
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
     afterSuccess('functionalTest:aat') {
@@ -330,27 +336,39 @@ def setFeatureFlags(environment) {
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = true
     env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
   } else if (environment =~ /aat/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
-    env.BUNDLING_FEATURE = false
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
   } else if (environment =~ /prod/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = false
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
     env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
   }
 }

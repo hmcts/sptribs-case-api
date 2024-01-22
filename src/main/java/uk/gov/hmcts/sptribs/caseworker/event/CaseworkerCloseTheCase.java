@@ -70,7 +70,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
-        var pageBuilder = closeCase(configBuilder);
+        final PageBuilder pageBuilder = closeCase(configBuilder);
         closeCaseWarning.addTo(pageBuilder);
         closeCaseReasonSelect.addTo(pageBuilder);
         closeCaseWithdrawalDetails.addTo(pageBuilder);
@@ -99,7 +99,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
 
         DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
@@ -116,7 +116,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

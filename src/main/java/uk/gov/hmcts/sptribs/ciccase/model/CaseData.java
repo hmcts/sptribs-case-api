@@ -44,6 +44,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
@@ -149,7 +150,9 @@ public class CaseData {
     private SecurityClass securityClass;
 
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(label = "Bundles",
+         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
@@ -169,6 +172,31 @@ public class CaseData {
     private State caseStatus;
 
     @CCD(
+        label = "CCD Case Reference",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNumber;
+
+    @CCD(
+        label = "SubjectRepFullName",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String subjectRepFullName;
+
+    @CCD(
+        label = "Scheme Label",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String schemeLabel;
+
+    @CCD(
+        label = "Bundle Configuration",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private MultiBundleConfig bundleConfiguration;
+
+    @CCD(
+        label = "Multi Bundle Configuration",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<MultiBundleConfig> multiBundleConfiguration;
@@ -176,8 +204,7 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
-    private List<CaseworkerCICDocument> caseDocuments;
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> caseDocuments;
 
     @CCD(
         label = "Hearing Date",

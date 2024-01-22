@@ -47,3 +47,4 @@ dependencies:
     version: 0.0.27
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: sptribs-frontend.enabled
+
