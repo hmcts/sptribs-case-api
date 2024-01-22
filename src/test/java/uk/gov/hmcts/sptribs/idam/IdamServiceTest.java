@@ -95,7 +95,7 @@ public class IdamServiceTest {
     }
 
     @Test
-    public void shouldRetrieveUserDetails() {
+    void shouldRetrieveUserDetails() {
         // Given
         String bearerToken = TEST_SERVICE_AUTH_TOKEN;
         UserDetails userDetails = userDetails();

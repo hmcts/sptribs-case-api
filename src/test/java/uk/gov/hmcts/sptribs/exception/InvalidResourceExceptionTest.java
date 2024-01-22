@@ -15,7 +15,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_RESOURCE_NOT_FOUN
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class InvalidResourceExceptionTest {
+class InvalidResourceExceptionTest {
 
 
     @Test
