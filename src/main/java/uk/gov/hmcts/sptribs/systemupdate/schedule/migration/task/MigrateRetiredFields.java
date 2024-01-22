@@ -23,10 +23,10 @@ public class MigrateRetiredFields implements CaseTask {
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) throws IllegalArgumentException  {
 
-        Map<String, Object> mappedData = objectMapper.convertValue(caseDetails.getData(), new TypeReference<>() {});
-        final var migratedMappedData = RetiredFields.migrate(mappedData);
+        final Map<String, Object> mappedData = objectMapper.convertValue(caseDetails.getData(), new TypeReference<>() {});
+        final Map<String, Object> migratedMappedData = RetiredFields.migrate(mappedData);
+        final CaseData convertedData = objectMapper.convertValue(migratedMappedData, CaseData.class);
 
-        final var convertedData = objectMapper.convertValue(migratedMappedData, CaseData.class);
         caseDetails.setData(convertedData);
 
         return caseDetails;

@@ -76,7 +76,7 @@ public final class AddressUtil {
         final String sanitisedCountry = address.getCountry().replaceAll("[^a-zA-Z0-9]+", "").toLowerCase(Locale.ROOT);
         final String postcode = Optional.ofNullable(address.getPostCode()).orElse("");
 
-        var isScottishPostcode = false;
+        boolean isScottishPostcode = false;
         if (postcode.matches(".*[a-zA-Z]+.*")) {
             final String sanitisedPostcodePrefix = postcode.split("[0-9]")[0].toLowerCase(Locale.ROOT);
             isScottishPostcode = SCOTTISH_POSTCODE_PREFIXES.contains(sanitisedPostcodePrefix);

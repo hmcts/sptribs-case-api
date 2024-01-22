@@ -67,6 +67,7 @@ class SystemMigrateCaseFlagsTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        systemMigrateCaseFlags.setMigrationFlagEnabled(true);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =

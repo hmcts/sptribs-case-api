@@ -188,7 +188,7 @@ task e2eTestInDemo(type: Test) {
   environment 'DSS_BASE_URL', 'https://sptribs-frontend.demo.platform.hmcts.net'
   environment 'BROWSER', 'chromium'
   environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-ciclegal-officer@cic.demo'
+  environment 'LEGAL_OFFICER', 'st-ciclegal-officer@mailinator.com'
   environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
   environment 'JUDGE', 'st-cicjudge@mailinator.com'
   environment 'SENIOR_JUDGE', 'st-cicseniorjudge@mailinator.com'
@@ -475,7 +475,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
   implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.0.1'
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.1'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.22.0'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.22.0'
@@ -534,7 +534,7 @@ dependencies {
   e2eTestsImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
-  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.0.0'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.1'
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.41'
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.41'

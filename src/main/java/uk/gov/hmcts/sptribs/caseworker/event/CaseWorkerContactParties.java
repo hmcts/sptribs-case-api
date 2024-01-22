@@ -125,8 +125,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
 
-        var data = details.getData();
-        var cicCase = data.getCicCase();
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
         try {
