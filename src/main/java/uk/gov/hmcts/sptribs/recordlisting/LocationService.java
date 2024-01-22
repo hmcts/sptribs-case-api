@@ -44,7 +44,7 @@ public class LocationService {
     }
 
     public DynamicList getAllRegions() {
-        final var regions = getRegions();
+        final Region[] regions = getRegions();
         return populateRegionDynamicList(regions);
     }
 
