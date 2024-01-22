@@ -23,7 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_TEST_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.DOCUMENT_DELETE_FAILURE_MSG;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_CONTENT_TYPE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_FILE_TYPE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 
@@ -53,18 +60,18 @@ class DocumentManagementControllerTest {
 
     @Test
     void testCicDocumentControllerFileUpload() throws Exception {
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
-        DocumentInfo document = DocumentInfo.builder()
+        final DocumentInfo document = DocumentInfo.builder()
             .documentId(CASE_DATA_CIC_ID)
             .url(TEST_URL)
             .fileName(CASE_DATA_FILE_CIC).build();
 
-        DocumentResponse documentResponse = DocumentResponse.builder()
+        final DocumentResponse documentResponse = DocumentResponse.builder()
             .status(RESPONSE_STATUS_SUCCESS)
             .document(document).build();
 
-        MockMultipartFile multipartFile = new MockMultipartFile(
+        final MockMultipartFile multipartFile = new MockMultipartFile(
             JSON_FILE_TYPE,
             CASE_DATA_FILE_CIC,
             JSON_CONTENT_TYPE,
@@ -78,7 +85,7 @@ class DocumentManagementControllerTest {
         )).thenReturn(
             documentResponse);
 
-        ResponseEntity<?> uploadDocumentResponse = documentManagementController.uploadDocument(
+        final ResponseEntity<?> uploadDocumentResponse = documentManagementController.uploadDocument(
             CASE_TEST_AUTHORIZATION,
             CASE_DATA_CIC_ID,
             multipartFile
@@ -95,7 +102,7 @@ class DocumentManagementControllerTest {
 
     @Test
     void testDeleteCicDocumentControllerFailedWithException() throws Exception {
-        DocumentInfo documentInfo = DocumentInfo.builder()
+        final DocumentInfo documentInfo = DocumentInfo.builder()
             .documentId(CASE_DATA_CIC_ID)
             .url(TEST_URL)
             .fileName(CASE_DATA_FILE_CIC).build();
@@ -109,7 +116,7 @@ class DocumentManagementControllerTest {
                 new Throwable()
             ));
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        final Exception exception = assertThrows(Exception.class, () -> {
             documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
         });
         assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));

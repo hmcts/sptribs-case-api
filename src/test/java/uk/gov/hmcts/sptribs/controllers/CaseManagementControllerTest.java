@@ -30,7 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_TEST_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_EMAIL_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_UPDATE_CASE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith(SpringExtension.class)
@@ -60,13 +65,15 @@ class CaseManagementControllerTest {
     @Test
     void testCicCreateCaseData() throws Exception {
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final DssCaseData caseData = mapper.readValue(caseDataJson, DssCaseData.class);
+        final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
+        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         final CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
 
         when(caseManagementService.createCase(eq(CASE_TEST_AUTHORIZATION), any(CaseData.class))).thenReturn(caseResponse);
 
-        final ResponseEntity<?> createCaseResponse = caseManagementController.createCase(CASE_TEST_AUTHORIZATION, caseData);
+        final ResponseEntity<?> createCaseResponse =
+            caseManagementController.createCase(CASE_TEST_AUTHORIZATION, caseData.getDssCaseData());
         final CaseResponse testResponse = (CaseResponse) createCaseResponse.getBody();
 
         assertEquals(HttpStatus.OK, createCaseResponse.getStatusCode());
@@ -78,12 +85,11 @@ class CaseManagementControllerTest {
     void testCicUpdateCaseData() throws Exception {
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
-//        final CaseData caseData = CaseData.builder().build();
+        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         final CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
 
-//        caseData.setDssCaseData(dssCaseData);
-        caseDataMap.put(CASE_DATA_CIC_ID, dssCaseData);
+        caseDataMap.put(CASE_DATA_CIC_ID, caseData);
         caseResponse.setId(TEST_CASE_ID);
         caseResponse.setStatus(null);
 
@@ -94,57 +100,58 @@ class CaseManagementControllerTest {
             TEST_CASE_ID,
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
-            dssCaseData
+            caseData.getDssCaseData()
         );
 
         final CaseResponse testPreUpdResponse = (CaseResponse) preUpdateCaseResponse.getBody();
-        assertThat(testPreUpdResponse).isNotNull();
         assertEquals(TEST_CASE_EMAIL_ADDRESS, dssCaseData.getSubjectEmailAddress());
 
-        final DssCaseData caseDataUpdate = (DssCaseData) testPreUpdResponse.getCaseData().get(CASE_DATA_CIC_ID);
-        caseDataUpdate.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        assertThat(testPreUpdResponse).isNotNull();
+        final CaseData caseDataUpdate = (CaseData) testPreUpdResponse.getCaseData().get(CASE_DATA_CIC_ID);
+        caseDataUpdate.getDssCaseData().setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
 
         final ResponseEntity<?> postUpdateCaseResponse = caseManagementController.updateCase(
             TEST_CASE_ID,
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
-            caseDataUpdate
+            caseDataUpdate.getDssCaseData()
         );
 
         final CaseResponse caseDataUpdateResponse = (CaseResponse) (postUpdateCaseResponse.getBody());
         assertThat(caseDataUpdateResponse).isNotNull();
 
-        final DssCaseData caseDataUpdatedFromResponse = (DssCaseData) (caseDataUpdateResponse.getCaseData().get(CASE_DATA_CIC_ID));
+        final CaseData caseDataUpdatedFromResponse = (CaseData) (caseDataUpdateResponse.getCaseData().get(CASE_DATA_CIC_ID));
 
         assertEquals(
-            caseDataUpdatedFromResponse.getSubjectEmailAddress(),
-            caseDataUpdate.getSubjectEmailAddress()
+            caseDataUpdatedFromResponse.getDssCaseData().getSubjectEmailAddress(),
+            caseDataUpdate.getDssCaseData().getSubjectEmailAddress()
         );
-        assertEquals(TEST_UPDATE_CASE_EMAIL_ADDRESS, caseDataUpdate.getSubjectEmailAddress());
+        assertEquals(TEST_UPDATE_CASE_EMAIL_ADDRESS, caseDataUpdate.getDssCaseData().getSubjectEmailAddress());
         assertEquals(HttpStatus.OK, postUpdateCaseResponse.getStatusCode());
     }
 
     @Test
     void testFetchCaseDetails() throws IOException {
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final CaseData caseData = mapper.readValue(caseDataJson,CaseData.class);
+        final DssCaseData dssCaseData = mapper.readValue(caseDataJson,DssCaseData.class);
+        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
 
         caseDataMap.put(CASE_DATA_CIC_ID, caseData);
 
-        CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
+        final CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
         caseResponse.setId(TEST_CASE_ID);
         caseResponse.setStatus(null);
 
         when(caseManagementService.fetchCaseDetails(CASE_TEST_AUTHORIZATION,TEST_CASE_ID)).thenReturn(caseResponse);
 
-        ResponseEntity<?> postFetchCaseResponse = caseManagementController.fetchCaseDetails(
+        final ResponseEntity<?> postFetchCaseResponse = caseManagementController.fetchCaseDetails(
             TEST_CASE_ID,
             CASE_TEST_AUTHORIZATION
         );
 
-        CaseResponse caseDataFetchResponse = (CaseResponse) (postFetchCaseResponse.getBody());
-
+        final CaseResponse caseDataFetchResponse = (CaseResponse) (postFetchCaseResponse.getBody());
+        assertThat(caseDataFetchResponse).isNotNull();
         assertEquals(caseDataFetchResponse.getId(),caseResponse.getId());
         assertEquals(postFetchCaseResponse.getStatusCode(),HttpStatus.OK);
 
