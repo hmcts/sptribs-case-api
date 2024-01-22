@@ -54,8 +54,8 @@ public class JudicialService {
     }
 
     public DynamicList getAllUsers(CaseData caseData) {
-        final var users = getUsers();
-        final var judges = populateJudgesList(users);
+        final List<UserProfileRefreshResponse> users = getUsers();
+        final List<ListValue<Judge>> judges = populateJudgesList(users);
         caseData.getListing().getSummary().setJudgeList(judges);
         return populateUsersDynamicList(judges);
     }

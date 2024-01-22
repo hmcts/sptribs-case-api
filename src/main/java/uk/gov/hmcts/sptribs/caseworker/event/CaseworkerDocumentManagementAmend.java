@@ -78,7 +78,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         updateCategoryToCaseworkerDocument(caseData.getAllDocManagement().getCaseworkerCICDocument());
 

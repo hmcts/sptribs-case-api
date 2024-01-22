@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REMOVE_STAY;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -42,7 +43,7 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = remove(configBuilder);
+        final PageBuilder pageBuilder = remove(configBuilder);
         removeStay.addTo(pageBuilder);
     }
 
@@ -55,15 +56,14 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .description("Stays: Remove stay")
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::stayRemoved)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         if (details.getState() == CaseStayed) {
             caseData.getRemoveCaseStay().setStayRemoveReason(null);
             caseData.getRemoveCaseStay().setStayRemoveOtherDescription(null);
@@ -75,25 +75,24 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.getCaseStay().setIsCaseStayed(YesOrNo.NO);
 
-        State newState = State.CaseManagement;
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(newState)
+            .state(CaseManagement)
             .build();
     }
 
-    public SubmittedCallbackResponse stayRemoved(CaseDetails<CaseData, State> details,
-                                                 CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
 
         sendCaseUnStayedNotification(caseData.getHyphenatedCaseRef(), caseData);
 

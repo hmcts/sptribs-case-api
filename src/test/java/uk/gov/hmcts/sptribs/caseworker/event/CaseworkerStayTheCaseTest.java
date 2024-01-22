@@ -113,7 +113,7 @@ class CaseworkerStayTheCaseTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerStayTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.stayed(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData().getCaseStay()).isNotNull();
