@@ -134,7 +134,7 @@ public final class EventUtil {
             .build();
         List<ListValue<PanelMember>> listValues = new ArrayList<>();
 
-        var listValue = ListValue
+        ListValue<PanelMember> listValue = ListValue
             .<PanelMember>builder()
             .id("1")
             .value(panelMember)

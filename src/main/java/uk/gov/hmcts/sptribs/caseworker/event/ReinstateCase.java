@@ -32,7 +32,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
@@ -51,7 +50,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
-        var pageBuilder = reinstateCase(configBuilder);
+        final PageBuilder pageBuilder = reinstateCase(configBuilder);
         reinstateWarning.addTo(pageBuilder);
         reinstateReason.addTo(pageBuilder);
         reinstateDocuments.addTo(pageBuilder);
@@ -67,7 +66,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::reinstated)
             .showSummary()
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
+            .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(
@@ -76,7 +75,6 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
                 ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
                 ST_CIC_JUDGE)
         );
     }
@@ -86,7 +84,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         updateCategoryToCaseworkerDocument(caseData.getCicCase().getReinstateDocuments());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

@@ -59,7 +59,7 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker case built callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)

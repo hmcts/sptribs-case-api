@@ -97,7 +97,7 @@ public class CcdSearchService {
             .size(500);
         log.info("Query:" + sourceBuilder.toString());
         log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
-        var cases = coreCaseDataApi.searchCases(
+        final List<CaseDetails> cases = coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
             CcdCaseType.CIC.getCaseTypeName(),

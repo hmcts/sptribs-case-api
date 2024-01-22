@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocumen
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -104,8 +105,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var data = details.getData();
-        var cicCase = data.getCicCase();
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
 
         CaseworkerCICDocument selectedDocument = cicCase.getSelectedDocument();
         String selectedDocumentType = cicCase.getSelectedDocumentType();
@@ -146,6 +147,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

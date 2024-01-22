@@ -101,7 +101,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
-        var caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
+        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

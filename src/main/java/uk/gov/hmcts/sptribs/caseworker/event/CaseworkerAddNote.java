@@ -31,7 +31,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -55,10 +54,10 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
             .name("Case: Add note")
             .description("Case: Add note")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
+            .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-        )
+            )
             .page("addCaseNotes")
             .pageLabel("Add case notes")
             .optional(CaseData::getNote);
@@ -69,11 +68,14 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         log.info("Caseworker add notes callback invoked for Case Id: {}", details.getId());
+
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        var caseData = details.getData();
+
+        final CaseData caseData = details.getData();
+
         String note = caseData.getNote();
 
-        var caseNote = new CaseNote();
+        final CaseNote caseNote = new CaseNote();
         caseNote.setNote(note);
         caseNote.setDate(LocalDate.now(clock));
         caseNote.setAuthor(caseworkerUser.getUserDetails().getFullName());
@@ -81,7 +83,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
         if (isEmpty(caseData.getNotes())) {
             List<ListValue<CaseNote>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            final ListValue<CaseNote> listValue = ListValue
                 .<CaseNote>builder()
                 .id("1")
                 .value(caseNote)
@@ -92,7 +94,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
             caseData.setNotes(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            final ListValue<CaseNote> listValue = ListValue
                 .<CaseNote>builder()
                 .value(caseNote)
                 .build();

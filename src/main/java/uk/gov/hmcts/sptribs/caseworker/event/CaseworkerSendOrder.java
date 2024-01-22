@@ -70,7 +70,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = send(configBuilder);
+        final PageBuilder pageBuilder = send(configBuilder);
         orderIssuingSelect.addTo(pageBuilder);
         draftOrder.addTo(pageBuilder);
         uploadOrder.addTo(pageBuilder);
@@ -93,18 +93,17 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
         if (null != caseData.getCicCase().getOrderFile()) {
             updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
 
         DraftOrderCIC selectedDraftOrder = null;
         String selectedDynamicDraft = null;
-        var order = Order.builder()
+        final Order order = Order.builder()
             .uploadedFile(caseData.getCicCase().getOrderFile())
             .dueDateList(caseData.getCicCase().getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
@@ -150,7 +149,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             AtomicInteger listValueIndex = new AtomicInteger(0);
             for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
                 if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
-                    var listValue = ListValue
+                    ListValue<DraftOrderCIC> listValue = ListValue
                         .<DraftOrderCIC>builder()
                         .value(draftValue.getValue())
                         .build();
@@ -192,7 +191,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            ListValue<Order> listValue = ListValue
                 .<Order>builder()
                 .id("1")
                 .value(order)
@@ -203,7 +202,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             caseData.getCicCase().setOrderList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<Order> listValue = ListValue
                 .<Order>builder()
                 .value(order)
                 .build();

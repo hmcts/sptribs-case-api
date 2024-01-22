@@ -8,18 +8,21 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrders;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_AMEND_DUE_DATE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
@@ -78,7 +81,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         DynamicList orderDynamicList = orderService.getOrderDynamicList(details);
         caseData.getCicCase().setOrderDynamicList(orderDynamicList);
 
@@ -87,27 +90,27 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
-        var cicCase = caseData.getCicCase();
-        String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
-        String id = getId(selectedOrder);
-        var orderList = caseData.getCicCase().getOrderList();
-        Order order = new Order();
-        for (int i = 0; i < orderList.size(); i++) {
-            if (null != id && id.equals(orderList.get(i).getId())) {
-                order = orderList.get(i).getValue();
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
+        final CicCase cicCase = caseData.getCicCase();
+        final String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
+        final String id = getId(selectedOrder);
+        final List<ListValue<Order>> orderList = caseData.getCicCase().getOrderList();
+
+        for (ListValue<Order> orderListValue : orderList) {
+            if (null != id && id.equals(orderListValue.getId())) {
+                Order order = orderListValue.getValue();
                 order.setDueDateList(cicCase.getOrderDueDates());
-                orderList.get(i).setValue(order);
+                orderListValue.setValue(order);
                 break;
             }
         }
 
         caseData.getCicCase().setOrderList(orderList);
         cicCase.setOrderDueDates(new ArrayList<>());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)

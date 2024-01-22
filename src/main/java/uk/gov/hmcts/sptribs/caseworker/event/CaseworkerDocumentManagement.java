@@ -89,7 +89,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         DocumentUtil.uploadDocument(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
