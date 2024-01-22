@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
@@ -26,10 +28,10 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -94,7 +96,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         caseData.setDecisionSignature("");
 
@@ -109,7 +111,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     ) {
 
         CaseData caseData = details.getData();
-        var decision = caseData.getCaseIssueDecision();
+        final CaseIssueDecision decision = caseData.getCaseIssueDecision();
 
         final Long caseId = details.getId();
 
@@ -134,8 +136,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
-        var decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
+        final CaseData caseData = details.getData();
+        final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
         if (null != decisionDocument) {
             decisionDocument.getDocumentLink().setCategoryId("TD");

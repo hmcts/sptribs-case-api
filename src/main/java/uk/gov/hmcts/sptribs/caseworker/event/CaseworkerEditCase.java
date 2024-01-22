@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
@@ -23,11 +24,15 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -48,16 +53,16 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editFurtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
-    @Autowired
     private final SubmissionService submissionService;
 
+    @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
     }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = addEventConfig(configBuilder);
+        final PageBuilder pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
@@ -71,7 +76,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
-            .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
             .description("Case: Edit case")
             .showSummary()
@@ -96,12 +101,14 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             data.getCicCase().removeApplicant();
         }
 
-        var submittedDetails = submissionService.submitApplication(details);
+        CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
-        var state = beforeDetails.getState();
+        State state = beforeDetails.getState();
         if (state == DSS_Submitted) {
             state = Submitted;
         }
+
+        initialiseFlags(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -118,5 +125,56 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
     private boolean checkNull(CaseData data) {
         return null != data.getCicCase() && null != data.getCicCase().getPartiesCIC();
+    }
+
+    private void initialiseFlags(CaseData data) {
+        if (Objects.isNull(data.getCaseFlags())) {
+            data.setCaseFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(null)
+                .roleOnCase(null)
+                .build());
+        }
+
+        if (Objects.isNull(data.getSubjectFlags()) || Objects.isNull(data.getSubjectFlags().getDetails())) {
+            data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getFullName())
+                .roleOnCase("subject")
+                .build());
+        }
+
+        updateApplicantFlags(data);
+        updateRepresentativeFlags(data);
+    }
+
+    private void updateRepresentativeFlags(CaseData data) {
+        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
+            if (Objects.isNull(data.getRepresentativeFlags()) || Objects.isNull(data.getRepresentativeFlags().getDetails())) {
+                data.setRepresentativeFlags(Flags.builder()
+                    .details(new ArrayList<>())
+                    .partyName(data.getCicCase().getRepresentativeFullName())
+                    .roleOnCase("Representative")
+                    .build()
+                );
+            }
+        } else {
+            data.setRepresentativeFlags(null);
+        }
+    }
+
+    private void updateApplicantFlags(CaseData data) {
+        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+            if (Objects.isNull(data.getApplicantFlags()) || Objects.isNull(data.getApplicantFlags().getDetails())) {
+                data.setApplicantFlags(Flags.builder()
+                    .details(new ArrayList<>())
+                    .partyName(data.getCicCase().getApplicantFullName())
+                    .roleOnCase("applicant")
+                    .build()
+                );
+            }
+        } else {
+            data.setApplicantFlags(null);
+        }
     }
 }

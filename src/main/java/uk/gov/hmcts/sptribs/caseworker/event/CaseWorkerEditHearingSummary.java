@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -53,6 +54,9 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     @Autowired
     private RecordListHelper recordListHelper;
 
+    @Autowired
+    private JudicialService judicialService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
@@ -79,7 +83,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_HEARING_SUMMARY);
         if (null != caseData.getListing().getSummary() && null != caseData.getListing().getHearingFormat()) {
             caseData.getListing().setHearingSummaryExists("YES");
@@ -97,7 +101,10 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
+        caseData.setJudicialId(judicialService.populateJudicialId(caseData));
+        caseData.getListing().getSummary().setJudgeList(null);
+
         recordListHelper.saveSummary(details.getData());
         hearingService.updateHearingSummaryList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

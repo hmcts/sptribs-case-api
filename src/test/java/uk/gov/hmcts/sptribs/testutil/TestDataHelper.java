@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -372,7 +373,6 @@ public class TestDataHelper {
             .build();
     }
 
-
     public static DynamicList getMockedHearingVenueData() {
         final DynamicListElement listItem = DynamicListElement
             .builder()
@@ -386,10 +386,31 @@ public class TestDataHelper {
             .build();
     }
 
-    public static List<ListValue<CICDocument>> getCICDocumentList() {
+    public static ListValue<CICDocument> getCICDocument(String fileName) {
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        return documentListValue;
+    }
+
+    public static ListValue<CaseworkerCICDocument> getCaseworkerCICDocument(String fileName) {
+        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        return documentListValue;
+    }
+
+    public static List<ListValue<CICDocument>> getCICDocumentList(String fileName) {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().build())
+            .documentLink(Document.builder().filename(fileName).build())
             .documentEmailContent("some email content")
             .build();
         ListValue<CICDocument> documentListValue = new ListValue<>();
@@ -398,9 +419,9 @@ public class TestDataHelper {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList() {
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName) {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename("test.pdf").build())
+            .documentLink(Document.builder().filename(fileName).build())
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentEmailContent("some email content")
             .build();
@@ -408,31 +429,6 @@ public class TestDataHelper {
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
         documentList.add(caseworkerCICDocumentListValue);
-        return documentList;
-    }
-
-    public static List<ListValue<CICDocument>> getCICDocumentListWithInvalidFileFormat() {
-        List<ListValue<CICDocument>> documentList = new ArrayList<>();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().filename("file.txt").build())
-            .documentEmailContent("some email content")
-            .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
-        return documentList;
-    }
-
-    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithFileFormat(String format) {
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename("file." + format).build())
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentEmailContent("some email content")
-            .build();
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
-        documentListValue.setValue(document);
-        documentList.add(documentListValue);
         return documentList;
     }
 
@@ -452,6 +448,30 @@ public class TestDataHelper {
             .builder()
             .value(elements)
             .listItems(elements)
+            .build();
+    }
+
+    public static List<ListValue<PanelMember>> getMembers() {
+        List<ListValue<PanelMember>> members = new ArrayList<>();
+        ListValue<PanelMember> member = new ListValue<>();
+        PanelMember panelMember1 = PanelMember.builder()
+            .name(getDynamicListMembers())
+            .build();
+        member.setValue(panelMember1);
+        members.add(member);
+        return members;
+    }
+
+    public static DynamicList getDynamicListMembers() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("Jane Doe")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
             .build();
     }
 }

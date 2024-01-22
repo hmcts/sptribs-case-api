@@ -36,6 +36,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
@@ -82,6 +83,7 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                     Submitted,
                     NewCaseReceived,
                     CaseManagement,
+                    ReadyToList,
                     AwaitingHearing,
                     AwaitingOutcome,
                     CaseClosed,
@@ -123,8 +125,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
 
-        var data = details.getData();
-        var cicCase = data.getCicCase();
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
         try {
