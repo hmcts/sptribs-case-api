@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 
 @Data
@@ -17,12 +20,14 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 public class DssDocumentInfo {
 
     @CCD(
-        label = "Document"
+        label = "Document",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private Document document;
 
     @CCD(
-        label = "Comment"
+        label = "Comment",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private String comment;
 }

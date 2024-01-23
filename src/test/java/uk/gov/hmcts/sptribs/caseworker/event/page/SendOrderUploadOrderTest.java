@@ -25,7 +25,7 @@ public class SendOrderUploadOrderTest {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CicCase cicCase = CicCase.builder()
-            .orderFile(getCICDocumentList("file.txt"))
+            .orderFile(getCICDocumentList("file.uml"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)

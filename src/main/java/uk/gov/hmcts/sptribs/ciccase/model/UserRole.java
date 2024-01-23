@@ -26,11 +26,13 @@ public enum UserRole implements HasRole {
     ST_CIC_HEARING_CENTRE_TEAM_LEADER("caseworker-st_cic-hearing-centre-team-leader", "D"),
     ST_CIC_SENIOR_JUDGE("caseworker-st_cic-senior-judge", "D"),
 
+
     ST_CIC_JUDGE("caseworker-st_cic-judge", "D"),
     ST_CIC_RESPONDENT("caseworker-st_cic-respondent", "D"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "D"),
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "D"),
     CITIZEN_CIC("citizen", "D");
+
 
     @JsonValue
     private final String role;

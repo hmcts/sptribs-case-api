@@ -15,15 +15,15 @@ public class BundleCallback extends Callback {
 
     public BundleCallback(Callback callback) {
         super(callback.getCaseDetails(), callback.getCaseDetailsBefore(), callback.getEvent(), callback.isIgnoreWarnings());
-        this.caseTypeId = callback.getCaseDetails().getCaseTypeId();
-        this.jurisdictionId = callback.getCaseDetails().getJurisdiction();
+        setCaseTypeId(callback.getCaseDetails().getCaseTypeId());
+        setJurisdictionId(callback.getCaseDetails().getJurisdiction());
     }
 
     public String getCaseTypeId() {
         return caseTypeId;
     }
 
-    public void setCaseTypeId(String caseTypeId) {
+    private void setCaseTypeId(String caseTypeId) {
         this.caseTypeId = caseTypeId;
     }
 
@@ -31,7 +31,7 @@ public class BundleCallback extends Callback {
         return jurisdictionId;
     }
 
-    public void setJurisdictionId(String jurisdictionId) {
+    private void setJurisdictionId(String jurisdictionId) {
         this.jurisdictionId = jurisdictionId;
     }
 
