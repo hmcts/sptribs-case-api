@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,6 +18,8 @@ import uk.gov.hmcts.sptribs.exception.DocumentUploadOrDeleteException;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.services.DocumentManagementService;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -59,7 +62,7 @@ class DocumentManagementControllerTest {
     }
 
     @Test
-    void testCicDocumentControllerFileUpload() throws Exception {
+    void testCicDocumentControllerFileUpload() throws IOException {
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
         final DocumentInfo document = DocumentInfo.builder()
@@ -91,8 +94,9 @@ class DocumentManagementControllerTest {
             multipartFile
         );
 
-        DocumentResponse testResponse = (DocumentResponse) uploadDocumentResponse.getBody();
+        final DocumentResponse testResponse = (DocumentResponse) uploadDocumentResponse.getBody();
 
+        assertEquals(HttpStatus.OK, uploadDocumentResponse.getStatusCode());
         assertNotNull(testResponse);
         assertEquals(document.getDocumentId(), testResponse.getDocument().getDocumentId());
         assertEquals(document.getFileName(), testResponse.getDocument().getFileName());
@@ -101,7 +105,7 @@ class DocumentManagementControllerTest {
     }
 
     @Test
-    void testDeleteCicDocumentControllerFailedWithException() throws Exception {
+    void testDeleteCicDocumentControllerFailedWithException() {
         final DocumentInfo documentInfo = DocumentInfo.builder()
             .documentId(CASE_DATA_CIC_ID)
             .url(TEST_URL)
@@ -116,7 +120,7 @@ class DocumentManagementControllerTest {
                 new Throwable()
             ));
 
-        final Exception exception = assertThrows(Exception.class, () -> {
+        final Exception exception = assertThrows(DocumentUploadOrDeleteException.class, () -> {
             documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
         });
         assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
