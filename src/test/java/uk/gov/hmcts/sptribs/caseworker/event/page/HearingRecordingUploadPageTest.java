@@ -39,9 +39,23 @@ public class HearingRecordingUploadPageTest {
     }
 
     @Test
-    void midEventReturnsNoErrors() {
+    void midEventReturnsNoErrorsWithDocumentList() {
         documentList = getCaseworkerCICDocumentList("file.mp3");
         final HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        listing.setSummary(hearingSummary);
+
+        final CaseData caseData = CaseData.builder()
+            .listing(listing)
+            .build();
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = hearingRecordingUploadPage.midEvent(caseDetails, caseDetails);
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void midEventReturnsNoErrorForEmptyDocumentList() {
+        final HearingSummary hearingSummary = HearingSummary.builder().build();
         listing.setSummary(hearingSummary);
 
         final CaseData caseData = CaseData.builder()
