@@ -92,13 +92,14 @@ class CaseworkerCaseFlagTest {
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
-
         //Then
-        assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getRepresentativeCIC()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getRepresentativeCIC()).contains(RepresentativeCIC.REPRESENTATIVE);
 
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(submittedCallbackResponse.getConfirmationHeader()).contains("Flag created");
+
     }
 
     @Test
@@ -124,13 +125,14 @@ class CaseworkerCaseFlagTest {
             caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
-
         //Then
-        assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getApplicantCIC()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantCIC()).contains(ApplicantCIC.APPLICANT_CIC);
 
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(submittedCallbackResponse.getConfirmationHeader()).contains("Flag created");
+
     }
 
     @Test
@@ -157,35 +159,13 @@ class CaseworkerCaseFlagTest {
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(submittedCallbackResponse).isNotNull();
-
-        updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-    }
-
-    @Test
-    void shouldSuccessfullyAddCaseFlag() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.setNote("This is a test note");
-        CicCase cicCase = new CicCase();
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCaseFlag.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.flagCreated(updatedCaseDetails, beforeDetails);
-
-        //Then
         assertThat(response).isNotNull();
-        assertThat(submittedCallbackResponse).isNotNull();
-    }
+        assertThat(response.getData().getCicCase().getSubjectCIC()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getSubjectCIC()).contains(SubjectCIC.SUBJECT);
 
+        assertThat(submittedCallbackResponse).isNotNull();
+        assertThat(submittedCallbackResponse.getConfirmationHeader()).contains("Flag created");
+
+    }
 
 }

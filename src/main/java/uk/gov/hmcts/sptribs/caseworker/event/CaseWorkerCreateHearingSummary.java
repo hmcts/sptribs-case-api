@@ -44,6 +44,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCasewor
 @Component
 @Slf4j
 public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State, UserRole> {
+
     private static final CcdPageConfiguration createHearingSummary = new SelectHearing();
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
@@ -100,21 +101,24 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers();
+        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
         caseData.getListing().getSummary().setJudge(judicialUsersDynamicList);
         caseData.getListing().getSummary().setMemberList(getPanelMembers(judicialUsersDynamicList));
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
+
         caseData.getListing().setHearingStatus(Complete);
+        caseData.setJudicialId(judicialService.populateJudicialId(caseData));
+        caseData.getListing().getSummary().setJudgeList(null);
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
 
@@ -124,7 +128,6 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
             .data(caseData)
             .state(AwaitingOutcome)
             .build();
-
     }
 
     public SubmittedCallbackResponse summaryCreated(CaseDetails<CaseData, State> details,
@@ -135,5 +138,4 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 "This hearing summary has been added to the case record."))
             .build();
     }
-
 }

@@ -31,19 +31,6 @@
       },
       {
         "roleType": "CASE",
-        "roleName": "idam:citizen-sptribs-cic-dss",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": {
-          "caseType": "CriminalInjuriesCompensation",
-          "jurisdiction": "ST_CIC"
-        },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
         "roleName": "idam:caseworker-st_cic",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",

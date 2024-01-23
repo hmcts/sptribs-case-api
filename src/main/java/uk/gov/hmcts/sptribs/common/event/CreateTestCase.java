@@ -79,7 +79,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private SubmissionService submissionService;
 
     @Autowired
-    private CcdSupplementaryDataService coreCaseApiService;
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
@@ -191,12 +191,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .roleOnCase(null)
             .build());
 
-        data.setSubjectFlags(Flags.builder()
-            .details(new ArrayList<>())
-            .partyName(data.getCicCase().getFullName())
-            .roleOnCase("subject")
-            .build()
-        );
+        if (null != data.getCicCase().getFullName()) {
+            data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getFullName())
+                .roleOnCase("subject")
+                .build()
+            );
+        }
 
         if (null != data.getCicCase().getApplicantFullName()) {
             data.setApplicantFlags(Flags.builder()
@@ -219,7 +221,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private void setSupplementaryData(Long caseId) {
         try {
-            coreCaseApiService.submitSupplementaryDataToCcd(caseId.toString());
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
         } catch (Exception exception) {
             log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
         }

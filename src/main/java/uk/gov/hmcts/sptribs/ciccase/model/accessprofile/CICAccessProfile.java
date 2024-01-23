@@ -20,19 +20,19 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
                 UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_CASEWORKER)
-            .accessProfiles(UserRolesForAccessProfiles.CIC_CASEWORKER_PROFILE.getRole(),
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CASEWORKER.getRole(),
                 UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_SENIOR_CASEWORKER)
-            .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER_PROFILE.getRole(),
+            .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER.getRole(),
                 UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_HEARING_CENTRE_ADMIN)
-            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN_PROFILE.getRole(),
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN.getRole(),
                 UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER_PROFILE.getRole(),
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole(),
                 UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_SENIOR_JUDGE)
@@ -40,11 +40,11 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
                 UserRolesForAccessProfiles.AC_CASEFLAGS_VIEWER.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_JUDGE)
-            .accessProfiles(UserRolesForAccessProfiles.CIC_JUDGE_PROFILE.getRole(),
+            .accessProfiles(UserRolesForAccessProfiles.CIC_JUDGE.getRole(),
                 UserRolesForAccessProfiles.AC_CASEFLAGS_VIEWER.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_RESPONDENT)
-            .accessProfiles(UserRolesForAccessProfiles.CIC_RESPONDENT_PROFILE.getRole())
+            .accessProfiles(UserRolesForAccessProfiles.CIC_RESPONDENT.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CREATOR)
             .accessProfiles(UserRolesForAccessProfiles.CREATOR.getRole())
@@ -57,14 +57,6 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_WA_CONFIG_USER)
             .accessProfiles(UserRolesForAccessProfiles.AC_ST_CIC_WA_CONFIG_USER.getRole())
-            .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.CASEWORKER_ADMIN)
-            .accessProfiles(UserRolesForAccessProfiles.AP_CASEWORKER_ADMIN.getRole(),
-                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
-            .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.IDAM_HMCTS_ADMIN)
-            .accessProfiles(UserRolesForAccessProfiles.AP_HMCTS_ADMIN.getRole(),
-                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SYSTEMUPDATE)
             .accessProfiles(UserRolesForAccessProfiles.AC_SYSTEMUPDATE.getRole())

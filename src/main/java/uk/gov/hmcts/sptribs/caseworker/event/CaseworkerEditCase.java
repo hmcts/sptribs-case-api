@@ -33,6 +33,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -55,9 +56,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editFurtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
-    @Autowired
     private final SubmissionService submissionService;
-
+    
+    @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
     }
@@ -78,7 +79,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
-            .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
             .description("Case: Edit case")
             .showSummary()
@@ -101,7 +102,6 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
         CaseData beforeData = beforeDetails.getData();
-
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
             data.getCicCase().removeRepresentative();
@@ -147,28 +147,22 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .roleOnCase(null)
                 .build());
         }
-        if (Objects.isNull(data.getSubjectFlags())) {
+
+        if (Objects.isNull(data.getSubjectFlags()) || Objects.isNull(data.getSubjectFlags().getDetails())) {
             data.setSubjectFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
                 .roleOnCase("subject")
-                .build()
-            );
+                .build());
         }
 
-        if (Objects.isNull(data.getApplicantFlags())) {
-            if (null != data.getCicCase().getApplicantFullName()) {
-                data.setApplicantFlags(Flags.builder()
-                    .details(new ArrayList<>())
-                    .partyName(data.getCicCase().getApplicantFullName())
-                    .roleOnCase("applicant")
-                    .build()
-                );
-            }
-        }
+        updateApplicantFlags(data);
+        updateRepresentativeFlags(data);
+    }
 
-        if (Objects.isNull(data.getRepresentativeFlags())) {
-            if (null != data.getCicCase().getRepresentativeFullName()) {
+    private void updateRepresentativeFlags(CaseData data) {
+        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
+            if (Objects.isNull(data.getRepresentativeFlags()) || Objects.isNull(data.getRepresentativeFlags().getDetails())) {
                 data.setRepresentativeFlags(Flags.builder()
                     .details(new ArrayList<>())
                     .partyName(data.getCicCase().getRepresentativeFullName())
@@ -176,6 +170,23 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                     .build()
                 );
             }
+        } else {
+            data.setRepresentativeFlags(null);
+        }
+    }
+
+    private void updateApplicantFlags(CaseData data) {
+        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+            if (Objects.isNull(data.getApplicantFlags()) || Objects.isNull(data.getApplicantFlags().getDetails())) {
+                data.setApplicantFlags(Flags.builder()
+                    .details(new ArrayList<>())
+                    .partyName(data.getCicCase().getApplicantFullName())
+                    .roleOnCase("applicant")
+                    .build()
+                );
+            }
+        } else {
+            data.setApplicantFlags(null);
         }
     }
 }

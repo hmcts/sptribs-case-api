@@ -29,7 +29,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.bundling.enabled}")
+    private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
+
+    @Value("${feature.bundling-stitch.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -45,6 +47,7 @@ public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRo
             .forStates(BUNDLE_STATES)
             .name("Bundle: Stitch a bundle")
             .description("Bundle: Stitch a bundle")
+            .showCondition(ALWAYS_HIDE)
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, SUPER_USER,

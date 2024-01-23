@@ -45,6 +45,9 @@ rd-judicial-api:
 rd-judicial-data-load:
   enabled: false
 
+sptribs-frontend:
+  enabled: false
+
 java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'

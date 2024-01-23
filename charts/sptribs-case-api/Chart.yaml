@@ -3,27 +3,24 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.87
+version: 0.0.89
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
   - name: java
     version: 5.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-  - name: sptribs-frontend
-    version: 0.0.23
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: 9.0.20
+    version: 8.0.29
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
       - ccd-idam-pr
   - name: xui-webapp
-    version: ~1.0.8
+    version: ~1.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-webapp.enabled
   - name: xui-mo-webapp
-    version: ~1.1.13
+    version: ~1.1.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: xui-mo-webapp.enabled
   - name: aac-manage-case-assignment
@@ -90,3 +87,7 @@ dependencies:
     version: ~0.3.13
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: rd-judicial-data-load.enabled
+  - name: sptribs-frontend
+    version: 0.0.27
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: sptribs-frontend.enabled

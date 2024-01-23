@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,6 @@ import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -67,9 +67,6 @@ class CicSubmitCaseEventTest {
 
     @InjectMocks
     private CicSubmitCaseEvent cicSubmitCaseEvent;
-
-    @Mock
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
 
     @Mock
     private AddSystemUpdateRole addSystemUpdateRole;
@@ -105,6 +102,7 @@ class CicSubmitCaseEventTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
+        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
         when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
             .thenReturn(List.of(CITIZEN_CIC));
 
@@ -157,9 +155,6 @@ class CicSubmitCaseEventTest {
 
         //Then
         Assertions.assertEquals(State.DSS_Submitted, aboutToSubmitResponse.getState());
-        assertThat(aboutToSubmitResponse.getData().getDssAnswer1()).isEqualTo("case_data.dssCaseDataSubjectFullName");
-        assertThat(aboutToSubmitResponse.getData().getDssAnswer3()).isEqualTo("case_data.dssCaseDataSubjectDateOfBirth");
-
     }
 
     @Test

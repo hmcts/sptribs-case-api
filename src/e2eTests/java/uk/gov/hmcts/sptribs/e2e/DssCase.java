@@ -94,10 +94,10 @@ public class DssCase {
         //Fill additional information
         assertH1Heading(page, "Add information to a case");
         uploadDocument(page);
-        page.locator("textarea#more-detail").fill("Lorem Ipsum is simply dummy text of the printing and typesetting "
+        page.locator("#documentRelevance").fill("This is a test document");
+        page.locator("textarea#additionalInformation").fill("Lorem Ipsum is simply dummy text of the printing and typesetting "
             + "industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, "
             + "when an unknown printer took a galley of type and scrambled it to make a type specimen book.");
-        getTextBoxByLabel(page, "Please explain why you feel this document is relevant to your case").fill("Test file ");
         clickButton(page,"Continue");
 
         //PCQ questions
