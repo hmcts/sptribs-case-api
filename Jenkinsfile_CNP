@@ -400,7 +400,7 @@ def setFeatureFlags(environment) {
   } else if (environment =~ /prod/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.CASE_FILE_VIEW = false
-    env.DOCUMENT_MANAGEMENT_FEATURE = false
+    env.DOCUMENT_MANAGEMENT_FEATURE = true
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
     env.CREATE_BUNDLING_FEATURE = true
