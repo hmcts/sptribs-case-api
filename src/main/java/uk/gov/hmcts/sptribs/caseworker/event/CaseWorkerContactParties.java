@@ -113,9 +113,10 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.setContactParties(new ContactParties());
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
         caseData.getCicCase().setNotifyPartyMessage("");
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -135,8 +136,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
 
-        var data = details.getData();
-        var cicCase = data.getCicCase();
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
         try {

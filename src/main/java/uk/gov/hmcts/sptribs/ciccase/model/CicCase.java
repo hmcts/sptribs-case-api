@@ -571,6 +571,7 @@ public class CicCase {
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
 
+
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )

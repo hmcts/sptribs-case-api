@@ -57,7 +57,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
     private final SubmissionService submissionService;
-    
+
     @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
@@ -65,7 +65,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = addEventConfig(configBuilder);
+        final PageBuilder pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
@@ -102,6 +102,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
         CaseData beforeData = beforeDetails.getData();
+
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
             data.getCicCase().removeRepresentative();
@@ -112,9 +113,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             data.getCicCase().removeApplicant();
         }
 
-        var submittedDetails = submissionService.submitApplication(details);
+        CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
-        var state = beforeDetails.getState();
+        State state = beforeDetails.getState();
         if (state == DSS_Submitted) {
             state = Submitted;
         }

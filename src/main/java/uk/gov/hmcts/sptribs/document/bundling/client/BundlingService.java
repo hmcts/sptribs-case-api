@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.document.bundling.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -72,14 +70,6 @@ public class BundlingService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
 
-            ObjectMapper mapper = new ObjectMapper();
-            String responseString = null;
-            try {
-                responseString = mapper.writeValueAsString(response);
-            } catch (JsonProcessingException e) {
-                log.error("Error converting json to string", e.getMessage());
-            }
-            log.info("response {}", responseString);
             return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
         } catch (FeignException exception) {
             log.error("Unable to create bundle {}",
@@ -104,7 +94,7 @@ public class BundlingService {
         AtomicInteger listValueIndex = new AtomicInteger(0);
         List<ListValue<Bundle>> newList = new ArrayList<>();
         for (Bundle doc : bundleList) {
-            var listValue = ListValue
+            ListValue<Bundle> listValue = ListValue
                 .<Bundle>builder()
                 .value(doc)
                 .build();
@@ -124,7 +114,7 @@ public class BundlingService {
         List<ListValue<BundleFolder>> newList = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleFolder doc : bundleList) {
-            var listValue = ListValue
+            ListValue<BundleFolder> listValue = ListValue
                 .<BundleFolder>builder()
                 .value(doc)
                 .build();
@@ -144,7 +134,7 @@ public class BundlingService {
         List<ListValue<BundleDocument>> newList = new ArrayList<>();
         AtomicInteger listValueIndex = new AtomicInteger(0);
         for (BundleDocument doc : bundleList) {
-            var listValue = ListValue
+            final ListValue<BundleDocument> listValue = ListValue
                 .<BundleDocument>builder()
                 .value(doc)
                 .build();

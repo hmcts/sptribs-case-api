@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
@@ -55,8 +56,8 @@ public class CaseApiApplication implements CommandLineRunner {
     ScheduledTaskRunner taskRunner;
 
     public static void main(final String[] args) {
-        final var application = new SpringApplication(CaseApiApplication.class);
-        final var instance = application.run(args);
+        final SpringApplication application = new SpringApplication(CaseApiApplication.class);
+        final ConfigurableApplicationContext instance = application.run(args);
 
         if (System.getenv("TASK_NAME") != null) {
             instance.close();

@@ -41,7 +41,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AC_CASEWORKER("caseworker", "CRU"),
     AC_CITIZEN("citizen", "CRU"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
-    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R");
+    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
     AP_CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
     AP_COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
     AP_DISTRICT_JUDGE_CIC_PROFILE("caseworker-sptribs-cic-districtjudge", "CRU"),

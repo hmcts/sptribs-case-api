@@ -42,7 +42,7 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
 
-        var data = details.getData();
+        final CaseData data = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

@@ -14,7 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.STITCH_BUNDLE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -44,7 +45,7 @@ public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRo
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(STITCH_BUNDLE)
-            .forStates(BUNDLE_STATES)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Stitch a bundle")
             .description("Bundle: Stitch a bundle")
             .showCondition(ALWAYS_HIDE)
@@ -66,15 +67,12 @@ public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRo
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
-
-        log.info("Caseworker Stitch bundle case_data for Case Id: {}. {}", details.getId(), details.getData());
+        final CaseData caseData = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

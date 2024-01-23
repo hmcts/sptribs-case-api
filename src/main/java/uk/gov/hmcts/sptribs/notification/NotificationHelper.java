@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
@@ -85,7 +87,7 @@ public class NotificationHelper {
 
     public Map<String, Object> getTribunalCommonVars(String caseNumber, CicCase cicCase) {
         Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
-        templateVars.put(CONTACT_NAME, cicCase.getTribunalName());
+        templateVars.put(CONTACT_NAME, TRIBUNAL_NAME_VALUE);
         return templateVars;
     }
 
@@ -149,14 +151,12 @@ public class NotificationHelper {
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, " ");
         }
-
-        if (listing.getVideoCallLink() != null) {
+        if (null != listing.getVideoCallLink()) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
         }
-
-        if (listing.getConferenceCallNumber() != null) {
+        if (null != listing.getConferenceCallNumber()) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, listing.getConferenceCallNumber());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
@@ -185,7 +185,7 @@ public class NotificationHelper {
         Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (documentList != null && !documentList.getValue().isEmpty()) {
+        if (!ObjectUtils.isEmpty(documentList.getValue()) && documentList.getValue().size() > 0) {
             List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;

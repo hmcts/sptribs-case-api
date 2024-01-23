@@ -77,6 +77,35 @@ public class CheckRequiredUtilTest {
     }
 
     @Test
+    void shouldSuccessfullyCheckNullSubjectRepresentativeRespondentWithApplicant() {
+        //Given
+        final CaseData caseData = new CaseData();
+        final CicCase cicCase = new CicCase();
+        cicCase.setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
+        caseData.setCicCase(cicCase);
+
+        //When
+        boolean result = CheckRequiredUtil.checkNullSubjectRepresentativeRespondent(caseData);
+
+        //Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldSuccessfullyCheckNullSubjectRepresentativeApplicant() {
+        //Given
+        final CaseData caseData = new CaseData();
+        final CicCase cicCase = new CicCase();
+        caseData.setCicCase(cicCase);
+
+        //When
+        boolean result = CheckRequiredUtil.checkNullSubjectRepresentativeApplicant(caseData);
+
+        //Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();

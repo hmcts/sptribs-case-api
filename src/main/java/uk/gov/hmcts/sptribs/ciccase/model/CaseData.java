@@ -14,8 +14,8 @@ import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
-import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -85,7 +85,7 @@ public class CaseData {
 
     @CCD(
         label = "Launch the Flags screen",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseFlagsAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private FlagLauncher flagLauncher;
 
@@ -182,7 +182,6 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private State caseStatus;
-
 
     @CCD(
         label = "CCD Case Reference",
@@ -345,7 +344,7 @@ public class CaseData {
         label = "Messages",
         typeOverride = Collection,
         typeParameterOverride = "DssMessage",
-        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private List<ListValue<DssMessage>> messages;
 
@@ -394,7 +393,7 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class})
     private DssCaseData dssCaseData = new DssCaseData();
 
     @CCD(

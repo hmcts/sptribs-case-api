@@ -94,6 +94,7 @@ ccd:
   ccd-api-gateway-web:
     nodejs:
       disableKeyVaults: true
+      image: hmctspublic.azurecr.io/ccd/api-gateway-web:prod-66e26b9-20231116094420
       imagePullPolicy: Always
       environment:
         ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
@@ -435,7 +436,6 @@ xui-webapp:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      SERVICES_CCD_CASE_ASSIGNMENT_API: https://aac-${SERVICE_FQDN}
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_DOCUMENTS_API_V2: http://${SERVICE_NAME}-ccd-case-document-am-api
@@ -589,7 +589,6 @@ em-stitching:
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
-      disabled: false
 
 wa:
   enabled: true
@@ -887,9 +886,9 @@ rd-judicial-api:
         key: PASSWORD
         disabled: false
     environment:
-#      JRD_MQ_HOST: "et-sb-preview.servicebus.windows.net"
+      #      JRD_MQ_HOST: "et-sb-preview.servicebus.windows.net"
       JRD_MQ_USERNAME: SendAndListenSharedAccessKey
-#      JRD_MQ_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
+      #      JRD_MQ_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
       LAUNCH_DARKLY_ENV: "{{ .Values.global.environment }}"
       ENVIRONMENT_NAME: "{{ .Values.global.environment }}"
       SCHEDULER_ENABLED: false
@@ -967,3 +966,4 @@ postgresql:
       - name: "pr-${CHANGE_ID}-dbuserprofile"
       - name: "pr-${CHANGE_ID}-dbjuddata"
       - name: "pr-${CHANGE_ID}-sptribs-case-api"
+

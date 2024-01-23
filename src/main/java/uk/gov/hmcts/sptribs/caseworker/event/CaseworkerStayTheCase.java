@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_STAY_THE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
@@ -31,7 +31,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -52,7 +51,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
+            .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(
@@ -61,7 +60,6 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
                 ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
                 ST_CIC_JUDGE))
             .page("addStay")
             .pageLabel("Add a Stay to this case")
@@ -96,7 +94,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
         log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
-        caseData.getCaseStay().setIsCaseStayed(YES);
+        caseData.getCaseStay().setIsCaseStayed(YesOrNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -107,11 +105,11 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        final CaseData caseData = details.getData();
-        final String caseReference = caseData.getHyphenatedCaseRef();
+        final CaseData data = details.getData();
+        final String claimNumber = data.getHyphenatedCaseRef();
 
         try {
-            sendCaseStayedNotification(caseReference, caseData);
+            sendCaseStayedNotification(claimNumber, data);
         } catch (Exception notificationException) {
             log.error("Case stay notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -121,7 +119,7 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Stay Added to Case %n## %s",
-                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(caseData.getCicCase()))))
+                MessageUtil.generateSimpleMessage(EventUtil.getNotificationParties(data.getCicCase()))))
             .build();
     }
 

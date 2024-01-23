@@ -98,7 +98,7 @@ class CaseworkerContactPartiesTest {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         final CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);
@@ -199,7 +199,6 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
 
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
-
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
@@ -372,6 +371,7 @@ class CaseworkerContactPartiesTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
                 contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
+
 
         //Then
         assertThat(response.getErrors()).hasSize(1);

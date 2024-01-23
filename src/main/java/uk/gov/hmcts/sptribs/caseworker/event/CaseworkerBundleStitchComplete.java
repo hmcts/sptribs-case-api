@@ -16,7 +16,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -49,7 +50,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(ASYNC_STITCH_COMPLETE)
-            .forStates(BUNDLE_STATES)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Async Stitching Comp")
             .description("Bundle: Async Stitching Comp")
             .showCondition(ALWAYS_HIDE)
@@ -77,7 +78,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
     ) {
         log.info("Caseworker async stitching complete for bundle callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

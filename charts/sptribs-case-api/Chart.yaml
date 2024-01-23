@@ -43,6 +43,14 @@ dependencies:
     version: 1.0.31
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
+  - name: em-ccdorc
+    version: 2.0.10
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: em-ccdorc.enabled
+  - name: em-stitching
+    version: 1.0.31
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: em-stitching.enabled
   - name: wa
     version: ~1.0.4
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'

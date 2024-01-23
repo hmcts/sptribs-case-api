@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.ITEventConstants.CASEWORKER_ADD_NOTE;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.COURT_ADMIN_CIC;
+import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamFailure;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
@@ -87,7 +87,7 @@ class CaseworkerAddNoteIT {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
 
-        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, COURT_ADMIN_CIC);
+        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
         mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)

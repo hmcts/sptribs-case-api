@@ -61,8 +61,6 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
 
-
-
     @Autowired
     private OrderService orderService;
 
@@ -87,43 +85,40 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         createDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
 
-
     }
 
     private void createDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
         pageBuilder.page("createDraftOrderAddDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
             .label("draftOrderDocFooter",
-                """
-                    \"Order Signature
-                    \"Confirm the Role and Surname of the person who made this order - this will be added
-                    \"to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'
-                    """)
+                "\nOrder Signature\n"
+                    + "\nConfirm the Role and Surname of the person who made this order - this will be added"
+                    + " to the bottom of the generated order notice. E.g. 'Tribunal Judge Farrelly'")
             .complex(CaseData::getDraftOrderContentCIC)
             .mandatory(DraftOrderContentCIC::getOrderSignature)
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
 
-
-        var caseData = details.getData();
-        OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
+        final CaseData caseData = details.getData();
+        final OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
         String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
         addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
+
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
-        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
-        if (isEmpty(caseData.getCicCase().getDraftOrderCICList())) {
-            List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
+
+        if (isEmpty(caseData.getCicCase().getDraftOrderCICList())) {
+            final List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
+
+            final ListValue<DraftOrderCIC> listValue = ListValue
                 .<DraftOrderCIC>builder()
                 .id("1")
                 .value(draftOrderCIC)
@@ -134,7 +129,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             caseData.getCicCase().setDraftOrderCICList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<DraftOrderCIC> listValue = ListValue
                 .<DraftOrderCIC>builder()
                 .value(draftOrderCIC)
                 .build();
@@ -184,7 +179,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
-        var caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
+        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

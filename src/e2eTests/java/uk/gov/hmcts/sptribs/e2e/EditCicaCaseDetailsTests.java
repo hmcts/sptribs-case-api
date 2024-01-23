@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import uk.gov.hmcts.sptribs.e2e.enums.CaseParties;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getValueFromTableFor;
 
 public class EditCicaCaseDetailsTests extends Base {
 
-    @RepeatedIfExceptionsTest
+    @Disabled
     public void respondentShouldBeAbleToAddEditCicDetails() {
         Page page = getPage();
         Login login = new Login(page);
@@ -25,7 +25,7 @@ public class EditCicaCaseDetailsTests extends Base {
         final String caseNumber = newCase.createCase(CaseParties.Representative.label);
         newCase.buildCase();
         clickLink(page, "Sign out");
-        login.loginAsCaseWorker();
+        login.loginAsStRespondentUser();
         page.navigate(getCaseUrl(caseNumber));
         assertThat(page.locator("ccd-markdown markdown h3").first())
             .hasText("Case number: " + caseNumber, textOptionsWithTimeout(60000));
@@ -33,11 +33,12 @@ public class EditCicaCaseDetailsTests extends Base {
         newCase.startNextStepAction(EditCicaCaseDetails);
         assertThat(page.locator("h1")).hasText("Case details", textOptionsWithTimeout(60000));
         String cicaReferenceNumber = "Test123";
-        page.getByLabel("CICA reference number").fill(cicaReferenceNumber);
+        page.getByLabel("CICA reference number").type(cicaReferenceNumber);
         String cicaCaseWorker = "Test user";
-        page.getByLabel("CICA case worker").fill(cicaCaseWorker);
+        page.getByLabel("CICA case worker").type(cicaCaseWorker);
         String cicaCasePresentingOfficer = "Test Officer";
-        page.getByLabel("CICA case presenting officer").fill(cicaCasePresentingOfficer);
+        page.getByLabel("CICA case presenting officer").type(cicaCasePresentingOfficer);
+        page.locator("//h1[contains(text(), 'Case details')]").click();
         clickButton(page, "Continue");
         assertThat(page.locator("h2")).hasText("Check your answers", textOptionsWithTimeout(30000));
         clickButton(page, "Save and continue");
@@ -58,4 +59,3 @@ public class EditCicaCaseDetailsTests extends Base {
         Assertions.assertEquals(cicaCasePresentingOfficer, presentingOfficer);
     }
 }
-

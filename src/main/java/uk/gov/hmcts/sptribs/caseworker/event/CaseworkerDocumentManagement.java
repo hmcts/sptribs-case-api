@@ -41,13 +41,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.case-file-view-and-document-management.enabled}")
-    private boolean caseFileViewAndDocumentManagementEnabled;
+    @Value("${feature.document-management.enabled}")
+    private boolean documentManagementEnabled;
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFileViewAndDocumentManagementEnabled) {
+        if (documentManagementEnabled) {
             doConfigure(configBuilder);
         }
     }
@@ -90,7 +90,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         DocumentUtil.uploadDocument(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

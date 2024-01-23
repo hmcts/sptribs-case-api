@@ -71,8 +71,7 @@ core_case_data:
     page_size: 100
 
 case-api:
-  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:https://manage-case.aat.platform.hmcts.net}
-
+  url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
@@ -115,9 +114,11 @@ feature:
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
   migration:
-    enabled: ${MIGRATION_ENABLED:false}
-  case-file-view-and-document-management:
-    enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
+    enabled: ${MIGRATION_ENABLED:true}
+  case-file-view:
+    enabled: ${CASE_FILE_VIEW_FEATURE:true}
+  document-management:
+    enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling-create:
     enabled: ${CREATE_BUNDLING_FEATURE:true}
   bundling-edit:
@@ -130,6 +131,9 @@ feature:
     enabled: ${DSS_FRONTEND_FEATURE:false}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
+  access-profiles:
+    enabled: ${ACCESS_PROFILES_ENABLED:true}
+
 
 caseinfo:
   apps:
@@ -139,6 +143,6 @@ caseinfo:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
         submitEvent: citizen-cic-submit-dss-application
-        dssUpdateEvent: caseworker-update-dss-application
+        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC

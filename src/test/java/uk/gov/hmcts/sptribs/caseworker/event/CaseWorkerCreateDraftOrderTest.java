@@ -164,7 +164,6 @@ class CaseWorkerCreateDraftOrderTest {
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(response2).isNotNull();
-
     }
 }
 

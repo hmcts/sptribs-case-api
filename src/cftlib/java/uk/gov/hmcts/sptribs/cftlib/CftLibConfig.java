@@ -24,24 +24,23 @@ public class CftLibConfig implements CFTLibConfigurer {
     @Value("Submitted")
     String state;
 
-
     @Autowired
     CCDDefinitionGenerator configWriter;
 
     @Override
     public void configure(CFTLib lib) throws Exception {
 
-        var roleList = List.of("caseworker",
+        List<String> roleList = List.of("caseworker",
+            "caseworker-st_cic",
             "caseworker-st_cic-caseworker",
             "pui-case-manager",
-            "jrd-system-user",
             "jrd-admin");
 
-        var users = Map.of(
+        Map<String, List<String>> users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
             "TEST_SOLICITOR@mailinator.com", roleList);
 
-        for (var p : users.entrySet()) {
+        for (Map.Entry<String, List<String>> p : users.entrySet()) {
             lib.createIdamUser(p.getKey(), p.getValue().toArray(new String[0]));
             lib.createProfile(p.getKey(), CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
                 CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(), state);
@@ -82,7 +81,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-wa-task-configuration"
         );
         ResourceLoader resourceLoader = new DefaultResourceLoader();
-        var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
+        String json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
             .getInputStream(), Charset.defaultCharset());
         lib.configureRoleAssignments(json);
 

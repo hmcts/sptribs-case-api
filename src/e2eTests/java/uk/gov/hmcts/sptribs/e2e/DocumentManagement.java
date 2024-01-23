@@ -44,10 +44,9 @@ public class DocumentManagement {
         clickButton(page, "Continue");
 
         assertThat(page.locator("h1")).hasText("Amend case documents", textOptionsWithTimeout(60000));
-        String amendedDocumentCategory = "A - Correspondence from the CICA";
         page.selectOption("#cicCaseSelectedDocument_documentCategory", new SelectOption().setLabel(documentCategory));
-        String amendedDocumentDescription = "This is a test to amend document";
-        page.locator("#cicCaseSelectedDocument_documentEmailContent").fill(documentDescription);
+        page.locator("#cicCaseSelectedDocument_documentEmailContent").type(documentDescription);
+        page.locator("//h2[contains(text(), 'Documents')]").click();
         clickButton(page, "Continue");
 
         assertThat(page.locator(".check-your-answers h2.heading-h2"))
@@ -92,9 +91,12 @@ public class DocumentManagement {
     private void uploadDocument(Page page, String documentCategory, String documentDescription, String documentName) {
         clickButton(page, "Add new");
         page.selectOption("#newCaseworkerCICDocument_0_documentCategory", new SelectOption().setLabel(documentCategory));
-        page.locator("#newCaseworkerCICDocument_0_documentEmailContent").fill(documentDescription);
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
+        page.waitForSelector("//span[contains(text(), 'Uploading...')]",
+            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
+        page.locator("#newCaseworkerCICDocument_0_documentEmailContent").type(documentDescription);
+        page.locator("//div[contains(@id, 'newCaseworkerCICDocument')]//h2[contains(text(), 'Documents')]").click();
     }
 }

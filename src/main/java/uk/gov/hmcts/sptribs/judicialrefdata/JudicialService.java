@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
@@ -39,39 +39,42 @@ public class JudicialService {
 
     private JudicialClient judicialClient;
 
+    private IdamService idamService;
+
     @Value("${toggle.enable_jrd_api_v2}")
     private boolean enableJrdApiV2;
 
     @Autowired
     public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
-            JudicialClient judicialClient) {
+            JudicialClient judicialClient, IdamService idamService) {
         this.httpServletRequest = httpServletRequest;
         this.authTokenGenerator = authTokenGenerator;
         this.judicialClient = judicialClient;
+        this.idamService = idamService;
     }
 
     public DynamicList getAllUsers(CaseData caseData) {
-        final var users = getUsers();
-        final var judges = populateJudgesList(users);
+        final List<UserProfileRefreshResponse> users = getUsers();
+        final List<ListValue<Judge>> judges = populateJudgesList(users);
         caseData.getListing().getSummary().setJudgeList(judges);
         return populateUsersDynamicList(judges);
     }
 
     private List<UserProfileRefreshResponse> getUsers() {
-
+        String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         try {
             List<UserProfileRefreshResponse> list =
                 enableJrdApiV2
                     ? judicialClient.getUserProfilesV2(
                         authTokenGenerator.generate(),
-                        httpServletRequest.getHeader(AUTHORIZATION),
+                        authToken,
                         ACCEPT_VALUE,
                         JudicialUsersRequest.builder()
                             .ccdServiceName(ST_CIC_JURISDICTION)
                             .build())
                     : judicialClient.getUserProfiles(
                         authTokenGenerator.generate(),
-                        httpServletRequest.getHeader(AUTHORIZATION),
+                        authToken,
                         JudicialUsersRequest.builder()
                             .ccdServiceName(ST_CIC_JURISDICTION)
                             .build());

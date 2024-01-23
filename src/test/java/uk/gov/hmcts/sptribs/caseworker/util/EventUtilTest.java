@@ -222,6 +222,7 @@ public class EventUtilTest {
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
     }
 
+
     @Test
     void shouldSuccessfullyGetOrderMainContentRule27() {
         //Given
@@ -371,4 +372,5 @@ public class EventUtilTest {
         assertThat(data.getDssAnswer3()).isEqualTo("case_data.cicCaseDateOfBirth");
 
     }
+
 }

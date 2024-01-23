@@ -70,8 +70,8 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_SENIOR_CASEWORKER, ST_CIC_SENIOR_JUDGE)
+            .grant(CREATE_READ_UPDATE,
+                ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -87,7 +87,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         String securityClassification = caseData.getSecurityClass().getLabel();
         Map<String, Object> dataClassification = caseDataService.getDataClassification(details.getId().toString());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -117,7 +117,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
     ) {
 
         final List<String> errors = new ArrayList<>();
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         if (!checkAvailableForNewClass(user, caseData.getSecurityClass())) {

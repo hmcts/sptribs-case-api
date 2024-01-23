@@ -29,7 +29,8 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
                 The order should be:
                  *  uploaded separately, not one large file
                  *  a maximum of 100MB in size (larger files must be split)
-                 *  select the appropriate category from case file view
+                 *  labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                 Note: If the remove button is disabled, please refresh the page to remove attachments
                  """
             )
             .complex(CaseData::getNewDocManagement)

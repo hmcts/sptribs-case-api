@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerDssUpdateCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Value("${feature.dss-frontend.enabled}")
     private boolean dssUpdateCaseEnabled;
@@ -52,7 +53,6 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
             .forStates(State.DSS_Submitted)
             .name("DSS Update case (cic)")
             .description("Application DSS Update (cic)")
-            .publishToCamunda()
             .retries(120, 120)
             .grant(CREATE_READ_UPDATE_DELETE, CITIZEN_CIC)
             .grant(CREATE_READ_UPDATE, SYSTEMUPDATE)

@@ -1,3 +1,4 @@
+
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
@@ -102,7 +103,8 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
+        caseData.setContactParties(new ContactParties());
+        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
         caseData.getCicCase().setNotifyPartyMessage("");
 

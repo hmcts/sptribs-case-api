@@ -58,7 +58,9 @@ class ContactPartiesNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
-        data.getCicCase().setAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
+        data.getCicCase().setAddress(
+            new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK")
+        );
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -94,7 +96,9 @@ class ContactPartiesNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
-        data.getCicCase().setApplicantAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
+        data.getCicCase().setApplicantAddress(
+            new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK")
+        );
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -130,7 +134,9 @@ class ContactPartiesNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
-        data.getCicCase().setRepresentativeAddress(new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
+        data.getCicCase().setRepresentativeAddress(
+            new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK")
+        );
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -139,6 +145,21 @@ class ContactPartiesNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+    }
+
+    @Test
+    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setRepresentativeFullName("respFullName");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        contactPartiesNotification.sendToRespondent(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -159,7 +180,6 @@ class ContactPartiesNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
-
     @Test
     void shouldNotifyTribunalOfCaseIssuedWithEmailWithAttachments() {
         //Given
@@ -167,7 +187,6 @@ class ContactPartiesNotificationTest {
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
             .documentList(getDynamicMultiSelectDocumentList()).build();
         data.setContactPartiesDocuments(contactPartiesDocuments);
-        data.getCicCase().setTribunalName("respFullName");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -177,7 +196,6 @@ class ContactPartiesNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
-
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();

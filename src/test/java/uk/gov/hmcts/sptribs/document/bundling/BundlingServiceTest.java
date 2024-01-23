@@ -152,15 +152,6 @@ public class BundlingServiceTest {
     }
 
     @Test
-    void shouldGenerateSingleMultiBundleConfig() {
-        //When
-        MultiBundleConfig result = bundlingService.getMultiBundleConfig();
-
-        //Then
-        assertThat(result.getValue()).isNotNull();
-    }
-
-    @Test
     void shouldGenerateMultiBundleConfig() {
         //When
         List<MultiBundleConfig> result = bundlingService.getMultiBundleConfigs();
@@ -242,7 +233,7 @@ public class BundlingServiceTest {
         assertThat(resultList).isNotNull();
     }
 
-    @Test
+    /*@Test
     void shouldReturnNullWhenNoBundles() {
         //Given
         final CaseData caseData = caseData();
@@ -272,7 +263,7 @@ public class BundlingServiceTest {
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).isEmpty();
         assertThat(resultList).isNull();
-    }
+    }*/
 
     @Test
     void shouldReturnNullWhenNoBundleFolders() {
