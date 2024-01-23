@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.cftlib;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.rse.ccd.lib.ControlPlane;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.PostConstruct;
 
 import static java.lang.Boolean.parseBoolean;
 
