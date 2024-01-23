@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
@@ -61,9 +61,7 @@ public class JudicialService {
     }
 
     private List<UserProfileRefreshResponse> getUsers() {
-
         String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
-
         try {
             List<UserProfileRefreshResponse> list =
                 enableJrdApiV2
@@ -125,7 +123,7 @@ public class JudicialService {
 
     public String populateJudicialId(CaseData caseData) {
         if (isNull(caseData.getListing().getSummary().getJudge())) {
-            return EMPTY_STRING;
+            return EMPTY_PLACEHOLDER;
         }
 
         UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
@@ -135,6 +133,6 @@ public class JudicialService {
             .findFirst()
             .map(Judge::getPersonalCode);
 
-        return judgeJudicialId.orElse(EMPTY_STRING);
+        return judgeJudicialId.orElse(EMPTY_PLACEHOLDER);
     }
 }

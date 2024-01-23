@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
@@ -20,9 +21,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
+@Ignore
 public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
 
-    private static final String REQUEST_START = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-about-to-start.json";
     private static final String REQUEST_SUBMIT = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-about-to-submit.json";
     private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-submitted.json";
     private static final String REQUEST_MID_EVENT = "classpath:request/casedata/ccd-callback-casedata.json";

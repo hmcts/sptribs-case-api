@@ -14,7 +14,6 @@ import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTim
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
 
-
 public class ReferCaseToJudgeTests extends Base {
 
     @Order(1)

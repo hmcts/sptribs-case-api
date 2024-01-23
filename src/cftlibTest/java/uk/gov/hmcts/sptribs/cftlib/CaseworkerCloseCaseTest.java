@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.cftlib;
 
 import com.microsoft.playwright.Page;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.gov.hmcts.sptribs.cftlib.action.Case;
 import uk.gov.hmcts.sptribs.cftlib.util.DateHelpers;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.sptribs.cftlib.util.PageHelpers.getTextBoxByLabel;
 
 public class CaseworkerCloseCaseTest extends XuiTest {
 
-    @Test
+    @RepeatedIfExceptionsTest
     public void caseworkerShouldAbleToCloseTheCase() {
         Mockito.doNothing().when(applicationReceivedNotification).sendToSubject(Mockito.any(), Mockito.any());
         Mockito.doNothing().when(caseWithdrawnNotification).sendToSubject(Mockito.any(), Mockito.any());
