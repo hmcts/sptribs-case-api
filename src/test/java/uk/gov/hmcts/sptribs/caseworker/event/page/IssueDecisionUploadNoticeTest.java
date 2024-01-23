@@ -27,7 +27,7 @@ public class IssueDecisionUploadNoticeTest {
         //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         CICDocument doc = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("file.txt").build()).build();
+            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("file.jar").build()).build();
         final CaseData caseData = CaseData.builder()
             .caseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build())
             .caseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build())
