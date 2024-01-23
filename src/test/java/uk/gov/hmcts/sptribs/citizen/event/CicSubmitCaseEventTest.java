@@ -10,7 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -54,7 +57,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestPropertySource("classpath:application.yaml")
+@ActiveProfiles("test")
 class CicSubmitCaseEventTest {
     final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
@@ -93,9 +99,12 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        setField(cicSubmitCaseEvent, "dssSubmitCaseEnabled", true);
+
+        when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
+            .thenReturn(List.of(CITIZEN_CIC));
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
 
         cicSubmitCaseEvent.configure(configBuilder);
 

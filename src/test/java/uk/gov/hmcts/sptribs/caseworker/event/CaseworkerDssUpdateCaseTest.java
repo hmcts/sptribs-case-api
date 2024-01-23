@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.citizen.event;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -20,16 +23,18 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 
-@ExtendWith(MockitoExtension.class)
-public class CicDssUpdateCaseEventTest {
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestPropertySource("classpath:application.yaml")
+@ActiveProfiles("test")
+public class CaseworkerDssUpdateCaseTest {
 
     @InjectMocks
-    private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
+    private CaseworkerDssUpdateCase caseworkerDssUpdateCase;
 
     @Mock
     private AppsConfig appsConfig;
@@ -46,7 +51,7 @@ public class CicDssUpdateCaseEventTest {
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
 
         final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
-        eventsConfig.setDssUpdateEvent("citizen-cic-dssUpdate-dss-application");
+        eventsConfig.setDssUpdateEvent("caseworker-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
     }
@@ -54,15 +59,15 @@ public class CicDssUpdateCaseEventTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-        setField(cicDssUpdateCaseEvent, "dssUpdateCaseEnabled", true);
 
         when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        caseworkerDssUpdateCase.setDssUpdateCaseEnabled(true);
 
-        cicDssUpdateCaseEvent.configure(configBuilder);
+        caseworkerDssUpdateCase.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains("citizen-cic-dssUpdate-dss-application");
+            .contains("caseworker-update-dss-application");
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getDescription)
             .contains("Application DSS Update (cic)");
@@ -71,4 +76,3 @@ public class CicDssUpdateCaseEventTest {
             .contains("DSS Update case (cic)");
     }
 }
-

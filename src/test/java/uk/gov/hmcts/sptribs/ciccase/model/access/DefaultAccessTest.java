@@ -8,7 +8,6 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.assertj.guava.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
-import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
@@ -49,8 +48,7 @@ class DefaultAccessTest {
                 entry(ST_CIC_SENIOR_JUDGE, U),
                 entry(SYSTEMUPDATE, C),
                 entry(SYSTEMUPDATE, R),
-                entry(SYSTEMUPDATE, U),
-                entry(SYSTEMUPDATE, D)
+                entry(SYSTEMUPDATE, U)
             );
     }
 }

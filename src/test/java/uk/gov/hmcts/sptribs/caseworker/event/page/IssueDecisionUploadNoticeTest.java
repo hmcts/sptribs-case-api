@@ -29,7 +29,7 @@ public class IssueDecisionUploadNoticeTest {
     @InjectMocks
     private IssueDecisionUploadNotice issueDecisionUploadNotice;
 
-    private final Document invalidDocumentType = Document.builder().filename("file.txt").build();
+    private final Document invalidDocumentType = Document.builder().filename("file.jar").build();
 
     private final Document validDocumentType = Document.builder().filename("file.pdf").build();
 

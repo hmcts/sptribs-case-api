@@ -64,6 +64,7 @@ class CaseworkerManageCaseFlagTest {
     }
 
 
+
     @Test
     void shouldSuccessfullySelectApplicantFlagSubmit() {
         //Given

@@ -33,6 +33,7 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Case Number").id(CCD_REFERENCE).build(),
         SearchField.<UserRole>builder().label("Case status (state)").id(CASE_STATE).build(),
         SearchField.<UserRole>builder().label("Case status (state)").id(CASE_STATE).build(),
+        SearchField.<UserRole>builder().label("Case Region").id(CASE_REGION).build(),
         SearchField.<UserRole>builder().label("Case category").id(CASE_CATEGORY).build(),
         SearchField.<UserRole>builder().label("Case sub-category").id(CASE_SUBCATEGORY).build(),
         SearchField.<UserRole>builder().label("Scheme").id(SCHEME).build(),
@@ -46,6 +47,7 @@ public class SearchInputFields implements CCDConfig<CaseData, State, UserRole> {
         SearchField.<UserRole>builder().label("Hearing Format").id(HEARING_FORMAT).build(),
         SearchField.<UserRole>builder().label("Short Notice").id(SHORT_NOTICE).build()
     );
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

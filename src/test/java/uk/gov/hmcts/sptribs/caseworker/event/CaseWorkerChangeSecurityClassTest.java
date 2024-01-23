@@ -32,7 +32,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CHANGE_SECURITY_CLASS;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerChangeSecurityClassificationTest {
+class CaseWorkerChangeSecurityClassTest {
     @InjectMocks
     private CaseworkerChangeSecurityClassification caseworkerChangeSecurityClassification;
 

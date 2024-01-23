@@ -32,7 +32,7 @@ public class SendOrderUploadOrderTest {
     void midEventReturnsErrorWithWrongDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .orderFile(getCICDocumentList("file.txt"))
+            .orderFile(getCICDocumentList("file.uml"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
