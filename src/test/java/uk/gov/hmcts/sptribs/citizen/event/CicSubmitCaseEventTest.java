@@ -102,7 +102,7 @@ class CicSubmitCaseEventTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception{
+    public void tearDown() throws Exception {
         autoCloseableMocks.close();
     }
 
