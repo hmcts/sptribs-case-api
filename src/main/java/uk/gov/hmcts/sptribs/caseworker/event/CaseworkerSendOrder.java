@@ -23,7 +23,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -127,7 +126,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
-        updateSelectedOrder(caseData.getCicCase(), order);
         updateCicCaseOrderList(caseData, order);
 
         caseData.getCicCase().setOrderIssuingType(null);
@@ -216,15 +214,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         }
     }
 
-    private void updateSelectedOrder(CicCase cicCase, Order order) {
-        if (order.getDraftOrder() != null) {
-            cicCase.setSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
-        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            cicCase.setSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
-        }
-    }
-
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
@@ -242,7 +231,5 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
         }
 
-        //Once Notification is sent, nullify the last selected order
-        caseData.getCicCase().setSelectedOrder(null);
     }
 }

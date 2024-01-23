@@ -200,8 +200,10 @@ feature:
     enabled: ${CASE_FLAGS_FEATURE:true}
   migration:
     enabled: ${MIGRATION_ENABLED:true}
-  case-file-view-and-document-management:
-    enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
+  case-file-view:
+    enabled: ${CASE_FILE_VIEW_FEATURE:true}
+  document-management:
+    enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling-create:
     enabled: ${CREATE_BUNDLING_FEATURE:true}
   bundling-edit:

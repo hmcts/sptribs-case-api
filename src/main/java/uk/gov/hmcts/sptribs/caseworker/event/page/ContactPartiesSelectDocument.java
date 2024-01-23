@@ -24,7 +24,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             .label("LabelContactPartiesSelectDocument", "Select a case document to include with this message(Optional)")
             .label("LabelContactPartiesSelectDocumentNote",
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf, MS Word Document "
-                    + "file and MS Excel File")
+                    + "file and MS Excel File. Your file must be smaller than 2MB")
             .complex(CaseData::getContactPartiesDocuments)
             .optionalWithLabel(ContactPartiesDocuments::getDocumentList,"Selected Documents")
             .done();
@@ -36,7 +36,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         DynamicMultiSelectList list = data.getContactPartiesDocuments().getDocumentList();
-        if (list != null && list.getValue().size() > MAX_DOCUMENT_COUNT) {
+        if (null != list && list.getValue().size() > MAX_DOCUMENT_COUNT) {
             errors.add("Select up to 10 documents");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

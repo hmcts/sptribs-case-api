@@ -25,10 +25,12 @@ import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
 import java.time.LocalDate;
 import java.util.Set;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -125,4 +127,37 @@ class CaseworkerStayTheCaseTest {
         assertThat(stay.getFlagType()).isNull();
     }
 
+    @Test
+    void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsEmpty() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.getCicCase().setSubjectCIC(emptySet());
+        caseData.getCicCase().setSubjectCIC(emptySet());
+        caseData.getCicCase().setSubjectCIC(emptySet());
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        //When
+        caseworkerStayTheCase.submitted(details, details);
+
+        //Then
+        verifyNoInteractions(caseStayedNotification);
+    }
+
+    @Test
+    void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsNull() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.getCicCase().setSubjectCIC(null);
+        caseData.getCicCase().setSubjectCIC(null);
+        caseData.getCicCase().setSubjectCIC(null);
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        //When
+        caseworkerStayTheCase.submitted(details, details);
+
+        //Then
+        verifyNoInteractions(caseStayedNotification);
+    }
 }
