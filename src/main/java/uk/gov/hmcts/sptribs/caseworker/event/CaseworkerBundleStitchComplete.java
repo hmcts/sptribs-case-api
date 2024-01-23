@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -33,9 +31,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
-
-    @Autowired
-    BundlingService bundlingService;
 
     @Value("${feature.bundling-stitch.enabled}")
     private boolean bundlingEnabled;
