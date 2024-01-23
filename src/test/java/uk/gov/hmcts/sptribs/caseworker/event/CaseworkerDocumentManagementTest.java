@@ -36,7 +36,7 @@ public class CaseworkerDocumentManagementTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseworkerDocumentManagement.setCaseFileViewAndDocumentManagementEnabled(true);
+        caseworkerDocumentManagement.setDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When

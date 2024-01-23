@@ -4,6 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -117,12 +121,27 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     private Map<String, String> getUploadedDocumentIds(CaseData caseData) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, String> uploadedDocuments = new HashMap<>();
-        if (null != cicCase.getSelectedOrder()) {
-            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(cicCase.getSelectedOrder().getUrl(), "/"));
+        Document lastSelectedOrder = getLastSelectedOrder(cicCase);
+        if (null != lastSelectedOrder) {
+            uploadedDocuments.put(TRIBUNAL_ORDER, StringUtils.substringAfterLast(lastSelectedOrder.getUrl(), "/"));
 
         }
 
         return uploadedDocuments;
+    }
+
+    private Document getLastSelectedOrder(CicCase cicCase) {
+        Document selectedOrder = null;
+        for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
+            Order order = orderListValue.getValue();
+            if (null != order.getDraftOrder()) {
+                selectedOrder = order.getDraftOrder().getTemplateGeneratedDocument();
+            } else if (null != order.getUploadedFile()
+                && !CollectionUtils.isEmpty(order.getUploadedFile())) {
+                selectedOrder = order.getUploadedFile().get(0).getValue().getDocumentLink();
+            }
+        }
+        return selectedOrder;
     }
 
 }

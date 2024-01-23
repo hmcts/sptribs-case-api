@@ -137,7 +137,7 @@ class CaseworkerIssueFinalDecisionTest {
         //Given
 
         final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.sql").build())
             .documentEmailContent("content")
             .build();
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().document(document).build();

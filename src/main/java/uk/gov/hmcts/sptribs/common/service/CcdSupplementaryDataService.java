@@ -60,6 +60,7 @@ public class CcdSupplementaryDataService {
                 caseFlagsConfiguration.getHmctsId())));
 
         final User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
+
         coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(),
             caseId,

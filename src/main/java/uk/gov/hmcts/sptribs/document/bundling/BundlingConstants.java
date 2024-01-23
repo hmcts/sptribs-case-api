@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.document.bundling;
 
 public final class BundlingConstants {
+
     public static final String DOCUMENTS = "documents";
     public static final String NAME = "name";
     public static final String CASE_BUNDLES = "caseBundles";
@@ -21,5 +22,6 @@ public final class BundlingConstants {
     public static final String DOCUMENT_BINARY_URL = "document_binary_url";
 
     private BundlingConstants() {
+
     }
 }

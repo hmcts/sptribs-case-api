@@ -32,6 +32,8 @@ public enum UserRole implements HasRole {
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
     CITIZEN_CIC("citizen", "CRU");
 
+
+
     @JsonValue
     private final String role;
     private final String caseTypePermissions;
