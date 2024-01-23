@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,9 +41,10 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -82,10 +84,12 @@ class CicSubmitCaseEventTest {
     @Mock
     private IdamService idamService;
 
+    private AutoCloseable autoCloseableMocks;
+
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        autoCloseableMocks = MockitoAnnotations.openMocks(this);
 
         cicAppDetail = new AppsConfig.AppsDetails();
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
@@ -95,6 +99,11 @@ class CicSubmitCaseEventTest {
         eventsConfig.setSubmitEvent("citizen-cic-submit-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception{
+        autoCloseableMocks.close();
     }
 
     @Test
