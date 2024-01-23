@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionPreviewTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectRecipients;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionUploadNotice;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
@@ -26,10 +28,10 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DECISION_FILE;
 
@@ -80,7 +83,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
         issueDecisionNotice.addTo(pageBuilder);
@@ -94,7 +97,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         caseData.setDecisionSignature("");
 
@@ -109,7 +112,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     ) {
 
         CaseData caseData = details.getData();
-        var decision = caseData.getCaseIssueDecision();
+        final CaseIssueDecision decision = caseData.getCaseIssueDecision();
 
         final Long caseId = details.getId();
 
@@ -134,10 +137,10 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
-        var decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
+        final CaseData caseData = details.getData();
+        final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
-        if (null != decisionDocument) {
+        if (null != decisionDocument && null != decisionDocument.getDocumentLink()) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
         }
 
@@ -149,8 +152,14 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-
-        sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        try {
+            sendIssueDecisionNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Issue a decision notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Issue a decision notification failed %n## Please resend the notification"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Decision notice issued %n## %s",
@@ -178,11 +187,9 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartySubject())) {
             decisionIssuedNotification.sendToSubject(data, caseNumber);
         }
-
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
             decisionIssuedNotification.sendToRespondent(data, caseNumber);
         }
-
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
             decisionIssuedNotification.sendToRepresentative(data, caseNumber);
         }

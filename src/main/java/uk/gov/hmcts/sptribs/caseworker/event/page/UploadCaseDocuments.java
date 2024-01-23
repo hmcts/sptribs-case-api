@@ -24,12 +24,13 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
             .page("uploadCaseDocuments", this::midEvent)
             .pageLabel("Upload case documents")
             .label("LabelUploadCaseDocuments", "")
-            .label("uploadCaseDocumentLabel", "Upload a copy of the order that you want to issue as part of this case")
+            .label("uploadCaseDocumentLabel", "Upload a copy of the document you wish to be added to case file view")
             .label("uploadCaseDocumentConditions", """
                 The order should be:
-                 *  uploaded separately, not in one large file
+                 *  uploaded separately, not one large file
                  *  a maximum of 100MB in size (larger files must be split)
-                 *  labelled clearly, e.g. applicant-name-decision-notice.pdf
+                 *  labelled clearly, e.g. applicant-name-decision-notice.pdf\n\n\n\n
+                 Note: If the remove button is disabled, please refresh the page to remove attachments
                  """
             )
             .complex(CaseData::getNewDocManagement)

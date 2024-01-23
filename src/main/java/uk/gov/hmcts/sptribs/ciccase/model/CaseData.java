@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
@@ -32,13 +35,17 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
@@ -61,16 +68,46 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 public class CaseData {
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {CaseLinksDefaultAccess.class},
+        typeOverride = Collection,
+        label = "Linked Cases",
+        typeParameterOverride = "CaseLink")
+    @Builder.Default
+    private List<ListValue<CaseLink>> caseLinks = new ArrayList<>();
+
+    @CCD(
+        label = "Component Launcher (for displaying Linked Cases data)",
+        access = {CaseLinksDefaultAccess.class}
+    )
+    @JsonProperty("LinkedCasesComponentLauncher")
+    private ComponentLauncher linkedCasesComponentLauncher;
+
+    @CCD(
+        label = "Launch the Flags screen",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLauncher flagLauncher;
+
+    @CCD(
+        label = "Case name Hmcts Internal",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNameHmctsInternal;
+
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Case Flags")
     private Flags caseFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Subject")
     private Flags subjectFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Representative")
     private Flags representativeFlags;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
+        label = "Flags for Applicant")
     private Flags applicantFlags;
 
     @JsonUnwrapped(prefix = "all")
@@ -114,7 +151,9 @@ public class CaseData {
     private SecurityClass securityClass;
 
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(label = "Bundles",
+         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
@@ -134,6 +173,31 @@ public class CaseData {
     private State caseStatus;
 
     @CCD(
+        label = "CCD Case Reference",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String caseNumber;
+
+    @CCD(
+        label = "SubjectRepFullName",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String subjectRepFullName;
+
+    @CCD(
+        label = "Scheme Label",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String schemeLabel;
+
+    @CCD(
+        label = "Bundle Configuration",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private MultiBundleConfig bundleConfiguration;
+
+    @CCD(
+        label = "Multi Bundle Configuration",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<MultiBundleConfig> multiBundleConfiguration;
@@ -141,8 +205,7 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
-    private List<CaseworkerCICDocument> caseDocuments;
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> caseDocuments;
 
     @CCD(
         label = "Hearing Date",
@@ -219,7 +282,7 @@ public class CaseData {
 
     @CCD(
         label = "Case number",
-        access = {CaseworkerAccess.class}
+        access = {DefaultAccess.class, CaseworkerAccess.class}
     )
     private String hyphenatedCaseRef;
 
@@ -270,7 +333,7 @@ public class CaseData {
         label = "Messages",
         typeOverride = Collection,
         typeParameterOverride = "DssMessage",
-        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerAndSuperUserAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private List<ListValue<DssMessage>> messages;
 
@@ -319,7 +382,7 @@ public class CaseData {
 
     @JsonUnwrapped(prefix = "dssCaseData")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class})
     private DssCaseData dssCaseData = new DssCaseData();
 
     @CCD(
@@ -329,32 +392,32 @@ public class CaseData {
     private String pcqId;
 
     @CCD(
-        access = { DefaultAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssQuestion1;
 
     @CCD(
-        access = { DefaultAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssAnswer1;
 
     @CCD(
-        access = { DefaultAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssQuestion2;
 
     @CCD(
-        access = {DefaultAccess.class}
+        access = {DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssAnswer2;
 
     @CCD(
-        access = {DefaultAccess.class}
+        access = {DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssQuestion3;
 
     @CCD(
-        access = { DefaultAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssAnswer3;
 
@@ -363,12 +426,12 @@ public class CaseData {
         label = "Uploaded DSS Documents",
         typeOverride = Collection,
         typeParameterOverride = "DssUploadedDocument",
-        access = {CaseworkerAccess.class}
+        access = {CaseworkerAccess.class, DSSUpdateAccess.class}
     )
     private List<ListValue<DssUploadedDocument>> uploadedDssDocuments;
 
     @CCD(
-        access = { DefaultAccess.class}
+        access = { DefaultAccess.class, DSSUpdateAccess.class}
     )
     private String dssHeaderDetails;
 
@@ -383,6 +446,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String hearingVenueName;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private String judicialId;
+
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
@@ -396,11 +462,6 @@ public class CaseData {
         }
         return "";
 
-    }
-
-    @JsonIgnore
-    public Listing getListing() {
-        return listing;
     }
 
     @JsonIgnore

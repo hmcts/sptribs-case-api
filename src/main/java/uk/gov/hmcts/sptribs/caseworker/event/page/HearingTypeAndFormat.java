@@ -18,7 +18,7 @@ public class HearingTypeAndFormat implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("HearingTypeAndFormat")
-            .pageLabel("Hearing type and format")
+            .pageLabel(" Hearing type and format ")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("LabelHearingTypeAndFormat", "")
             .complex(CaseData::getListing)
@@ -27,6 +27,5 @@ public class HearingTypeAndFormat implements CcdPageConfiguration {
             .readonly(Listing::getHearingSummaryExists,ALWAYS_HIDE)
             .done();
     }
-
 
 }

@@ -14,11 +14,11 @@ import java.util.EnumSet;
 public enum State {
 
     @CCD(
-        label = "DSS-Draft",
+        label = "Application completed",
         hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
+        access = {DefaultStateAccess.class}
     )
-    DSS_Draft("DSS-Draft"),
+    Completed("Completed"),
 
     @CCD(
         label = "Application rejected",
@@ -26,12 +26,6 @@ public enum State {
         access = {DefaultStateAccess.class}
     )
     Rejected("Rejected"),
-    @CCD(
-        label = "Application completed",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccess.class}
-    )
-    Completed("Completed"),
 
     @CCD(
         label = "Application Sent",
@@ -46,42 +40,6 @@ public enum State {
         access = {DefaultStateAccess.class}
     )
     Withdrawn("Withdrawn"),
-
-    @CCD(
-        label = "Draft",
-        hint = "### Case record for: ${hyphenatedCaseRef}\n",
-        access = {DefaultStateAccessExcludingCAA.class, SolicitorAccess.class}
-    )
-    Draft("Draft"),
-
-    @CCD(
-        label = "Submitted",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    Submitted("Submitted"),
-
-    @CCD(
-        label = "DSS-Submitted",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    DSS_Submitted("DSS-Submitted"),
-
-    @CCD(
-        label = "New case received",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    NewCaseReceived("NewCaseReceived"),
-
-
-    @CCD(
-        label = "Case management",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    CaseManagement("CaseManagement"),
 
     @CCD(
         label = "Awaiting hearing",
@@ -105,6 +63,19 @@ public enum State {
     )
     CaseClosed("CaseClosed"),
 
+    @CCD(
+        label = "Case Concession",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    Concession("Concession"),
+
+    @CCD(
+        label = "Case management",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    CaseManagement("CaseManagement"),
 
     @CCD(
         label = "Case stayed",
@@ -121,13 +92,6 @@ public enum State {
     StrikeOut("StrikeOut"),
 
     @CCD(
-        label = "Case Concession",
-        hint = "### Case number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
-    )
-    Concession("Concession"),
-
-    @CCD(
         label = "Consent Order",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
@@ -135,12 +99,53 @@ public enum State {
     ConsentOrder("ConsentOrder"),
 
     @CCD(
+        label = "Draft",
+        hint = "### Case record for: ${hyphenatedCaseRef}\n",
+        access = {DefaultStateAccessExcludingCAA.class, SolicitorAccess.class}
+    )
+    Draft("Draft"),
+
+    @CCD(
+        label = "DSS-Draft",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Draft("DSS-Draft"),
+
+    @CCD(
+        label = "DSS-Submitted",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Submitted("DSS-Submitted"),
+
+    @CCD(
+        label = "New case received",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    NewCaseReceived("NewCaseReceived"),
+
+    @CCD(
+        label = "Ready to list",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    ReadyToList("ReadyToList"),
+
+    @CCD(
         label = "Rule 27",
         hint = "### Case number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}
     )
-    Rule27("Rule27");
+    Rule27("Rule27"),
 
+    @CCD(
+        label = "Submitted",
+        hint = "### Case number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    Submitted("Submitted");
 
     public static final EnumSet<State> POST_SUBMISSION_STATES = EnumSet.complementOf(EnumSet.of(
         Draft,
@@ -153,10 +158,10 @@ public enum State {
     ));
 
 
-    public static final EnumSet<State> BUNDLE_STATES = EnumSet.complementOf(EnumSet.of(
+    public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
         CaseManagement,
         AwaitingHearing
-    ));
+    );
     private final String name;
 }
 

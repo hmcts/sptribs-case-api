@@ -20,6 +20,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
@@ -49,6 +50,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 Submitted,
                 NewCaseReceived,
                 CaseManagement,
+                ReadyToList,
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,
@@ -71,24 +73,23 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
         uploadCaseDocuments.addTo(pageBuilder);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var data = details.getData();
-        uploadDocument(data);
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
+        uploadDocument(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
+            .data(caseData)
             .build();
 
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
     }
-
 }

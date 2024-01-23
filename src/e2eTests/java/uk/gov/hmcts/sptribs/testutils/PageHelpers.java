@@ -67,7 +67,11 @@ public class PageHelpers {
     }
 
     public static String getValueFromTableFor(Page page, String rowHeader) {
-        return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent();
+        return page.locator("th:has-text(\"" + rowHeader + "\") + td").textContent().trim();
+    }
+
+    public static String getInnerTextContentFromTableFor(Page page, String rowHeader) {
+        return page.locator("th:has-text(\"" + rowHeader + "\") + td").innerText();
     }
 
     public static String getCaseStatus(Page page) {
@@ -80,5 +84,11 @@ public class PageHelpers {
 
     public static void clickLink(Page page, String linkText) {
         page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(linkText)).click();
+    }
+
+    public static String getCaseNumber(Page page) {
+        String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
+        return page.locator("ccd-markdown markdown h3")
+            .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
     }
 }

@@ -11,7 +11,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
@@ -27,14 +27,13 @@ public class SystemMigrateCase implements CCDConfig<CaseData, State, UserRole> {
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .name("Migrate case data")
                 .description("Migrate case data to the latest version")
-                .grant(CREATE_READ_UPDATE, SYSTEMUPDATE);
+                .grant(CREATE_READ_UPDATE_DELETE, SYSTEMUPDATE);
+
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-
         log.info("Migrating case data for case Id: {}", details.getId());
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(details.getData())
                 .build();

@@ -5,59 +5,140 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.elasticsearch.common.TriConsumer;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.CaseLink;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.FlagType;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
+import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingCancellationReason;
+import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 
+import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
 public class RetiredFields {
-    @CCD(label = "Case data version")
+    @CCD(label = "Case data version", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private int dataVersion;
 
     @CCD(
-            label = "Enter any other important information about this cancellation",
-            typeOverride = TextArea
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String cancelHearingAdditionalDetail;
+    @JsonIgnore
+    private Document cicCaseLastSelectedOrder;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private List<ListValue<Bundle>> cicBundles;
 
     @CCD(
-            label = "Why was the hearing cancelled?",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-            typeOverride = FixedRadioList,
-            typeParameterOverride = "HearingCancellationReason"
+        label = "Enter any other important information about this cancellation",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
     )
-    private HearingCancellationReason hearingCancellationReason;
-
+    private String cicCaseCancelHearingAdditionalDetail;
 
     @CCD(
-            label = "Template",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        label = "Why was the hearing cancelled?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "HearingCancellationReason"
     )
-    private DynamicList orderDynamicList;
+    private HearingCancellationReason cicCaseHearingCancellationReason;
 
     @CCD(
-            label = "Enter any other important information about this postponement",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-            typeOverride = TextArea
+        label = "Postpone Reason",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "PostponeReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String postponeAdditionalInformation;
+    private PostponeReason cicCasePostponeReason;
 
     @CCD(
-            label = "Postpone Reason",
-            typeOverride = FixedRadioList,
-            typeParameterOverride = "PostponeReason",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        label = "Enter any other important information about this postponement",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
     )
-    private PostponeReason postponeReason;
+    private String cicCasePostponeAdditionalInformation;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for Appellant flags",
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> cicCaseAppellantFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for Case flags",
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> cicCaseCaseFlags;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for Respondent flags",
+        typeOverride = Collection,
+        typeParameterOverride = "Flags")
+    private List<ListValue<Flags>> cicCaseRespondentFlags;
+
+    @CCD(
+        label = "Retired field for Flag Type",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagType cicCaseFlagType;
+
+    @CCD(
+        label = "Retired field for flagAdditionalDetail",
+        regex = "^.{0,200}$",
+        hint = "You can enter up to 200 characters",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String cicCaseFlagAdditionalDetail;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for flag type"
+    )
+    private String cicCaseFlagOtherDescription;
+
+    @CCD(
+        label = "Retired field for flagLevel",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private FlagLevel cicCaseFlagLevel;
+
+    @CCD(
+        label = "Retired field for link case number",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private CaseLink cicCaseLinkCaseNumber;
+
+    @CCD(
+        label = "Retired field for linkCaseReason",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private LinkCaseReason cicCaseLinkCaseReason;
+
+    @CCD(
+        label = "Retired field for Other Description",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String cicCaseLinkCaseOtherDescription;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for CaseLinks",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseLinks")
+    private List<ListValue<CaseLinks>> cicCaseCaseLinks;
 
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
@@ -65,7 +146,7 @@ public class RetiredFields {
 
     @JsonIgnore
     private static final Map<String, TriConsumer<Map<String, Object>, String, Object>> migrations = Map.of(
-            "orderDynamicList", moveTo("flagDynamicList")
+        "cicBundles", moveTo("caseBundles")
     );
 
     /**

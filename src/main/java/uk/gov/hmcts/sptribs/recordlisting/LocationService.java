@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.recordlisting;
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COURT_TYPE_ID;
@@ -44,7 +44,7 @@ public class LocationService {
     }
 
     public DynamicList getAllRegions() {
-        final var regions = getRegions();
+        final Region[] regions = getRegions();
         return populateRegionDynamicList(regions);
     }
 
@@ -65,6 +65,13 @@ public class LocationService {
         }
 
         return new Region[0];
+    }
+
+    public String getRegionId(String selectedRegion) {
+        String[] values = selectedRegion != null
+            ? Arrays.stream(selectedRegion.split(HYPHEN)).map(String::trim).toArray(String[]::new)
+            : null;
+        return values != null && values.length > 0 ? values[0] : null;
     }
 
     private HearingVenue[] getCourtVenues(String regionId) {

@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
@@ -37,6 +38,14 @@ public class HearingSummary {
     private DynamicList judge;
 
     @CCD(
+        label = "Information about Judges stored in dynamic list",
+        typeOverride = Collection,
+        typeParameterOverride = "Judge",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<Judge>> judgeList;
+
+    @CCD(
         label = "panel member Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -52,7 +61,7 @@ public class HearingSummary {
         label = "Panel member and Role",
         typeOverride = Collection,
         typeParameterOverride = "PanelMember",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CaseworkerWithCAAAccess.class, CollectionDefaultAccess.class}
     )
     private List<ListValue<PanelMember>> memberList;
 
@@ -109,7 +118,7 @@ public class HearingSummary {
         label = "Upload the recording of the hearing",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<CaseworkerCICDocument>>  recFile;
+    private List<ListValue<CaseworkerCICDocument>> recFile;
 }

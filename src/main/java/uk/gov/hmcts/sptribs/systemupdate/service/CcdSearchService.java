@@ -61,7 +61,6 @@ public class CcdSearchService {
             log.info(message, e);
             throw new CcdSearchCaseException(message, e);
         }
-
         return allCaseDetails;
     }
 
@@ -92,13 +91,13 @@ public class CcdSearchService {
             .query(
                 boolQuery()
                     .must(boolQuery()
-                        .must(matchQuery("reference", 1688978122333564L)))
+                        .must(matchQuery("reference", 1695290772211061L)))
             )
             .from(0)
             .size(500);
         log.info("Query:" + sourceBuilder.toString());
         log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
-        var cases = coreCaseDataApi.searchCases(
+        final List<CaseDetails> cases = coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
             CcdCaseType.CIC.getCaseTypeName(),

@@ -9,6 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum OrderTemplate implements HasLabel {
 
+    @JsonProperty("CIC3_Rule_27")
+    CIC3_RULE_27("CIC3 - Rule 27", "CIC3_Rule_27"),
+
     @JsonProperty("CIC6_General_Directions")
     CIC6_GENERAL_DIRECTIONS("CIC6 - General Directions", "CIC6_General_Directions"),
 
@@ -22,7 +25,10 @@ public enum OrderTemplate implements HasLabel {
     CIC10_STRIKE_OUT_WARNING("CIC10 - Strike Out Warning", "CIC10_Strike_Out_Warning"),
 
     @JsonProperty("CIC13_Pro_Forma_Summons")
-    CIC13_PRO_FORMA_SUMMONS("CIC13 - Pro Forma Summons", "CIC13_Pro_Forma_Summons");
+    CIC13_PRO_FORMA_SUMMONS("CIC13 - Pro Forma Summons", "CIC13_Pro_Forma_Summons"),
+
+    @JsonProperty("CIC14_LO_General_Directions")
+    CIC14_LO_GENERAL_DIRECTIONS("CIC14 – LO General Directions", "CIC14_LO_General_Directions");
 
     private final String label;
     private String id;

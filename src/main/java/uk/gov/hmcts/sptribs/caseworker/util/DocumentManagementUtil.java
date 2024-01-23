@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DocumentManagementUtil {
@@ -22,7 +23,7 @@ public final class DocumentManagementUtil {
         if (CollectionUtils.isEmpty(cicCase.getRemovedDocumentList())) {
             List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            ListValue<CaseworkerCICDocument> listValue = ListValue
                 .<CaseworkerCICDocument>builder()
                 .id("1")
                 .value(caseworkerCICDocument)
@@ -33,7 +34,7 @@ public final class DocumentManagementUtil {
             cicCase.setRemovedDocumentList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<CaseworkerCICDocument> listValue = ListValue
                 .<CaseworkerCICDocument>builder()
                 .value(caseworkerCICDocument)
                 .build();
@@ -70,18 +71,16 @@ public final class DocumentManagementUtil {
     }
 
     public static List<ListValue<CaseworkerCICDocument>> buildListValues(List<CaseworkerCICDocument> docList) {
-        List<ListValue<CaseworkerCICDocument>> newList = new ArrayList<>();
-        AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (CaseworkerCICDocument doc : docList) {
-            var listValue = ListValue
+        return docList.stream()
+            .map(doc -> ListValue
                 .<CaseworkerCICDocument>builder()
+                .id(UUID.randomUUID().toString())
                 .value(doc)
-                .build();
-
-            newList.add(0, listValue);
-            newList.forEach(
-                document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-        return newList;
+                .build())
+            .toList();
     }
+
+
+
+
 }

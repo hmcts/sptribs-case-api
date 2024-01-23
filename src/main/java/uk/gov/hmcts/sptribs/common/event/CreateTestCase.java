@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
@@ -28,14 +29,15 @@ import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.COURT_ADMIN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -68,14 +70,16 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private SubmissionService submissionService;
 
     @Autowired
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    @Autowired
     private ApplicationReceivedNotification applicationReceivedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var roles = new ArrayList<UserRole>();
+        final List<UserRole> roles = new ArrayList<>();
         final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
         roles.add(SOLICITOR);
-        roles.add(COURT_ADMIN_CIC);
         roles.add(ST_CIC_CASEWORKER);
         roles.add(ST_CIC_SENIOR_CASEWORKER);
         roles.add(ST_CIC_HEARING_CENTRE_ADMIN);
@@ -83,7 +87,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         roles.add(ST_CIC_SENIOR_JUDGE);
         if (!env.contains(ENVIRONMENT_PROD)) {
             roles.add(SUPER_USER);
-            roles.add(COURT_ADMIN_CIC);
             roles.add(DISTRICT_JUDGE_CIC);
         }
 
@@ -113,12 +116,16 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var submittedDetails = submissionService.submitApplication(details);
-        CaseData data = submittedDetails.getData();
+
+        final CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
+        final CaseData data = submittedDetails.getData();
 
         updateCategoryToCaseworkerDocument(data.getCicCase().getApplicantDocumentsUploaded());
         setIsRepresentativePresent(data);
         data.setSecurityClass(SecurityClass.PUBLIC);
+        data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
+
+        initialiseFlags(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -128,14 +135,66 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        String claimNumber = data.getHyphenatedCaseRef();
+        final CaseData data = details.getData();
 
-        sendApplicationReceivedNotification(claimNumber, data);
+        setSupplementaryData(details.getId());
+
+        String claimNumber = data.getHyphenatedCaseRef();
+        try {
+            sendApplicationReceivedNotification(claimNumber, data);
+        } catch (Exception notificationException) {
+            log.error("Create case notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", claimNumber))
             .build();
+    }
+
+    private void initialiseFlags(CaseData data) {
+        data.setCaseFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .partyName(null)
+            .roleOnCase(null)
+            .build());
+
+        if (null != data.getCicCase().getFullName()) {
+            data.setSubjectFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getFullName())
+                .roleOnCase("subject")
+                .build()
+            );
+        }
+
+        if (null != data.getCicCase().getApplicantFullName()) {
+            data.setApplicantFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getApplicantFullName())
+                .roleOnCase("applicant")
+                .build()
+            );
+        }
+
+        if (null != data.getCicCase().getRepresentativeFullName()) {
+            data.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getRepresentativeFullName())
+                .roleOnCase("Representative")
+                .build()
+            );
+        }
+    }
+
+    private void setSupplementaryData(Long caseId) {
+        try {
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
     }
 
     private void sendApplicationReceivedNotification(String caseNumber, CaseData data) {

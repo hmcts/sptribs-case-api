@@ -35,17 +35,16 @@ public abstract class Base {
     public static String CASE_API_BASE_URL;
 
     public static String DSS_BASE_URL;
-    
 
     @BeforeAll
     public void setUp() {
         playwright = Playwright.create();
 
-        var launchOptions = getenv("CI").equalsIgnoreCase("true")
+        final BrowserType.LaunchOptions launchOptions = getenv("CI").equalsIgnoreCase("true")
             ? new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(100)
             : new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(100);
 
-        var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
+        final String browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
 
         switch (browserType) {
             case "msedge", "chrome" -> browser = playwright.chromium().launch(launchOptions.setChannel(browserType));
@@ -71,8 +70,9 @@ public abstract class Base {
         }
         page = context.newPage();
         page.setDefaultTimeout(30000);
-        page.setDefaultNavigationTimeout(30000);
-        CASE_API_BASE_URL = getenv("CASE_API_BASE_URL") == null ? CASE_API_AAT_URL : getenv("CASE_API_BASE_URL");
+        page.setDefaultNavigationTimeout(60000);
+        String url = getenv("CASE_API_BASE_URL");
+        CASE_API_BASE_URL = url == null || url.equals("null") ? CASE_API_AAT_URL : url;
         page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(120000));
     }
 

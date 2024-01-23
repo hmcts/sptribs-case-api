@@ -24,15 +24,16 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
             .label("LabelReinstateCaseUploadDocument", "")
             .complex(CaseData::getCicCase)
             .label("reinstateUploadMessage",
-                "<b>Please upload any documents that explain why this case is being reinstated. (Optional)</b>")
+                "Please upload any documents that explain why this case is being reinstated")
             .label("reinstateUploadAdvice", """
                 Files should be
-                  *  uploaded separately and not in one large file
+                  *  uploaded separately, not one large file
                   *  a maximum of 100MB in size (larger files must be split)
-                  *  labelled clearly, e.g. applicant-name-B1-form.pdf
+                  *  select the appropriate category from case file view
 
                 Add a file
-                Upload a file to the system
+                Upload a file to the system\n\n\n\n
+                Note: If the remove button is disabled, please refresh the page to remove attachments
                 """)
             .optionalWithLabel(CicCase::getReinstateDocuments, "Reinstate Documents")
             .done();

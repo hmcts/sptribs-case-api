@@ -33,19 +33,36 @@ public class HearingService {
 
         for (ListValue<Listing> listing : data.getHearingList()) {
             if (listing.getValue().getHearingStatus() == HearingState.Listed) {
-                String hearingDate =
-                    listing.getId()
-                        + SPACE + HYPHEN + SPACE
-                        + listing.getValue().getHearingType().getLabel()
-                        + SPACE + HYPHEN + SPACE
-                        + listing.getValue().getDate().format(dateFormatter)
-                        + SPACE
-                        + listing.getValue().getHearingTime();
+                String hearingDate = getHearingDate(listing.getId(), listing.getValue());
                 hearingDateList.add(hearingDate);
             }
         }
 
         return createDynamicList(hearingDateList);
+    }
+
+    public void addListingIfExists(CaseData data) {
+        if (null != data.getListing().getHearingType() && data.getHearingList().isEmpty()) {
+            addListing(data, data.getListing());
+
+            ListValue<Listing> firstListing = data.getHearingList().stream().findFirst().orElse(null);
+            if (null != firstListing && null != data.getRetiredFields()) {
+                firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
+                firstListing.getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
+                firstListing.getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
+                firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
+            }
+        }
+    }
+
+    private String getHearingDate(String id, Listing listing) {
+        return id
+                + SPACE + HYPHEN + SPACE
+                + listing.getHearingType().getLabel()
+                + SPACE + HYPHEN + SPACE
+                + listing.getDate().format(dateFormatter)
+                + SPACE
+                + listing.getHearingTime();
     }
 
     public DynamicList getCompletedHearingDynamicList(final CaseData data) {
@@ -73,7 +90,7 @@ public class HearingService {
         if (CollectionUtils.isEmpty(caseData.getHearingList())) {
             List<ListValue<Listing>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            ListValue<Listing> listValue = ListValue
                 .<Listing>builder()
                 .id("1")
                 .value(listing)
@@ -84,7 +101,7 @@ public class HearingService {
             caseData.setHearingList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<Listing> listValue = ListValue
                 .<Listing>builder()
                 .value(listing)
                 .build();
@@ -100,11 +117,27 @@ public class HearingService {
     public void updateHearingList(CaseData caseData) {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
             String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
-            if (hearingName.contains(listingListValue.getValue().getHearingTime())
-                && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())) {
+            if (isMatchingHearing(listingListValue, hearingName)) {
                 listingListValue.setValue(caseData.getListing());
                 break;
             }
         }
     }
+
+    public void updateHearingSummaryList(CaseData caseData) {
+        for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
+            String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+            if (isMatchingHearing(listingListValue, hearingName)) {
+                listingListValue.setValue(caseData.getListing());
+                break;
+            }
+        }
+    }
+
+    private boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
+        return hearingName.contains(listingListValue.getValue().getHearingTime())
+            && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
+            && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter));
+    }
+
 }

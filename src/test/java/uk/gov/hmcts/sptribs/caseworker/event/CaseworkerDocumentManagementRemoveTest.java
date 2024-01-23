@@ -45,14 +45,13 @@ public class CaseworkerDocumentManagementRemoveTest {
     @InjectMocks
     private CaseworkerDocumentManagementRemove caseworkerDocumentManagementRemove;
 
-
     @InjectMocks
     private ShowCaseDocuments showCaseDocuments;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseworkerDocumentManagementRemove.setCaseFileViewAndDocumentManagementEnabled(true);
+        caseworkerDocumentManagementRemove.setDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -178,7 +177,6 @@ public class CaseworkerDocumentManagementRemoveTest {
         assertThat(documentMgmtResponse).isNotNull();
     }
 
-
     @Test
     void shouldRemoveDocumentSuccessfullyWithAboutToStart() {
         //Given
@@ -207,6 +205,7 @@ public class CaseworkerDocumentManagementRemoveTest {
             .decisionDocumentList(new ArrayList<>())
             .finalDecisionDocumentList(new ArrayList<>())
             .applicantDocumentsUploaded(getDocument())
+            .removedDocumentList(getDocument())
             .build();
         caseData.setCicCase(cicCase);
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(getDocument()).build();
@@ -245,6 +244,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         assertThat(start).isNotNull();
         assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getRemovedDocumentList()).hasSize(0);
         assertThat(documentMgmtResponse).isNotNull();
     }
 

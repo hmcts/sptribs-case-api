@@ -102,7 +102,6 @@ public class EventUtilTest {
         assertThat(result).isNull();
     }
 
-
     @Test
     void shouldSuccessfullyParseHyphen() {
         //Given
@@ -125,9 +124,7 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ELIGIBILITY_MAIN_CONTENT);
-
     }
-
 
     @Test
     void shouldSuccessfullyGetMainContentQuantum() {
@@ -139,7 +136,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(QUANTUM_MAIN_CONTENT);
-
     }
 
     @Test
@@ -152,7 +148,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEmpty();
-
     }
 
     @Test
@@ -165,7 +160,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(RULE27_MAIN_CONTENT);
-
     }
 
     @Test
@@ -178,7 +172,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_NOTICE_MAIN_CONTENT);
-
     }
 
     @Test
@@ -191,7 +184,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
-
     }
 
     @Test
@@ -204,7 +196,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
-
     }
 
     @Test
@@ -217,7 +208,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
-
     }
 
     @Test
@@ -230,9 +220,21 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
-
     }
 
+
+    @Test
+    void shouldSuccessfullyGetOrderMainContentRule27() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC3_RULE_27;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEqualTo(RULE27_MAIN_CONTENT);
+
+    }
 
     @Test
     void shouldSuccessfullyGetOrderMainContentMedicalDmiReports() {
@@ -244,7 +246,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_DMI_MAIN_CONTENT);
-
     }
 
     @Test
@@ -257,7 +258,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(ME_JOINT_MAIN_CONTENT);
-
     }
 
     @Test
@@ -270,7 +270,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(STRIKE_OUT_WARNING_MAIN_CONTENT);
-
     }
 
     @Test
@@ -283,7 +282,18 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isEqualTo(PRO_FORMA_MAIN_CONTENT);
+    }
 
+    @Test
+    void shouldSuccessfullyGetOrderMainContentLOGeneralDirection() {
+        //Given
+        final OrderTemplate orderTemplate = OrderTemplate.CIC14_LO_GENERAL_DIRECTIONS;
+
+        //When
+        String result = EventUtil.getOrderMainContent(orderTemplate);
+
+        //Then
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -296,7 +306,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -309,7 +318,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -327,7 +335,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
 
     @Test
@@ -345,6 +352,6 @@ public class EventUtilTest {
 
         //Then
         assertThat(result).isNotNull();
-
     }
+
 }

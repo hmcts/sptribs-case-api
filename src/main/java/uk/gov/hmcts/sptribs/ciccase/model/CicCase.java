@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -12,19 +11,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseLinks;
-import uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagLevel;
-import uk.gov.hmcts.sptribs.caseworker.model.FlagType;
-import uk.gov.hmcts.sptribs.caseworker.model.LinkCaseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
@@ -52,88 +44,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
-
-    @CCD(
-        label = "Enter case number",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private CaseLink linkCaseNumber;
-
-    @CCD(
-        label = "Why should these cases be linked?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private LinkCaseReason linkCaseReason;
-
-    @CCD(
-        label = "Other Description",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String linkCaseOtherDescription;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "CaseLinks")
-    private List<ListValue<CaseLinks>> caseLinks;
-
-    @JsonUnwrapped(prefix = "LinkedCasesComponentLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher linkedCasesComponentLauncher;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> appellantFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> caseFlags;
-
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = Collection,
-        typeParameterOverride = "Flags")
-    private List<ListValue<Flags>> respondentFlags;
-
-    @JsonUnwrapped(prefix = "flagLauncher")
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    private ComponentLauncher flagLauncher;
-
-    @CCD(
-        label = "Flag Type",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagType flagType;
-
-    @CCD(
-        label = "Explain why you are creating this flag.\n"
-            + "Do not include any sensitive information such as personal details.",
-        regex = "^.{0,200}$",
-        hint = "You can enter up to 200 characters",
-        typeOverride = TextArea,
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String flagAdditionalDetail;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        label = "Enter a flag type"
-    )
-    private String flagOtherDescription;
-
-
-    @CCD(
-        label = "Why is a stay being added to this case?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private FlagLevel flagLevel;
 
     @CCD(
         label = "Preview order",
@@ -171,7 +87,6 @@ public class CicCase {
     )
     private DynamicList hearingSummaryList;
 
-
     @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "ContactPartiesCIC",
@@ -179,9 +94,9 @@ public class CicCase {
     )
     private Set<ContactPartiesCIC> contactPartiesCIC;
 
-
     @CCD(
-        label = "How would you like to issue an order?"
+        label = "How would you like to issue an order?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private OrderIssuingType orderIssuingType;
 
@@ -190,7 +105,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
-
 
     @CCD(
         label = "Due Date",
@@ -201,8 +115,7 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonIgnore
-    private Document lastSelectedOrder;
+    private Document selectedOrder;
 
     @CCD(
         label = "Should a reminder notification be sent? You can only send a reminder for the earliest due date stated on this order",
@@ -273,7 +186,7 @@ public class CicCase {
     private CaseCategory caseCategory;
 
     @CCD(
-        label = "CCase sub-category",
+        label = "Case sub-category",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         typeOverride = FixedList,
         typeParameterOverride = "CaseSubcategory"
@@ -361,7 +274,8 @@ public class CicCase {
 
     @CCD(
         label = "Message",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String notifyPartyMessage;
 
@@ -373,10 +287,10 @@ public class CicCase {
 
     @CCD(
         label = "Additional information related to the case reinstatement",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String reinstateAdditionalDetail;
-
 
     @CCD(
         label = "Respondent name ",
@@ -405,21 +319,25 @@ public class CicCase {
     )
     private String fullName;
 
-    @CCD(label = "Subject's address")
+    @CCD(
+        label = "Subject's address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private AddressGlobalUK address;
 
     @CCD(
         label = "Subject's phone number",
-        regex = "^[0-9 +().-]{9,}$"
+        regex = "^[0-9 +().-]{9,}$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String phoneNumber;
 
     @CCD(
         label = "Subject's email address",
-        typeOverride = Email
+        typeOverride = Email,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String email;
-
 
     @CCD(
         label = "Subject's date of birth",
@@ -428,13 +346,11 @@ public class CicCase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
-
     @CCD(
         label = "What is subject's contact preference type?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private ContactPreferenceType contactPreferenceType;
-
 
     @CCD(
         label = "Scheme",
@@ -464,18 +380,23 @@ public class CicCase {
     )
     private String applicantFullName;
 
-    @CCD(label = "Applicant's address")
+    @CCD(
+        label = "Applicant's address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private AddressGlobalUK applicantAddress;
 
     @CCD(
         label = "Applicant's phone number",
-        regex = "^[0-9 +().-]{9,}$"
+        regex = "^[0-9 +().-]{9,}$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String applicantPhoneNumber;
 
     @CCD(
         label = "Applicant's email address",
-        typeOverride = Email
+        typeOverride = Email,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String applicantEmailAddress;
 
@@ -510,18 +431,23 @@ public class CicCase {
     )
     private String representativeReference;
 
-    @CCD(label = "Representative's Address")
+    @CCD(
+        label = "Representative's Address",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private AddressGlobalUK representativeAddress;
 
     @CCD(
         label = "Representative's contact number",
-        regex = "^[0-9 +().-]{9,}$"
+        regex = "^[0-9 +().-]{9,}$",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String representativePhoneNumber;
 
     @CCD(
         label = "Representative's email address",
-        typeOverride = Email
+        typeOverride = Email,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String representativeEmailAddress;
 
@@ -545,6 +471,9 @@ public class CicCase {
     )
     private YesOrNo isRepresentativeQualified;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo representativeDetailsObjects;
 
 
@@ -579,7 +508,6 @@ public class CicCase {
     )
     private String caseNumber;
 
-
     @CCD(
         label = "Is there a representative?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -601,7 +529,6 @@ public class CicCase {
     )
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
 
-
     @CCD(
         label = "Decision Documents",
         access = {CaseworkerAndSuperUserAccess.class}
@@ -620,6 +547,9 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
 
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private YesOrNo selectedCheckBox;
 
     @CCD(
@@ -651,6 +581,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private NotificationResponse repNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private NotificationResponse tribunalNotificationResponse;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -768,6 +703,5 @@ public class CicCase {
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";
         applicantEmailAddress = "";
-
     }
 }
