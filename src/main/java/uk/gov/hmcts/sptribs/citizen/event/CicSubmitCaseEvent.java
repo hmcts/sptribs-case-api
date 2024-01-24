@@ -41,6 +41,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -82,7 +84,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getSubmitEvent())
-            .forStates(State.DSS_Draft)
+            .forStateTransition(DSS_Draft, DSS_Submitted)
             .name("Submit case (cic)")
             .description("Application submit (cic)")
             .retries(120, 120)
@@ -112,7 +114,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(State.DSS_Submitted)
             .build();
     }
 
@@ -160,6 +161,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
+
+                if (!docList.contains(caseworkerCICDocument)) {
+                    docList.add(caseworkerCICDocument);
+                }
+
                 final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
                 final DssMessage message = DssMessage.builder()
@@ -177,7 +183,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .build();
 
                 listValues.add(listValue);
-
             }
         }
         caseData.setMessages(listValues);

@@ -1,9 +1,6 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +33,6 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,16 +43,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_UPDATE_CASE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -117,48 +110,7 @@ class CicSubmitCaseEventTest {
     }
 
     @Test
-    void shouldSubmitEventThroughAboutToSubmit() throws IOException {
-        final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
-
-        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
-        beforeCaseDetails.setData(caseBeforeData);
-        beforeCaseDetails.setState(State.Submitted);
-        beforeCaseDetails.setId(TEST_CASE_ID);
-        beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-        caseDetails.setData(caseData);
-        caseDetails.setState(State.Submitted);
-        caseDetails.setId(TEST_CASE_ID);
-        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        caseDetails.getData().getDssCaseData().setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
-        caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
-        caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
-
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-
-        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
-
-        cicSubmitCaseEvent.configure(configBuilder);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
-            caseDetails,
-            beforeCaseDetails
-        );
-
-        //Then
-        Assertions.assertEquals(State.DSS_Submitted, aboutToSubmitResponse.getState());
-    }
-
-    @Test
-    void shouldUpdateCaseDetails() {
+    void shouldUpdateCaseDetailsWhenAboutToSubmitCallbackIsTriggered() {
         //Given
         EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
@@ -187,6 +139,7 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setData(caseData);
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response1 =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -194,7 +147,7 @@ class CicSubmitCaseEventTest {
         //Then
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response1.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
         assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
             .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
