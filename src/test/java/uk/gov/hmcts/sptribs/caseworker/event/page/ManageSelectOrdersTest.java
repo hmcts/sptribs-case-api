@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,7 +81,39 @@ public class ManageSelectOrdersTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Please select and order to manage");
+        assertThat(response.getErrors()).contains("Please select an order to manage");
+    }
+
+    @Test
+    void midEventReturnsCorrectErrorWhenOrderListIsNull() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder()
+            .orderList(null)
+            .orderDynamicList(dynamicListUnlabelled)
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Please select an order to manage");
+    }
+
+    @Test
+    void midEventReturnsCorrectErrorWhenOrderListIsEmpty() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder()
+            .orderList(Collections.emptyList())
+            .orderDynamicList(dynamicListUnlabelled)
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Please select an order to manage");
     }
 
     private DynamicList createDynamicList(String label) {
