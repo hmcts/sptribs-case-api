@@ -131,13 +131,16 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
+
         final Set<PartiesCIC> setParty = new HashSet<>();
         setParty.add(PartiesCIC.SUBJECT);
         caseData.getCicCase().setPartiesCIC(setParty);
+
         final Set<SubjectCIC> set = new HashSet<>();
         set.add(SubjectCIC.SUBJECT);
         caseData.getCicCase().setSubjectCIC(set);
         caseData.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+
         if (!ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
             caseData.getCicCase().setRepresentativeFullName(dssCaseData.getRepresentativeFullName());
             caseData.getCicCase().setRepresentativeOrgName(dssCaseData.getRepresentativeOrganisationName());
@@ -150,8 +153,10 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setRepresentativeCIC(setRep);
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         }
-        List<CaseworkerCICDocument> docList = new ArrayList<>();
-        List<ListValue<DssMessage>> listValues = new ArrayList<>();
+
+        final List<CaseworkerCICDocument> docList = new ArrayList<>();
+        final List<ListValue<DssMessage>> listValues = new ArrayList<>();
+
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
             //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
@@ -214,6 +219,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 }
             }
         }
+
         caseData.getCicCase().setApplicantDocumentsUploaded(DocumentManagementUtil.buildListValues(docList));
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
         dssCaseData.setSupportingDocuments(new ArrayList<>());
@@ -221,6 +227,4 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.setDssCaseData(dssCaseData);
         return caseData;
     }
-
-
 }
