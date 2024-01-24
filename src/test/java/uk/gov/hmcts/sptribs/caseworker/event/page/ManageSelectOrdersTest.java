@@ -37,6 +37,8 @@ public class ManageSelectOrdersTest {
 
     private final DynamicList dynamicListUnlabelled = createDynamicList("");
 
+    private final DynamicList dynamicListNullLabel = createDynamicList(null);
+
     @Test
     void midEventCompletesSuccessfully() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -91,6 +93,22 @@ public class ManageSelectOrdersTest {
         final CicCase cicCase = CicCase.builder()
             .orderList(null)
             .orderDynamicList(dynamicListUnlabelled)
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Please select an order to manage");
+    }
+
+    @Test
+    void midEventReturnsCorrectErrorWhenDynamicOrderLabelIsNull() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder()
+            .orderList(null)
+            .orderDynamicList(dynamicListNullLabel)
             .build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
