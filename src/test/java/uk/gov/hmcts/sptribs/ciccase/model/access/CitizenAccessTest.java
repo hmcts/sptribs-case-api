@@ -10,7 +10,7 @@ import static org.assertj.guava.api.Assertions.assertThat;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 
 public class CitizenAccessTest {
 
@@ -22,9 +22,9 @@ public class CitizenAccessTest {
         assertThat(grants)
             .hasSize(3)
             .contains(
-                entry(CITIZEN_CIC, C),
-                entry(CITIZEN_CIC, R),
-                entry(CITIZEN_CIC, U)
+                entry(CITIZEN, C),
+                entry(CITIZEN, R),
+                entry(CITIZEN, U)
             );
     }
 }

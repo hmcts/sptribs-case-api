@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -110,7 +110,7 @@ class CicSubmitCaseEventTest {
     void shouldAddConfigurationToConfigBuilder() {
 
         when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
-            .thenReturn(List.of(CITIZEN_CIC));
+            .thenReturn(List.of(CITIZEN));
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
