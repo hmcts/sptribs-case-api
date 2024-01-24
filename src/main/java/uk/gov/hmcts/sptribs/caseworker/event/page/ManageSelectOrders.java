@@ -46,7 +46,8 @@ public class ManageSelectOrders implements CcdPageConfiguration {
                     break;
                 }
             }
-        } else if (CollectionUtils.isEmpty(orderList) || StringUtils.isBlank(selectedOrder)) {
+        }
+        if (CollectionUtils.isEmpty(orderList) || StringUtils.isBlank(selectedOrder)) {
             errors.add("Please select an order to manage");
         }
 
