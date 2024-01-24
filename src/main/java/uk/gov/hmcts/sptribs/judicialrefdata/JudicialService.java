@@ -4,7 +4,6 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
@@ -40,9 +39,6 @@ public class JudicialService {
     private JudicialClient judicialClient;
 
     private IdamService idamService;
-
-    @Value("${toggle.enable_jrd_api_v2}")
-    private boolean enableJrdApiV2;
 
     @Autowired
     public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
@@ -61,25 +57,17 @@ public class JudicialService {
     }
 
     private List<UserProfileRefreshResponse> getUsers() {
-
         String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
-
         try {
             List<UserProfileRefreshResponse> list =
-                enableJrdApiV2
-                    ? judicialClient.getUserProfilesV2(
-                        authTokenGenerator.generate(),
-                        authToken,
-                        ACCEPT_VALUE,
-                        JudicialUsersRequest.builder()
-                            .ccdServiceName(ST_CIC_JURISDICTION)
-                            .build())
-                    : judicialClient.getUserProfiles(
-                        authTokenGenerator.generate(),
-                        authToken,
-                        JudicialUsersRequest.builder()
-                            .ccdServiceName(ST_CIC_JURISDICTION)
-                            .build());
+                judicialClient.getUserProfiles(
+                    authTokenGenerator.generate(),
+                    authToken,
+                    ACCEPT_VALUE,
+                    JudicialUsersRequest.builder()
+                        .ccdServiceName(ST_CIC_JURISDICTION)
+                        .build()
+                );
             if (isEmpty(list)) {
                 return new ArrayList<>();
             }
@@ -125,7 +113,7 @@ public class JudicialService {
 
     public String populateJudicialId(CaseData caseData) {
         if (isNull(caseData.getListing().getSummary().getJudge())) {
-            return EMPTY_STRING;
+            return EMPTY_PLACEHOLDER;
         }
 
         UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
@@ -135,6 +123,6 @@ public class JudicialService {
             .findFirst()
             .map(Judge::getPersonalCode);
 
-        return judgeJudicialId.orElse(EMPTY_STRING);
+        return judgeJudicialId.orElse(EMPTY_PLACEHOLDER);
     }
 }

@@ -149,13 +149,14 @@ public class DssCaseData implements MappableObject {
 
     @CCD(
         label = "Message",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CitizenAccess.class}
     )
     private String notifyPartyMessage;
 
     @CCD(
         label = "Is there a representative?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo isRepresentativePresent;
 }

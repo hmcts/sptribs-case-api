@@ -9,7 +9,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASEFLAGS_VIEWER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASE_FLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -74,8 +74,8 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_PH
 @Setter
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.case-file-view-and-document-management.enabled}")
-    private boolean caseFileViewAndDocumentManagementEnabled;
+    @Value("${feature.case-file-view.enabled}")
+    private boolean caseFileViewEnabled;
 
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
@@ -128,7 +128,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")
-            .forRoles(AC_CASEFLAGS_VIEWER, SUPER_USER,
+            .forRoles(AC_CASE_FLAGS_VIEWER, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
@@ -139,7 +139,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFileViewAndDocumentManagementEnabled) {
+        if (caseFileViewEnabled) {
             doBuildCaseFileViewTab(configBuilder);
         }
     }

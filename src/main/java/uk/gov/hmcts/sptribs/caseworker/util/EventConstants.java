@@ -1,7 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 public final class EventConstants {
-
+    public static final String CASE_FLAG = "CASE LEVEL FLAG";
+    public static final String SUBJECT_FLAG = "SUBJECT FLAG";
+    public static final String REPRESENTATIVE_FLAG = "REPRESENTATIVE FLAG";
+    public static final String APPLICANT_FLAG = "APPLICANT FLAG";
     public static final String HYPHEN = "-";
     public static final String DOUBLE_HYPHEN = "--";
     public static final String SPACE = " ";
@@ -56,6 +59,8 @@ public final class EventConstants {
     public static final String CLONE_BUNDLE = "cloneBundle";
 
     public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
+    public static final String YES = "YES";
+    public static final String NO_LINKS = "No links on this case";
 
     private EventConstants() {
     }

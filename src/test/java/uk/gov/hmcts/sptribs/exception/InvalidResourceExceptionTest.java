@@ -1,44 +1,25 @@
 package uk.gov.hmcts.sptribs.exception;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_RESOURCE_NOT_FOUND;
+import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadResource;
 
-
-
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ActiveProfiles("test")
 class InvalidResourceExceptionTest {
-
-
     @Test
-    void testInvalidResourceExceptionWithMessage() throws Exception {
+    void testInvalidResourceExceptionThrownForNonExistentFile() throws Exception {
+        String createCaseDataFileNotExist = "CICCaseDataNotExist.json";
 
-        String message = TEST_RESOURCE_NOT_FOUND;
-        Exception cause = new Exception();
-        InvalidResourceException exception = new InvalidResourceException(TEST_RESOURCE_NOT_FOUND);
+        Exception exception = assertThrows(Exception.class, () -> {
+            byte [] caseDataJson = loadResource(createCaseDataFileNotExist);
+            assertNull(caseDataJson);
+        });
 
-        assertEquals(message, exception.getMessage());
-        assertNull(exception.getCause());
+        assertTrue(exception.getMessage().contains(TEST_RESOURCE_NOT_FOUND), String.valueOf(true));
 
-    }
-
-    @Test
-    void testInvalidResourceExceptionWithMessageandClause() throws Exception {
-
-        String message = TEST_RESOURCE_NOT_FOUND;
-        Exception cause = new Exception();
-        InvalidResourceException exception = new InvalidResourceException(TEST_RESOURCE_NOT_FOUND, cause);
-
-        assertEquals(message, exception.getMessage());
-        assertEquals(cause, exception.getCause());
 
     }
 }

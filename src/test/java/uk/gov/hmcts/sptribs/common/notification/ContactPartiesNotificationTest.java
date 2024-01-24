@@ -180,6 +180,23 @@ class ContactPartiesNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
+    @Test
+    void shouldNotifyTribunalOfCaseIssuedWithEmailWithAttachments() {
+        //Given
+        final CaseData data = getMockCaseData();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setContactPartiesDocuments(contactPartiesDocuments);
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        contactPartiesNotification.sendToTribunal(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+    }
+
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
         CaseData caseData = CaseData.builder().cicCase(cicCase).build();
