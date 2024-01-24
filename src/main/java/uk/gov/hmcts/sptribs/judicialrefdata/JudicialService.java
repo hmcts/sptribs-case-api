@@ -4,7 +4,6 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -41,9 +40,6 @@ public class JudicialService {
 
     private IdamService idamService;
 
-    @Value("${toggle.enable_jrd_api_v2}")
-    private boolean enableJrdApiV2;
-
     @Autowired
     public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
             JudicialClient judicialClient, IdamService idamService) {
@@ -64,20 +60,14 @@ public class JudicialService {
         String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         try {
             List<UserProfileRefreshResponse> list =
-                enableJrdApiV2
-                    ? judicialClient.getUserProfilesV2(
-                        authTokenGenerator.generate(),
-                        authToken,
-                        ACCEPT_VALUE,
-                        JudicialUsersRequest.builder()
-                            .ccdServiceName(ST_CIC_JURISDICTION)
-                            .build())
-                    : judicialClient.getUserProfiles(
-                        authTokenGenerator.generate(),
-                        authToken,
-                        JudicialUsersRequest.builder()
-                            .ccdServiceName(ST_CIC_JURISDICTION)
-                            .build());
+                judicialClient.getUserProfiles(
+                    authTokenGenerator.generate(),
+                    authToken,
+                    ACCEPT_VALUE,
+                    JudicialUsersRequest.builder()
+                        .ccdServiceName(ST_CIC_JURISDICTION)
+                        .build()
+                );
             if (isEmpty(list)) {
                 return new ArrayList<>();
             }
