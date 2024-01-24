@@ -14,7 +14,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.sptribs.controllers.DocumentManagementController;
 import uk.gov.hmcts.sptribs.exception.DocumentUploadOrDeleteException;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.model.DocumentResponse;
@@ -48,7 +47,7 @@ class DocumentManagementControllerTest {
     private DocumentManagementController documentManagementController;
 
     @Mock
-    DocumentManagementService documentManagementService;
+    private DocumentManagementService documentManagementService;
 
     private AutoCloseable closeableMocks;
 

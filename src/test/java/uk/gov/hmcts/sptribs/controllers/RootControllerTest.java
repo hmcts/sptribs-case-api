@@ -28,7 +28,7 @@ class RootControllerTest {
     }
 
     @Test
-    void testWelcome() throws Exception {
+    void testWelcome() {
         final ResponseEntity<String> response = rootController.welcome();
         assertEquals("Welcome to sptribs-case-api",response.getBody());
     }

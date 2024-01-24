@@ -48,7 +48,7 @@ class CaseManagementControllerTest {
     private CaseManagementController caseManagementController;
 
     @Mock
-    CaseManagementService caseManagementService;
+    private CaseManagementService caseManagementService;
 
     private AutoCloseable closeableMocks;
 
