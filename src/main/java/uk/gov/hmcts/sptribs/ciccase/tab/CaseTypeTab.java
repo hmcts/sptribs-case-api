@@ -74,8 +74,8 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_PH
 @Setter
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.case-file-view-and-document-management.enabled}")
-    private boolean caseFileViewAndDocumentManagementEnabled;
+    @Value("${feature.case-file-view.enabled}")
+    private boolean caseFileViewEnabled;
 
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
@@ -139,7 +139,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFileViewAndDocumentManagementEnabled) {
+        if (caseFileViewEnabled) {
             doBuildCaseFileViewTab(configBuilder);
         }
     }

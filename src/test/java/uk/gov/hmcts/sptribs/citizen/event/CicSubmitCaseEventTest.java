@@ -102,11 +102,11 @@ class CicSubmitCaseEventTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
 
-        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
         when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
             .thenReturn(List.of(CITIZEN));
 
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+        cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
 
         cicSubmitCaseEvent.configure(configBuilder);
 

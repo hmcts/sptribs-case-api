@@ -1,4 +1,5 @@
-package uk.gov.hmcts.sptribs.citizen.event;
+package uk.gov.hmcts.sptribs.caseworker.event;
+
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerDssUpdateCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Value("${feature.dss-frontend.enabled}")
     private boolean dssUpdateCaseEnabled;
