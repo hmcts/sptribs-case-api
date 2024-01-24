@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.ArrayList;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
@@ -28,16 +28,16 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
     public static final String SYSTEM_MIGRATE_CASE_FLAGS = "system-migrate-case-flags";
 
     private CcdSupplementaryDataService ccdSupplementaryDataService;
-    
+
     @Value("${feature.migration.enabled}")
     private boolean migrationFlagEnabled;
-    
-    
+
+
     @Autowired
     public SystemMigrateCaseFlags(CcdSupplementaryDataService ccdSupplementaryDataService) {
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
     }
-    
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (migrationFlagEnabled) {
@@ -47,7 +47,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .name("Migrate case flags")
                 .description("Migrate case flags for old cases")
-                .grant(CREATE_READ_UPDATE_DELETE, SYSTEMUPDATE);
+                .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
         }
 
     }
