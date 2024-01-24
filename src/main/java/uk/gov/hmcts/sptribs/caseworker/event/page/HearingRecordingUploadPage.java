@@ -53,8 +53,8 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
         List<String> errors = new ArrayList<>();
         if (!CollectionUtils.isEmpty(uploadedDocuments)) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (ObjectUtils.isEmpty(documentListValue.getValue()) ||
-                    ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
+                if (ObjectUtils.isEmpty(documentListValue.getValue())
+                    || ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
                 } else {
                     if (!documentListValue.getValue().isDocumentValid("mp3")) {
