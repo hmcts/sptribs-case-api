@@ -22,12 +22,14 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
@@ -48,7 +50,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
-        var pageBuilder = reinstateCase(configBuilder);
+        final PageBuilder pageBuilder = reinstateCase(configBuilder);
         reinstateWarning.addTo(pageBuilder);
         reinstateReason.addTo(pageBuilder);
         reinstateDocuments.addTo(pageBuilder);
@@ -66,7 +68,15 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .showSummary()
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                ST_CIC_JUDGE)
+        );
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -74,7 +84,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         updateCategoryToCaseworkerDocument(caseData.getCicCase().getReinstateDocuments());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -85,31 +95,33 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
 
     public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
                                                 CaseDetails<CaseData, State> beforeDetails) {
-
-        sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-
-        var cicCase = details.getData().getCicCase();
+        try {
+            sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Case Reinstate notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case Reinstate notification failed %n## Please resend the notification"))
+                .build();
+        }
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case reinstated %n##  The case record will now be reopened"
-                + ". %n## %s ", MessageUtil.generateSimpleMessage(cicCase)))
+                + ". %n## %s ", MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
     }
 
     private void sendCaseReinstatedNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (!cicCase.getNotifyPartySubject().isEmpty()) {
+        if (!isEmpty(cicCase.getNotifyPartySubject())) {
             caseReinstatedNotification.sendToSubject(data, caseNumber);
         }
-
-        if (!cicCase.getNotifyPartyRepresentative().isEmpty()) {
+        if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
             caseReinstatedNotification.sendToRepresentative(data, caseNumber);
         }
-
-        if (!cicCase.getNotifyPartyRespondent().isEmpty()) {
+        if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
             caseReinstatedNotification.sendToRespondent(data, caseNumber);
         }
-        if (!cicCase.getNotifyPartyApplicant().isEmpty()) {
+        if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
             caseReinstatedNotification.sendToApplicant(data, caseNumber);
         }
     }

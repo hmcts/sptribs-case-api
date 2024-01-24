@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -44,16 +44,18 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .initialState(State.Draft)
             .name("Create draft case (DSS)")
             .description("Apply for edge case (DSS)")
-            .grant(CREATE_READ_UPDATE, CITIZEN_CIC, CREATOR)
+            .grant(CREATE_READ_UPDATE, CITIZEN, CREATOR)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .retries(120, 120);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
+
         caseData.setHyphenatedCaseRef(details.getData().formatCaseRef(details.getId()));
         setIsRepresentativePresent(caseData);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Draft)

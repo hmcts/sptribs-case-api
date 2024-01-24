@@ -67,6 +67,7 @@ class CicUpdateCaseEventTest {
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
+        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
 
     }
 
@@ -74,7 +75,7 @@ class CicUpdateCaseEventTest {
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
+
         when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
 
         cicUpdateCaseEvent.configure(configBuilder);

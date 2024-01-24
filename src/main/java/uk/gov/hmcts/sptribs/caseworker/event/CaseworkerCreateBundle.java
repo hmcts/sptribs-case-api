@@ -86,7 +86,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     ) {
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
         List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
         for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : documentListValues) {

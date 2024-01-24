@@ -11,7 +11,7 @@ import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.D;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.R;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.U;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 
 public class CitizenDocumentAccessTest {
 
@@ -23,10 +23,10 @@ public class CitizenDocumentAccessTest {
         assertThat(grants)
             .hasSize(4)
             .contains(
-                entry(CITIZEN_CIC, C),
-                entry(CITIZEN_CIC, R),
-                entry(CITIZEN_CIC, U),
-                entry(CITIZEN_CIC, D)
+                entry(CITIZEN, C),
+                entry(CITIZEN, R),
+                entry(CITIZEN, U),
+                entry(CITIZEN, D)
             );
     }
 }

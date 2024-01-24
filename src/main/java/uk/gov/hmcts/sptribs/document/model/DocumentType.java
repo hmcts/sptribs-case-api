@@ -149,4 +149,5 @@ public enum DocumentType implements HasLabel {
     private final String label;
     private final String type;
     private final String category;
+
 }

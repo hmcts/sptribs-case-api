@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -431,6 +432,36 @@ public class TestDataHelper {
         return documentList;
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName, DocumentType category) {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(category)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList() {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder()
+                .filename("test.pdf")
+                .binaryUrl("http://url/")
+                .url("http://url/")
+                .build())
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
     public static DynamicMultiSelectList getDynamicMultiSelectDocumentListWithXElements(int numberOfDocuments) {
         List<DynamicListElement> elements = new ArrayList<>();
         for (int i = 0; i < numberOfDocuments; i++) {
@@ -447,6 +478,30 @@ public class TestDataHelper {
             .builder()
             .value(elements)
             .listItems(elements)
+            .build();
+    }
+
+    public static List<ListValue<PanelMember>> getMembers() {
+        List<ListValue<PanelMember>> members = new ArrayList<>();
+        ListValue<PanelMember> member = new ListValue<>();
+        PanelMember panelMember1 = PanelMember.builder()
+            .name(getDynamicListMembers())
+            .build();
+        member.setValue(panelMember1);
+        members.add(member);
+        return members;
+    }
+
+    public static DynamicList getDynamicListMembers() {
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("Jane Doe")
+            .code(UUID.randomUUID())
+            .build();
+        return DynamicList
+            .builder()
+            .value(listItem)
+            .listItems(List.of(listItem))
             .build();
     }
 }

@@ -189,7 +189,6 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
-  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
 
 feature:
   contact-parties:
@@ -200,8 +199,10 @@ feature:
     enabled: ${CASE_FLAGS_FEATURE:true}
   migration:
     enabled: ${MIGRATION_ENABLED:true}
-  case-file-view-and-document-management:
-    enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:true}
+  case-file-view:
+    enabled: ${CASE_FILE_VIEW_FEATURE:true}
+  document-management:
+    enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
   bundling-create:
     enabled: ${CREATE_BUNDLING_FEATURE:true}
   bundling-edit:
@@ -213,7 +214,9 @@ feature:
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:
-    enabled: ${SECURITY_CLASSIFICATION:false}
+    enabled: ${SECURITY_CLASSIFICATION:true}
+  access-profiles:
+    enabled: ${ACCESS_PROFILES_ENABLED:true}
 
 caseinfo:
   apps:

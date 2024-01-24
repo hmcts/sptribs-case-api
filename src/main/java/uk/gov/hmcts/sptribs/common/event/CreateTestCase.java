@@ -22,12 +22,12 @@ import java.util.List;
 
 import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SOLICITOR;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Slf4j
@@ -47,7 +47,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         final String env = getenv().getOrDefault("S2S_URL_BASE", "aat");
 
         if (env.contains(ENVIRONMENT_AAT)) {
-            roles.add(SOLICITOR);
+            roles.add(CASEWORKER);
             roles.add(ST_CIC_CASEWORKER);
             roles.add(ST_CIC_SENIOR_CASEWORKER);
         }
@@ -58,7 +58,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .name("Create test case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
-            .grantHistoryOnly(SUPER_USER, SOLICITOR, SYSTEMUPDATE, CITIZEN_CIC))
+            .grantHistoryOnly(SUPER_USER, CASEWORKER, SYSTEM_UPDATE, CITIZEN))
             .page("Create test case")
             .mandatoryWithLabel(CaseData::getCaseStatus, "Case state")
             .done();

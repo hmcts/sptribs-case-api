@@ -90,7 +90,7 @@ public class HearingService {
         if (CollectionUtils.isEmpty(caseData.getHearingList())) {
             List<ListValue<Listing>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            ListValue<Listing> listValue = ListValue
                 .<Listing>builder()
                 .id("1")
                 .value(listing)
@@ -101,7 +101,7 @@ public class HearingService {
             caseData.setHearingList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<Listing> listValue = ListValue
                 .<Listing>builder()
                 .value(listing)
                 .build();
