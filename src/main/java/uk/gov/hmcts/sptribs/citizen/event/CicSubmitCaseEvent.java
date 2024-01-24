@@ -103,9 +103,10 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        var dssData = details.getData().getDssCaseData();
-        CaseData caseData = getCaseData(data, dssData);
+
+        final CaseData data = details.getData();
+        final DssCaseData dssData = details.getData().getDssCaseData();
+        final CaseData caseData = getCaseData(data, dssData);
 
         setDssMetaData(data);
 
@@ -161,7 +162,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .build();
                 final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
-                DssMessage message = DssMessage.builder()
+                final DssMessage message = DssMessage.builder()
                     .message(dssCaseData.getAdditionalInformation())
                     .dateReceived(LocalDate.now())
                     .receivedFrom(caseworkerUser.getUserDetails().getFullName())
@@ -169,7 +170,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .otherInfoDocument(caseworkerCICDocument)
                     .build();
 
-                var listValue = ListValue
+                final ListValue<DssMessage> listValue = ListValue
                     .<DssMessage>builder()
                     .id(UUID.randomUUID().toString())
                     .value(message)

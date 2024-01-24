@@ -44,13 +44,11 @@ public class TestStateChange implements CCDConfig<CaseData, State, UserRole> {
             .optional(CicCase::getDays);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
 
-        var caseData = details.getData();
-        State newState = State.valueOf(caseData.getCicCase().getTestState().getName());
+        final CaseData caseData = details.getData();
+        final State newState = State.valueOf(caseData.getCicCase().getTestState().getName());
 
         if (newState == CaseClosed || newState == Withdrawn) {
             if (null != caseData.getCicCase().getDays()) {

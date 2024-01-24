@@ -150,7 +150,11 @@ class CaseWorkerCreateDraftOrderTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
+
+        //When
         SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
+
+        //  Then
         assertThat(draftCreatedResponse).isNotNull();
 
         final CicCase cicCase2 = CicCase.builder()
@@ -162,8 +166,6 @@ class CaseWorkerCreateDraftOrderTest {
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(response2).isNotNull();
-
     }
-
 }
 

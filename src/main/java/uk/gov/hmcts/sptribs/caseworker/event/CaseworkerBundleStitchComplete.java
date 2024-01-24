@@ -78,7 +78,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
     ) {
         log.info("Caseworker async stitching complete for bundle callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

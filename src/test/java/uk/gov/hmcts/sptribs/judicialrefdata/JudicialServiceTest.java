@@ -54,18 +54,18 @@ class JudicialServiceTest {
     @Test
     void shouldPopulateUserDynamicList() {
         //Given
-        var userResponse1 = UserProfileRefreshResponse
+        final UserProfileRefreshResponse userResponse1 = UserProfileRefreshResponse
             .builder()
             .fullName("John Smith")
             .personalCode("12345")
             .build();
-        var userResponse2 = UserProfileRefreshResponse
+        final UserProfileRefreshResponse userResponse2 = UserProfileRefreshResponse
             .builder()
             .fullName("John Doe")
             .personalCode("98765")
             .build();
         List<UserProfileRefreshResponse> responseEntity = List.of(userResponse1, userResponse2);
-        var caseData = CaseData.builder().build();
+        final CaseData caseData = CaseData.builder().build();
 
         //When
         User user = TestDataHelper.getUser();

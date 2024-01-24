@@ -21,12 +21,36 @@ class CaseworkerCICDocumentTest {
         "test.doc",
         "test.xls",
         "test.mp3",
-        "test.m4a"
+        "test.m4a",
+        "test.mp4",
+        "test.msg",
+        "test.eml"
     })
     void shouldCheckIsValid() {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().filename("test.pdf").build())
+            .build();
+
+        assertTrue(document.isDocumentValid());
+
+        document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename("test.mp4").build())
+            .build();
+
+        assertTrue(document.isDocumentValid());
+
+        document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().filename("test.msg").build())
+            .build();
+
+        assertTrue(document.isDocumentValid());
+
+        document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .documentLink(Document.builder().filename("test.eml").build())
             .build();
 
         assertTrue(document.isDocumentValid());

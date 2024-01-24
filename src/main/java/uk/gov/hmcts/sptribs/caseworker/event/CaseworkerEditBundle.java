@@ -68,7 +68,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
     ) {
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

@@ -38,6 +38,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
+
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
     @Value("${feature.case-flags.enabled}")
@@ -80,7 +81,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .optional(CaseData::getSubjectFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getApplicantFlags, ALWAYS_HIDE, true, true)
             .optional(CaseData::getRepresentativeFlags, ALWAYS_HIDE, true, true)
-            .mandatory(CaseData::getFlagLauncher,
+            .optional(CaseData::getFlagLauncher,
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
 
@@ -91,8 +92,9 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     ) {
         log.info("Create Case flags about to Submit invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -104,6 +106,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
                 .build();
+
     }
 
 
