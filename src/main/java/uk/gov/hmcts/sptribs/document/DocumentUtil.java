@@ -30,7 +30,7 @@ public final class DocumentUtil {
     }
 
     public static void updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> documentList) {
-        if (documentList != null && !documentList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(documentList)) {
             documentList.forEach(doc -> {
                 if (doc != null) {
                     doc.getValue().getDocumentLink()
@@ -41,7 +41,7 @@ public final class DocumentUtil {
     }
 
     public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList, String categoryId) {
-        if (documentList != null && !documentList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(documentList)) {
             documentList.forEach(doc -> {
                 if (doc != null) {
                     doc.getValue().getDocumentLink().setCategoryId(categoryId);
@@ -53,7 +53,7 @@ public final class DocumentUtil {
     public static List<String> validateDocumentFormat(List<ListValue<CICDocument>> documentList) {
         final List<String> errors = new ArrayList<>();
 
-        if (documentList != null && !documentList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(documentList)) {
             documentList.stream()
                 .filter(value -> value != null && !value.getValue().isDocumentValid())
                 .findFirst()
@@ -66,7 +66,7 @@ public final class DocumentUtil {
     public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocument>> documentList) {
         final List<String> errors = new ArrayList<>();
 
-        if (documentList != null && !documentList.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(documentList)) {
             documentList.stream()
                 .filter(value -> value != null && !value.getValue().isDocumentValid())
                 .findFirst()
@@ -78,7 +78,7 @@ public final class DocumentUtil {
 
     public static List<String> validateDecisionDocumentFormat(CICDocument document) {
         final List<String> errors = new ArrayList<>();
-        if (null != document && !document.isDocumentValid()) {
+        if (document != null && !document.isDocumentValid()) {
             errors.add(DOCUMENT_VALIDATION_MESSAGE);
         }
 

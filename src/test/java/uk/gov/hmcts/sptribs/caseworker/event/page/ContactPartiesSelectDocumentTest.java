@@ -64,4 +64,14 @@ class ContactPartiesSelectDocumentTest {
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Select up to 10 documents");
     }
+
+    @Test
+    void midEventReturnsWithNoDocumentsSelected() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+        assertThat(response.getErrors()).isEmpty();
+    }
 }

@@ -34,6 +34,24 @@ class IssueCaseSelectDocumentTest {
     private DynamicMultiSelectList dynamicMultiSelectList;
 
     @Test
+    void midEventSuccessful() {
+        when(dynamicMultiSelectList.getValue()).thenReturn(documentList);
+        when(documentList.size()).thenReturn(3);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
+        final CaseData caseData = CaseData.builder()
+            .caseIssue(caseIssue)
+            .build();
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+
+        assertTrue(response.getErrors().isEmpty());
+        assertThat(response.getData().getCaseIssue().getDocumentList()).isEqualTo((dynamicMultiSelectList));
+    }
+
+    @Test
     void midEventReturnsErrorWhenMaxDocumentsExceeded() {
         when(dynamicMultiSelectList.getValue()).thenReturn(documentList);
         when(documentList.size()).thenReturn(6);
@@ -45,10 +63,25 @@ class IssueCaseSelectDocumentTest {
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
 
         assertFalse(response.getErrors().isEmpty());
         assertThat(response.getErrors()).contains("Select up to 5 documents");
+    }
+
+    @Test
+    void midEventReturnsNoErrorsForNullDocumentList() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseIssue caseIssue = CaseIssue.builder().build();
+        final CaseData caseData = CaseData.builder()
+            .caseIssue(caseIssue)
+            .build();
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Select at least one document");
     }
 
     @Test
@@ -62,27 +95,9 @@ class IssueCaseSelectDocumentTest {
             .build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
 
         assertFalse(response.getErrors().isEmpty());
         assertThat(response.getErrors()).contains("Select at least one document");
-    }
-
-    @Test
-    void midEventSuccessful() {
-        when(dynamicMultiSelectList.getValue()).thenReturn(documentList);
-        when(documentList.size()).thenReturn(3);
-
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseIssue caseIssue = CaseIssue.builder().documentList(dynamicMultiSelectList).build();
-        final CaseData caseData = CaseData.builder()
-            .caseIssue(caseIssue)
-            .build();
-        caseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseSelectDocument.midEvent(caseDetails, caseDetails);
-
-        assertTrue(response.getErrors().isEmpty());
-        assertThat(response.getData().getCaseIssue().getDocumentList()).isEqualTo((dynamicMultiSelectList));
     }
 }
