@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.controllers.CaseManagementController;
 import uk.gov.hmcts.sptribs.services.CaseManagementService;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -44,33 +45,35 @@ class CaseCreateOrUpdateExceptionTest {
 
     @Test
     void testCreateCaseDataCaseCreateUpdateException() throws Exception {
-        String createCaseTestAuth = CASE_TEST_AUTHORIZATION;
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
+        final String createCaseTestAuth = CASE_TEST_AUTHORIZATION;
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
 
         when(caseManagementController.createCase(createCaseTestAuth, dssCaseData))
             .thenThrow(new CaseCreateOrUpdateException(CASE_CREATE_FAILURE_MSG, new Throwable()));
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        final CaseCreateOrUpdateException caseCreateOrUpdateException = assertThrows(CaseCreateOrUpdateException.class, () -> {
             caseManagementController.createCase(createCaseTestAuth, dssCaseData);
         });
 
-        assertTrue(exception.getMessage().contains(CASE_CREATE_FAILURE_MSG));
+        assertTrue(caseCreateOrUpdateException.getMessage().contains(CASE_CREATE_FAILURE_MSG));
+        assertNotNull(caseCreateOrUpdateException.getCause());
     }
 
     @Test
     void testUpdateCaseDataCaseCreateUpdateException() throws Exception {
-        String updateCaseTestAuth = CASE_TEST_AUTHORIZATION;
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final String updateCaseTestAuth = CASE_TEST_AUTHORIZATION;
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
         when(caseManagementService.createCase(updateCaseTestAuth, caseData))
             .thenThrow(new CaseCreateOrUpdateException(CASE_UPDATE_FAILURE_MSG, new Throwable()));
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        final CaseCreateOrUpdateException caseCreateOrUpdateException = assertThrows(CaseCreateOrUpdateException.class, () -> {
             caseManagementService.createCase(updateCaseTestAuth, caseData);
         });
 
-        assertTrue(exception.getMessage().contains(CASE_UPDATE_FAILURE_MSG));
+        assertTrue(caseCreateOrUpdateException.getMessage().contains(CASE_UPDATE_FAILURE_MSG));
+        assertNotNull(caseCreateOrUpdateException.getCause());
     }
 }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.controllers.DocumentManagementController;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.services.DocumentManagementService;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -57,10 +58,12 @@ class DocumentUploadOrDeleteExceptionTest {
                 new RuntimeException()
             ));
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        final DocumentUploadOrDeleteException documentUploadOrDeleteException = assertThrows(DocumentUploadOrDeleteException.class, () -> {
             documentManagementController.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
         });
-        assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
+
+        assertTrue(documentUploadOrDeleteException.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
+        assertNotNull(documentUploadOrDeleteException.getCause());
     }
 
     @Test
@@ -79,10 +82,11 @@ class DocumentUploadOrDeleteExceptionTest {
                 new RuntimeException()
             ));
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        final DocumentUploadOrDeleteException documentUploadOrDeleteException = assertThrows(DocumentUploadOrDeleteException.class, () -> {
             documentManagementController.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
         });
-        assertTrue(
-            exception.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG));
+
+        assertTrue(documentUploadOrDeleteException.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG));
+        assertNotNull(documentUploadOrDeleteException.getCause());
     }
 }

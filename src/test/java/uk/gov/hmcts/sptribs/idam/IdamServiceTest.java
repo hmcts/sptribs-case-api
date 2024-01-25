@@ -97,13 +97,13 @@ public class IdamServiceTest {
     @Test
     void shouldRetrieveUserDetails() {
         // Given
-        String bearerToken = TEST_SERVICE_AUTH_TOKEN;
-        UserDetails userDetails = userDetails();
+        final String bearerToken = TEST_SERVICE_AUTH_TOKEN;
+        final UserDetails userDetails = userDetails();
 
         // When
         when(idamClient.getUserDetails(bearerToken)).thenReturn(userDetails());
 
-        User result = idamService.retrieveUser(bearerToken);
+        final User result = idamService.retrieveUser(bearerToken);
 
         //Then
         assertEquals(userDetails, result.getUserDetails());
