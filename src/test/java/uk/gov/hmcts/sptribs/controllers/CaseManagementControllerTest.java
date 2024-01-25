@@ -141,7 +141,6 @@ class CaseManagementControllerTest {
 
         final CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
         caseResponse.setId(TEST_CASE_ID);
-        caseResponse.setStatus(null);
 
         when(caseManagementService.fetchCaseDetails(CASE_TEST_AUTHORIZATION,TEST_CASE_ID)).thenReturn(caseResponse);
 
@@ -154,7 +153,6 @@ class CaseManagementControllerTest {
         assertThat(caseDataFetchResponse).isNotNull();
         assertEquals(caseDataFetchResponse.getId(),caseResponse.getId());
         assertEquals(postFetchCaseResponse.getStatusCode(),HttpStatus.OK);
-
     }
 
 }
