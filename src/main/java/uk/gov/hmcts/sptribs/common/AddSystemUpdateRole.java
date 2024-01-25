@@ -6,7 +6,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
 @Component
 public class AddSystemUpdateRole {
@@ -17,7 +17,7 @@ public class AddSystemUpdateRole {
         List<UserRole> existingRoles = new ArrayList<>(userRoles);
 
         if (isEnvironmentAat()) {
-            existingRoles.add(SYSTEMUPDATE);
+            existingRoles.add(SYSTEM_UPDATE);
         }
 
         return existingRoles;
