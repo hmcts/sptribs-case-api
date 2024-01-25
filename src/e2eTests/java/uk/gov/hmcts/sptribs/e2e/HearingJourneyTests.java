@@ -56,29 +56,6 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Special officer", otherAttendee);
     }
 
-    @Disabled
-    public void caseWorkerShouldBeAbleToCreateHearingSummaryAndViewDetailsInHearingTabForDSSCase() {
-        Page page = getPage();
-        createEditAndBuildDssCase(page);
-
-        Hearing hearing = createListing(page);
-        final HashMap<String, String> map = hearing.createHearingSummary();
-        getTabByText(page, "Hearings").click();
-        assertThat(page.locator("h4").first()).hasText("Listing details");
-        String hearingStatus = getValueFromTableWithinHearingsTabFor(page, "Hearing Status");
-        Assertions.assertEquals("Completed", hearingStatus);
-        String hearingType = getValueFromTableWithinHearingsTabFor(page, "Hearing type");
-        Assertions.assertEquals("Case management", hearingType);
-        String hearingFormat = getValueFromTableWithinHearingsTabFor(page, "Hearing format");
-        Assertions.assertEquals("Face to Face", hearingFormat);
-        String displayedJudge = getValueFromTableWithinHearingsTabFor(page, "Which judge heard the case?");
-        Assertions.assertEquals(map.get("judge"), displayedJudge);
-        String displayedPanelMember = getValueFromTableWithinHearingsTabFor(page, "Name of the panel member");
-        Assertions.assertEquals(map.get("panelMember"), displayedPanelMember);
-        String otherAttendee = getValueFromTableWithinHearingsTabFor(page, "Who was this other attendee?");
-        Assertions.assertEquals("Special officer", otherAttendee);
-    }
-
     @RepeatedIfExceptionsTest
     public void caseWorkerShouldBeAbleToEditHearingSummaryAndViewDetailsInHearingTab() {
         Page page = getPage();
@@ -144,22 +121,6 @@ public class HearingJourneyTests extends Base {
         newCase.buildCase();
     }
 
-    private void createEditAndBuildDssCase(Page page) {
-        DssCase newDssCase = new DssCase(page);
-        newDssCase.navigateToDssLoginPage();
-        Login login = new Login(page);
-        login.loginAsStCitizen1User();
-        final String caseNumber = newDssCase.createCase("representative");
-        clickLink(page, "Sign out");
-        page.navigate(CASE_API_BASE_URL, new Page.NavigateOptions().setTimeout(90000));
-        login.loginAsCaseWorker();
-        page.navigate(getCaseUrl(caseNumber));
-        Case dssCase = new Case(page);
-        assertThat(page.locator(".mat-tab-list")).isVisible(visibleOptionsWithTimeout(60000));
-        Assertions.assertEquals(DssSubmitted.label, dssCase.getCaseStatus());
-        //dssCase.editDssCase("representative","applicant"); // TODO: to fix - Santoshini
-        dssCase.buildCase();
-    }
 
     private Hearing createListing(Page page) {
         Hearing hearing = new Hearing(page);
