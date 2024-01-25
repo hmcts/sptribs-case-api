@@ -106,8 +106,15 @@ public class ManageSelectOrdersTest {
     void midEventReturnsCorrectErrorWhenDynamicOrderLabelIsNull() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
+        final Order order = Order.builder()
+            .dueDateList(List.of(mockListValueDateModel))
+            .draftOrder(new DraftOrderCIC())
+            .build();
+        final ListValue<Order> listValue = new ListValue<>();
+        listValue.setValue(order);
+        listValue.setId("0");
         final CicCase cicCase = CicCase.builder()
-            .orderList(null)
+            .orderList(List.of(listValue))
             .orderDynamicList(dynamicListNullLabel)
             .build();
         caseData.setCicCase(cicCase);
@@ -132,6 +139,30 @@ public class ManageSelectOrdersTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains("Please select an order to manage");
+    }
+
+    @Test
+    void midEventReturnsNoErrorsForNoMatchingId() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final Order order = Order.builder()
+            .dueDateList(List.of(mockListValueDateModel))
+            .draftOrder(new DraftOrderCIC())
+            .build();
+        final ListValue<Order> listValue = new ListValue<>();
+        listValue.setValue(order);
+        listValue.setId("1");
+        final CicCase cicCase = CicCase.builder()
+            .orderList(List.of(listValue))
+            .orderDynamicList(dynamicListLabelled)
+            .build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getErrors()).isEmpty();
     }
 
     private DynamicList createDynamicList(String label) {
