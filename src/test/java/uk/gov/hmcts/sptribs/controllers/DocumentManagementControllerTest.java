@@ -120,9 +120,30 @@ class DocumentManagementControllerTest {
                 new Throwable()
             ));
 
-        final Exception exception = assertThrows(DocumentUploadOrDeleteException.class, () -> {
+        assertThrows(DocumentUploadOrDeleteException.class,
+            () -> documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId()));
+    }
+
+    @Test
+    void testDeleteDocumentControllerExceptionMessage() {
+        final DocumentInfo documentInfo = DocumentInfo.builder()
+            .documentId(CASE_DATA_CIC_ID)
+            .url(TEST_URL)
+            .fileName(CASE_DATA_FILE_CIC).build();
+
+        when(documentManagementService.deleteDocument(
+            CASE_TEST_AUTHORIZATION,
+            documentInfo.getDocumentId()
+        )).thenThrow(
+            new DocumentUploadOrDeleteException(
+                DOCUMENT_DELETE_FAILURE_MSG,
+                new Throwable()
+            ));
+
+        try {
             documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
-        });
-        assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
+        } catch (DocumentUploadOrDeleteException documentUploadOrDeleteException) {
+            assertTrue(documentUploadOrDeleteException.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
+        }
     }
 }
