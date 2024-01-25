@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.common.event;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,37 +12,27 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
-import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
-import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
-class CreateTestCaseTest {
+public class CreateTestCaseTest {
 
     @InjectMocks
     private CreateTestCase createTestCase;
 
     @Mock
-    private CcdSupplementaryDataService ccdSupplementaryDataService;
-
-    @InjectMocks
-    private SelectParties selectParties;
-
-    @InjectMocks
-    private ContactPreferenceDetails contactPreferenceDetails;
-
+    private ObjectMapper mapper;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -50,87 +42,26 @@ class CreateTestCaseTest {
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains("caseworker-create-case");
+            .contains("create-test-case");
     }
 
-
     @Test
-    void shouldSelectSubject() {
-        //Given
+    void shouldMoveCaseIntoChosenStateAndCreateTestCase() throws JsonProcessingException {
+        final CaseData caseData =
+            CaseData.builder()
+                .caseStatus(CaseManagement)
+                .build();
+
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder().partiesCIC(Set.of(PartiesCIC.APPLICANT)).build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
+        caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
 
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = selectParties.midEvent(caseDetails, caseDetails);
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
 
-        //Then
-        assertThat(response.getErrors()).isNotNull();
-    }
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            createTestCase.aboutToSubmit(caseDetails, caseDetails);
 
-
-    @Test
-    void shouldSelectContactPreference() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.SEXUAL_ABUSE)
-            .partiesCIC(Set.of(PartiesCIC.APPLICANT))
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPreferenceDetails.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).isNotNull();
-    }
-
-
-    @Test
-    void shouldSelectContactPreferenceFatal() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.FATAL)
-            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
-            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPreferenceDetails.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).isNotNull();
-    }
-
-
-    @Test
-    void shouldSelectContactPreferenceMinor() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.MINOR)
-            .subjectCIC(Set.of(SubjectCIC.SUBJECT))
-            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPreferenceDetails.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).isNotNull();
+        assertThat(response.getState()).isEqualTo(CaseManagement);
+        assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo("1616-5914-0147-3378");
     }
 }
