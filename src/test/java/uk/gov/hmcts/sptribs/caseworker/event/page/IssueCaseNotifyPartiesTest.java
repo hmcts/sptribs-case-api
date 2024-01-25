@@ -36,7 +36,7 @@ class IssueCaseNotifyPartiesTest {
     private IssueCaseNotifyParties issueCaseNotifyParties;
 
     @Test
-    void testMidEventReturnsErrorForNoRecipients() {
+    void midEventReturnsErrorForNoRecipients() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
