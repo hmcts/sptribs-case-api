@@ -45,7 +45,7 @@ class DocumentUploadOrDeleteExceptionTest {
     }
 
     @Test
-    void testDeleteDocumentUploadOrDeleteException() throws Exception {
+    void testDeleteDocumentUploadOrDeleteException() throws RuntimeException {
         documentInfo = DocumentInfo.builder()
             .documentId(CASE_DATA_CIC_ID)
             .url(TEST_URL)
@@ -60,12 +60,11 @@ class DocumentUploadOrDeleteExceptionTest {
         Exception exception = assertThrows(Exception.class, () -> {
             documentManagementController.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
         });
-        assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG),
-            String.valueOf(true));
+        assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
     }
 
     @Test
-    void testUpdateDocumentUploadOrDeleteException() throws Exception {
+    void testUpdateDocumentUploadOrDeleteException() throws RuntimeException {
         documentInfo = DocumentInfo.builder()
             .documentId(CASE_DATA_CIC_ID)
             .url(TEST_URL)
@@ -84,8 +83,6 @@ class DocumentUploadOrDeleteExceptionTest {
             documentManagementController.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
         });
         assertTrue(
-            exception.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG),
-            String.valueOf(true)
-        );
+            exception.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG));
     }
 }
