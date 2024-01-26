@@ -52,6 +52,21 @@ public class JudicialService {
         return populateUsersDynamicList(judges);
     }
 
+    public String populateJudicialId(CaseData caseData) {
+        if (isNull(caseData.getListing().getSummary().getJudge())) {
+            return EMPTY_PLACEHOLDER;
+        }
+
+        final UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
+        final Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
+            .map(ListValue::getValue)
+            .filter(j -> UUID.fromString(j.getUuid()).equals(selectedJudgeUuid))
+            .findFirst()
+            .map(Judge::getPersonalCode);
+
+        return judgeJudicialId.orElse(EMPTY_PLACEHOLDER);
+    }
+
     private List<UserProfileRefreshResponse> getUsers() {
         final String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         try {
@@ -105,20 +120,5 @@ public class JudicialService {
             .builder()
             .listItems(usersDynamicList)
             .build();
-    }
-
-    public String populateJudicialId(CaseData caseData) {
-        if (isNull(caseData.getListing().getSummary().getJudge())) {
-            return EMPTY_PLACEHOLDER;
-        }
-
-        final UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
-        final Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
-            .map(ListValue::getValue)
-            .filter(j -> UUID.fromString(j.getUuid()).equals(selectedJudgeUuid))
-            .findFirst()
-            .map(Judge::getPersonalCode);
-
-        return judgeJudicialId.orElse(EMPTY_PLACEHOLDER);
     }
 }
