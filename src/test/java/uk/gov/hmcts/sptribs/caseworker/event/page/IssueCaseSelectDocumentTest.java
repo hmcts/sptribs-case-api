@@ -70,7 +70,7 @@ class IssueCaseSelectDocumentTest {
     }
 
     @Test
-    void midEventReturnsNoErrorsForNullDocumentList() {
+    void midEventReturnsErrorForNullDocumentList() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseIssue caseIssue = CaseIssue.builder().build();
         final CaseData caseData = CaseData.builder()
