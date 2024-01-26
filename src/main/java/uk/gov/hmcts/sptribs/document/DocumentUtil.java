@@ -94,7 +94,7 @@ public final class DocumentUtil {
     public static List<String> validateUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
         List<String> errors = new ArrayList<>();
 
-        if (!CollectionUtils.isEmpty(uploadedDocuments)) {
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
                 if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
