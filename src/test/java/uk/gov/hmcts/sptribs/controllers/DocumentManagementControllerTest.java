@@ -30,6 +30,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_TEST_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.DOCUMENT_DELETE_FAILURE_MSG;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.DOCUMENT_UPLOAD_FAILURE_MSG;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_CONTENT_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_FILE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCESS;
@@ -51,6 +52,14 @@ class DocumentManagementControllerTest {
 
     private AutoCloseable closeableMocks;
 
+    private final DocumentInfo documentInfo = DocumentInfo.builder()
+        .documentId(CASE_DATA_CIC_ID)
+        .url(TEST_URL)
+        .fileName(CASE_DATA_FILE_CIC).build();
+    private final DocumentResponse documentResponseSuccess = DocumentResponse.builder()
+        .status(RESPONSE_STATUS_SUCCESS)
+        .document(documentInfo).build();
+
     @BeforeEach
     void setUp() {
         closeableMocks = MockitoAnnotations.openMocks(this);
@@ -65,32 +74,23 @@ class DocumentManagementControllerTest {
     void testCicDocumentControllerFileUpload() throws IOException {
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
-        final DocumentInfo document = DocumentInfo.builder()
-            .documentId(CASE_DATA_CIC_ID)
-            .url(TEST_URL)
-            .fileName(CASE_DATA_FILE_CIC).build();
-
-        final DocumentResponse documentResponse = DocumentResponse.builder()
-            .status(RESPONSE_STATUS_SUCCESS)
-            .document(document).build();
-
         final MockMultipartFile multipartFile = new MockMultipartFile(
             JSON_FILE_TYPE,
-                CASE_DATA_FILE_CIC,
+            CASE_DATA_FILE_CIC,
             JSON_CONTENT_TYPE,
             caseDataJson.getBytes()
         );
 
         when(documentManagementService.uploadDocument(
             CASE_TEST_AUTHORIZATION,
-                CASE_DATA_CIC_ID,
+            CASE_DATA_CIC_ID,
             multipartFile
         )).thenReturn(
-            documentResponse);
+            documentResponseSuccess);
 
         final ResponseEntity<?> uploadDocumentResponse = documentManagementController.uploadDocument(
             CASE_TEST_AUTHORIZATION,
-                CASE_DATA_CIC_ID,
+            CASE_DATA_CIC_ID,
             multipartFile
         );
 
@@ -98,52 +98,66 @@ class DocumentManagementControllerTest {
 
         assertEquals(HttpStatus.OK, uploadDocumentResponse.getStatusCode());
         assertNotNull(testResponse);
-        assertEquals(document.getDocumentId(), testResponse.getDocument().getDocumentId());
-        assertEquals(document.getFileName(), testResponse.getDocument().getFileName());
-        assertEquals(document.getUrl(), testResponse.getDocument().getUrl());
+        assertEquals(documentInfo.getDocumentId(), testResponse.getDocument().getDocumentId());
+        assertEquals(documentInfo.getFileName(), testResponse.getDocument().getFileName());
+        assertEquals(documentInfo.getUrl(), testResponse.getDocument().getUrl());
         assertEquals(RESPONSE_STATUS_SUCCESS, testResponse.getStatus());
     }
 
     @Test
-    void testDeleteCicDocumentControllerFailedWithException() {
-        final DocumentInfo documentInfo = DocumentInfo.builder()
-            .documentId(CASE_DATA_CIC_ID)
-            .url(TEST_URL)
-            .fileName(CASE_DATA_FILE_CIC).build();
+    void testUploadDocumentControllerFailsWithException() throws IOException {
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
-        when(documentManagementService.deleteDocument(
+        final MockMultipartFile multipartFile = new MockMultipartFile(
+            JSON_FILE_TYPE,
+            CASE_DATA_FILE_CIC,
+            JSON_CONTENT_TYPE,
+            caseDataJson.getBytes()
+        );
+
+        when(documentManagementService.uploadDocument(
             CASE_TEST_AUTHORIZATION,
-            documentInfo.getDocumentId()
+            CASE_DATA_CIC_ID,
+            multipartFile
         )).thenThrow(
             new DocumentUploadOrDeleteException(
-                DOCUMENT_DELETE_FAILURE_MSG,
+                DOCUMENT_UPLOAD_FAILURE_MSG,
                 new Throwable()
             ));
 
-        assertThrows(DocumentUploadOrDeleteException.class,
-            () -> documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId()));
+        final DocumentUploadOrDeleteException exception = assertThrows(DocumentUploadOrDeleteException.class,
+            () -> documentManagementService.uploadDocument(
+                CASE_TEST_AUTHORIZATION,
+                CASE_DATA_CIC_ID,
+                multipartFile
+            ));
+        assertTrue(exception.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG));
     }
 
     @Test
-    void testDeleteDocumentControllerExceptionMessage() {
-        final DocumentInfo documentInfo = DocumentInfo.builder()
-            .documentId(CASE_DATA_CIC_ID)
-            .url(TEST_URL)
-            .fileName(CASE_DATA_FILE_CIC).build();
-
+    void testDeleteCicDocumentController() {
         when(documentManagementService.deleteDocument(
             CASE_TEST_AUTHORIZATION,
-            documentInfo.getDocumentId()
+            CASE_DATA_CIC_ID
+        )).thenReturn(documentResponseSuccess);
+
+        final ResponseEntity<?> response = documentManagementController.deleteDocument(CASE_TEST_AUTHORIZATION, CASE_DATA_CIC_ID);
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    void testDeleteCicDocumentControllerFailedWithException() {
+        when(documentManagementService.deleteDocument(
+            CASE_TEST_AUTHORIZATION,
+            CASE_DATA_CIC_ID
         )).thenThrow(
             new DocumentUploadOrDeleteException(
                 DOCUMENT_DELETE_FAILURE_MSG,
                 new Throwable()
             ));
 
-        try {
-            documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
-        } catch (DocumentUploadOrDeleteException documentUploadOrDeleteException) {
-            assertTrue(documentUploadOrDeleteException.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
-        }
+        final DocumentUploadOrDeleteException exception = assertThrows(DocumentUploadOrDeleteException.class,
+            () -> documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, CASE_DATA_CIC_ID));
+        assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
     }
 }
