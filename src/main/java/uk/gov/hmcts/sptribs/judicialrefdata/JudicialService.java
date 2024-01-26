@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,18 +31,15 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION
 @Slf4j
 public class JudicialService {
 
-    private HttpServletRequest httpServletRequest;
+    private final AuthTokenGenerator authTokenGenerator;
 
-    private AuthTokenGenerator authTokenGenerator;
+    private final JudicialClient judicialClient;
 
-    private JudicialClient judicialClient;
-
-    private IdamService idamService;
+    private final IdamService idamService;
 
     @Autowired
-    public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
+    public JudicialService(AuthTokenGenerator authTokenGenerator,
             JudicialClient judicialClient, IdamService idamService) {
-        this.httpServletRequest = httpServletRequest;
         this.authTokenGenerator = authTokenGenerator;
         this.judicialClient = judicialClient;
         this.idamService = idamService;

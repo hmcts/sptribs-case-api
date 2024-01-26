@@ -19,7 +19,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AppointmentRefreshResponse {
 
-
     private String baseLocationId;
 
     private String epimmsId;
@@ -47,6 +46,4 @@ public class AppointmentRefreshResponse {
     private String startDate;
 
     private String endDate;
-
-
 }
