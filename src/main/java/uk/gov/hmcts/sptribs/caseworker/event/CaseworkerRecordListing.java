@@ -219,6 +219,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .optional(Listing::getImportantInfoDetails)
             .readonly(Listing::getPostponeReason, ALWAYS_HIDE)
             .readonly(Listing::getPostponeAdditionalInformation, ALWAYS_HIDE)
+            .readonly(Listing::getRecordListingChangeReason, ALWAYS_HIDE)
             .readonly(Listing::getHearingCancellationReason, ALWAYS_HIDE)
             .readonly(Listing::getCancelHearingAdditionalDetail, ALWAYS_HIDE)
             .complex(Listing::getSummary)
