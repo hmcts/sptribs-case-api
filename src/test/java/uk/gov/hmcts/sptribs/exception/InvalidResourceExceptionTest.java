@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.exception;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_RESOURCE_NOT_FOUND;
@@ -10,15 +10,14 @@ import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadResource;
 
 class InvalidResourceExceptionTest {
     @Test
-    void testInvalidResourceExceptionThrownForNonExistentFile() throws Exception {
-        String createCaseDataFileNotExist = "CICCaseDataNotExist.json";
+    void invalidResourceExceptionThrownForNonExistentFile() throws RuntimeException {
+        final String createCaseDataFileNotExist = "CICCaseDataNotExist.json";
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            byte [] caseDataJson = loadResource(createCaseDataFileNotExist);
-            assertNull(caseDataJson);
-        });
+        final InvalidResourceException invalidResourceException =
+            assertThrows(InvalidResourceException.class, () ->
+                loadResource(createCaseDataFileNotExist));
 
-        assertTrue(exception.getMessage().contains(TEST_RESOURCE_NOT_FOUND), String.valueOf(true));
-
+        assertTrue(invalidResourceException.getMessage().contains(TEST_RESOURCE_NOT_FOUND));
+        assertNotNull(invalidResourceException.getCause());
     }
 }
