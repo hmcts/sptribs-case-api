@@ -25,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
@@ -96,6 +99,7 @@ class DocumentManagementControllerTest {
 
         final DocumentResponse testResponse = (DocumentResponse) uploadDocumentResponse.getBody();
 
+        verify(documentManagementService, times(1)).uploadDocument(any(), any(), any());
         assertEquals(HttpStatus.OK, uploadDocumentResponse.getStatusCode());
         assertNotNull(testResponse);
         assertEquals(documentInfo.getDocumentId(), testResponse.getDocument().getDocumentId());
@@ -131,6 +135,8 @@ class DocumentManagementControllerTest {
                 CASE_DATA_CIC_ID,
                 multipartFile
             ));
+
+        verify(documentManagementService, times(1)).uploadDocument(any(), any(), any());
         assertTrue(exception.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG));
     }
 
@@ -142,7 +148,16 @@ class DocumentManagementControllerTest {
         )).thenReturn(documentResponseSuccess);
 
         final ResponseEntity<?> response = documentManagementController.deleteDocument(CASE_TEST_AUTHORIZATION, CASE_DATA_CIC_ID);
-        assertTrue(response.getStatusCode().is2xxSuccessful());
+
+        verify(documentManagementService, times(1)).deleteDocument(any(), any());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        final DocumentResponse testResponse = (DocumentResponse) response.getBody();
+        assertNotNull(testResponse);
+        assertEquals(documentInfo.getDocumentId(), testResponse.getDocument().getDocumentId());
+        assertEquals(documentInfo.getFileName(), testResponse.getDocument().getFileName());
+        assertEquals(documentInfo.getUrl(), testResponse.getDocument().getUrl());
+        assertEquals(RESPONSE_STATUS_SUCCESS, testResponse.getStatus());
     }
 
     @Test
@@ -158,6 +173,7 @@ class DocumentManagementControllerTest {
 
         final DocumentUploadOrDeleteException exception = assertThrows(DocumentUploadOrDeleteException.class,
             () -> documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, CASE_DATA_CIC_ID));
+        verify(documentManagementService, times(1)).deleteDocument(any(), any());
         assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
     }
 }

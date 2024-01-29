@@ -168,12 +168,12 @@ public class BundlingService {
         if (null != objectLinkedHashMap.get(FOLDERS)) {
             List<LinkedHashMap<String, Object>> responseFolders
                 = (List<LinkedHashMap<String, Object>>) objectLinkedHashMap.get(FOLDERS);
-            for (int y = 0; y < responseFolders.size(); y++) {
-                LinkedHashMap<String, Object> foldersObject = (LinkedHashMap<String, Object>) responseFolders.get(y).get(VALUE);
+            for (LinkedHashMap<String, Object> responseFolder : responseFolders) {
+                LinkedHashMap<String, Object> foldersObject = (LinkedHashMap<String, Object>) responseFolder.get(VALUE);
                 BundleFolder bundleFolder = BundleFolder.builder()
-                    .name(null != foldersObject.get(NAME) ? foldersObject.get(NAME).toString() : "")
-                    .sortIndex(null != foldersObject.get(SORT_INDEX) ? (Integer) foldersObject.get(SORT_INDEX) : null)
-                    .build();
+                        .name(null != foldersObject.get(NAME) ? foldersObject.get(NAME).toString() : "")
+                        .sortIndex(null != foldersObject.get(SORT_INDEX) ? (Integer) foldersObject.get(SORT_INDEX) : null)
+                        .build();
                 if (null != foldersObject.get(DOCUMENTS)) {
                     bundleFolder.setDocuments(buildBundleDocumentListValues(getDocuments(foldersObject)));
                 }
