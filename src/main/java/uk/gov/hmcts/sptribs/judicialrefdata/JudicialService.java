@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,18 +31,15 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION
 @Slf4j
 public class JudicialService {
 
-    private HttpServletRequest httpServletRequest;
+    private final AuthTokenGenerator authTokenGenerator;
 
-    private AuthTokenGenerator authTokenGenerator;
+    private final JudicialClient judicialClient;
 
-    private JudicialClient judicialClient;
-
-    private IdamService idamService;
+    private final IdamService idamService;
 
     @Autowired
-    public JudicialService(HttpServletRequest httpServletRequest, AuthTokenGenerator authTokenGenerator,
+    public JudicialService(AuthTokenGenerator authTokenGenerator,
             JudicialClient judicialClient, IdamService idamService) {
-        this.httpServletRequest = httpServletRequest;
         this.authTokenGenerator = authTokenGenerator;
         this.judicialClient = judicialClient;
         this.idamService = idamService;
@@ -56,8 +52,23 @@ public class JudicialService {
         return populateUsersDynamicList(judges);
     }
 
+    public String populateJudicialId(CaseData caseData) {
+        if (isNull(caseData.getListing().getSummary().getJudge())) {
+            return EMPTY_PLACEHOLDER;
+        }
+
+        final UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
+        final Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
+            .map(ListValue::getValue)
+            .filter(j -> UUID.fromString(j.getUuid()).equals(selectedJudgeUuid))
+            .findFirst()
+            .map(Judge::getPersonalCode);
+
+        return judgeJudicialId.orElse(EMPTY_PLACEHOLDER);
+    }
+
     private List<UserProfileRefreshResponse> getUsers() {
-        String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
+        final String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         try {
             List<UserProfileRefreshResponse> list =
                 judicialClient.getUserProfiles(
@@ -82,7 +93,7 @@ public class JudicialService {
     }
 
     private List<ListValue<Judge>> populateJudgesList(List<UserProfileRefreshResponse> userProfiles) {
-        AtomicInteger listValueIndex = new AtomicInteger(0);
+        final AtomicInteger listValueIndex = new AtomicInteger(0);
         return userProfiles.stream()
             .map(userProfile -> ListValue.<Judge>builder()
                     .id(String.valueOf(listValueIndex.incrementAndGet()))
@@ -98,7 +109,7 @@ public class JudicialService {
     }
 
     private DynamicList populateUsersDynamicList(List<ListValue<Judge>> judges) {
-        List<DynamicListElement> usersDynamicList =
+        final List<DynamicListElement> usersDynamicList =
             judges.stream()
                 .map(ListValue::getValue)
                 .sorted(comparing(Judge::getJudgeFullName))
@@ -109,20 +120,5 @@ public class JudicialService {
             .builder()
             .listItems(usersDynamicList)
             .build();
-    }
-
-    public String populateJudicialId(CaseData caseData) {
-        if (isNull(caseData.getListing().getSummary().getJudge())) {
-            return EMPTY_PLACEHOLDER;
-        }
-
-        UUID selectedJudgeUuid = caseData.getListing().getSummary().getJudge().getValueCode();
-        Optional<String> judgeJudicialId = caseData.getListing().getSummary().getJudgeList().stream()
-            .map(ListValue::getValue)
-            .filter(j -> UUID.fromString(j.getUuid()).equals(selectedJudgeUuid))
-            .findFirst()
-            .map(Judge::getPersonalCode);
-
-        return judgeJudicialId.orElse(EMPTY_PLACEHOLDER);
     }
 }

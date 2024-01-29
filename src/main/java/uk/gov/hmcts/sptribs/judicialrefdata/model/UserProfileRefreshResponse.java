@@ -37,5 +37,4 @@ public class UserProfileRefreshResponse {
     private List<AppointmentRefreshResponse> appointments;
 
     private List<AuthorisationRefreshResponse> authorisations;
-
 }
