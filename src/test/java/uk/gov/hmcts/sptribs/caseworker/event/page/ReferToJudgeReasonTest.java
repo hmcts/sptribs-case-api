@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.INCOMPATIBLE_REFERRAL_REASON;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -47,7 +48,7 @@ public class ReferToJudgeReasonTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("The case state is incompatible with the selected referral reason");
+        assertThat(response.getErrors()).contains(INCOMPATIBLE_REFERRAL_REASON);
     }
 
     @Test
@@ -96,7 +97,7 @@ public class ReferToJudgeReasonTest {
 
         // Then
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors().get(0)).isEqualTo("The case state is incompatible with the selected referral reason");
+        assertThat(response.getErrors().get(0)).isEqualTo(INCOMPATIBLE_REFERRAL_REASON);
     }
 }
 

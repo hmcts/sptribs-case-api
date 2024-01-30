@@ -34,6 +34,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.STRIKE_OUT_RE
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.TIME_EXTENSION_REQUEST;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.WITHDRAWAL_REQUEST;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.WRITTEN_REASONS_REQUEST;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.INCOMPATIBLE_REFERRAL_REASON;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -84,7 +85,7 @@ public class ReferToLegalOfficerReason implements CcdPageConfiguration {
 
 
         if (!emptyIfNull(permittedStatesByReason.get(data.getReferToLegalOfficer().getReferralReason())).contains(caseState)) {
-            errors.add("The case state is incompatible with the selected referral reason");
+            errors.add(INCOMPATIBLE_REFERRAL_REASON);
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

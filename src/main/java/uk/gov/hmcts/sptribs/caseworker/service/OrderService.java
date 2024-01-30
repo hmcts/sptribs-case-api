@@ -2,9 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -42,7 +42,7 @@ public class OrderService {
         CaseData data = caseDetails.getData();
         List<ListValue<Order>> orderList = data.getCicCase().getOrderList();
         List<String> orders = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(orderList)) {
+        if (CollectionUtils.isNotEmpty(orderList)) {
             for (ListValue<Order> order : orderList) {
                 if (null != order.getValue().getDraftOrder()) {
                     String item = order.getId() + EventConstants.HYPHEN

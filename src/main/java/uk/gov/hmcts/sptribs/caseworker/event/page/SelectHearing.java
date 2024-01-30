@@ -38,6 +38,7 @@ public class SelectHearing implements CcdPageConfiguration {
 
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
+
         final String selectedHearing = data.getCicCase().getHearingList().getValue().getLabel();
         final String id = getId(selectedHearing);
         final List<ListValue<Listing>> hearingList = data.getHearingList();
@@ -48,7 +49,7 @@ public class SelectHearing implements CcdPageConfiguration {
                 break;
             }
         }
-        
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

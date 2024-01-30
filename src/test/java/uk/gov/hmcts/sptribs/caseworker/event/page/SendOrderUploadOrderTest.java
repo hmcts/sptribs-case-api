@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.document.DocumentUtil;
 
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -41,6 +42,7 @@ public class SendOrderUploadOrderTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = sendOrderUploadOrder.midEvent(caseDetails, caseDetails);
 
+        assertThat(response.getErrors()).hasSize(1);
         assertTrue(response.getErrors().contains(DOCUMENT_VALIDATION_MESSAGE));
     }
 

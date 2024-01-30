@@ -40,6 +40,11 @@ public class ReinstateUploadDocumentsTest {
         caseDetails.setData(caseData);
         final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
         assertThat(response.getData().getCicCase().getReinstateDocuments()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocuments()).hasSize(1);
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink().getFilename())
+            .isEqualTo("file.pdf");
         assertTrue(response.getErrors().isEmpty());
     }
 

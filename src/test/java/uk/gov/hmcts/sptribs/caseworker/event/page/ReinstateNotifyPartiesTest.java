@@ -25,7 +25,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 
 
 @ExtendWith(MockitoExtension.class)
-class ReinstateCaseNotifyPartiesTest {
+class ReinstateNotifyPartiesTest {
 
     @InjectMocks
     private ReinstateNotifyParties reinstateNotifyParties;

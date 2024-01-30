@@ -22,10 +22,16 @@ import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -61,6 +67,35 @@ class OrderServiceTest {
         final DynamicList regionList = orderService.getOrderDynamicList(details);
 
         assertThat(regionList).isNotNull();
+        assertThat(regionList.getListItems()).isNotNull();
+        assertThat(regionList.getListItems().get(0)).isNotNull();
+        assertThat(regionList.getListItems().get(0).getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
+    }
+
+    @Test
+    void getOrderDynamicListReturnNullForEmptyOrderList() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder().orderList(Collections.emptyList()).build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final DynamicList regionList = orderService.getOrderDynamicList(details);
+
+        assertThat(regionList).isNull();
+    }
+
+    @Test
+    void getOrderDynamicListReturnNullWhenOrderListIsNull() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder().build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final DynamicList regionList = orderService.getOrderDynamicList(details);
+
+        assertThat(regionList).isNull();
     }
 
     @Test
@@ -78,6 +113,7 @@ class OrderServiceTest {
         documentListValue.setValue(document);
         final Order orderCIC = Order.builder().uploadedFile(List.of(documentListValue)).build();
         order.setValue(orderCIC);
+        order.setId("12345");
         final CicCase cicCase = CicCase.builder().orderList(List.of(order)).build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
@@ -85,20 +121,33 @@ class OrderServiceTest {
         final DynamicList regionList = orderService.getOrderDynamicList(details);
 
         assertThat(regionList).isNotNull();
+        assertThat(regionList.getListItems()).isNotNull();
+        assertThat(regionList.getListItems().get(0)).isNotNull();
+        assertThat(regionList.getListItems().get(0).getLabel()).contains("12345");
+
     }
 
     @Test
     void shouldGenerateOrderFile() {
-        //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(12345L);
         final CaseData caseData = CaseData.builder().build();
-        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        final CicCase cicCase = CicCase.builder().fullName("Jane Smith").build();
+        caseData.setCicCase(cicCase);
+        final DraftOrderContentCIC orderContentCIC =
+            DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
         details.setData(caseData);
 
-        CaseData result = orderService.generateOrderFile(caseData, details.getId(), "");
+        final Document expectedDocument = Document.builder().filename("testDraft.pdf").build();
+        when(caseDataDocumentService.renderDocument(anyMap(), anyLong(), anyString(), any(), anyString(), any()))
+            .thenReturn(expectedDocument);
+        final CaseData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
 
         assertThat(result).isNotNull();
+        assertThat(result.getCicCase()).isNotNull();
+        assertThat(result.getCicCase().getOrderTemplateIssued()).isNotNull();
+        assertThat(result.getCicCase().getOrderTemplateIssued()).isEqualTo(expectedDocument);
     }
 
 

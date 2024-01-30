@@ -8,6 +8,8 @@ public final class ErrorConstants {
         = "Subject should not be selected for notification if the case is Fatal or Minor";
     public static final String SELECT_AT_LEAST_ONE_ERROR_MESSAGE
         = "One recipient must be selected.";
+    public static final String INCOMPATIBLE_REFERRAL_REASON = "The case state is incompatible with the selected referral reason";
+
 
     private ErrorConstants() {
 
