@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,9 +42,6 @@ class JudicialServiceTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private HttpServletRequest httpServletRequest;
-
-    @Mock
     private JudicialClient judicialClient;
 
     @Mock
@@ -68,7 +64,7 @@ class JudicialServiceTest {
         final CaseData caseData = CaseData.builder().build();
 
         //When
-        User user = TestDataHelper.getUser();
+        final User user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
@@ -76,7 +72,7 @@ class JudicialServiceTest {
             TEST_AUTHORIZATION_TOKEN,
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC"))).thenReturn(responseEntity);
-        DynamicList userList = judicialService.getAllUsers(caseData);
+        final DynamicList userList = judicialService.getAllUsers(caseData);
 
         //Then
         assertThat(userList).isNotNull();
@@ -94,7 +90,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenListFromJudicialRefDataCallIsNull() {
         //When
-        User user = TestDataHelper.getUser();
+        final User user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
@@ -102,7 +98,7 @@ class JudicialServiceTest {
             TEST_AUTHORIZATION_TOKEN,
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC"))).thenReturn(null);
-        DynamicList regionList = judicialService.getAllUsers(caseData());
+        final DynamicList regionList = judicialService.getAllUsers(caseData());
 
         //Then
         assertThat(regionList.getListItems()).isEmpty();
@@ -111,7 +107,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenExceptionFromJudicialRefDataCall() {
         //When
-        User user = TestDataHelper.getUser();
+        final User user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
@@ -123,7 +119,7 @@ class JudicialServiceTest {
                 new JudicialUsersRequest("ST_CIC")
             );
 
-        DynamicList regionList = judicialService.getAllUsers(caseData());
+        final DynamicList regionList = judicialService.getAllUsers(caseData());
 
         //Then
         assertThat(regionList.getListItems()).isEmpty();
@@ -137,8 +133,8 @@ class JudicialServiceTest {
 
     @Test
     void shouldPopulateJudicialIdBasedOnDynamicListValue() {
-        UUID selectedJudgeUuid = UUID.randomUUID();
-        CaseData caseData = CaseData.builder()
+        final UUID selectedJudgeUuid = UUID.randomUUID();
+        final CaseData caseData = CaseData.builder()
             .listing(
                 Listing.builder()
                     .summary(
@@ -180,14 +176,14 @@ class JudicialServiceTest {
             )
             .build();
 
-        String result = judicialService.populateJudicialId(caseData);
+        final String result = judicialService.populateJudicialId(caseData);
 
         assertThat(result).isEqualTo("mr judges personal code");
     }
 
     @Test
     void shouldPopulateJudicialIdAsEmptyStringWhenJudgeListDoesNotContainMatch() {
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .listing(
                 Listing.builder()
                     .summary(
@@ -219,14 +215,14 @@ class JudicialServiceTest {
             )
             .build();
 
-        String result = judicialService.populateJudicialId(caseData);
+        final String result = judicialService.populateJudicialId(caseData);
 
         assertThat(result).isEqualTo("");
     }
 
     @Test
     void shouldPopulateJudicialIdAsEmptyStringWhenJudgeListIsEmpty() {
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .listing(
                 Listing.builder()
                     .summary(
@@ -248,15 +244,15 @@ class JudicialServiceTest {
             )
             .build();
 
-        String result = judicialService.populateJudicialId(caseData);
+        final String result = judicialService.populateJudicialId(caseData);
 
         assertThat(result).isEqualTo("");
     }
 
     @Test
     void shouldPopulateJudicialIdAsEmptyStringWhenJudgeIsNull() {
-        UUID selectedJudgeUuid = UUID.randomUUID();
-        CaseData caseData = CaseData.builder()
+        final UUID selectedJudgeUuid = UUID.randomUUID();
+        final CaseData caseData = CaseData.builder()
             .listing(
                 Listing.builder()
                     .summary(
@@ -288,7 +284,7 @@ class JudicialServiceTest {
             )
             .build();
 
-        String result = judicialService.populateJudicialId(caseData);
+        final String result = judicialService.populateJudicialId(caseData);
 
         assertThat(result).isEqualTo("");
     }

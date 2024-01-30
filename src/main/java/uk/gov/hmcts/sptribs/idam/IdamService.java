@@ -12,14 +12,22 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREF
 
 @Service
 public class IdamService {
-    @Value("${idam.systemupdate.username}")
-    private String systemUpdateUserName;
 
-    @Value("${idam.systemupdate.password}")
-    private String systemUpdatePassword;
+    private final String systemUpdateUserName;
+
+    private final String systemUpdatePassword;
+
+    private final IdamClient idamClient;
 
     @Autowired
-    private IdamClient idamClient;
+    public IdamService(
+        @Value("${idam.systemupdate.username}") String systemUpdateUserName,
+        @Value("${idam.systemupdate.password}") String systemUpdatePassword,
+        IdamClient idamClient) {
+        this.systemUpdateUserName = systemUpdateUserName;
+        this.systemUpdatePassword = systemUpdatePassword;
+        this.idamClient = idamClient;
+    }
 
     public User retrieveUser(String authorisation) {
         final String bearerToken = getBearerToken(authorisation);
