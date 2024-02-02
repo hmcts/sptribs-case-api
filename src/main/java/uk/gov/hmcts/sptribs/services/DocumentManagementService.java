@@ -23,7 +23,7 @@ public class DocumentManagementService {
 
     public DocumentResponse uploadDocument(String authorization, String caseTypeOfApplication, MultipartFile file) {
         try {
-            DocumentInfo document = caseDocumentApiService.uploadDocument(authorization, file, AppsUtil
+            final DocumentInfo document = caseDocumentApiService.uploadDocument(authorization, file, AppsUtil
                 .getExactAppsDetails(appsConfig, caseTypeOfApplication));
             log.info("Stored Doc Detail: " + document.toString());
             return DocumentResponse.builder().status("Success").document(document).build();
