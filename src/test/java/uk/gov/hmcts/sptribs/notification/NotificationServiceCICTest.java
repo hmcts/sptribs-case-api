@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +21,6 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -255,9 +254,8 @@ public class NotificationServiceCICTest {
             any());
     }
 
-    @Ignore
-    void shouldThrowNotificationExceptionWhileFileUploadToSendEmail()
-        throws IOException, NotificationClientException {
+    @Test
+    void shouldThrowNotificationExceptionWhileFileUploadToSendEmail() throws NotificationClientException {
 
         //Given
         final String templateId = UUID.randomUUID().toString();
@@ -268,13 +266,6 @@ public class NotificationServiceCICTest {
         uploadedDocuments.put("FinalDecisionNotice", templateId);
         uploadedDocuments.put("FinalDecisionNotice1", "");
         uploadedDocuments.put("DocumentAvailable1", "no");
-
-        when(notificationClient.sendEmail(
-            any(),
-            any(),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
 
         final NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
@@ -288,24 +279,19 @@ public class NotificationServiceCICTest {
         final User user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
 
         final byte[] newUploadDocument = caseDocumentClient.getDocumentBinary(anyString(),anyString(),any()).getBody();
-
         assertNotNull(newUploadDocument);
+        mockStatic(NotificationClient.class);
         when(NotificationClient.prepareUpload(newUploadDocument)).thenThrow(NotificationClientException.class);
-
-        doThrow(new IOException("some message"))
-            .when(resource).getInputStream();
 
         //When&Then
         assertThatThrownBy(() -> notificationService.sendEmail(request))
             .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("some message");
-
+            .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
     }
 
     @Test
