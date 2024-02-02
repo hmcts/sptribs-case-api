@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.services.cdam;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +14,8 @@ import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -35,22 +36,23 @@ public class DssCaseDocumentClientTest {
     @Test
     public void shouldUploadDocuments() {
         // Given
-        UploadResponse response = new UploadResponse();
+        final UploadResponse response = new UploadResponse();
         when(caseDocumentClientApi.uploadDocuments(eq("authorisation"), eq("serviceAuthorisation"),
             any(DocumentUploadRequest.class))).thenReturn(response);
 
         // When
-        UploadResponse uploadResponse = caseDocumentClient.uploadDocuments("authorisation", "serviceAuthorisation",
+        final UploadResponse uploadResponse = caseDocumentClient.uploadDocuments("authorisation", "serviceAuthorisation",
             "CriminalInjuriesCompensation", "ST_CIC", new ArrayList<>());
 
         // Then
-        Assertions.assertSame(response, uploadResponse);
+        assertEquals(response, uploadResponse);
+        assertEquals(response.getDocuments(), uploadResponse.getDocuments());
     }
 
     @Test
     public void shouldDeleteDocument() {
         // Given
-        UUID docUUID = UUID.randomUUID();
+        final UUID docUUID = UUID.randomUUID();
 
         // When
         caseDocumentClient.deleteDocument("authorisation", "serviceAuthorisation", docUUID, true);
