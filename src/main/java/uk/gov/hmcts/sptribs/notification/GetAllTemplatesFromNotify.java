@@ -27,11 +27,11 @@ public final class GetAllTemplatesFromNotify {
     }
 
     public static void main(String[] args) {
-        final NotificationClient client = getNotificationClient();
 
-        try  {
+        NotificationClient client = getNotificationClient();
 
-            final  TemplateList templates = client.getAllTemplates(notificationType);
+        try {
+            TemplateList templates = client.getAllTemplates(notificationType);
 
             log.info("Found " + templates.getTemplates().size() + " templates in total");
 
@@ -56,7 +56,7 @@ public final class GetAllTemplatesFromNotify {
 
         for (Template template: templates.getTemplates()) {
 
-            final Map<String, Object> personalisation = template.getPersonalisation().orElse(new HashMap<>());
+            Map<String, Object> personalisation = template.getPersonalisation().orElse(new HashMap<>());
 
             if (personalisation.containsKey(searchCriteria)) {
                 log.info("************************************************************");
@@ -79,7 +79,7 @@ public final class GetAllTemplatesFromNotify {
 
         for (Template template: templates.getTemplates()) {
 
-            final String body = template.getBody();
+            String body = template.getBody();
 
             if (body.contains(searchCriteria)) {
                 log.info("************************************************************");

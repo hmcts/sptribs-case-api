@@ -68,31 +68,31 @@ public class NotificationHelper {
     }
 
     public Map<String, Object> getSubjectCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getFullName());
         return templateVars;
     }
 
     public Map<String, Object> getRepresentativeCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
         return templateVars;
     }
 
     public Map<String, Object> getRespondentCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getRespondentName());
         return templateVars;
     }
 
     public Map<String, Object> getTribunalCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, TRIBUNAL_NAME_VALUE);
         return templateVars;
     }
 
     public Map<String, Object> getApplicantCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
         return templateVars;
     }
@@ -132,31 +132,31 @@ public class NotificationHelper {
     public void setRecordingTemplateVars(Map<String, Object> templateVars, Listing listing) {
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TYPE, listing.getHearingType());
 
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommonConstants.CIC_CASE_UK_DATE_FORMAT);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommonConstants.CIC_CASE_UK_DATE_FORMAT);
         templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, listing.getDate().format(dateTimeFormatter));
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, listing.getHearingTime());
 
         if (isVideoFormat(listing) || isTelephoneFormat(listing)) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
-        } else if (listing.getSelectedVenue() != null) {
+        } else if (null != listing.getSelectedVenue()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getSelectedVenue());
-        } else if (listing.getHearingVenueNameAndAddress() != null) {
+        } else if (null != listing.getHearingVenueNameAndAddress()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, listing.getHearingVenueNameAndAddress());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_VENUE, " ");
         }
 
-        if (listing.getAddlInstr() != null) {
+        if (null != listing.getAddlInstr()) {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, listing.getAddlInstr());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, " ");
         }
-        if (listing.getVideoCallLink() != null) {
+        if (null != listing.getVideoCallLink()) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
         }
-        if (listing.getConferenceCallNumber() != null) {
+        if (null != listing.getConferenceCallNumber()) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, listing.getConferenceCallNumber());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, " ");
@@ -182,14 +182,14 @@ public class NotificationHelper {
     }
 
     public Map<String, String> buildDocumentList(DynamicMultiSelectList documentList, int docAttachLimit) {
-        final Map<String, String> uploadedDocuments = new HashMap<>();
+        Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
         if (!ObjectUtils.isEmpty(documentList.getValue()) && documentList.getValue().size() > 0) {
-            final List<DynamicListElement> documents = documentList.getValue();
+            List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
-                final String[] labels = element.getLabel().split(MARKUP_SEPARATOR);
+                String[] labels = element.getLabel().split(MARKUP_SEPARATOR);
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(CASE_DOCUMENT + count,
                     StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
@@ -210,27 +210,26 @@ public class NotificationHelper {
     }
 
     private boolean isFaceToFaceFormat(Listing listing) {
-        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
+        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
     }
 
     private boolean isVideoFormat(Listing listing) {
-        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.VIDEO);
+        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.VIDEO);
     }
 
     private boolean isTelephoneFormat(Listing listing) {
-        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
     }
 
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
-        final String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
-        final String[] hearingDateTimeArr = (selectedHearingDateTime != null)
-            ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
-        final int arrayLength = hearingDateTimeArr != null ? hearingDateTimeArr.length : 0;
-        final int lastIndex = arrayLength > 0 ? hearingDateTimeArr.length - 1 : 0;
-        final String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+        String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
+        String[] hearingDateTimeArr = (selectedHearingDateTime != null) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
+        int arrayLength = hearingDateTimeArr != null ? hearingDateTimeArr.length : 0;
+        int lastIndex = arrayLength > 0 ? hearingDateTimeArr.length - 1 : 0;
+        String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
             ? hearingDateTimeArr[lastIndex].substring(0, hearingDateTimeArr[lastIndex].lastIndexOf(SPACE))
             : null;
-        final String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+        String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
             ? hearingDateTimeArr[lastIndex].substring(hearingDateTimeArr[lastIndex].lastIndexOf(SPACE) + 1)
             : null;
 

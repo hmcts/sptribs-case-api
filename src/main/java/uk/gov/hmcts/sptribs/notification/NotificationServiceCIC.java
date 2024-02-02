@@ -36,44 +36,30 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREF
 public class NotificationServiceCIC {
 
     @Autowired
-    private final NotificationClient notificationClient;
+    private NotificationClient notificationClient;
 
     @Autowired
-    private final EmailTemplatesConfigCIC emailTemplatesConfig;
+    private EmailTemplatesConfigCIC emailTemplatesConfig;
 
     @Autowired
-    private final IdamService idamService;
+    private IdamService idamService;
 
     @Autowired
-    private final HttpServletRequest request;
+    private HttpServletRequest request;
 
     @Autowired
-    private final AuthTokenGenerator authTokenGenerator;
+    private AuthTokenGenerator authTokenGenerator;
 
     @Autowired
-    private final DocumentClient caseDocumentClient;
-
-    public NotificationServiceCIC(
-        NotificationClient notificationClient,
-        EmailTemplatesConfigCIC emailTemplatesConfig,
-        IdamService idamService, HttpServletRequest request,
-        AuthTokenGenerator authTokenGenerator,
-        DocumentClient caseDocumentClient) {
-        this.notificationClient = notificationClient;
-        this.emailTemplatesConfig = emailTemplatesConfig;
-        this.idamService = idamService;
-        this.request = request;
-        this.authTokenGenerator = authTokenGenerator;
-        this.caseDocumentClient = caseDocumentClient;
-    }
+    private DocumentClient caseDocumentClient;
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
-        final SendEmailResponse sendEmailResponse;
-        final String destinationAddress = notificationRequest.getDestinationAddress();
-        final TemplateName template = notificationRequest.getTemplate();
-        final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
+        SendEmailResponse sendEmailResponse;
+        String destinationAddress = notificationRequest.getDestinationAddress();
+        TemplateName template = notificationRequest.getTemplate();
+        Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
-        final String referenceId = UUID.randomUUID().toString();
+        String referenceId = UUID.randomUUID().toString();
 
         try {
             if (notificationRequest.isHasFileAttachments()) {
@@ -116,13 +102,13 @@ public class NotificationServiceCIC {
     }
 
     public NotificationResponse sendLetter(NotificationRequest notificationRequest) {
-        final TemplateName template = notificationRequest.getTemplate();
-        final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
+        TemplateName template = notificationRequest.getTemplate();
+        Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
-        final String referenceId = UUID.randomUUID().toString();
+        String referenceId = UUID.randomUUID().toString();
 
         try {
-            final String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
+            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
 
             log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
 
@@ -153,13 +139,13 @@ public class NotificationServiceCIC {
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
             ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
-        final String serviceAuthorization = authTokenGenerator.generate();
-        final String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
+        String serviceAuthorization = authTokenGenerator.generate();
+        String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
             ? serviceAuthorization.substring(7) : serviceAuthorization;
 
         for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
-            final String docName = document.getKey();
-            final String item = document.getValue();
+            String docName = document.getKey();
+            String item = document.getValue();
 
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
@@ -192,11 +178,12 @@ public class NotificationServiceCIC {
             log.error("Unable to upload file to Notification - {}", e.getMessage());
             throw new NotificationException(e);
         }
+
         return jsonObject;
     }
 
     private NotificationResponse getNotificationResponse(final SendEmailResponse sendEmailResponse) {
-        final Optional<String> reference = sendEmailResponse.getReference();
+        Optional<String> reference = sendEmailResponse.getReference();
         String clientReference = null;
         if (reference.isPresent()) {
             clientReference = reference.get();
@@ -213,7 +200,7 @@ public class NotificationServiceCIC {
     }
 
     private NotificationResponse getLetterNotificationResponse(final SendLetterResponse sendLetterResponse) {
-        final Optional<String> reference = sendLetterResponse.getReference();
+        Optional<String> reference = sendLetterResponse.getReference();
         String clientReference = null;
         if (reference.isPresent()) {
             clientReference = reference.get();
