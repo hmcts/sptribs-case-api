@@ -23,6 +23,7 @@ import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +31,6 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -79,18 +79,18 @@ public class NotificationServiceCICTest {
     private SendLetterResponse sendLetterResponse;
 
     @Test
-    void shouldInvokeNotificationClientToSendEmail() throws NotificationClientException {
+    void shouldInvokeNotificationClientToSendEmail() throws NotificationClientException, IOException {
         //Given
-        final String templateId = UUID.randomUUID().toString();
+        String templateId = UUID.randomUUID().toString();
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
+        Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-        final Map<String, String> uploadedDocuments = new HashMap<>();
+        Map<String, String> uploadedDocuments = new HashMap<>();
         uploadedDocuments.put("FinalDecisionNotice", templateId);
         uploadedDocuments.put("FinalDecisionNotice1", "");
         uploadedDocuments.put("DocumentAvailable1", "no");
-
         final NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
@@ -99,16 +99,14 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
-
+        User user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final byte[] sample = new byte[1];
+        byte[] sample = new byte[1];
         when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
@@ -134,14 +132,15 @@ public class NotificationServiceCICTest {
     }
 
     @Test
-    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException {
+    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException, IOException {
         //Given
-        final String templateId = UUID.randomUUID().toString();
+        String templateId = UUID.randomUUID().toString();
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
+        Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-        final Map<String, String> uplodedDocuments = new HashMap<>();
+        Map<String, String> uplodedDocuments = new HashMap<>();
         uplodedDocuments.put("FinalDecisionNotice", templateId);
         final NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
@@ -151,8 +150,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uplodedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
-
+        User user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
@@ -186,8 +184,8 @@ public class NotificationServiceCICTest {
     @Test
     void shouldInvokeNotificationClientToSendLetter() throws NotificationClientException {
         //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+        String templateId = UUID.randomUUID().toString();
+        Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
         final NotificationRequest request = NotificationRequest.builder()
             .template(CASE_ISSUED_CITIZEN_POST)
             .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
@@ -221,12 +219,14 @@ public class NotificationServiceCICTest {
         throws NotificationClientException {
 
         //Given
-        final String templateId = UUID.randomUUID().toString();
+        String templateId = UUID.randomUUID().toString();
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
+        final UUID uuid = UUID.randomUUID();
+        Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-        final NotificationRequest request = NotificationRequest.builder()
+        NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
@@ -257,46 +257,30 @@ public class NotificationServiceCICTest {
 
     @Ignore
     void shouldThrowNotificationExceptionWhileFileUploadToSendEmail()
-        throws IOException, NotificationClientException {
+        throws IOException {
 
         //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, Object> templateVars = new HashMap<>();
+        String templateId = UUID.randomUUID().toString();
+        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
+        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
+        final UUID uuid = UUID.randomUUID();
+        Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-        final Map<String, String> uploadedDocuments = new HashMap<>();
-        uploadedDocuments.put("FinalDecisionNotice", templateId);
-        uploadedDocuments.put("FinalDecisionNotice1", "");
-        uploadedDocuments.put("DocumentAvailable1", "no");
-
-        when(notificationClient.sendEmail(
-            any(),
-            any(),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
-
-        final NotificationRequest request = NotificationRequest.builder()
+        NotificationRequest request = NotificationRequest.builder()
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
             .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .uploadedDocuments(Map.of("docName", uuid.toString()))
             .build();
 
-        final byte[] sample = new byte[1];
-        final User user = TestDataHelper.getUser();
-
+        User user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        byte[] sample = new byte[1];
         when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
-
-        final byte[] newUploadDocument = caseDocumentClient.getDocumentBinary(anyString(),anyString(),any()).getBody();
-
-        assertNotNull(newUploadDocument);
-        when(NotificationClient.prepareUpload(newUploadDocument)).thenThrow(NotificationClientException.class);
 
         doThrow(new IOException("some message"))
             .when(resource).getInputStream();
@@ -312,9 +296,9 @@ public class NotificationServiceCICTest {
     void shouldThrowNotificationExceptionWhenClientFailsToSendLetter()
         throws NotificationClientException {
         //Given
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
-        final NotificationRequest request = NotificationRequest.builder()
+        String templateId = UUID.randomUUID().toString();
+        Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+        NotificationRequest request = NotificationRequest.builder()
             .template(CASE_ISSUED_CITIZEN_POST)
             .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
             .build();
