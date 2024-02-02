@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
