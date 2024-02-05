@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Order;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.INCOMPATIBLE_REFERRAL_REASON;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ReferCaseToLegalOfficer;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
@@ -45,7 +46,7 @@ public class ReferCaseToLegalOfficerTests extends Base {
         page.selectOption("#referToLegalOfficerReferralReason", "Reinstatement request");
         clickButton(page, "Continue");
         assertThat(page.locator("#errors li"))
-            .hasText("The case state is incompatible with the selected referral reason", textOptionsWithTimeout(30000));
+            .hasText(INCOMPATIBLE_REFERRAL_REASON, textOptionsWithTimeout(30000));
     }
 
     private void startReferCaseToLegalOfficerJourney(Page page) {
