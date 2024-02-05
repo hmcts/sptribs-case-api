@@ -55,20 +55,18 @@ class CicCreateCaseEventTest {
 
     @Test
     void shouldChangeCaseStateWhenAboutToSubmit() {
-        // Given
-        CaseDetails<CaseData, State> details = new CaseDetails<>();
-        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        details.setId(TEST_CASE_ID);
-        CaseData data = caseData();
-        details.setData(data);
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = cicCreateCaseEvent.aboutToSubmit(
+        details.setId(TEST_CASE_ID);
+        final CaseData caseData = caseData();
+        details.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = cicCreateCaseEvent.aboutToSubmit(
             details,
             beforeDetails
-        );
+            );
 
-        // Then
         assertThat(response.getState()).isEqualTo(State.DSS_Draft);
     }
 }

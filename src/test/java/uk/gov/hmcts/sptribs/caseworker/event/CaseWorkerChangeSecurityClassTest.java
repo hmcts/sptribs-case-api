@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -46,14 +47,11 @@ class CaseWorkerChangeSecurityClassTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         caseworkerChangeSecurityClassification.setSecurityClassificationEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerChangeSecurityClassification.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CHANGE_SECURITY_CLASS);
@@ -61,66 +59,60 @@ class CaseWorkerChangeSecurityClassTest {
 
     @Test
     void shouldAdd2LinksToCase() {
-        //Given
-
-        CaseData caseData = caseData();
+        final CaseData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
-            caseworkerChangeSecurityClassification.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse submitted = caseworkerChangeSecurityClassification.submitted(updatedCaseDetails, beforeDetails);
 
-        //Then
-        assertThat(response1).isNotNull();
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerChangeSecurityClassification.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerChangeSecurityClassification.submitted(updatedCaseDetails, beforeDetails);
+
+        assertThat(response).isNotNull();
+        assertEquals(response.getSecurityClassification(), SecurityClass.PRIVATE.name());
         assertThat(submitted).isNotNull();
+        assertThat(submitted.getConfirmationHeader()).contains("Security classification changed");
     }
 
     @Test
     void shouldCheckRolesSuccessfully() {
-        //Given
-
-        CaseData caseData = caseData();
+        final CaseData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        User user = TestDataHelper.getUserWithSeniorJudge();
+        final User user = TestDataHelper.getUserWithSeniorJudge();
         when(request.getHeader(any())).thenReturn("listing");
         when(idamService.retrieveUser(any())).thenReturn(user);
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
 
-        //Then
-        assertThat(response1.getErrors()).hasSize(0);
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
     void shouldFailIfInsufficientRolesForSecurityClass() {
-        //Given
-
-        CaseData caseData = caseData();
+        final CaseData caseData = caseData();
         caseData.setSecurityClass(SecurityClass.PRIVATE);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        User user = TestDataHelper.getUser();
+        final User user = TestDataHelper.getUser();
         when(request.getHeader(any())).thenReturn("listing");
         when(idamService.retrieveUser(any())).thenReturn(user);
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response1 =
             caseworkerChangeSecurityClassification.midEvent(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response1.getErrors()).hasSize(1);
+        assertThat(response1.getErrors()).contains("You do not have permission to change the case to the selected Security Classification");
     }
 }

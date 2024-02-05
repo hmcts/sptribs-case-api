@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,20 +84,26 @@ class CicSubmitCaseEventTest {
     @Mock
     private IdamService idamService;
 
+    private AutoCloseable autoCloseableMocks;
+
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        autoCloseableMocks = MockitoAnnotations.openMocks(this);
 
         cicAppDetail = new AppsConfig.AppsDetails();
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setSubmitEvent("citizen-cic-submit-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
+    }
 
+    @AfterEach
+    public void tearDown() throws Exception {
+        autoCloseableMocks.close();
     }
 
     @Test
@@ -119,7 +126,7 @@ class CicSubmitCaseEventTest {
     @Test
     void shouldSubmitEventThroughAboutToSubmit() throws IOException {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
 
         final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
@@ -128,8 +135,8 @@ class CicSubmitCaseEventTest {
         beforeCaseDetails.setId(TEST_CASE_ID);
         beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
         caseDetails.setData(caseData);
         caseDetails.setState(State.Submitted);
         caseDetails.setId(TEST_CASE_ID);
@@ -139,32 +146,23 @@ class CicSubmitCaseEventTest {
         caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
         caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
 
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-
-        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
-
         cicSubmitCaseEvent.configure(configBuilder);
 
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
+        final AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
             caseDetails,
             beforeCaseDetails
         );
 
-        //Then
         Assertions.assertEquals(State.DSS_Submitted, aboutToSubmitResponse.getState());
     }
 
     @Test
     void shouldUpdateCaseDetails() {
-        //Given
-        EdgeCaseDocument dssDoc = new EdgeCaseDocument();
+        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
-        ListValue<EdgeCaseDocument> listValue = new ListValue<>();
+        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
         listValue.setValue(dssDoc);
-        DssCaseData dssCaseData = DssCaseData.builder()
+        final DssCaseData dssCaseData = DssCaseData.builder()
             .caseTypeOfApplication(CASE_DATA_CIC_ID)
             .otherInfoDocuments(List.of(listValue))
             .supportingDocuments(List.of(listValue))
@@ -176,8 +174,8 @@ class CicSubmitCaseEventTest {
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
 
-        CicCase cicCase = CicCase.builder().build();
-        CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -187,16 +185,15 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setData(caseData);
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        //Then
-        assertThat(response1).isNotNull();
-        assertThat(response1.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
-        assertThat(response1.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
-        assertThat(response1.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
             .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
     }
 }

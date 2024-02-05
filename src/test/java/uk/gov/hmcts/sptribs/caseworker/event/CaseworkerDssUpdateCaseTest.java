@@ -50,11 +50,10 @@ public class CaseworkerDssUpdateCaseTest {
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
 
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setDssUpdateEvent("caseworker-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-
     }
 
     @Test
