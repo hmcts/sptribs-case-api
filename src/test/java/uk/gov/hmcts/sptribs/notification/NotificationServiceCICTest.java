@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -21,6 +20,7 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +28,9 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -58,9 +60,6 @@ public class NotificationServiceCICTest {
 
     @Mock
     private DocumentClient caseDocumentClient;
-
-    @Mock
-    private Resource resource;
 
     @Mock
     private NotificationClient notificationClient;
@@ -246,6 +245,48 @@ public class NotificationServiceCICTest {
         assertThatThrownBy(() -> notificationService.sendEmail(request))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
+
+        verify(notificationClient).sendEmail(
+            eq(templateId),
+            eq(EMAIL_ADDRESS),
+            any(),
+            any());
+    }
+
+    @Test
+    void shouldThrowIOExceptionWhenClientFailsToSendEmail()
+        throws NotificationClientException {
+
+        //Given
+        final String templateId = UUID.randomUUID().toString();
+        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
+        final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+
+        final NotificationRequest request = NotificationRequest.builder()
+            .destinationAddress(EMAIL_ADDRESS)
+            .template(TemplateName.APPLICATION_RECEIVED)
+            .templateVars(templateVars)
+            .hasFileAttachments(false)
+            .uploadedDocuments(new HashMap<>())
+            .build();
+
+        doThrow(new NotificationClientException(new IOException()))
+            .when(notificationClient).sendEmail(
+                eq(templateId),
+                eq(EMAIL_ADDRESS),
+                any(),
+                any());
+
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
+
+        //When&Then
+        assertThatThrownBy(() -> notificationService.sendEmail(request))
+            .isInstanceOf(NotificationException.class)
+            .satisfies(e -> assertAll(
+                () -> assertTrue(e.getCause() instanceof NotificationClientException),
+                () -> assertTrue(e.getCause().getCause() instanceof IOException)
+            ));
 
         verify(notificationClient).sendEmail(
             eq(templateId),

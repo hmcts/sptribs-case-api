@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-public class NotificationExceptionTest {
+class NotificationExceptionTest {
 
     @Test
     void shouldthrowNotificationExceptionTest() {
