@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,12 +14,16 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
@@ -39,41 +43,64 @@ class SelectHearingTest {
     @InjectMocks
     private SelectHearing selectHearing;
 
-    @Test
-    void shouldReturnHearingSelected() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        List<ListValue<Listing>> listValueList = new ArrayList<>();
+    private Listing initialListing;
 
-        // A Final Listing
-        ListValue<Listing> finalListingListValue = new ListValue<>();
+    private CaseDetails<CaseData, State> caseDetails;
+    private ListValue<Listing> finalListingListValue;
+
+    @BeforeEach
+    void setUp() {
+        caseDetails = new CaseDetails<>();
+        finalListingListValue = new ListValue<>();
+        initialListing = new Listing();
+
+        initialListing.setHearingFormat(HearingFormat.TELEPHONE);
+        initialListing.setConferenceCallNumber("");
+        initialListing.setHearingType(HearingType.CASE_MANAGEMENT);
+        initialListing.setImportantInfoDetails("initial details");
+        initialListing.setDate(LocalDate.now());
+        initialListing.setHearingTime("9:30");
+        initialListing.setDate(LocalDate.of(2023, 3, 15));
+        initialListing.setHearingStatus(HearingState.Listed);
+
         finalListingListValue.setValue(getRecordListing());
         finalListingListValue.setId("Final 10:00");
+
+        List<ListValue<Listing>> listValueList = new ArrayList<>();
         listValueList.add(finalListingListValue);
 
-        // A Case Management listing
-        Listing caseManagementListing = getRecordListing();
-        caseManagementListing.setHearingType(HearingType.CASE_MANAGEMENT);
-        ListValue<Listing> caseManagementListingListValue = new ListValue<>();
-        caseManagementListingListValue.setValue(caseManagementListing);
-        caseManagementListingListValue.setId("Case Management 10:00");
-        listValueList.add(caseManagementListingListValue);
+        CaseData caseData = CaseData.builder().build();
+        caseData.setCicCase(cicCase);
+        caseData.setListing(initialListing);
+        caseData.setHearingList(listValueList);
+        caseDetails.setData(caseData);
+    }
 
+    @Test
+    void shouldReturnHearingSelected() {
         when(cicCaseHearingLabel.getLabel()).thenReturn("Final 10:00");
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
         when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
-        CaseData caseData = CaseData.builder().build();
-        caseData.setCicCase(cicCase);
-        caseData.setListing(caseManagementListing);
-        caseData.setHearingList(listValueList);
-        caseDetails.setData(caseData);
 
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
 
-        //Then
-        // Have replaced Case Management Listing with Final Listing
-        Assertions.assertEquals(response.getData().getListing(), finalListingListValue.getValue());
+        assertThat(response.getErrors()).isNotNull();
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().getListing()).isEqualTo(finalListingListValue.getValue());
+        assertThat(response.getData().getListing()).isNotEqualTo(initialListing);
     }
 
+    @Test
+    void shouldReturnWithNoErrorsWhenSelectedIdIsNull() {
+        when(cicCaseHearingLabel.getLabel()).thenReturn(null);
+        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
+        when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).isNotNull();
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().getListing()).isEqualTo(initialListing);
+        assertThat(response.getData().getListing()).isNotEqualTo(finalListingListValue.getValue());
+    }
 }
