@@ -311,6 +311,49 @@ class CaseApiServiceTest {
     }
 
     @Test
+    void shouldGetEventTokenForUpdateWithSubmitEvent() throws IOException {
+
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+
+        caseDataMap.put(TEST_CASE_REFERENCE, caseData);
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+            .id(TEST_CASE_ID)
+            .data(caseDataMap)
+            .jurisdiction(ST_CIC_JURISDICTION)
+            .build();
+
+        eventRes = StartEventResponse.builder()
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getSubmitEvent())
+            .caseDetails(caseDetail)
+            .token(TEST_AUTHORIZATION_TOKEN)
+            .build();
+
+        when(coreCaseDataApi.startEventForCitizen(
+            CASE_TEST_AUTHORIZATION,
+            authTokenGenerator.generate(),
+            TEST_USER,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            TEST_CASE_ID.toString(),
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getSubmitEvent()
+        )).thenReturn(eventRes);
+
+        final String result = caseApiService.getEventTokenForUpdate(
+            CASE_TEST_AUTHORIZATION,
+            TEST_USER,
+            cicAppDetails.getEventIds().getSubmitEvent(),
+            TEST_CASE_ID.toString(),
+            cicAppDetails
+        );
+
+        assertNotNull(result);
+        assertEquals(eventRes.getToken(),result);
+    }
+
+    @Test
     void shouldGetCaseDetails() throws Exception {
         final String caseDatajson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDatajson,CaseData.class);
