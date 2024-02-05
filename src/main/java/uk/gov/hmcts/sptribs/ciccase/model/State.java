@@ -55,7 +55,6 @@ public enum State {
     )
     AwaitingOutcome("AwaitingOutcome"),
 
-
     @CCD(
         label = "Case closed",
         hint = "### Case number: ${hyphenatedCaseRef}",

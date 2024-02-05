@@ -148,42 +148,6 @@ withPipeline(type, product, component) {
     ]
   }
 
-  afterSuccess('functionalTest:preview') {
-    if( "880" == "${CHANGE_ID}" ) {
-      try {
-        builder.gradle('e2eTestInPrev')
-      } finally {
-
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTestInPrev",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report"
-        ]
-      }
-     }
-  }
-
-  afterSuccess('functionalTest:demo') {
-    if( "1133" == "${CHANGE_ID}" ) {
-      try {
-        builder.gradle('e2eTestInDemo')
-      } finally {
-
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTestInDemo",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report in Demo"
-        ]
-      }
-     }
-  }
-
   afterAlways('functionalTest:aat') {
     publishHTML target: [
       allowMissing         : true,

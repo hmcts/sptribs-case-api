@@ -14,5 +14,4 @@ public class JudicialUsersRequest {
 
     @JsonProperty("ccdServiceName")
     private String ccdServiceName;
-
 }

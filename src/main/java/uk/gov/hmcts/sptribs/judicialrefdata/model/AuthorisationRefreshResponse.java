@@ -29,5 +29,4 @@ public class AuthorisationRefreshResponse {
     private String startDate;
 
     private String endDate;
-
 }
