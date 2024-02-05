@@ -177,6 +177,8 @@ class DocumentManagementServiceTest {
             .url(TEST_URL)
             .fileName(CASE_DATA_FILE_CIC).build();
 
+        final String docInfoId = documentInfo.getDocumentId();
+
         when(documentManagementService.deleteDocument(
             CASE_TEST_AUTHORIZATION,
             documentInfo.getDocumentId()
@@ -188,7 +190,7 @@ class DocumentManagementServiceTest {
 
         final DocumentUploadOrDeleteException documentUploadOrDeleteException =
             assertThrows(DocumentUploadOrDeleteException.class, () ->
-            documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId()));
+            documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, docInfoId));
 
         assertNotNull(documentUploadOrDeleteException.getCause());
         assertTrue(documentUploadOrDeleteException.getCause() instanceof RuntimeException);
