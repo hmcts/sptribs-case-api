@@ -271,7 +271,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(new HashMap<>())
             .build();
 
-        doThrow(new NotificationClientException(new IOException()))
+        doThrow(new NotificationException(new IOException()))
             .when(notificationClient).sendEmail(
                 eq(templateId),
                 eq(EMAIL_ADDRESS),
@@ -284,8 +284,7 @@ public class NotificationServiceCICTest {
         assertThatThrownBy(() -> notificationService.sendEmail(request))
             .isInstanceOf(NotificationException.class)
             .satisfies(e -> assertAll(
-                () -> assertTrue(e.getCause() instanceof NotificationClientException),
-                () -> assertTrue(e.getCause().getCause() instanceof IOException)
+                () -> assertTrue(e.getCause() instanceof IOException)
             ));
 
         verify(notificationClient).sendEmail(
