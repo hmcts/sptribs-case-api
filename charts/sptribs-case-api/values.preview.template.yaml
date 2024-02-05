@@ -12,8 +12,8 @@ java:
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
     POSTGRES_HOST: ${SERVICE_NAME}-postgresql
     POSTGRES_NAME: sptribs-case-api
-    POSTGRES_USERNAME: hmcts
-    POSTGRES_PASSWORD: hmcts
+    POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
+    POSTGRES_PASSWORD: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
 
   keyVaults:
@@ -35,6 +35,26 @@ java:
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
+        - name: sptribs-postgres-username-preview
+          alias: SPTRIBS_POSTGRES_USERNAME_PREVIEW
+        - name: sptribs-postgres-password-preview
+          alias: SPTRIBS_POSTGRES_PASSWORD_PREVIEW
+        - name: ccd-global-postgres-username-preview
+          alias: CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW
+        - name: ccd-global-postgres-password-preview
+          alias: CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW
+        - name: ccd-data-store-db-username-preview
+          alias: CCD_DATA_STORE_DB_USERNAME_PREVIEW
+        - name: ccd-data-store-db-password-preview
+          alias: CCD_DATA_STORE_DB_PASSWORD_PREVIEW
+        - name: ccd-user-profile-db-username-preview
+          alias: CCD_USER_PROFILE_DB_USERNAME_PREVIEW
+        - name: ccd-user-profile-db-password-preview
+          alias: CCD_USER_PROFILE_DB_PASSWORD_PREVIEW
+        - name: em-spring-datasource-username-preview
+          alias: EM_SPRING_DATASOURCE_USERNAME_PREVIEW
+        - name: em-spring-datasource-password-preview
+          alias: EM_SPRING_DATASOURCE_PASSWORD_PREVIEW
 
   postgresql:
     enabled: true
@@ -56,8 +76,8 @@ java:
             CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
             CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     auth:
-      username: hmcts
-      password: hmcts
+      username: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
+      password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
 
 ccd:
   ccd:
@@ -82,8 +102,8 @@ ccd:
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
-    postgresUsername: hmcts
-    postgresPassword: hmcts
+    postgresUsername: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
+    postgresPassword: ${CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW}
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
@@ -105,8 +125,8 @@ ccd:
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
         DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
-        DATA_STORE_DB_USERNAME: hmcts
-        DATA_STORE_DB_PASSWORD: hmcts
+        DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}
+        DATA_STORE_DB_PASSWORD: ${CCD_DATA_STORE_DB_PASSWORD_PREVIEW}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
         LOG_CALLBACK_DETAILS: "*"
@@ -182,8 +202,8 @@ ccd:
         - st_super@mailinator.com|ST_CIC|CIC|Submitted
       userProfileDatabaseHost: ${SERVICE_NAME}-ccd-postgres
       userProfileDatabasePort: 5432
-      userProfileDatabaseUser: hmcts
-      userProfileDatabasePassword: hmcts
+      userProfileDatabaseUser: ${CCD_USER_PROFILE_DB_USERNAME_PREVIEW}
+      userProfileDatabasePassword: ${CCD_USER_PROFILE_DB_PASSWORD_PREVIEW}
       userProfileDatabaseName: user-profile
 
 
@@ -508,8 +528,8 @@ em-stitching:
       SPRING_DATASOURCE_NAME: emstitch
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       SPRING_DATASOURCE_PORT: 5432
-      SPRING_DATASOURCE_USERNAME: hmcts
-      SPRING_DATASOURCE_PASSWORD: hmcts
+      SPRING_DATASOURCE_USERNAME: ${EM_SPRING_DATASOURCE_USERNAME_PREVIEW}
+      SPRING_DATASOURCE_PASSWORD: ${EM_SPRING_DATASOURCE_PASSWORD_PREVIEW}
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
