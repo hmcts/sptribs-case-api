@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
@@ -117,8 +118,27 @@ class CaseworkerRecordListingTest {
         final SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getListing().getHearingType().getLabel()).isEqualTo("Final");
-        assertThat(response.getData().getListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
+        Listing responseListing = response.getData().getListing();
+        assertThat(responseListing.getHearingType().getLabel()).isEqualTo("Final");
+        assertThat(responseListing.getHearingFormat().getLabel()).isEqualTo("Face to face");
+        assertThat(responseListing.getPostponeReason()).isNull();
+        assertThat(responseListing.getPostponeAdditionalInformation()).isNull();
+        assertThat(responseListing.getRecordListingChangeReason()).isNull();
+        assertThat(responseListing.getHearingCancellationReason()).isNull();
+        assertThat(responseListing.getCancelHearingAdditionalDetail()).isNull();
+
+        HearingSummary summary = responseListing.getSummary();
+        assertThat(summary.getJudge()).isNull();
+        assertThat(summary.getIsFullPanel()).isNull();
+        assertThat(summary.getMemberList()).isNull();
+        assertThat(summary.getOutcome()).isNull();
+        assertThat(summary.getAdjournmentReasons()).isNull();
+        assertThat(summary.getOthers()).isNull();
+        assertThat(summary.getOtherDetailsOfAdjournment()).isNull();
+        assertThat(summary.getRecFile()).isNull();
+        assertThat(summary.getRecDesc()).isNull();
+        assertThat(summary.getRoles()).isNull();
+        assertThat(summary.getSubjectName()).isNull();
         assertThat(stayedResponse).isNotNull();
     }
 
