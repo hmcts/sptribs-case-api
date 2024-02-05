@@ -14,6 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -51,12 +53,14 @@ class CaseWorkerCaseBuiltTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCaseBuilt.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerCaseBuilt.submitted(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse stayedResponse = caseworkerCaseBuilt.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response).isNotNull();
+        assertEquals(CaseManagement, response.getState());
         assertThat(stayedResponse).isNotNull();
+        assertThat(stayedResponse.getConfirmationHeader()).contains("# Case built successful");
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -38,15 +39,16 @@ public class ManageSelectOrders implements CcdPageConfiguration {
         final String id = getId(selectedOrder);
         final List<ListValue<Order>> orderList = data.getCicCase().getOrderList();
 
-        for (ListValue<Order> orderListValue : orderList) {
-            if (null != id && id.equals(orderListValue.getId())) {
-                cicCase.setOrderDueDates(orderListValue.getValue().getDueDateList());
-                break;
+        if (CollectionUtils.isNotEmpty(orderList)) {
+            for (ListValue<Order> orderListValue : orderList) {
+                if (id != null && id.equals(orderListValue.getId())) {
+                    cicCase.setOrderDueDates(orderListValue.getValue().getDueDateList());
+                    break;
+                }
             }
         }
-
-        if (StringUtils.isBlank(selectedOrder)) {
-            errors.add("Please select and order to manage");
+        if (CollectionUtils.isEmpty(orderList) || StringUtils.isBlank(selectedOrder)) {
+            errors.add("Please select an order to manage");
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
