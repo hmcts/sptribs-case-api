@@ -228,7 +228,7 @@ public class BundlingService {
                 Map<String, Object> document = (Map<String, Object>) res.get(VALUE);
                 BundleDocument bundleDocument = BundleDocument.builder()
                     .name(null != document.get(NAME) ? document.get(NAME).toString() : "")
-                    .name(null != document.get(DESCRIPTION) ? document.get(DESCRIPTION).toString() : "")
+                    .description(null != document.get(DESCRIPTION) ? document.get(DESCRIPTION).toString() : "")
                     .sortIndex(null != document.get(SORT_INDEX) ? (Integer) document.get(SORT_INDEX) : null)
                     .build();
                 documents.add(bundleDocument);
