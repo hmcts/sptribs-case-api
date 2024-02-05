@@ -22,11 +22,16 @@ import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
-import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -46,69 +51,103 @@ class OrderServiceTest {
     @Mock
     private HttpServletRequest request;
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     @Test
     void shouldPopulateOrderDynamicList() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
-        ListValue<Order> order = new ListValue<>();
-        DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
-        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().draftOrderContentCIC(contentCIC).build();
-        Order orderCIC = Order.builder().draftOrder(draftOrderCIC).build();
+        final ListValue<Order> order = new ListValue<>();
+        final DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().draftOrderContentCIC(contentCIC).build();
+        final Order orderCIC = Order.builder().draftOrder(draftOrderCIC).build();
         order.setValue(orderCIC);
-        CicCase cicCase = CicCase.builder().orderList(List.of(order)).build();
+        final CicCase cicCase = CicCase.builder().orderList(List.of(order)).build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
-        //When
 
-        DynamicList regionList = orderService.getOrderDynamicList(details);
+        final DynamicList regionList = orderService.getOrderDynamicList(details);
 
-        //Then
         assertThat(regionList).isNotNull();
+        assertThat(regionList.getListItems()).isNotNull();
+        assertThat(regionList.getListItems().get(0)).isNotNull();
+        assertThat(regionList.getListItems().get(0).getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
+    }
+
+    @Test
+    void getOrderDynamicListReturnNullForEmptyOrderList() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder().orderList(Collections.emptyList()).build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final DynamicList regionList = orderService.getOrderDynamicList(details);
+
+        assertThat(regionList).isNull();
+    }
+
+    @Test
+    void getOrderDynamicListReturnNullWhenOrderListIsNull() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder().build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final DynamicList regionList = orderService.getOrderDynamicList(details);
+
+        assertThat(regionList).isNull();
     }
 
     @Test
     void shouldPopulateOrderDynamicListWithUploadFile() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
-        ListValue<Order> order = new ListValue<>();
+        final ListValue<Order> order = new ListValue<>();
 
         final UUID uuid = UUID.randomUUID();
         final CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
-        Order orderCIC = Order.builder().uploadedFile(List.of(documentListValue)).build();
+        final Order orderCIC = Order.builder().uploadedFile(List.of(documentListValue)).build();
         order.setValue(orderCIC);
-        CicCase cicCase = CicCase.builder().orderList(List.of(order)).build();
+        order.setId("12345");
+        final CicCase cicCase = CicCase.builder().orderList(List.of(order)).build();
         caseData.setCicCase(cicCase);
         details.setData(caseData);
-        //When
 
-        DynamicList regionList = orderService.getOrderDynamicList(details);
+        final DynamicList regionList = orderService.getOrderDynamicList(details);
 
-        //Then
         assertThat(regionList).isNotNull();
+        assertThat(regionList.getListItems()).isNotNull();
+        assertThat(regionList.getListItems().get(0)).isNotNull();
+        assertThat(regionList.getListItems().get(0).getLabel()).contains("12345");
+
     }
 
     @Test
     void shouldGenerateOrderFile() {
-        //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(12345L);
         final CaseData caseData = CaseData.builder().build();
-        DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        final CicCase cicCase = CicCase.builder().fullName("Jane Smith").build();
+        caseData.setCicCase(cicCase);
+        final DraftOrderContentCIC orderContentCIC =
+            DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
         details.setData(caseData);
 
-        //When
-        CaseData result = orderService.generateOrderFile(caseData, details.getId(), "");
+        final Document expectedDocument = Document.builder().filename("testDraft.pdf").build();
+        when(caseDataDocumentService.renderDocument(anyMap(), anyLong(), anyString(), any(), anyString(), any()))
+            .thenReturn(expectedDocument);
+        final CaseData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
 
-        //Then
         assertThat(result).isNotNull();
-
+        assertThat(result.getCicCase()).isNotNull();
+        assertThat(result.getCicCase().getOrderTemplateIssued()).isNotNull();
+        assertThat(result.getCicCase().getOrderTemplateIssued()).isEqualTo(expectedDocument);
     }
 
 

@@ -31,7 +31,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseworkerDssUpdateCase implements CCDConfig<CaseData, State, UserRole> {
+class CaseworkerDssUpdateCase implements CCDConfig<CaseData, State, UserRole> {
 
     @Value("${feature.dss-frontend.enabled}")
     private boolean dssUpdateCaseEnabled;

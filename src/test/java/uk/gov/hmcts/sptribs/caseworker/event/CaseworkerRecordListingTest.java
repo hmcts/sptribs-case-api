@@ -82,7 +82,7 @@ class CaseworkerRecordListingTest {
     @Test
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
-        Set<NotificationParties> parties = new HashSet<>();
+        final Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
@@ -98,7 +98,7 @@ class CaseworkerRecordListingTest {
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        Listing listing = getRecordListing();
+        final Listing listing = getRecordListing();
         caseData.setListing(listing);
 
         updatedCaseDetails.setData(caseData);
@@ -112,9 +112,9 @@ class CaseworkerRecordListingTest {
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData().getListing().getHearingType().getLabel()).isEqualTo("Final");
