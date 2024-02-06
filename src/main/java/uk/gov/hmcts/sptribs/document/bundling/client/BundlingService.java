@@ -191,18 +191,15 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
         return Bundle.builder()
             .stitchStatus(NEW)
-            .description(objectLinkedHashMap.get(DESCRIPTION) != null ? objectLinkedHashMap.get(DESCRIPTION).toString() : "")
-            .id(objectLinkedHashMap.get(ID) != null ? objectLinkedHashMap.get(ID).toString() : "")
-            .title(objectLinkedHashMap.get(TITLE) != null ? objectLinkedHashMap.get(TITLE).toString() : "")
+            .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
+            .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
+            .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
             .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
-            .paginationStyle(objectLinkedHashMap.get(PAGINATION_STYLE) != null
-                ? BundlePaginationStyle.valueOf(objectLinkedHashMap.get(PAGINATION_STYLE).toString()) : null)
-            .pageNumberFormat(objectLinkedHashMap.get(PAGE_NUMBER_FORMAT) != null
-                ? PageNumberFormat.valueOf(objectLinkedHashMap.get(PAGE_NUMBER_FORMAT).toString()) : null)
-            .stitchingFailureMessage(objectLinkedHashMap.get(STITCHING_FAILURE_MESSAGE) != null
-                ? objectLinkedHashMap.get(STITCHING_FAILURE_MESSAGE).toString() : "")
-            .stitchStatus(objectLinkedHashMap.get(STITCHING_STATUS) != null
-                ? objectLinkedHashMap.get(STITCHING_STATUS).toString() : "")
+            .paginationStyle(BundlePaginationStyle.valueOf
+                (MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
+            .pageNumberFormat(PageNumberFormat.valueOf(MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
+            .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+            .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
     }
 
@@ -214,12 +211,9 @@ public class BundlingService {
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
         return Document.builder()
-            .url(stitchedDocMap != null && stitchedDocMap.get(DOCUMENT_URL) != null
-                ? stitchedDocMap.get(DOCUMENT_URL).toString() : "")
-            .binaryUrl(stitchedDocMap != null && stitchedDocMap.get(DOCUMENT_BINARY_URL) != null
-                ? stitchedDocMap.get(DOCUMENT_BINARY_URL).toString() : "")
-            .filename(stitchedDocMap != null && stitchedDocMap.get(DOCUMENT_FILENAME) != null
-                ? stitchedDocMap.get(DOCUMENT_FILENAME).toString() : "")
+            .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
+            .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
+            .filename(MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
             .build();
     }
 
@@ -228,8 +222,8 @@ public class BundlingService {
         documentsList.forEach(listItem -> {
             Map<String, Object> document = (Map<String, Object>) listItem.get(VALUE);
             BundleDocument bundleDocument = BundleDocument.builder()
-                .name(document.get(NAME) != null ? document.get(NAME).toString() : "")
-                .description(document.get(DESCRIPTION) != null ? document.get(DESCRIPTION).toString() : "")
+                .name(MapUtils.getString(document, NAME, ""))
+                .description(MapUtils.getString(document, DESCRIPTION, ""))
                 .sortIndex(MapUtils.getIntValue(document, SORT_INDEX))
                 .build();
             documents.add(bundleDocument);

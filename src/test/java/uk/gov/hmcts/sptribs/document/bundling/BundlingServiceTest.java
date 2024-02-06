@@ -84,6 +84,14 @@ public class BundlingServiceTest {
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS;
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
 
+    public static Bundle DEFAULT_BUNDLE = Bundle.builder()
+        .id("")
+        .description("")
+        .title("")
+        .stitchingFailureMessage("")
+        .stitchStatus("")
+        .build();
+
     @InjectMocks
     private BundlingService bundlingService;
 
@@ -149,6 +157,35 @@ public class BundlingServiceTest {
         assertThat(result.get(0).getDocuments()).isEqualTo(expectedBundle.getDocuments());
         assertThat(result.get(0).getFolders()).isEqualTo(expectedBundle.getFolders());
         assertThat(result.get(0).getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
+    }
+
+    @Test
+    void shouldCreateBundleWithDefaultValues() {
+        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
+
+        final LinkedHashMap<String, Object> innerBundleMap = new LinkedHashMap<>();
+        final LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
+        bundleMap.put("value", innerBundleMap);
+        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
+        caseBundles.add(bundleMap);
+
+        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
+        caseBundlesMap.put("caseBundles", caseBundles);
+
+        final BundleResponse bundleResponse = new BundleResponse();
+        bundleResponse.setData(caseBundlesMap);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+
+        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
+
+        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
+        final BundleCallback bundleCallback = new BundleCallback(callback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+
+        assertThat(result).isNotNull();
+        assertThat(result.get(0)).isEqualTo(DEFAULT_BUNDLE);
     }
 
     @Test
