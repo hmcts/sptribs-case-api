@@ -21,7 +21,7 @@ public class SystemMigrateOldHearing implements CCDConfig<CaseData, State, UserR
 
     public static final String SYSTEM_MIGRATE_OLD_HEARING = "system-migrate-old-hearing";
 
-    private HearingService hearingService;
+    private final HearingService hearingService;
 
     @Autowired
     public SystemMigrateOldHearing(HearingService hearingService) {

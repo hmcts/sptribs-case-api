@@ -36,20 +36,17 @@ public class SystemMigrateCaseLinks implements CCDConfig<CaseData, State, UserRo
                 .description("Migrate case links for old cases")
                 .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
         }
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
         log.info("Migrating case links for case Id: {}", details.getId());
 
-        CaseData data = details.getData();
+        final CaseData data = details.getData();
         data.setCaseNameHmctsInternal(data.getCicCase().getFullName());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
             .build();
     }
-
-
 }
