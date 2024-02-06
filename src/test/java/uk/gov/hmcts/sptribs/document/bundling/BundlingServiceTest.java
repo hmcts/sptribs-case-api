@@ -43,9 +43,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DESCRIPTION;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENTS;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENT_BINARY_URL;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENT_FILENAME;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENT_URL;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.FOLDERS;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.ID;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.NAME;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGE_NUMBER_FORMAT;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGINATION_STYLE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.SORT_INDEX;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_FAILURE_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_STATUS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -59,7 +67,6 @@ public class BundlingServiceTest {
 
     public static final String BUNDLE_FILE_NAME = "st_cic_bundle_all_case.yaml";
     public static final String FOLDER_DOCUMENT_NAME = "folderDocument";
-    public static final String DESCRIPTION = "some description";
     public static final String FOLDER_NAME = "folderName";
     public static final String DOCUMENT_NAME = "documentName";
     public static final String DOCUMENT_NAME_1 = "documentName1";
@@ -379,7 +386,7 @@ public class BundlingServiceTest {
         return BundleDocument.builder()
             .name(name)
             .sortIndex(1)
-            .description(DESCRIPTION)
+            .description("some description")
             .build();
     }
 
@@ -400,9 +407,9 @@ public class BundlingServiceTest {
         final LinkedHashMap<String, Object> folderListMap = new LinkedHashMap<>();
         folderListMap.put("value", folder);
         folders.add(folderListMap);
-        bundleMap.put("folders", folders);
+        bundleMap.put(FOLDERS, folders);
 
-        bundleMap.put("documents", documents);
+        bundleMap.put(DOCUMENTS, documents);
 
         final LinkedHashMap<String, Object> bundleListMap = new LinkedHashMap<>();
         bundleListMap.put("value", bundleMap);
@@ -428,25 +435,25 @@ public class BundlingServiceTest {
 
     private static LinkedHashMap<String, Object> createStitchedDocMap() {
         final LinkedHashMap<String, Object> stitchedDocMap = new LinkedHashMap<>();
-        stitchedDocMap.put("document_url", "http://url/documents/id");
-        stitchedDocMap.put("document_filename", "test.pdf");
-        stitchedDocMap.put("document_binary_url", "http://url/documents/id");
+        stitchedDocMap.put(DOCUMENT_URL, "http://url/documents/id");
+        stitchedDocMap.put(DOCUMENT_FILENAME, "test.pdf");
+        stitchedDocMap.put(DOCUMENT_BINARY_URL, "http://url/documents/id");
         return stitchedDocMap;
     }
 
     private static LinkedHashMap<String, Object> createDocumentMap(String name) {
         final LinkedHashMap<String, Object> document = new LinkedHashMap<>();
-        document.put("name", name);
-        document.put("sortIndex", 1);
-        document.put("description", DESCRIPTION);
+        document.put(NAME, name);
+        document.put(SORT_INDEX, 1);
+        document.put(DESCRIPTION, "some description");
         return document;
     }
 
     private static LinkedHashMap<String, Object> createFolderMap(List<LinkedHashMap<String, Object>> folderDocumentsList) {
         final LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
-        folder.put("name", FOLDER_NAME);
-        folder.put("sortIndex", 1);
-        folder.put("documents", folderDocumentsList);
+        folder.put(NAME, FOLDER_NAME);
+        folder.put(SORT_INDEX, 1);
+        folder.put(DOCUMENTS, folderDocumentsList);
         return folder;
     }
 }
