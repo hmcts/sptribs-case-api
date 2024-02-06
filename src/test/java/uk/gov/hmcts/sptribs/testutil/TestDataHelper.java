@@ -419,6 +419,22 @@ public class TestDataHelper {
         return documentList;
     }
 
+    public static List<ListValue<CICDocument>> getCICDocumentListWithUrl(String fileName, String url) {
+        List<ListValue<CICDocument>> documentList = new ArrayList<>();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder()
+                .filename(fileName)
+                .binaryUrl(url)
+                .url(url)
+                .build())
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
+        return documentList;
+    }
+
     public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName) {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().filename(fileName).build())

@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -63,7 +64,7 @@ class CicUpdateCaseEventTest {
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
 
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
@@ -92,13 +93,12 @@ class CicUpdateCaseEventTest {
     }
 
     @Test
-    void shouldUpdateCaseDetails() {
-        //Given
-        EdgeCaseDocument dssDoc = new EdgeCaseDocument();
+    void aboutToSubmitShouldUpdateCaseDetails() {
+        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
-        ListValue<EdgeCaseDocument> listValue = new ListValue<>();
+        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
         listValue.setValue(dssDoc);
-        DssCaseData dssCaseData = DssCaseData.builder()
+        final DssCaseData dssCaseData = DssCaseData.builder()
             .caseTypeOfApplication(CASE_DATA_CIC_ID)
             .otherInfoDocuments(List.of(listValue))
             .supportingDocuments(List.of(listValue))
@@ -110,8 +110,8 @@ class CicUpdateCaseEventTest {
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
 
-        CicCase cicCase = CicCase.builder().build();
-        CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -120,11 +120,11 @@ class CicUpdateCaseEventTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
 
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response1 =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        //Then
-        assertThat(response1).isNotNull();
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isEqualTo(caseData);
+        assertNotEquals(response.getData(), beforeDetails.getData());
     }
 }

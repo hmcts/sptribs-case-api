@@ -44,7 +44,17 @@ def secrets = [
                 secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
                 secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
                 secret('idam-systemupdate-username', 'IDAM_SYSTEM_UPDATE_USERNAME'),
-                secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD')
+                secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
+                secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
+                secret('sptribs-postgres-password-preview', 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'),
+                secret('ccd-global-postgres-username-preview', 'CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW'),
+                secret('ccd-global-postgres-password-preview', 'CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW'),
+                secret('ccd-data-store-db-username-preview', 'CCD_DATA_STORE_DB_USERNAME_PREVIEW'),
+                secret('ccd-data-store-db-password-preview', 'CCD_DATA_STORE_DB_PASSWORD_PREVIEW'),
+                secret('ccd-user-profile-db-username-preview', 'CCD_USER_PROFILE_DB_USERNAME_PREVIEW'),
+                secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
+                secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
+                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW')
         ],
         'civil-${env}'    :[
           secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
@@ -52,7 +62,7 @@ def secrets = [
         ]
 ]
 
-def pipelineConf = new AppPipelineConfig()
+AppPipelineConfig pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
 
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
@@ -146,42 +156,6 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "Functional Tests Report"
     ]
-  }
-
-  afterSuccess('functionalTest:preview') {
-    if( "880" == "${CHANGE_ID}" ) {
-      try {
-        builder.gradle('e2eTestInPrev')
-      } finally {
-
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTestInPrev",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report"
-        ]
-      }
-     }
-  }
-
-  afterSuccess('functionalTest:demo') {
-    if( "1133" == "${CHANGE_ID}" ) {
-      try {
-        builder.gradle('e2eTestInDemo')
-      } finally {
-
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTestInDemo",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report in Demo"
-        ]
-      }
-     }
   }
 
   afterAlways('functionalTest:aat') {
