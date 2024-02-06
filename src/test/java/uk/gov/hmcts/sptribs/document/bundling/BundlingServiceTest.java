@@ -146,6 +146,9 @@ public class BundlingServiceTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0)).isNotNull();
         assertThat(result.get(0)).isEqualTo(expectedBundle);
+        assertThat(result.get(0).getDocuments()).isEqualTo(expectedBundle.getDocuments());
+        assertThat(result.get(0).getFolders()).isEqualTo(expectedBundle.getFolders());
+        assertThat(result.get(0).getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
     }
 
     @Test
