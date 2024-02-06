@@ -43,6 +43,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.ID;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGE_NUMBER_FORMAT;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.PAGINATION_STYLE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_FAILURE_MESSAGE;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_STATUS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
@@ -59,12 +64,18 @@ public class BundlingServiceTest {
     public static final String DOCUMENT_NAME = "documentName";
     public static final String DOCUMENT_NAME_1 = "documentName1";
     public static final String DOCUMENT_NAME_2 = "documentName2";
-    public static LinkedHashMap<String, Object> BUNDLE_LIST_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS;
-    public static LinkedHashMap<String, Object> BUNDLE_LIST_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT;
-    public static LinkedHashMap<String, Object> BUNDLE_LIST_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
-    public static LinkedHashMap<String, Object> BUNDLE_LIST_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS;
-    public static LinkedHashMap<String, Object> BUNDLE_LIST_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS;
-    public static LinkedHashMap<String, Object> BUNDLE_LIST_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
+    public static LinkedHashMap<String, Object> BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS;
+    public static LinkedHashMap<String, Object> BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT;
+    public static LinkedHashMap<String, Object> BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
+    public static LinkedHashMap<String, Object> BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS;
+    public static LinkedHashMap<String, Object> BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS;
+    public static LinkedHashMap<String, Object> BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
+    public static Bundle BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS;
+    public static Bundle BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT;
+    public static Bundle BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
+    public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS;
+    public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS;
+    public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
 
     @InjectMocks
     private BundlingService bundlingService;
@@ -97,40 +108,13 @@ public class BundlingServiceTest {
 
     @BeforeAll
     static void createTestValuesAndExpected() {
-        final LinkedHashMap<String, Object> folderDocument = createDocumentMap(FOLDER_DOCUMENT_NAME);
-        final List<LinkedHashMap<String, Object>> folderDocuments = new ArrayList<>();
-        final LinkedHashMap<String, Object> folderDocumentListMap = new LinkedHashMap<>();
-        folderDocumentListMap.put("value", folderDocument);
-        folderDocuments.add(folderDocumentListMap);
-
-        final LinkedHashMap<String, Object> document = createDocumentMap(DOCUMENT_NAME);
-        final List<LinkedHashMap<String, Object>> documents = new ArrayList<>();
-        final LinkedHashMap<String, Object> documentListMap = new LinkedHashMap<>();
-        documentListMap.put("value", document);
-        documents.add(documentListMap);
-
-        final LinkedHashMap<String, Object> document1 = createDocumentMap(DOCUMENT_NAME_1);
-        final LinkedHashMap<String, Object> documentListMap1 = new LinkedHashMap<>();
-        documentListMap1.put("value", document1);
-        final LinkedHashMap<String, Object> document2 = createDocumentMap(DOCUMENT_NAME_2);
-        final LinkedHashMap<String, Object> documentListMap2 = new LinkedHashMap<>();
-        documentListMap2.put("value", document2);
-        final List<LinkedHashMap<String, Object>> multiDocuments = new ArrayList<>();
-        multiDocuments.add(documentListMap);
-        multiDocuments.add(documentListMap1);
-        multiDocuments.add(documentListMap2);
-
-        BUNDLE_LIST_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundleList(null, null);
-        BUNDLE_LIST_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT = createBundleList(null, documents);
-        BUNDLE_LIST_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS = createBundleList(null, multiDocuments);
-        BUNDLE_LIST_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundleList(folderDocuments, null);
-        BUNDLE_LIST_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS = createBundleList(folderDocuments, documents);
-        BUNDLE_LIST_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS = createBundleList(folderDocuments, multiDocuments);
+        createBundleListMaps();
+        createBundleObjects();
     }
 
     @ParameterizedTest
-    @MethodSource("createBundleObject")
-    void shouldCreateBundleSingleFolderAndDocument(LinkedHashMap<String, Object> bundleListMap, Bundle expectedBundle) {
+    @MethodSource("createBundleTestValues")
+    void shouldCreateBundle(LinkedHashMap<String, Object> bundleListMap, Bundle expectedBundle) {
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
 
         final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
@@ -190,21 +174,12 @@ public class BundlingServiceTest {
         assertThat(result.getValue()).isEqualTo(BUNDLE_FILE_NAME);
     }
 
-    @Test
-    void shouldCreateBundleListValues() {
+    @ParameterizedTest
+    @MethodSource("createBundleListTestValues")
+    void shouldCreateBundleListValues(List<LinkedHashMap<String, Object>> bundleListMapList, List<Bundle> expectedBundles) {
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
 
-        final LinkedHashMap<String, Object> document = createDocumentMap(DOCUMENT_NAME);
-        final List<LinkedHashMap<String, Object>> documents = new ArrayList<>();
-        final LinkedHashMap<String, Object> documentListMap = new LinkedHashMap<>();
-        documentListMap.put("value", document);
-        documents.add(documentListMap);
-
-        final LinkedHashMap<String, Object> bundleListMap = createBundleList(null, documents);
-
-        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
-        caseBundles.add(bundleListMap);
-        //        caseBundles.add(bundleListMap);
+        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>(bundleListMapList);
 
         final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
         caseBundlesMap.put("caseBundles", caseBundles);
@@ -223,27 +198,10 @@ public class BundlingServiceTest {
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0).getId()).isEqualTo("1");
-        assertThat(result.get(0).getStitchedDocument()).isNotNull();
-        assertThat(result.get(0).getStitchedDocument().getFilename()).isEqualTo("test.pdf");
-        assertThat(result.get(0).getDocuments()).hasSize(1);
-        assertThat(result.get(0).getDocuments().get(0).getId()).isEqualTo("1");
-        assertThat(result.get(0).getDocuments().get(0).getValue()).isNotNull();
-        assertThat(result.get(0).getDocuments().get(0).getValue().getName()).isEqualTo("name");
-        assertThat(result.get(0).getFolders()).isNotNull();
-        assertThat(result.get(0).getFolders()).hasSize(1);
-        assertThat(result.get(0).getFolders().get(0)).isNotNull();
-        assertThat(result.get(0).getFolders().get(0).getId()).isEqualTo("1");
-        assertThat(result.get(0).getFolders().get(0).getValue()).isNotNull();
-        assertThat(result.get(0).getFolders().get(0).getValue().getName()).isEqualTo("name");
-        assertThat(result.get(0).getFolders().get(0).getValue().getDocuments()).isNull();
-        assertThat(result.get(0).getFolders().get(0).getValue().getFolders()).isNull();
+        assertThat(result).hasSize(expectedBundles.size());
+        assertThat(result).containsAll(expectedBundles);
 
-        assertThat(resultList).isNotNull();
-
-        //        assertThat()
+        assertThat(resultList.stream().map(ListValue::getValue).toList()).containsAll(expectedBundles);
     }
 
     @Test
@@ -283,7 +241,31 @@ public class BundlingServiceTest {
         assertThat(resultList).isNull();
     }
 
-    static Stream<Arguments> createBundleObject() {
+    static Stream<Arguments> createBundleTestValues() {
+        return Stream.of(
+            Arguments.arguments(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS),
+            Arguments.arguments(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT),
+            Arguments.arguments(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS, BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS),
+            Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS),
+            Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS),
+            Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS)
+        );
+    }
+
+    static Stream<Arguments> createBundleListTestValues() {
+        final List<LinkedHashMap<String, Object>> listOfNullFolderDocumentBundle = List.of(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        final List<LinkedHashMap<String, Object>> listOfFolderDocumentsBundle = List.of(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        final List<Bundle> nullFolderDocumentBundleList = List.of(BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        final List<Bundle> oneFolderDocumentBundleList = List.of(BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        return Stream.of(
+            Arguments.arguments(List.of(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS), List.of(BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS)),
+            Arguments.arguments(List.of(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS), List.of(BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS)),
+            Arguments.arguments(listOfNullFolderDocumentBundle, nullFolderDocumentBundleList),
+            Arguments.arguments(listOfFolderDocumentsBundle, oneFolderDocumentBundleList)
+        );
+    }
+
+    private static void createBundleObjects() {
         final BundleFolder bundleFolder = BundleFolder.builder()
             .name(FOLDER_NAME)
             .sortIndex(1)
@@ -292,15 +274,12 @@ public class BundlingServiceTest {
         bundleFolderListValueNoDocuments.setId("1");
         bundleFolderListValueNoDocuments.setValue(bundleFolder);
 
-        final Bundle bundle1 = createBundle(List.of(bundleFolderListValueNoDocuments), null);
-
         final BundleDocument bundleDocument = createBundleDocument(DOCUMENT_NAME);
 
         final ListValue<BundleDocument> bundleDocumentListValue = new ListValue<>();
         bundleDocumentListValue.setId("1");
         bundleDocumentListValue.setValue(bundleDocument);
 
-        final Bundle bundle2 = createBundle(List.of(bundleFolderListValueNoDocuments), List.of(bundleDocumentListValue));
 
         final ListValue<BundleDocument> bundleDocumentListValue6 = new ListValue<>();
         bundleDocumentListValue6.setId("6");
@@ -318,8 +297,6 @@ public class BundlingServiceTest {
         bundleDocumentListValue4.setId("4");
         bundleDocumentListValue4.setValue(bundleDocument4);
 
-        final Bundle bundle3 = createBundle(List.of(bundleFolderListValueNoDocuments),
-                                            List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
 
         final BundleDocument bundleFolderDocument = createBundleDocument(FOLDER_DOCUMENT_NAME);
 
@@ -336,19 +313,54 @@ public class BundlingServiceTest {
         bundleFolderListValueOneDocuments.setId("1");
         bundleFolderListValueOneDocuments.setValue(bundleFolderOneDoc);
 
-        final Bundle bundle4 = createBundle(List.of(bundleFolderListValueOneDocuments), null);
-        final Bundle bundle5 = createBundle(List.of(bundleFolderListValueOneDocuments), List.of(bundleDocumentListValue));
-        final Bundle bundle6 = createBundle(List.of(bundleFolderListValueOneDocuments),
-                                            List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
+        final Document stitchedDocument = Document.builder()
+            .url("http://url/documents/id")
+            .filename("test.pdf")
+            .binaryUrl("http://url/documents/id")
+            .build();
 
-        return Stream.of(
-            Arguments.arguments(BUNDLE_LIST_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS, bundle1),
-            Arguments.arguments(BUNDLE_LIST_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, bundle2),
-            Arguments.arguments(BUNDLE_LIST_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS, bundle3),
-            Arguments.arguments(BUNDLE_LIST_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, bundle4),
-            Arguments.arguments(BUNDLE_LIST_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, bundle5),
-            Arguments.arguments(BUNDLE_LIST_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS, bundle6)
-        );
+        BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundle(null, List.of(bundleFolderListValueNoDocuments), null);
+        BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT = createBundle(null, List.of(bundleFolderListValueNoDocuments), List.of(bundleDocumentListValue));
+        BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS = createBundle(null, List.of(bundleFolderListValueNoDocuments),
+            List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
+        BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments), null);
+        BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS = createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments), List.of(bundleDocumentListValue));
+        BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS= createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments),
+            List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
+    }
+
+    private static void createBundleListMaps() {
+        final LinkedHashMap<String, Object> folderDocument = createDocumentMap(FOLDER_DOCUMENT_NAME);
+        final List<LinkedHashMap<String, Object>> folderDocuments = new ArrayList<>();
+        final LinkedHashMap<String, Object> folderDocumentListMap = new LinkedHashMap<>();
+        folderDocumentListMap.put("value", folderDocument);
+        folderDocuments.add(folderDocumentListMap);
+
+        final LinkedHashMap<String, Object> document = createDocumentMap(DOCUMENT_NAME);
+        final List<LinkedHashMap<String, Object>> documents = new ArrayList<>();
+        final LinkedHashMap<String, Object> documentListMap = new LinkedHashMap<>();
+        documentListMap.put("value", document);
+        documents.add(documentListMap);
+
+        final LinkedHashMap<String, Object> document1 = createDocumentMap(DOCUMENT_NAME_1);
+        final LinkedHashMap<String, Object> documentListMap1 = new LinkedHashMap<>();
+        documentListMap1.put("value", document1);
+        final LinkedHashMap<String, Object> document2 = createDocumentMap(DOCUMENT_NAME_2);
+        final LinkedHashMap<String, Object> documentListMap2 = new LinkedHashMap<>();
+        documentListMap2.put("value", document2);
+        final List<LinkedHashMap<String, Object>> multiDocuments = new ArrayList<>();
+        multiDocuments.add(documentListMap);
+        multiDocuments.add(documentListMap1);
+        multiDocuments.add(documentListMap2);
+
+        final LinkedHashMap<String, Object> stitchedDocMap = createStitchedDocMap();
+
+        BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundleList(null,null, null);
+        BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT = createBundleList(null, null, documents);
+        BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS = createBundleList(null, null, multiDocuments);
+        BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundleList(stitchedDocMap, folderDocuments, null);
+        BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS = createBundleList(stitchedDocMap, folderDocuments, documents);
+        BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS = createBundleList(stitchedDocMap, folderDocuments, multiDocuments);
     }
 
     private static BundleDocument createBundleDocument(String name) {
@@ -359,17 +371,17 @@ public class BundlingServiceTest {
             .build();
     }
 
-    private static LinkedHashMap<String, Object> createBundleList(List<LinkedHashMap<String, Object>> folderDocuments,
+    private static LinkedHashMap<String, Object> createBundleList(LinkedHashMap<String, Object> stitchedDocuments,
+                                                                  List<LinkedHashMap<String, Object>> folderDocuments,
                                                                   List<LinkedHashMap<String, Object>> documents) {
         final LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
-        bundleMap.put("id", "1");
-        bundleMap.put("paginationStyle", BundlePaginationStyle.off);
-        bundleMap.put("pageNumberFormat", PageNumberFormat.numberOfPages);
-        bundleMap.put("stitchingFailureMessage", "1");
-        bundleMap.put("stitchingStatus", "1");
+        bundleMap.put(ID, "1");
+        bundleMap.put(PAGINATION_STYLE, BundlePaginationStyle.off);
+        bundleMap.put(PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages);
+        bundleMap.put(STITCHING_FAILURE_MESSAGE, "1");
+        bundleMap.put(STITCHING_STATUS, "1");
 
-        final LinkedHashMap<String, Object> stitchedDocMap = createStitchedDocMap();
-        bundleMap.put("stitchedDocument", stitchedDocMap);
+        bundleMap.put("stitchedDocument", stitchedDocuments);
 
         final LinkedHashMap<String, Object> folder = createFolderMap(folderDocuments);
         final List<LinkedHashMap<String, Object>> folders = new ArrayList<>();
@@ -385,16 +397,12 @@ public class BundlingServiceTest {
         return bundleListMap;
     }
 
-    private static Bundle createBundle(List<ListValue<BundleFolder>> bundleFolders, List<ListValue<BundleDocument>> bundleDocuments) {
+    private static Bundle createBundle(Document stitchedDocument, List<ListValue<BundleFolder>> bundleFolders, List<ListValue<BundleDocument>> bundleDocuments) {
         return Bundle.builder()
             .id("1")
             .title("")
             .description("")
-            .stitchedDocument(Document.builder()
-                .url("http://url/documents/id")
-                .filename("test.pdf")
-                .binaryUrl("http://url/documents/id")
-                .build())
+            .stitchedDocument(stitchedDocument)
             .folders(bundleFolders)
             .documents(bundleDocuments)
             .paginationStyle(BundlePaginationStyle.off)
