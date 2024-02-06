@@ -253,13 +253,19 @@ public class BundlingServiceTest {
     }
 
     static Stream<Arguments> createBundleListTestValues() {
-        final List<LinkedHashMap<String, Object>> listOfNullFolderDocumentBundle = List.of(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
-        final List<LinkedHashMap<String, Object>> listOfFolderDocumentsBundle = List.of(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
-        final List<Bundle> nullFolderDocumentBundleList = List.of(BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
-        final List<Bundle> oneFolderDocumentBundleList = List.of(BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        final List<LinkedHashMap<String, Object>> listOfNullFolderDocumentBundle = List.of(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS,
+            BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        final List<LinkedHashMap<String, Object>> listOfFolderDocumentsBundle = List.of(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS,
+            BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        final List<Bundle> nullFolderDocumentBundleList = List.of(BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS,
+            BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
+        final List<Bundle> oneFolderDocumentBundleList = List.of(BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS,
+            BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS);
         return Stream.of(
-            Arguments.arguments(List.of(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS), List.of(BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS)),
-            Arguments.arguments(List.of(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS), List.of(BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS)),
+            Arguments.arguments(List.of(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS),
+                List.of(BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS)),
+            Arguments.arguments(List.of(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS),
+                List.of(BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS)),
             Arguments.arguments(listOfNullFolderDocumentBundle, nullFolderDocumentBundleList),
             Arguments.arguments(listOfFolderDocumentsBundle, oneFolderDocumentBundleList)
         );
@@ -319,14 +325,20 @@ public class BundlingServiceTest {
             .binaryUrl("http://url/documents/id")
             .build();
 
-        BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundle(null, List.of(bundleFolderListValueNoDocuments), null);
-        BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT = createBundle(null, List.of(bundleFolderListValueNoDocuments), List.of(bundleDocumentListValue));
-        BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS = createBundle(null, List.of(bundleFolderListValueNoDocuments),
-            List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
-        BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS = createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments), null);
-        BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS = createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments), List.of(bundleDocumentListValue));
-        BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS= createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments),
-            List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
+        BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS =
+            createBundle(null, List.of(bundleFolderListValueNoDocuments), null);
+        BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT =
+            createBundle(null, List.of(bundleFolderListValueNoDocuments), List.of(bundleDocumentListValue));
+        BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS =
+            createBundle(null, List.of(bundleFolderListValueNoDocuments),
+                List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
+        BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS =
+            createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments), null);
+        BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS =
+            createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments), List.of(bundleDocumentListValue));
+        BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS =
+            createBundle(stitchedDocument, List.of(bundleFolderListValueOneDocuments),
+                List.of(bundleDocumentListValue4, bundleDocumentListValue5, bundleDocumentListValue6));
     }
 
     private static void createBundleListMaps() {
@@ -397,7 +409,9 @@ public class BundlingServiceTest {
         return bundleListMap;
     }
 
-    private static Bundle createBundle(Document stitchedDocument, List<ListValue<BundleFolder>> bundleFolders, List<ListValue<BundleDocument>> bundleDocuments) {
+    private static Bundle createBundle(Document stitchedDocument,
+                                       List<ListValue<BundleFolder>> bundleFolders,
+                                       List<ListValue<BundleDocument>> bundleDocuments) {
         return Bundle.builder()
             .id("1")
             .title("")
