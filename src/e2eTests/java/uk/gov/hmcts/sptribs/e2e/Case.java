@@ -487,7 +487,7 @@ public class Case {
 
         // Select to make flag inactive
         clickButton(page, "Make inactive");
-        page.locator("#flagComments").type("Test Manage case flag, making the flag inactive");
+        page.locator("#flagComment").type("Test Manage case flag, making the flag inactive");
         clickButton(page, "Next");
 
         // Review flag details screen
