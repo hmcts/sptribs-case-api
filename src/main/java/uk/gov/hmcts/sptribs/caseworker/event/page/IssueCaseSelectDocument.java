@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -34,12 +35,13 @@ public class IssueCaseSelectDocument implements CcdPageConfiguration {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
         DynamicMultiSelectList list = data.getCaseIssue().getDocumentList();
-        if (list.getValue().size() > MAX_DOCUMENT_COUNT) {
+        if (ObjectUtils.isEmpty(list)
+            || CollectionUtils.isEmpty(list.getValue())) {
+            errors.add("Select at least one document");
+        } else if (list.getValue().size() > MAX_DOCUMENT_COUNT) {
             errors.add("Select up to 5 documents");
         }
-        if (CollectionUtils.isEmpty(list.getValue())) {
-            errors.add("Select at least one document");
-        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

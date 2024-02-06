@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.NEW_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.INCOMPATIBLE_REFERRAL_REASON;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -25,34 +26,29 @@ public class ReferToJudgeReasonTest {
 
     @Test
     void shouldReturnNoErrorIfValidStateForReason() {
-        // Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseData.getReferToJudge().setReferralReason(ReferralReason.CORRECTIONS);
         caseDetails.setState(CaseClosed);
         caseDetails.setData(caseData);
 
-        // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
-        // Then
         assertThat(response.getErrors()).hasSize(0);
     }
 
     @Test
     void shouldReturnErrorIfInvalidStateForReason() {
-        // Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseData.getReferToJudge().setReferralReason(ReferralReason.CORRECTIONS);
         caseDetails.setState(CaseManagement);
         caseDetails.setData(caseData);
 
-        // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
-        // Then
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains(INCOMPATIBLE_REFERRAL_REASON);
     }
 
     @Test
@@ -65,7 +61,7 @@ public class ReferToJudgeReasonTest {
         caseDetails.setData(caseData);
 
         // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         // Then
         assertThat(response.getErrors()).hasSize(0);
@@ -81,7 +77,7 @@ public class ReferToJudgeReasonTest {
         caseDetails.setData(caseData);
 
         // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         // Then
         assertThat(response.getErrors()).hasSize(0);
@@ -97,11 +93,11 @@ public class ReferToJudgeReasonTest {
         caseDetails.setData(caseData);
 
         // When
-        AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = referToJudgeReason.midEvent(caseDetails, caseDetails);
 
         // Then
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors().get(0).equals("The case state is incompatible with the selected referral reason"));
+        assertThat(response.getErrors().get(0)).isEqualTo(INCOMPATIBLE_REFERRAL_REASON);
     }
 }
 
