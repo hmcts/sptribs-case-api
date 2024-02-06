@@ -17,10 +17,14 @@ import java.util.Map;
 @Slf4j
 public class SetFailedMigrationVersionToZero implements CaseTask {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public static final int HIGHEST_PRIORITY = 0;
+
+    @Autowired
+    public SetFailedMigrationVersionToZero(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
