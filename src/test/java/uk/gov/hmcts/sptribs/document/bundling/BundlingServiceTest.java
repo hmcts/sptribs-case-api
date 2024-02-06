@@ -205,9 +205,7 @@ public class BundlingServiceTest {
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
-        assertThat(result).hasSize(expectedBundles.size());
-        assertThat(result).containsAll(expectedBundles);
-
+        assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);
         assertThat(resultList.stream().map(ListValue::getValue).toList()).containsAll(expectedBundles);
     }
 
