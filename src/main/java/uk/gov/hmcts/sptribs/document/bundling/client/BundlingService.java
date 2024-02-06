@@ -195,9 +195,10 @@ public class BundlingService {
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
             .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
-            .paginationStyle(BundlePaginationStyle.valueOf
-                (MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
-            .pageNumberFormat(PageNumberFormat.valueOf(MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
+            .paginationStyle(BundlePaginationStyle.valueOf(
+                MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
+            .pageNumberFormat(PageNumberFormat.valueOf(
+                MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
             .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
             .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
