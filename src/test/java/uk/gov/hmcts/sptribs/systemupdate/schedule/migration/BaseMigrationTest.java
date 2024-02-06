@@ -23,7 +23,6 @@ import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -51,6 +50,9 @@ class BaseMigrationTest {
     @Mock
     private SetFailedMigrationVersionToZero setFailedMigrationVersionToZero;
 
+    @Mock
+    private FeignException feignException;
+
     @InjectMocks
     private BaseMigration baseMigration;
 
@@ -64,7 +66,7 @@ class BaseMigrationTest {
     @Test
     void shouldNotSubmitEventIfSearchFailsForBaseMigration() {
         when(ccdSearchService.searchForCasesWithVersionLessThan(getVersion(), user, SERVICE_AUTHORIZATION))
-            .thenThrow(new CcdSearchCaseException("Failed to search cases", mock(FeignException.class)));
+            .thenThrow(new CcdSearchCaseException("Failed to search cases", feignException));
 
         baseMigration.apply(user, SERVICE_AUTHORIZATION);
 
@@ -89,7 +91,7 @@ class BaseMigrationTest {
         when(ccdSearchService.searchForCasesWithVersionLessThan(getVersion(), user, SERVICE_AUTHORIZATION))
             .thenReturn(caseDetailsList);
 
-        doThrow(new CcdConflictException("Case is modified by another transaction", mock(FeignException.class)))
+        doThrow(new CcdConflictException("Case is modified by another transaction", feignException))
             .when(ccdUpdateService).submitEventWithRetry(
                 caseDetails1.getId().toString(),
                 SYSTEM_MIGRATE_CASE,
@@ -135,7 +137,7 @@ class BaseMigrationTest {
         when(ccdSearchService.searchForCasesWithVersionLessThan(getVersion(), user, SERVICE_AUTHORIZATION))
             .thenReturn(caseDetailsList);
 
-        doThrow(new IllegalArgumentException("Failed to deserialize"), mock(FeignException.class))
+        doThrow(new IllegalArgumentException("Failed to deserialize"), feignException)
             .doNothing()
             .when(ccdUpdateService).submitEventWithRetry(
                 caseDetails1.getId().toString(),
@@ -173,7 +175,7 @@ class BaseMigrationTest {
         when(ccdSearchService.searchForCasesWithVersionLessThan(getVersion(), user, SERVICE_AUTHORIZATION))
             .thenReturn(caseDetailsList);
 
-        doThrow(new CcdManagementException(GATEWAY_TIMEOUT.value(), "Failed processing of case", mock(FeignException.class)))
+        doThrow(new CcdManagementException(GATEWAY_TIMEOUT.value(), "Failed processing of case", feignException))
             .doNothing()
             .when(ccdUpdateService).submitEventWithRetry(
                 caseDetails1.getId().toString(),
@@ -212,7 +214,7 @@ class BaseMigrationTest {
         when(ccdSearchService.searchForCasesWithVersionLessThan(latestVersion, user, SERVICE_AUTHORIZATION))
             .thenReturn(caseDetailsList);
 
-        doThrow(new CcdManagementException(NOT_FOUND.value(), "Failed processing of case", mock(FeignException.class)))
+        doThrow(new CcdManagementException(NOT_FOUND.value(), "Failed processing of case", feignException))
             .doNothing()
             .when(ccdUpdateService).submitEventWithRetry(
                 caseDetails1.getId().toString(),
@@ -229,6 +231,7 @@ class BaseMigrationTest {
             migrateRetiredFields,
             user,
             SERVICE_AUTHORIZATION);
+
         verifyNoMoreInteractions(ccdUpdateService);
     }
 }
