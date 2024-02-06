@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.systemupdate.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -12,8 +13,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -27,6 +33,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 class SystemMigrateCaseFlagsTest {
     @InjectMocks
     private SystemMigrateCaseFlags systemMigrateCaseFlags;
+
+    @Mock
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Test
     void shouldAddConfigurationToConfigBuilderWithToggleOn() {
@@ -44,6 +53,7 @@ class SystemMigrateCaseFlagsTest {
     void shouldAddConfigurationToConfigBuilderWithToggleOff() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
+        systemMigrateCaseFlags.setMigrationFlagEnabled(false);
         systemMigrateCaseFlags.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
@@ -70,15 +80,45 @@ class SystemMigrateCaseFlagsTest {
         systemMigrateCaseFlags.setMigrationFlagEnabled(true);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData()).isNotNull();
-        assertThat(response.getData().getCaseFlags()).isNotNull();
-        assertThat(response.getData().getSubjectFlags()).isNotNull();
-        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
-        assertThat(response.getData().getApplicantFlags()).isNotNull();
+        assertNotNull(response.getData());
+        assertNotNull(response.getData().getCaseFlags());
+        assertNotNull(response.getData().getSubjectFlags());
+        assertNotNull(response.getData().getRepresentativeFlags());
+        assertNotNull(response.getData().getApplicantFlags());
     }
 
+    @Test
+    void shouldSuccessfullyUpdateCaseFlagsWithNullValues() {
+        //Given
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .fullName(null)
+            .applicantFullName(null)
+            .representativeFullName(null)
+            .build();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        systemMigrateCaseFlags.setMigrationFlagEnabled(true);
+
+        doNothing().when(ccdSupplementaryDataService).submitSupplementaryDataToCcd(anyString());
+
+        //When
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertNotNull(response.getData());
+        assertNull(response.getData().getSubjectFlags());
+        assertNull(response.getData().getRepresentativeFlags());
+        assertNull(response.getData().getApplicantFlags());
+    }
 }

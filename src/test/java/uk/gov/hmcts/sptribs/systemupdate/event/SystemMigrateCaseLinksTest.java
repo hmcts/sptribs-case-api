@@ -14,6 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseLinks.SYSTEM_MIGRATE_CASE_LINKS;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -73,8 +75,8 @@ class SystemMigrateCaseLinksTest {
             systemMigrateCaseLinks.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData()).isNotNull();
-        assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
+        assertNotNull(response.getData());
+        assertEquals(TEST_FIRST_NAME,response.getData().getCaseNameHmctsInternal());
     }
 
 }
