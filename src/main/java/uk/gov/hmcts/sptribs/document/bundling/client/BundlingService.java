@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document.bundling.client;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -173,7 +174,7 @@ public class BundlingService {
                 LinkedHashMap<String, Object> foldersObject = (LinkedHashMap<String, Object>) responseFolder.get(VALUE);
                 BundleFolder bundleFolder = BundleFolder.builder()
                         .name(foldersObject.get(NAME) != null ? foldersObject.get(NAME).toString() : "")
-                        .sortIndex(foldersObject.get(SORT_INDEX) != null ? (Integer) foldersObject.get(SORT_INDEX) : null)
+                        .sortIndex(MapUtils.getIntValue(foldersObject, SORT_INDEX))
                         .build();
 
                 if (foldersObject.get(DOCUMENTS) != null) {
@@ -229,7 +230,7 @@ public class BundlingService {
             BundleDocument bundleDocument = BundleDocument.builder()
                 .name(document.get(NAME) != null ? document.get(NAME).toString() : "")
                 .description(document.get(DESCRIPTION) != null ? document.get(DESCRIPTION).toString() : "")
-                .sortIndex(document.get(SORT_INDEX) != null ? (Integer) document.get(SORT_INDEX) : null)
+                .sortIndex(MapUtils.getIntValue(document, SORT_INDEX))
                 .build();
             documents.add(bundleDocument);
         });
