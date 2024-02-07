@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
@@ -82,7 +83,7 @@ class CaseworkerRecordListingTest {
     @Test
     void shouldSuccessfullyUpdateRecordListingData() {
         //Given
-        Set<NotificationParties> parties = new HashSet<>();
+        final Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
@@ -98,7 +99,7 @@ class CaseworkerRecordListingTest {
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        Listing listing = getRecordListing();
+        final Listing listing = getRecordListing();
         caseData.setListing(listing);
 
         updatedCaseDetails.setData(caseData);
@@ -112,13 +113,32 @@ class CaseworkerRecordListingTest {
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRecordListing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(response.getData().getListing().getHearingType().getLabel()).isEqualTo("Final");
-        assertThat(response.getData().getListing().getHearingFormat().getLabel()).isEqualTo("Face to face");
+        Listing responseListing = response.getData().getListing();
+        assertThat(responseListing.getHearingType().getLabel()).isEqualTo("Final");
+        assertThat(responseListing.getHearingFormat().getLabel()).isEqualTo("Face to face");
+        assertThat(responseListing.getPostponeReason()).isNull();
+        assertThat(responseListing.getPostponeAdditionalInformation()).isNull();
+        assertThat(responseListing.getRecordListingChangeReason()).isNull();
+        assertThat(responseListing.getHearingCancellationReason()).isNull();
+        assertThat(responseListing.getCancelHearingAdditionalDetail()).isNull();
+
+        HearingSummary summary = responseListing.getSummary();
+        assertThat(summary.getJudge()).isNull();
+        assertThat(summary.getIsFullPanel()).isNull();
+        assertThat(summary.getMemberList()).isNull();
+        assertThat(summary.getOutcome()).isNull();
+        assertThat(summary.getAdjournmentReasons()).isNull();
+        assertThat(summary.getOthers()).isNull();
+        assertThat(summary.getOtherDetailsOfAdjournment()).isNull();
+        assertThat(summary.getRecFile()).isNull();
+        assertThat(summary.getRecDesc()).isNull();
+        assertThat(summary.getRoles()).isNull();
+        assertThat(summary.getSubjectName()).isNull();
         assertThat(stayedResponse).isNotNull();
     }
 
