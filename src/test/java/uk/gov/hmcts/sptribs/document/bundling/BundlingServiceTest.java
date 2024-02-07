@@ -84,13 +84,7 @@ public class BundlingServiceTest {
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS;
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
 
-    public static Bundle DEFAULT_BUNDLE = Bundle.builder()
-        .id("")
-        .description("")
-        .title("")
-        .stitchingFailureMessage("")
-        .stitchStatus("")
-        .build();
+    public static Bundle DEFAULT_BUNDLE;
 
     @InjectMocks
     private BundlingService bundlingService;
@@ -163,7 +157,14 @@ public class BundlingServiceTest {
     void shouldCreateBundleWithDefaultValues() {
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
 
+        final List<LinkedHashMap<String, Object>> folders = new ArrayList<>();
+        final LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
+        final LinkedHashMap<String, Object> folderListMap = new LinkedHashMap<>();
+        folderListMap.put("value", folder);
+        folders.add(folderListMap);
+
         final LinkedHashMap<String, Object> innerBundleMap = new LinkedHashMap<>();
+        innerBundleMap.put(FOLDERS, folders);
         final LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
         bundleMap.put("value", innerBundleMap);
         final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
@@ -317,6 +318,11 @@ public class BundlingServiceTest {
     }
 
     private static void createBundleObjects() {
+        final BundleFolder defaultBundleFolder = BundleFolder.builder().name("").build();
+        final ListValue<BundleFolder> defaultBundleFolderListValue = new ListValue<>();
+        defaultBundleFolderListValue.setId("1");
+        defaultBundleFolderListValue.setValue(defaultBundleFolder);
+
         final BundleFolder bundleFolder = BundleFolder.builder()
             .name(FOLDER_NAME)
             .sortIndex(1)
@@ -324,6 +330,15 @@ public class BundlingServiceTest {
         final ListValue<BundleFolder> bundleFolderListValueNoDocuments = new ListValue<>();
         bundleFolderListValueNoDocuments.setId("1");
         bundleFolderListValueNoDocuments.setValue(bundleFolder);
+
+        DEFAULT_BUNDLE = Bundle.builder()
+            .id("")
+            .description("")
+            .title("")
+            .stitchingFailureMessage("")
+            .stitchStatus("")
+            .folders(List.of(defaultBundleFolderListValue))
+            .build();
 
         final BundleDocument bundleDocument = createBundleDocument(DOCUMENT_NAME);
 

@@ -62,7 +62,6 @@ public class BundlingService {
     @Autowired
     private BundlingClient bundlingClient;
 
-
     public List<Bundle> createBundle(Callback callback) {
         BundleResponse response = null;
         try {
@@ -173,7 +172,7 @@ public class BundlingService {
             for (LinkedHashMap<String, Object> responseFolder : responseFolders) {
                 LinkedHashMap<String, Object> foldersObject = (LinkedHashMap<String, Object>) responseFolder.get(VALUE);
                 BundleFolder bundleFolder = BundleFolder.builder()
-                        .name(foldersObject.get(NAME) != null ? foldersObject.get(NAME).toString() : "")
+                        .name(MapUtils.getString(foldersObject, NAME, ""))
                         .sortIndex(MapUtils.getIntValue(foldersObject, SORT_INDEX))
                         .build();
 
