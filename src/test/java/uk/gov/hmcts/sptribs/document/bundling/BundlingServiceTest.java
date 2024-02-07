@@ -83,8 +83,8 @@ public class BundlingServiceTest {
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS;
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS;
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
-
     public static Bundle DEFAULT_BUNDLE;
+    public static Bundle DEFAULT_BUNDLE_EMPTY_FOLDER;
 
     @InjectMocks
     private BundlingService bundlingService;
@@ -187,6 +187,36 @@ public class BundlingServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.get(0)).isEqualTo(DEFAULT_BUNDLE);
+    }
+
+    @Test
+    void shouldCreateBundleWithEmptyListOfFolders() {
+        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
+
+        final LinkedHashMap<String, Object> innerBundleMap = new LinkedHashMap<>();
+        innerBundleMap.put(FOLDERS, null);
+        final LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
+        bundleMap.put("value", innerBundleMap);
+        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
+        caseBundles.add(bundleMap);
+
+        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
+        caseBundlesMap.put("caseBundles", caseBundles);
+
+        final BundleResponse bundleResponse = new BundleResponse();
+        bundleResponse.setData(caseBundlesMap);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+
+        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
+
+        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
+        final BundleCallback bundleCallback = new BundleCallback(callback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+
+        assertThat(result).isNotNull();
+        assertThat(result.get(0)).isEqualTo(DEFAULT_BUNDLE_EMPTY_FOLDER);
     }
 
     @Test
@@ -338,6 +368,15 @@ public class BundlingServiceTest {
             .stitchingFailureMessage("")
             .stitchStatus("")
             .folders(List.of(defaultBundleFolderListValue))
+            .build();
+
+        DEFAULT_BUNDLE_EMPTY_FOLDER = Bundle.builder()
+            .id("")
+            .description("")
+            .title("")
+            .stitchingFailureMessage("")
+            .stitchStatus("")
+            .folders(null)
             .build();
 
         final BundleDocument bundleDocument = createBundleDocument(DOCUMENT_NAME);
