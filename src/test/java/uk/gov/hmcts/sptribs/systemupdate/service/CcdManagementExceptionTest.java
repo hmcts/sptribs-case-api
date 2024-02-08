@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-public class CcdManagementExceptionTest {
+class CcdManagementExceptionTest {
 
     @Test
     void shouldThrowCcdManagementException() {
