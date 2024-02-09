@@ -43,7 +43,7 @@ class SystemMigrateCaseLinksTest {
     }
 
     @Test
-    void shouldAddConfigurationToConfigBuilderWithToggleOff() {
+    void shoulNotdAddConfigurationToConfigBuilderWithToggleOff() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         systemMigrateCaseLinks.setCaseLinksMigrationEnabled(false);
