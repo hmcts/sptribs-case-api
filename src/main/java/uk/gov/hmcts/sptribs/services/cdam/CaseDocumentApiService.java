@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@SuppressWarnings("PMD")
 public class CaseDocumentApiService {
 
     @Autowired

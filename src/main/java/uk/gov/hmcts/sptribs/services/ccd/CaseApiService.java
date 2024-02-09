@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 
 @Service
 @Slf4j
-@SuppressWarnings("PMD")
 public class CaseApiService {
 
     @Autowired

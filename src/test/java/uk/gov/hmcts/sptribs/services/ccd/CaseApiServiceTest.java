@@ -48,7 +48,6 @@ import static uk.gov.hmcts.sptribs.util.AppsUtil.getExactAppsDetailsByCaseType;
 @SpringBootTest
 @TestPropertySource("classpath:application.yaml")
 @ActiveProfiles("test")
-@SuppressWarnings("PMD")
 class CaseApiServiceTest {
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private static final String TEST_CASE_REFERENCE = "123";
