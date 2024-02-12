@@ -1,10 +1,11 @@
 package uk.gov.hmcts.sptribs.document.model;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CICDocumentTest {
 
@@ -19,8 +20,6 @@ class CICDocumentTest {
         "test.mp3",
         "test.m4a",
         "test.mp4",
-        "test.msg",
-        "test.eml",
         "test.csv",
         "test.txt",
         "test.rtf",
@@ -35,45 +34,23 @@ class CICDocumentTest {
             .documentLink(Document.builder().filename(filename).build())
             .build();
 
-        Assertions.assertTrue(document.isDocumentValid());
-
-        document = CICDocument.builder()
-            .documentEmailContent("Dear sir/madam, here is a video.")
-            .documentLink(Document.builder().filename("test.mp4").build())
-            .build();
-
-        Assertions.assertTrue(document.isDocumentValid());
-
-        document = CICDocument.builder()
-            .documentEmailContent("Dear sir/madam, here is a message.")
-            .documentLink(Document.builder().filename("test.msg").build())
-            .build();
-
-        Assertions.assertTrue(document.isDocumentValid());
-
-        document = CICDocument.builder()
-            .documentEmailContent("Dear sir/madam, here is eml file.")
-            .documentLink(Document.builder().filename("test.eml").build())
-            .build();
-
-        Assertions.assertTrue(document.isDocumentValid());
-
-        document = CICDocument.builder()
-            .documentEmailContent("Dear sir/madam, here is doc file.")
-            .documentLink(Document.builder().filename("test.docx").build())
-            .build();
-
-        Assertions.assertTrue(document.isDocumentValid());
+        assertTrue(document.isDocumentValid());
     }
 
-    @Test
-    void shouldCheckDocxDocumentIsInvalid() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.xml",
+        "test.eml",
+        "test.msg",
+        "test.uml"
+    })
+    void shouldCheckDocxDocumentIsInvalid(String filename) {
         CICDocument document = CICDocument.builder()
             .documentEmailContent("Dear sir/madam, here is an email.")
-            .documentLink(Document.builder().filename("test.uml").build())
+            .documentLink(Document.builder().filename(filename).build())
             .build();
 
-        Assertions.assertFalse(document.isDocumentValid());
+        assertFalse(document.isDocumentValid());
     }
 
 }
