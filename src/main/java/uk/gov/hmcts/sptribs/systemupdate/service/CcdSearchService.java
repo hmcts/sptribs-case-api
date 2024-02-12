@@ -62,25 +62,6 @@ public class CcdSearchService {
         return allCaseDetails;
     }
 
-    public SearchResult searchForCasesWithQuery(final int from,
-                                                final int size,
-                                                final BoolQueryBuilder query,
-                                                final User user,
-                                                final String serviceAuth) {
-
-        final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(query)
-            .from(from)
-            .size(size);
-
-        return coreCaseDataApi.searchCases(
-            user.getAuthToken(),
-            serviceAuth,
-            CcdCaseType.CIC.getCaseTypeName(),
-            sourceBuilder.toString());
-    }
 
     public List<CaseDetails> searchForCasesWithVersionLessThan(int latestVersion, User user, String serviceAuth) {
 
@@ -126,5 +107,25 @@ public class CcdSearchService {
             CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
+    }
+
+    private SearchResult searchForCasesWithQuery(final int from,
+                                                 final int size,
+                                                 final BoolQueryBuilder query,
+                                                 final User user,
+                                                 final String serviceAuth) {
+
+        final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
+            .searchSource()
+            .sort(DUE_DATE, ASC)
+            .query(query)
+            .from(from)
+            .size(size);
+
+        return coreCaseDataApi.searchCases(
+            user.getAuthToken(),
+            serviceAuth,
+            CcdCaseType.CIC.getCaseTypeName(),
+            sourceBuilder.toString());
     }
 }
