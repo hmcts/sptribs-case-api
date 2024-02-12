@@ -63,7 +63,7 @@ public class CaseManagementService {
         } catch (Exception e) {
             //This has to be corrected
             log.error("Error while updating case. " + e);
-            throw new CaseCreateOrUpdateException("Failing while updating the case. " + e.getMessage(), e);
+            throw new CaseCreateOrUpdateException("Failing while updating the case " + e.getMessage(), e);
         }
     }
 
@@ -77,7 +77,7 @@ public class CaseManagementService {
                 .id(caseDetails.getId()).status(SUCCESS).build();
         } catch (Exception e) {
             log.error("Error while fetching Case Details. " + e);
-            throw new CaseCreateOrUpdateException("Failing while fetching the case details. " + e.getMessage(), e);
+            throw new CaseCreateOrUpdateException("Failing while fetching the case details " + e.getMessage(), e);
         }
     }
 }

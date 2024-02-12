@@ -62,7 +62,7 @@ public class DssCaseDocumentClientTest {
     }
 
     @Test
-    public void shouldUploadDocumentsWithClassification() throws IOException {
+    void shouldUploadDocumentsWithClassification() throws IOException {
 
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
@@ -78,6 +78,7 @@ public class DssCaseDocumentClientTest {
         multipartFileList.add(multipartFile);
 
         final UploadResponse response = new UploadResponse();
+
         when(caseDocumentClientApi.uploadDocuments(any(), any(),any(DocumentUploadRequest.class)))
             .thenReturn(response);
 
