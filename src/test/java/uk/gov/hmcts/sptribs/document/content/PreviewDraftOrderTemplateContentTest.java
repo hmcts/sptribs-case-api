@@ -18,8 +18,12 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_DATE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.ORDER_SIGNATURE;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.formatter;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMembers;
@@ -53,6 +57,49 @@ public class PreviewDraftOrderTemplateContentTest {
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
             .contains(entry(SUBJECT_FULL_NAME, "John Smith"))
             .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
+    }
+
+    @Test
+    public void shouldSuccessfullyApplyPreviewDraftOrderContentNoMembers() {
+        final CaseData caseData = buildCaseData();
+        final HearingSummary summary = HearingSummary.builder()
+            .build();
+        final Listing listing = Listing.builder()
+            .summary(summary)
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+        final Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(ORDER_SIGNATURE, null))
+            .contains(entry(TRIBUNAL_MEMBERS, ""));
+    }
+
+    @Test
+    void shouldSuccessfullyApplyPreviewDraftOrderContentWithEmptyDate() {
+        final CaseData caseData = buildCaseData();
+        final HearingSummary summary = HearingSummary.builder()
+            .build();
+        final Listing listing = Listing.builder()
+            .summary(summary)
+            .date(null)
+            .hearingTime("15:30")
+            .build();
+
+        //Using a spy as getLatestCompletedHearing cannot handle a null date
+        final CaseData caseDataMock = spy(caseData);
+        when(caseDataMock.getLatestCompletedHearing()).thenReturn(listing);
+
+        final Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseDataMock, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(HEARING_DATE, ""));
     }
 
     private CaseData buildCaseData() {
