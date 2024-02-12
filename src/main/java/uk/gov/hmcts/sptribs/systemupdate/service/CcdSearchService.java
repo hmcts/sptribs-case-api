@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 
@@ -70,7 +70,7 @@ public class CcdSearchService {
             .query(
                 boolQuery()
                     .must(boolQuery()
-                        .must(matchQuery("reference", 1695290772211061L)))
+                        .must(rangeQuery("data.dataVersion").lt(latestVersion)))
             )
             .from(0)
             .size(500);

@@ -90,13 +90,14 @@ class CcdSearchServiceTest {
         //Given
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
+        final int latestVersion = 1;
 
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
                 .searchSource()
                 .query(
                         boolQuery()
                                 .must(boolQuery()
-                                        .must(matchQuery("reference", 1695290772211061L)))
+                                        .must(rangeQuery("data.dataVersion").lt(latestVersion)))
                 )
                 .from(0)
                 .size(500);
@@ -109,7 +110,8 @@ class CcdSearchServiceTest {
             .thenReturn(expected1);
 
         //When
-        final List<CaseDetails> searchResult = ccdSearchService.searchForCasesWithVersionLessThan(1, user, SERVICE_AUTHORIZATION);
+        final List<CaseDetails> searchResult =
+            ccdSearchService.searchForCasesWithVersionLessThan(latestVersion, user, SERVICE_AUTHORIZATION);
 
         //Then
         assertThat(searchResult.size()).isEqualTo(100);
