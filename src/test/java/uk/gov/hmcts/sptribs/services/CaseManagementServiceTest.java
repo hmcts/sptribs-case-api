@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.services.ccd.CaseApiService;
+import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,9 @@ class CaseManagementServiceTest {
 
     @Mock
     private AppsConfig.AppsDetails cicAppDetail;
+
+    @Mock
+    private AppsUtil appsUtil;
 
     @Mock
     CaseApiService caseApiService;
@@ -117,6 +121,25 @@ class CaseManagementServiceTest {
         assertEquals(caseResponseData.getDssCaseData().getSubjectFullName(), caseData.getDssCaseData().getSubjectFullName());
         assertEquals(caseResponseData.getDssCaseData().getCaseTypeOfApplication(), caseData.getDssCaseData().getCaseTypeOfApplication());
         assertEquals(RESPONSE_STATUS_SUCCESS, createCaseResponse.getStatus());
+    }
+
+    @Test
+    void shouldCreateCaseCicFailsWhenCaseTypeIsInvalid() throws Exception {
+
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
+
+        when(appsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
+            .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
+
+        final CaseCreateOrUpdateException caseCreateOrUpdateException =
+            assertThrows(CaseCreateOrUpdateException.class, () ->
+            caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData));
+
+        assertNotNull(caseCreateOrUpdateException.getCause());
+        assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
+        assertTrue(caseCreateOrUpdateException.getMessage().contains("Invalid Case type application. Please check the request."));
     }
 
     @Test
@@ -241,6 +264,25 @@ class CaseManagementServiceTest {
         assertNotNull(caseCreateOrUpdateException.getCause());
         assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
         assertTrue(caseCreateOrUpdateException.getMessage().contains(CASE_UPDATE_FAILURE_MSG));
+    }
+
+    @Test
+    void shouldUpdateCaseCicFailsWhenCaseTypeIsInvalid() throws Exception {
+
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
+
+        when(appsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
+            .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
+
+        final CaseCreateOrUpdateException caseCreateOrUpdateException =
+            assertThrows(CaseCreateOrUpdateException.class, () ->
+                caseManagementService.updateCase(CASE_TEST_AUTHORIZATION,Event.UPDATE, caseData,TEST_CASE_ID));
+
+        assertNotNull(caseCreateOrUpdateException.getCause());
+        assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
+        assertTrue(caseCreateOrUpdateException.getMessage().contains("Invalid Case type application. Please check the request."));
     }
 
     @Test
