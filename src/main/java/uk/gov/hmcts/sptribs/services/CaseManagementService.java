@@ -41,7 +41,7 @@ public class CaseManagementService {
                 .id(caseDetails.getId()).status(SUCCESS).build();
 
         } catch (Exception e) {
-            log.error("Error while creating case." + e);
+            log.error("Error while creating case. " + e);
             throw new CaseCreateOrUpdateException("Failing while creating the case " + e.getMessage(), e);
         }
     }
@@ -62,8 +62,8 @@ public class CaseManagementService {
                 .id(caseDetails.getId()).status(SUCCESS).build();
         } catch (Exception e) {
             //This has to be corrected
-            log.error("Error while updating case." + e);
-            throw new CaseCreateOrUpdateException("Failing while updating the case" + e.getMessage(), e);
+            log.error("Error while updating case. " + e);
+            throw new CaseCreateOrUpdateException("Failing while updating the case. " + e.getMessage(), e);
         }
     }
 
@@ -76,8 +76,8 @@ public class CaseManagementService {
             return CaseResponse.builder().caseData(caseDetails.getData())
                 .id(caseDetails.getId()).status(SUCCESS).build();
         } catch (Exception e) {
-            log.error("Error while fetching Case Details" + e);
-            throw new CaseCreateOrUpdateException("Failing while fetching the case details" + e.getMessage(), e);
+            log.error("Error while fetching Case Details. " + e);
+            throw new CaseCreateOrUpdateException("Failing while fetching the case details. " + e.getMessage(), e);
         }
     }
 }

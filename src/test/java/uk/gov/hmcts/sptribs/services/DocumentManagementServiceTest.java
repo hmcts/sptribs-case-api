@@ -103,7 +103,7 @@ class DocumentManagementServiceTest {
                 .stream()
                 .filter(eachCase -> eachCase.equals(CASE_DATA_CIC_ID))
                 .findFirst()
-                .get(),
+                .orElse(null),
             multipartFile
         );
 

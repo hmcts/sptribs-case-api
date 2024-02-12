@@ -29,7 +29,7 @@ public class DocumentManagementService {
             return DocumentResponse.builder().status("Success").document(document).build();
 
         } catch (Exception e) {
-            log.error("Error while uploading document ." + e.getMessage());
+            log.error("Error while uploading document. " + e.getMessage());
             throw new DocumentUploadOrDeleteException("Failing while uploading the document. The error message is "
                                                            + e.getMessage(), e);
         }
@@ -38,13 +38,14 @@ public class DocumentManagementService {
     public DocumentResponse deleteDocument(String authorization, String documentId) {
         try {
             caseDocumentApiService.deleteDocument(authorization, documentId);
-            log.info("document deleted successfully..");
+            log.info("document deleted successfully for Id: " + documentId);
             return DocumentResponse.builder().status("Success").build();
 
         } catch (Exception e) {
-            log.error("Error while deleting  document ." + e.getMessage());
-            throw new DocumentUploadOrDeleteException("Failing while deleting the document. The error message is "
-                                                          + e.getMessage(), e);
+            log.error("Error while deleting  document. " + e.getMessage());
+            throw new DocumentUploadOrDeleteException("Failing while deleting the document for Id: "
+                + documentId + " The error message is "
+                + e.getMessage(), e);
         }
     }
 }
