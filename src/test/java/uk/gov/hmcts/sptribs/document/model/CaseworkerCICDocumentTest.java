@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.document.model;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -22,45 +21,28 @@ class CaseworkerCICDocumentTest {
         "test.xls",
         "test.mp3",
         "test.m4a",
-        "test.mp4",
-        "test.msg",
-        "test.eml"
+        "test.mp4"
     })
-    void shouldCheckIsValid() {
+    void shouldCheckIsValid(String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().filename("test.pdf").build())
-            .build();
-
-        assertTrue(document.isDocumentValid());
-
-        document = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().filename("test.mp4").build())
-            .build();
-
-        assertTrue(document.isDocumentValid());
-
-        document = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.APPLICATION_FORM)
-            .documentLink(Document.builder().filename("test.msg").build())
-            .build();
-
-        assertTrue(document.isDocumentValid());
-
-        document = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-            .documentLink(Document.builder().filename("test.eml").build())
+            .documentLink(Document.builder().filename(filename).build())
             .build();
 
         assertTrue(document.isDocumentValid());
     }
 
-    @Test
-    void shouldCheckIsValidInvalid() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.xml",
+        "test.eml",
+        "test.msg",
+        "test.uml"
+    })
+    void shouldCheckIsValidInvalid(String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().filename("test.xml").build())
+            .documentLink(Document.builder().filename(filename).build())
             .build();
 
         assertFalse(document.isDocumentValid());
