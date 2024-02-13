@@ -71,6 +71,8 @@ public class BundlingServiceTest {
     public static final String DOCUMENT_NAME = "documentName";
     public static final String DOCUMENT_NAME_1 = "documentName1";
     public static final String DOCUMENT_NAME_2 = "documentName2";
+    public static LinkedHashMap<String, Object> DEFAULT_BUNDLE_MAP;
+    public static LinkedHashMap<String, Object> DEFAULT_BUNDLE_MAP_NULL_FOLDER;
     public static LinkedHashMap<String, Object> BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS;
     public static LinkedHashMap<String, Object> BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT;
     public static LinkedHashMap<String, Object> BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
@@ -84,7 +86,7 @@ public class BundlingServiceTest {
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS;
     public static Bundle BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS;
     public static Bundle DEFAULT_BUNDLE;
-    public static Bundle DEFAULT_BUNDLE_EMPTY_FOLDER;
+    public static Bundle DEFAULT_BUNDLE_NULL_FOLDER;
 
     @InjectMocks
     private BundlingService bundlingService;
@@ -151,72 +153,6 @@ public class BundlingServiceTest {
         assertThat(result.get(0).getDocuments()).isEqualTo(expectedBundle.getDocuments());
         assertThat(result.get(0).getFolders()).isEqualTo(expectedBundle.getFolders());
         assertThat(result.get(0).getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
-    }
-
-    @Test
-    void shouldCreateBundleWithDefaultValues() {
-        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
-
-        final List<LinkedHashMap<String, Object>> folders = new ArrayList<>();
-        final LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
-        final LinkedHashMap<String, Object> folderListMap = new LinkedHashMap<>();
-        folderListMap.put("value", folder);
-        folders.add(folderListMap);
-
-        final LinkedHashMap<String, Object> innerBundleMap = new LinkedHashMap<>();
-        innerBundleMap.put(FOLDERS, folders);
-        final LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
-        bundleMap.put("value", innerBundleMap);
-        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
-        caseBundles.add(bundleMap);
-
-        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
-        caseBundlesMap.put("caseBundles", caseBundles);
-
-        final BundleResponse bundleResponse = new BundleResponse();
-        bundleResponse.setData(caseBundlesMap);
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-
-        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
-
-        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
-        final BundleCallback bundleCallback = new BundleCallback(callback);
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
-
-        assertThat(result).isNotNull();
-        assertThat(result.get(0)).isEqualTo(DEFAULT_BUNDLE);
-    }
-
-    @Test
-    void shouldCreateBundleWithEmptyListOfFolders() {
-        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
-
-        final LinkedHashMap<String, Object> innerBundleMap = new LinkedHashMap<>();
-        innerBundleMap.put(FOLDERS, null);
-        final LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
-        bundleMap.put("value", innerBundleMap);
-        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
-        caseBundles.add(bundleMap);
-
-        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
-        caseBundlesMap.put("caseBundles", caseBundles);
-
-        final BundleResponse bundleResponse = new BundleResponse();
-        bundleResponse.setData(caseBundlesMap);
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-
-        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
-
-        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
-        final BundleCallback bundleCallback = new BundleCallback(callback);
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
-
-        assertThat(result).isNotNull();
-        assertThat(result.get(0)).isEqualTo(DEFAULT_BUNDLE_EMPTY_FOLDER);
     }
 
     @Test
@@ -319,6 +255,8 @@ public class BundlingServiceTest {
 
     static Stream<Arguments> createBundleTestValues() {
         return Stream.of(
+            Arguments.arguments(DEFAULT_BUNDLE_MAP, DEFAULT_BUNDLE),
+            Arguments.arguments(DEFAULT_BUNDLE_MAP_NULL_FOLDER, DEFAULT_BUNDLE_NULL_FOLDER),
             Arguments.arguments(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS),
             Arguments.arguments(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT, BUNDLE_NULL_FOLDER_DOCUMENT_ONE_DOCUMENT),
             Arguments.arguments(BUNDLE_MAP_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS, BUNDLE_NULL_FOLDER_DOCUMENT_MULTI_DOCUMENTS),
@@ -370,7 +308,7 @@ public class BundlingServiceTest {
             .folders(List.of(defaultBundleFolderListValue))
             .build();
 
-        DEFAULT_BUNDLE_EMPTY_FOLDER = Bundle.builder()
+        DEFAULT_BUNDLE_NULL_FOLDER = Bundle.builder()
             .id("")
             .description("")
             .title("")
@@ -441,6 +379,21 @@ public class BundlingServiceTest {
     }
 
     private static void createBundleListMaps() {
+        final List<LinkedHashMap<String, Object>> emptyFolders = new ArrayList<>();
+        final LinkedHashMap<String, Object> emptyFolder = new LinkedHashMap<>();
+        final LinkedHashMap<String, Object> emptyFolderListMap = new LinkedHashMap<>();
+        emptyFolderListMap.put("value", emptyFolder);
+        emptyFolders.add(emptyFolderListMap);
+        final LinkedHashMap<String, Object> emptyBundleMap = new LinkedHashMap<>();
+        emptyBundleMap.put(FOLDERS, emptyFolders);
+        DEFAULT_BUNDLE_MAP = new LinkedHashMap<>();
+        DEFAULT_BUNDLE_MAP.put("value", emptyBundleMap);
+
+        final LinkedHashMap<String, Object> nullFoldersBundleMap = new LinkedHashMap<>();
+        nullFoldersBundleMap.put(FOLDERS, null);
+        DEFAULT_BUNDLE_MAP_NULL_FOLDER = new LinkedHashMap<>();
+        DEFAULT_BUNDLE_MAP_NULL_FOLDER.put("value", nullFoldersBundleMap);
+
         final LinkedHashMap<String, Object> folderDocument = createDocumentMap(FOLDER_DOCUMENT_NAME);
         final List<LinkedHashMap<String, Object>> folderDocuments = new ArrayList<>();
         final LinkedHashMap<String, Object> folderDocumentListMap = new LinkedHashMap<>();
