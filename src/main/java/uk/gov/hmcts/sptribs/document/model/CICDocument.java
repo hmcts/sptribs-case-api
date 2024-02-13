@@ -32,7 +32,6 @@ public class CICDocument {
     )
     private Document documentLink;
 
-
     //Add handwritten constructor as a workaround for @JsonUnwrapped prefix issue
     @JsonCreator
     public CICDocument(@JsonProperty("documentEmailContent") String documentEmailContent,
@@ -43,7 +42,7 @@ public class CICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        String regex = ".pdf,.csv,.txt,.rtf,.xlsx,.docx,.doc,.xls,.tif,.tiff,.jpg,.jpeg,.png,.mp3,.m4a,.mp4,.msg,.eml";
+        String regex = ".pdf,.csv,.txt,.rtf,.xlsx,.docx,.doc,.xls,.tif,.tiff,.jpg,.jpeg,.png,.mp3,.m4a,.mp4";
         String fileName = this.documentLink.getFilename();
         String fileExtension = StringUtils.substringAfter(fileName, ".");
 
