@@ -123,13 +123,10 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
-        if (caseData.getListing() != null) {
-            caseData.getListing().setHearingCreatedDate(LocalDateTime.now());
-
-            if (caseData.getListing().getNumberOfDays() != null
-                && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
+        if (caseData.getListing() != null
+            && caseData.getListing().getNumberOfDays() != null
+            && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
                 caseData.getListing().setAdditionalHearingDate(null);
-            }
         }
 
         recordListHelper.getNotificationParties(caseData);
@@ -137,6 +134,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
 
+        caseData.getListing().setHearingCreatedDate(LocalDateTime.now());
         caseData.getListing().setHearingStatus(Listed);
         hearingService.addListing(caseData, caseData.getListing());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -221,6 +219,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     of anyone who should be excluded from attending this hearing.
                     """)
             .optional(Listing::getImportantInfoDetails)
+            .readonly(Listing::getHearingCreatedDate, ALWAYS_HIDE)
             .readonly(Listing::getPostponeReason, ALWAYS_HIDE)
             .readonly(Listing::getPostponeAdditionalInformation, ALWAYS_HIDE)
             .readonly(Listing::getRecordListingChangeReason, ALWAYS_HIDE)
