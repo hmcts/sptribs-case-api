@@ -25,6 +25,7 @@ public class CaseManagementService {
     private static final String SUCCESS = "Success";
 
     public CaseResponse createCase(String authorization, CaseData caseData) {
+
         try {
             // Validate Case Data (CHECKING CASE TYPE ALONE)
             log.info("Case data received from UI: " + caseData.toString());
@@ -33,53 +34,50 @@ public class CaseManagementService {
             }
 
             // creating case to CCD.
-            CaseDetails caseDetails = caseApiService.createCase(authorization, caseData,
+            final CaseDetails caseDetails = caseApiService.createCase(authorization, caseData,
                                                                 AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData()));
             log.info("Created case details: " + caseDetails.toString());
             return CaseResponse.builder().caseData(caseDetails.getData())
                 .id(caseDetails.getId()).status(SUCCESS).build();
 
-
         } catch (Exception e) {
-            log.error("Error while creating case." + e);
-            throw new CaseCreateOrUpdateException("Failing while creating the case" + e.getMessage(), e);
+            log.error("Error while creating case. " + e);
+            throw new CaseCreateOrUpdateException("Failing while creating the case " + e.getMessage(), e);
         }
     }
 
     public CaseResponse updateCase(String authorization, Event event, CaseData caseData, Long caseId) {
+
         try {
             // Validate Case Type of application
             if (!AppsUtil.isValidCaseTypeOfApplication(appsConfig, caseData.getDssCaseData())) {
                 throw new CaseCreateOrUpdateException("Invalid Case type application. Please check the request.");
             }
 
-            // Updating or Submitting case to CCD..
-            CaseDetails caseDetails = caseApiService.updateCase(authorization, event, caseId, caseData,
+            // Updating or Submitting case to CCD.
+            final CaseDetails caseDetails = caseApiService.updateCase(authorization, event, caseId, caseData,
                                                                 AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData()));
             log.info("Updated case details: " + caseDetails.toString());
             return CaseResponse.builder().caseData(caseDetails.getData())
                 .id(caseDetails.getId()).status(SUCCESS).build();
         } catch (Exception e) {
             //This has to be corrected
-            log.error("Error while updating case." + e);
-            throw new CaseCreateOrUpdateException("Failing while updating the case" + e.getMessage(), e);
+            log.error("Error while updating case. " + e);
+            throw new CaseCreateOrUpdateException("Failing while updating the case " + e.getMessage(), e);
         }
     }
 
     public CaseResponse fetchCaseDetails(String authorization,Long caseId) {
 
         try {
-            CaseDetails caseDetails = caseApiService.getCaseDetails(authorization,
+            final CaseDetails caseDetails = caseApiService.getCaseDetails(authorization,
                                                                     caseId);
             log.info("Case Details for CaseID :{} and CaseDetails:{}", caseId, caseDetails);
             return CaseResponse.builder().caseData(caseDetails.getData())
                 .id(caseDetails.getId()).status(SUCCESS).build();
         } catch (Exception e) {
-            log.error("Error while fetching Case Details" + e);
-            throw new CaseCreateOrUpdateException("Failing while fetching the case details" + e.getMessage(), e);
+            log.error("Error while fetching Case Details. " + e);
+            throw new CaseCreateOrUpdateException("Failing while fetching the case details " + e.getMessage(), e);
         }
-
     }
-
-
 }

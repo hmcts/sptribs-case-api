@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.services;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,11 +18,15 @@ import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentApiService;
 
-import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
@@ -61,7 +64,7 @@ class DocumentManagementServiceTest {
     }
 
     @Test
-    void testUploadFgmDocument() throws Exception {
+    void shouldUploadFgmDocument() throws Exception {
         fgmAppDetail = new AppsConfig.AppsDetails();
         fgmAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         fgmAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
@@ -71,18 +74,16 @@ class DocumentManagementServiceTest {
 
         fgmAppDetail.setEventIds(eventsConfig);
 
-        DocumentInfo documentInfo = DocumentInfo.builder()
+        final DocumentInfo documentInfo = DocumentInfo.builder()
             .documentId(CASE_DATA_CIC_ID)
             .url(TEST_URL)
             .fileName(CASE_DATA_FILE_CIC).build();
 
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(fgmAppDetail));
+        when(appsConfig.getApps()).thenReturn(List.of(fgmAppDetail));
 
-        Assertions.assertNotNull(fgmAppDetail);
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-
-        MockMultipartFile multipartFile = new MockMultipartFile(
+        final MockMultipartFile multipartFile = new MockMultipartFile(
             JSON_FILE_TYPE,
                 CASE_DATA_FILE_CIC,
             JSON_CONTENT_TYPE,
@@ -95,30 +96,32 @@ class DocumentManagementServiceTest {
             fgmAppDetail
         )).thenReturn(documentInfo);
 
-        DocumentResponse testUploadResponse = (DocumentResponse) documentManagementService.uploadDocument(
+        DocumentResponse testUploadResponse = documentManagementService.uploadDocument(
             CASE_TEST_AUTHORIZATION,
             fgmAppDetail
                 .getCaseTypeOfApplication()
                 .stream()
                 .filter(eachCase -> eachCase.equals(CASE_DATA_CIC_ID))
                 .findFirst()
-                .get(),
+                .orElse(null),
             multipartFile
         );
 
 
-        Assertions.assertNotNull(testUploadResponse);
-        Assertions.assertEquals(documentInfo.getDocumentId(), testUploadResponse.getDocument().getDocumentId());
-        Assertions.assertEquals(documentInfo.getFileName(), testUploadResponse.getDocument().getFileName());
-        Assertions.assertEquals(documentInfo.getUrl(), testUploadResponse.getDocument().getUrl());
-        Assertions.assertEquals(RESPONSE_STATUS_SUCCESS, testUploadResponse.getStatus());
+        assertNotNull(fgmAppDetail);
+        assertNotNull(testUploadResponse);
+        assertEquals(documentInfo.getDocumentId(), testUploadResponse.getDocument().getDocumentId());
+        assertEquals(documentInfo.getFileName(), testUploadResponse.getDocument().getFileName());
+        assertEquals(documentInfo.getUrl(), testUploadResponse.getDocument().getUrl());
+        assertEquals(RESPONSE_STATUS_SUCCESS, testUploadResponse.getStatus());
     }
 
     @Test
-    void testUploadFgmDocumentFailedWithException() throws Exception {
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+    void shouldUploadFgmDocumentFailedWithException() throws Exception {
 
-        MockMultipartFile multipartFile = new MockMultipartFile(
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+
+        final MockMultipartFile multipartFile = new MockMultipartFile(
             JSON_FILE_TYPE,
                 CASE_DATA_FILE_CIC,
             JSON_CONTENT_TYPE,
@@ -135,19 +138,46 @@ class DocumentManagementServiceTest {
                 new RuntimeException()
             ));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            documentManagementService.uploadDocument(CASE_TEST_AUTHORIZATION, CASE_DATA_CIC_ID, multipartFile);
-        });
+        final DocumentUploadOrDeleteException documentUploadOrDeleteException =
+            assertThrows(DocumentUploadOrDeleteException.class, () ->
+            documentManagementService.uploadDocument(CASE_TEST_AUTHORIZATION, CASE_DATA_CIC_ID, multipartFile));
 
-        assertTrue(exception.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG));
+        assertNotNull(documentUploadOrDeleteException.getCause());
+        assertTrue(documentUploadOrDeleteException.getCause() instanceof RuntimeException);
+        assertTrue(documentUploadOrDeleteException.getMessage().contains(DOCUMENT_UPLOAD_FAILURE_MSG));
     }
 
     @Test
-    void testDeleteFgmDocumentFailedWithException() throws Exception {
-        DocumentInfo documentInfo = DocumentInfo.builder()
+    void shouldDeleteDocument() {
+
+        final DocumentInfo documentInfo = DocumentInfo.builder()
             .documentId(CASE_DATA_CIC_ID)
             .url(TEST_URL)
             .fileName(CASE_DATA_FILE_CIC).build();
+
+        doNothing().when(
+            caseDocumentApiService).deleteDocument(
+                CASE_TEST_AUTHORIZATION,documentInfo.getDocumentId());
+
+        final DocumentResponse testDeleteResponse = documentManagementService.deleteDocument(
+            CASE_TEST_AUTHORIZATION,documentInfo.getDocumentId());
+
+        assertNotNull(testDeleteResponse);
+        assertEquals("Success",testDeleteResponse.getStatus());
+
+        verify(caseDocumentApiService, times(1))
+            .deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
+
+    }
+
+    @Test
+    void shouldDeleteFgmDocumentFailedWithException() {
+        final DocumentInfo documentInfo = DocumentInfo.builder()
+            .documentId(CASE_DATA_CIC_ID)
+            .url(TEST_URL)
+            .fileName(CASE_DATA_FILE_CIC).build();
+
+        final String docInfoId = documentInfo.getDocumentId();
 
         when(documentManagementService.deleteDocument(
             CASE_TEST_AUTHORIZATION,
@@ -158,9 +188,13 @@ class DocumentManagementServiceTest {
                 new RuntimeException()
             ));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
-        });
-        assertTrue(exception.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
+        final DocumentUploadOrDeleteException documentUploadOrDeleteException =
+            assertThrows(DocumentUploadOrDeleteException.class, () ->
+            documentManagementService.deleteDocument(CASE_TEST_AUTHORIZATION, docInfoId));
+
+        assertNotNull(documentUploadOrDeleteException.getCause());
+        assertTrue(documentUploadOrDeleteException.getCause() instanceof RuntimeException);
+        assertTrue(documentUploadOrDeleteException.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
+
     }
 }
