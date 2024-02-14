@@ -91,9 +91,9 @@ class CaseManagementControllerTest {
     void cicCreateCaseDataThrowsCaseCreateOrUpdateException() {
         when(caseManagementService.createCase(eq(CASE_TEST_AUTHORIZATION), any(CaseData.class)))
             .thenThrow(new CaseCreateOrUpdateException(CASE_CREATE_FAILURE_MSG));
-
-        Exception exception = assertThrows(CaseCreateOrUpdateException.class,
-            () -> caseManagementController.createCase(CASE_TEST_AUTHORIZATION, caseData.getDssCaseData()));
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
+        final Exception exception = assertThrows(CaseCreateOrUpdateException.class,
+            () -> caseManagementController.createCase(CASE_TEST_AUTHORIZATION, dssCaseData));
         assertThat(exception.getMessage()).contains(CASE_CREATE_FAILURE_MSG);
     }
 
@@ -146,13 +146,13 @@ class CaseManagementControllerTest {
     void cicUpdateCaseDataThrowsCaseCreateOrUpdateException() {
         when(caseManagementService.updateCase(eq(CASE_TEST_AUTHORIZATION), eq(Event.UPDATE), any(CaseData.class), eq(TEST_CASE_ID)))
             .thenThrow(new CaseCreateOrUpdateException(CASE_UPDATE_FAILURE_MSG));
-
-        Exception exception = assertThrows(CaseCreateOrUpdateException.class, () ->
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
+        final Exception exception = assertThrows(CaseCreateOrUpdateException.class, () ->
             caseManagementController.updateCase(
                 TEST_CASE_ID,
                 CASE_TEST_AUTHORIZATION,
                 Event.UPDATE,
-                caseData.getDssCaseData()));
+                dssCaseData));
         assertThat(exception.getMessage()).contains(CASE_UPDATE_FAILURE_MSG);
     }
 

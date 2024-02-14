@@ -30,13 +30,13 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMembers;
 
 
 @ExtendWith(MockitoExtension.class)
-public class PreviewDraftOrderTemplateContentTest {
+class PreviewDraftOrderTemplateContentTest {
 
     @InjectMocks
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
     @Test
-    public void shouldSuccessfullyPreviewDraftOrderContent() {
+    void shouldSuccessfullyPreviewDraftOrderContent() {
         CaseData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
@@ -60,7 +60,7 @@ public class PreviewDraftOrderTemplateContentTest {
     }
 
     @Test
-    public void shouldSuccessfullyApplyPreviewDraftOrderContentNoMembers() {
+    void shouldSuccessfullyApplyPreviewDraftOrderContentNoMembers() {
         final CaseData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
             .build();
