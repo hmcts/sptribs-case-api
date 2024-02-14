@@ -42,5 +42,4 @@ class ScheduledTaskRunnerTest {
         //Then
         verifyNoInteractions(task);
     }
-
 }

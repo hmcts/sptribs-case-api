@@ -10,12 +10,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 
-
 @Component
 public class CaseDetailsUpdater {
 
+    private final ObjectMapper objectMapper;
+
     @Autowired
-    private ObjectMapper objectMapper;
+    public CaseDetailsUpdater(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     public CaseDetails<CaseData, State> updateCaseData(final CaseTask caseTask,
                                                        final StartEventResponse startEventResponse) {

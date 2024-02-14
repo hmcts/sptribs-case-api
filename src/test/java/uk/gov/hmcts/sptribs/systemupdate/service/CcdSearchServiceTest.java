@@ -13,11 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
-import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
-import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsListConverter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,6 +25,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -49,12 +46,6 @@ class CcdSearchServiceTest {
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
 
-    @Mock
-    private CaseDetailsConverter caseDetailsConverter;
-
-    @Mock
-    private CaseDetailsListConverter caseDetailsListConverter;
-
     @InjectMocks
     private CcdSearchService ccdSearchService;
 
@@ -62,7 +53,6 @@ class CcdSearchServiceTest {
     void setPageSize() {
         setField(ccdSearchService, "pageSize", PAGE_SIZE);
     }
-
 
     @Test
     void shouldReturnAllCasesWithGivenState() {
@@ -78,13 +68,13 @@ class CcdSearchServiceTest {
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
             CcdCaseType.CIC.getCaseTypeName(),
-            getSourceBuilder(0, PAGE_SIZE).toString()))
+            getSourceBuilder(0).toString()))
             .thenReturn(expected1);
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
             SERVICE_AUTHORIZATION,
             CcdCaseType.CIC.getCaseTypeName(),
-            getSourceBuilder(PAGE_SIZE, PAGE_SIZE).toString()))
+            getSourceBuilder(PAGE_SIZE).toString()))
             .thenReturn(expected2);
 
         //When
@@ -92,6 +82,7 @@ class CcdSearchServiceTest {
 
         //Then
         assertThat(searchResult.size()).isEqualTo(101);
+        assertNotNull(searchResult.listIterator(0));
     }
 
     @Test
@@ -99,13 +90,14 @@ class CcdSearchServiceTest {
         //Given
         final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
+        final int latestVersion = 1;
 
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
                 .searchSource()
                 .query(
                         boolQuery()
                                 .must(boolQuery()
-                                        .must(matchQuery("reference", 1695290772211061L)))
+                                        .must(rangeQuery("data.dataVersion").lt(latestVersion)))
                 )
                 .from(0)
                 .size(500);
@@ -118,10 +110,12 @@ class CcdSearchServiceTest {
             .thenReturn(expected1);
 
         //When
-        final List<CaseDetails> searchResult = ccdSearchService.searchForCasesWithVersionLessThan(1, user, SERVICE_AUTHORIZATION);
+        final List<CaseDetails> searchResult =
+            ccdSearchService.searchForCasesWithVersionLessThan(latestVersion, user, SERVICE_AUTHORIZATION);
 
         //Then
         assertThat(searchResult.size()).isEqualTo(100);
+        assertNotNull(searchResult.listIterator(0));
     }
 
     @Test
@@ -137,13 +131,14 @@ class CcdSearchServiceTest {
                 SYSTEM_UPDATE_AUTH_TOKEN,
                 SERVICE_AUTHORIZATION,
                 CcdCaseType.CIC.getCaseTypeName(),
-                getSourceBuilder(0, PAGE_SIZE).toString());
+                getSourceBuilder(0).toString());
 
         //When&Then
         final CcdSearchCaseException exception = assertThrows(
             CcdSearchCaseException.class,
             () -> ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION, Submitted));
 
+        assertNotNull(exception.getCause());
         assertThat(exception.getMessage()).contains("Failed to complete search for Cases with state of [Submitted]");
     }
 
@@ -196,19 +191,8 @@ class CcdSearchServiceTest {
         return caseDetails;
     }
 
-    @SuppressWarnings("unchecked")
-    private List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State>> createConvertedCaseDetailsList(final int size) {
 
-        final List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State>> caseDetails = new ArrayList<>();
-
-        for (int index = 0; index < size; index++) {
-            caseDetails.add(mock(uk.gov.hmcts.ccd.sdk.api.CaseDetails.class));
-        }
-
-        return caseDetails;
-    }
-
-    private SearchSourceBuilder getSourceBuilder(final int from, final int pageSize) {
+    private SearchSourceBuilder getSourceBuilder(final int from) {
         return SearchSourceBuilder
             .searchSource()
             .sort(DUE_DATE, ASC)
@@ -216,7 +200,7 @@ class CcdSearchServiceTest {
                 .must(matchQuery(STATE, Submitted))
                 .filter(rangeQuery(DUE_DATE).lte(LocalDate.now())))
             .from(from)
-            .size(pageSize);
+            .size(CcdSearchServiceTest.PAGE_SIZE);
     }
 
 }
