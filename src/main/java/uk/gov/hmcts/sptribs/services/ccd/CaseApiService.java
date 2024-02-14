@@ -73,15 +73,27 @@ public class CaseApiService {
 
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, Event eventEnum,
                                                String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
+
         CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseData);
+
         if (eventEnum.getEventType().equalsIgnoreCase(Event.UPDATE.getEventType())) {
+
             builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateEvent()).build())
                 .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateEvent(),
                                                    caseId, appsDetails));
+
         } else if (eventEnum.getEventType().equalsIgnoreCase(Event.SUBMIT.getEventType())) {
+
             builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getSubmitEvent()).build())
                 .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getSubmitEvent(),
                                                    caseId, appsDetails));
+
+        } else if (eventEnum.getEventType().equalsIgnoreCase(Event.UPDATE_CASE.getEventType())) {
+
+            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getSubmitEvent()).build())
+                .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateCaseEvent(),
+                    caseId, appsDetails));
+
         }
 
         return builder.build();

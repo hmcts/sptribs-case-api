@@ -156,6 +156,9 @@ public enum State {
         Draft
     ));
 
+    public static final EnumSet<State> DSS_UPDATE_CASE_AVAILABLE_STATES = EnumSet.complementOf(EnumSet.of(
+        Draft, DSS_Draft
+    ));
 
     public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
         CaseManagement,

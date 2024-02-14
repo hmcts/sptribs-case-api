@@ -225,7 +225,7 @@ caseinfo:
       eventIds:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
+        updateCaseEvent: citizen-cic-dss-update-case
         submitEvent: citizen-cic-submit-dss-application
-        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC
