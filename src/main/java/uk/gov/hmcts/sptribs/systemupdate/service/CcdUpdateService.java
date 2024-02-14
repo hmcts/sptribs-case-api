@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
-import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -25,17 +24,22 @@ public class CcdUpdateService {
     static final String SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting Sptribs Case Event";
 
 
-    @Autowired
-    private CoreCaseDataApi coreCaseDataApi;
+    private final CoreCaseDataApi coreCaseDataApi;
+
+    private final CcdCaseDataContentProvider ccdCaseDataContentProvider;
+
+
+    private final CaseDetailsUpdater caseDetailsUpdater;
 
     @Autowired
-    private CcdCaseDataContentProvider ccdCaseDataContentProvider;
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-
-    @Autowired
-    private CaseDetailsUpdater caseDetailsUpdater;
+    public CcdUpdateService(
+        CoreCaseDataApi coreCaseDataApi,
+        CcdCaseDataContentProvider ccdCaseDataContentProvider,
+        CaseDetailsUpdater caseDetailsUpdater) {
+        this.coreCaseDataApi = coreCaseDataApi;
+        this.ccdCaseDataContentProvider = ccdCaseDataContentProvider;
+        this.caseDetailsUpdater = caseDetailsUpdater;
+    }
 
 
     public void submitEvent(final Long caseId,
@@ -109,13 +113,6 @@ public class CcdUpdateService {
             throw new CcdManagementException(message, e);
         }
     }
-
-
-
-
-
-
-
 
 
     private void startAndSubmitEventForCaseworkers(final String eventId,

@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDetailsUpdaterTest {
@@ -47,5 +48,8 @@ class CaseDetailsUpdaterTest {
 
         //When
         assertThat(caseDetails.getData().getDueDate()).isEqualTo(now);
+        assertEquals(caseDetails.getId(),startEventResponse.getCaseDetails().getId());
+        assertEquals(caseDetails.getCaseTypeId(),startEventResponse.getCaseDetails().getCaseTypeId());
+        assertEquals(caseDetails.getJurisdiction(),startEventResponse.getCaseDetails().getJurisdiction());
     }
 }
