@@ -126,7 +126,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         if (caseData.getListing() != null
             && caseData.getListing().getNumberOfDays() != null
             && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
-                caseData.getListing().setAdditionalHearingDate(null);
+            caseData.getListing().setAdditionalHearingDate(null);
         }
 
         recordListHelper.getNotificationParties(caseData);
