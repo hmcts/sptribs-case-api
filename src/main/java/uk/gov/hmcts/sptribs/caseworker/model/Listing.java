@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +38,12 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Listing {
+
+    @CCD(
+        label = "Hearing Created",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private LocalDateTime hearingCreatedDate;
 
     @CCD(
         label = "Hearing Status",

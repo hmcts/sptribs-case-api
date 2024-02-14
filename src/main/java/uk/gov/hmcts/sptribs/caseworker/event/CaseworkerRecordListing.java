@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -122,10 +123,13 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
-        if (null != caseData.getListing()
-            && null != caseData.getListing().getNumberOfDays()
-            && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getListing().setAdditionalHearingDate(null);
+        if (caseData.getListing() != null) {
+            caseData.getListing().setHearingCreatedDate(LocalDateTime.now());
+
+            if (caseData.getListing().getNumberOfDays() != null
+                && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
+                caseData.getListing().setAdditionalHearingDate(null);
+            }
         }
 
         recordListHelper.getNotificationParties(caseData);

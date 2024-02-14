@@ -45,7 +45,7 @@ public class RecordListHelper {
         String selectedRegion = caseData.getListing().getSelectedRegionVal();
         String regionId = locationService.getRegionId(selectedRegion);
 
-        if (null != regionId) {
+        if (regionId != null) {
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
             caseData.getListing().setHearingVenues(hearingVenueList);
 
@@ -57,7 +57,7 @@ public class RecordListHelper {
     }
 
     public boolean checkNullCondition(CicCase cicCase) {
-        return null != cicCase
+        return cicCase != null
             && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
             && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
             && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent());
@@ -126,9 +126,9 @@ public class RecordListHelper {
     }
 
     public Listing checkAndUpdateVenueInformationSummary(Listing listing) {
-        if ((null == listing.getVenueNotListedOption()
+        if ((listing.getVenueNotListedOption() == null
             || !listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED))
-            && null != listing.getReadOnlyHearingVenueName() && !listing.getReadOnlyHearingVenueName().isEmpty()) {
+            && listing.getReadOnlyHearingVenueName() != null && !listing.getReadOnlyHearingVenueName().isEmpty()) {
             listing.setHearingVenueNameAndAddress(listing.getReadOnlyHearingVenueName());
         }
         return listing;
@@ -139,8 +139,8 @@ public class RecordListHelper {
         caseData.getListing().setHearingType(caseData.getListing().getHearingType());
         caseData.getListing().getSummary().setSubjectName(caseData.getCicCase().getFullName());
         caseData.setCurrentEvent("");
-        if (null != caseData.getListing()
-            && null != caseData.getListing().getNumberOfDays()
+        if (caseData.getListing() != null
+            && caseData.getListing().getNumberOfDays() != null
             && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
             caseData.getListing().setAdditionalHearingDate(null);
         }
