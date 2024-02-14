@@ -43,6 +43,7 @@ public class Listing {
         label = "Hearing Created",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime hearingCreatedDate;
 
     @CCD(

@@ -133,7 +133,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
-
         caseData.getListing().setHearingCreatedDate(LocalDateTime.now());
         caseData.getListing().setHearingStatus(Listed);
         hearingService.addListing(caseData, caseData.getListing());
