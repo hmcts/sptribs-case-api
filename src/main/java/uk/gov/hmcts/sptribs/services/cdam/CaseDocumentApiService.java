@@ -9,11 +9,10 @@ import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
-@SuppressWarnings("PMD")
 public class CaseDocumentApiService {
 
     @Autowired
@@ -25,19 +24,19 @@ public class CaseDocumentApiService {
     public DocumentInfo uploadDocument(String authorizationToken, MultipartFile file,
                                        AppsConfig.AppsDetails appsDetails) {
 
-        String serviceAuthToken = authTokenGenerator.generate();
+        final String serviceAuthToken = authTokenGenerator.generate();
 
-        UploadResponse uploadResponse = dssCaseDocumentClient.uploadDocuments(
+        final UploadResponse uploadResponse = dssCaseDocumentClient.uploadDocuments(
             authorizationToken,
             serviceAuthToken,
             appsDetails.getCaseType(),
             appsDetails.getJurisdiction(),
-            Arrays.asList(file)
+            List.of(file)
         );
 
-        Document uploadedDocument = uploadResponse.getDocuments().get(0);
+        final Document uploadedDocument = uploadResponse.getDocuments().get(0);
 
-        String[] split = uploadedDocument.links.self.href.split("/");
+        final String[] split = uploadedDocument.links.self.href.split("/");
 
         return DocumentInfo.builder()
             .url(uploadedDocument.links.self.href)
