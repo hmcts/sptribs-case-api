@@ -23,6 +23,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 
+import java.time.LocalDateTime;
+
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Postponed;
@@ -39,7 +41,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration selectHearing = new SelectHearing();
     private static final CcdPageConfiguration selectReason = new PostponeHearingSelectReason();
@@ -101,6 +103,7 @@ public class CaseWorkerPostponeHearing implements CCDConfig<CaseData, State, Use
         recordListHelper.getNotificationParties(caseData);
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingStatus(Postponed);
+        caseData.getListing().setPostponeDate(LocalDateTime.now());
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

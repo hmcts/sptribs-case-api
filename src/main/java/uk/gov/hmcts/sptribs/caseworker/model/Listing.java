@@ -212,12 +212,26 @@ public class Listing {
     private HearingCancellationReason hearingCancellationReason;
 
     @CCD(
+        label = "Date Cancelled",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime cancelledDate;
+
+    @CCD(
         label = "Postpone Reason",
         typeOverride = FixedRadioList,
         typeParameterOverride = "PostponeReason",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private PostponeReason postponeReason;
+
+    @CCD(
+        label = "Date Postponed",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime postponeDate;
 
     @CCD(
         label = "Enter any other important information about this postponement",

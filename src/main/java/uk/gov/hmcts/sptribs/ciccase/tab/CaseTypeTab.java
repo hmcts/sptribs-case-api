@@ -353,10 +353,12 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
             .label("Postponement summary", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY, "#### Postponement summary")
             .field("cicCasePostponeReason", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
+            .field("postponeDate", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
             .field("cicCasePostponeAdditionalInformation", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
 
             .label("Cancellation summary", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY, "#### Cancellation summary")
             .field("cicCaseHearingCancellationReason", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
+            .field("cancelledDate", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
             .field("cicCaseCancelHearingAdditionalDetail", COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY)
 
             .label("Listing details", null, "#### Listing details")

@@ -40,7 +40,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_POSTPO
 @ExtendWith(MockitoExtension.class)
 class CaseworkerPostponeHearingTest {
     @InjectMocks
-    private CaseWorkerPostponeHearing caseWorkerPostponeHearing;
+    private CaseworkerPostponeHearing caseWorkerPostponeHearing;
 
     @Mock
     private RecordListHelper recordListHelper;
