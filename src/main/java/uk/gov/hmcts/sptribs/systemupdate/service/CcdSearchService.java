@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.search.sort.SortOrder.ASC;
 
@@ -36,8 +36,6 @@ public class CcdSearchService {
 
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
-
-
 
     public List<CaseDetails> searchForAllCasesWithQuery(
         final BoolQueryBuilder query, User user, String serviceAuth, final State... states) {
@@ -64,25 +62,6 @@ public class CcdSearchService {
         return allCaseDetails;
     }
 
-    public SearchResult searchForCasesWithQuery(final int from,
-                                                final int size,
-                                                final BoolQueryBuilder query,
-                                                final User user,
-                                                final String serviceAuth) {
-
-        final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
-            .searchSource()
-            .sort(DUE_DATE, ASC)
-            .query(query)
-            .from(from)
-            .size(size);
-
-        return coreCaseDataApi.searchCases(
-            user.getAuthToken(),
-            serviceAuth,
-            CcdCaseType.CIC.getCaseTypeName(),
-            sourceBuilder.toString());
-    }
 
     public List<CaseDetails> searchForCasesWithVersionLessThan(int latestVersion, User user, String serviceAuth) {
 
@@ -91,11 +70,11 @@ public class CcdSearchService {
             .query(
                 boolQuery()
                     .must(boolQuery()
-                        .must(matchQuery("reference", 1695290772211061L)))
+                        .must(rangeQuery("data.dataVersion").lt(latestVersion)))
             )
             .from(0)
             .size(500);
-        log.info("Query:" + sourceBuilder.toString());
+        log.info("Query:" + sourceBuilder);
         log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
         final List<CaseDetails> cases = coreCaseDataApi.searchCases(
             user.getAuthToken(),
@@ -128,5 +107,25 @@ public class CcdSearchService {
             CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
+    }
+
+    private SearchResult searchForCasesWithQuery(final int from,
+                                                 final int size,
+                                                 final BoolQueryBuilder query,
+                                                 final User user,
+                                                 final String serviceAuth) {
+
+        final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
+            .searchSource()
+            .sort(DUE_DATE, ASC)
+            .query(query)
+            .from(from)
+            .size(size);
+
+        return coreCaseDataApi.searchCases(
+            user.getAuthToken(),
+            serviceAuth,
+            CcdCaseType.CIC.getCaseTypeName(),
+            sourceBuilder.toString());
     }
 }

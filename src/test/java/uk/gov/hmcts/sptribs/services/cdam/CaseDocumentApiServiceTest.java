@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.services.cdam;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +20,13 @@ import uk.gov.hmcts.sptribs.model.DocumentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -54,29 +58,30 @@ class CaseDocumentApiServiceTest {
     }
 
     @Test
-    void testUploadDocuments() throws Exception {
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+    void shouldUploadDocuments() throws Exception {
 
-        MockMultipartFile multipartFile = new MockMultipartFile(
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+
+        final MockMultipartFile multipartFile = new MockMultipartFile(
             JSON_FILE_TYPE,
                 CASE_DATA_FILE_CIC,
             JSON_CONTENT_TYPE,
             caseDataJson.getBytes()
         );
 
-        List<MultipartFile> multipartFileLst = new ArrayList<>();
+        final List<MultipartFile> multipartFileList = new ArrayList<>();
 
-        multipartFileLst.add(multipartFile);
+        multipartFileList.add(multipartFile);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
-        Document.Links links = new Document.Links();
+        final Document.Links links = new Document.Links();
         links.binary = new Document.DocumentLink();
         links.self = new Document.DocumentLink();
         links.binary.href = "binaryUrl";
         links.self.href = "selfURL";
 
-        Document document = new Document();
+        final Document document = new Document();
         document.setClassification(Classification.RESTRICTED);
         document.setOriginalDocumentName(CASE_DATA_FILE_CIC);
         document.setHashToken("SomeToken");
@@ -85,10 +90,10 @@ class CaseDocumentApiServiceTest {
 
         document.links = links;
 
-        List<Document> documents = new ArrayList<>();
+        final List<Document> documents = new ArrayList<>();
         documents.add(document);
 
-        AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
 
         appsDetails.setJurisdiction(ST_CIC_JURISDICTION);
         appsDetails.setCaseType(ST_CIC_CASE_TYPE);
@@ -98,7 +103,7 @@ class CaseDocumentApiServiceTest {
         eventsConfig.setUpdateEvent("citizen-prl-update-dss-application");
         appsDetails.setEventIds(eventsConfig);
 
-        UploadResponse uploadResponse = new UploadResponse();
+        final UploadResponse uploadResponse = new UploadResponse();
         uploadResponse.setDocuments(documents);
 
         when(caseDocumentClient.uploadDocuments(
@@ -106,21 +111,44 @@ class CaseDocumentApiServiceTest {
             TEST_AUTHORIZATION_TOKEN,
             ST_CIC_CASE_TYPE,
             ST_CIC_JURISDICTION,
-            multipartFileLst
+            multipartFileList
         )).thenReturn(uploadResponse);
 
-        DocumentInfo testUploadResponse = caseDocumentApiService.uploadDocument(
+        final DocumentInfo testUploadResponse = caseDocumentApiService.uploadDocument(
             CASE_TEST_AUTHORIZATION,
             multipartFile,
             appsDetails
         );
 
-        DocumentInfo documentInfo = DocumentInfo.builder()
-            .documentId(CASE_DATA_CIC_ID)
+        final DocumentInfo documentInfo = DocumentInfo.builder()
+            .documentId(links.binary.toString())
             .url(TEST_URL)
             .fileName(CASE_DATA_FILE_CIC).build();
 
-        Assertions.assertEquals(documentInfo.getFileName(), testUploadResponse.getFileName());
-        Assertions.assertEquals(document.links.self.href, testUploadResponse.getUrl());
+        assertNotNull(testUploadResponse);
+        assertEquals(documentInfo.getFileName(), testUploadResponse.getFileName());
+        assertEquals(document.links.self.href, testUploadResponse.getUrl());
+    }
+
+    @Test
+    void shouldDeleteDocument() {
+
+        final DocumentInfo documentInfo = DocumentInfo.builder()
+            .documentId(UUID.randomUUID().toString())
+            .url(TEST_URL)
+            .fileName(CASE_DATA_FILE_CIC).build();
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+
+        caseDocumentApiService.deleteDocument(CASE_TEST_AUTHORIZATION,documentInfo.getDocumentId());
+
+        verify(authTokenGenerator, times(1)).generate();
+
+        verify(caseDocumentClient).deleteDocument(
+            CASE_TEST_AUTHORIZATION,
+            TEST_AUTHORIZATION_TOKEN,
+            UUID.fromString(documentInfo.getDocumentId()),
+            true
+        );
     }
 }
