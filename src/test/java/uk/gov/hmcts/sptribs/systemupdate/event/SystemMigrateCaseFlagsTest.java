@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
@@ -147,6 +148,7 @@ class SystemMigrateCaseFlagsTest {
 
         //Then
         assertNotEquals(response.getData().getCaseFlags(), beforeCaseData.getCaseFlags());
+        assertNotNull(response.getData().getCaseFlags());
         assertNull(response.getData().getSubjectFlags());
         assertNull(response.getData().getApplicantFlags());
         assertNull(response.getData().getRepresentativeFlags());
