@@ -23,7 +23,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
@@ -47,14 +47,20 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
     private static final CcdPageConfiguration selectReason = new PostponeHearingSelectReason();
     private static final CcdPageConfiguration notifyParties = new PostponeHearingNotifyParties();
 
-    @Autowired
-    private HearingService hearingService;
+    private final HearingService hearingService;
+
+    private final RecordListHelper recordListHelper;
+
+    private final HearingPostponedNotification hearingPostponedNotification;
 
     @Autowired
-    private RecordListHelper recordListHelper;
-
-    @Autowired
-    private HearingPostponedNotification hearingPostponedNotification;
+    public CaseworkerPostponeHearing(HearingService hearingService,
+                                     RecordListHelper recordListHelper,
+                                     HearingPostponedNotification hearingPostponedNotification) {
+        this.hearingService = hearingService;
+        this.recordListHelper = recordListHelper;
+        this.hearingPostponedNotification = hearingPostponedNotification;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -103,7 +109,7 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
         recordListHelper.getNotificationParties(caseData);
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingStatus(Postponed);
-        caseData.getListing().setPostponeDate(LocalDateTime.now());
+        caseData.getListing().setPostponeDate(LocalDate.now());
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

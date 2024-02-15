@@ -25,7 +25,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CancelHearingNotification;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
@@ -113,7 +113,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             state = CaseManagement;
         }
         caseData.getListing().setHearingStatus(Cancelled);
-        caseData.getListing().setCancelledDate(LocalDateTime.now());
+        caseData.getListing().setCancelledDate(LocalDate.now());
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
