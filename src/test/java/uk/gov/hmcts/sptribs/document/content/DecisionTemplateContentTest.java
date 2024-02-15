@@ -18,6 +18,12 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DECISION_SIGNATURE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_DATE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.MAIN_CONTENT;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMembers;
 
@@ -29,53 +35,71 @@ public class DecisionTemplateContentTest {
 
     @Test
     public void shouldSuccessfullyApplyDecisionContent() {
-        //Given
-        CaseData caseData = buildCaseData();
+        final CaseData caseData = buildCaseData();
         caseData.setDecisionSignature("John Doe");
         caseData.setDecisionMainContent("Case Closed");
-        HearingSummary summary = HearingSummary.builder()
+        final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .build();
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .date(LocalDate.now())
             .hearingTime("11::00")
             .hearingStatus(HearingState.Complete)
             .summary(summary)
             .build();
-        ListValue<Listing> listingListValue = new ListValue<>();
+        final ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(listing);
         caseData.setHearingList(List.of(listingListValue));
 
-        //When
-        Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
+        final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
-        //Then
-        assertThat(result).contains(
-            entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel())
-        );
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(DECISION_SIGNATURE, "John Doe"))
+            .contains(entry(MAIN_CONTENT, "Case Closed"));
     }
 
     @Test
     public void shouldSuccessfullyApplyDecisionContentNoMembers() {
-        //Given
-        CaseData caseData = buildCaseData();
-        HearingSummary summary = HearingSummary.builder()
+        final CaseData caseData = buildCaseData();
+        final HearingSummary summary = HearingSummary.builder()
             .build();
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .summary(summary)
             .date(LocalDate.now())
             .hearingTime("11::00")
             .build();
-        ListValue<Listing> listingListValue = new ListValue<>();
+        final ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(listing);
         caseData.setHearingList(List.of(listingListValue));
-        //When
-        Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
+        final Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
-        //Then
-        assertThat(result).contains(
-            entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel())
-        );
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(DECISION_SIGNATURE, null))
+            .contains(entry(TRIBUNAL_MEMBERS, ""));
+    }
+
+    @Test
+    void shouldSuccessfullyApplyDecisionContentWithEmptyDate() {
+        final CaseData caseData = buildCaseData();
+        final HearingSummary summary = HearingSummary.builder()
+            .build();
+        final Listing listing = Listing.builder()
+            .summary(summary)
+            .date(null)
+            .hearingTime("15:30")
+            .build();
+
+        //Using a spy as getLatestCompletedHearing cannot handle a null date
+        final CaseData caseDataMock = spy(caseData);
+        when(caseDataMock.getLatestCompletedHearing()).thenReturn(listing);
+
+        final Map<String, Object> result = templateContent.apply(caseDataMock, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(HEARING_DATE, ""));
     }
 
     private CaseData buildCaseData() {

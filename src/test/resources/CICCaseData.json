@@ -1,15 +1,15 @@
 {
   "CaseTypeOfApplication": "CIC",
-  "subjectFullName": "test Full Name",
-  "subjectDateOfBirth": "2023-01-01",
-  "subjectEmailAddress": "test1@test.com",
-  "subjectContactNumber": "012345678890",
-  "subjectAgreeContact": "Yes",
-  "representation": "Yes",
-  "representationQualified": "Yes",
-  "representativeFullName": "test Representative",
-  "representativeOrganisationName": "test Organisation",
-  "representativeContactNumber": "098876543210",
-  "representativeEmailAddress": "test2@test.com"
+  "SubjectFullName": "test Full Name",
+  "SubjectDateOfBirth": "2023-01-01",
+  "SubjectEmailAddress": "test1@test.com",
+  "SubjectContactNumber": "012345678890",
+  "SubjectAgreeContact": "Yes",
+  "Representation": "Yes",
+  "RepresentationQualified": "Yes",
+  "RepresentativeFullName": "test Representative",
+  "RepresentativeOrganisationName": "test Organisation",
+  "RepresentativeContactNumber": "098876543210",
+  "RepresentativeEmailAddress": "test2@test.com"
 }
 
