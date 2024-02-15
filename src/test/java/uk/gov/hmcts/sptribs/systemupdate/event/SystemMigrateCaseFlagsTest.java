@@ -88,7 +88,7 @@ class SystemMigrateCaseFlagsTest {
         assertEquals("subject",response.getData().getSubjectFlags().getRoleOnCase());
         assertEquals("applicant",response.getData().getApplicantFlags().getRoleOnCase());
         assertEquals(TEST_FIRST_NAME, response.getData().getApplicantFlags().getPartyName());
-        assertEquals("Representative", response.getData().getRepresentativeFlags().getRoleOnCase() );
+        assertEquals("Representative", response.getData().getRepresentativeFlags().getRoleOnCase());
         assertEquals(TEST_SOLICITOR_NAME,response.getData().getRepresentativeFlags().getPartyName());
     }
 
