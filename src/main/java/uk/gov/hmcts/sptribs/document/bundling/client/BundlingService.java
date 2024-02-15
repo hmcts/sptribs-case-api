@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document.bundling.client;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -60,7 +61,6 @@ public class BundlingService {
 
     @Autowired
     private BundlingClient bundlingClient;
-
 
     public List<Bundle> createBundle(Callback callback) {
         BundleResponse response = null;
@@ -154,8 +154,9 @@ public class BundlingService {
                 Bundle bundle = buildBundle(objectLinkedHashMap);
 
                 bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
-                if (null != objectLinkedHashMap.get(DOCUMENTS)) {
-                    bundle.setDocuments(buildBundleDocumentListValues(getDocuments(objectLinkedHashMap)));
+                if (objectLinkedHashMap.get(DOCUMENTS) != null) {
+                    List<Map<String, Object>> documentsFromResponse = (List<Map<String, Object>>) objectLinkedHashMap.get(DOCUMENTS);
+                    bundle.setDocuments(buildBundleDocumentListValues(getDocuments(documentsFromResponse)));
                 }
                 bundleList.add(bundle);
             }));
@@ -165,17 +166,19 @@ public class BundlingService {
 
     private List<BundleFolder> buildBundleFolders(LinkedHashMap<String, Object> objectLinkedHashMap) {
         List<BundleFolder> folders = new ArrayList<>();
-        if (null != objectLinkedHashMap.get(FOLDERS)) {
+        if (objectLinkedHashMap.get(FOLDERS) != null) {
             List<LinkedHashMap<String, Object>> responseFolders
                 = (List<LinkedHashMap<String, Object>>) objectLinkedHashMap.get(FOLDERS);
-            for (int y = 0; y < responseFolders.size(); y++) {
-                LinkedHashMap<String, Object> foldersObject = (LinkedHashMap<String, Object>) responseFolders.get(y).get(VALUE);
+            for (LinkedHashMap<String, Object> responseFolder : responseFolders) {
+                LinkedHashMap<String, Object> foldersObject = (LinkedHashMap<String, Object>) responseFolder.get(VALUE);
                 BundleFolder bundleFolder = BundleFolder.builder()
-                    .name(null != foldersObject.get(NAME) ? foldersObject.get(NAME).toString() : "")
-                    .sortIndex(null != foldersObject.get(SORT_INDEX) ? (Integer) foldersObject.get(SORT_INDEX) : null)
-                    .build();
-                if (null != foldersObject.get(DOCUMENTS)) {
-                    bundleFolder.setDocuments(buildBundleDocumentListValues(getDocuments(foldersObject)));
+                        .name(MapUtils.getString(foldersObject, NAME, ""))
+                        .sortIndex(MapUtils.getIntValue(foldersObject, SORT_INDEX))
+                        .build();
+
+                if (foldersObject.get(DOCUMENTS) != null) {
+                    List<Map<String, Object>> folderDocumentsList = (List<Map<String, Object>>) foldersObject.get(DOCUMENTS);
+                    bundleFolder.setDocuments(buildBundleDocumentListValues(getDocuments(folderDocumentsList)));
                 }
                 folders.add(bundleFolder);
             }
@@ -187,18 +190,16 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
         return Bundle.builder()
             .stitchStatus(NEW)
-            .description(null != objectLinkedHashMap.get(DESCRIPTION) ? objectLinkedHashMap.get(DESCRIPTION).toString() : "")
-            .id(null != objectLinkedHashMap.get(ID) ? objectLinkedHashMap.get(ID).toString() : "")
-            .title(null != objectLinkedHashMap.get(TITLE) ? objectLinkedHashMap.get(TITLE).toString() : "")
+            .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
+            .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
+            .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
             .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
-            .paginationStyle(null != objectLinkedHashMap.get(PAGINATION_STYLE)
-                ? BundlePaginationStyle.valueOf(objectLinkedHashMap.get(PAGINATION_STYLE).toString()) : null)
-            .pageNumberFormat(null != objectLinkedHashMap.get(PAGE_NUMBER_FORMAT)
-                ? PageNumberFormat.valueOf(objectLinkedHashMap.get(PAGE_NUMBER_FORMAT).toString()) : null)
-            .stitchingFailureMessage(null != objectLinkedHashMap.get(STITCHING_FAILURE_MESSAGE)
-                ? objectLinkedHashMap.get(STITCHING_FAILURE_MESSAGE).toString() : "")
-            .stitchStatus(null != objectLinkedHashMap.get(STITCHING_STATUS)
-                ? objectLinkedHashMap.get(STITCHING_STATUS).toString() : "")
+            .paginationStyle(BundlePaginationStyle.valueOf(
+                MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
+            .pageNumberFormat(PageNumberFormat.valueOf(
+                MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
+            .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+            .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
     }
 
@@ -207,35 +208,27 @@ public class BundlingService {
             return null;
         }
 
-        LinkedHashMap stitchedDocMap = (LinkedHashMap) objectLinkedHashMap.get(STITCHED_DOCUMENT);
-        Document stitchedDocument = Document.builder()
-            .url(null != stitchedDocMap && null != stitchedDocMap.get(DOCUMENT_URL)
-                ? stitchedDocMap.get(DOCUMENT_URL).toString() : "")
-            .binaryUrl(null != stitchedDocMap && null != stitchedDocMap.get(DOCUMENT_BINARY_URL)
-                ? stitchedDocMap.get(DOCUMENT_BINARY_URL).toString() : "")
-            .filename(null != stitchedDocMap && null != stitchedDocMap.get(DOCUMENT_FILENAME)
-                ? stitchedDocMap.get(DOCUMENT_FILENAME).toString() : "")
-            .build();
+        LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
-        return stitchedDocument;
+        return Document.builder()
+            .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
+            .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
+            .filename(MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
+            .build();
     }
 
-    private List<BundleDocument> getDocuments(Map<String, Object> response) {
+    private List<BundleDocument> getDocuments(List<Map<String, Object>> documentsList) {
         List<BundleDocument> documents = new ArrayList<>();
-        if (null != response.get(DOCUMENTS)) {
-            List<Map<String, Object>> documentsFromResponse = (List<Map<String, Object>>) response.get(DOCUMENTS);
-            documentsFromResponse.forEach(res -> {
-                Map<String, Object> document = (Map<String, Object>) res.get(VALUE);
-                BundleDocument bundleDocument = BundleDocument.builder()
-                    .name(null != document.get(NAME) ? document.get(NAME).toString() : "")
-                    .name(null != document.get(DESCRIPTION) ? document.get(DESCRIPTION).toString() : "")
-                    .sortIndex(null != document.get(SORT_INDEX) ? (Integer) document.get(SORT_INDEX) : null)
-                    .build();
-                documents.add(bundleDocument);
-            });
+        documentsList.forEach(listItem -> {
+            Map<String, Object> document = (Map<String, Object>) listItem.get(VALUE);
+            BundleDocument bundleDocument = BundleDocument.builder()
+                .name(MapUtils.getString(document, NAME, ""))
+                .description(MapUtils.getString(document, DESCRIPTION, ""))
+                .sortIndex(MapUtils.getIntValue(document, SORT_INDEX))
+                .build();
+            documents.add(bundleDocument);
+        });
 
-            return documents;
-        }
-        return null;
+        return documents;
     }
 }

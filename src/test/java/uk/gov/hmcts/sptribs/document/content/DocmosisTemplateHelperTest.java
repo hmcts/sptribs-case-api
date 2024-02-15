@@ -37,10 +37,8 @@ class DocmosisTemplateHelperTest {
 
     @Test
     void shouldReturnEmptyStringWhenMembersListIsNull() {
-        //When
-        String members = getMembers(null);
+        final String members = getMembers(null);
 
-        //Then
         assertTrue(members.isEmpty());
     }
 
