@@ -32,7 +32,7 @@ public class DssCaseDocumentClient {
                                            List<MultipartFile> files,
                                            Classification classification) {
 
-        DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(classification.toString(),
+        final DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(classification.toString(),
                                                                                 caseTypeId,
                                                                                 jurisdictionId,
                                                                                 files);
