@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,14 +11,11 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
-import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
@@ -45,7 +44,7 @@ class JudicialServiceTest {
     private JudicialClient judicialClient;
 
     @Mock
-    private IdamService idamService;
+    private HttpServletRequest httpServletRequest;
 
     @Test
     void shouldPopulateUserDynamicList() {
@@ -64,8 +63,7 @@ class JudicialServiceTest {
         final CaseData caseData = CaseData.builder().build();
 
         //When
-        final User user = TestDataHelper.getUser();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,
@@ -90,8 +88,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenListFromJudicialRefDataCallIsNull() {
         //When
-        final User user = TestDataHelper.getUser();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,
@@ -107,8 +104,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenExceptionFromJudicialRefDataCall() {
         //When
-        final User user = TestDataHelper.getUser();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         doThrow(FeignException.class)
