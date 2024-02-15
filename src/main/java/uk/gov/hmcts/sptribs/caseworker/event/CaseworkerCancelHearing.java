@@ -50,11 +50,16 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
-    @Autowired
-    private HearingService hearingService;
+    private final HearingService hearingService;
+
+    private final CancelHearingNotification cancelHearingNotification;
 
     @Autowired
-    private CancelHearingNotification cancelHearingNotification;
+    public CaseworkerCancelHearing(HearingService hearingService,
+                                   CancelHearingNotification cancelHearingNotification) {
+        this.hearingService = hearingService;
+        this.cancelHearingNotification = cancelHearingNotification;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

@@ -57,17 +57,24 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
-    @Autowired
-    private RecordListHelper recordListHelper;
+    private final RecordListHelper recordListHelper;
+
+    private final LocationService locationService;
+
+    private final HearingService hearingService;
+
+    private final ListingCreatedNotification listingCreatedNotification;
 
     @Autowired
-    private LocationService locationService;
-
-    @Autowired
-    private HearingService hearingService;
-
-    @Autowired
-    private ListingCreatedNotification listingCreatedNotification;
+    public CaseworkerRecordListing(HearingService hearingService,
+                                   LocationService locationService,
+                                   RecordListHelper recordListHelper,
+                                   ListingCreatedNotification listingCreatedNotification) {
+        this.hearingService = hearingService;
+        this.locationService = locationService;
+        this.recordListHelper = recordListHelper;
+        this.listingCreatedNotification = listingCreatedNotification;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
