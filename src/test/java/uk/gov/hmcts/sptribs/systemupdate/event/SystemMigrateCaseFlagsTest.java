@@ -14,8 +14,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -58,17 +60,18 @@ class SystemMigrateCaseFlagsTest {
     @Test
     void shouldSuccessfullyUpdateCaseFlags() {
         //Given
-        final CaseData caseData = caseData();
+        final CaseData beforeCaseData = caseData();
+        final CaseData updatedCaseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .applicantFullName(TEST_FIRST_NAME)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
-        caseData.setCicCase(cicCase);
+        updatedCaseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        beforeDetails.setData(caseData);
-        updatedCaseDetails.setData(caseData);
+        beforeDetails.setData(beforeCaseData);
+        updatedCaseDetails.setData(updatedCaseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         systemMigrateCaseFlags.setMigrationFlagEnabled(true);
@@ -78,27 +81,32 @@ class SystemMigrateCaseFlagsTest {
             systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertNotNull(response.getData());
-        assertNotNull(response.getData().getCaseFlags());
-        assertNotNull(response.getData().getSubjectFlags());
-        assertNotNull(response.getData().getRepresentativeFlags());
-        assertNotNull(response.getData().getApplicantFlags());
+        assertNotEquals(response.getData().getCaseFlags(), beforeDetails.getData().getCaseFlags());
+        assertTrue(response.getData().getCaseFlags().getDetails().isEmpty());
+        assertEquals(response.getData().getSubjectFlags().getPartyName(),TEST_FIRST_NAME);
+        assertEquals(response.getData().getSubjectFlags().getRoleOnCase(),"subject");
+        assertEquals(response.getData().getApplicantFlags().getRoleOnCase(), "applicant");
+        assertEquals(response.getData().getApplicantFlags().getPartyName(), TEST_FIRST_NAME);
+        assertEquals(response.getData().getRepresentativeFlags().getRoleOnCase(), "Representative");
+        assertEquals(response.getData().getRepresentativeFlags().getPartyName(), TEST_SOLICITOR_NAME);
     }
 
     @Test
     void shouldNotUpdateCaseFlags() {
         //Given
-        final CaseData caseData = caseData();
-        final CicCase cicCase = CicCase.builder()
+        final CaseData beforeCaseData = caseData();
+        final CaseData updatedCaseData = caseData();
+        final CicCase updatedCicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .applicantFullName(TEST_FIRST_NAME)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .build();
-        caseData.setCicCase(cicCase);
+
+        updatedCaseData.setCicCase(updatedCicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        beforeDetails.setData(caseData);
-        updatedCaseDetails.setData(caseData);
+        beforeDetails.setData(beforeCaseData);
+        updatedCaseDetails.setData(updatedCaseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         systemMigrateCaseFlags.setMigrationFlagEnabled(false);
@@ -108,27 +116,27 @@ class SystemMigrateCaseFlagsTest {
             systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertNotNull(response.getData());
-        assertNull(response.getData().getCaseFlags());
+        assertEquals(response.getData().getCaseFlags(), beforeDetails.getData().getCaseFlags());
         assertNull(response.getData().getSubjectFlags());
-        assertNull(response.getData().getRepresentativeFlags());
         assertNull(response.getData().getApplicantFlags());
+        assertNull(response.getData().getRepresentativeFlags());
     }
 
     @Test
     void shouldSuccessfullyUpdateCaseFlagsWithNullValues() {
         //Given
-        final CaseData caseData = caseData();
+        final CaseData beforeCaseData = caseData();
+        final CaseData updatedCaseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(null)
             .applicantFullName(null)
             .representativeFullName(null)
             .build();
-        caseData.setCicCase(cicCase);
+        updatedCaseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        beforeDetails.setData(caseData);
-        updatedCaseDetails.setData(caseData);
+        beforeDetails.setData(beforeCaseData);
+        updatedCaseDetails.setData(updatedCaseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         systemMigrateCaseFlags.setMigrationFlagEnabled(true);
@@ -138,9 +146,9 @@ class SystemMigrateCaseFlagsTest {
             systemMigrateCaseFlags.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertNotNull(response.getData());
+        assertNotEquals(response.getData().getCaseFlags(), beforeCaseData.getCaseFlags());
         assertNull(response.getData().getSubjectFlags());
-        assertNull(response.getData().getRepresentativeFlags());
         assertNull(response.getData().getApplicantFlags());
+        assertNull(response.getData().getRepresentativeFlags());
     }
 }
