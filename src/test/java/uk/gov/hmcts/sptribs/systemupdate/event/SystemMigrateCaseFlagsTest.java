@@ -85,11 +85,11 @@ class SystemMigrateCaseFlagsTest {
         assertNotEquals(response.getData().getCaseFlags(), beforeDetails.getData().getCaseFlags());
         assertTrue(response.getData().getCaseFlags().getDetails().isEmpty());
         assertEquals(TEST_FIRST_NAME, response.getData().getSubjectFlags().getPartyName());
-        assertEquals("subject",response.getData().getSubjectFlags().getRoleOnCase());
-        assertEquals("applicant",response.getData().getApplicantFlags().getRoleOnCase());
+        assertEquals("subject", response.getData().getSubjectFlags().getRoleOnCase());
+        assertEquals("applicant", response.getData().getApplicantFlags().getRoleOnCase());
         assertEquals(TEST_FIRST_NAME, response.getData().getApplicantFlags().getPartyName());
         assertEquals("Representative", response.getData().getRepresentativeFlags().getRoleOnCase());
-        assertEquals(TEST_SOLICITOR_NAME,response.getData().getRepresentativeFlags().getPartyName());
+        assertEquals(TEST_SOLICITOR_NAME, response.getData().getRepresentativeFlags().getPartyName());
     }
 
     @Test
