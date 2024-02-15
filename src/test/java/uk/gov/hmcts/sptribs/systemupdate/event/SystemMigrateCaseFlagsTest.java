@@ -84,12 +84,12 @@ class SystemMigrateCaseFlagsTest {
         //Then
         assertNotEquals(response.getData().getCaseFlags(), beforeDetails.getData().getCaseFlags());
         assertTrue(response.getData().getCaseFlags().getDetails().isEmpty());
-        assertEquals(response.getData().getSubjectFlags().getPartyName(),TEST_FIRST_NAME);
-        assertEquals(response.getData().getSubjectFlags().getRoleOnCase(),"subject");
-        assertEquals(response.getData().getApplicantFlags().getRoleOnCase(), "applicant");
-        assertEquals(response.getData().getApplicantFlags().getPartyName(), TEST_FIRST_NAME);
-        assertEquals(response.getData().getRepresentativeFlags().getRoleOnCase(), "Representative");
-        assertEquals(response.getData().getRepresentativeFlags().getPartyName(), TEST_SOLICITOR_NAME);
+        assertEquals(TEST_FIRST_NAME, response.getData().getSubjectFlags().getPartyName());
+        assertEquals("subject",response.getData().getSubjectFlags().getRoleOnCase());
+        assertEquals("applicant",response.getData().getApplicantFlags().getRoleOnCase());
+        assertEquals(TEST_FIRST_NAME, response.getData().getApplicantFlags().getPartyName());
+        assertEquals("Representative", response.getData().getRepresentativeFlags().getRoleOnCase() );
+        assertEquals(TEST_SOLICITOR_NAME,response.getData().getRepresentativeFlags().getPartyName());
     }
 
     @Test
