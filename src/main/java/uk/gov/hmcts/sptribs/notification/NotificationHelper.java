@@ -49,14 +49,6 @@ public class NotificationHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationHelper.class);
 
-    public Map<String, Object> commonTemplateVars(final CicCase cicCase, final String caseNumber) {
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(TRIBUNAL_NAME, CIC);
-        templateVars.put(CIC_CASE_NUMBER, caseNumber);
-        templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        return templateVars;
-    }
-
     public void addAddressTemplateVars(AddressGlobalUK address, Map<String, Object> templateVars) {
         templateVars.put(ADDRESS_LINE_1, address.getAddressLine1());
         templateVars.put(ADDRESS_LINE_2, address.getAddressLine2());
@@ -209,18 +201,6 @@ public class NotificationHelper {
         return uploadedDocuments;
     }
 
-    private boolean isFaceToFaceFormat(Listing listing) {
-        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
-    }
-
-    private boolean isVideoFormat(Listing listing) {
-        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.VIDEO);
-    }
-
-    private boolean isTelephoneFormat(Listing listing) {
-        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
-    }
-
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
         final String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
         final String[] hearingDateTimeArr = (selectedHearingDateTime != null)
@@ -237,4 +217,25 @@ public class NotificationHelper {
         templateVars.put(HEARING_DATE, hearingDate);
         templateVars.put(HEARING_TIME, hearingTime);
     }
+
+    private Map<String, Object> commonTemplateVars(final CicCase cicCase, final String caseNumber) {
+        final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(TRIBUNAL_NAME, CIC);
+        templateVars.put(CIC_CASE_NUMBER, caseNumber);
+        templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
+        return templateVars;
+    }
+
+    private boolean isFaceToFaceFormat(Listing listing) {
+        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
+    }
+
+    private boolean isVideoFormat(Listing listing) {
+        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.VIDEO);
+    }
+
+    private boolean isTelephoneFormat(Listing listing) {
+        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+    }
+
 }
