@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.judicialrefdata;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -31,6 +32,9 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION
 @Slf4j
 public class JudicialService {
 
+    @Value("${judicial.api.usersPageSize}")
+    private int judicialUsersPageSize;
+
     private final AuthTokenGenerator authTokenGenerator;
 
     private final JudicialClient judicialClient;
@@ -46,9 +50,13 @@ public class JudicialService {
     }
 
     public DynamicList getAllUsers(CaseData caseData) {
+        log.info("Getting users");
         final List<UserProfileRefreshResponse> users = getUsers();
+        log.info("users received, starting populateJudgesList");
         final List<ListValue<Judge>> judges = populateJudgesList(users);
+        log.info("populateJudgesList completed, adding judge list to summary");
         caseData.getListing().getSummary().setJudgeList(judges);
+        log.info("added judge list to summary, started populateUsersDynamicList");
         return populateUsersDynamicList(judges);
     }
 
@@ -74,6 +82,7 @@ public class JudicialService {
                 judicialClient.getUserProfiles(
                     authTokenGenerator.generate(),
                     authToken,
+                    judicialUsersPageSize,
                     ACCEPT_VALUE,
                     JudicialUsersRequest.builder()
                         .ccdServiceName(ST_CIC_JURISDICTION)
@@ -115,7 +124,7 @@ public class JudicialService {
                 .sorted(comparing(Judge::getJudgeFullName))
                 .map(user -> DynamicListElement.builder().label(user.getJudgeFullName()).code(UUID.fromString(user.getUuid())).build())
                 .collect(Collectors.toList());
-
+        log.info("populateUsersDynamicList completed");
         return DynamicList
             .builder()
             .listItems(usersDynamicList)
