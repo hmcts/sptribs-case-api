@@ -83,9 +83,9 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        assertEquals(templateVars.size(), 10);
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO),true);
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_HEARING_VENUE), CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING);
+        assertEquals(10, templateVars.size());
+        assertEquals(true, templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO));
+        assertEquals(CommonConstants.CIC_CASE_RECORD_REMOTE_HEARING, templateVars.get(CommonConstants.CIC_CASE_HEARING_VENUE));
         assertEquals(templateVars.get(CommonConstants.CIC_CASE_HEARING_INFO), listing.getAddlInstr());
         assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK), listing.getVideoCallLink());
         assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM), listing.getConferenceCallNumber());
@@ -104,14 +104,14 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        assertEquals(templateVars.size(), 10);
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO),false);
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE),false);
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL),false);
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_HEARING_VENUE), " ");
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_HEARING_INFO), " ");
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK), " ");
-        assertEquals(templateVars.get(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM), " ");
+        assertEquals(10, templateVars.size());
+        assertEquals(false, templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO));
+        assertEquals(false, templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE));
+        assertEquals(false, templateVars.get(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL));
+        assertEquals(" ", templateVars.get(CommonConstants.CIC_CASE_HEARING_VENUE));
+        assertEquals(" ", templateVars.get(CommonConstants.CIC_CASE_HEARING_INFO));
+        assertEquals(" ", templateVars.get(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK));
+        assertEquals(" ", templateVars.get(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM));
     }
 
     @Test
@@ -208,6 +208,11 @@ public class NotificationHelperTest {
 
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
+        assertEquals(10, templateVars.size());
+        assertEquals(false, templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_FORMAT_VIDEO));
+        assertEquals(false, templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE));
+        assertEquals(false, templateVars.get(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL));
+        assertEquals(" ", templateVars.get(CommonConstants.CIC_CASE_HEARING_VENUE));
     }
 
 
