@@ -254,7 +254,7 @@ public class NotificationServiceCICTest {
     }
 
     @Test
-    void shouldThrowIOExceptionWhenClientFailsToSendEmail()
+    void shouldThrowNotificationClientExceptionWhenIssueWithAttachDocFailsToSendEmail()
         throws NotificationClientException {
 
         //Given
