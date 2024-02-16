@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 
 import java.util.ArrayList;
@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
@@ -36,14 +35,14 @@ public class JudicialService {
 
     private final JudicialClient judicialClient;
 
-    private final HttpServletRequest httpServletRequest;
+    private final IdamService idamService;
 
     @Autowired
     public JudicialService(AuthTokenGenerator authTokenGenerator,
-            JudicialClient judicialClient, HttpServletRequest httpServletRequest) {
+            JudicialClient judicialClient, IdamService idamService) {
         this.authTokenGenerator = authTokenGenerator;
         this.judicialClient = judicialClient;
-        this.httpServletRequest = httpServletRequest;
+        this.idamService = idamService;
     }
 
     public DynamicList getAllUsers(CaseData caseData) {
@@ -69,11 +68,12 @@ public class JudicialService {
     }
 
     private List<UserProfileRefreshResponse> getUsers() {
+        final String authToken = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         try {
             List<UserProfileRefreshResponse> list =
                 judicialClient.getUserProfiles(
                     authTokenGenerator.generate(),
-                    httpServletRequest.getHeader(AUTHORIZATION),
+                    authToken,
                     ACCEPT_VALUE,
                     JudicialUsersRequest.builder()
                         .ccdServiceName(ST_CIC_JURISDICTION)
