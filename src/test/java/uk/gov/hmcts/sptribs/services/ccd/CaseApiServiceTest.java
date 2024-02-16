@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
@@ -49,7 +50,6 @@ import static uk.gov.hmcts.sptribs.util.AppsUtil.getExactAppsDetailsByCaseType;
 @SpringBootTest
 @TestPropertySource("classpath:application.yaml")
 @ActiveProfiles("test")
-@SuppressWarnings("PMD")
 class CaseApiServiceTest {
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private static final String TEST_CASE_REFERENCE = "123";
@@ -87,14 +87,14 @@ class CaseApiServiceTest {
     }
 
     @Test
-    void testFgmCreateCaseData() throws Exception {
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+    void shouldfgmCreateCaseData() throws Exception {
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
-        Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
 
         caseDataMap.put(TEST_CASE_REFERENCE, caseData);
-        CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
             .id(TEST_CASE_ID)
             .data(caseDataMap)
             .jurisdiction(ST_CIC_JURISDICTION)
@@ -123,7 +123,7 @@ class CaseApiServiceTest {
             getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getCreateEvent()
         )).thenReturn(eventRes);
 
-        CaseDataContent caseDataContent = CaseDataContent.builder()
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(caseData)
             .event(Event.builder().id(getExactAppsDetailsByCaseType(
                 appsConfig,
@@ -142,7 +142,7 @@ class CaseApiServiceTest {
             caseDataContent
         )).thenReturn(caseDetail);
 
-        CaseDetails createCaseDetail = caseApiService.createCase(CASE_TEST_AUTHORIZATION, caseData, cicAppDetails);
+        final CaseDetails createCaseDetail = caseApiService.createCase(CASE_TEST_AUTHORIZATION, caseData, cicAppDetails);
 
         assertEquals(CASE_DATA_CIC_ID, createCaseDetail.getCaseTypeId());
         assertEquals(createCaseDetail.getId(), caseDetail.getId());
@@ -151,21 +151,251 @@ class CaseApiServiceTest {
         assertEquals(createCaseDetail.getData().get(TEST_CASE_REFERENCE), caseDataMap.get(TEST_CASE_REFERENCE));
     }
 
-
     @Test
-    void getCaseDetails() throws Exception {
-        String caseDatajson = loadJson(CASE_DATA_FILE_CIC);
-        CaseData caseData = mapper.readValue(caseDatajson,CaseData.class);
+    void shouldUpdateCaseData() throws IOException {
 
-        Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+
         caseDataMap.put(TEST_CASE_REFERENCE, caseData);
-
-        CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
             .id(TEST_CASE_ID)
             .data(caseDataMap)
             .jurisdiction(ST_CIC_JURISDICTION)
             .build();
 
+        eventRes = StartEventResponse.builder()
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent())
+            .caseDetails(caseDetail)
+            .token(TEST_AUTHORIZATION_TOKEN)
+            .build();
+
+        when(idamService.retrieveUser(CASE_TEST_AUTHORIZATION)).thenReturn(user);
+
+        when(user.getUserDetails()).thenReturn(userDetails);
+
+        when(userDetails.getId()).thenReturn(TEST_USER);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
+
+        when(coreCaseDataApi.startEventForCitizen(
+            CASE_TEST_AUTHORIZATION,
+            authTokenGenerator.generate(),
+            TEST_USER,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            TEST_CASE_ID.toString(),
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent()
+        )).thenReturn(eventRes);
+
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
+            .data(caseData)
+            .event(Event.builder().id(getExactAppsDetailsByCaseType(
+                appsConfig,
+                ST_CIC_CASE_TYPE
+            ).getEventIds().getUpdateEvent()).build())
+            .eventToken(TEST_AUTHORIZATION_TOKEN)
+            .build();
+
+        when(coreCaseDataApi.submitEventForCitizen(
+            CASE_TEST_AUTHORIZATION,
+            authTokenGenerator.generate(),
+            TEST_USER,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            TEST_CASE_ID.toString(),
+            true,
+            caseDataContent
+        )).thenReturn(caseDetail);
+
+        final CaseDetails updateCaseDetails = caseApiService.updateCase(
+            CASE_TEST_AUTHORIZATION,
+            uk.gov.hmcts.sptribs.edgecase.event.Event.UPDATE,
+            TEST_CASE_ID,
+            caseData,
+            cicAppDetails);
+
+        assertEquals(CASE_DATA_CIC_ID, updateCaseDetails.getCaseTypeId());
+        assertEquals(updateCaseDetails.getId(), caseDetail.getId());
+        assertEquals(updateCaseDetails.getCaseTypeId(), caseDetail.getCaseTypeId());
+        assertEquals(updateCaseDetails.getData(), caseDetail.getData());
+        assertEquals(updateCaseDetails.getData().get(TEST_CASE_REFERENCE), caseDataMap.get(TEST_CASE_REFERENCE));
+    }
+
+    @Test
+    void shouldGetEventToken() throws IOException {
+
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+
+        caseDataMap.put(TEST_CASE_REFERENCE, caseData);
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+            .id(TEST_CASE_ID)
+            .data(caseDataMap)
+            .jurisdiction(ST_CIC_JURISDICTION)
+            .build();
+
+        eventRes = StartEventResponse.builder()
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getCreateEvent())
+            .caseDetails(caseDetail)
+            .token(TEST_AUTHORIZATION_TOKEN)
+            .build();
+
+        when(coreCaseDataApi.startForCitizen(
+            CASE_TEST_AUTHORIZATION,
+            authTokenGenerator.generate(),
+            TEST_USER,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getCreateEvent()
+        )).thenReturn(eventRes);
+
+        final String result = caseApiService.getEventToken(
+            CASE_TEST_AUTHORIZATION,
+            TEST_USER,
+            cicAppDetails.getEventIds().getCreateEvent(),
+            cicAppDetails
+        );
+
+        assertNotNull(result);
+        assertEquals(eventRes.getToken(),result);
+        assertEquals(eventRes.getToken(),result);
+
+    }
+
+    @Test
+    void shouldGetEventTokenForUpdate() throws IOException {
+
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+
+        caseDataMap.put(TEST_CASE_REFERENCE, caseData);
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+            .id(TEST_CASE_ID)
+            .data(caseDataMap)
+            .jurisdiction(ST_CIC_JURISDICTION)
+            .build();
+
+        eventRes = StartEventResponse.builder()
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent())
+            .caseDetails(caseDetail)
+            .token(TEST_AUTHORIZATION_TOKEN)
+            .build();
+
+        when(coreCaseDataApi.startEventForCitizen(
+            CASE_TEST_AUTHORIZATION,
+            authTokenGenerator.generate(),
+            TEST_USER,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            TEST_CASE_ID.toString(),
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent()
+        )).thenReturn(eventRes);
+
+        final String result = caseApiService.getEventTokenForUpdate(
+            CASE_TEST_AUTHORIZATION,
+            TEST_USER,
+            cicAppDetails.getEventIds().getUpdateEvent(),
+            TEST_CASE_ID.toString(),
+            cicAppDetails
+        );
+
+        assertNotNull(result);
+        assertEquals(eventRes.getToken(),result);
+    }
+
+    @Test
+    void shouldUpdateCaseDataWithSubmitEvent() throws IOException {
+
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+
+        caseDataMap.put(TEST_CASE_REFERENCE, caseData);
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+            .id(TEST_CASE_ID)
+            .data(caseDataMap)
+            .jurisdiction(ST_CIC_JURISDICTION)
+            .build();
+
+        eventRes = StartEventResponse.builder()
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getSubmitEvent())
+            .caseDetails(caseDetail)
+            .token(TEST_AUTHORIZATION_TOKEN)
+            .build();
+
+        when(idamService.retrieveUser(CASE_TEST_AUTHORIZATION)).thenReturn(user);
+
+        when(user.getUserDetails()).thenReturn(userDetails);
+
+        when(userDetails.getId()).thenReturn(TEST_USER);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
+
+        when(coreCaseDataApi.startEventForCitizen(
+            CASE_TEST_AUTHORIZATION,
+            authTokenGenerator.generate(),
+            TEST_USER,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            TEST_CASE_ID.toString(),
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getSubmitEvent()
+        )).thenReturn(eventRes);
+
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
+            .data(caseData)
+            .event(Event.builder().id(getExactAppsDetailsByCaseType(
+                appsConfig,
+                ST_CIC_CASE_TYPE
+            ).getEventIds().getSubmitEvent()).build())
+            .eventToken(TEST_AUTHORIZATION_TOKEN)
+            .build();
+
+        when(coreCaseDataApi.submitEventForCitizen(
+            CASE_TEST_AUTHORIZATION,
+            authTokenGenerator.generate(),
+            TEST_USER,
+            ST_CIC_JURISDICTION,
+            ST_CIC_CASE_TYPE,
+            TEST_CASE_ID.toString(),
+            true,
+            caseDataContent
+        )).thenReturn(caseDetail);
+
+        final CaseDetails updateCaseDetails = caseApiService.updateCase(
+            CASE_TEST_AUTHORIZATION,
+            uk.gov.hmcts.sptribs.edgecase.event.Event.SUBMIT,
+            TEST_CASE_ID,
+            caseData,
+            cicAppDetails);
+
+        assertEquals(CASE_DATA_CIC_ID, updateCaseDetails.getCaseTypeId());
+        assertEquals(updateCaseDetails.getId(), caseDetail.getId());
+        assertEquals(updateCaseDetails.getCaseTypeId(), caseDetail.getCaseTypeId());
+        assertEquals(updateCaseDetails.getData(), caseDetail.getData());
+        assertEquals(updateCaseDetails.getData().get(TEST_CASE_REFERENCE), caseDataMap.get(TEST_CASE_REFERENCE));
+    }
+
+    @Test
+    void shouldGetCaseDetails() throws Exception {
+        final String caseDatajson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDatajson,CaseData.class);
+
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+        caseDataMap.put(TEST_CASE_REFERENCE, caseData);
+
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+            .id(TEST_CASE_ID)
+            .data(caseDataMap)
+            .jurisdiction(ST_CIC_JURISDICTION)
+            .build();
 
         when(coreCaseDataApi.getCase(
             CASE_TEST_AUTHORIZATION,
@@ -173,12 +403,15 @@ class CaseApiServiceTest {
             String.valueOf(TEST_CASE_ID)))
             .thenReturn(caseDetail);
 
-        CaseDetails caseDetails = caseApiService.getCaseDetails(
+        final CaseDetails result = caseApiService.getCaseDetails(
             CASE_TEST_AUTHORIZATION,
             TEST_CASE_ID);
 
-        assertEquals(caseDetails.getId(),caseDetail.getId());
-        assertEquals(caseDetails.getData(),caseDetails.getData());
+        assertNotNull(result);
+        assertEquals(result.getId(),caseDetail.getId());
+        assertEquals(result.getCaseTypeId(),caseDetail.getCaseTypeId());
+        assertEquals(result.getJurisdiction(),caseDetail.getJurisdiction());
+        assertEquals(result.getData(),caseDetail.getData());
     }
 
     @Test

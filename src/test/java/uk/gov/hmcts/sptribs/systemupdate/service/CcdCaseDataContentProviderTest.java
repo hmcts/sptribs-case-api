@@ -3,12 +3,12 @@ package uk.gov.hmcts.sptribs.systemupdate.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_MIGRATE_CASE;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,10 +21,11 @@ class CcdCaseDataContentProviderTest {
     @InjectMocks
     private CcdCaseDataContentProvider ccdCaseDataContentProvider;
 
+    @Mock
+    private Object data;
+
     @Test
     void shouldCreateCaseDataContent() {
-
-        final Object data = mock(Object.class);
 
         final CaseDataContent caseDataContent = ccdCaseDataContentProvider.createCaseDataContent(
             getStartEventResponse(),
