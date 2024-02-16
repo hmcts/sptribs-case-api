@@ -17,13 +17,14 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_UPDATE_CASE_AVAILABLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -38,6 +39,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
+
+    private static final EnumSet<State> DSS_UPDATE_CASE_AVAILABLE_STATES = EnumSet.complementOf(EnumSet.of(Draft, DSS_Draft));
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -94,7 +97,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
             isEmpty(caseData.getCicCase().getApplicantDocumentsUploaded())
                 ? docListUpdated
                 : Stream.concat(
-                    caseData.getCicCase().getApplicantDocumentsUploaded().stream(), docListUpdated.stream()).collect(Collectors.toList());
+                    caseData.getCicCase().getApplicantDocumentsUploaded().stream(), docListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
 
         return caseData;

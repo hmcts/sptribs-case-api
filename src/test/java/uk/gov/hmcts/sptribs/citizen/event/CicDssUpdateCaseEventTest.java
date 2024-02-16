@@ -28,7 +28,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigB
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 
 @ExtendWith(MockitoExtension.class)
-public class CicDssUpdateCaseEventTest {
+class CicDssUpdateCaseEventTest {
 
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
@@ -70,7 +70,7 @@ public class CicDssUpdateCaseEventTest {
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().size()).isEqualTo(3);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class CicDssUpdateCaseEventTest {
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().size()).isEqualTo(2);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
     }
 
     private DssCaseData getDssCaseData() {
