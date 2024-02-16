@@ -22,8 +22,8 @@ import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.services.ccd.CaseApiService;
+import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,6 +66,9 @@ class CaseManagementServiceTest {
     private AppsConfig.AppsDetails cicAppDetail;
 
     @Mock
+    private AppsUtil appsUtil;
+
+    @Mock
     CaseApiService caseApiService;
 
     @BeforeEach
@@ -79,24 +82,23 @@ class CaseManagementServiceTest {
     }
 
     @Test
-    void testCicCreateCaseData() throws Exception {
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+    void shouldCreateCicCaseData() throws Exception {
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
-        Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         caseDataMap.put(CASE_DATA_CIC_ID, caseData);
 
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setCreateEvent("citizen-cic-create-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
-        assertNotNull(cicAppDetail);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_USER);
 
-        CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
             .id(TEST_CASE_ID)
             .jurisdiction(CommonConstants.ST_CIC_JURISDICTION)
             .data(caseDataMap)
@@ -104,79 +106,97 @@ class CaseManagementServiceTest {
 
         when(caseApiService.createCase(CASE_TEST_AUTHORIZATION, caseData, cicAppDetail)).thenReturn(caseDetail);
 
-        CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
-        DssCaseData dssCaseData =  mapper.readValue(caseDataJson, DssCaseData.class);
+        final CaseResponse caseResponse = CaseResponse.builder().caseData(caseDataMap).build();
+        final DssCaseData dssCaseData =  mapper.readValue(caseDataJson, DssCaseData.class);
         caseData.setDssCaseData(dssCaseData);
-        CaseResponse createCaseResponse = caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData);
+        final CaseResponse createCaseResponse = caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData);
+        final CaseData caseResponseData = (CaseData) createCaseResponse.getCaseData().get(CASE_DATA_CIC_ID);
+
+        assertNotNull(cicAppDetail);
+        assertNotNull(createCaseResponse);
         assertEquals(createCaseResponse.getCaseData(), caseResponse.getCaseData());
         assertEquals(createCaseResponse.getId(), caseDetail.getId());
         assertTrue(createCaseResponse.getCaseData().containsKey(CASE_DATA_CIC_ID));
-
-        CaseData caseResponseData = (CaseData) createCaseResponse.getCaseData().get(CASE_DATA_CIC_ID);
-        assertNotNull(createCaseResponse);
-        assertEquals(
-            createCaseResponse.getCaseData().get(CASE_DATA_CIC_ID),
-            caseDetail.getData().get(CASE_DATA_CIC_ID)
-        );
+        assertEquals(createCaseResponse.getCaseData().get(CASE_DATA_CIC_ID), caseDetail.getData().get(CASE_DATA_CIC_ID));
         assertEquals(caseResponseData.getDssCaseData().getSubjectFullName(), caseData.getDssCaseData().getSubjectFullName());
         assertEquals(caseResponseData.getDssCaseData().getCaseTypeOfApplication(), caseData.getDssCaseData().getCaseTypeOfApplication());
         assertEquals(RESPONSE_STATUS_SUCCESS, createCaseResponse.getStatus());
     }
 
     @Test
-    void testCreateCaseCicFailedWithCaseCreateUpdateException() throws Exception {
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
-        eventsConfig.setCreateEvent("citizen-cic-create-dss-application");
+    void shouldCreateCaseCicFailsWhenCaseTypeIsInvalid() throws Exception {
 
-        cicAppDetail.setEventIds(eventsConfig);
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
 
-        assertNotNull(cicAppDetail);
+        when(appsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
+            .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
 
-        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
+        final CaseCreateOrUpdateException caseCreateOrUpdateException =
+            assertThrows(CaseCreateOrUpdateException.class, () ->
+            caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData));
 
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-
-        when(caseApiService.createCase(CASE_TEST_AUTHORIZATION, caseData, cicAppDetail)).thenThrow(
-            new CaseCreateOrUpdateException(
-                CASE_CREATE_FAILURE_MSG,
-                new RuntimeException()
-            ));
-
-        Exception exception = assertThrows(Exception.class, () -> {
-            caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData);
-        });
-
-        //assertTrue(exception.getMessage().contains(CASE_CREATE_FAILURE_MSG));
+        assertNotNull(caseCreateOrUpdateException.getCause());
+        assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
+        assertTrue(caseCreateOrUpdateException.getMessage().contains("Invalid Case type application. Please check the request."));
     }
 
     @Test
-    void testCicUpdateCaseData() throws Exception {
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-        DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
+    void shouldCreateCaseCicFailedWithCaseCreateUpdateException() throws Exception {
 
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+        eventsConfig.setCreateEvent("citizen-cic-create-dss-application");
+
+        cicAppDetail.setEventIds(eventsConfig);
+        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
+
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+
+        when(caseApiService.createCase(CASE_TEST_AUTHORIZATION, caseData, cicAppDetail)).thenThrow(
+            new CaseCreateOrUpdateException(CASE_CREATE_FAILURE_MSG, new RuntimeException()
+            ));
+
+        final CaseCreateOrUpdateException caseCreateOrUpdateException =
+            assertThrows(CaseCreateOrUpdateException.class, () ->
+            caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData));
+
+        assertNotNull(cicAppDetail);
+        assertNotNull(caseCreateOrUpdateException.getCause());
+        assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
+        assertTrue(caseCreateOrUpdateException.getMessage().contains(CASE_CREATE_FAILURE_MSG));
+    }
+
+    @Test
+    void shouldUpdateCicCaseData() throws Exception {
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
+
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
 
-        String origEmailAddress = caseData.getDssCaseData().getSubjectEmailAddress();
+        final String origEmailAddress = caseData.getDssCaseData().getSubjectEmailAddress();
         dssCaseData.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
         assertNotEquals(dssCaseData.getSubjectEmailAddress(), origEmailAddress);
 
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         assertNotNull(cicAppDetail);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_USER);
 
-        Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         caseDataMap.put(CASE_DATA_CIC_ID, caseData);
 
-        CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+        final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
             .id(TEST_CASE_ID)
             .data(caseDataMap)
             .build();
@@ -190,36 +210,37 @@ class CaseManagementServiceTest {
         )).thenReturn(caseDetail);
 
         caseData.setDssCaseData(dssCaseData);
-        CaseResponse updateCaseResponse = caseManagementService.updateCase(CASE_TEST_AUTHORIZATION,Event.UPDATE,caseData,TEST_CASE_ID);
+
+        final CaseResponse updateCaseResponse = caseManagementService.updateCase(
+            CASE_TEST_AUTHORIZATION,
+            Event.UPDATE,caseData,
+            TEST_CASE_ID);
+        final CaseData caseResponseData = (CaseData) updateCaseResponse.getCaseData().get(CASE_DATA_CIC_ID);
+
         assertEquals(updateCaseResponse.getId(), caseDetail.getId());
         assertTrue(updateCaseResponse.getCaseData().containsKey(CASE_DATA_CIC_ID));
-        CaseData caseResponseData = (CaseData) updateCaseResponse.getCaseData().get(CASE_DATA_CIC_ID);
         assertNotEquals(caseResponseData.getDssCaseData().getSubjectEmailAddress(), origEmailAddress);
         assertNotNull(updateCaseResponse);
-        assertEquals(
-            updateCaseResponse.getCaseData().get(CASE_DATA_CIC_ID),
-            caseDetail.getData().get(CASE_DATA_CIC_ID)
-        );
+        assertEquals(updateCaseResponse.getCaseData().get(CASE_DATA_CIC_ID), caseDetail.getData().get(CASE_DATA_CIC_ID));
         assertEquals(caseResponseData.getDssCaseData().getSubjectFullName(), caseData.getDssCaseData().getSubjectFullName());
         assertEquals(caseResponseData.getDssCaseData().getCaseTypeOfApplication(), caseData.getDssCaseData().getCaseTypeOfApplication());
         assertEquals(RESPONSE_STATUS_SUCCESS, updateCaseResponse.getStatus());
     }
 
     @Test
-    void testUpdateCaseCicFailedWithCaseCreateUpdateException() throws Exception {
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
+    void shouldUpdateCaseCicFailedWithCaseCreateUpdateException() throws Exception {
+        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
-
         cicAppDetail.setEventIds(eventsConfig);
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         assertNotNull(cicAppDetail);
 
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-        DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_USER);
         when(caseApiService.updateCase(
@@ -236,29 +257,50 @@ class CaseManagementServiceTest {
 
         caseData.setDssCaseData(dssCaseData);
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            caseManagementService.updateCase(CASE_TEST_AUTHORIZATION, Event.UPDATE, caseData, TEST_CASE_ID);
-        });
+        final CaseCreateOrUpdateException caseCreateOrUpdateException =
+            assertThrows(CaseCreateOrUpdateException.class, () ->
+            caseManagementService.updateCase(CASE_TEST_AUTHORIZATION, Event.UPDATE, caseData, TEST_CASE_ID));
 
-        assertTrue(exception.getMessage().contains(CASE_UPDATE_FAILURE_MSG));
+        assertNotNull(caseCreateOrUpdateException.getCause());
+        assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
+        assertTrue(caseCreateOrUpdateException.getMessage().contains(CASE_UPDATE_FAILURE_MSG));
     }
 
     @Test
-    void testFetchCaseDetail() throws Exception {
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-        DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
+    void shouldUpdateCaseCicFailsWhenCaseTypeIsInvalid() throws Exception {
 
-        String origEmailAddress = caseData.getDssCaseData().getSubjectEmailAddress();
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
+
+        when(appsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
+            .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
+
+        final CaseCreateOrUpdateException caseCreateOrUpdateException =
+            assertThrows(CaseCreateOrUpdateException.class, () ->
+                caseManagementService.updateCase(CASE_TEST_AUTHORIZATION,Event.UPDATE, caseData,TEST_CASE_ID));
+
+        assertNotNull(caseCreateOrUpdateException.getCause());
+        assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
+        assertTrue(caseCreateOrUpdateException.getMessage().contains("Invalid Case type application. Please check the request."));
+    }
+
+    @Test
+    void shouldFetchCaseDetail() throws Exception {
+        final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
+        final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
+        final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
+
+        final String origEmailAddress = caseData.getDssCaseData().getSubjectEmailAddress();
         dssCaseData.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
         assertNotEquals(dssCaseData.getSubjectEmailAddress(), origEmailAddress);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_USER);
 
-        Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+        final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         caseDataMap.put(CASE_DATA_CIC_ID, caseData);
 
-        CaseDetails caseDetail = CaseDetails.builder()
+        final CaseDetails caseDetail = CaseDetails.builder()
             .id(TEST_CASE_ID)
             .data(caseDataMap)
             .build();
@@ -266,29 +308,31 @@ class CaseManagementServiceTest {
         when(caseApiService.getCaseDetails(CASE_TEST_AUTHORIZATION,TEST_CASE_ID))
             .thenReturn(caseDetail);
 
-        CaseResponse fetchCaseResponse = caseManagementService.fetchCaseDetails(
+        final CaseResponse fetchCaseResponse = caseManagementService.fetchCaseDetails(
             CASE_TEST_AUTHORIZATION,
             TEST_CASE_ID);
 
+        assertNotNull(fetchCaseResponse);
         assertEquals(fetchCaseResponse.getId(), caseDetail.getId());
+        assertTrue(fetchCaseResponse.getCaseData().containsKey(CASE_DATA_CIC_ID));
+        assertEquals(fetchCaseResponse.getCaseData().get(CASE_DATA_CIC_ID), caseDetail.getData().get(CASE_DATA_CIC_ID));
         assertEquals(RESPONSE_STATUS_SUCCESS, fetchCaseResponse.getStatus());
-
     }
 
     @Test
-    void testFetchCaseDetailsWithException() throws Exception {
+    void shouldFetchCaseDetailsWithException() {
 
         when(caseApiService.getCaseDetails(CASE_TEST_AUTHORIZATION,TEST_CASE_ID))
             .thenThrow(new CaseCreateOrUpdateException(
                 CASE_FETCH_FAILURE_MSG, new RuntimeException()
             ));
 
-        Exception ex = assertThrows(Exception.class, () -> {
-            caseManagementService.fetchCaseDetails(CASE_TEST_AUTHORIZATION,TEST_CASE_ID);
-        });
+        final CaseCreateOrUpdateException caseCreateOrUpdateException =
+            assertThrows(CaseCreateOrUpdateException.class, () ->
+            caseManagementService.fetchCaseDetails(CASE_TEST_AUTHORIZATION,TEST_CASE_ID));
 
-        assertTrue(ex.getMessage().contains(CASE_FETCH_FAILURE_MSG));
-
+        assertNotNull(caseCreateOrUpdateException.getCause());
+        assertTrue(caseCreateOrUpdateException.getCause() instanceof RuntimeException);
+        assertTrue(caseCreateOrUpdateException.getMessage().contains(CASE_FETCH_FAILURE_MSG));
     }
-
 }
