@@ -31,6 +31,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
@@ -119,6 +122,28 @@ class RecordListHelperTest {
         recordListHelper.populateVenuesData(caseData);
 
         assertThat(caseData.getListing().getHearingVenuesMessage()).contains("Unable to retrieve Hearing Venues data");
+    }
+
+    @Test
+    void shouldNotSetHearingVenueWhenRegionIdIsNull() {
+        final CaseData caseData = caseData();
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
+
+        when(locationService.getRegionId("1-region")).thenReturn(null);
+        recordListHelper.populateVenuesData(caseData);
+
+        verify(locationService, never()).getHearingVenuesByRegion(any());
+        assertThat(caseData.getListing().getHearingVenuesMessage()).isNull();
+    }
+
+    @ParameterizedTest
+    @MethodSource("cicCaseNotifyValues")
+    void checkNullConditions(CicCase cicCase, boolean expected) {
+        boolean result = recordListHelper.checkNullCondition(cicCase);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
@@ -228,6 +253,49 @@ class RecordListHelperTest {
         return Stream.of(
             null,
             Arguments.arguments(EMPTY_DYNAMIC_LIST)
+        );
+    }
+
+    private static Stream<Arguments> cicCaseNotifyValues() {
+        final CicCase emptyCicCase = CicCase.builder().build();
+        final CicCase notifySubject = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        final CicCase notifyRepresentative = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+        final CicCase notifyRespondent = CicCase.builder()
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        final CicCase notifySubjectRepresentative = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+        final CicCase notifySubjectRespondent= CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        final CicCase notifyRepresentativeRespondent =  CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        final CicCase notifyAll = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+
+        return Stream.of(
+            Arguments.arguments(null, true),
+            Arguments.arguments(emptyCicCase, true),
+            Arguments.arguments(notifySubject, false),
+            Arguments.arguments(notifyRepresentative, false),
+            Arguments.arguments(notifyRespondent, false),
+            Arguments.arguments(notifySubjectRepresentative, false),
+            Arguments.arguments(notifySubjectRespondent, false),
+            Arguments.arguments(notifyRepresentativeRespondent, false),
+            Arguments.arguments(notifyAll, false)
         );
     }
 }
