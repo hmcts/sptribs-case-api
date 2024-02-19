@@ -140,16 +140,14 @@ public class RecordListHelper {
 
     public Listing saveSummary(CaseData caseData) {
         final Listing listing = caseData.getListing();
-        if (listing != null)
-        {
+        if (listing != null) {
             listing.setHearingFormat(listing.getHearingFormat());
             listing.setHearingType(listing.getHearingType());
             listing.getSummary().setSubjectName(caseData.getCicCase().getFullName());
             caseData.setCurrentEvent("");
 
             if (listing.getNumberOfDays() != null
-                && listing.getNumberOfDays().equals(YesOrNo.NO))
-            {
+                && listing.getNumberOfDays().equals(YesOrNo.NO)) {
                 listing.setAdditionalHearingDate(null);
             }
             return checkAndUpdateVenueInformationSummary(listing);
