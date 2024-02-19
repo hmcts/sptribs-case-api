@@ -177,8 +177,9 @@ class RecordListHelperTest {
         caseData.setCicCase(cicCase);
 
         final List<String> errors = recordListHelper.getErrorMsg(cicCase);
-        assertThat(errors).isNotEmpty();
-        assertThat(errors).contains("One party must be selected.");
+        assertThat(errors)
+            .isNotEmpty()
+            .contains("One party must be selected.");
     }
 
     @Test
