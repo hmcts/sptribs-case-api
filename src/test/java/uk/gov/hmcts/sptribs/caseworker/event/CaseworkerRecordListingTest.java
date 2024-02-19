@@ -218,6 +218,7 @@ class CaseworkerRecordListingTest {
                 doThrow(sendToException).when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
             case APPLICANT ->
                 doThrow(sendToException).when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
+            default -> doNothing();
         }
 
         final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
