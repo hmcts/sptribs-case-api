@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -26,6 +25,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateOldHearing.SYSTEM_MIGRATE_OLD_HEARING;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -56,11 +59,10 @@ class SystemMigrateOldHearingTest {
             .contains(SYSTEM_MIGRATE_OLD_HEARING);
     }
 
-
     @Test
     void shouldSuccessfullyMigrateTheOldHearingPost() {
         //Given
-        Set<NotificationParties> parties = new HashSet<>();
+        final Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
@@ -76,7 +78,7 @@ class SystemMigrateOldHearingTest {
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        Listing listing = getRecordListing();
+        final Listing listing = getRecordListing();
         caseData.setListing(listing);
 
         updatedCaseDetails.setData(caseData);
@@ -84,15 +86,13 @@ class SystemMigrateOldHearingTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        Mockito.doNothing().when(hearingService).addListingIfExists(Mockito.any());
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        doNothing().when(hearingService).addListingIfExists(any());
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             systemMigrateOldHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-
-
         //Then
-        assertThat(response.getData()).isNotNull();
-
+        assertNotNull(response);
+        assertEquals(response.getData(),updatedCaseDetails.getData());
     }
 
 }

@@ -84,7 +84,7 @@ class SystemMigrateCaseLinksTaskTest {
     }
 
     @Test
-    void shouldThrowExceptionIWhenTriggerSystemMigrateCaseLinks() {
+    void shouldThrowCcdManagementExceptionWhenTriggerSystemMigrateCaseLinks() {
         final CaseDetails caseDetails1 = mock(CaseDetails.class);
         final CaseDetails caseDetails2 = mock(CaseDetails.class);
 
@@ -99,11 +99,30 @@ class SystemMigrateCaseLinksTaskTest {
         doThrow(new CcdManagementException(GATEWAY_TIMEOUT.value(), "Failed processing of case", mock(FeignException.class)))
             .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_LINKS, user, SERVICE_AUTHORIZATION);
 
-
         task.run();
 
         verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_LINKS, user, SERVICE_AUTHORIZATION);
         verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_CASE_LINKS, user, SERVICE_AUTHORIZATION);
     }
 
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenTriggerSystemMigrateCaseLinks() {
+        final CaseDetails caseDetails1 = mock(CaseDetails.class);
+        final CaseDetails caseDetails2 = mock(CaseDetails.class);
+
+        final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
+
+        when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
+        when(caseDetails2.getId()).thenReturn(2L);
+
+        when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
+            .thenReturn(caseDetailsList);
+        doThrow(new IllegalArgumentException())
+            .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_LINKS, user, SERVICE_AUTHORIZATION);
+
+        task.run();
+
+        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_LINKS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_CASE_LINKS, user, SERVICE_AUTHORIZATION);
+    }
 }

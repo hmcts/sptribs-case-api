@@ -15,11 +15,11 @@ import static java.util.Comparator.comparing;
 @Slf4j
 public class SystemMigrateCasesTask implements Runnable {
 
-    private IdamService idamService;
+    private final IdamService idamService;
 
-    private AuthTokenGenerator authTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
 
-    private List<Migration> migrations;
+    private final List<Migration> migrations;
 
     @Autowired
     public SystemMigrateCasesTask(IdamService idamService, AuthTokenGenerator authTokenGenerator,
