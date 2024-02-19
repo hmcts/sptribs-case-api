@@ -122,6 +122,7 @@ class CaseworkerRecordListingTest {
         assertThat(responseListing.getHearingCreatedDate()).isEqualTo(LocalDate.now());
         assertThat(responseListing.getHearingType().getLabel()).isEqualTo("Final");
         assertThat(responseListing.getHearingFormat().getLabel()).isEqualTo("Face to face");
+        assertThat(responseListing.getAdditionalHearingDate()).isNull();
         assertThat(responseListing.getPostponeReason()).isNull();
         assertThat(responseListing.getPostponeAdditionalInformation()).isNull();
         assertThat(responseListing.getRecordListingChangeReason()).isNull();
@@ -226,11 +227,6 @@ class CaseworkerRecordListingTest {
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader())
             .isEqualTo(format("# Create listing notification failed %n## Please resend the notification"));
-    }
-
-    @Test
-    void shouldSetAdditionalHearingDateAsNull() {
-
     }
 
     private DynamicList getMockedRegionData() {
