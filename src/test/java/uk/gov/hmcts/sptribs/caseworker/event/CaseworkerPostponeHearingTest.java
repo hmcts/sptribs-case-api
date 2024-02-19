@@ -140,7 +140,7 @@ class CaseworkerPostponeHearingTest {
     }
 
     @ParameterizedTest
-    @MethodSource("createExceptionCaseData")
+    @MethodSource("notificationExceptionCicCase")
     void submittedShouldThrowExceptionWhenSendIsUnsuccessful(String notifyParty, CicCase cicCase, Exception exception) {
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -167,7 +167,7 @@ class CaseworkerPostponeHearingTest {
             .isEqualTo(format("# Postpone hearing notification failed %n## Please resend the notification"));
     }
 
-    private static Stream<Arguments> createExceptionCaseData() {
+    private static Stream<Arguments> notificationExceptionCicCase() {
         final CicCase cicCaseSubject = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .build();

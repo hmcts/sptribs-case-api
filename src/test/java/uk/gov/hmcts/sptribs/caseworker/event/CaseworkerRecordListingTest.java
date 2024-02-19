@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,15 +29,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -111,7 +118,8 @@ class CaseworkerRecordListingTest {
         final SubmittedCallbackResponse stayedResponse = caseworkerRecordListing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        Listing responseListing = response.getData().getListing();
+        final Listing responseListing = response.getData().getListing();
+        assertThat(responseListing.getHearingCreatedDate()).isEqualTo(LocalDate.now());
         assertThat(responseListing.getHearingType().getLabel()).isEqualTo("Final");
         assertThat(responseListing.getHearingFormat().getLabel()).isEqualTo("Face to face");
         assertThat(responseListing.getPostponeReason()).isNull();
@@ -185,8 +193,42 @@ class CaseworkerRecordListingTest {
         verifyNoInteractions(recordListHelper);
     }
 
+    @ParameterizedTest
+    @EnumSource(NotificationParties.class)
+    void submittedShouldThrowExceptionWhenSendIsUnsuccessful(NotificationParties notificationParty) {
+        final CicCase cicCaseSubject = CicCase.builder()
+            .hearingNotificationParties(Set.of(notificationParty))
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCaseSubject)
+            .hyphenatedCaseRef("1234-5678-3456")
+            .build();
+
+        final Exception sendToException = new NotificationException(new Exception("Failed to send"));
+
+        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        switch (notificationParty) {
+            case SUBJECT ->
+                doThrow(sendToException).when(listingCreatedNotification).sendToSubject(any(CaseData.class), anyString());
+            case REPRESENTATIVE ->
+                doThrow(sendToException).when(listingCreatedNotification).sendToRepresentative(any(CaseData.class), anyString());
+            case RESPONDENT ->
+                doThrow(sendToException).when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
+            case APPLICANT ->
+                doThrow(sendToException).when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
+        }
+
+        final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo(format("# Create listing notification failed %n## Please resend the notification"));
+    }
+
     @Test
-    void shouldCatchNotificationExceptionWhenSubmitted() {
+    void shouldSetAdditionalHearingDateAsNull() {
 
     }
 

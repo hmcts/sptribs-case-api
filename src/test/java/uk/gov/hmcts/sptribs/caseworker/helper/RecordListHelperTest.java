@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.helper;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -37,6 +41,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedRegionData;
 @ExtendWith(MockitoExtension.class)
 class RecordListHelperTest {
 
+    public static final DynamicList EMPTY_DYNAMIC_LIST = DynamicListUtil.createDynamicList(Collections.emptyList());
     @InjectMocks
     private RecordListHelper recordListHelper;
 
@@ -65,22 +70,12 @@ class RecordListHelperTest {
         assertThat(caseData.getListing().getRegionsMessage()).isNull();
     }
 
-    @Test
-    void shouldSetRegionMessageToUnableToRetrieveWhenRegionsListIsNull() {
+    @ParameterizedTest
+    @MethodSource("emptyAndNullDynamicListSource")
+    void shouldSetRegionMessageToUnableToRetrieveWhenRegionsListIsNullOrEmpty(DynamicList regionList) {
         final CaseData caseData = caseData();
 
-        when(locationService.getAllRegions()).thenReturn(null);
-        recordListHelper.regionData(caseData);
-
-        assertThat(caseData.getListing().getRegionsMessage()).contains("Unable to retrieve Region data");
-    }
-
-    @Test
-    void shouldSetRegionMessageToUnableToRetrieveWhenRegionsListIsEmpty() {
-        final CaseData caseData = caseData();
-        final DynamicList emptyList = DynamicListUtil.createDynamicList(Collections.emptyList());
-
-        when(locationService.getAllRegions()).thenReturn(emptyList);
+        when(locationService.getAllRegions()).thenReturn(regionList);
         recordListHelper.regionData(caseData);
 
         assertThat(caseData.getListing().getRegionsMessage()).contains("Unable to retrieve Region data");
@@ -102,12 +97,28 @@ class RecordListHelperTest {
         when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
         recordListHelper.populateVenuesData(caseData);
 
-        //Then
         assertThat(caseData.getListing().getHearingVenues()
             .getValue().getLabel()).isEqualTo("courtname-courtAddress");
         assertThat(caseData.getListing().getHearingVenues().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
+        assertThat(caseData.getListing().getHearingVenuesMessage()).isNull();
+    }
+
+    @ParameterizedTest
+    @MethodSource("emptyAndNullDynamicListSource")
+    void shouldSetHearingVenuesMessageToUnableToRetrieveWhenHearingVenueListIsNullOrEmpty(DynamicList dynamicList) {
+        final CaseData caseData = caseData();
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
+
+        when(locationService.getRegionId("1-region")).thenReturn("1");
+        when(locationService.getHearingVenuesByRegion("1")).thenReturn((dynamicList));
+        recordListHelper.populateVenuesData(caseData);
+
+        assertThat(caseData.getListing().getHearingVenuesMessage()).contains("Unable to retrieve Hearing Venues data");
     }
 
     @Test
@@ -211,5 +222,12 @@ class RecordListHelperTest {
         final Listing result = recordListHelper.saveSummary(data);
 
         assertThat(result).isNotNull();
+    }
+
+    private static Stream<Arguments> emptyAndNullDynamicListSource() {
+        return Stream.of(
+            null,
+            Arguments.arguments(EMPTY_DYNAMIC_LIST)
+        );
     }
 }
