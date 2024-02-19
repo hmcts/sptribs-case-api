@@ -49,7 +49,6 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
                 .description("Migrate case flags for old cases")
                 .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
         }
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
@@ -74,7 +73,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             .roleOnCase(null)
             .build());
 
-        if (null != data.getCicCase().getFullName()) {
+        if (data.getCicCase().getFullName() != null) {
             data.setSubjectFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
@@ -83,7 +82,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             );
         }
 
-        if (null != data.getCicCase().getApplicantFullName()) {
+        if (data.getCicCase().getApplicantFullName() != null) {
             data.setApplicantFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getApplicantFullName())
@@ -92,7 +91,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             );
         }
 
-        if (null != data.getCicCase().getRepresentativeFullName()) {
+        if (data.getCicCase().getRepresentativeFullName() != null) {
             data.setRepresentativeFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getRepresentativeFullName())
@@ -109,5 +108,4 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
         }
     }
-
 }

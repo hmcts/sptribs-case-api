@@ -14,8 +14,12 @@ import java.util.Objects;
 @Slf4j
 public class CaseDetailsListConverter {
 
+    private final CaseDetailsConverter caseDetailsConverter;
+
     @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
+    public CaseDetailsListConverter(CaseDetailsConverter caseDetailsConverter) {
+        this.caseDetailsConverter = caseDetailsConverter;
+    }
 
     public List<CaseDetails<CaseData, State>> convertToListOfValidCaseDetails(
         final List<uk.gov.hmcts.reform.ccd.client.model.CaseDetails> caseDetailsList) {

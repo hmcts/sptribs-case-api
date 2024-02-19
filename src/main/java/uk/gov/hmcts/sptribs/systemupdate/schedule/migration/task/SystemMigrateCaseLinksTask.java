@@ -25,14 +25,14 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseLinks.SYS
 
 public class SystemMigrateCaseLinksTask implements Runnable {
 
-    private AuthTokenGenerator authTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
 
-    private CcdSearchService ccdSearchService;
+    private final CcdSearchService ccdSearchService;
 
-    private CcdUpdateService ccdUpdateService;
+    private final CcdUpdateService ccdUpdateService;
 
-    private IdamService idamService;
-    
+    private final IdamService idamService;
+
     @Autowired
     public SystemMigrateCaseLinksTask(AuthTokenGenerator authTokenGenerator, CcdSearchService ccdSearchService,
             CcdUpdateService ccdUpdateService, IdamService idamService) {
