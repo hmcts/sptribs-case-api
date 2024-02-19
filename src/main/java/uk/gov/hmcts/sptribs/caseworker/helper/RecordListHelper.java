@@ -139,16 +139,21 @@ public class RecordListHelper {
     }
 
     public Listing saveSummary(CaseData caseData) {
-        caseData.getListing().setHearingFormat(caseData.getListing().getHearingFormat());
-        caseData.getListing().setHearingType(caseData.getListing().getHearingType());
-        caseData.getListing().getSummary().setSubjectName(caseData.getCicCase().getFullName());
-        caseData.setCurrentEvent("");
-        if (caseData.getListing() != null
-            && caseData.getListing().getNumberOfDays() != null
-            && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getListing().setAdditionalHearingDate(null);
-        }
+        final Listing listing = caseData.getListing();
+        if (listing != null)
+        {
+            listing.setHearingFormat(listing.getHearingFormat());
+            listing.setHearingType(listing.getHearingType());
+            listing.getSummary().setSubjectName(caseData.getCicCase().getFullName());
+            caseData.setCurrentEvent("");
 
-        return checkAndUpdateVenueInformationSummary(caseData.getListing());
+            if (listing.getNumberOfDays() != null
+                && listing.getNumberOfDays().equals(YesOrNo.NO))
+            {
+                listing.setAdditionalHearingDate(null);
+            }
+            return checkAndUpdateVenueInformationSummary(listing);
+        }
+        return null;
     }
 }

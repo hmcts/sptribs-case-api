@@ -43,6 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -227,6 +228,66 @@ class CaseworkerRecordListingTest {
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader())
             .isEqualTo(format("# Create listing notification failed %n## Please resend the notification"));
+    }
+
+    @ParameterizedTest
+    @EnumSource(NotificationParties.class)
+    void verifySendToIsCalledForEachParty(NotificationParties notificationParty) {
+        final CicCase cicCaseSubject = CicCase.builder()
+            .hearingNotificationParties(Set.of(notificationParty))
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCaseSubject)
+            .hyphenatedCaseRef("1234-5678-3456")
+            .build();
+
+        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        switch (notificationParty) {
+            case SUBJECT ->
+                doNothing().when(listingCreatedNotification).sendToSubject(any(CaseData.class), anyString());
+            case REPRESENTATIVE ->
+                doNothing().when(listingCreatedNotification).sendToRepresentative(any(CaseData.class), anyString());
+            case RESPONDENT ->
+                doNothing().when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
+            case APPLICANT ->
+                doNothing().when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
+            default -> doNothing();
+        }
+
+        final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader())
+            .contains("# Listing record created \n## A notification has been sent to: ");
+
+        switch (notificationParty) {
+            case SUBJECT -> {
+                verify(listingCreatedNotification, times(1)).sendToSubject(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
+            }
+            case REPRESENTATIVE -> {
+                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
+            }
+            case RESPONDENT -> {
+                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToApplicant(any(CaseData.class), anyString());
+            }
+            case APPLICANT -> {
+                verify(listingCreatedNotification, times(0)).sendToSubject(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRepresentative(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
+                verify(listingCreatedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+            }
+        }
     }
 
     private DynamicList getMockedRegionData() {

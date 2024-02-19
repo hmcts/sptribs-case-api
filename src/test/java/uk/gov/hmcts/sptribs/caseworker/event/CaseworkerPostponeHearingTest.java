@@ -39,6 +39,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -137,6 +139,9 @@ class CaseworkerPostponeHearingTest {
         assertThat(submitted.getConfirmationHeader()).contains("Hearing Postponed");
         assertThat(response.getData().getListing().getHearingStatus()).isEqualTo(HearingState.Postponed);
         assertThat(response.getData().getListing().getPostponeDate()).isEqualTo(LocalDate.now());
+        verify(hearingPostponedNotification, times(1)).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        verify(hearingPostponedNotification, times(1)).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        verify(hearingPostponedNotification, times(1)).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
     }
 
     @ParameterizedTest

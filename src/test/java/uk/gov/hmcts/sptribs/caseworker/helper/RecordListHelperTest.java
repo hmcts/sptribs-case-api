@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
@@ -27,12 +28,14 @@ import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -157,12 +160,25 @@ class RecordListHelperTest {
         cicCase.setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
         caseData.setCicCase(cicCase);
 
-        recordListHelper.checkNullCondition(cicCase);
-        recordListHelper.getErrorMsg(cicCase);
+        final boolean result = recordListHelper.checkNullCondition(cicCase);
+        final List<String> errors = recordListHelper.getErrorMsg(cicCase);
 
         assertThat(caseData.getCicCase().getNotifyPartySubject()).isNotNull();
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).isNotNull();
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).isNotNull();
+        assertThat(result).isFalse();
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldGetErrorMessageForMissingNotificationParties() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = new CicCase();
+        caseData.setCicCase(cicCase);
+
+        final List<String> errors = recordListHelper.getErrorMsg(cicCase);
+        assertThat(errors).isNotEmpty();
+        assertThat(errors).contains("One party must be selected.");
     }
 
     @Test
@@ -181,12 +197,21 @@ class RecordListHelperTest {
 
         recordListHelper.getNotificationParties(caseData);
 
+        assertThat(caseData.getCicCase()).isNotNull();
         assertThat(caseData.getCicCase().getHearingNotificationParties()).hasSize(4);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.REPRESENTATIVE);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.RESPONDENT);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.APPLICANT);
-        assertThat(caseData.getCicCase()).isNotNull();
+    }
+
+    @Test
+    void shouldGetEmptySetOfNotificationParties() {
+        final CaseData caseData = caseData();
+
+        recordListHelper.getNotificationParties(caseData);
+
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).isEmpty();
     }
 
     @Test
@@ -229,6 +254,33 @@ class RecordListHelperTest {
         final Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
 
         assertThat(result.getHearingVenueNameAndAddress()).isNotNull();
+        assertThat(result.getHearingVenueNameAndAddress()).isEqualTo(listing.getReadOnlyHearingVenueName());
+    }
+
+    @Test
+    void shouldNotUpdateVenueInformationSummaryWhenVenueNotListed() {
+        final Listing listing = Listing.builder()
+            .readOnlyHearingVenueName("name-address")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
+            .build();
+
+        final Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+
+        assertThat(result.getHearingVenueNameAndAddress()).isNull();
+    }
+
+    @Test
+    void shouldNotUpdateVenueInformationSummaryWhenVenueNotListedAndReadOnlyHearingVenueIsEmpty() {
+        final Listing listing = Listing.builder()
+            .readOnlyHearingVenueName("")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
+            .build();
+
+        final Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+
+        assertThat(result.getHearingVenueNameAndAddress()).isNull();
     }
 
     @Test
@@ -242,11 +294,49 @@ class RecordListHelperTest {
             .venueNotListedOption(venueNotListedOption)
             .build();
         final CaseData data = caseData();
-        caseData().setListing(listing);
+        data.setListing(listing);
+        final CicCase cicCase = CicCase.builder()
+            .fullName("John McNeil")
+            .build();
+        data.setCicCase(cicCase);
 
         final Listing result = recordListHelper.saveSummary(data);
 
         assertThat(result).isNotNull();
+        assertThat(result.getSummary().getSubjectName()).isEqualTo("John McNeil");
+    }
+
+    @Test
+    void saveSummaryShouldUpdateAdditionalHearingDate() {
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final HearingSummary summary = HearingSummary.builder().build();
+        final Listing listing = Listing.builder()
+            .readOnlyHearingVenueName("name-address")
+            .summary(summary)
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(venueNotListedOption)
+            .numberOfDays(YesOrNo.NO)
+            .build();
+        final Listing spyListing = spy(listing);
+        final CaseData data = caseData();
+        data.setListing(spyListing);
+        final CicCase cicCase = CicCase.builder()
+            .fullName("John McNeil")
+            .build();
+        data.setCicCase(cicCase);
+
+        final Listing result = recordListHelper.saveSummary(data);
+        assertThat(result).isNotNull();
+        assertThat(result.getSummary().getSubjectName()).isEqualTo("John McNeil");
+        verify(spyListing).setAdditionalHearingDate(null);
+    }
+
+    @Test
+    void shouldNotSaveSummaryAndReturnNullWhenListingIsNull() {
+        final CaseData caseData = caseData();
+        caseData.setListing(null);
+        final Listing result = recordListHelper.saveSummary(caseData);
+        assertThat(result).isNull();
     }
 
     private static Stream<Arguments> emptyAndNullDynamicListSource() {
