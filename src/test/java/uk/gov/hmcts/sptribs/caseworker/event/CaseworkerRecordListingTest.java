@@ -287,6 +287,9 @@ class CaseworkerRecordListingTest {
                 verify(listingCreatedNotification, times(0)).sendToRespondent(any(CaseData.class), anyString());
                 verify(listingCreatedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
             }
+            default -> {
+                break;
+            }
         }
     }
 
