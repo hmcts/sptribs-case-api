@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -28,7 +27,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +35,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -57,9 +56,6 @@ class CaseworkerRecordListingTest {
     @Mock
     private RecordListHelper recordListHelper;
 
-    @Mock
-    private LocationService locationService;
-
     @InjectMocks
     private CaseworkerRecordListing caseworkerRecordListing;
 
@@ -68,13 +64,10 @@ class CaseworkerRecordListingTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerRecordListing.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_RECORD_LISTING);
@@ -106,10 +99,10 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        Mockito.doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
-        Mockito.doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-        Mockito.doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
-        Mockito.doNothing().when(listingCreatedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
+        doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+        doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        doNothing().when(listingCreatedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When
@@ -144,23 +137,19 @@ class CaseworkerRecordListingTest {
 
     @Test
     void aboutToStartMethodShouldSuccessfullyPopulateRegionData() {
-        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         caseworkerRecordListing.aboutToStart(updatedCaseDetails);
 
-        //Then
         verify(recordListHelper).regionData(caseData);
     }
 
     @Test
     void midEventMethodShouldSuccessfullyPopulateHearingVenueDataWhenNotPresent() {
-        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -172,16 +161,13 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 
-        //Then
         verify(recordListHelper).populateVenuesData(caseData);
     }
 
     @Test
     void shouldNotPopulateHearingVenueDataInMidEventCallbackIfAlreadyPresent() {
-        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -194,11 +180,14 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         caseworkerRecordListing.midEvent(updatedCaseDetails, beforeDetails);
 
-        //Then
         verifyNoInteractions(recordListHelper);
+    }
+
+    @Test
+    void shouldCatchNotificationExceptionWhenSubmitted() {
+
     }
 
     private DynamicList getMockedRegionData() {

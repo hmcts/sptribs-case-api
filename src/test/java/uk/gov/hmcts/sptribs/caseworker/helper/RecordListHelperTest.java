@@ -6,8 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,7 +45,6 @@ class RecordListHelperTest {
 
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
-        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final Listing listing = new Listing();
@@ -53,7 +55,6 @@ class RecordListHelperTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
         recordListHelper.regionData(caseData);
 
@@ -61,6 +62,28 @@ class RecordListHelperTest {
         assertThat(caseData.getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
         assertThat(caseData.getListing().getRegionList().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+        assertThat(caseData.getListing().getRegionsMessage()).isNull();
+    }
+
+    @Test
+    void shouldSetRegionMessageToUnableToRetrieveWhenRegionsListIsNull() {
+        final CaseData caseData = caseData();
+
+        when(locationService.getAllRegions()).thenReturn(null);
+        recordListHelper.regionData(caseData);
+
+        assertThat(caseData.getListing().getRegionsMessage()).contains("Unable to retrieve Region data");
+    }
+
+    @Test
+    void shouldSetRegionMessageToUnableToRetrieveWhenRegionsListIsEmpty() {
+        final CaseData caseData = caseData();
+        final DynamicList emptyList = DynamicListUtil.createDynamicList(Collections.emptyList());
+
+        when(locationService.getAllRegions()).thenReturn(emptyList);
+        recordListHelper.regionData(caseData);
+
+        assertThat(caseData.getListing().getRegionsMessage()).contains("Unable to retrieve Region data");
     }
 
     @Test
@@ -132,61 +155,60 @@ class RecordListHelperTest {
 
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformationVenueNotListed() {
-
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .hearingVenueNameAndAddress("name-address")
             .readOnlyHearingVenueName("name-address")
             .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
             .build();
 
-        Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+        final Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
 
         assertThat(result.getReadOnlyHearingVenueName()).isNull();
     }
 
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformation() {
-        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        Listing listing = Listing.builder()
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final Listing listing = Listing.builder()
             .hearingVenueNameAndAddress("name-address")
             .readOnlyHearingVenueName("name-address")
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
 
-        Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+        final Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
 
         assertThat(result.getReadOnlyHearingVenueName()).isNotNull();
     }
 
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformationSummary() {
-        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        Listing listing = Listing.builder()
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final Listing listing = Listing.builder()
             .readOnlyHearingVenueName("name-address")
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
 
-        Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+        final Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
 
         assertThat(result.getHearingVenueNameAndAddress()).isNotNull();
     }
 
     @Test
     void shouldSuccessfullySaveSummary() {
-        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        HearingSummary summary = HearingSummary.builder().build();
-        Listing listing = Listing.builder()
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final HearingSummary summary = HearingSummary.builder().build();
+        final Listing listing = Listing.builder()
             .readOnlyHearingVenueName("name-address")
             .summary(summary)
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
-        CaseData data = caseData();
+        final CaseData data = caseData();
         caseData().setListing(listing);
 
-        Listing result = recordListHelper.saveSummary(data);
+        final Listing result = recordListHelper.saveSummary(data);
 
         assertThat(result).isNotNull();
     }

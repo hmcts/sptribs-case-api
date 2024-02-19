@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.helper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
@@ -25,8 +25,12 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.parseHyphen;
 @Slf4j
 public class RecordListHelper {
 
+    private final LocationService locationService;
+
     @Autowired
-    private LocationService locationService;
+    public RecordListHelper(LocationService locationService) {
+        this.locationService = locationService;
+    }
 
     public void regionData(CaseData caseData) {
 
@@ -66,16 +70,16 @@ public class RecordListHelper {
     public void getNotificationParties(CaseData caseData) {
         Set<NotificationParties> partiesSet = new HashSet<>();
 
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             partiesSet.add(NotificationParties.REPRESENTATIVE);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
             partiesSet.add(NotificationParties.APPLICANT);
         }
 

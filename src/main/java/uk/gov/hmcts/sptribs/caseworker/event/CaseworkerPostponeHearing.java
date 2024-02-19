@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 import java.time.LocalDate;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Postponed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -91,7 +91,7 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
+        final DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
         caseData.setCurrentEvent(CASEWORKER_POSTPONE_HEARING);
 
@@ -136,15 +136,15 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
 
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+        if (isNotEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             hearingPostponedNotification.sendToSubject(caseData, caseNumber);
         }
 
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+        if (isNotEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
         }
 
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+        if (isNotEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
         }
     }

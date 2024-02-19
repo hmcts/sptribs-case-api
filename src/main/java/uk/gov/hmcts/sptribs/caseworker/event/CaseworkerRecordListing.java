@@ -26,7 +26,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -59,19 +58,15 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private final RecordListHelper recordListHelper;
 
-    private final LocationService locationService;
-
     private final HearingService hearingService;
 
     private final ListingCreatedNotification listingCreatedNotification;
 
     @Autowired
     public CaseworkerRecordListing(HearingService hearingService,
-                                   LocationService locationService,
                                    RecordListHelper recordListHelper,
                                    ListingCreatedNotification listingCreatedNotification) {
         this.hearingService = hearingService;
-        this.locationService = locationService;
         this.recordListHelper = recordListHelper;
         this.listingCreatedNotification = listingCreatedNotification;
     }
