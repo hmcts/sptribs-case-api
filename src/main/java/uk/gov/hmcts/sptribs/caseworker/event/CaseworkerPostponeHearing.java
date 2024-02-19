@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -25,7 +26,6 @@ import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 import java.time.LocalDate;
 
 import static java.lang.String.format;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Postponed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -136,15 +136,15 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
 
-        if (isNotEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             hearingPostponedNotification.sendToSubject(caseData, caseNumber);
         }
 
-        if (isNotEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
         }
 
-        if (isNotEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
         }
     }
