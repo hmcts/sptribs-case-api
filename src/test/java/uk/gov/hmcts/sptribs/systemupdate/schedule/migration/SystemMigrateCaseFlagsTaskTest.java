@@ -13,7 +13,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
+import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
@@ -23,6 +25,7 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
@@ -84,7 +87,7 @@ class SystemMigrateCaseFlagsTaskTest {
     }
 
     @Test
-    void shouldThrowExceptionIWhenTriggerSystemMigrateCaseFlags() {
+    void shouldThrowCcdManagementExceptionIWhenTriggerSystemMigrateCaseFlags() {
         final CaseDetails caseDetails1 = mock(CaseDetails.class);
         final CaseDetails caseDetails2 = mock(CaseDetails.class);
 
@@ -104,5 +107,49 @@ class SystemMigrateCaseFlagsTaskTest {
 
         verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
         verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionIWhenTriggerSystemMigrateCaseFlags() {
+        final CaseDetails caseDetails1 = mock(CaseDetails.class);
+        final CaseDetails caseDetails2 = mock(CaseDetails.class);
+
+
+        final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
+
+        when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
+        when(caseDetails2.getId()).thenReturn(2L);
+
+        when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
+            .thenReturn(caseDetailsList);
+        doThrow(new IllegalArgumentException())
+            .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
+
+        task.run();
+
+        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldThrowCcdSearchCaseExceptionIWhenTriggerSystemMigrateCaseFlags() {
+
+        when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
+            .thenThrow(CcdSearchCaseException.class);
+
+        task.run();
+
+        verify(ccdUpdateService, never()).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS,user, SERVICE_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldThrowCcdConflictExceptionIWhenTriggerSystemMigrateCaseFlags() {
+
+        when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
+            .thenThrow(CcdConflictException.class);
+
+        task.run();
+
+        verify(ccdUpdateService, never()).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS,user, SERVICE_AUTHORIZATION);
     }
 }
