@@ -271,7 +271,7 @@ class RecordListHelperTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .build();
-        final CicCase notifySubjectRespondent= CicCase.builder()
+        final CicCase notifySubjectRespondent = CicCase.builder()
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .build();

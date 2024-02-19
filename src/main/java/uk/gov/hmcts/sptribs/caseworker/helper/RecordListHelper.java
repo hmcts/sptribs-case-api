@@ -61,10 +61,10 @@ public class RecordListHelper {
     }
 
     public boolean checkNullCondition(CicCase cicCase) {
-        return cicCase == null ||
-            ( CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent()));
+        return cicCase == null
+            || (CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent()));
     }
 
     public void getNotificationParties(CaseData caseData) {
