@@ -15,7 +15,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @ExtendWith(MockitoExtension.class)
 class CaseDetailsListConverterTest {
@@ -60,6 +63,21 @@ class CaseDetailsListConverterTest {
         assertThat(result)
             .hasSize(8)
             .containsAll(expectedResult);
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenConverting() {
+
+        final List<CaseDetails> caseDetailsList = createCaseDetailsList(2);
+
+        doThrow(new IllegalArgumentException()).when(caseDetailsConverter).convertToCaseDetailsFromReformModel(any());
+
+        final List<uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State>> result =
+            caseDetailsListConverter.convertToListOfValidCaseDetails(caseDetailsList);
+
+        assertThat(result).isEmpty();
+        verify(caseDetailsConverter, times(2)).convertToCaseDetailsFromReformModel(any());
+
     }
 
     private List<CaseDetails> createCaseDetailsList(final int size) {

@@ -21,17 +21,25 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_M
 @Slf4j
 public class BaseMigration implements Migration {
 
-    @Autowired
-    private CcdSearchService ccdSearchService;
+    private final CcdSearchService ccdSearchService;
+
+    private final CcdUpdateService ccdUpdateService;
+
+    private final MigrateRetiredFields migrateRetiredFields;
+
+    private final SetFailedMigrationVersionToZero setFailedMigrationVersionToZero;
 
     @Autowired
-    private CcdUpdateService ccdUpdateService;
-
-    @Autowired
-    private MigrateRetiredFields migrateRetiredFields;
-
-    @Autowired
-    private SetFailedMigrationVersionToZero setFailedMigrationVersionToZero;
+    public BaseMigration(
+        CcdSearchService ccdSearchService,
+        CcdUpdateService ccdUpdateService,
+        MigrateRetiredFields migrateRetiredFields,
+        SetFailedMigrationVersionToZero setFailedMigrationVersionToZero) {
+        this.ccdSearchService = ccdSearchService;
+        this.ccdUpdateService = ccdUpdateService;
+        this.migrateRetiredFields = migrateRetiredFields;
+        this.setFailedMigrationVersionToZero = setFailedMigrationVersionToZero;
+    }
 
     @Override
     public void apply(final User user, final String serviceAuthorization) {
