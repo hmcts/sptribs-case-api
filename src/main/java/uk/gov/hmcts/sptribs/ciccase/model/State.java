@@ -99,7 +99,7 @@ public enum State {
 
     @CCD(
         label = "Draft",
-        hint = "### Case record for: ${hyphenatedCaseRef}\n",
+        hint = "### ${cicCaseFullName}\nCase number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class, SolicitorAccess.class}
     )
     Draft("Draft"),
