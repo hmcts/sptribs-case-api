@@ -50,13 +50,9 @@ public class JudicialService {
     }
 
     public DynamicList getAllUsers(CaseData caseData) {
-        log.info("Getting users");
         final List<UserProfileRefreshResponse> users = getUsers();
-        log.info("users received, starting populateJudgesList");
         final List<ListValue<Judge>> judges = populateJudgesList(users);
-        log.info("populateJudgesList completed, adding judge list to summary");
         caseData.getListing().getSummary().setJudgeList(judges);
-        log.info("added judge list to summary, started populateUsersDynamicList");
         return populateUsersDynamicList(judges);
     }
 
@@ -88,9 +84,13 @@ public class JudicialService {
                         .ccdServiceName(ST_CIC_JURISDICTION)
                         .build()
                 );
+
             if (isEmpty(list)) {
+                log.info("No judge profiles found in JRD");
                 return new ArrayList<>();
             }
+
+            log.info("Number of judge profiles found in JRD: {}", list.size());
             return list;
         } catch (FeignException exception) {
             log.error(
@@ -124,7 +124,7 @@ public class JudicialService {
                 .sorted(comparing(Judge::getJudgeFullName))
                 .map(user -> DynamicListElement.builder().label(user.getJudgeFullName()).code(UUID.fromString(user.getUuid())).build())
                 .collect(Collectors.toList());
-        log.info("populateUsersDynamicList completed");
+
         return DynamicList
             .builder()
             .listItems(usersDynamicList)
