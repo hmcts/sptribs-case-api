@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -10,25 +11,34 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.DSS_TRIBUNAL_FORM;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 class CicDssUpdateCaseEventTest {
+
+    @Mock
+    private DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
 
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
@@ -92,6 +102,45 @@ class CicDssUpdateCaseEventTest {
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+    }
+
+    @Test
+    void shouldSendEmailNotifications() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+
+        SubmittedCallbackResponse response = cicDssUpdateCaseEvent.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# CIC Dss Update Case Event Email notifications sent");
+
+        verify(dssUpdateCaseSubmissionNotification).sendToApplicant(
+            details.getData(),
+            TEST_CASE_ID.toString()
+        );
+        verify(dssUpdateCaseSubmissionNotification).sendToTribunal(
+            details.getData(),
+            TEST_CASE_ID.toString()
+        );
+    }
+
+    @Test
+    void shouldCatchErrorIfSendEmailNotificationFails() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+
+        doThrow(NotificationException.class)
+            .when(dssUpdateCaseSubmissionNotification)
+            .sendToApplicant(details.getData(), TEST_CASE_ID.toString());
+
+        SubmittedCallbackResponse response = cicDssUpdateCaseEvent.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader())
+            .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
     }
 
     private DssCaseData getDssCaseData() {

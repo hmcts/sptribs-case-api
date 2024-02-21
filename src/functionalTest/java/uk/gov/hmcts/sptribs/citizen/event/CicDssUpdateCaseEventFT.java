@@ -14,8 +14,10 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
@@ -30,6 +32,12 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-dss-update-case-submission-empty-docs-about-to-submit.json";
     private static final String RESPONSE_EMPTY_APPLICANT_DOCUMENTS_UPLOADED =
         "classpath:responses/response-dss-update-case-submission-empty-docs-about-to-submit.json";
+
+    private static final String REQUEST_SUBMITTED_CALLBACK =
+        "classpath:request/casedata/ccd-callback-casedata-dss-update-case-submission-submitted.json";
+    private static final String INVALID_REQUEST_SUBMITTED_CALLBACK =
+        "classpath:request/casedata/ccd-callback-casedata-dss-update-case-submission-invalid-submitted.json";
+
 
     @Test
     public void shouldAddDocumentsToExistingApplicantDocumentsUploadedListInAboutToSubmitCallback()
@@ -59,5 +67,34 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE_EMPTY_APPLICANT_DOCUMENTS_UPLOADED)));
+    }
+
+    @Test
+    public void shouldSendEmailNotificationsInSubmittedCallback()
+        throws Exception {
+
+        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_CALLBACK);
+
+        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString(),
+            json -> json.inPath("confirmation_header").isEqualTo("# CIC Dss Update Case Event Email notifications sent")
+        );
+    }
+
+    @Test
+    public void shouldReturnErrorIfSendEmailNotificationsInSubmittedCallbackFails()
+        throws Exception {
+
+        final Map<String, Object> caseData = caseData(INVALID_REQUEST_SUBMITTED_CALLBACK);
+
+        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString(),
+            json -> json.inPath("confirmation_header")
+                .isEqualTo("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification")
+        );
     }
 }
