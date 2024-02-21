@@ -25,14 +25,14 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYS
 
 public class SystemMigrateCaseFlagsTask implements Runnable {
 
-    private CcdSearchService ccdSearchService;
-    
-    private CcdUpdateService ccdUpdateService;
-    
-    private IdamService idamService;
-    
-    private AuthTokenGenerator authTokenGenerator;
-    
+    private final CcdSearchService ccdSearchService;
+
+    private final CcdUpdateService ccdUpdateService;
+
+    private final IdamService idamService;
+
+    private final AuthTokenGenerator authTokenGenerator;
+
     @Autowired
     public SystemMigrateCaseFlagsTask(CcdSearchService ccdSearchService, CcdUpdateService ccdUpdateService,
             IdamService idamService, AuthTokenGenerator authTokenGenerator) {
@@ -41,7 +41,7 @@ public class SystemMigrateCaseFlagsTask implements Runnable {
         this.idamService = idamService;
         this.authTokenGenerator = authTokenGenerator;
     }
-    
+
     @Override
     public void run() {
         log.info("Migrate case flags scheduled task started");

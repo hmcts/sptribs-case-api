@@ -18,7 +18,7 @@ import java.util.Map;
 public class MigrateRetiredFields implements CaseTask {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private  ObjectMapper objectMapper;
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) throws IllegalArgumentException  {
