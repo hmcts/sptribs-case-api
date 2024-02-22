@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.BuildCase;
@@ -28,8 +27,6 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCases;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageCaseLinks;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
@@ -670,64 +667,4 @@ public class Case {
             .hasText(ManageDueDate.label, textOptionsWithTimeout(60000));
     }
 
-    public void linkCase(String caseId1, String caseId2) {
-        openCase(caseId1);
-        startNextStepAction(LinkCases);
-        assertThat(page.locator("h1"))
-            .hasText("Before you start", textOptionsWithTimeout(60000));
-        clickButton(page, "Next");
-        assertThat(page.locator("h1"))
-            .hasText("Select a case you want to link to this case", textOptionsWithTimeout(60000));
-        page.locator("#caseNumber input").fill(caseId2);
-        page.getByLabel("Bail").check();
-        clickButton(page, "Propose case link");
-        page.waitForSelector("//td/span[contains(text(), 'Bail')]",
-            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
-        clickButton(page, "Next");
-        assertThat(page.locator("h1"))
-            .hasText("Check your answers", textOptionsWithTimeout(60000));
-        clickButton(page, "Submit");
-        assertThat(page.locator("h1").last())
-            .hasText("Case Link created", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
-    }
-
-    public void unlinkCase(String caseId1, String caseId2) {
-        openCase(caseId1);
-        startNextStepAction(ManageCaseLinks);
-        assertThat(page.locator("h1"))
-            .hasText("Before you start", textOptionsWithTimeout(60000));
-        clickButton(page, "Next");
-        assertThat(page.locator("h1").last())
-            .hasText("Select the cases you want to unlink from this case", textOptionsWithTimeout(60000));
-        page.locator(format("#case-reference-%s", caseId2.replace("-", ""))).check();
-        clickButton(page, "Next");
-        assertThat(page.locator("h1").last())
-            .hasText("Check your answers", textOptionsWithTimeout(60000));
-        clickButton(page, "Submit");
-        assertThat(page.locator("h1").last())
-            .hasText("Case Link updated", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
-    }
-
-    private void openCase(String caseId) {
-        clickLink(page, "Find Case");
-        page.selectOption("#s-jurisdiction", new SelectOption().setLabel("CIC"));
-        page.selectOption("#s-case-type", new SelectOption().setLabel("CIC"));
-        page.locator("input[id*=CASE_REFERENCE]").fill(caseId);
-        clickButton(page, "Apply");
-        String selector = "//ccd-read-text-field/span[contains(text(), '" + caseId + "')]";
-        page.waitForSelector(selector, new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
-        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
-            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED).setTimeout(60000));
-        page.locator(selector).click();
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-    }
 }
