@@ -220,7 +220,7 @@ feature:
   access-profiles:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
   update-case:
-    enabled: ${DSS_UPDATE_CASE_ENABLED:false}
+    enabled: ${DSS_UPDATE_CASE_ENABLED:true}
 
 caseinfo:
   apps:
