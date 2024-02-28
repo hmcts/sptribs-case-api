@@ -104,8 +104,9 @@ class CaseworkerCreateBundleTest {
         verify(bundlingService).buildBundleListValues(anyList());
 
         final CaseData responseData = response.getData();
-        assertThat(responseData).isNotNull();
-        assertThat(responseData).isEqualTo(updatedCaseDetails.getData());
+        assertThat(responseData)
+            .isNotNull()
+            .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
 
         //case documents should remain null so that they are not duplicated
