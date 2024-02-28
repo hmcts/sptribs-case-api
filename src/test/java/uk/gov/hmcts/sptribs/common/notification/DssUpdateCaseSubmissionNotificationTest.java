@@ -23,7 +23,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
-public class DssUpdateCaseSubmissionNotificationTest {
+class DssUpdateCaseSubmissionNotificationTest {
 
     @Mock
     private NotificationServiceCIC notificationService;
