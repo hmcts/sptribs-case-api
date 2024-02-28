@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -50,16 +51,24 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     @Autowired
     private DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
 
+    @Value("${feature.update-case.enabled}")
+    private boolean dssUpdateCaseEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        // IDAM Auth not in use in DSS Update Case so call made by System User
+        if (dssUpdateCaseEnabled) {
+            doConfigure(configBuilder);
+        }
+    }
+
+    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
             .event(CITIZEN_DSS_UPDATE_CASE_SUBMISSION)
             .forStates(DSS_UPDATE_CASE_AVAILABLE_STATES)
             .name("DSS Update Case Submission")
             .description("DSS Update Case Submission")
             .retries(120, 120)
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE)
+            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN, CREATOR)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -68,8 +77,8 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
                 ST_CIC_JUDGE,
-                CITIZEN,
-                CREATOR)
+                SYSTEM_UPDATE
+            )
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted);
     }
