@@ -87,8 +87,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
-        List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
-        List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
+        final List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
+        final List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
         for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : documentListValues) {
             abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
         }
@@ -101,8 +101,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setSchemeLabel(caseData.getCicCase().getSchemeCic() != null ? caseData.getCicCase().getSchemeCic().getLabel() : "");
         details.setData(caseData);
 
-        Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
-        BundleCallback bundleCallback = new BundleCallback(callback);
+        final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
+        final BundleCallback bundleCallback = new BundleCallback(callback);
 
         caseData.setCaseBundles(bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback)));
 
