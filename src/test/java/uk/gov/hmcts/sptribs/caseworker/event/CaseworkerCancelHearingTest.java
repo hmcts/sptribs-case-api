@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CancelHearingNotification;
 import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -203,9 +204,9 @@ class CaseworkerCancelHearingTest {
         //Then
         assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
         assertThat(response).isNotNull();
-        assert response.getState().getName().equals(State.CaseManagement.getName());
-        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Cancelled));
-
+        assertThat(response.getState()).isEqualTo(State.CaseManagement);
+        assertThat(response.getData().getListing().getHearingStatus()).isEqualTo(HearingState.Cancelled);
+        assertThat(response.getData().getListing().getCancelledDate()).isEqualTo(LocalDate.now());
     }
 
     private DynamicList getDynamicList() {

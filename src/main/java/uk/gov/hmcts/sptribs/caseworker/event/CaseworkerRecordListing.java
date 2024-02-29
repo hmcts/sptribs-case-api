@@ -26,8 +26,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
-import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -56,17 +56,20 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
-    @Autowired
-    private RecordListHelper recordListHelper;
+    private final RecordListHelper recordListHelper;
+
+    private final HearingService hearingService;
+
+    private final ListingCreatedNotification listingCreatedNotification;
 
     @Autowired
-    private LocationService locationService;
-
-    @Autowired
-    private HearingService hearingService;
-
-    @Autowired
-    private ListingCreatedNotification listingCreatedNotification;
+    public CaseworkerRecordListing(HearingService hearingService,
+                                   RecordListHelper recordListHelper,
+                                   ListingCreatedNotification listingCreatedNotification) {
+        this.hearingService = hearingService;
+        this.recordListHelper = recordListHelper;
+        this.listingCreatedNotification = listingCreatedNotification;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -122,8 +125,8 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
-        if (null != caseData.getListing()
-            && null != caseData.getListing().getNumberOfDays()
+        if (caseData.getListing() != null
+            && caseData.getListing().getNumberOfDays() != null
             && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
             caseData.getListing().setAdditionalHearingDate(null);
         }
@@ -132,7 +135,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
-
+        caseData.getListing().setHearingCreatedDate(LocalDate.now());
         caseData.getListing().setHearingStatus(Listed);
         hearingService.addListing(caseData, caseData.getListing());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -217,10 +220,13 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                     of anyone who should be excluded from attending this hearing.
                     """)
             .optional(Listing::getImportantInfoDetails)
+            .readonly(Listing::getHearingCreatedDate, ALWAYS_HIDE)
             .readonly(Listing::getPostponeReason, ALWAYS_HIDE)
+            .readonly(Listing::getPostponeDate, ALWAYS_HIDE)
             .readonly(Listing::getPostponeAdditionalInformation, ALWAYS_HIDE)
             .readonly(Listing::getRecordListingChangeReason, ALWAYS_HIDE)
             .readonly(Listing::getHearingCancellationReason, ALWAYS_HIDE)
+            .readonly(Listing::getCancelledDate, ALWAYS_HIDE)
             .readonly(Listing::getCancelHearingAdditionalDetail, ALWAYS_HIDE)
             .complex(Listing::getSummary)
             .readonly(HearingSummary::getJudge, ALWAYS_HIDE)
