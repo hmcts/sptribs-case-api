@@ -377,7 +377,7 @@ public class Hearing {
         // Check your answers form
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
-        String cancelReason = getValueFromTableFor(page, "Why was the hearing cancelled?");
+        String cancelReason = getValueFromTableFor(page, "Reason Cancelled");
         Assertions.assertEquals("Incomplete Panel", cancelReason);
         clickButton(page, "Save and continue");
 
