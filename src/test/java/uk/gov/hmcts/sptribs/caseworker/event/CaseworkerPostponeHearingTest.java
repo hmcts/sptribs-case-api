@@ -2,6 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,13 +26,21 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -40,7 +51,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_POSTPO
 @ExtendWith(MockitoExtension.class)
 class CaseworkerPostponeHearingTest {
     @InjectMocks
-    private CaseWorkerPostponeHearing caseWorkerPostponeHearing;
+    private CaseworkerPostponeHearing caseworkerPostponeHearing;
 
     @Mock
     private RecordListHelper recordListHelper;
@@ -56,13 +67,10 @@ class CaseworkerPostponeHearingTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
-        caseWorkerPostponeHearing.configure(configBuilder);
+        caseworkerPostponeHearing.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_POSTPONE_HEARING);
@@ -70,7 +78,6 @@ class CaseworkerPostponeHearingTest {
 
     @Test
     void shouldRunAboutToStart() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
         final CaseData caseData = CaseData.builder()
@@ -79,10 +86,8 @@ class CaseworkerPostponeHearingTest {
         updatedCaseDetails.setData(caseData);
         when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
 
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerPostponeHearing.aboutToStart(updatedCaseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerPostponeHearing.aboutToStart(updatedCaseDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
         assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_POSTPONE_HEARING);
@@ -94,15 +99,14 @@ class CaseworkerPostponeHearingTest {
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = postponeHearingNotifyParties.midEvent(caseDetails, caseDetails);
 
         assertThat(response.getErrors()).hasSize(1);
     }
 
     @Test
     void shouldSuccessfullyPostpone() {
-        //Given
-        Set<NotificationParties> parties = new HashSet<>();
+        final Set<NotificationParties> parties = new HashSet<>();
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
@@ -128,12 +132,65 @@ class CaseworkerPostponeHearingTest {
         doNothing().when(hearingPostponedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
         doNothing().when(recordListHelper).getNotificationParties(any());
 
-        AboutToStartOrSubmitResponse<CaseData, State> response
-            = caseWorkerPostponeHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse submitted = caseWorkerPostponeHearing.submitted(updatedCaseDetails, beforeDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response
+            = caseworkerPostponeHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerPostponeHearing.submitted(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(submitted.getConfirmationHeader()).contains("Hearing Postponed");
-        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Postponed));
+        assertThat(response.getData().getListing().getHearingStatus()).isEqualTo(HearingState.Postponed);
+        assertThat(response.getData().getListing().getPostponeDate()).isEqualTo(LocalDate.now());
+        verify(hearingPostponedNotification, times(1)).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
+        verify(hearingPostponedNotification, times(1)).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
+        verify(hearingPostponedNotification, times(1)).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+    }
+
+    @ParameterizedTest
+    @MethodSource("notificationExceptionCicCase")
+    void submittedShouldThrowExceptionWhenSendIsUnsuccessful(String notifyParty, CicCase cicCase, Exception exception) {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .hyphenatedCaseRef("1234-5678-3456")
+            .build();
+
+        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        if (notifyParty.equals(SubjectCIC.SUBJECT.name())) {
+            doThrow(exception).when(hearingPostponedNotification).sendToSubject(any(CaseData.class), anyString());
+        }
+        if (notifyParty.equals(RepresentativeCIC.REPRESENTATIVE.name())) {
+            doThrow(exception).when(hearingPostponedNotification).sendToRepresentative(any(CaseData.class), anyString());
+        }
+        if (notifyParty.equals(RespondentCIC.RESPONDENT.name())) {
+            doThrow(exception).when(hearingPostponedNotification).sendToRespondent(any(CaseData.class), anyString());
+        }
+
+        final SubmittedCallbackResponse response = caseworkerPostponeHearing.submitted(updatedCaseDetails, beforeCaseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo(format("# Postpone hearing notification failed %n## Please resend the notification"));
+    }
+
+    private static Stream<Arguments> notificationExceptionCicCase() {
+        final CicCase cicCaseSubject = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        final CicCase cicCaseRepresentative = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+        final CicCase cicCaseRespondent = CicCase.builder()
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+
+        final Exception sendToSubjectException = new NotificationException(new Exception("Failed to send to subject"));
+        final Exception sendToRepresentativeException = new NotificationException(new Exception("Failed to send to representative"));
+        final Exception sendToRespondentException = new NotificationException(new Exception("Failed to send to respondent"));
+
+        return Stream.of(
+            Arguments.arguments(SubjectCIC.SUBJECT.name(), cicCaseSubject, sendToSubjectException),
+            Arguments.arguments(RepresentativeCIC.REPRESENTATIVE.name(), cicCaseRepresentative, sendToRepresentativeException),
+            Arguments.arguments(RespondentCIC.RESPONDENT.name(), cicCaseRespondent, sendToRespondentException)
+        );
     }
 }
