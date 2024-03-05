@@ -64,13 +64,7 @@
         "id": "${json-unit.any-string}",
         "value": {
           "dateReceived": "${json-unit.any-string}",
-          "receivedFrom": "User Test",
-          "otherInfoDocument": {
-            "documentCategory": "DSS Other information documents",
-            "documentLink": {
-              "category_id": "DSS"
-            }
-          }
+          "receivedFrom": "User Test"
         }
       }
     ],
