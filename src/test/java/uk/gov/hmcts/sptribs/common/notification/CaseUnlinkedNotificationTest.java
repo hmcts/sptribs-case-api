@@ -48,6 +48,10 @@ class CaseUnlinkedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrepr@outlook.com",
+            new HashMap<>(),
+            TemplateName.CASE_UNLINKED_EMAIL);
     }
 
     @Test
@@ -66,7 +70,11 @@ class CaseUnlinkedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_UNLINKED_POST);
     }
+
 
     @Test
     void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
@@ -84,6 +92,10 @@ class CaseUnlinkedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrepr@outlook.com",
+            new HashMap<>(),
+            TemplateName.CASE_UNLINKED_EMAIL);
     }
 
     @Test
@@ -103,6 +115,9 @@ class CaseUnlinkedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_UNLINKED_POST);
     }
 
     @Test
@@ -121,6 +136,10 @@ class CaseUnlinkedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrepr@outlook.com",
+            new HashMap<>(),
+            TemplateName.CASE_UNLINKED_EMAIL);
     }
 
     @Test
@@ -140,10 +159,13 @@ class CaseUnlinkedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_UNLINKED_POST);
     }
 
     private CaseData getMockCaseData() {
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
         return CaseData.builder().cicCase(cicCase).build();

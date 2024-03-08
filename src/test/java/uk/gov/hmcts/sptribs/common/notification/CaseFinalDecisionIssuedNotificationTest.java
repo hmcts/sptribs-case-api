@@ -8,8 +8,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
+import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -19,7 +21,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
@@ -46,10 +47,10 @@ public class CaseFinalDecisionIssuedNotificationTest {
     @Test
     void shouldNotifySubjectWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testsubject@outlook.com");
 
         final UUID uuid = UUID.randomUUID();
         final Document guidanceDocument = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
@@ -64,8 +65,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -78,53 +77,21 @@ public class CaseFinalDecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectWithEmailWithNoUploadedDocument() {
+    void shouldNotifySubjectWithEmailWithoutDecisionDocument() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testsubject@outlook.com");
 
         final UUID uuid = UUID.randomUUID();
-        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+        final Document guidanceDocument = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
+
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
-            .finalDecisionDraft(document)
-            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
-            .finalDecisionGuidance(document)
-            .build();
-        data.setCaseIssueFinalDecision(caseIssueFinalDecision);
-
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        finalDecisionIssuedNotification.sendToSubject(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
-    void shouldNotifySubjectWithEmailThrowsException() {
-        //Given
-        LocalDate expDate = LocalDate.now();
-        final CaseData data = getMockCaseData(expDate);
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
-        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
-
-        final UUID uuid = UUID.randomUUID();
-        final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
-
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
-            .finalDecisionDraft(document)
-            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
-            .finalDecisionGuidance(document)
-            .build();
+            .finalDecisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
+            .document(null)
+            .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         //When
@@ -156,6 +123,9 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
     }
 
     @Test
@@ -176,8 +146,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -189,25 +157,22 @@ public class CaseFinalDecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmailWithException() {
+    void shouldNotifyRespondentWithEmailWithoutDecisionNotice() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
-        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         final UUID uuid = UUID.randomUUID();
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
             .finalDecisionDraft(document)
-            .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
+            .finalDecisionNotice(null)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
-
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -239,7 +204,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -253,7 +217,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmailWithException() {
+    void shouldNotifyRepresentativeWithEmailWithoutDecisionDraft() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -266,11 +230,12 @@ public class CaseFinalDecisionIssuedNotificationTest {
         final Document document = Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build();
 
         final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder()
-            .finalDecisionDraft(document)
+            .finalDecisionDraft(null)
             .finalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE)
             .finalDecisionGuidance(document)
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
+
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -301,6 +266,9 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
     }
 
     @Test
@@ -324,7 +292,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        final byte[] firstFile = "data from file 1".getBytes(StandardCharsets.UTF_8);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -355,14 +322,23 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
-
-        return caseData;
+        final CaseStay caseStay = CaseStay.builder()
+            .expirationDate(stayCaseExpDate)
+            .stayReason(StayReason.OTHER)
+            .additionalDetail("addlDetail")
+            .build();
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .caseStay(caseStay)
+            .build();
     }
 }

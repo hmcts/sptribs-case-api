@@ -21,20 +21,24 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.REINSTATE_REASON;
 @Slf4j
 public class CaseReinstatedNotification implements PartiesNotification {
 
-    @Autowired
-    private NotificationServiceCIC notificationService;
+    private final NotificationServiceCIC notificationService;
+
+    private final NotificationHelper notificationHelper;
 
     @Autowired
-    private NotificationHelper notificationHelper;
+    public CaseReinstatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+        this.notificationService = notificationService;
+        this.notificationHelper = notificationHelper;
+    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
-        NotificationResponse notificationResponse;
+        final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
         } else {
@@ -47,12 +51,12 @@ public class CaseReinstatedNotification implements PartiesNotification {
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
-        NotificationResponse notificationResponse;
+        final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
         } else {
@@ -65,23 +69,23 @@ public class CaseReinstatedNotification implements PartiesNotification {
 
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
-        NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
+        final NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
-        NotificationResponse notificationResponse;
+        final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
         } else {
