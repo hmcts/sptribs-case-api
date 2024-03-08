@@ -15,14 +15,12 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 
 @ExtendWith(MockitoExtension.class)
 class CaseUnstayedNotificationTest {
@@ -42,9 +40,6 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getFullName());
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -53,6 +48,11 @@ class CaseUnstayedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrepr@outlook.com",
+            new HashMap<>(),
+            TemplateName.CASE_UNSTAYED_EMAIL);
+
     }
 
     @Test
@@ -61,9 +61,6 @@ class CaseUnstayedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
-
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getFullName());
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -74,6 +71,9 @@ class CaseUnstayedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_UNSTAYED_POST);
     }
 
     @Test
@@ -84,9 +84,6 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getApplicantFullName());
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -95,6 +92,10 @@ class CaseUnstayedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrepr@outlook.com",
+            new HashMap<>(),
+            TemplateName.CASE_UNSTAYED_EMAIL);
     }
 
     @Test
@@ -105,9 +106,6 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getApplicantFullName());
-
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -117,6 +115,9 @@ class CaseUnstayedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_UNSTAYED_POST);
     }
 
     @Test
@@ -127,9 +128,6 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getRepresentativeFullName());
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -138,6 +136,10 @@ class CaseUnstayedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrepr@outlook.com",
+            new HashMap<>(),
+            TemplateName.CASE_UNSTAYED_EMAIL);
     }
 
     @Test
@@ -148,9 +150,6 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getRepresentativeFullName());
-
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -160,15 +159,19 @@ class CaseUnstayedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_UNSTAYED_POST);
     }
 
     private CaseData getMockCaseData() {
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
 
-        return caseData;
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .build();
     }
 
 }

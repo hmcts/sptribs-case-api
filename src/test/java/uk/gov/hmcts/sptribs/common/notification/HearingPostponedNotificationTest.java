@@ -40,7 +40,7 @@ public class HearingPostponedNotificationTest {
     @Test
     void shouldNotifySubjectWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
@@ -54,12 +54,16 @@ public class HearingPostponedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            new HashMap<>(),
+            TemplateName.HEARING_POSTPONED_EMAIL);
     }
 
     @Test
     void shouldNotifySubjectWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
@@ -74,12 +78,15 @@ public class HearingPostponedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.HEARING_POSTPONED_POST);
     }
 
     @Test
     void shouldNotifyRespondentWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
@@ -94,12 +101,16 @@ public class HearingPostponedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRespondentEmail(),
+            new HashMap<>(),
+            TemplateName.HEARING_POSTPONED_EMAIL);
     }
 
     @Test
     void shouldNotifyRepresentativeWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -114,12 +125,16 @@ public class HearingPostponedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            new HashMap<>(),
+            TemplateName.HEARING_POSTPONED_EMAIL);
     }
 
     @Test
     void shouldNotifyRepresentativeWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
@@ -135,20 +150,25 @@ public class HearingPostponedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.HEARING_POSTPONED_POST);
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
-        CaseStay caseStay = CaseStay.builder()
+        final CaseStay caseStay = CaseStay.builder()
             .expirationDate(stayCaseExpDate)
             .stayReason(StayReason.OTHER)
             .additionalDetail("addlDetail")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).caseStay(caseStay).build();
 
-        return caseData;
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .caseStay(caseStay)
+            .build();
     }
 
 }

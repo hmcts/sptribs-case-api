@@ -54,8 +54,8 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
+        final Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
+        final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         data.getCicCase().setOrderList(List.of(orderListValue));
 
@@ -78,8 +78,8 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
 
-        Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
+        final Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
         ListValue<Order> orderListValue1 = new ListValue<>();
         ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
@@ -94,7 +94,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
+        final ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         verify(notificationHelper).buildEmailNotificationRequest(eq("testrepr@outlook.com"), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
@@ -110,8 +110,8 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
+        final Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
+        final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         data.getCicCase().setOrderList(List.of(orderListValue));
 
@@ -153,10 +153,10 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRespondentName("respondentName");
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
 
-        Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
-        ListValue<Order> orderListValue1 = new ListValue<>();
-        ListValue<Order> orderListValue2 = new ListValue<>();
+        final Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
+        final ListValue<Order> orderListValue1 = new ListValue<>();
+        final ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
         orderListValue2.setValue(oldOrder);
         data.getCicCase().setOrderList(List.of(orderListValue1, orderListValue2));
@@ -168,7 +168,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
+        final ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         verify(notificationHelper).buildEmailNotificationRequest(eq("testrepr@outlook.com"), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
@@ -184,8 +184,8 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRespondentEmail("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
+        final Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
+        final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         data.getCicCase().setOrderList(List.of(orderListValue));
 
@@ -209,12 +209,12 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        Document document = new Document("http://url/test.tif", "test.tif", "http://url/test.tif");
-        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
-        Order recentOrder = Order.builder().draftOrder(draftOrderCIC).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.txt", "http://url/test.txt")).build();
-        ListValue<Order> orderListValue1 = new ListValue<>();
-        ListValue<Order> orderListValue2 = new ListValue<>();
+        final Document document = new Document("http://url/test.tif", "test.tif", "http://url/test.tif");
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
+        final Order recentOrder = Order.builder().draftOrder(draftOrderCIC).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.txt", "http://url/test.txt")).build();
+        final ListValue<Order> orderListValue1 = new ListValue<>();
+        final ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
         orderListValue2.setValue(oldOrder);
         data.getCicCase().setOrderList(List.of(orderListValue1, orderListValue2));
@@ -227,7 +227,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
+        final ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         verify(notificationHelper).buildEmailNotificationRequest(eq("testrepr@outlook.com"), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
@@ -244,8 +244,8 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
+        final Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
+        final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         data.getCicCase().setOrderList(List.of(orderListValue));
 
@@ -289,10 +289,10 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
         data.getCicCase().setOrderList(List.of());
 
-        Order recentOrder = Order.builder().uploadedFile(null).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.docx", "http://url/test.docx")).build();
-        ListValue<Order> orderListValue1 = new ListValue<>();
-        ListValue<Order> orderListValue2 = new ListValue<>();
+        final Order recentOrder = Order.builder().uploadedFile(null).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.docx", "http://url/test.docx")).build();
+        final ListValue<Order> orderListValue1 = new ListValue<>();
+        final ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
         orderListValue2.setValue(oldOrder);
         data.getCicCase().setOrderList(List.of(orderListValue1, orderListValue2));
@@ -345,8 +345,8 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
         data.getCicCase().setOrderList(List.of());
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
+        final Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
+        final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
 
         //When
@@ -385,6 +385,8 @@ public class NewOrderIssuedNotificationTest {
             .fullName("fullName").caseNumber("CN1")
             .build();
 
-        return CaseData.builder().cicCase(cicCase).build();
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .build();
     }
 }

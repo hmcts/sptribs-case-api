@@ -21,75 +21,86 @@ import java.util.Map;
 @Slf4j
 public class ListingUpdatedNotification implements PartiesNotification {
 
-    @Autowired
-    private NotificationServiceCIC notificationService;
+    private final NotificationServiceCIC notificationService;
+
+    private final  NotificationHelper notificationHelper;
 
     @Autowired
-    private NotificationHelper notificationHelper;
+    public ListingUpdatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+        this.notificationService = notificationService;
+        this.notificationHelper = notificationHelper;
+    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
-        Listing listing = caseData.getListing();
+        final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, listing);
+
+        final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
-            NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject,
-                cicCase.getEmail(),
-                TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
+            notificationResponse = sendEmailNotification(templateVarsSubject,
+                cicCase.getEmail()
+            );
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            sendLetterNotification(templateVarsSubject, TemplateName.LISTING_UPDATED_CITIZEN_POST);
+            sendLetterNotification(templateVarsSubject);
         }
     }
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
-        Listing listing = caseData.getListing();
+        final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, listing);
 
+        final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
-            NotificationResponse notificationResponse = sendEmailNotification(templateVarsRepresentative,
-                cicCase.getRepresentativeEmailAddress(), TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
-            cicCase.setRepNotificationResponse(notificationResponse);
+            notificationResponse = sendEmailNotification(templateVarsRepresentative,
+                cicCase.getRepresentativeEmailAddress());
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            NotificationResponse notificationResponse = sendLetterNotification(templateVarsRepresentative,
-                TemplateName.LISTING_UPDATED_CITIZEN_POST);
-            cicCase.setRepNotificationResponse(notificationResponse);
+            notificationResponse = sendLetterNotification(templateVarsRepresentative
+            );
         }
+
+        cicCase.setRepNotificationResponse(notificationResponse);
     }
 
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
-        Listing listing = caseData.getListing();
+        final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRespondent, listing);
         // Send Email
-        NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondentEmail(), TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
+        final NotificationResponse notificationResponse = sendEmailNotification(templateVarsRespondent,
+            cicCase.getRespondentEmail());
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
-                                                       String toEmail,
-                                                       TemplateName emailTemplateName) {
+                                                       String toEmail) {
 
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail, templateVars, emailTemplateName);
+        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
+            toEmail,
+            templateVars,
+            TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
         return notificationService.sendEmail(request);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName emailTemplateName) {
-        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter, emailTemplateName);
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+        final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
+            templateVarsLetter,
+            TemplateName.LISTING_UPDATED_CITIZEN_POST);
         return notificationService.sendLetter(letterRequest);
     }
 }

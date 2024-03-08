@@ -12,12 +12,14 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -41,7 +43,7 @@ public class CaseWithdrawnNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -51,6 +53,13 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testSubject@outlook.com",
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
@@ -69,6 +78,12 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+            TemplateName.CASE_WITHDRAWN_POST);
     }
 
     @Test
@@ -76,7 +91,7 @@ public class CaseWithdrawnNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
-        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentEmail("testrespondent@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
@@ -87,6 +102,13 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrespondent@outlook.com",
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
@@ -105,6 +127,13 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testrepr@outlook.com",
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
@@ -124,6 +153,12 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+            TemplateName.CASE_WITHDRAWN_POST);
     }
 
     @Test
@@ -131,7 +166,7 @@ public class CaseWithdrawnNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -141,6 +176,13 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            "testApplicant@outlook.com",
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
@@ -159,6 +201,13 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+
+            TemplateName.CASE_WITHDRAWN_POST);
     }
 
     private CaseData getMockCaseData() {
@@ -169,8 +218,11 @@ public class CaseWithdrawnNotificationTest {
             .closeCaseReason(CloseReason.Withdrawn)
             .additionalDetail("additionalDet")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).closeCase(closeCase).build();
 
-        return caseData;
+
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .closeCase(closeCase)
+            .build();
     }
 }
