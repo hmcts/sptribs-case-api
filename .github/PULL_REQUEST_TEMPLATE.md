@@ -2,14 +2,15 @@
 
 Enter a description.
 
-### JIRA link (if applicable) ###
+### JIRA link ###
 
-https://tools.hmcts.net/jira/browse/SPTRIBS-
+https://tools.hmcts.net/jira/browse/DTSSTCI-
 
 **Before merging a pull request make sure that:**
 
 - [ ] tests have been updated / new tests has been added (if needed)
 - [ ] README and other documentation has been updated / added (if needed)
+- [ ] `enable-e2e-tests` label can be used to run the e2e tests before QA handover and before release (required)
 
 **If this ticket will have any visible impact on users and is not behind a feature toggle, make sure that:**
 - [ ] this ticket been reviewed by QA
