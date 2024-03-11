@@ -82,7 +82,7 @@ public class ApplicationReceivedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-           data.getCicCase().getApplicantEmailAddress(),
+            data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
             TemplateName.APPLICATION_RECEIVED);
     }
