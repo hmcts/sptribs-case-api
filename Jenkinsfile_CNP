@@ -6,6 +6,7 @@ import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GradleBuilder
 import uk.gov.hmcts.contino.MetricsPublisher
+import uk.gov.hmcts.contino.GithubAPI
 
 def type = "java"
 def product = "sptribs"
@@ -262,22 +263,23 @@ withPipeline(type, product, component) {
         generateDefinitions()
     }
 
-  /* afterSuccess('functionalTest:preview') {
-
-        try {
-            builder.gradle('e2eTests')
-        } finally {
-
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/e2eTests",
-                    reportFiles          : "index.html",
-                    reportName           : "E2E Tests Report"
-            ]
-        }
-    }*/
+  def githubApi = new GithubAPI(this) as Object
+  if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")) {
+    afterSuccess('functionalTest:preview') {
+      try {
+        builder.gradle('e2eTests')
+      } finally {
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports/tests/e2eTests",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report"
+        ]
+      }
+    }
+  }
 
 
   onDemo {

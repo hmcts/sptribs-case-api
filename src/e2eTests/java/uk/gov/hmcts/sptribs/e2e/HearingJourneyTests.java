@@ -90,7 +90,7 @@ public class HearingJourneyTests extends Base {
         Assertions.assertEquals("Case management", hearingType);
         String hearingFormat = getValueFromTableWithinHearingsTabFor(page, "Hearing format");
         Assertions.assertEquals("Face to Face", hearingFormat);
-        String postponeReason = getValueFromTableWithinHearingsTabFor(page, "Postpone Reason");
+        String postponeReason = getValueFromTableWithinHearingsTabFor(page, "Reason Postponed");
         Assertions.assertEquals("Extension granted", postponeReason);
     }
 
