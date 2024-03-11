@@ -55,12 +55,11 @@ class CaseStayedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testSubject@outlook.com",
+            data.getCicCase().getEmail(),
             Map.of(
                 CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
                 CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
-                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()
-            ),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
             TemplateName.CASE_STAYED_EMAIL);
     }
 
@@ -82,12 +81,11 @@ class CaseStayedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testSubject@outlook.com",
+            data.getCicCase().getEmail(),
             Map.of(
                 CommonConstants.STAY_ADDITIONAL_DETAIL, CommonConstants.NONE_PROVIDED,
                 CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
-                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()
-            ),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
             TemplateName.CASE_STAYED_EMAIL);
     }
 
@@ -112,8 +110,7 @@ class CaseStayedNotificationTest {
             Map.of(
                 CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
                 CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
-                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()
-            ),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
             TemplateName.CASE_STAYED_POST);
     }
 
@@ -135,12 +132,11 @@ class CaseStayedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testApplicant@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             Map.of(
                 CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
                 CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
-                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()
-            ),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
             TemplateName.CASE_STAYED_EMAIL);
     }
 
@@ -166,8 +162,7 @@ class CaseStayedNotificationTest {
             Map.of(
                 CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
                 CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
-                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()
-            ),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
             TemplateName.CASE_STAYED_POST);
     }
 
@@ -193,8 +188,7 @@ class CaseStayedNotificationTest {
             Map.of(
                 CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
                 CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
-                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()
-            ),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
             TemplateName.CASE_STAYED_EMAIL);
     }
 
@@ -220,8 +214,7 @@ class CaseStayedNotificationTest {
             Map.of(
                 CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
                 CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
-                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()
-            ),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
             TemplateName.CASE_STAYED_POST);
     }
 

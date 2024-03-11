@@ -67,8 +67,7 @@ public class CancelHearingNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL
-        );
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
@@ -91,8 +90,7 @@ public class CancelHearingNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_POST
-        );
+            TemplateName.CASE_CANCEL_HEARING_POST);
     }
 
     @Test
@@ -115,8 +113,7 @@ public class CancelHearingNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL
-        );
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
@@ -138,10 +135,9 @@ public class CancelHearingNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
+            data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL
-        );
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
@@ -165,8 +161,7 @@ public class CancelHearingNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_POST
-        );
+            TemplateName.CASE_CANCEL_HEARING_POST);
     }
 
 
@@ -189,10 +184,9 @@ public class CancelHearingNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testapplicant@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL
-        );
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
@@ -216,8 +210,7 @@ public class CancelHearingNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_POST
-        );
+            TemplateName.CASE_CANCEL_HEARING_POST);
     }
 
 

@@ -50,10 +50,9 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "TestSubject@outlook.com",
+            data.getCicCase().getEmail(),
             Map.of(CommonConstants.CIC_CASE_SUBJECT_NAME,data.getCicCase().getFullName()),
-            TemplateName.CASE_ISSUED_CITIZEN_EMAIL
-        );
+            TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
     }
 
     @Test
@@ -71,12 +70,8 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
-            Map.of(
-                CommonConstants.CIC_CASE_SUBJECT_NAME,
-                data.getCicCase().getFullName()
-            ),
-            TemplateName.CASE_ISSUED_CITIZEN_POST
-        );
+            Map.of(CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
+            TemplateName.CASE_ISSUED_CITIZEN_POST);
     }
 
     @Test
@@ -95,10 +90,9 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "TestApplicant@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             Map.of(CommonConstants.CIC_CASE_APPLICANT_NAME,data.getCicCase().getApplicantFullName()),
-            TemplateName.CASE_ISSUED_CITIZEN_EMAIL
-        );
+            TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
     }
 
     @Test
@@ -137,7 +131,7 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "TestRepresentative@outlook.com",
+            data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
     }
@@ -177,7 +171,7 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testRespondentEmail@outlook.com",
+            data.getCicCase().getRespondentEmail(),
             Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),
             TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
     }

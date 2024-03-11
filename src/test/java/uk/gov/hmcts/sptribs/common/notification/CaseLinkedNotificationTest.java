@@ -49,7 +49,7 @@ class CaseLinkedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testSubject@outlook.com",
+            data.getCicCase().getEmail(),
             new HashMap<>(),
             TemplateName.CASE_LINKED_EMAIL);
     }
@@ -92,7 +92,7 @@ class CaseLinkedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testApplicant@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
             TemplateName.CASE_LINKED_EMAIL);
     }
@@ -136,7 +136,7 @@ class CaseLinkedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
+            data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
             TemplateName.CASE_LINKED_EMAIL);
 

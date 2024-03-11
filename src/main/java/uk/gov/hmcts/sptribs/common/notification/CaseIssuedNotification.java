@@ -106,8 +106,7 @@ public class CaseIssuedNotification implements PartiesNotification {
             // Send Email
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
-                uploadedDocuments
-            );
+                uploadedDocuments);
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,

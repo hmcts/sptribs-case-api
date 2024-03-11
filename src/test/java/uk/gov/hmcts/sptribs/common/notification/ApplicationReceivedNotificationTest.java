@@ -49,7 +49,7 @@ public class ApplicationReceivedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "test@outlook.com",
+            data.getCicCase().getEmail(),
             new HashMap<>(),
             TemplateName.APPLICATION_RECEIVED);
     }
@@ -82,7 +82,7 @@ public class ApplicationReceivedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "test@outlook.com",
+           data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
             TemplateName.APPLICATION_RECEIVED);
     }
@@ -116,7 +116,7 @@ public class ApplicationReceivedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "test@outlook.com",
+            data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
             TemplateName.APPLICATION_RECEIVED);
     }

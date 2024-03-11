@@ -58,7 +58,7 @@ class CaseReinstatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testsubject@outlook.com",
+            data.getCicCase().getEmail(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.CASE_REINSTATED_EMAIL);
     }
@@ -104,7 +104,7 @@ class CaseReinstatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testRespondent@outlook.com",
+            data.getCicCase().getRespondentEmail(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.CASE_REINSTATED_EMAIL);
     }
@@ -128,7 +128,7 @@ class CaseReinstatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
+            data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.CASE_REINSTATED_EMAIL);
     }
@@ -175,7 +175,7 @@ class CaseReinstatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testApplicant@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.CASE_REINSTATED_EMAIL);
     }
