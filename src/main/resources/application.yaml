@@ -217,6 +217,8 @@ feature:
     enabled: ${SECURITY_CLASSIFICATION:true}
   access-profiles:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
+  sni-5511:
+    enabled: ${SNI_5511_ENABLED:false}
 
 caseinfo:
   apps:
