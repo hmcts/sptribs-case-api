@@ -134,7 +134,8 @@ feature:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
   update-case:
     enabled: ${DSS_UPDATE_CASE_ENABLED:true}
-
+  sni-5511:
+    enabled: ${SNI_5511_ENABLED:false}
 
 caseinfo:
   apps:
