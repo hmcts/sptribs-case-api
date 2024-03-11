@@ -41,6 +41,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -71,6 +73,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
+    @Value("${feature.sni-5511.enabled}")
+    private boolean sni5511Enabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (dssSubmitCaseEnabled) {
@@ -82,7 +87,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getSubmitEvent())
-            .forStates(State.DSS_Draft)
+            .forStateTransition(DSS_Draft, DSS_Submitted)
             .name("Submit case (cic)")
             .description("Application submit (cic)")
             .retries(120, 120)
@@ -112,7 +117,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(State.DSS_Submitted)
             .build();
     }
 
@@ -130,13 +134,16 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
+
         final Set<PartiesCIC> setParty = new HashSet<>();
         setParty.add(PartiesCIC.SUBJECT);
         caseData.getCicCase().setPartiesCIC(setParty);
+
         final Set<SubjectCIC> set = new HashSet<>();
         set.add(SubjectCIC.SUBJECT);
         caseData.getCicCase().setSubjectCIC(set);
         caseData.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+
         if (!ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
             caseData.getCicCase().setRepresentativeFullName(dssCaseData.getRepresentativeFullName());
             caseData.getCicCase().setRepresentativeOrgName(dssCaseData.getRepresentativeOrganisationName());
@@ -149,8 +156,10 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setRepresentativeCIC(setRep);
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         }
+
         List<CaseworkerCICDocument> docList = new ArrayList<>();
         List<ListValue<DssMessage>> listValues = new ArrayList<>();
+
         if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
             //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
@@ -160,6 +169,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
+
+                if (sni5511Enabled && !docList.contains(caseworkerCICDocument)) {
+                    docList.add(caseworkerCICDocument);
+                }
+
                 final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
                 final DssMessage message = DssMessage.builder()
@@ -167,8 +181,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .dateReceived(LocalDate.now())
                     .receivedFrom(caseworkerUser.getUserDetails().getFullName())
                     .documentRelevance(dssCaseData.getDocumentRelevance())
-                    .otherInfoDocument(caseworkerCICDocument)
                     .build();
+
+                if (!sni5511Enabled) {
+                    message.setOtherInfoDocument(caseworkerCICDocument);
+                }
 
                 final ListValue<DssMessage> listValue = ListValue
                     .<DssMessage>builder()
@@ -177,7 +194,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .build();
 
                 listValues.add(listValue);
-
             }
         }
         caseData.setMessages(listValues);
