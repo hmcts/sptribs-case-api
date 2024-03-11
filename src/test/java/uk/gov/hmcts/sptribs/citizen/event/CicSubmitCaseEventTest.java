@@ -92,6 +92,7 @@ class CicSubmitCaseEventTest {
         eventsConfig.setSubmitEvent("citizen-cic-submit-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
+        cicSubmitCaseEvent.setSni5511Enabled(true);
     }
 
     @AfterEach
