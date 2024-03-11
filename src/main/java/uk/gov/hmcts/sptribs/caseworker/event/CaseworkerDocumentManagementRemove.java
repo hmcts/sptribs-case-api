@@ -30,6 +30,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
@@ -69,6 +70,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 Submitted,
                 NewCaseReceived,
                 CaseManagement,
+                ReadyToList,
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,
@@ -76,14 +78,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .name("Document management: Remove")
             .description("Document management: Remove")
             .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE)
+            .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE)
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
