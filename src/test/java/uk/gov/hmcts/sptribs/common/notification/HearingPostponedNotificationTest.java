@@ -89,7 +89,7 @@ public class HearingPostponedNotificationTest {
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
-        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentEmail("testrespondent@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
@@ -170,5 +170,4 @@ public class HearingPostponedNotificationTest {
             .caseStay(caseStay)
             .build();
     }
-
 }

@@ -58,13 +58,12 @@ class ContactPartiesNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testSubject@outlook.com",
+            data.getCicCase().getEmail(),
             true,
             new HashMap<>(),
             Map.of(
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
-                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()
-            ),
+                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
     }
 
@@ -75,8 +74,7 @@ class ContactPartiesNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setNotifyPartyMessage("message");
         data.getCicCase().setAddress(
-            new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK")
-        );
+            new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -113,13 +111,12 @@ class ContactPartiesNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testApplicant@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             true,
             new HashMap<>(),
             Map.of(
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
-                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()
-            ),
+                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
     }
 
@@ -131,8 +128,7 @@ class ContactPartiesNotificationTest {
         data.getCicCase().setNotifyPartyMessage("message");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(
-            new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK")
-        );
+            new AddressGlobalUK("11", "JOHN", "STREET", "WINCHESTER", "COUNTY", "TW4 5BH", "UK"));
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
@@ -144,8 +140,7 @@ class ContactPartiesNotificationTest {
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName(),
-                CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()
-            ),
+                CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()),
             TemplateName.CONTACT_PARTIES_POST);
     }
 
@@ -169,13 +164,12 @@ class ContactPartiesNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
+            data.getCicCase().getRepresentativeEmailAddress(),
             true,
             new HashMap<>(),
             Map.of(
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
-                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()
-            ),
+                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
     }
 
@@ -200,8 +194,7 @@ class ContactPartiesNotificationTest {
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName(),
-                CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()
-            ),
+                CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()),
             TemplateName.CONTACT_PARTIES_POST);
     }
 
@@ -223,8 +216,7 @@ class ContactPartiesNotificationTest {
             data.getCicCase().getRespondentEmail(),
             Map.of(
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
-                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()
-            ),
+                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
     }
 
@@ -251,8 +243,7 @@ class ContactPartiesNotificationTest {
             new HashMap<>(),
             Map.of(
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
-                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()
-            ),
+                CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
     }
 
@@ -278,8 +269,7 @@ class ContactPartiesNotificationTest {
             new HashMap<>(),
             Map.of(
                 CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE,
-                CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()
-            ),
+                CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()),
             TemplateName.CONTACT_PARTIES_EMAIL);
     }
 

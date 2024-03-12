@@ -51,7 +51,7 @@ public class ListingUpdatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testSubject@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
             TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
     }
@@ -118,10 +118,8 @@ public class ListingUpdatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
-            Map.of(
-                CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()
-            ),
+            data.getCicCase().getRepresentativeEmailAddress(),
+            Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
             TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
     }
 
@@ -141,9 +139,7 @@ public class ListingUpdatedNotificationTest {
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
-            Map.of(
-                CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()
-            ),
+            Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()),
             TemplateName.LISTING_UPDATED_CITIZEN_POST);
     }
 
@@ -162,10 +158,8 @@ public class ListingUpdatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testRespondent@outlook.com",
-            Map.of(
-                CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()
-            ),
+            data.getCicCase().getRespondentEmail(),
+            Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()),
             TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
     }
 

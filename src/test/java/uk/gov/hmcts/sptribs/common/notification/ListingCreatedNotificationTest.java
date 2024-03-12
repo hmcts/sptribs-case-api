@@ -51,7 +51,7 @@ public class ListingCreatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testSubject@outlook.com",
+            data.getCicCase().getEmail(),
             new HashMap<>(),
             TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
     }
@@ -79,7 +79,7 @@ public class ListingCreatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testSubject@outlook.com",
+            data.getCicCase().getEmail(),
             new HashMap<>(),
             TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
 
@@ -121,10 +121,8 @@ public class ListingCreatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
-            Map.of(
-                CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()
-            ),
+            data.getCicCase().getRepresentativeEmailAddress(),
+            Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
             TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
     }
 
@@ -144,9 +142,7 @@ public class ListingCreatedNotificationTest {
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
-            Map.of(
-                CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()
-            ),
+            Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
             TemplateName.LISTING_CREATED_CITIZEN_POST);
     }
 
@@ -165,10 +161,9 @@ public class ListingCreatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrespondent@outlook.com",
+            data.getCicCase().getRespondentEmail(),
             Map.of(
-                CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()
-            ),
+                CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()),
             TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
     }
 
@@ -186,7 +181,7 @@ public class ListingCreatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testapp@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
             TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
     }

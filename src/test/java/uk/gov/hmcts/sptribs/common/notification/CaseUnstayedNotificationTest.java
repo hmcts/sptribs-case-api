@@ -38,7 +38,7 @@ class CaseUnstayedNotificationTest {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -49,7 +49,7 @@ class CaseUnstayedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
+            data.getCicCase().getEmail(),
             new HashMap<>(),
             TemplateName.CASE_UNSTAYED_EMAIL);
 
@@ -82,7 +82,7 @@ class CaseUnstayedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
-        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -93,7 +93,7 @@ class CaseUnstayedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
+            data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
             TemplateName.CASE_UNSTAYED_EMAIL);
     }
@@ -137,7 +137,7 @@ class CaseUnstayedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            "testrepr@outlook.com",
+            data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
             TemplateName.CASE_UNSTAYED_EMAIL);
     }
