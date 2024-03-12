@@ -51,7 +51,7 @@ public class ListingUpdatedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
-            data.getCicCase().getApplicantEmailAddress(),
+            data.getCicCase().getEmail(),
             new HashMap<>(),
             TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
     }
