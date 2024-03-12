@@ -98,10 +98,15 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
         if (!isEmpty(dssCaseData.getOtherInfoDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
-                Document doc = documentListValue.getValue().getDocumentLink();
-                doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
+                // TODO: add messages for
+                //  documentRelevance and additionalInformation
+                // TODO: add comments/document relevance field to EdgeCaseDocument object
+                Document document = documentListValue.getValue().getDocumentLink();
+                String documentComment = documentListValue.getValue().getComment();
+                document.setCategoryId(DocumentType.DSS_OTHER.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-                    .documentLink(doc)
+                    .documentLink(document)
+                    .documentEmailContent(documentComment)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
                 if (!docList.contains(caseworkerCICDocument)) {
