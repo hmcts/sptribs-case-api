@@ -17,18 +17,6 @@
         }
       }
     ],
-    "dssCaseDataOtherInfoDocuments": [
-      {
-        "id": "${json-unit.any-string}",
-        "value": {
-          "documentLink": {
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
-            "document_filename": "mockFileUpdated.pdf",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
-            "category_id": "DSS"
-          }
-        }
-      }
-    ]
+    "dssCaseDataOtherInfoDocuments": []
   }
 }

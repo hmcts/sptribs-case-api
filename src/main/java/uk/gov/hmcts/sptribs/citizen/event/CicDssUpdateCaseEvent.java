@@ -159,6 +159,10 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     caseData.getCicCase().getApplicantDocumentsUploaded().stream(), documentListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
 
+        dssCaseData.setOtherInfoDocuments(new ArrayList<>());
+        dssCaseData.setAdditionalInformation(null);
+        caseData.setDssCaseData(dssCaseData);
+
         return caseData;
     }
 

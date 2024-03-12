@@ -109,6 +109,8 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(2);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
     }
 
     @Test
@@ -148,6 +150,8 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
     }
 
     @Test
@@ -187,6 +191,8 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
     }
 
     @Test
@@ -214,6 +220,8 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
     }
 
     @Test
