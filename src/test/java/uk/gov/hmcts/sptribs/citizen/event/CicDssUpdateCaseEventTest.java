@@ -112,6 +112,84 @@ class CicDssUpdateCaseEventTest {
     }
 
     @Test
+    void shouldAddDocumentsOnlyToCaseDataInAboutToSubmitCallbackIfAdditionalInfoFieldIsEmpty() {
+        final CaseworkerCICDocument caseworkerCICDocument =
+            CaseworkerCICDocument.builder()
+                .documentLink(Document.builder().build())
+                .documentCategory(DSS_TRIBUNAL_FORM)
+                .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
+        applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
+
+        final DssMessage message = DssMessage.builder()
+            .message("new doc")
+            .build();
+        final List<ListValue<DssMessage>> messages = new ArrayList<>();
+        messages.add(new ListValue<>("1", message));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(
+                CicCase.builder()
+                    .applicantDocumentsUploaded(applicantDocumentsUploaded)
+                    .build()
+            )
+            .messages(messages)
+            .dssCaseData(getDssCaseData())
+            .build();
+        caseData.getDssCaseData().setAdditionalInformation("");
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(1);
+    }
+
+    @Test
+    void shouldAddDocumentsOnlyToCaseDataInAboutToSubmitCallbackIfAdditionalInfoFieldIsNull() {
+        final CaseworkerCICDocument caseworkerCICDocument =
+            CaseworkerCICDocument.builder()
+                .documentLink(Document.builder().build())
+                .documentCategory(DSS_TRIBUNAL_FORM)
+                .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
+        applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
+
+        final DssMessage message = DssMessage.builder()
+            .message("new doc")
+            .build();
+        final List<ListValue<DssMessage>> messages = new ArrayList<>();
+        messages.add(new ListValue<>("1", message));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(
+                CicCase.builder()
+                    .applicantDocumentsUploaded(applicantDocumentsUploaded)
+                    .build()
+            )
+            .messages(messages)
+            .dssCaseData(getDssCaseData())
+            .build();
+        caseData.getDssCaseData().setAdditionalInformation(null);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(1);
+    }
+
+    @Test
     void shouldCreateNewApplicantDocumentsUploadedAndMessagesListIfEmptyInAboutToSubmitCallback() {
         final CaseData caseData = CaseData.builder()
             .cicCase(

@@ -53,6 +53,7 @@
       {
         "id": "${json-unit.any-string}",
         "value": {
+          "message": "some documents relevant to the case",
           "dateReceived": "${json-unit.any-string}",
           "receivedFrom": "User Test"
         }

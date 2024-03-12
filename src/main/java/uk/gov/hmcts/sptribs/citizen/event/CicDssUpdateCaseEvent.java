@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
@@ -126,21 +127,29 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
             }
         }
 
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        if (isNotBlank(dssCaseData.getAdditionalInformation())) {
+            final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
-        final DssMessage message = DssMessage.builder()
-            .message(dssCaseData.getAdditionalInformation())
-            .dateReceived(LocalDate.now())
-            .receivedFrom(caseworkerUser.getUserDetails().getFullName())
-            .build();
+            final DssMessage message = DssMessage.builder()
+                .message(dssCaseData.getAdditionalInformation())
+                .dateReceived(LocalDate.now())
+                .receivedFrom(user.getUserDetails().getFullName())
+                .build();
 
-        final ListValue<DssMessage> listValue = ListValue
-            .<DssMessage>builder()
-            .id(UUID.randomUUID().toString())
-            .value(message)
-            .build();
+            final ListValue<DssMessage> listValue = ListValue
+                .<DssMessage>builder()
+                .id(UUID.randomUUID().toString())
+                .value(message)
+                .build();
 
-        messagesList.add(listValue);
+            messagesList.add(listValue);
+
+            final List<ListValue<DssMessage>> updatedMessagesList =
+                isEmpty(caseData.getMessages())
+                    ? messagesList
+                    : Stream.concat(caseData.getMessages().stream(), messagesList.stream()).toList();
+            caseData.setMessages(updatedMessagesList);
+        }
 
         final List<ListValue<CaseworkerCICDocument>> documentListUpdated = DocumentManagementUtil.buildListValues(documentList);
         final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded =
@@ -149,12 +158,6 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 : Stream.concat(
                     caseData.getCicCase().getApplicantDocumentsUploaded().stream(), documentListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
-
-        final List<ListValue<DssMessage>> updatedMessagesList =
-            isEmpty(caseData.getMessages())
-                ? messagesList
-                : Stream.concat(caseData.getMessages().stream(), messagesList.stream()).toList();
-        caseData.setMessages(updatedMessagesList);
 
         return caseData;
     }

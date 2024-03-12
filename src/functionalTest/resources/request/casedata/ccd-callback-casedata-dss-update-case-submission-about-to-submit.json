@@ -34,6 +34,7 @@
       }
     }
   ],
+  "dssCaseDataAdditionalInformation": "some documents relevant to the case",
   "dssCaseDataOtherInfoDocuments": [
     {
       "id": "1",
