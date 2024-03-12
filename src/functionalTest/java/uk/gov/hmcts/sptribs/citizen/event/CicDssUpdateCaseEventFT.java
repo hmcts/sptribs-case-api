@@ -41,14 +41,14 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
 
 
     @Test
-    public void shouldAddDocumentsToExistingApplicantDocumentsUploadedListInAboutToSubmitCallback()
+    public void shouldAddDocumentsAndMessagesToExistingListsInAboutToSubmitCallback()
         throws Exception {
 
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ABOUT_TO_SUBMIT_URL);
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
@@ -56,14 +56,14 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldCreateNewListWhenExistingApplicantDocumentsUploadedListIsEmptyInAboutToSubmitCallback()
+    public void shouldCreateNewListsWhenExistingDocumentsAndMessagesListIsEmptyInAboutToSubmitCallback()
         throws Exception {
 
         final Map<String, Object> caseData = caseData(REQUEST_EMPTY_APPLICANT_DOCUMENTS_UPLOADED);
 
         final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ABOUT_TO_SUBMIT_URL);
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)

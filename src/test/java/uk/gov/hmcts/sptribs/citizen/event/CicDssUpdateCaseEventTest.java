@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,12 +17,15 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +33,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.DSS_TRIBUNAL_FORM;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +47,12 @@ class CicDssUpdateCaseEventTest {
 
     @Mock
     private DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private IdamService idamService;
 
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
@@ -58,7 +71,7 @@ class CicDssUpdateCaseEventTest {
     }
 
     @Test
-    void shouldAddDocumentsToCaseDataInAboutToSubmitCallback() {
+    void shouldAddDocumentsAndMessagesToCaseDataInAboutToSubmitCallback() {
         final CaseworkerCICDocument caseworkerCICDocument =
             CaseworkerCICDocument.builder()
                 .documentLink(Document.builder().build())
@@ -67,44 +80,62 @@ class CicDssUpdateCaseEventTest {
         final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
         applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
 
+        final DssMessage message = DssMessage.builder()
+            .message("new doc")
+            .build();
+        final List<ListValue<DssMessage>> messages = new ArrayList<>();
+        messages.add(new ListValue<>("1", message));
+
         final CaseData caseData = CaseData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(applicantDocumentsUploaded)
                     .build()
             )
+            .messages(messages)
             .dssCaseData(getDssCaseData())
             .build();
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(2);
     }
 
     @Test
-    void shouldCreateNewApplicantDocumentsUploadedListIfEmptyInAboutToSubmitCallback() {
+    void shouldCreateNewApplicantDocumentsUploadedAndMessagesListIfEmptyInAboutToSubmitCallback() {
         final CaseData caseData = CaseData.builder()
             .cicCase(
                 CicCase.builder()
                     .applicantDocumentsUploaded(new ArrayList<>())
                     .build()
             )
+            .messages(new ArrayList<>())
             .dssCaseData(getDssCaseData())
             .build();
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(1);
     }
 
     @Test
@@ -155,6 +186,7 @@ class CicDssUpdateCaseEventTest {
                 .categoryId("test category")
                 .build()
         );
+        doc1.setComment("this doc is relevant to the case");
         EdgeCaseDocument doc2 = new EdgeCaseDocument();
         doc2.setDocumentLink(
             Document.builder()
@@ -163,12 +195,14 @@ class CicDssUpdateCaseEventTest {
                 .categoryId("test category")
                 .build()
         );
+        doc2.setComment("this doc is also relevant to the case");
         final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
             new ListValue<>("1", doc1),
             new ListValue<>("2", doc2)
         );
 
         return DssCaseData.builder()
+            .additionalInformation("some additional info")
             .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
             .build();
     }

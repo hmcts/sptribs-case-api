@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,21 +12,27 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
@@ -50,6 +57,12 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     @Autowired
     private DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private IdamService idamService;
 
     @Value("${feature.update-case.enabled}")
     private boolean dssUpdateCaseEnabled;
@@ -94,13 +107,11 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     }
 
     private CaseData addDocumentsToCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
-        final List<CaseworkerCICDocument> docList = new ArrayList<>();
+        final List<CaseworkerCICDocument> documentList = new ArrayList<>();
+        final List<ListValue<DssMessage>> messagesList = new ArrayList<>();
 
         if (!isEmpty(dssCaseData.getOtherInfoDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
-                // TODO: add messages for
-                //  documentRelevance and additionalInformation
-                // TODO: add comments/document relevance field to EdgeCaseDocument object
                 Document document = documentListValue.getValue().getDocumentLink();
                 String documentComment = documentListValue.getValue().getComment();
                 document.setCategoryId(DocumentType.DSS_OTHER.getCategory());
@@ -109,19 +120,41 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     .documentEmailContent(documentComment)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
-                if (!docList.contains(caseworkerCICDocument)) {
-                    docList.add(caseworkerCICDocument);
+                if (!documentList.contains(caseworkerCICDocument)) {
+                    documentList.add(caseworkerCICDocument);
                 }
             }
         }
 
-        final List<ListValue<CaseworkerCICDocument>> docListUpdated = DocumentManagementUtil.buildListValues(docList);
+        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+
+        final DssMessage message = DssMessage.builder()
+            .message(dssCaseData.getAdditionalInformation())
+            .dateReceived(LocalDate.now())
+            .receivedFrom(caseworkerUser.getUserDetails().getFullName())
+            .build();
+
+        final ListValue<DssMessage> listValue = ListValue
+            .<DssMessage>builder()
+            .id(UUID.randomUUID().toString())
+            .value(message)
+            .build();
+
+        messagesList.add(listValue);
+
+        final List<ListValue<CaseworkerCICDocument>> documentListUpdated = DocumentManagementUtil.buildListValues(documentList);
         final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded =
             isEmpty(caseData.getCicCase().getApplicantDocumentsUploaded())
-                ? docListUpdated
+                ? documentListUpdated
                 : Stream.concat(
-                    caseData.getCicCase().getApplicantDocumentsUploaded().stream(), docListUpdated.stream()).toList();
+                    caseData.getCicCase().getApplicantDocumentsUploaded().stream(), documentListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
+
+        final List<ListValue<DssMessage>> updatedMessagesList =
+            isEmpty(caseData.getMessages())
+                ? messagesList
+                : Stream.concat(caseData.getMessages().stream(), messagesList.stream()).toList();
+        caseData.setMessages(updatedMessagesList);
 
         return caseData;
     }
