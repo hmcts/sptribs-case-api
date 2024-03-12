@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -27,7 +26,6 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
     private static final String CITIZEN_SUBMIT_CASE_EVENT_ID = "citizen-cic-submit-dss-application";
 
     @Test
-    @Disabled("Disabled until feature tested and flag/toggle removed")
     public void shouldSuccessfullySubmitCaseWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 

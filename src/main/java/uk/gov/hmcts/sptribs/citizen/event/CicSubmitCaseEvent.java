@@ -73,9 +73,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     AppsConfig appsConfig;
 
-    @Value("${feature.sni-5511.enabled}")
-    private boolean sni5511Enabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (dssSubmitCaseEnabled) {
@@ -170,7 +167,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
 
-                if (sni5511Enabled && !docList.contains(caseworkerCICDocument)) {
+                if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
                 }
 
@@ -182,10 +179,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .receivedFrom(caseworkerUser.getUserDetails().getFullName())
                     .documentRelevance(dssCaseData.getDocumentRelevance())
                     .build();
-
-                if (!sni5511Enabled) {
-                    message.setOtherInfoDocument(caseworkerCICDocument);
-                }
 
                 final ListValue<DssMessage> listValue = ListValue
                     .<DssMessage>builder()
