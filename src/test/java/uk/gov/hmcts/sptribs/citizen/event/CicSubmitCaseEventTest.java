@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -118,8 +117,7 @@ class CicSubmitCaseEventTest {
     }
 
     @Test
-    void shouldUpdateCaseDetailsToggleEnabled() {
-        ReflectionTestUtils.setField(cicSubmitCaseEvent, "sni5511Enabled", true);
+    void shouldUpdateCaseDetails() {
         final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
         dssDoc.setDocumentLink(Document.builder().build());
         final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
@@ -154,48 +152,6 @@ class CicSubmitCaseEventTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
-        assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
-            .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
-    }
-
-    @Test
-    void shouldUpdateCaseDetailsToggleDisabled() {
-        ReflectionTestUtils.setField(cicSubmitCaseEvent, "sni5511Enabled", false);
-        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
-        dssDoc.setDocumentLink(Document.builder().build());
-        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
-        listValue.setValue(dssDoc);
-        final DssCaseData dssCaseData = DssCaseData.builder()
-            .caseTypeOfApplication(CASE_DATA_CIC_ID)
-            .otherInfoDocuments(List.of(listValue))
-            .supportingDocuments(List.of(listValue))
-            .tribunalFormDocuments(List.of(listValue))
-            .subjectFullName(TEST_FIRST_NAME)
-            .representation(YesOrNo.YES)
-            .representationQualified(YesOrNo.YES)
-            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .build();
-
-        final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = caseData();
-        caseData.setCicCase(cicCase);
-        caseData.setDssCaseData(dssCaseData);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        updatedCaseDetails.setData(caseData);
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
         assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
             .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
