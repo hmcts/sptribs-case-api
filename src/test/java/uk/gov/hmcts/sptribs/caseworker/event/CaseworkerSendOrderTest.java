@@ -85,7 +85,6 @@ class CaseworkerSendOrderTest {
             .contains(CASEWORKER_SEND_ORDER);
     }
 
-
     @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
