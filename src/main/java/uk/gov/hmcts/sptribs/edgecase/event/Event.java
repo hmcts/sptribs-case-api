@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Event {
     SUBMIT("submit"),
-    UPDATE("update");
+    UPDATE("update"),
+    UPDATE_CASE("update_case");
 
     private final String eventType;
 }

@@ -1,0 +1,16 @@
+{
+  "dssCaseDataOtherInfoDocuments": [
+    {
+      "id": "1",
+      "value": {
+        "documentLink": {
+          "category_id": "DSS",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+          "document_filename": "mockFileUpdated.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary"
+        },
+        "comment": "a relevant doc"
+      }
+    }
+  ]
+}

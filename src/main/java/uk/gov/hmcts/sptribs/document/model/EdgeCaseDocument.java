@@ -18,4 +18,10 @@ public class EdgeCaseDocument {
         access = {DefaultAccess.class, CitizenAccess.class}
     )
     private uk.gov.hmcts.ccd.sdk.type.Document documentLink;
+
+    @CCD(
+        label = "Document description",
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String comment;
 }

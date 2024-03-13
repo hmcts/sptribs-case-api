@@ -20,7 +20,7 @@ public class AppsConfig {
         private String createEvent;
         private String updateEvent;
         private String submitEvent;
-        private String dssUpdateEvent;
+        private String updateCaseEvent;
     }
 
     @Data
@@ -30,5 +30,4 @@ public class AppsConfig {
         private List<String> caseTypeOfApplication;
         private EventsConfig eventIds;
     }
-
 }
