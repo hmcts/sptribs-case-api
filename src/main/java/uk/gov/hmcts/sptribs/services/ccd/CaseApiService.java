@@ -122,7 +122,7 @@ public class CaseApiService {
 
         } else if (eventEnum.getEventType().equalsIgnoreCase(Event.UPDATE_CASE.getEventType())) {
 
-            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getSubmitEvent()).build())
+            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateCaseEvent()).build())
                 .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateCaseEvent(),
                     caseId, appsDetails));
 
