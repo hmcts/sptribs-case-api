@@ -58,6 +58,7 @@ location:
 judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
+    usersPageSize: ${JUDICIAL_USERS_PAGE_SIZE:200}
 
 bundling:
   api:
