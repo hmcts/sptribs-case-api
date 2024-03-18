@@ -34,7 +34,7 @@ class CaseUnlinkedNotificationTest {
     private CaseUnlinkedNotification caseUnlinkedNotification;
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+    void shouldNotifySubjectOfCaseUnlikedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -55,7 +55,7 @@ class CaseUnlinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithPost() {
+    void shouldNotifySubjectOfCaseUnlikedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -77,7 +77,7 @@ class CaseUnlinkedNotificationTest {
 
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
+    void shouldNotifyApplicantOfCaseUnlikedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -99,7 +99,7 @@ class CaseUnlinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithPost() {
+    void shouldNotifyApplicantOfCaseUnlikedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -121,7 +121,7 @@ class CaseUnlinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
+    void shouldNotifyRepresentativeOfCaseUnlikedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -143,7 +143,7 @@ class CaseUnlinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithPost() {
+    void shouldNotifyRepresentativeOfCaseUnlikedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");

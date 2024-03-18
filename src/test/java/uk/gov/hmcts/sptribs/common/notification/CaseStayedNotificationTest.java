@@ -39,7 +39,7 @@ class CaseStayedNotificationTest {
     private CaseStayedNotification caseStayedNotification;
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+    void shouldNotifySubjectOfCaseStayedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -64,7 +64,7 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmailWithoutAdditionalDetail() {
+    void shouldNotifySubjectOfCaseStayedWithEmailWithoutAdditionalDetail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -90,7 +90,7 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithPost() {
+    void shouldNotifySubjectOfCaseStayedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -115,7 +115,7 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
+    void shouldNotifyApplicantOfCaseStayedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -141,7 +141,7 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithPost() {
+    void shouldNotifyApplicantOfCaseStayedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -167,7 +167,7 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
+    void shouldNotifyRepresentativeOfCaseStayedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -193,7 +193,7 @@ class CaseStayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithPost() {
+    void shouldNotifyRepresentativeOfCaseStayedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);

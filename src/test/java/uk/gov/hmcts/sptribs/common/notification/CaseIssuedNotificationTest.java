@@ -36,7 +36,7 @@ public class CaseIssuedNotificationTest {
     private CaseIssuedNotification caseIssuedNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() {
+    void shouldNotifySubjectOfCaseIssuedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -56,7 +56,7 @@ public class CaseIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithPost() {
+    void shouldNotifySubjectOfCaseIssuedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -75,7 +75,7 @@ public class CaseIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithEmail() {
+    void shouldNotifyApplicantOfCaseIssuedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -96,7 +96,7 @@ public class CaseIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithPost() {
+    void shouldNotifyApplicantOfCaseIssuedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -116,7 +116,7 @@ public class CaseIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
+    void shouldNotifyRepresentativeOfCaseIssuedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -137,7 +137,7 @@ public class CaseIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() {
+    void shouldNotifyRepresentativeOfCaseIssuedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -157,7 +157,7 @@ public class CaseIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmailWithoutAttachments() {
+    void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithoutAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
@@ -177,7 +177,7 @@ public class CaseIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
+    void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         final CaseIssue caseIssue = CaseIssue.builder().documentList(getDynamicMultiSelectDocumentList()).build();

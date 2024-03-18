@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
+import org.elasticsearch.core.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -45,7 +47,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
     private CaseFinalDecisionIssuedNotification finalDecisionIssuedNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectOfCaseFinalDecisionIssuedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -74,10 +76,18 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            true,
+            Map.of(
+                CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
+                CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
-    void shouldNotifySubjectWithEmailWithoutDecisionDocument() {
+    void shouldNotifySubjectOfCaseFinalDecisionIssuedWithEmailWithoutDecisionDocument() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -103,10 +113,18 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            true,
+            Map.of(
+                CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
+                CommonConstants.FINAL_DECISION_NOTICE, ""),
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectOfCaseFinalDecisionIssuedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -129,7 +147,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentOfCaseFinalDecisionIssuedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -154,10 +172,18 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRespondentEmail(),
+            true,
+            Map.of(
+                CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
+                CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
-    void shouldNotifyRespondentWithEmailWithoutDecisionNotice() {
+    void shouldNotifyRespondentOfCaseFinalDecisionIssuedWithEmailWithoutDecisionNotice() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -182,10 +208,18 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRespondentEmail(),
+            true,
+            Map.of(
+                CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
+                CommonConstants.FINAL_DECISION_NOTICE, ""),
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -214,10 +248,18 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            true,
+            Map.of(
+                CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
+                CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmailWithoutDecisionDraft() {
+    void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithEmailWithoutDecisionDraft() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -246,10 +288,18 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            true,
+            Map.of(
+                CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
+                CommonConstants.FINAL_DECISION_NOTICE, ""),
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -272,7 +322,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantWithEmail() {
+    void shouldNotifyApplicantOfCaseFinalDecisionIssuedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -302,10 +352,18 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getApplicantEmailAddress(),
+            true,
+            Map.of(
+                CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
+                CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
+            new HashMap<>(),
+            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
-    void shouldNotifyApplicantWithPost() {
+    void shouldNotifyApplicantOfCaseFinalDecisionIssuedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);

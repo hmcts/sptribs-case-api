@@ -40,7 +40,7 @@ class CaseReinstatedNotificationTest {
     private CaseReinstatedNotification reinstatedNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectOfCaseReinstatedWithEmail() {
 
         //Given
         final LocalDate expDate = LocalDate.now();
@@ -64,7 +64,7 @@ class CaseReinstatedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectOfCaseReinstatedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -87,7 +87,7 @@ class CaseReinstatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentOfCaseReinstatedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -110,7 +110,7 @@ class CaseReinstatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeOfCaseReinstatedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -134,7 +134,7 @@ class CaseReinstatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeOfCaseReinstatedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -158,7 +158,7 @@ class CaseReinstatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantWithEmail() {
+    void shouldNotifyApplicantOfCaseReinstatedWithEmail() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -181,7 +181,7 @@ class CaseReinstatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantWithPost() {
+    void shouldNotifyApplicantOfCaseReinstatedWithPost() {
         //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);

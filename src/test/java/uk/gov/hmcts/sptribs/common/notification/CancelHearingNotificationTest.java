@@ -48,7 +48,7 @@ public class CancelHearingNotificationTest {
     private CancelHearingNotification cancelHearingNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -71,7 +71,7 @@ public class CancelHearingNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectOfCaseCancelHearingWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -94,7 +94,7 @@ public class CancelHearingNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -117,7 +117,7 @@ public class CancelHearingNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -141,7 +141,7 @@ public class CancelHearingNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeOfCaseCancelHearingWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -166,7 +166,7 @@ public class CancelHearingNotificationTest {
 
 
     @Test
-    void shouldNotifyApplicantWithEmail() {
+    void shouldNotifyApplicantOfCaseCancelHearingWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -190,7 +190,7 @@ public class CancelHearingNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantWithPost() {
+    void shouldNotifyApplicantOfCaseCancelHearingWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);

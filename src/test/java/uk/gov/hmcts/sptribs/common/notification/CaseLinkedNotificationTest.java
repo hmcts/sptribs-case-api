@@ -34,7 +34,7 @@ class CaseLinkedNotificationTest {
     private CaseLinkedNotification caseLinkedNotification;
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+    void shouldNotifySubjectOfCaseLinkedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -55,7 +55,7 @@ class CaseLinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithPost() {
+    void shouldNotifySubjectOfCaseLinkedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -76,7 +76,7 @@ class CaseLinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
+    void shouldNotifyApplicantOfCaseLinkedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -98,7 +98,7 @@ class CaseLinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithPost() {
+    void shouldNotifyApplicantOfCaseLinkedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -120,7 +120,7 @@ class CaseLinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
+    void shouldNotifyRepresentativeOfCaseLinkedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -143,7 +143,7 @@ class CaseLinkedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithPost() {
+    void shouldNotifyRepresentativeOfCaseLinkedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
