@@ -31,9 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
+import static uk.gov.hmcts.sptribs.edgecase.event.Event.UPDATE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_TEST_AUTHORIZATION;
@@ -61,6 +63,7 @@ class CaseApiServiceTest {
 
     @Mock
     StartEventResponse eventRes;
+
     @Mock
     User user;
 
@@ -79,10 +82,8 @@ class CaseApiServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
         cicAppDetails = appsConfig.getApps().stream().filter(eachApps -> eachApps.getCaseTypeOfApplication().contains(
             CASE_DATA_CIC_ID)).findAny().orElse(null);
-
     }
 
     @Test
@@ -411,5 +412,57 @@ class CaseApiServiceTest {
         assertEquals(result.getCaseTypeId(),caseDetail.getCaseTypeId());
         assertEquals(result.getJurisdiction(),caseDetail.getJurisdiction());
         assertEquals(result.getData(),caseDetail.getData());
+    }
+
+    @Test
+    void verifyDssUpdateCaseSubmissionEventIsStartedForCitizen() throws IOException {
+        String caseDatajson = loadJson(CASE_DATA_FILE_CIC);
+        CaseData caseData = mapper.readValue(caseDatajson,CaseData.class);
+
+        Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
+        caseDataMap.put(TEST_CASE_REFERENCE, caseData);
+
+        CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
+            .id(TEST_CASE_ID)
+            .data(caseDataMap)
+            .jurisdiction(ST_CIC_JURISDICTION)
+            .build();
+
+        StartEventResponse startEventResponse = StartEventResponse.builder()
+            .caseDetails(caseDetail)
+            .eventId("citizen-cic-dss-update-case")
+            .token("event token")
+            .build();
+
+        when(idamService.retrieveUser(CASE_TEST_AUTHORIZATION)).thenReturn(user);
+        when(user.getUserDetails()).thenReturn(userDetails);
+        when(userDetails.getId()).thenReturn(TEST_USER);
+        when(coreCaseDataApi.startEventForCitizen(
+            "testAuth",
+            authTokenGenerator.generate(),
+            "TestUser",
+            "ST_CIC",
+            "CriminalInjuriesCompensation",
+            TEST_CASE_ID.toString(),
+            "citizen-cic-dss-update-case")
+        ).thenReturn(startEventResponse);
+
+        caseApiService.updateCase(
+            CASE_TEST_AUTHORIZATION,
+            UPDATE_CASE,
+            TEST_CASE_ID,
+            caseData,
+            cicAppDetails
+        );
+
+        verify(coreCaseDataApi).startEventForCitizen(
+            "testAuth",
+            authTokenGenerator.generate(),
+            "TestUser",
+            "ST_CIC",
+            "CriminalInjuriesCompensation",
+            TEST_CASE_ID.toString(),
+            "citizen-cic-dss-update-case"
+        );
     }
 }

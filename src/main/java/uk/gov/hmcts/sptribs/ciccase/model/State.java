@@ -156,7 +156,6 @@ public enum State {
         Draft
     ));
 
-
     public static final EnumSet<State> BUNDLE_STATES = EnumSet.of(
         CaseManagement,
         AwaitingHearing
