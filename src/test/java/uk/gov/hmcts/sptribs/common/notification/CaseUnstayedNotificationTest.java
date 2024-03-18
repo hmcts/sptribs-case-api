@@ -34,7 +34,7 @@ class CaseUnstayedNotificationTest {
     private CaseUnstayedNotification caseUnstayedNotification;
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+    void shouldNotifySubjectOfCaseUnstayedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -56,7 +56,7 @@ class CaseUnstayedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithPost() {
+    void shouldNotifySubjectOfCaseUnstayedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -77,7 +77,7 @@ class CaseUnstayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
+    void shouldNotifyApplicantOfCaseUnstayedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -99,7 +99,7 @@ class CaseUnstayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithPost() {
+    void shouldNotifyApplicantOfCaseUnstayedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -121,7 +121,7 @@ class CaseUnstayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
+    void shouldNotifyRepresentativeOfCaseUnstayedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -143,7 +143,7 @@ class CaseUnstayedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithPost() {
+    void shouldNotifyRepresentativeOfCaseUnstayedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");

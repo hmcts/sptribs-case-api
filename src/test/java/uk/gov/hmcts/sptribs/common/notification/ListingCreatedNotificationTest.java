@@ -37,7 +37,7 @@ public class ListingCreatedNotificationTest {
     private ListingCreatedNotification listingCreatedNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() {
+    void shouldNotifySubjectOfListingCreatedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -57,7 +57,7 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail_withFullRecordListing() {
+    void shouldNotifySubjectOfListingCreatedCitizenWithEmail_withFullRecordListing() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -86,7 +86,7 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithPost() {
+    void shouldNotifySubjectOfListingCreatedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -106,7 +106,7 @@ public class ListingCreatedNotificationTest {
 
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
+    void shouldNotifyRepresentativeOfListingCreatedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -127,7 +127,7 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() {
+    void shouldNotifyRepresentativeOfListingCreatedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -147,7 +147,7 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
+    void shouldNotifyRespondentOfListingCreatedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respFullName");
@@ -168,7 +168,7 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithEmail() {
+    void shouldNotifyApplicantOfListingCreatedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -187,7 +187,7 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithPost() {
+    void shouldNotifyApplicantOfListingCreatedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);

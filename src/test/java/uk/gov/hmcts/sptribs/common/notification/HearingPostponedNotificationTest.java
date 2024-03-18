@@ -38,12 +38,12 @@ public class HearingPostponedNotificationTest {
     private HearingPostponedNotification hearingPostponedNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectOfHearingPostponedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -61,7 +61,7 @@ public class HearingPostponedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectOfHearingPostponedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -84,7 +84,7 @@ public class HearingPostponedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentOfHearingPostponedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -108,7 +108,7 @@ public class HearingPostponedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeOfHearingPostponedWithEmail() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
@@ -132,7 +132,7 @@ public class HearingPostponedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeOfHearingPostponedWithPost() {
         //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);

@@ -66,8 +66,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
                 cicCase.getRepresentativeEmailAddress());
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            notificationResponse = sendLetterNotification(templateVarsRepresentative
-            );
+            notificationResponse = sendLetterNotification(templateVarsRepresentative);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);

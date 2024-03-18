@@ -24,6 +24,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,7 +42,7 @@ public class DecisionIssuedNotificationTest {
     private DecisionIssuedNotification decisionIssuedNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectOfDecisionIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -66,24 +67,20 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getEmail()),
+            eq(true),
+            anyMap(),
+            anyMap(),
+            eq(TemplateName.DECISION_ISSUED_EMAIL));
     }
 
     @Test
-    void shouldNotifySubjectWithEmailWithNoUploadedDocument() {
+    void shouldNotifySubjectOfDecisionIssuedWithEmailWithNoUploadedDocument() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testrepr@outlook.com");
-
-        final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
-            .documentEmailContent("content")
-            .build();
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(document)
-            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER).build();
-        data.setCaseIssueDecision(caseIssueDecision);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -94,10 +91,16 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getEmail()),
+            eq(true),
+            anyMap(),
+            anyMap(),
+            eq(TemplateName.DECISION_ISSUED_EMAIL));
     }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectOfDecisionIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -119,10 +122,13 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.DECISION_ISSUED_POST);
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentOfDecisionIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
@@ -144,37 +150,17 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getRespondentEmail()),
+            eq(true),
+            anyMap(),
+            anyMap(),
+            eq(TemplateName.DECISION_ISSUED_EMAIL));
     }
 
-    @Test
-    void shouldNotifyRespondentWithEmailWithException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setRespondentName("respondentName");
-        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
-        final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
-            .documentEmailContent("content")
-            .build();
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(document)
-            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
-            .build();
-        data.setCaseIssueDecision(caseIssueDecision);
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        decisionIssuedNotification.sendToRespondent(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeOfDecisionIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -201,40 +187,16 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getRepresentativeEmailAddress()),
+            eq(true),
+            anyMap(),
+            anyMap(),
+            eq(TemplateName.DECISION_ISSUED_EMAIL));
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmailWithException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setRepresentativeFullName("repFullName");
-        data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
-        data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
-
-        final UUID uuid = UUID.randomUUID();
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
-            .documentEmailContent("content")
-            .build();
-        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
-            .decisionDocument(document)
-            .decisionNotice(NoticeOption.UPLOAD_FROM_COMPUTER)
-            .build();
-        data.setCaseIssueDecision(caseIssueDecision);
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        decisionIssuedNotification.sendToRepresentative(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeOfDecisionIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -250,10 +212,13 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.DECISION_ISSUED_POST);
     }
 
     @Test
-    void shouldNotifyApplicantWithEmail() {
+    void shouldNotifyApplicantOfDecisionIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -278,10 +243,16 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getApplicantEmailAddress()),
+            eq(true),
+            anyMap(),
+            anyMap(),
+            eq(TemplateName.DECISION_ISSUED_EMAIL));
     }
 
     @Test
-    void shouldNotifyApplicantWithPost() {
+    void shouldNotifyApplicantOfDecisionIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -296,6 +267,9 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.DECISION_ISSUED_POST);
     }
 
     private CaseData getMockCaseData() {

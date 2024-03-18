@@ -42,13 +42,11 @@ public class ListingCreatedNotification implements PartiesNotification {
         if (cicCaseListing.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsSubject,
-                cicCaseListing.getEmail()
-            );
+                cicCaseListing.getEmail());
         } else {
             notificationHelper.addAddressTemplateVars(cicCaseListing.getAddress(), templateVarsSubject);
             //SEND POST
-            notificationResponse = sendLetterNotification(templateVarsSubject
-            );
+            notificationResponse = sendLetterNotification(templateVarsSubject);
         }
 
         cicCaseListing.setSubHearingNotificationResponse(notificationResponse);
@@ -70,8 +68,7 @@ public class ListingCreatedNotification implements PartiesNotification {
                 cicCase.getRepresentativeEmailAddress());
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            notificationResponse = sendLetterNotification(templateVarsRepresentative
-            );
+            notificationResponse = sendLetterNotification(templateVarsRepresentative);
         }
 
         cicCase.setRepHearingNotificationResponse(notificationResponse);
@@ -101,13 +98,11 @@ public class ListingCreatedNotification implements PartiesNotification {
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVars,
-                cicCase.getApplicantEmailAddress()
-            );
+                cicCase.getApplicantEmailAddress());
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
             //SEND POST
-            notificationResponse = sendLetterNotification(templateVars
-            );
+            notificationResponse = sendLetterNotification(templateVars);
         }
 
         cicCase.setSubHearingNotificationResponse(notificationResponse);

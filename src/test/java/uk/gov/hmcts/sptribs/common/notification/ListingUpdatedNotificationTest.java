@@ -37,7 +37,7 @@ public class ListingUpdatedNotificationTest {
     private ListingUpdatedNotification listingUpdatedNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() {
+    void shouldNotifySubjectOfListingUpdatedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -57,7 +57,7 @@ public class ListingUpdatedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail_withFullRecordListing() {
+    void shouldNotifySubjectOfListingUpdatedCitizenWithEmail_withFullRecordListing() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -83,7 +83,7 @@ public class ListingUpdatedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithPost() {
+    void shouldNotifySubjectOfListingUpdatedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -103,7 +103,7 @@ public class ListingUpdatedNotificationTest {
 
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
+    void shouldNotifyRepresentativeOfListingUpdatedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -124,7 +124,7 @@ public class ListingUpdatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() {
+    void shouldNotifyRepresentativeOfListingUpdatedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -144,7 +144,7 @@ public class ListingUpdatedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
+    void shouldNotifyRespondentOfListingUpdatedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");

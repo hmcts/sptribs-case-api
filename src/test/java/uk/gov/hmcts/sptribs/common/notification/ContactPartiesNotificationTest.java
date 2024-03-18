@@ -40,7 +40,7 @@ class ContactPartiesNotificationTest {
     private ContactPartiesNotification contactPartiesNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() {
+    void shouldNotifySubjectOfContactPartiesWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -68,7 +68,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithPost() {
+    void shouldNotifySubjectOfContactPartiesWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -92,7 +92,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithEmail() {
+    void shouldNotifyApplicantOfContactPartiesWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -121,7 +121,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithPost() {
+    void shouldNotifyApplicantOfContactPartiesWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -145,7 +145,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
+    void shouldNotifyRepresentativeOfContactPartiesWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -174,7 +174,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() {
+    void shouldNotifyRepresentativeOfContactPartiesWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -199,7 +199,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
+    void shouldNotifyRespondentOfContactPartiesWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
@@ -221,7 +221,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
+    void shouldNotifyRespondentOfContactPartiesWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -248,7 +248,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyTribunalOfCaseIssuedWithEmailWithAttachments() {
+    void shouldNotifyTribunalOfContactPartiesWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
