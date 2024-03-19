@@ -256,7 +256,7 @@ class ContactPartiesNotificationTest {
         data.getCicCase().setNotifyPartyMessage("message");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         contactPartiesNotification.sendToTribunal(data, "CN1");
 
@@ -264,8 +264,6 @@ class ContactPartiesNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
-            true,
-            new HashMap<>(),
             Map.of(
                 CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE,
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()),
