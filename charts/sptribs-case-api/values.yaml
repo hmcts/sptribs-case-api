@@ -34,6 +34,8 @@ java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'
   ingressHost: sptribs-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  spotInstances:
+    enabled: true
   aadIdentityName: sptribs
   keyVaults:
     sptribs:
