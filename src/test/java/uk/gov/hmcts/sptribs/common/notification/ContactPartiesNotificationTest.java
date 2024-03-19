@@ -40,7 +40,7 @@ class ContactPartiesNotificationTest {
     private ContactPartiesNotification contactPartiesNotification;
 
     @Test
-    void shouldNotifySubjectOfContactPartiesWithEmail() {
+    void shouldNotifySubjectOfContactPartiesWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -92,7 +92,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantOfContactPartiesWithEmail() {
+    void shouldNotifyApplicantOfContactPartiesWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -145,7 +145,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeOfContactPartiesWithEmail() {
+    void shouldNotifyRepresentativeOfContactPartiesWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -198,6 +198,7 @@ class ContactPartiesNotificationTest {
             TemplateName.CONTACT_PARTIES_POST);
     }
 
+
     @Test
     void shouldNotifyRespondentOfContactPartiesWithEmail() {
         //Given
@@ -244,6 +245,30 @@ class ContactPartiesNotificationTest {
             Map.of(
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
+            TemplateName.CONTACT_PARTIES_EMAIL);
+    }
+
+    @Test
+    void shouldNotifyTribunalOfContactPartiesWithEmail() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setRepresentativeFullName("respFullName");
+        data.getCicCase().setNotifyPartyMessage("message");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        contactPartiesNotification.sendToTribunal(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            TRIBUNAL_EMAIL_VALUE,
+            true,
+            new HashMap<>(),
+            Map.of(
+                CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE,
+                CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()),
             TemplateName.CONTACT_PARTIES_EMAIL);
     }
 
