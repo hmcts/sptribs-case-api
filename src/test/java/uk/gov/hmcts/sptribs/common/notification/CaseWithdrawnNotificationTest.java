@@ -39,11 +39,12 @@ public class CaseWithdrawnNotificationTest {
     private CaseWithdrawnNotification caseWithdrawnNotification;
 
     @Test
-    void shouldNotifySubjectCaseWithDrawnWithEmail() {
+    void shouldNotifySubjectCaseWithdrawnWithEmailWithoutAdditionalDetail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("testSubject@outlook.com");
+        data.getCloseCase().setAdditionalDetail("");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -62,7 +63,7 @@ public class CaseWithdrawnNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectCaseWithDrawnWithPost() {
+    void shouldNotifySubjectCaseWithdrawnWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -86,7 +87,7 @@ public class CaseWithdrawnNotificationTest {
     }
 
     @Test
-    void shouldNotifyRespondentCaseWithDrawnWithEmail() {
+    void shouldNotifyRespondentCaseWithdrawnWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
@@ -110,7 +111,7 @@ public class CaseWithdrawnNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeCaseWithDrawnWithEmail() {
+    void shouldNotifyRepresentativeCaseWithdrawnWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -134,7 +135,7 @@ public class CaseWithdrawnNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeCaseWithDrawnWithPost() {
+    void shouldNotifyRepresentativeCaseWithdrawnWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -158,7 +159,7 @@ public class CaseWithdrawnNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantCaseWithDrawnWithEmail() {
+    void shouldNotifyApplicantCaseWithdrawnWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -181,7 +182,7 @@ public class CaseWithdrawnNotificationTest {
     }
 
     @Test
-    void shouldNotifyApplicantCaseWithDrawnWithPost() {
+    void shouldNotifyApplicantCaseWithdrawnWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
