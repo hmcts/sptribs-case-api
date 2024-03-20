@@ -57,7 +57,7 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_INFORMATION, CommonConstants.NONE_PROVIDED,
                 CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
             TemplateName.CASE_WITHDRAWN_EMAIL);
     }
