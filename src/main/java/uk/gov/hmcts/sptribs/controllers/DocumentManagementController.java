@@ -3,8 +3,7 @@ package uk.gov.hmcts.sptribs.controllers;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,14 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.sptribs.services.DocumentManagementService;
 
+@Slf4j
 @RestController
 @RequestMapping("/doc/dss-orchestration")
 public class DocumentManagementController {
 
     @Autowired
     DocumentManagementService documentManagementService;
-
-    private static final Logger logger = LoggerFactory.getLogger(DocumentManagementController.class);
 
     @RequestMapping(
         value = "/upload",
@@ -45,7 +43,7 @@ public class DocumentManagementController {
                                         @RequestParam("caseTypeOfApplication") String caseTypeOfApplication,
                                         @RequestParam("file") MultipartFile file) {
 
-        logger.info("DSS Upload Document: Request received");
+        log.info("DSS Upload Document: Request received");
         return ResponseEntity.ok(documentManagementService.uploadDocument(authorisation, caseTypeOfApplication, file));
     }
 

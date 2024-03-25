@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.services.cdam;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class CaseDocumentApiService {
 
@@ -24,14 +24,13 @@ public class CaseDocumentApiService {
     @Autowired
     DssCaseDocumentClient dssCaseDocumentClient;
 
-    private static final Logger logger = LoggerFactory.getLogger(CaseDocumentApiService.class);
 
     public DocumentInfo uploadDocument(String authorizationToken, MultipartFile file,
                                        AppsConfig.AppsDetails appsDetails) {
 
-        final String serviceAuthToken = authTokenGenerator.generate();
+        log.info("uploadDocument start");
 
-        logger.info("serviceAuthToken: " + serviceAuthToken);
+        final String serviceAuthToken = authTokenGenerator.generate();
 
         final UploadResponse uploadResponse = dssCaseDocumentClient.uploadDocuments(
             authorizationToken,
@@ -41,15 +40,17 @@ public class CaseDocumentApiService {
             List.of(file)
         );
 
-        logger.info("uploadResponse: " + uploadResponse.toString());
+        log.info("uploadResponse: " + uploadResponse.toString());
 
         final Document uploadedDocument = uploadResponse.getDocuments().get(0);
 
-        logger.info("uploadedDocument: " + uploadedDocument.toString());
+        log.info("uploadedDocument: " + uploadedDocument.toString());
 
         final String[] split = uploadedDocument.links.self.href.split("/");
 
-        logger.info("split: " + Arrays.toString(split));
+        log.info("split: " + Arrays.toString(split));
+
+        log.info("uploadDocument end");
 
         return DocumentInfo.builder()
             .url(uploadedDocument.links.self.href)
