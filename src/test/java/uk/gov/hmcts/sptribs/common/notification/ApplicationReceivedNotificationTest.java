@@ -14,13 +14,12 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 
 @ExtendWith(MockitoExtension.class)
 public class ApplicationReceivedNotificationTest {
@@ -40,17 +39,30 @@ public class ApplicationReceivedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setEmail("test@outlook.com");
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getFullName());
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+
         applicationReceivedNotification.sendToSubject(data, "CN1");
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            new HashMap<>(),
+            TemplateName.APPLICATION_RECEIVED);
+    }
+
+    @Test
+    void shouldNotNotifySubjectOfApplicationIfContactPreferenceIsNull() {
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(null);
+        data.getCicCase().setEmail("test@outlook.com");
+
+        applicationReceivedNotification.sendToSubject(data, "CN1");
+
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -61,9 +73,6 @@ public class ApplicationReceivedNotificationTest {
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("test@outlook.com");
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getApplicantFullName());
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -72,6 +81,22 @@ public class ApplicationReceivedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getApplicantEmailAddress(),
+            new HashMap<>(),
+            TemplateName.APPLICATION_RECEIVED);
+    }
+
+
+    @Test
+    void shouldNotNotifyApplicantOfApplicationIfContactPreferenceIsNull() {
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(null);
+        data.getCicCase().setEmail("test@outlook.com");
+
+        applicationReceivedNotification.sendToApplicant(data, "CN1");
+
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
@@ -82,9 +107,6 @@ public class ApplicationReceivedNotificationTest {
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         data.getCicCase().setRepresentativeEmailAddress("test@outlook.com");
 
-        Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CONTACT_NAME, data.getCicCase().getRepresentativeFullName());
-
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
@@ -93,13 +115,29 @@ public class ApplicationReceivedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            new HashMap<>(),
+            TemplateName.APPLICATION_RECEIVED);
+    }
+
+
+    @Test
+    void shouldNotNotifyRepresentativeOfApplicationIfContactPreferenceIsNull() {
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setContactPreferenceType(null);
+        data.getCicCase().setEmail("test@outlook.com");
+
+        applicationReceivedNotification.sendToRepresentative(data, "CN1");
+
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class));
     }
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
 
-        return caseData;
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .build();
     }
-
 }

@@ -26,18 +26,22 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_REASON;
 @Slf4j
 public class CaseStayedNotification implements PartiesNotification {
 
-    @Autowired
-    private NotificationServiceCIC notificationService;
+    private final NotificationServiceCIC notificationService;
+
+    private final NotificationHelper notificationHelper;
 
     @Autowired
-    private NotificationHelper notificationHelper;
+    public CaseStayedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+        this.notificationService = notificationService;
+        this.notificationHelper = notificationHelper;
+    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        CaseStay caseStay = caseData.getCaseStay();
+        final CicCase cicCase = caseData.getCicCase();
+        final CaseStay caseStay = caseData.getCaseStay();
 
-        Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
@@ -51,10 +55,10 @@ public class CaseStayedNotification implements PartiesNotification {
 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        CaseStay caseStay = caseData.getCaseStay();
+        final CicCase cicCase = caseData.getCicCase();
+        final CaseStay caseStay = caseData.getCaseStay();
 
-        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -68,10 +72,10 @@ public class CaseStayedNotification implements PartiesNotification {
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        CaseStay caseStay = caseData.getCaseStay();
+        final CicCase cicCase = caseData.getCicCase();
+        final CaseStay caseStay = caseData.getCaseStay();
 
-        Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         addCaseStayTemplateVars(caseStay, templateVars);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -84,7 +88,7 @@ public class CaseStayedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
+        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_STAYED_EMAIL);
@@ -92,19 +96,18 @@ public class CaseStayedNotification implements PartiesNotification {
     }
 
     private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
-        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
+        final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.CASE_STAYED_POST);
         notificationService.sendLetter(letterRequest);
     }
 
     private void addCaseStayTemplateVars(CaseStay caseStay, Map<String, Object> templateVars) {
-        String additionalDetail = StringUtils.isNotEmpty(caseStay.getAdditionalDetail())
+        final String additionalDetail = StringUtils.isNotEmpty(caseStay.getAdditionalDetail())
             ? caseStay.getAdditionalDetail() : NONE_PROVIDED;
 
         templateVars.put(STAY_EXPIRATION_DATE, caseStay.getExpirationDate());
         templateVars.put(STAY_REASON, caseStay.getStayReason().getLabel());
         templateVars.put(STAY_ADDITIONAL_DETAIL, additionalDetail);
     }
-
 }

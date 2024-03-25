@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
+import org.elasticsearch.core.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,12 +11,13 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.IOException;
+import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -36,10 +38,11 @@ public class CaseIssuedNotificationTest {
     private CaseIssuedNotification caseIssuedNotification;
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithEmail() {
+    void shouldNotifySubjectOfCaseIssuedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setEmail("TestSubject@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -48,10 +51,14 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            Map.of(CommonConstants.CIC_CASE_SUBJECT_NAME,data.getCicCase().getFullName()),
+            TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithPost() throws IOException {
+    void shouldNotifySubjectOfCaseIssuedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -64,14 +71,18 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
+            TemplateName.CASE_ISSUED_CITIZEN_POST);
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithEmail() {
+    void shouldNotifyApplicantOfCaseIssuedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
+        data.getCicCase().setApplicantEmailAddress("TestApplicant@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -80,10 +91,14 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getApplicantEmailAddress(),
+            Map.of(CommonConstants.CIC_CASE_APPLICANT_NAME,data.getCicCase().getApplicantFullName()),
+            TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
     }
 
     @Test
-    void shouldNotifyApplicantOfCaseIssuedWithPost() {
+    void shouldNotifyApplicantOfCaseIssuedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setApplicantFullName("appFullName");
@@ -97,13 +112,17 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(CommonConstants.CIC_CASE_APPLICANT_NAME,data.getCicCase().getApplicantFullName()),
+            TemplateName.CASE_ISSUED_CITIZEN_POST);
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithEmail() {
+    void shouldNotifyRepresentativeOfCaseIssuedCitizenWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
+        data.getCicCase().setRepresentativeEmailAddress("TestRepresentative@outlook.com");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
 
         //When
@@ -113,10 +132,14 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()),
+            TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeOfCaseIssuedWithPost() {
+    void shouldNotifyRepresentativeOfCaseIssuedCitizenWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -130,13 +153,17 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()),
+            TemplateName.CASE_ISSUED_CITIZEN_POST);
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmail() {
+    void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithoutAttachments() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
+        data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -145,13 +172,17 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRespondentEmail(),
+            Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
     }
 
     @Test
-    void shouldNotifyRespondentOfCaseIssuedWithEmailWithAttachments() {
+    void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithAttachments() {
         //Given
         final CaseData data = getMockCaseData();
-        CaseIssue caseIssue = CaseIssue.builder().documentList(getDynamicMultiSelectDocumentList()).build();
+        final CaseIssue caseIssue = CaseIssue.builder().documentList(getDynamicMultiSelectDocumentList()).build();
         data.setCaseIssue(caseIssue);
         data.getCicCase().setRepresentativeFullName("respFullName");
 
@@ -162,12 +193,23 @@ public class CaseIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRespondentEmail(),
+            true,
+            new HashMap<>(),
+            Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+
     }
 
     private CaseData getMockCaseData() {
-        CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+        final CicCase cicCase = CicCase.builder()
+            .fullName("fullName")
+            .caseNumber("CN1")
+            .build();
 
-        return caseData;
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .build();
     }
 }
