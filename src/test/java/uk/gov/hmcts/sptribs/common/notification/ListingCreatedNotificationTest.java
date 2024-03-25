@@ -57,7 +57,7 @@ public class ListingCreatedNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfListingCreatedCitizenWithEmail_withFullRecordListing() {
+    void shouldNotifySubjectOfListingCreatedCitizenWithEmailWithFullRecordListing() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);

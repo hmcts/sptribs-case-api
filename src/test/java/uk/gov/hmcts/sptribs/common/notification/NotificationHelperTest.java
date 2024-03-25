@@ -65,7 +65,7 @@ public class NotificationHelperTest {
     private CicCase cicCase;
 
     @Test
-    void setRecordingTemplateVarsTest_AllConditionsMet() {
+    void setRecordingTemplateVarsTestAllConditionsMet() {
         //Given
         final Listing listing = Listing.builder()
             .conferenceCallNumber("cmi459t5iut5")
@@ -93,7 +93,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_AllConditionNotMet() {
+    void setRecordingTemplateVarsTestAllConditionNotMet() {
         //Given
         final Listing listing = Listing.builder()
             .date(LocalDate.of(2022, 12, 23))
@@ -115,7 +115,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_TelephoneFormat() {
+    void setRecordingTemplateVarsTestTelephoneFormat() {
         //Given
         final Listing listing = Listing.builder()
             .date(LocalDate.of(2022, 12, 23))
@@ -137,7 +137,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_FacetoFaceFormat() {
+    void setRecordingTemplateVarsTestFaceToFaceFormat() {
         //Given
         final Listing listing = Listing.builder()
             .date(LocalDate.of(2022, 12, 23))
@@ -155,7 +155,7 @@ public class NotificationHelperTest {
 
 
     @Test
-    void setRecordingTemplateVarsTest_SelectedVenueSet() {
+    void setRecordingTemplateVarsTestSelectedVenueSet() {
         //Given
         final Listing listing = Mockito.mock(Listing.class);
 
@@ -173,7 +173,7 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_ManualHearingVenueSet() {
+    void setRecordingTemplateVarsTestManualHearingVenueSet() {
         //Given
         final Listing listing = Mockito.mock(Listing.class);
 
