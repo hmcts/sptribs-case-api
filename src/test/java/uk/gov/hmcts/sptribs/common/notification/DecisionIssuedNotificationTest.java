@@ -242,6 +242,7 @@ public class DecisionIssuedNotificationTest {
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
     }
+
     @Test
     void shouldNotifyRepresentativeOfDecisionIssuedWithPost() {
         //Given

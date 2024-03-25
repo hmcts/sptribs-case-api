@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
+import jakarta.enterprise.util.TypeLiteral;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -77,7 +78,6 @@ public class NewOrderIssuedNotificationTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifySubjectOfNewOrderIssuedWithEmailWithUploadedTemplateDocument() {
         //Given
         final CaseData data = getMockCaseData();
@@ -99,8 +99,8 @@ public class NewOrderIssuedNotificationTest {
 
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
-        //Then
-        final ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
+        final ArgumentCaptor<Map<String, String>> argument =
+            ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
         verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getEmail()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
@@ -134,7 +134,6 @@ public class NewOrderIssuedNotificationTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifyRespondentOfNewOrderIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
@@ -156,7 +155,8 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        final ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
+        final ArgumentCaptor<Map<String, String>> argument =
+            ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
         verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getRespondentEmail()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
@@ -167,7 +167,6 @@ public class NewOrderIssuedNotificationTest {
 
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifyRepresentativeOfNewOrderIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
@@ -194,7 +193,8 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        final ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
+        final ArgumentCaptor<Map<String, String>> argument =
+            ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
         verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getRepresentativeEmailAddress()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
@@ -225,7 +225,6 @@ public class NewOrderIssuedNotificationTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldNotifyApplicantOfNewOrderIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
@@ -250,7 +249,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
         verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getApplicantEmailAddress()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue().get(TRIBUNAL_ORDER)).isNull();
