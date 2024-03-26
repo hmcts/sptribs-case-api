@@ -21,9 +21,9 @@ public class CaseDocumentApiService {
     @Autowired
     DssCaseDocumentClient dssCaseDocumentClient;
 
-
     public DocumentInfo uploadDocument(String authorizationToken, MultipartFile file,
                                        AppsConfig.AppsDetails appsDetails) {
+
         final String serviceAuthToken = authTokenGenerator.generate();
 
         final UploadResponse uploadResponse = dssCaseDocumentClient.uploadDocuments(
