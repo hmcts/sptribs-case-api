@@ -40,6 +40,7 @@ public class DocumentManagementController {
     public ResponseEntity<?> uploadDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                         @RequestParam("caseTypeOfApplication") String caseTypeOfApplication,
                                         @RequestParam("file") MultipartFile file) {
+
         return ResponseEntity.ok(documentManagementService.uploadDocument(authorisation, caseTypeOfApplication, file));
     }
 
