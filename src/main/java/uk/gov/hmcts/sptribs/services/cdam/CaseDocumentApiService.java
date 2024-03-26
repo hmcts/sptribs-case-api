@@ -28,7 +28,7 @@ public class CaseDocumentApiService {
     public DocumentInfo uploadDocument(String authorizationToken, MultipartFile file,
                                        AppsConfig.AppsDetails appsDetails) {
 
-        log.info("uploadDocument start");
+        log.debug("uploadDocument start");
 
         final String serviceAuthToken = authTokenGenerator.generate();
 
@@ -40,17 +40,17 @@ public class CaseDocumentApiService {
             List.of(file)
         );
 
-        log.info("uploadResponse: " + uploadResponse.toString());
+        log.debug("uploadResponse: " + uploadResponse.toString());
 
         final Document uploadedDocument = uploadResponse.getDocuments().get(0);
 
-        log.info("uploadedDocument: " + uploadedDocument.toString());
+        log.debug("uploadedDocument: " + uploadedDocument.toString());
 
         final String[] split = uploadedDocument.links.self.href.split("/");
 
-        log.info("split: " + Arrays.toString(split));
+        log.debug("split: " + Arrays.toString(split));
 
-        log.info("uploadDocument end");
+        log.debug("uploadDocument end");
 
         return DocumentInfo.builder()
             .url(uploadedDocument.links.self.href)

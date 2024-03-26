@@ -43,7 +43,7 @@ public class DocumentManagementController {
                                         @RequestParam("caseTypeOfApplication") String caseTypeOfApplication,
                                         @RequestParam("file") MultipartFile file) {
 
-        log.info("DSS Upload Document: Request received");
+        log.debug("DSS Upload Document: Request received");
         return ResponseEntity.ok(documentManagementService.uploadDocument(authorisation, caseTypeOfApplication, file));
     }
 
