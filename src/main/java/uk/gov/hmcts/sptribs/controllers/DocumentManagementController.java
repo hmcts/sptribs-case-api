@@ -42,8 +42,6 @@ public class DocumentManagementController {
     public ResponseEntity<?> uploadDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                         @RequestParam("caseTypeOfApplication") String caseTypeOfApplication,
                                         @RequestParam("file") MultipartFile file) {
-
-        log.debug("DSS Upload Document: Request received");
         return ResponseEntity.ok(documentManagementService.uploadDocument(authorisation, caseTypeOfApplication, file));
     }
 
