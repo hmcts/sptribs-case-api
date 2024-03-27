@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task.MigrateRetiredFields;
 
 import java.util.HashMap;
@@ -39,15 +40,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 @ExtendWith(MockitoExtension.class)
 class CcdUpdateServiceTest {
 
-
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
 
     @Mock
     private CcdCaseDataContentProvider ccdCaseDataContentProvider;
-
-    @Mock
-    private CaseDetailsUpdater caseDetailsUpdater;
 
     @Mock
     private CaseDataContent caseDataContent;
@@ -75,8 +72,7 @@ class CcdUpdateServiceTest {
                 .createCaseDataContent(
                         startEventResponse,
                         SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
-                        SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                        caseData))
+                        SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION))
                 .thenReturn(caseDataContent);
         when(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(),  anyString(),
                 anyString(), any(), any())).thenReturn(startEventResponse);
@@ -85,8 +81,7 @@ class CcdUpdateServiceTest {
                 .createCaseDataContent(
                         startEventResponse,
                         SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
-                        SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                        caseData))
+                        SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION))
                 .thenReturn(caseDataContent);
 
         ccdUpdateService.submitEvent(TEST_CASE_ID, SYSTEM_REMOVE_FAILED_CASES, user, SERVICE_AUTHORIZATION);
@@ -149,13 +144,14 @@ class CcdUpdateServiceTest {
         caseDetails.setData(CaseData.builder().build());
 
         final StartEventResponse startEventResponse = getStartEventResponse();
+        final CaseTask caseTask = new MigrateRetiredFields();
 
         when(ccdCaseDataContentProvider
             .createCaseDataContent(
                 startEventResponse,
                 SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
                 SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                caseDetails.getData()))
+                caseTask))
             .thenReturn(caseDataContent);
         when(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(),  anyString(),
             anyString(), any(), any())).thenReturn(startEventResponse);
@@ -165,19 +161,13 @@ class CcdUpdateServiceTest {
                 startEventResponse,
                 SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
                 SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                caseDetails.getData()))
+                caseTask))
             .thenReturn(caseDataContent);
-
-        when(caseDetailsUpdater
-            .updateCaseData(
-                any(),
-                any()))
-            .thenReturn(caseDetails);
 
         ccdUpdateService.submitEventWithRetry(
             TEST_CASE_ID.toString(),
             SYSTEM_REMOVE_FAILED_CASES,
-            new MigrateRetiredFields(),
+            caseTask,
             user, SERVICE_AUTHORIZATION);
 
         verify(coreCaseDataApi).submitEventForCaseWorker(
