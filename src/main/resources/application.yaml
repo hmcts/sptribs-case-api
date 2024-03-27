@@ -28,8 +28,8 @@ spring:
 
 logging:
   level:
-    root: debug
-    web: debug
+    root: info
+    web: info
 
 
 springdoc:
