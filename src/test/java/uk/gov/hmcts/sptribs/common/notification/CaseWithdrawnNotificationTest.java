@@ -169,8 +169,7 @@ public class CaseWithdrawnNotificationTest {
             .closeCaseReason(CloseReason.Withdrawn)
             .additionalDetail("additionalDet")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).closeCase(closeCase).build();
 
-        return caseData;
+        return CaseData.builder().cicCase(cicCase).closeCase(closeCase).build();
     }
 }

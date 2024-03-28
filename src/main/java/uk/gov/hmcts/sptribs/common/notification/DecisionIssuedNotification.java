@@ -43,7 +43,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
 
-        NotificationResponse notificationResponse = null;
+        NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
 
@@ -63,7 +63,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
-        NotificationResponse notificationResponse = null;
+        NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
@@ -93,7 +93,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
 
 
-        NotificationResponse notificationResponse = null;
+        NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
 

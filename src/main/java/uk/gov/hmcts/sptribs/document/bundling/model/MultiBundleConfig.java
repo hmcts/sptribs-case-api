@@ -19,7 +19,7 @@ public class MultiBundleConfig {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String value;
+    String value;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

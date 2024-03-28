@@ -28,7 +28,7 @@ public class CaseworkerBundleStitchCompleteTest {
     private CaseworkerBundleStitchComplete caseworkerBundleStitchComplete;
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() throws Exception {
+    void shouldAddConfigurationToConfigBuilder() {
         //Given
         caseworkerBundleStitchComplete.setBundlingEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
@@ -43,7 +43,7 @@ public class CaseworkerBundleStitchCompleteTest {
     }
 
     @Test
-    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() throws Exception {
+    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() {
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 

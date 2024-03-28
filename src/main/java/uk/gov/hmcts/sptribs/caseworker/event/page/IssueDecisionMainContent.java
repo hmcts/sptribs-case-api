@@ -15,15 +15,21 @@ public class IssueDecisionMainContent implements CcdPageConfiguration {
             .label("LabelIssueDecisionMainContent", "")
             .pageShowConditions(issueDecisionShowConditions())
             .label("LabelIssueDecisionMainContentHeader",
-                "<hr>" + "\n<h3>Header</h3>" + "\nThe header will be automatically generated."
-                    + "You can preview this in pdf document on the next screen.\n\n"
-                    + "<hr>\n"
-                    + "<h3>Main content</h3> \nEnter text in the box below. This will be added into the centre of the generated"
-                    + " decision document")
+                """
+                    <hr>
+                    <h3>Header</h3>
+                    The header will be automatically generated.You can preview this in pdf document on the next screen.
+
+                    <hr>
+                    <h3>Main content</h3>\s
+                    Enter text in the box below. This will be added into the centre of the generated decision document""")
             .mandatory(CaseData::getDecisionMainContent)
-            .label("LabelIssueDecisionMainContentFooter", "<hr><h3>Footer</h3>\n The footer will be automatically generated.\n "
-                + "You can preview this in pdf document on the next screen.\n"
-                + "<hr>\n")
+            .label("LabelIssueDecisionMainContentFooter", """
+                <hr><h3>Footer</h3>
+                 The footer will be automatically generated.
+                 You can preview this in pdf document on the next screen.
+                <hr>
+                """)
             .done();
     }
 
