@@ -230,7 +230,7 @@ class CaseworkerEditRecordListingTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getData().equals(beforeDetails.getData())).isNotNull();
+        assertThat(response.getData()).isEqualTo(beforeDetails.getData());
         assertThat(beforeDetails.getData().getListing().getRegionList()).isNotNull();
     }
 
