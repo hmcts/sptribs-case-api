@@ -1,5 +1,4 @@
 ### Change description ###
-
 Enter a description.
 
 ### JIRA link ###
@@ -13,8 +12,8 @@ https://tools.hmcts.net/jira/browse/DTSSTCI-
 - [ ] `enable-e2e-tests` label can be used to run the e2e tests before QA handover and before release (required)
 
 **If this ticket will have any visible impact on users and is not behind a feature toggle, make sure that:**
-- [ ] this ticket been reviewed by QA
-- [ ] the user story been signed off by the PO
+- [ ] this ticket has been reviewed by QA
+- [ ] the user story has been signed off by the PO
 
 Note that bug fixes, dependency updates and technical tasks do not directly impact the user experience and can be merged without QA and PO review.
 

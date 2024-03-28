@@ -34,7 +34,7 @@ import static uk.gov.hmcts.sptribs.common.event.CreateCase.TEST_CREATE;
 @TestPropertySource("classpath:application.yaml")
 public abstract class FunctionalTestSuite {
 
-    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 04, 28, 1, 0);
+    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
 
     @Value("${test-url}")
     protected String testUrl;
@@ -166,7 +166,7 @@ public abstract class FunctionalTestSuite {
         return triggerCallback(request, url);
     }
 
-    protected Response triggerCallback(CallbackRequest request, String url) throws IOException {
+    protected Response triggerCallback(CallbackRequest request, String url) {
         return RestAssured
             .given()
             .relaxedHTTPSValidation()

@@ -11,19 +11,19 @@ import java.util.Base64;
 @Builder
 @Value
 public class DocAssemblyRequest {
-    private String templateId;
+    String templateId;
 
-    private String outputType;
+    String outputType;
 
-    private JsonNode formPayload;
+    JsonNode formPayload;
 
-    private String outputFilename;
+    String outputFilename;
 
-    private boolean secureDocStoreEnabled;
+    boolean secureDocStoreEnabled;
 
-    private String caseTypeId;
+    String caseTypeId;
 
-    private String jurisdictionId;
+    String jurisdictionId;
 
     public static class DocAssemblyRequestBuilder {
         public DocAssemblyRequestBuilder templateId(String templateId) {

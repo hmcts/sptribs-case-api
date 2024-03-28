@@ -146,9 +146,8 @@ public class HearingPostponedNotificationTest {
             .stayReason(StayReason.OTHER)
             .additionalDetail("addlDetail")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).caseStay(caseStay).build();
 
-        return caseData;
+        return CaseData.builder().cicCase(cicCase).caseStay(caseStay).build();
     }
 
 }

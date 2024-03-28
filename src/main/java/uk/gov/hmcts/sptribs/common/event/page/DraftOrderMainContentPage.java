@@ -16,18 +16,25 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
         pageBuilder
             .page("mainContent")
             .pageLabel("Edit order")
-            .label("EditDraftOrderMainContent", "<hr>" + "\n<h3>Header</h3>" + "\nThe header will be automatically generated."
-                + " You can preview this in the pdf document on the next screen.\n\n"
-                + "<hr>\n"
-                + "<h3>Main content</h3>\n\n"
-                + "Enter text in the box below. This will be added into the centre"
-                + " of the generated order document.\n")
+            .label("EditDraftOrderMainContent", """
+                <hr>
+                <h3>Header</h3>
+                The header will be automatically generated. You can preview this in the pdf document on the next screen.
+
+                <hr>
+                <h3>Main content</h3>
+
+                Enter text in the box below. This will be added into the centre of the generated order document.
+                """)
             .complex(CaseData::getDraftOrderContentCIC)
             .mandatory(DraftOrderContentCIC::getMainContent)
             .done()
-            .label("footer", "<h3>Footer</h3>\n The footer will be automatically generated.\n "
-                + "You can preview this in the pdf document on the next screen.\n"
-                + "<hr>\n")
+            .label("footer", """
+                <h3>Footer</h3>
+                 The footer will be automatically generated.
+                 You can preview this in the pdf document on the next screen.
+                <hr>
+                """)
             .done();
     }
 

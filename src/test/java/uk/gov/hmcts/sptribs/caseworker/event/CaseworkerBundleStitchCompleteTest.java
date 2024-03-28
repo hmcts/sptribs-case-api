@@ -42,7 +42,7 @@ class CaseworkerBundleStitchCompleteTest {
     }
 
     @Test
-    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() throws Exception {
+    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() {
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 

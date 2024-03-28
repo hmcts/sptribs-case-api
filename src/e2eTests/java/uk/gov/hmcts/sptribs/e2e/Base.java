@@ -30,11 +30,7 @@ public abstract class Base {
 
     protected static final String CASE_API_AAT_URL = "https://manage-case.aat.platform.hmcts.net";
 
-    protected static final String DSS_AAT_URL = "https://sptribs-frontend.aat.platform.hmcts.net";
-
     public static String CASE_API_BASE_URL;
-
-    public static String DSS_BASE_URL;
 
     @BeforeAll
     public void setUp() {

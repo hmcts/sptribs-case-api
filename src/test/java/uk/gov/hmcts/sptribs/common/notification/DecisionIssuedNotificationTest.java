@@ -303,8 +303,6 @@ public class DecisionIssuedNotificationTest {
             .fullName("fullName").caseNumber("CN1")
             .build();
 
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
-
-        return caseData;
+        return CaseData.builder().cicCase(cicCase).build();
     }
 }

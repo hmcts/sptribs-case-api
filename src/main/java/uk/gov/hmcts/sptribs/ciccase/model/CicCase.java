@@ -40,7 +40,6 @@ import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -551,14 +550,6 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo selectedCheckBox;
-
-    @CCD(
-        label = "Case Status",
-        typeOverride = FixedRadioList,
-        typeParameterOverride = "State",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private State testState;
 
     @CCD(
         label = "Minus days from today to set close date ",

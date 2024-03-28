@@ -2,9 +2,9 @@ package uk.gov.hmcts.sptribs.ciccase.util;
 
 import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AccessCodeGeneratorTest {
 

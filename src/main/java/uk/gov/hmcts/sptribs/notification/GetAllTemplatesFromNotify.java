@@ -101,10 +101,6 @@ public final class GetAllTemplatesFromNotify {
         log.info("Name: " + template.getName());
         log.info("ID: " + template.getId());
         log.info("Type: " + template.getTemplateType());
-
-        // Optional<String> subject = template.getSubject();
-        // subject.ifPresent(s -> log.info("Subject: " + s));
-        // log.info("Body is: " + template.getBody());
     }
 
     private static boolean isRetiredTemplate(String str) {

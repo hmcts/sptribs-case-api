@@ -66,15 +66,12 @@ class IdamConsumerTest {
     }
 
     private DslPart createAuthResponse() {
-        return newJsonBody((o) -> {
-            o.stringType("id",
-                "123432")
-                .stringType("forename", "Joe")
-                .stringType("surname", "Bloggs")
-                .stringType("email", "joe.bloggs@hmcts.net")
-                .booleanType("active", true)
-                .array("roles", role -> role.stringType("caseworker").stringType("citizen"))
-            ;
-        }).build();
+        return newJsonBody((o) -> o.stringType("id",
+            "123432")
+            .stringType("forename", "Joe")
+            .stringType("surname", "Bloggs")
+            .stringType("email", "joe.bloggs@hmcts.net")
+            .booleanType("active", true)
+            .array("roles", role -> role.stringType("caseworker").stringType("citizen"))).build();
     }
 }

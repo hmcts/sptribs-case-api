@@ -63,7 +63,7 @@ public class BundlingService {
     private BundlingClient bundlingClient;
 
     public List<Bundle> createBundle(Callback callback) {
-        BundleResponse response = null;
+        BundleResponse response;
         try {
             response = bundlingClient.createBundle(
                 authTokenGenerator.generate(),

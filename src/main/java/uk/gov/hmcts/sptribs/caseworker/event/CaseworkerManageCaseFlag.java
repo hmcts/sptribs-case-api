@@ -33,8 +33,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-
-
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
     @Value("${feature.case-flags.enabled}")

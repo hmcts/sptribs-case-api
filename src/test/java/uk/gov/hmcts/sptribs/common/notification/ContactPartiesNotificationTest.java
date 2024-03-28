@@ -15,8 +15,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.io.IOException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -54,7 +52,7 @@ class ContactPartiesNotificationTest {
     }
 
     @Test
-    void shouldNotifySubjectOfCaseIssuedWithPost() throws IOException {
+    void shouldNotifySubjectOfCaseIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -199,8 +197,7 @@ class ContactPartiesNotificationTest {
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
 
-        return caseData;
+        return CaseData.builder().cicCase(cicCase).build();
     }
 }
