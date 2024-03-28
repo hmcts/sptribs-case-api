@@ -25,21 +25,25 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
 @Slf4j
 public class CaseWithdrawnNotification implements PartiesNotification {
 
-    @Autowired
-    private NotificationServiceCIC notificationService;
+    private final NotificationServiceCIC notificationService;
+
+    private final NotificationHelper notificationHelper;
 
     @Autowired
-    private NotificationHelper notificationHelper;
+    public CaseWithdrawnNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+        this.notificationService = notificationService;
+        this.notificationHelper = notificationHelper;
+    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+            final NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
@@ -49,13 +53,13 @@ public class CaseWithdrawnNotification implements PartiesNotification {
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse caseWithdrawnNotifyResponse =
+            final NotificationResponse caseWithdrawnNotifyResponse =
                 sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(caseWithdrawnNotifyResponse);
         } else {
@@ -66,24 +70,26 @@ public class CaseWithdrawnNotification implements PartiesNotification {
 
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, respondentTemplateVars);
 
-        NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
+        final NotificationResponse caseWithdrawnNotifyResponse =
+            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
         cicCase.setResNotificationResponse(caseWithdrawnNotifyResponse);
     }
 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            final NotificationResponse caseWithdrawnNotifyResponse =
+                sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
@@ -92,7 +98,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
+        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_WITHDRAWN_EMAIL);
@@ -100,15 +106,15 @@ public class CaseWithdrawnNotification implements PartiesNotification {
     }
 
     private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
-        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
+        final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.CASE_WITHDRAWN_POST);
         notificationService.sendLetter(letterRequest);
     }
 
     private void addCaseClosedTemplateVars(CaseData caseData, Map<String, Object> templateVars) {
-        CloseCase closeCase = caseData.getCloseCase();
-        String additionalDetail = StringUtils.isNotEmpty(closeCase.getAdditionalDetail())
+        final CloseCase closeCase = caseData.getCloseCase();
+        final String additionalDetail = StringUtils.isNotEmpty(closeCase.getAdditionalDetail())
             ? closeCase.getAdditionalDetail() : NONE_PROVIDED;
 
         templateVars.put(CLOSURE_REASON, closeCase.getCloseCaseReason());
