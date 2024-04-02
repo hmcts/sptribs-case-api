@@ -135,6 +135,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
         int count = 0;
         if (caseIssueDecision.getDecisionNotice() == NoticeOption.UPLOAD_FROM_COMPUTER) {
+            count++;
 
             final String uuid = StringUtils.substringAfterLast(caseIssueDecision.getDecisionDocument().getDocumentLink().getUrl(), "/");
             uploadedDocuments.put(DOC_AVAILABLE + count, YES);
