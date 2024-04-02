@@ -12,12 +12,14 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -37,11 +39,12 @@ public class CaseWithdrawnNotificationTest {
     private CaseWithdrawnNotification caseWithdrawnNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectCaseWithdrawnWithEmailWithoutAdditionalDetail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
+        data.getCloseCase().setAdditionalDetail("");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -51,10 +54,16 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, CommonConstants.NONE_PROVIDED,
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectCaseWithdrawnWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -69,14 +78,20 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+            ),
+            TemplateName.CASE_WITHDRAWN_POST);
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentCaseWithdrawnWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
-        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentEmail("testrespondent@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
@@ -87,10 +102,16 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRespondentEmail(),
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeCaseWithdrawnWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -105,10 +126,16 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeCaseWithdrawnWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -124,14 +151,19 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+            TemplateName.CASE_WITHDRAWN_POST);
     }
 
     @Test
-    void shouldNotifyApplicantWithEmail() {
+    void shouldNotifyApplicantCaseWithdrawnWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -141,10 +173,16 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getApplicantEmailAddress(),
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+            TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
     @Test
-    void shouldNotifyApplicantWithPost() {
+    void shouldNotifyApplicantCaseWithdrawnWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -159,6 +197,11 @@ public class CaseWithdrawnNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+            TemplateName.CASE_WITHDRAWN_POST);
     }
 
     private CaseData getMockCaseData() {
@@ -170,6 +213,9 @@ public class CaseWithdrawnNotificationTest {
             .additionalDetail("additionalDet")
             .build();
 
-        return CaseData.builder().cicCase(cicCase).closeCase(closeCase).build();
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .closeCase(closeCase)
+            .build();
     }
 }

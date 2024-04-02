@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
+import jakarta.enterprise.util.TypeLiteral;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -48,14 +49,14 @@ public class NewOrderIssuedNotificationTest {
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectOfNewOrderIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
+        final Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
+        final ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         data.getCicCase().setOrderList(List.of(orderListValue));
 
@@ -68,18 +69,23 @@ public class NewOrderIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getEmail()),
+            eq(true),
+            anyMap(),
+            eq(new HashMap<>()),
+            eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void shouldNotifySubjectWithEmailWithUploadedTemplateDocument() {
+    void shouldNotifySubjectOfNewOrderIssuedWithEmailWithUploadedTemplateDocument() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
 
-        Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
+        final Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
         ListValue<Order> orderListValue1 = new ListValue<>();
         ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
@@ -93,41 +99,20 @@ public class NewOrderIssuedNotificationTest {
 
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
-        //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
-        verify(notificationHelper).buildEmailNotificationRequest(eq("testrepr@outlook.com"), eq(true),
+        final ArgumentCaptor<Map<String, String>> argument =
+            ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
+        verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getEmail()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+
     }
 
-    @Test
-    void shouldNotifySubjectWithEmailThrowsException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
-        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        data.getCicCase().setOrderList(List.of(orderListValue));
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        newOrderIssuedNotification.sendToSubject(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectOfNewOrderIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -143,20 +128,22 @@ public class NewOrderIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.NEW_ORDER_ISSUED_POST);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentOfNewOrderIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRespondentName("respondentName");
-        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
 
-        Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
-        ListValue<Order> orderListValue1 = new ListValue<>();
-        ListValue<Order> orderListValue2 = new ListValue<>();
+        final Order recentOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.doc", "http://url/test.doc")).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.pdf", "http://url/test.pdf")).build();
+        final ListValue<Order> orderListValue1 = new ListValue<>();
+        final ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
         orderListValue2.setValue(oldOrder);
         data.getCicCase().setOrderList(List.of(orderListValue1, orderListValue2));
@@ -168,40 +155,19 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
-        verify(notificationHelper).buildEmailNotificationRequest(eq("testrepr@outlook.com"), eq(true),
+        final ArgumentCaptor<Map<String, String>> argument =
+            ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
+        verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getRespondentEmail()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
-    @Test
-    void shouldNotifyRespondentWithEmailWithException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setRespondentName("respondentName");
-        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
-        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        data.getCicCase().setOrderList(List.of(orderListValue));
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-        newOrderIssuedNotification.sendToRespondent(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeOfNewOrderIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -209,12 +175,12 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        Document document = new Document("http://url/test.tif", "test.tif", "http://url/test.tif");
-        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
-        Order recentOrder = Order.builder().draftOrder(draftOrderCIC).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.txt", "http://url/test.txt")).build();
-        ListValue<Order> orderListValue1 = new ListValue<>();
-        ListValue<Order> orderListValue2 = new ListValue<>();
+        final Document document = new Document("http://url/test.tif", "test.tif", "http://url/test.tif");
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
+        final Order recentOrder = Order.builder().draftOrder(draftOrderCIC).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.txt", "http://url/test.txt")).build();
+        final ListValue<Order> orderListValue1 = new ListValue<>();
+        final ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
         orderListValue2.setValue(oldOrder);
         data.getCicCase().setOrderList(List.of(orderListValue1, orderListValue2));
@@ -227,8 +193,9 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
-        verify(notificationHelper).buildEmailNotificationRequest(eq("testrepr@outlook.com"), eq(true),
+        final ArgumentCaptor<Map<String, String>> argument =
+            ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
+        verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getRepresentativeEmailAddress()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getDraftOrder().getTemplateGeneratedDocument().getFilename());
@@ -236,32 +203,7 @@ public class NewOrderIssuedNotificationTest {
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmailWithException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setRepresentativeFullName("repFullName");
-        data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
-        data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
-        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
-
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        data.getCicCase().setOrderList(List.of(orderListValue));
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        newOrderIssuedNotification.sendToRepresentative(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeOfNewOrderIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -277,11 +219,13 @@ public class NewOrderIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.NEW_ORDER_ISSUED_POST);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    void shouldNotifyApplicantWithEmail() {
+    void shouldNotifyApplicantOfNewOrderIssuedWithEmail() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -289,10 +233,10 @@ public class NewOrderIssuedNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
         data.getCicCase().setOrderList(List.of());
 
-        Order recentOrder = Order.builder().uploadedFile(null).build();
-        Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.docx", "http://url/test.docx")).build();
-        ListValue<Order> orderListValue1 = new ListValue<>();
-        ListValue<Order> orderListValue2 = new ListValue<>();
+        final Order recentOrder = Order.builder().uploadedFile(null).build();
+        final Order oldOrder = Order.builder().uploadedFile(getCICDocumentListWithUrl("test.docx", "http://url/test.docx")).build();
+        final ListValue<Order> orderListValue1 = new ListValue<>();
+        final ListValue<Order> orderListValue2 = new ListValue<>();
         orderListValue1.setValue(recentOrder);
         orderListValue2.setValue(oldOrder);
         data.getCicCase().setOrderList(List.of(orderListValue1, orderListValue2));
@@ -305,25 +249,21 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
-        verify(notificationHelper).buildEmailNotificationRequest(eq("testapplicant@outlook.com"), eq(true),
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
+        verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getApplicantEmailAddress()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue().get(TRIBUNAL_ORDER)).isNull();
         verify(notificationService).sendEmail(any(NotificationRequest.class));
     }
 
     @Test
-    void shouldNotifyApplicantWithEmailWithNoUploadedDocument() {
+    void shouldNotifyApplicantOfNewOrderIssuedWithEmailWithNoUploadedDocument() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
         data.getCicCase().setOrderList(List.of());
-
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -334,34 +274,16 @@ public class NewOrderIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getApplicantEmailAddress()),
+            eq(true),
+            anyMap(),
+            eq(new HashMap<>()),
+            eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
     }
 
     @Test
-    void shouldNotifyApplicantWithEmailThrowsException() {
-        //Given
-        final CaseData data = getMockCaseData();
-        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setApplicantEmailAddress("testapplicant@outlook.com");
-        data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
-        data.getCicCase().setOrderList(List.of());
-
-        Order order = Order.builder().uploadedFile(getCICDocumentList("test.pdf")).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-
-        //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
-
-        newOrderIssuedNotification.sendToApplicant(data, "CN1");
-
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
-    }
-
-    @Test
-    void shouldNotifyApplicantWithPost() {
+    void shouldNotifyApplicantOfNewOrderIssuedWithPost() {
         //Given
         final CaseData data = getMockCaseData();
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
@@ -378,6 +300,9 @@ public class NewOrderIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.NEW_ORDER_ISSUED_POST);
     }
 
     private CaseData getMockCaseData() {
@@ -385,6 +310,8 @@ public class NewOrderIssuedNotificationTest {
             .fullName("fullName").caseNumber("CN1")
             .build();
 
-        return CaseData.builder().cicCase(cicCase).build();
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .build();
     }
 }
