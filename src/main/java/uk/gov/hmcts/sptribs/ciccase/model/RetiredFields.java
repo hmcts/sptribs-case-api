@@ -140,6 +140,14 @@ public class RetiredFields {
         typeParameterOverride = "CaseLinks")
     private List<ListValue<CaseLinks>> cicCaseCaseLinks;
 
+    @CCD(
+        label = "Case Status",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "State",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private State cicCaseTestState;
+
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
     };

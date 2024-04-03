@@ -26,9 +26,9 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.when;
@@ -76,8 +76,7 @@ class CicUpdateCaseEventTest {
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        when(appsConfig.getApps()).thenReturn(singletonList(cicAppDetail));
 
         cicUpdateCaseEvent.configure(configBuilder);
 

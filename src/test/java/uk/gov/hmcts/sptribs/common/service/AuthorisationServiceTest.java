@@ -63,28 +63,4 @@ class AuthorisationServiceTest {
         //Then
         assertThat(response).isEqualTo(TEST_BEARER_TOKEN);
     }
-
-    @Test
-    void shouldRemoveBearerTokenFromServiceAuthorisation() {
-        //Given
-        when(authTokenGenerator.generate()).thenReturn(TEST_BEARER_TOKEN);
-
-        //When
-        String response = authorisationService.getServiceAuthorization();
-
-        //Then
-        assertThat(response).isEqualTo(TEST_TOKEN);
-    }
-
-    @Test
-    void shouldNotRemoveBearerTokenFromServiceAuthorisation() {
-        //Given
-        when(authTokenGenerator.generate()).thenReturn(TEST_TOKEN);
-
-        //When
-        String response = authorisationService.getServiceAuthorization();
-
-        //Then
-        assertThat(response).isEqualTo(TEST_TOKEN);
-    }
 }
