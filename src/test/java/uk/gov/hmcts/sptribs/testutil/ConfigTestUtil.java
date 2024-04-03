@@ -123,8 +123,6 @@ public final class ConfigTestUtil {
         final String fieldName,
         final ConfigBuilder<T, S, R> configBuilder) throws IllegalAccessException {
 
-        final List<CaseCategory.CaseCategoryBuilder> categories =
-            (List<CaseCategory.CaseCategoryBuilder>) getValueIncludingSuperclasses(fieldName, configBuilder);
-        return categories;
+        return (List<CaseCategory.CaseCategoryBuilder>) getValueIncludingSuperclasses(fieldName, configBuilder);
     }
 }
