@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.AddSystemUpdateRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -37,10 +36,8 @@ import uk.gov.hmcts.sptribs.util.AppsUtil;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -61,9 +58,6 @@ class CicSubmitCaseEventTest {
 
     @InjectMocks
     private CicSubmitCaseEvent cicSubmitCaseEvent;
-
-    @Mock
-    private AddSystemUpdateRole addSystemUpdateRole;
 
     @Mock
     private AppsConfig appsConfig;
@@ -101,10 +95,6 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-
-        when(addSystemUpdateRole.addIfConfiguredForEnvironment(anyList()))
-            .thenReturn(List.of(CITIZEN));
-
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.setDssSubmitCaseEnabled(true);
 

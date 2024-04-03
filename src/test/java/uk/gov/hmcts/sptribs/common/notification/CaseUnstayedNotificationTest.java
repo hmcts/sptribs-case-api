@@ -173,5 +173,4 @@ class CaseUnstayedNotificationTest {
             .cicCase(cicCase)
             .build();
     }
-
 }

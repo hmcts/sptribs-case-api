@@ -213,7 +213,6 @@ public class CaseWithdrawnNotificationTest {
             .additionalDetail("additionalDet")
             .build();
 
-
         return CaseData.builder()
             .cicCase(cicCase)
             .closeCase(closeCase)
