@@ -128,6 +128,8 @@ feature:
     enabled: ${STITCH_BUNDLING_FEATURE:true}
   dss-frontend:
     enabled: ${DSS_FRONTEND_FEATURE:false}
+    submit-notification:
+      enabled: ${DSS_FRONTEND_SUBMIT_NOTIFICATION_ENABLED:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
   access-profiles:
