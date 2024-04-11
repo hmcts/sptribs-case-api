@@ -25,20 +25,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.dss-frontend.enabled}")
-    private boolean dssUpdateCaseEnabled;
-
     @Autowired
     AppsConfig appsConfig;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (dssUpdateCaseEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    private void doConfigure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getUpdateEvent())
@@ -59,5 +50,4 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .data(data)
             .build();
     }
-
 }
