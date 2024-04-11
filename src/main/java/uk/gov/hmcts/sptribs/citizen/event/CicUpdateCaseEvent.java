@@ -37,17 +37,6 @@ public class CicUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .name("Update case (cic)")
             .description("Application update (cic)")
             .retries(120, 120)
-            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN, CREATOR)
-            .aboutToSubmitCallback(this::aboutToSubmit);
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-
-        final CaseData data = details.getData();
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .build();
+            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN, CREATOR);
     }
 }

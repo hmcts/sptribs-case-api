@@ -68,8 +68,6 @@ class CicUpdateCaseEventTest {
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
-
     }
 
     @Test
@@ -89,41 +87,5 @@ class CicUpdateCaseEventTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getName)
             .contains("Update case (cic)");
-    }
-
-    @Test
-    void aboutToSubmitShouldUpdateCaseDetails() {
-        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
-        dssDoc.setDocumentLink(Document.builder().build());
-        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
-        listValue.setValue(dssDoc);
-        final DssCaseData dssCaseData = DssCaseData.builder()
-            .caseTypeOfApplication(CASE_DATA_CIC_ID)
-            .otherInfoDocuments(List.of(listValue))
-            .supportingDocuments(List.of(listValue))
-            .tribunalFormDocuments(List.of(listValue))
-            .subjectFullName(TEST_FIRST_NAME)
-            .representation(YesOrNo.YES)
-            .representationQualified(YesOrNo.YES)
-            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .build();
-
-        final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = caseData();
-        caseData.setCicCase(cicCase);
-        caseData.setDssCaseData(dssCaseData);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        updatedCaseDetails.setData(caseData);
-
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            cicUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isEqualTo(caseData);
-        assertNotEquals(response.getData(), beforeDetails.getData());
     }
 }
