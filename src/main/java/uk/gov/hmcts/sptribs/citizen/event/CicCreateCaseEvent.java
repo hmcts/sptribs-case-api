@@ -54,12 +54,10 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
 
     private void setIsRepresentativePresent(CaseData data) {
-        if (null != data.getDssCaseData().getRepresentativeFullName()) {
+        if (data.getDssCaseData().getRepresentativeFullName() != null) {
             data.getDssCaseData().setIsRepresentativePresent(YesOrNo.YES);
         } else {
             data.getDssCaseData().setIsRepresentativePresent(YesOrNo.NO);
         }
     }
-
-
 }
