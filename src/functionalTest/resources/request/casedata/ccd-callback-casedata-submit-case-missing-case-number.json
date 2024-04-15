@@ -1,0 +1,56 @@
+{
+  "dssCaseDataCaseTypeOfApplication": "CIC",
+  "dssCaseDataSubjectFullName": "test_first_name",
+  "dssCaseDataSubjectDateOfBirth": null,
+  "dssCaseDataSubjectEmailAddress": "citizen@test.com",
+  "dssCaseDataSubjectContactNumber": null,
+  "dssCaseDataSubjectAgreeContact": null,
+  "dssCaseDataRepresentation": "Yes",
+  "dssCaseDataRepresentationQualified": "Yes",
+  "dssCaseDataRepresentativeFullName": "The Solicitor",
+  "dssCaseDataRepresentativeOrganisationName": null,
+  "dssCaseDataRepresentativeContactNumber": null,
+  "dssCaseDataRepresentativeEmailAddress": null,
+  "dssCaseDataDocumentRelevance": null,
+  "dssCaseDataAdditionalInformation": null,
+  "dssCaseDataPcqId": null,
+  "dssCaseDataTribunalFormDocuments": [
+    {
+      "id": null,
+      "value": {
+        "documentLink": {
+          "document_url": null,
+          "document_filename": null,
+          "document_binary_url": null,
+          "category_id": null
+        }
+      }
+    }
+  ],
+  "dssCaseDataSupportingDocuments": [
+    {
+      "id": null,
+      "value": {
+        "documentLink": {
+          "document_url": null,
+          "document_filename": null,
+          "document_binary_url": null,
+          "category_id": null
+        }
+      }
+    }
+  ],
+  "dssCaseDataOtherInfoDocuments": [
+    {
+      "id": null,
+      "value": {
+        "documentLink": {
+          "document_url": null,
+          "document_filename": null,
+          "document_binary_url": null,
+          "category_id": null
+        }
+      }
+    }
+  ]
+}
