@@ -12,6 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
+import uk.gov.hmcts.sptribs.ciccase.model.SecondPanelMember;
+import uk.gov.hmcts.sptribs.ciccase.model.ThirdPanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -121,4 +124,33 @@ public class HearingSummary {
         access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> recFile;
+
+    @CCD(
+        label = "Panel 1",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String panel1;
+
+    @CCD(
+        label = "Panel 2",
+        typeOverride = FixedList,
+        typeParameterOverride = "SecondPanelMember",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private SecondPanelMember panel2;
+
+    @CCD(
+        label = "Panel 3",
+        typeOverride = FixedList,
+        typeParameterOverride = "ThirdPanelMember",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private ThirdPanelMember panel3;
+
+    @CCD(
+        label = "Specialisms or reserved panel member information",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = TextArea
+    )
+    private String panelMemberInformation;
 }
