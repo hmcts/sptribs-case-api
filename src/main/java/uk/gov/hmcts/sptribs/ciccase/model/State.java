@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultStateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultStateAccessExcludingCAA;
 import uk.gov.hmcts.sptribs.ciccase.model.access.SolicitorAccess;
@@ -128,7 +129,7 @@ public enum State {
     @CCD(
         label = "Ready to list",
         hint = "### ${cicCaseFullName}\nCase number: ${hyphenatedCaseRef}",
-        access = {DefaultStateAccessExcludingCAA.class}
+        access = {DefaultStateAccessExcludingCAA.class, CaseworkerWithCAAAccess.class}
     )
     ReadyToList("ReadyToList"),
 

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.testutil;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -27,20 +29,20 @@ public class AppsUtilTest {
     @Test
     void isValidCaseTypeOfApplicationTest() {
         DssCaseData a100CaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
-        Assert.assertTrue(AppsUtil.isValidCaseTypeOfApplication(appsConfig, a100CaseData));
+        assertTrue(AppsUtil.isValidCaseTypeOfApplication(appsConfig, a100CaseData));
     }
 
     @Test
     void inValidCaseTypeOfApplicationTest() {
         DssCaseData a100CaseData = DssCaseData.builder().caseTypeOfApplication("dummy").build();
-        Assert.assertFalse(AppsUtil.isValidCaseTypeOfApplication(appsConfig, a100CaseData));
+        assertFalse(AppsUtil.isValidCaseTypeOfApplication(appsConfig, a100CaseData));
     }
 
     @Test
     void validateExactAppDetailsTest() {
         DssCaseData cicCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
         AppsConfig.AppsDetails appDetails = AppsUtil.getExactAppsDetails(appsConfig, cicCaseData);
-        Assert.assertEquals(ST_CIC_CASE_TYPE, appDetails.getCaseType());
-        Assert.assertEquals(ST_CIC_JURISDICTION, appDetails.getJurisdiction());
+        assertEquals(ST_CIC_CASE_TYPE, appDetails.getCaseType());
+        assertEquals(ST_CIC_JURISDICTION, appDetails.getJurisdiction());
     }
 }
