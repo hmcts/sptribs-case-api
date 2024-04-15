@@ -160,7 +160,6 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldSubmitEventThroughSubmittedCallbackWithNotification() throws IOException {
-        cicSubmitCaseEvent.setDssSubmitNotificationEnabled(true);
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
@@ -209,56 +208,7 @@ class CicSubmitCaseEventTest {
     }
 
     @Test
-    void shouldSubmitEventThroughSubmittedCallbackWithoutNotification() throws IOException {
-        cicSubmitCaseEvent.setDssSubmitNotificationEnabled(false);
-        final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
-        final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);
-
-        final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
-        beforeCaseDetails.setData(caseBeforeData);
-        beforeCaseDetails.setState(State.Submitted);
-        beforeCaseDetails.setId(TEST_CASE_ID);
-        beforeCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-        caseDetails.setData(caseData);
-        caseDetails.setState(State.Submitted);
-        caseDetails.setId(TEST_CASE_ID);
-        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
-        caseDetails.getData().getDssCaseData().setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
-        caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
-        caseDetails.getData().getDssCaseData().setRepresentativeEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
-
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
-        cicSubmitCaseEvent.configure(configBuilder);
-
-        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
-            caseDetails,
-            beforeCaseDetails
-        );
-
-        assertThat(aboutToSubmitResponse.getState()).isEqualTo(State.DSS_Submitted);
-        assertThat(aboutToSubmitResponse.getData().getDssQuestion1()).isEqualTo("Full Name");
-        assertThat(aboutToSubmitResponse.getData().getDssQuestion2()).isEqualTo("Date of Birth");
-        assertThat(aboutToSubmitResponse.getData().getDssAnswer1()).isEqualTo("case_data.dssCaseDataSubjectFullName");
-        assertThat(aboutToSubmitResponse.getData().getDssAnswer2()).isEqualTo("case_data.dssCaseDataSubjectDateOfBirth");
-        assertThat(aboutToSubmitResponse.getData().getDssHeaderDetails()).isEqualTo("Subject of this case");
-
-        SubmittedCallbackResponse submittedResponse = cicSubmitCaseEvent.submitted(caseDetails, beforeCaseDetails);
-
-        assertThat(submittedResponse.getConfirmationHeader())
-            .isEqualTo("# Application Received %n##");
-    }
-
-    @Test
     void shouldSubmitEventThroughSubmittedCallbackWithoutNotificationParties() throws IOException {
-        cicSubmitCaseEvent.setDssSubmitNotificationEnabled(true);
         final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
         String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseBeforeData = mapper.readValue(caseDataJson, CaseData.class);

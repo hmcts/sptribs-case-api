@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -46,7 +45,6 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .isEqualTo(json(expectedResponse(RESPONSE)));
     }
 
-    @Disabled("Should be enabled after removing the temporary toggle DSS_FRONTEND_SUBMIT_NOTIFICATION_ENABLED")
     @Test
     public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
@@ -69,7 +67,6 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .isEqualTo("# Application Received %n##");
     }
 
-    @Disabled("Should be enabled after removing the temporary toggle DSS_FRONTEND_SUBMIT_NOTIFICATION_ENABLED")
     @Test
     public void shouldRaiseErrorWhenNotificationExceptionFound() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MISSING_CASE_NUMBER);

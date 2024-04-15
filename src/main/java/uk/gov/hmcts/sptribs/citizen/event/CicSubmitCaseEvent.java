@@ -68,9 +68,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Value("${feature.dss-frontend.enabled}")
     private boolean dssSubmitCaseEnabled;
 
-    @Value("${feature.dss-frontend.submit-notification.enabled}")
-    private boolean dssSubmitNotificationEnabled;
-
     @Autowired
     private HttpServletRequest request;
 
@@ -133,24 +130,22 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         DssCaseData dssCaseData = data.getDssCaseData();
         generateNotifyParties(dssCaseData);
 
-        if (dssSubmitNotificationEnabled) {
-            String caseNumber = data.getHyphenatedCaseRef();
+        final String caseNumber = data.getHyphenatedCaseRef();
 
-            try {
-                sendApplicationReceivedNotification(caseNumber, dssCaseData);
-            } catch (Exception notificationException) {
-                log.error("Application Received notification failed with exception : {}", notificationException.getMessage());
-                return SubmittedCallbackResponse.builder()
-                    .confirmationHeader("# Application Received notification failed %n## Please resend the notification")
-                    .build();
-            }
+        try {
+            sendApplicationReceivedNotification(caseNumber, dssCaseData);
+        } catch (Exception notificationException) {
+            log.error("Application Received notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader("# Application Received notification failed %n## Please resend the notification")
+                .build();
+        }
 
-            if (isNotEmpty(dssCaseData.getNotificationParties())) {
-                return SubmittedCallbackResponse.builder()
-                    .confirmationHeader(format("# Application Received %n## %s",
-                        MessageUtil.generateSimpleMessage(dssCaseData.getNotificationParties())))
-                    .build();
-            }
+        if (isNotEmpty(dssCaseData.getNotificationParties())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Application Received %n## %s",
+                    MessageUtil.generateSimpleMessage(dssCaseData.getNotificationParties())))
+                .build();
         }
 
         return SubmittedCallbackResponse.builder()
