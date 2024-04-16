@@ -3,43 +3,18 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.92
+version: 0.0.93
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
   - name: java
     version: 5.0.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-  - name: ccd
-    version: 8.0.29
+  - name: sptribs-frontend
+    version: 0.0.33
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    tags:
-      - ccd-idam-pr
-  - name: xui-webapp
-    version: ~1.0.0
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: xui-webapp.enabled
-  - name: xui-mo-webapp
-    version: ~1.1.0
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: xui-mo-webapp.enabled
-  - name: aac-manage-case-assignment
-    version: ~0.2.0
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: aac-manage-case-assignment.enabled
+    condition: sptribs-frontend.enabled
   - name: idam-pr
     version: 2.3.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: idam-pr.enabled
-  - name: ccd-case-document-am-api
-    version: 1.7.13
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: ccd-case-document-am-api.enabled
-  - name: em-ccdorc
-    version: 2.0.10
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: em-ccdorc.enabled
-  - name: em-stitching
-    version: 1.0.31
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: em-stitching.enabled

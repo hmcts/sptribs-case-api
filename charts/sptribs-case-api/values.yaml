@@ -1,33 +1,7 @@
-tags:
-  ccd-idam-pr: false
-
-ccd:
-  postgres:
-    enabled: false
-  elastic:
-    enabled: false
-  xui:
-    enabled: false
-
-xui-webapp:
-  enabled: false
-
-xui-mo-webapp:
-  enabled: false
-
-aac-manage-case-assignment:
+sptribs-frontend:
   enabled: false
 
 idam-pr:
-  enabled: false
-
-ccd-case-document-am-api:
-  enabled: false
-
-em-ccdorc:
-  enabled: false
-
-em-stitching:
   enabled: false
 
 java:
