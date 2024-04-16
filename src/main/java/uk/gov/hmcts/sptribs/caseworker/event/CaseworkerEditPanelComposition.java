@@ -37,7 +37,7 @@ public class CaseworkerEditPanelComposition implements CCDConfig<CaseData, State
             .description("Case: Edit Panel Composition")
             .grant(CREATE_READ_UPDATE, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE))
-            .page("casePanelComposition")
+            .page("caseEditPanelComposition")
             .complex(CaseData::getListing)
                 .complex(Listing::getSummary)
                     .readonly(HearingSummary::getPanel1)

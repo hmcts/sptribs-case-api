@@ -12,10 +12,7 @@ public enum ThirdPanelMember {
     MEDICAL_MEMBER("Medical Member"),
 
     @JsonProperty("Lay Member")
-    LAY_MEMBER("Lay Member"),
-
-    @JsonProperty("None")
-    NONE("Blank / None");
+    LAY_MEMBER("Lay Member");
 
     private final String label;
 }
