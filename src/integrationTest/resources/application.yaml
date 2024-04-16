@@ -126,8 +126,6 @@ feature:
     enabled: ${CLONE_BUNDLING_FEATURE:true}
   bundling-stitch:
     enabled: ${STITCH_BUNDLING_FEATURE:true}
-  dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:false}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
   access-profiles:

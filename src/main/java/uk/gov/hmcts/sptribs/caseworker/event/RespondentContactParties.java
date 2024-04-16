@@ -93,9 +93,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                     ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
-                    ST_CIC_JUDGE,
-                    ST_CIC_RESPONDENT)
+                    ST_CIC_JUDGE)
         );
         contactPartiesSelectDocument.addTo(pageBuilder);
         resPartiesToContact.addTo(pageBuilder);
