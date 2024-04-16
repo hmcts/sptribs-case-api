@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_PANEL_COMPOSITION;
@@ -31,9 +30,12 @@ public class CaseworkerPanelComposition implements CCDConfig<CaseData, State, Us
         new PageBuilder(configBuilder
             .event(CASEWORKER_PANEL_COMPOSITION)
             .forState(CaseManagement)
-            .showCondition("panel1!=\"*\"")
+            .showCondition("panel1!=\"Tribunal Judge\"")
             .name("Case: Panel Composition")
             .description("Case: Panel Composition")
+            .showSummary()
+            .aboutToStartCallback(this::aboutToStart)
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE))
             .page("casePanelComposition")
@@ -41,7 +43,7 @@ public class CaseworkerPanelComposition implements CCDConfig<CaseData, State, Us
                 .complex(Listing::getSummary)
                     .readonly(HearingSummary::getPanel1)
                     .optional(HearingSummary::getPanel2)
-                    .optional(HearingSummary::getPanel3)
+                    .optional(HearingSummary::getPanel3, "panel2=\"*\"")
                     .optional(HearingSummary::getPanelMemberInformation)
                 .done()
             .done();
@@ -50,6 +52,17 @@ public class CaseworkerPanelComposition implements CCDConfig<CaseData, State, Us
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.getListing().getSummary().setPanel1("Tribunal Judge");
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
+        caseData.getListing().getSummary().populatePanelComposition();
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

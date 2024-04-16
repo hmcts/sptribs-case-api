@@ -30,7 +30,9 @@ public class CaseworkerEditPanelComposition implements CCDConfig<CaseData, State
         new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_PANEL_COMPOSITION)
             .forState(CaseManagement)
-            .showCondition("panel1=\"*\"")
+            .showCondition("panel1=\"Tribunal Judge\"")
+            .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .name("Case: Edit Panel Composition")
             .description("Case: Edit Panel Composition")
             .grant(CREATE_READ_UPDATE, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
@@ -40,15 +42,18 @@ public class CaseworkerEditPanelComposition implements CCDConfig<CaseData, State
                 .complex(Listing::getSummary)
                     .readonly(HearingSummary::getPanel1)
                     .optional(HearingSummary::getPanel2)
-                    .optional(HearingSummary::getPanel3)
+                    .optional(HearingSummary::getPanel3, "panel2=\"*\"")
                     .optional(HearingSummary::getPanelMemberInformation)
                 .done()
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+
         final CaseData caseData = details.getData();
-        caseData.getListing().getSummary().setPanel1("Tribunal Judge");
+        caseData.getListing().getSummary().populatePanelComposition();
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();

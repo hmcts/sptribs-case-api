@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.AdjournmentReasons;
 import uk.gov.hmcts.sptribs.ciccase.model.FullPanelHearing;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingAttendeesRole;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingOutcome;
+import uk.gov.hmcts.sptribs.ciccase.model.PanelComposition;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.SecondPanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.ThirdPanelMember;
@@ -27,6 +29,9 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+import static uk.gov.hmcts.sptribs.ciccase.model.PanelComposition.PANEL_1;
+import static uk.gov.hmcts.sptribs.ciccase.model.PanelComposition.PANEL_2;
+import static uk.gov.hmcts.sptribs.ciccase.model.PanelComposition.PANEL_3;
 
 @Data
 @NoArgsConstructor
@@ -153,4 +158,23 @@ public class HearingSummary {
         typeOverride = TextArea
     )
     private String panelMemberInformation;
+
+    @CCD(
+        label = "Panel Composition",
+        typeOverride = FixedList,
+        typeParameterOverride = "PanelComposition",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private PanelComposition panelComposition;
+
+    @JsonIgnore
+    public void populatePanelComposition() {
+        if (this.getPanel2() != null && this.getPanel3() != null) {
+            this.setPanelComposition(PANEL_3);
+        } else if (this.getPanel2() != null) {
+            this.setPanelComposition(PANEL_2);
+        } else {
+            this.setPanelComposition(PANEL_1);
+        }
+    }
 }
