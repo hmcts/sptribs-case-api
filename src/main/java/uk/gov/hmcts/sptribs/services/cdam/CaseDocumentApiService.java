@@ -21,6 +21,7 @@ public class CaseDocumentApiService {
     @Autowired
     DssCaseDocumentClient dssCaseDocumentClient;
 
+
     public DocumentInfo uploadDocument(String authorizationToken, MultipartFile file,
                                        AppsConfig.AppsDetails appsDetails) {
 

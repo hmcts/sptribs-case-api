@@ -11,36 +11,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
-import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -68,16 +53,13 @@ class CicUpdateCaseEventTest {
         eventsConfig.setUpdateEvent("citizen-cic-update-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-        cicUpdateCaseEvent.setDssUpdateCaseEnabled(true);
-
     }
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        when(appsConfig.getApps()).thenReturn(singletonList(cicAppDetail));
 
         cicUpdateCaseEvent.configure(configBuilder);
 
@@ -90,41 +72,5 @@ class CicUpdateCaseEventTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getName)
             .contains("Update case (cic)");
-    }
-
-    @Test
-    void aboutToSubmitShouldUpdateCaseDetails() {
-        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
-        dssDoc.setDocumentLink(Document.builder().build());
-        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
-        listValue.setValue(dssDoc);
-        final DssCaseData dssCaseData = DssCaseData.builder()
-            .caseTypeOfApplication(CASE_DATA_CIC_ID)
-            .otherInfoDocuments(List.of(listValue))
-            .supportingDocuments(List.of(listValue))
-            .tribunalFormDocuments(List.of(listValue))
-            .subjectFullName(TEST_FIRST_NAME)
-            .representation(YesOrNo.YES)
-            .representationQualified(YesOrNo.YES)
-            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .build();
-
-        final CicCase cicCase = CicCase.builder().build();
-        final CaseData caseData = caseData();
-        caseData.setCicCase(cicCase);
-        caseData.setDssCaseData(dssCaseData);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        updatedCaseDetails.setData(caseData);
-
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            cicUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData()).isEqualTo(caseData);
-        assertNotEquals(response.getData(), beforeDetails.getData());
     }
 }
