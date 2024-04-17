@@ -1,14 +1,13 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
-
 import java.util.HashMap;
 import java.util.Map;
-import org.json.JSONObject;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
