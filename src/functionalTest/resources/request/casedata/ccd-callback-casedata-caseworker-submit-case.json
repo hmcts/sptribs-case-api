@@ -13,8 +13,6 @@
     "cicCaseDateOfBirth": "2000-01-01",
     "cicCaseAddress": {
       "AddressLine1": "Buckingham Palace",
-      "AddressLine2": "",
-      "AddressLine3": "",
       "PostTown": "London",
       "County": "",
       "Country": "United Kingdom",
@@ -63,10 +61,5 @@
     "cicCaseCompensationClaimLinkCIC": "No",
     "cicCaseFormReceivedInTime": "No",
     "cicCaseMissedTheDeadLineCic": "No"
-  },
-  "event": {
-    "id": "caseworker-create-case",
-    "summary": "",
-    "description": ""
   }
 }

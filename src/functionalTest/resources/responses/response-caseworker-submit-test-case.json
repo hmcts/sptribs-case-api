@@ -1,26 +1,15 @@
 {
   "data": {
-    "caseLinks": [],
     "caseNameHmctsInternal": "Subject kaikaqsrf",
-    "caseFlags": {
-      "details": []
-    },
     "subjectFlags": {
       "partyName": "Subject kaikaqsrf",
-      "roleOnCase": "subject",
-      "details": []
+      "roleOnCase": "subject"
     },
     "representativeFlags": {
       "partyName": "Representative juiutsqbg",
-      "roleOnCase": "Representative",
-      "details": []
+      "roleOnCase": "Representative"
     },
-    "allCaseworkerCICDocument": [],
-    "newCaseworkerCICDocument": [],
-    "editCicaCaseDetails": {},
-    "contactParties": {},
     "securityClass": "PUBLIC",
-    "caseBundles": [],
     "cicCaseHearingList": {
       "value": {
         "code": "34064639-3e4d-4cea-9395-4dddddf75060",
@@ -183,7 +172,6 @@
       "valueCode": "60441279-18cc-4310-8a9f-04d18c37f775",
       "valueLabel": "1-London"
     },
-    "venueNotListedOption": [],
     "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
     "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
     "roomAtVenue": "The Court Room 2",
@@ -196,8 +184,6 @@
     "conferenceCallNumber": "01762534634",
     "importantInfoDetails": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
     "recordListingChangeReason": "Listing record is being changed for testing purpose",
-    "memberList": [],
-    "recFile": [],
     "hearingList": [
       {
         "id": "1",
@@ -274,7 +260,6 @@
             "valueCode": "60441279-18cc-4310-8a9f-04d18c37f775",
             "valueLabel": "1-London"
           },
-          "venueNotListedOption": [],
           "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
           "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
           "roomAtVenue": "The Court Room 2",
@@ -286,9 +271,7 @@
           "videoCallLink": "http://localhost:3001",
           "conferenceCallNumber": "01762534634",
           "importantInfoDetails": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-          "recordListingChangeReason": "Listing record is being changed for testing purpose",
-          "memberList": [],
-          "recFile": []
+          "recordListingChangeReason": "Listing record is being changed for testing purpose"
         }
       }
     ],
