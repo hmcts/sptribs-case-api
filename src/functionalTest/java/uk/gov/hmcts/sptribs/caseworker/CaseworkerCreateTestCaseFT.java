@@ -26,7 +26,7 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
     private static final String CASEWORKER_CREATE_TEST_CASE_EVENT_ID = "create-test-case";
 
     @Test
-    public void shouldSuccessfullySubmitWhenAboutToStartOrSubmitCallbackIsTriggered() throws Exception {
+    public void shouldSuccessfullySubmitWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
         final Response response = triggerCallback(caseData, CASEWORKER_CREATE_TEST_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL);
 
