@@ -52,6 +52,7 @@ public final class EventConstants {
     public static final String EDIT_BUNDLE = "editBundle";
     public static final String CLONE_BUNDLE = "cloneBundle";
 
+    public static final String CITIZEN_CIC_CREATE_CASE = "citizen-cic-create-dss-application";
     public static final String CITIZEN_DSS_UPDATE_CASE_SUBMISSION = "citizen-cic-dss-update-case";
 
     public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";

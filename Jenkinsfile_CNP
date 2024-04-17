@@ -355,7 +355,6 @@ def setFeatureFlags(environment) {
     env.EDIT_BUNDLING_FEATURE = true
     env.CLONE_BUNDLING_FEATURE = true
     env.STITCH_BUNDLING_FEATURE = true
-    env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = true
     env.MIGRATION_ENABLED = true
     env.ACCESS_PROFILES_ENABLED = true
@@ -366,7 +365,6 @@ def setFeatureFlags(environment) {
     env.CASE_FLAGS_FEATURE = true
     env.CASE_FILE_VIEW = true
     env.DOCUMENT_MANAGEMENT_FEATURE = true
-    env.DSS_FRONTEND_FEATURE = true
     env.CREATE_BUNDLING_FEATURE = true
     env.EDIT_BUNDLING_FEATURE = true
     env.CLONE_BUNDLING_FEATURE = true
@@ -385,7 +383,6 @@ def setFeatureFlags(environment) {
     env.EDIT_BUNDLING_FEATURE = true
     env.CLONE_BUNDLING_FEATURE = true
     env.STITCH_BUNDLING_FEATURE = true
-    env.DSS_FRONTEND_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
     env.ACCESS_PROFILES_ENABLED = true

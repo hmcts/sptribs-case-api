@@ -28,9 +28,8 @@ spring:
 
 logging:
   level:
-    root: debug
-    web: debug
-
+    root: info
+    web: info
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
@@ -219,8 +218,6 @@ feature:
     enabled: ${CLONE_BUNDLING_FEATURE:true}
   bundling-stitch:
     enabled: ${STITCH_BUNDLING_FEATURE:true}
-  dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:true}
   access-profiles:
