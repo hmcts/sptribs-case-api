@@ -58,15 +58,14 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
             .name("Document management: Upload")
             .description("Document management: Upload")
             .showSummary()
-            .grantHistoryOnly(SUPER_USER,
+            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
+            .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
-                ST_CIC_JUDGE,
-                ST_CIC_RESPONDENT)
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
+                ST_CIC_JUDGE)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 

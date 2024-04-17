@@ -32,7 +32,11 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
                   *  select the appropriate category from case file view
 
                 Add a file
-                Upload a file to the system\n\n\n\n
+                Upload a file to the system
+
+
+
+
                 Note: If the remove button is disabled, please refresh the page to remove attachments
                 """)
             .optionalWithLabel(CicCase::getReinstateDocuments, "Reinstate Documents")

@@ -108,7 +108,6 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         pageBuilder.page("changeSecurityClass", this::midEvent)
             .pageLabel("Security classification selection")
             .mandatory(CaseData::getSecurityClass);
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
@@ -128,11 +127,10 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             .data(caseData)
             .errors(errors)
             .build();
-
     }
 
     private boolean checkAvailableForNewClass(User user, SecurityClass newClass) {
         List<String> roles = user.getUserDetails().getRoles();
-        return Arrays.stream(newClass.getPermittedRoles()).anyMatch(role -> roles.contains(role));
+        return Arrays.stream(newClass.getPermittedRoles()).anyMatch(roles::contains);
     }
 }
