@@ -1,0 +1,72 @@
+{
+  "data": {
+    "cicCaseCaseCategory": "Assessment",
+    "cicCaseCaseSubcategory": "other",
+    "cicCaseCaseReceivedDate": "2000-01-01",
+    "cicCasePartiesCIC": [
+      "ApplicantCIC",
+      "SubjectCIC",
+      "RepresentativeCIC"
+    ],
+    "cicCaseFullName": "Testing subject",
+    "cicCasePhoneNumber": "01234567891",
+    "cicCaseDateOfBirth": "2000-01-01",
+    "cicCaseAddress": {
+      "AddressLine1": "Buckingham Palace",
+      "AddressLine2": "",
+      "AddressLine3": "",
+      "PostTown": "London",
+      "County": "",
+      "Country": "United Kingdom",
+      "PostCode": "SW1A 1AA"
+    },
+    "cicCaseContactPreferenceType": "Email",
+    "cicCaseEmail": "subject@hmcts.net",
+    "cicCaseApplicantFullName": "Testing applicant",
+    "cicCaseApplicantPhoneNumber": "01234567892",
+    "cicCaseApplicantDateOfBirth": null,
+    "cicCaseApplicantContactDetailsPreference": "Email",
+    "cicCaseApplicantEmailAddress": "applicant@hmcts.net",
+    "cicCaseRepresentativeFullName": "Testing representative",
+    "cicCaseRepresentativeOrgName": "HMCTS",
+    "cicCaseRepresentativePhoneNumber": "01234567893",
+    "cicCaseRepresentativeReference": null,
+    "cicCaseIsRepresentativeQualified": "No",
+    "cicCaseRepresentativeContactDetailsPreference": "Email",
+    "cicCaseRepresentativeEmailAddress": "representative@hmcts.net",
+    "cicCaseSubjectCIC": [
+      "SubjectCIC"
+    ],
+    "cicCaseApplicantCIC": [
+      "ApplicantCIC"
+    ],
+    "cicCaseRepresentativeCIC": [
+      "RepresentativeCIC"
+    ],
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "ApplicationForm",
+          "documentEmailContent": "L",
+          "documentLink": {
+            "document_url": "null",
+            "document_binary_url": "null",
+            "document_filename": "null"
+          }
+        },
+        "id": "null"
+      }
+    ],
+    "cicCaseSchemeCic": "Year2012",
+    "cicCaseRegionCIC": "London",
+    "cicCaseClaimLinkedToCic": "No",
+    "cicCaseCompensationClaimLinkCIC": "No",
+    "cicCaseFormReceivedInTime": "No",
+    "cicCaseMissedTheDeadLineCic": "No"
+  },
+  "event": {
+    "id": "caseworker-create-case",
+    "summary": "",
+    "description": ""
+  }
+}
