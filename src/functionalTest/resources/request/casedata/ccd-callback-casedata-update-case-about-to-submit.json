@@ -1,0 +1,9 @@
+{
+  "dssCaseDataCaseTypeOfApplication": "CIC",
+  "dssCaseDataSubjectFullName": "test_first_name",
+  "dssCaseDataSubjectDateOfBirth": "1990-01-01",
+  "dssCaseDataSubjectEmailAddress": "test@email.com",
+  "dssCaseDataSubjectContactNumber": "07123123123123",
+  "dssCaseDataSubjectAgreeContact": "Yes",
+  "dssCaseDataRepresentation": "No"
+}

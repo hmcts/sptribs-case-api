@@ -34,12 +34,9 @@ java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'
   ingressHost: sptribs-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-  aadIdentityName: sptribs
-  autoscaling:
+  spotInstances:
     enabled: true
-    maxReplicas: 9
-    minReplicas: 2
-    targetCPUUtilizationPercentage: 80 # Default is 80% target CPU utilization
+  aadIdentityName: sptribs
   keyVaults:
     sptribs:
       secrets:

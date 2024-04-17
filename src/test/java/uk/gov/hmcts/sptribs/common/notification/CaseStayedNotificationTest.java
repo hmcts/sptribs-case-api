@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
+import org.elasticsearch.core.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -37,12 +39,12 @@ class CaseStayedNotificationTest {
     private CaseStayedNotification caseStayedNotification;
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithEmail() {
+    void shouldNotifySubjectOfCaseStayedWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -52,12 +54,45 @@ class CaseStayedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            Map.of(
+                CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
+                CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
+            TemplateName.CASE_STAYED_EMAIL);
     }
 
     @Test
-    void shouldNotifySubjectOfApplicationReceivedWithPost() {
+    void shouldNotifySubjectOfCaseStayedWithEmailWithoutAdditionalDetail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
+        final CaseData data = getMockCaseData(expDate);
+        data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        data.getCicCase().setEmail("testSubject@outlook.com");
+        data.getCaseStay().setAdditionalDetail("");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        caseStayedNotification.sendToSubject(data, "CN1");
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            Map.of(
+                CommonConstants.STAY_ADDITIONAL_DETAIL, CommonConstants.NONE_PROVIDED,
+                CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
+            TemplateName.CASE_STAYED_EMAIL);
+    }
+
+    @Test
+    void shouldNotifySubjectOfCaseStayedWithPost() {
+        //Given
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
@@ -71,16 +106,22 @@ class CaseStayedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
+                CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
+            TemplateName.CASE_STAYED_POST);
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithEmail() {
+    void shouldNotifyApplicantOfCaseStayedWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
-        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -90,12 +131,19 @@ class CaseStayedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getApplicantEmailAddress(),
+            Map.of(
+                CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
+                CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
+            TemplateName.CASE_STAYED_EMAIL);
     }
 
     @Test
-    void shouldNotifyApplicantOfApplicationReceivedWithPost() {
+    void shouldNotifyApplicantOfCaseStayedWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("appFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
@@ -110,12 +158,18 @@ class CaseStayedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
+                CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
+            TemplateName.CASE_STAYED_POST);
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithEmail() {
+    void shouldNotifyRepresentativeOfCaseStayedWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -129,12 +183,19 @@ class CaseStayedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            Map.of(
+                CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
+                CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
+            TemplateName.CASE_STAYED_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeOfApplicationReceivedWithPost() {
+    void shouldNotifyRepresentativeOfCaseStayedWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
@@ -149,20 +210,28 @@ class CaseStayedNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            Map.of(
+                CommonConstants.STAY_ADDITIONAL_DETAIL, data.getCaseStay().getAdditionalDetail(),
+                CommonConstants.STAY_EXPIRATION_DATE, data.getCaseStay().getExpirationDate(),
+                CommonConstants.STAY_REASON, data.getCaseStay().getStayReason().getType()),
+            TemplateName.CASE_STAYED_POST);
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
-        CaseStay caseStay = CaseStay.builder()
+        final CaseStay caseStay = CaseStay.builder()
             .expirationDate(stayCaseExpDate)
             .stayReason(StayReason.OTHER)
             .additionalDetail("addlDetail")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).caseStay(caseStay).build();
 
-        return caseData;
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .caseStay(caseStay)
+            .build();
     }
 
 }
