@@ -65,9 +65,9 @@ public class NotificationHelperTest {
     private CicCase cicCase;
 
     @Test
-    void setRecordingTemplateVarsTest_AllConditionsMet() {
+    void setRecordingTemplateVarsTestAllConditionsMet() {
         //Given
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .conferenceCallNumber("cmi459t5iut5")
             .date(LocalDate.of(2022, 12, 23))
             .importantInfoDetails("Imp Info")
@@ -77,7 +77,7 @@ public class NotificationHelperTest {
             .addlInstr("Test Instructions")
             .build();
 
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
 
         //When
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
@@ -93,12 +93,12 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_AllConditionNotMet() {
+    void setRecordingTemplateVarsTestAllConditionNotMet() {
         //Given
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .date(LocalDate.of(2022, 12, 23))
             .build();
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
 
         //When
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
@@ -115,9 +115,9 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_TelephoneFormat() {
+    void setRecordingTemplateVarsTestTelephoneFormat() {
         //Given
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .date(LocalDate.of(2022, 12, 23))
             .conferenceCallNumber("cmi459t5iut5")
             .addlInstr("Test Instructions")
@@ -126,7 +126,7 @@ public class NotificationHelperTest {
             .hearingFormat(HearingFormat.TELEPHONE)
             .build();
 
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
 
         //When
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
@@ -137,13 +137,13 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_FacetoFaceFormat() {
+    void setRecordingTemplateVarsTestFaceToFaceFormat() {
         //Given
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .date(LocalDate.of(2022, 12, 23))
             .hearingFormat(HearingFormat.FACE_TO_FACE)
             .build();
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
 
         //When
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
@@ -155,15 +155,15 @@ public class NotificationHelperTest {
 
 
     @Test
-    void setRecordingTemplateVarsTest_SelectedVenueSet() {
+    void setRecordingTemplateVarsTestSelectedVenueSet() {
         //Given
-        Listing listing = Mockito.mock(Listing.class);
+        final Listing listing = Mockito.mock(Listing.class);
 
         when(listing.getSelectedVenue()).thenReturn("London Hearing Venue");
         when(listing.getDate()).thenReturn(LocalDate.of(2022, 12, 23));
         when(listing.getHearingFormat()).thenReturn(HearingFormat.HYBRID);
 
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
 
         //When
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
@@ -173,9 +173,9 @@ public class NotificationHelperTest {
     }
 
     @Test
-    void setRecordingTemplateVarsTest_ManualHearingVenueSet() {
+    void setRecordingTemplateVarsTestManualHearingVenueSet() {
         //Given
-        Listing listing = Mockito.mock(Listing.class);
+        final Listing listing = Mockito.mock(Listing.class);
 
         when(listing.getHearingVenueNameAndAddress()).thenReturn("London Hearing Venue - London");
         when(listing.getSelectedVenue()).thenReturn(null);
@@ -193,7 +193,7 @@ public class NotificationHelperTest {
     @Test
     void shouldSetRecordingTemplateVarsWithVenueNull() {
 
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .date(LocalDate.of(2022, 12, 23))
             .conferenceCallNumber("cmi459t5iut5")
             .addlInstr("Test Instructions")
@@ -204,7 +204,7 @@ public class NotificationHelperTest {
             .addlInstr("Test Instructions")
             .build();
 
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
 
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
@@ -219,12 +219,12 @@ public class NotificationHelperTest {
     @Test
     void shouldGetRespondentCommonVars() {
         // Given
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .respondentName("respondent name")
             .build();
 
         // When
-        Map<String, Object> commonVars = notificationHelper.getRespondentCommonVars("case number", cicCase);
+        final Map<String, Object> commonVars = notificationHelper.getRespondentCommonVars("case number", cicCase);
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("respondent name");
@@ -234,11 +234,11 @@ public class NotificationHelperTest {
     @Test
     void shouldGetTribunalCommonVars() {
         // Given
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .build();
 
         // When
-        Map<String, Object> commonVars = notificationHelper.getTribunalCommonVars("case number", cicCase);
+        final Map<String, Object> commonVars = notificationHelper.getTribunalCommonVars("case number", cicCase);
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("First-tier Tribunal (CIC)");
@@ -247,12 +247,12 @@ public class NotificationHelperTest {
     @Test
     void shouldGetSubjectCommonVars() {
         // Given
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName("subject name")
             .build();
 
         // When
-        Map<String, Object> commonVars = notificationHelper.getSubjectCommonVars("case number", cicCase);
+        final Map<String, Object> commonVars = notificationHelper.getSubjectCommonVars("case number", cicCase);
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("subject name");
@@ -261,12 +261,12 @@ public class NotificationHelperTest {
     @Test
     void shouldGetApplicantCommonVars() {
         // Given
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .applicantFullName("app name")
             .build();
 
         // When
-        Map<String, Object> commonVars = notificationHelper.getApplicantCommonVars("case number", cicCase);
+        final Map<String, Object> commonVars = notificationHelper.getApplicantCommonVars("case number", cicCase);
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("app name");
@@ -275,12 +275,12 @@ public class NotificationHelperTest {
     @Test
     void shouldGetReprCommonVars() {
         // Given
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .representativeFullName("repr name")
             .build();
 
         // When
-        Map<String, Object> commonVars = notificationHelper.getRepresentativeCommonVars("case number", cicCase);
+        final Map<String, Object> commonVars = notificationHelper.getRepresentativeCommonVars("case number", cicCase);
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("repr name");
@@ -289,7 +289,7 @@ public class NotificationHelperTest {
     @Test
     void shouldGetAddressVars() {
         // Given
-        AddressGlobalUK addressGlobalUK = AddressGlobalUK.builder()
+        final AddressGlobalUK addressGlobalUK = AddressGlobalUK.builder()
             .addressLine1("test addr1")
             .addressLine2("test addr2")
             .addressLine3("test addr3")
@@ -298,7 +298,7 @@ public class NotificationHelperTest {
             .country("test county")
             .postTown("test postTown")
             .build();
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
 
         // When
         notificationHelper.addAddressTemplateVars(addressGlobalUK, templateVars);
@@ -316,17 +316,17 @@ public class NotificationHelperTest {
     @Test
     void shouldBuildNotificationRequest() {
         // When
-        NotificationRequest emailNotificationRequest = notificationHelper.buildEmailNotificationRequest(
+        final NotificationRequest emailNotificationRequest = notificationHelper.buildEmailNotificationRequest(
             "id@email.com",
             new HashMap<>(),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
-        NotificationRequest emailNotificationRequestWithAttachment = notificationHelper.buildEmailNotificationRequest(
+        final NotificationRequest emailNotificationRequestWithAttachment = notificationHelper.buildEmailNotificationRequest(
             "id@email.com",
             false,
             new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
-        NotificationRequest letterNotificationRequest = notificationHelper.buildLetterNotificationRequest(
+        final NotificationRequest letterNotificationRequest = notificationHelper.buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
 
@@ -338,7 +338,7 @@ public class NotificationHelperTest {
 
     @Test
     void shouldAddHearingPostponedTemplateVars() {
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
@@ -355,7 +355,7 @@ public class NotificationHelperTest {
 
     @Test
     void shouldAddHearingPostponedTemplateVarsWithNull() {
-        Map<String, Object> templateVars = new HashMap<>();
+        final Map<String, Object> templateVars = new HashMap<>();
         when(cicCase.getSelectedHearingToCancel()).thenReturn(null);
 
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
@@ -401,7 +401,7 @@ public class NotificationHelperTest {
         final int docAttachLimit = 2;
 
         //When
-        Map<String, String> result = notificationHelper.buildDocumentList(documentList, docAttachLimit);
+        final Map<String, String> result = notificationHelper.buildDocumentList(documentList, docAttachLimit);
 
         //Then
         assertThat(result)
@@ -426,7 +426,7 @@ public class NotificationHelperTest {
         final int docAttachLimit = 2;
 
         //When
-        Map<String, String> result = notificationHelper.buildDocumentList(documentList, docAttachLimit);
+        final Map<String, String> result = notificationHelper.buildDocumentList(documentList, docAttachLimit);
 
         //Then
         assertThat(result)
@@ -451,7 +451,7 @@ public class NotificationHelperTest {
         final int docAttachLimit = 2;
 
         //When
-        Map<String, String> result = notificationHelper.buildDocumentList(documentList, docAttachLimit);
+        final Map<String, String> result = notificationHelper.buildDocumentList(documentList, docAttachLimit);
 
         //Then
         assertThat(result)
