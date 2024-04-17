@@ -22,6 +22,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-caseworker-submit-case.json";
+    private static final String BAD_REQUEST = "classpath:request/casedata/ccd-callback-casedata-caseworker-submit-case-failure.json";
     private static final String RESPONSE = "classpath:responses/response-caseworker-submit-case.json";
 
     private static final String CASEWORKER_CREATE_CASE_EVENT_ID = "caseworker-create-case";
@@ -47,7 +48,18 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Case Created \\n## Case reference number: \\n## null");
+            .isEqualTo("# Case Created \\n## Case reference number: \\n## 1234-5678-9012-3456");
+    }
+
+    @Test
+    public void shouldGetFailureWhenInvalidSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(BAD_REQUEST);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isEqualTo("# Create case notification failed \\n## Please resend the notification");
     }
 
 }

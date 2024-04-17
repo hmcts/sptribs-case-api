@@ -7,7 +7,6 @@
     "ApplicantCIC",
     "SubjectCIC"
   ],
-  "cicCaseFullName": "Testing subject",
   "cicCasePhoneNumber": "01234567891",
   "cicCaseDateOfBirth": "2000-01-01",
   "cicCaseAddress": {
