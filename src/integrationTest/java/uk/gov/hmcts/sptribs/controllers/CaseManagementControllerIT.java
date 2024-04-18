@@ -58,11 +58,18 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseManagementControllerIT {
 
-    private static final String CCD_CASE_RESPONSE =
-        "classpath:citizen-create-case-response.json";
+    private static final String CCD_CASE_RESPONSE = "classpath:citizen-create-case-response.json";
+
+    private static final String CREATE_URL = "/case/dss-orchestration/create";
+    private static final String UPDATE_URL = "/case/dss-orchestration/1616591401473378/update";
+    private static final String FETCH_CASE_URL = "/case/dss-orchestration/fetchCaseDetails/1616591401473378";
 
     private static final String AUTH_TOKEN = "test-auth";
     private static final String S2S_TOKEN = "s2s-token";
+
+    private static final String EVENT_PARAM = "event";
+    private static final String UPDATE = "UPDATE";
+    private static final String SUBMIT = "SUBMIT";
 
     @Autowired
     private MockMvc mockMvc;
@@ -146,7 +153,7 @@ public class CaseManagementControllerIT {
             caseDataContent
         )).thenReturn(reformCaseDetails);
 
-        final String response = mockMvc.perform(post("/case/dss-orchestration/create")
+        final String response = mockMvc.perform(post(CREATE_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -174,7 +181,7 @@ public class CaseManagementControllerIT {
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
-        mockMvc.perform(post("/case/dss-orchestration/create")
+        mockMvc.perform(post(CREATE_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -243,10 +250,11 @@ public class CaseManagementControllerIT {
             caseDataContent
         )).thenReturn(reformCaseDetails);
 
-        final String response = mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=UPDATE")
+        final String response = mockMvc.perform(put(UPDATE_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .param(EVENT_PARAM, UPDATE)
             .content(objectMapper.writeValueAsString(dssCaseData))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -271,10 +279,11 @@ public class CaseManagementControllerIT {
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
-        mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=UPDATE")
+        mockMvc.perform(put(UPDATE_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .param(EVENT_PARAM, UPDATE)
             .content(objectMapper.writeValueAsString(dssCaseData))
             .accept(APPLICATION_JSON))
             .andExpect(status().is5xxServerError())
@@ -340,10 +349,11 @@ public class CaseManagementControllerIT {
             caseDataContent
         )).thenReturn(reformCaseDetails);
 
-        final String response = mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=SUBMIT")
+        final String response = mockMvc.perform(put(UPDATE_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .param(EVENT_PARAM, SUBMIT)
             .content(objectMapper.writeValueAsString(dssCaseData))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -368,10 +378,11 @@ public class CaseManagementControllerIT {
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
-        mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=SUBMIT")
+        mockMvc.perform(put(UPDATE_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .param(EVENT_PARAM, SUBMIT)
             .content(objectMapper.writeValueAsString(dssCaseData))
             .accept(APPLICATION_JSON))
             .andExpect(status().is5xxServerError())
@@ -406,10 +417,10 @@ public class CaseManagementControllerIT {
         when(coreCaseDataApi.getCase(
             AUTH_TOKEN,
             S2S_TOKEN,
-            "1616591401473378"
+            String.valueOf(TEST_CASE_ID)
         )).thenReturn(reformCaseDetails);
 
-        final String response = mockMvc.perform(get("/case/dss-orchestration/fetchCaseDetails/" + TEST_CASE_ID)
+        final String response = mockMvc.perform(get(FETCH_CASE_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
