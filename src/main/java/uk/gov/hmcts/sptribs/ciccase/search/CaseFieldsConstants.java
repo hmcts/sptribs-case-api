@@ -67,7 +67,9 @@ public final class CaseFieldsConstants {
         = "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"";
     public static final String COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY
         = "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"";
-    public static final String COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY = "hearingList!=\"*\" AND isFullPanel!=\"\"";
+    public static final String COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY =
+        "panel1=\"Tribunal Judge\" OR hearingList!=\"*\" AND isFullPanel!=\"\"";
+    public static final String PANEL_COMPOSITION_DEFINED = "panel1=\"Tribunal Judge\"";
     public static final String COND_APPLICANT_FULL_NAME_NOT_EMPTY = "cicCaseApplicantFullName!=\"\"";
     public static final String COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY = "hearingList!=\"*\" AND hearingType!=\"\"";
     public static final String COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY = "cicCaseRepresentativeFullName!=\"\"";

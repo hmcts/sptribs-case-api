@@ -44,6 +44,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_IS_NO
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_NOT_EMPTY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.IS_STAYED;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.PANEL_COMPOSITION_DEFINED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_ADDITIONAL_DETAIL;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_DETAILS;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_OTHER_DESCRIPTION;
@@ -341,7 +342,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("importantInfoDetails", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
             .field("cicCaseHearingNotificationParties", COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY)
 
-            .label("Hearing summary", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY, "#### Hearing summary")
+            .label("Hearing summary", PANEL_COMPOSITION_DEFINED, "#### Hearing summary")
             .field("judge", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
             .field("isFullPanel", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
             .field("memberList", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
@@ -350,10 +351,10 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("outcome", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
             .field("recFile", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
             .field("recDesc", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("panel1", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("panel2", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("panel3", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
-            .field("panelMemberInformation", COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY)
+            .field("panel1", PANEL_COMPOSITION_DEFINED)
+            .field("panel2", PANEL_COMPOSITION_DEFINED)
+            .field("panel3", PANEL_COMPOSITION_DEFINED)
+            .field("panelMemberInformation", PANEL_COMPOSITION_DEFINED)
 
             .label("Postponement summary", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY, "#### Postponement summary")
             .field("postponeDate", COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY)
@@ -371,7 +372,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
             .label("Hearing options",
                 "hearingVenues!=\"\" OR roomAtVenue!=\"\" OR addlInstr!=\"\" OR hearingFormat!=\"\" OR shortNotice!=\"\"",
-                "#### Hearing summary")
+                "#### Hearing options")
             .field("hearingVenues")
             .field("roomAtVenue")
             .field("addlInstr")
