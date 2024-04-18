@@ -61,6 +61,9 @@ public class CaseManagementControllerIT {
     private static final String CCD_CASE_RESPONSE =
         "classpath:citizen-create-case-response.json";
 
+    private static final String AUTH_TOKEN = "test-auth";
+    private static final String S2S_TOKEN = "s2s-token";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -124,18 +127,18 @@ public class CaseManagementControllerIT {
             .build();
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
-        when(authTokenGenerator.generate()).thenReturn("s2s token");
+        when(authTokenGenerator.generate()).thenReturn(S2S_TOKEN);
         when(coreCaseDataApi.startForCitizen(
-            "test-auth",
-            "s2s token",
+            AUTH_TOKEN,
+            S2S_TOKEN,
             "2",
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
             CITIZEN_CIC_CREATE_CASE
         )).thenReturn(startEventResponse);
         when(coreCaseDataApi.submitForCitizen(
-            "test-auth",
-            "s2s token",
+            AUTH_TOKEN,
+            S2S_TOKEN,
             "2",
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
@@ -143,7 +146,7 @@ public class CaseManagementControllerIT {
             caseDataContent
         )).thenReturn(reformCaseDetails);
 
-        String response = mockMvc.perform(post("/case/dss-orchestration/create")
+        final String response = mockMvc.perform(post("/case/dss-orchestration/create")
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -219,10 +222,10 @@ public class CaseManagementControllerIT {
             .build();
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
-        when(authTokenGenerator.generate()).thenReturn("s2s token");
+        when(authTokenGenerator.generate()).thenReturn(S2S_TOKEN);
         when(coreCaseDataApi.startEventForCitizen(
-            "test-auth",
-            "s2s token",
+            AUTH_TOKEN,
+            S2S_TOKEN,
             "2",
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
@@ -230,8 +233,8 @@ public class CaseManagementControllerIT {
             CITIZEN_CIC_UPDATE_CASE
         )).thenReturn(startEventResponse);
         when(coreCaseDataApi.submitEventForCitizen(
-            "test-auth",
-            "s2s token",
+            AUTH_TOKEN,
+            S2S_TOKEN,
             "2",
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
@@ -240,7 +243,7 @@ public class CaseManagementControllerIT {
             caseDataContent
         )).thenReturn(reformCaseDetails);
 
-        String response = mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=UPDATE")
+        final String response = mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=UPDATE")
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -316,10 +319,10 @@ public class CaseManagementControllerIT {
             .build();
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
-        when(authTokenGenerator.generate()).thenReturn("s2s token");
+        when(authTokenGenerator.generate()).thenReturn(S2S_TOKEN);
         when(coreCaseDataApi.startEventForCitizen(
-            "test-auth",
-            "s2s token",
+            AUTH_TOKEN,
+            S2S_TOKEN,
             "2",
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
@@ -327,8 +330,8 @@ public class CaseManagementControllerIT {
             CITIZEN_CIC_SUBMIT_CASE
         )).thenReturn(startEventResponse);
         when(coreCaseDataApi.submitEventForCitizen(
-            "test-auth",
-            "s2s token",
+            AUTH_TOKEN,
+            S2S_TOKEN,
             "2",
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
@@ -337,7 +340,7 @@ public class CaseManagementControllerIT {
             caseDataContent
         )).thenReturn(reformCaseDetails);
 
-        String response = mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=SUBMIT")
+        final String response = mockMvc.perform(put("/case/dss-orchestration/1616591401473378/update?event=SUBMIT")
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -399,14 +402,14 @@ public class CaseManagementControllerIT {
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
-        when(authTokenGenerator.generate()).thenReturn("s2s token");
+        when(authTokenGenerator.generate()).thenReturn(S2S_TOKEN);
         when(coreCaseDataApi.getCase(
-            "test-auth",
-            "s2s token",
+            AUTH_TOKEN,
+            S2S_TOKEN,
             "1616591401473378"
         )).thenReturn(reformCaseDetails);
 
-        String response = mockMvc.perform(get("/case/dss-orchestration/fetchCaseDetails/" + TEST_CASE_ID)
+        final String response = mockMvc.perform(get("/case/dss-orchestration/fetchCaseDetails/" + TEST_CASE_ID)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)

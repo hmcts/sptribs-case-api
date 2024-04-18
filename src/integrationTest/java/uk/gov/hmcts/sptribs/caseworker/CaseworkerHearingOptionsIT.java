@@ -133,7 +133,6 @@ public class CaseworkerHearingOptionsIT {
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(callbackRequest))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andExpect(jsonPath("$.state").value("ReadyToList"));
