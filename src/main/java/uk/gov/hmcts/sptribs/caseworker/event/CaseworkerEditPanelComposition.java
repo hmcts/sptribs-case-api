@@ -42,7 +42,7 @@ public class CaseworkerEditPanelComposition implements CCDConfig<CaseData, State
                 .complex(Listing::getSummary)
                     .readonly(HearingSummary::getPanel1)
                     .optional(HearingSummary::getPanel2)
-                    .optional(HearingSummary::getPanel3, "panel2=\"*\"")
+                    .optional(HearingSummary::getPanel3)
                     .optional(HearingSummary::getPanelMemberInformation)
                 .done()
             .done();

@@ -171,7 +171,7 @@ public class HearingSummary {
     public void populatePanelComposition() {
         if (this.getPanel2() != null && this.getPanel3() != null) {
             this.setPanelComposition(PANEL_3);
-        } else if (this.getPanel2() != null) {
+        } else if (this.getPanel2() != null || this.getPanel3() != null) {
             this.setPanelComposition(PANEL_2);
         } else {
             this.setPanelComposition(PANEL_1);

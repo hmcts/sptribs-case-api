@@ -28,11 +28,24 @@ public class HearingSummaryTest {
     }
 
     @Test
-    void shouldPopulatePanelCompositionToPanel2WhenTwoPanelMembersSet() {
+    void shouldPopulatePanelCompositionToPanel2WhenPanel2AndNotPanel3Set() {
         HearingSummary hearingSummary = new HearingSummary();
         hearingSummary.setPanel1("Tribunal Judge");
         hearingSummary.setPanel2(MEDICAL_MEMBER);
         hearingSummary.setPanel3(null);
+
+        hearingSummary.populatePanelComposition();
+
+        assertThat(hearingSummary.getPanelComposition())
+            .isEqualTo(PANEL_2);
+    }
+
+    @Test
+    void shouldPopulatePanelCompositionToPanel2WhenPanel3AndNotPanel2Set() {
+        HearingSummary hearingSummary = new HearingSummary();
+        hearingSummary.setPanel1("Tribunal Judge");
+        hearingSummary.setPanel2(null);
+        hearingSummary.setPanel3(LAY_MEMBER);
 
         hearingSummary.populatePanelComposition();
 
