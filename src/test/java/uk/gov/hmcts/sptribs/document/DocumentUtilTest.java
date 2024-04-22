@@ -1,14 +1,18 @@
 package uk.gov.hmcts.sptribs.document;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
@@ -44,6 +48,9 @@ class DocumentUtilTest {
     private static final String DOCX_FILE = "file.docx";
     private static final String INVALID_FILE = "file.xyz";
     private static final String EMAIL_CONTENT = "Test Email Content";
+
+//    @Mock
+//    private Clock clock;
 
     @Test
     void shouldConvertFromDocumentInfoToDocument() {
@@ -516,6 +523,23 @@ class DocumentUtilTest {
         assertThat(errors).contains("Please attach the document");
     }
 
+    @Test
+    void shouldAddDatesToUploadedDocuments() {
+        final CaseworkerCICDocumentUpload documentUpload = createCaseworkerCICDocumentUpload(true, PDF_FILE, true, true);
+        ListValue<CaseworkerCICDocumentUpload> documentUploadListValue = new ListValue<>();
+        documentUploadListValue.setValue(documentUpload);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentUploadList = new ArrayList<>();
+        documentUploadList.add(documentUploadListValue);
+
+        List<ListValue<CaseworkerCICDocument>> outputList = DocumentUtil.addDateToUploadedDocuments(documentUploadList);
+
+        assertThat(outputList).hasSize(1);
+        assertThat(outputList.get(0).getValue().getDocumentCategory()).isEqualTo(documentUpload.getDocumentCategory());
+        assertThat(outputList.get(0).getValue().getDocumentEmailContent()).isEqualTo(documentUpload.getDocumentEmailContent());
+        assertThat(outputList.get(0).getValue().getDocumentLink()).isEqualTo(documentUpload.getDocumentLink());
+        assertThat(outputList.get(0).getValue().getDate()).isNotNull();
+    }
+
     private DocumentInfo documentInfo() {
         return new DocumentInfo(
             DOC_URL,
@@ -559,6 +583,38 @@ class DocumentUtilTest {
         documentListValue.setValue(document);
 
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(documentListValue);
+
+        return documentList;
+    }
+
+    private CaseworkerCICDocumentUpload createCaseworkerCICDocumentUpload(Boolean includeLink, String fileName,
+                                                                          Boolean includeContent, Boolean includeCategory) {
+        CaseworkerCICDocumentUpload document = new CaseworkerCICDocumentUpload();
+
+        if (includeLink && fileName != null) {
+            document.setDocumentLink(Document.builder().filename(fileName).build());
+        }
+
+        if (includeContent) {
+            document.setDocumentEmailContent(EMAIL_CONTENT);
+        }
+
+        if (includeCategory) {
+            document.setDocumentCategory(DocumentType.LINKED_DOCS);
+        }
+
+        return document;
+    }
+
+    private List<ListValue<CaseworkerCICDocumentUpload>> createCaseworkerCICDocumentUploadList(Boolean includeLink, String fileName,
+                                                                                   Boolean includeContent, Boolean includeCategory) {
+        CaseworkerCICDocumentUpload document = createCaseworkerCICDocumentUpload(includeLink, fileName, includeContent, includeCategory);
+
+        ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         documentList.add(documentListValue);
 
         return documentList;

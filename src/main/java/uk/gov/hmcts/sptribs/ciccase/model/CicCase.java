@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -521,6 +522,14 @@ public class CicCase {
         access = {DefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
+
+    @CCD(
+        label = "Case Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocumentUpload",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocumentUpload>> caseDocumentsUpload;
 
     @CCD(
         label = "Reinstate Documents",

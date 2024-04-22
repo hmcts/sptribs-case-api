@@ -8,8 +8,11 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +79,19 @@ public final class DocumentUtil {
         return errors;
     }
 
+    public static List<String> validateCaseworkerCICDocumentUploadFormat(List<ListValue<CaseworkerCICDocumentUpload>> documentList) {
+        final List<String> errors = new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(documentList)) {
+            documentList.stream()
+                .filter(value -> value != null && !value.getValue().isDocumentValid())
+                .findFirst()
+                .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
+        }
+
+        return errors;
+    }
+
     public static List<String> validateDecisionDocumentFormat(CICDocument document) {
         final List<String> errors = new ArrayList<>();
         if (document != null && !document.isDocumentValid()) {
@@ -112,6 +128,54 @@ public final class DocumentUtil {
         }
 
         return errors;
+    }
+
+    public static List<String> validateCICUploadedDocuments(List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments) {
+        List<String> errors = new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
+            for (ListValue<CaseworkerCICDocumentUpload> documentListValue : uploadedDocuments) {
+                if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
+                    errors.add("Please attach the document");
+                } else {
+                    errors.addAll(validateCaseworkerCICDocumentUploadFormat(List.of(documentListValue)));
+
+                    if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
+                        errors.add("Description is mandatory for each document");
+                    }
+                    if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentCategory())) {
+                        errors.add("Category is mandatory for each document");
+                    }
+                }
+            }
+        }
+
+        return errors;
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> addDateToUploadedDocuments(List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments) {
+        Clock clock = Clock.systemDefaultZone();
+
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        uploadedDocuments.forEach(
+            listValue -> {
+                CaseworkerCICDocumentUpload uploadedDocument = listValue.getValue();
+                CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+                    .documentCategory(uploadedDocument.getDocumentCategory())
+                    .documentEmailContent(uploadedDocument.getDocumentEmailContent())
+                    .documentLink(uploadedDocument.getDocumentLink())
+                    .date(LocalDate.now(clock))
+                    .build();
+
+                ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+                documentListValue.setId(listValue.getId());
+                documentListValue.setValue(document);
+
+                documentList.add(documentListValue);
+            }
+        );
+
+        return documentList;
     }
 
 }
