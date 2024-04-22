@@ -49,9 +49,6 @@ class DocumentUtilTest {
     private static final String INVALID_FILE = "file.xyz";
     private static final String EMAIL_CONTENT = "Test Email Content";
 
-//    @Mock
-//    private Clock clock;
-
     @Test
     void shouldConvertFromDocumentInfoToDocument() {
         //When
