@@ -10,11 +10,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCICUploadedDocuments;
 
 public class CaseUploadDocuments implements CcdPageConfiguration {
 
@@ -35,18 +35,17 @@ public class CaseUploadDocuments implements CcdPageConfiguration {
 
                     """)
             .complex(CaseData::getCicCase)
-            .mandatoryWithLabel(CicCase::getApplicantDocumentsUploaded, "File Attachments")
+            .mandatoryWithLabel(CicCase::getCaseDocumentsUpload, "File Attachments")
             .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        LOG.info("Start of midEvent");
 
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCicCase().getApplicantDocumentsUploaded();
-        List<String> errors = validateUploadedDocuments(uploadedDocuments);
-        LOG.info("End of midEvent");
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getCicCase().getCaseDocumentsUpload();
+        List<String> errors = validateCICUploadedDocuments(uploadedDocuments);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
