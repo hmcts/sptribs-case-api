@@ -110,9 +110,9 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCicCase().getCaseDocumentsUpload();
         List<ListValue<CaseworkerCICDocument>> documents = addDateToUploadedDocuments(uploadedDocuments);
         caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
-        caseData.getCicCase().setApplicantDocumentsUploaded(documents);
 
-        updateCategoryToCaseworkerDocument(caseData.getCicCase().getApplicantDocumentsUploaded());
+        updateCategoryToCaseworkerDocument(documents);
+        caseData.getCicCase().setApplicantDocumentsUploaded(documents);
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
