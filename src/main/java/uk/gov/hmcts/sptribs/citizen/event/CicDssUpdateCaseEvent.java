@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -64,6 +65,9 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     @Autowired
     private IdamService idamService;
+
+    @Autowired
+    private Clock clock;
 
     @Value("${feature.update-case.enabled}")
     private boolean dssUpdateCaseEnabled;
@@ -120,6 +124,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     .documentLink(document)
                     .documentEmailContent(documentComment)
                     .documentCategory(DocumentType.DSS_OTHER)
+                    .date(LocalDate.now(clock))
                     .build();
                 if (!documentList.contains(caseworkerCICDocument)) {
                     documentList.add(caseworkerCICDocument);
