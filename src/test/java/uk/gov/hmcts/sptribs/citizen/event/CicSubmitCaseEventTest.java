@@ -37,6 +37,10 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,6 +86,9 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private IdamService idamService;
+
+    @Mock
+    private Clock clock;
 
     private AutoCloseable autoCloseableMocks;
 
@@ -143,8 +150,15 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
+
+        final Instant instant = Instant.now();
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final LocalDate expectedDate = LocalDate.ofInstant(instant, zoneId);
+
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -152,6 +166,9 @@ class CicSubmitCaseEventTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDate()).isEqualTo(expectedDate);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate()).isEqualTo(expectedDate);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate()).isEqualTo(expectedDate);
         assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
             .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
@@ -184,6 +201,8 @@ class CicSubmitCaseEventTest {
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+        when(clock.instant()).thenReturn(Instant.now());
+        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
         cicSubmitCaseEvent.configure(configBuilder);
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
@@ -231,6 +250,8 @@ class CicSubmitCaseEventTest {
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+        when(clock.instant()).thenReturn(Instant.now());
+        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
         cicSubmitCaseEvent.configure(configBuilder);
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse = cicSubmitCaseEvent.aboutToSubmit(
