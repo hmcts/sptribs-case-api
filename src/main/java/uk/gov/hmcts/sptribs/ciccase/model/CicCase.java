@@ -538,6 +538,12 @@ public class CicCase {
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
 
     @CCD(
+        label = "Reinstate Documents",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    List<ListValue<CaseworkerCICDocumentUpload>> reinstateDocumentsUpload;
+
+    @CCD(
         label = "Decision Documents",
         access = {CaseworkerAndSuperUserAccess.class}
     )

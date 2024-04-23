@@ -9,9 +9,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCICUploadedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 public class ReinstateUploadDocuments implements CcdPageConfiguration {
@@ -39,7 +41,7 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
 
                 Note: If the remove button is disabled, please refresh the page to remove attachments
                 """)
-            .optionalWithLabel(CicCase::getReinstateDocuments, "Reinstate Documents")
+            .optionalWithLabel(CicCase::getReinstateDocumentsUpload, "Reinstate Documents")
             .done();
 
     }
@@ -47,8 +49,8 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> documents = data.getCicCase().getReinstateDocuments();
-        List<String> errors = validateUploadedDocuments(documents);
+        List<ListValue<CaseworkerCICDocumentUpload>> documents = data.getCicCase().getReinstateDocumentsUpload();
+        List<String> errors = validateCICUploadedDocuments(documents);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
