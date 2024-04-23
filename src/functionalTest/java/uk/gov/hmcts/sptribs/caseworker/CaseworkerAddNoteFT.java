@@ -21,7 +21,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CaseworkerAddNoteFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String REQUEST_MULTIPLE_NOTES = "classpath:request/casedata/ccd-callback-casedata-multiple-notes.json";
+
     private static final String RESPONSE = "classpath:responses/response-caseworker-add-notes-about-to-submit.json";
+    private static final String RESPONSE_MULTIPLE_NOTES =
+        "classpath:responses/response-caseworker-add-multiple-notes-about-to-submit.json";
 
     @Test
     public void shouldUpdateCaseDataWithNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
@@ -33,5 +37,17 @@ public class CaseworkerAddNoteFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE)));
+    }
+
+    @Test
+    public void shouldUpdateCaseDataWithMultipleNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_MULTIPLE_NOTES);
+
+        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_ADD_NOTE, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(RESPONSE_MULTIPLE_NOTES)));
     }
 }
