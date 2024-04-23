@@ -63,25 +63,29 @@ public class CaseApiService {
 
     public String getEventToken(String authorization, String userId, String eventId,
                                 AppsConfig.AppsDetails appsDetails) {
-        final StartEventResponse res = coreCaseDataApi.startForCitizen(authorization,
+        final StartEventResponse res = coreCaseDataApi.startForCitizen(
+            authorization,
             authTokenGenerator.generate(),
             userId,
             appsDetails.getJurisdiction(),
             appsDetails.getCaseType(),
-            eventId);
+            eventId
+        );
 
         return res.getToken();
     }
 
     public String getEventTokenForUpdate(String authorization, String userId, String eventId, String caseId,
                                          AppsConfig.AppsDetails appsDetails) {
-        final StartEventResponse res = coreCaseDataApi.startEventForCitizen(authorization,
+        final StartEventResponse res = coreCaseDataApi.startEventForCitizen(
+            authorization,
             authTokenGenerator.generate(),
             userId,
             appsDetails.getJurisdiction(),
             appsDetails.getCaseType(),
             caseId,
-            eventId);
+            eventId
+        );
 
         return res.getToken();
     }

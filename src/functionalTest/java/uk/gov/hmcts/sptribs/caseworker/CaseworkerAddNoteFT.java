@@ -21,6 +21,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CaseworkerAddNoteFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String RESPONSE = "classpath:responses/response-caseworker-add-notes-about-to-submit.json";
 
     @Test
     public void shouldUpdateCaseDataWithNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
@@ -31,8 +32,6 @@ public class CaseworkerAddNoteFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(
-                "classpath:responses/response-caseworker-add-notes-about-to-submit.json"
-            )));
+            .isEqualTo(json(expectedResponse(RESPONSE)));
     }
 }

@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import static java.util.Collections.emptySet;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
@@ -101,7 +100,6 @@ public class CaseworkerCreateHearingSummaryIT {
                         caseData,
                         CASEWORKER_CREATE_HEARING_SUMMARY)))
                 .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andExpect(
