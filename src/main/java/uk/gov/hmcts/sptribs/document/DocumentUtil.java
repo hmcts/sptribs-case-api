@@ -178,4 +178,26 @@ public final class DocumentUtil {
         return documentList;
     }
 
+    public static List<ListValue<CaseworkerCICDocumentUpload>> removeDateFromUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadDocuments) {
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
+        uploadDocuments.forEach(
+            listValue -> {
+                CaseworkerCICDocument uploadedDocument = listValue.getValue();
+                CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
+                    .documentCategory(uploadedDocument.getDocumentCategory())
+                    .documentEmailContent(uploadedDocument.getDocumentEmailContent())
+                    .documentLink(uploadedDocument.getDocumentLink())
+                    .build();
+
+                ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
+                documentListValue.setId(listValue.getId());
+                documentListValue.setValue(document);
+
+                documentList.add(documentListValue);
+            }
+        );
+
+        return documentList;
+    }
+
 }

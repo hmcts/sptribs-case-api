@@ -537,6 +537,22 @@ class DocumentUtilTest {
         assertThat(outputList.get(0).getValue().getDate()).isNotNull();
     }
 
+    @Test
+    void shouldRemoveDatesFromUploadedDocuments() {
+        final CaseworkerCICDocument document = createCaseworkerCICDocument(true, PDF_FILE, true, true);
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        documentList.add(documentListValue);
+
+        List<ListValue<CaseworkerCICDocumentUpload>> outputList = DocumentUtil.removeDateFromUploadedDocuments(documentList);
+
+        assertThat(outputList).hasSize(1);
+        assertThat(outputList.get(0).getValue().getDocumentCategory()).isEqualTo(document.getDocumentCategory());
+        assertThat(outputList.get(0).getValue().getDocumentEmailContent()).isEqualTo(document.getDocumentEmailContent());
+        assertThat(outputList.get(0).getValue().getDocumentLink()).isEqualTo(document.getDocumentLink());
+    }
+
     private DocumentInfo documentInfo() {
         return new DocumentInfo(
             DOC_URL,
