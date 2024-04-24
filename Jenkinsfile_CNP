@@ -233,20 +233,6 @@ withPipeline(type, product, component) {
 
     afterSuccess('functionalTest:aat') {
 
-       try {
-         builder.gradle('e2eTests')
-       } finally {
-
-          publishHTML target: [
-             allowMissing         : true,
-             alwaysLinkToLastBuild: true,
-             keepAll              : true,
-             reportDir            : "build/reports/tests/e2eTests",
-             reportFiles          : "index.html",
-             reportName           : "E2E Tests Report"
-          ]
-       }
-
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
         env.CCD_DEF_NAME="prod"
