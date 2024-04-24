@@ -24,7 +24,7 @@ public class CaseworkerCaseBuiltFT extends FunctionalTestSuite {
     private static final String STATE = "$.state";
 
     @Test
-    public void shouldUpdateCaseDataWithNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+    public void shouldUpdateCaseStateWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CASE_BUILT, ABOUT_TO_SUBMIT_URL);
@@ -36,7 +36,7 @@ public class CaseworkerCaseBuiltFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldRecieveErrorIfInvalidRequestIsInvoked() throws Exception {
+    public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CASE_BUILT, SUBMITTED_URL);
