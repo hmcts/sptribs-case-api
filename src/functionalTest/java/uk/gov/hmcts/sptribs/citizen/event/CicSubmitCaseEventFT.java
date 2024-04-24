@@ -21,7 +21,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest
 public class CicSubmitCaseEventFT extends FunctionalTestSuite {
 
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-submit-case-about-to-start.json";
+    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-submit-case-about-to-submit.json";
     private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-submit-case-submitted.json";
     private static final String REQUEST_MISSING_CASE_NUMBER =
         "classpath:request/casedata/ccd-callback-casedata-submit-case-missing-case-number.json";
