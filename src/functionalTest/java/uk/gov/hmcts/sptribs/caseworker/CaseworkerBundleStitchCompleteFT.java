@@ -19,7 +19,7 @@ public class CaseworkerBundleStitchCompleteFT extends FunctionalTestSuite {
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-caseworker-stich-bundle.json";
 
     @Test
-    public void shouldUpdateCaseDataWithNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+    public void shouldRecieveOkResponseWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final Response response = triggerCallback(caseData, EventConstants.ASYNC_STITCH_COMPLETE, ABOUT_TO_SUBMIT_URL);
