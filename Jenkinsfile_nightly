@@ -44,19 +44,19 @@ withNightlyPipeline(type, product, component) {
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
 
-    try {
-      builder.gradle('e2eTests')
-    } finally {
-
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/e2eTests",
-        reportFiles          : "index.html",
-        reportName           : "E2E Tests Report"
-      ]
+    stage("Case-API E2E tests") {
+      try {
+        builder.gradle('e2eTests')
+      } finally {
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports/tests/e2eTests",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report"
+        ]
+      }
     }
   }
-
 }
