@@ -17,11 +17,23 @@ public class IdamTokenGenerator {
     @Value("${idam.solicitor.password}")
     private String solicitorPassword;
 
+    @Value("${idam.caseworker.username}")
+    private String caseworkerUsername;
+
+    @Value("${idam.caseworker.password}")
+    private String caseworkerPassword;
+
     @Value("${idam.systemupdate.username}")
     private String systemUpdateUsername;
 
     @Value("${idam.systemupdate.password}")
     private String systemUpdatePassword;
+
+    @Value("${idam.citizen.username}")
+    private String citizenUsername;
+
+    @Value("${idam.citizen.password}")
+    private String citizenPassword;
 
     @Autowired
     private IdamClient idamClient;
@@ -30,12 +42,20 @@ public class IdamTokenGenerator {
         return idamClient.getAccessToken(solicitorUsername, solicitorPassword);
     }
 
+    public String generateIdamTokenForCaseworker() {
+        return idamClient.getAccessToken(caseworkerUsername, caseworkerPassword);
+    }
+
     public String generateIdamTokenForSystem() {
         return idamClient.getAccessToken(systemUpdateUsername, systemUpdatePassword);
     }
 
     public String generateIdamTokenForUser(String username, String password) {
         return idamClient.getAccessToken(username, password);
+    }
+
+    public String generateIdamTokenForCitizen() {
+        return idamClient.getAccessToken(citizenUsername, citizenPassword);
     }
 
     public UserDetails getUserDetailsFor(final String token) {
