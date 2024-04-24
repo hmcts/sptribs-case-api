@@ -58,10 +58,10 @@ public abstract class FunctionalTestSuite {
     protected ObjectMapper objectMapper;
 
     protected CaseDetails createCaseInCcd() {
-        String solicitorToken = idamTokenGenerator.generateIdamTokenForSolicitor();
+        String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
         String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate("sptribs_case_api");
-        String solicitorUserId = idamTokenGenerator.getUserDetailsFor(solicitorToken).getId();
-        StartEventResponse startEventResponse = startEventForCreateCase(solicitorToken, s2sTokenForCaseApi, solicitorUserId);
+        String caseworkerUserId = idamTokenGenerator.getUserDetailsFor(caseworkerToken).getId();
+        StartEventResponse startEventResponse = startEventForCreateCase(caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -74,19 +74,19 @@ public abstract class FunctionalTestSuite {
             ))
             .build();
 
-        return submitNewCase(caseDataContent, solicitorToken, s2sTokenForCaseApi, solicitorUserId);
+        return submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
     }
 
     private StartEventResponse startEventForCreateCase(
-        String solicitorToken,
+        String caseworkerToken,
         String s2sToken,
-        String solicitorUserId
+        String caseworkerUserId
     ) {
         // not including in try catch to fail fast the method
         return coreCaseDataApi.startForCaseworker(
-            solicitorToken,
+            caseworkerToken,
             s2sToken,
-            solicitorUserId,
+            caseworkerUserId,
             CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
             CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(),
             TEST_CREATE
