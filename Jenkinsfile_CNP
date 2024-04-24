@@ -46,6 +46,8 @@ def secrets = [
                 secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
                 secret('idam-systemupdate-username', 'IDAM_SYSTEM_UPDATE_USERNAME'),
                 secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
+                secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
+                secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
                 secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
                 secret('sptribs-postgres-password-preview', 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'),
                 secret('ccd-global-postgres-username-preview', 'CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW'),
@@ -230,20 +232,6 @@ withPipeline(type, product, component) {
     }
 
     afterSuccess('functionalTest:aat') {
-
-       try {
-         builder.gradle('e2eTests')
-       } finally {
-
-          publishHTML target: [
-             allowMissing         : true,
-             alwaysLinkToLastBuild: true,
-             keepAll              : true,
-             reportDir            : "build/reports/tests/e2eTests",
-             reportFiles          : "index.html",
-             reportName           : "E2E Tests Report"
-          ]
-       }
 
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
