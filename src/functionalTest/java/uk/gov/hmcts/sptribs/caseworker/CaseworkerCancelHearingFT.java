@@ -33,10 +33,9 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-submitted_invalid_party.json";
 
     private static final String RESPONSE_ABOUT_TO_SUBMIT = "classpath:responses/response-caseworker-cancel-hearing-about-to-submit.json";
-    private static final String RESPONSE_ALL_PARTIES_ERROR =
-        "classpath:responses/response-caseworker-cancel-hearing-record-notify-parties-mid-event.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+    private static final String ERROR_MESSAGE = "$.errors";
 
     @Test
     public void shouldCancelHearingWhenAboutToSubmitCallbackIsInvoked() throws Exception {
@@ -83,10 +82,9 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
         Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-
         assertThatJson(response.asString())
-            .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(RESPONSE_ALL_PARTIES_ERROR)));
+            .inPath(ERROR_MESSAGE)
+            .isEqualTo("[\"One recipient must be selected.\"]");
     }
 
     @Test
@@ -97,7 +95,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-            .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(RESPONSE_ALL_PARTIES_ERROR)));
+            .inPath(ERROR_MESSAGE)
+            .isEqualTo("[\"One recipient must be selected.\"]");
     }
 }
