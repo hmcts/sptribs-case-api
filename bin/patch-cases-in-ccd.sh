@@ -37,8 +37,8 @@ for user in $users; do
 
   echo "Retrieving user details for user $email"
   userDetails=$(curl --insecure --fail --show-error --silent -X GET -H "Authorization: Bearer $idamToken" "${IDAM_API_BASE_URL}/details")
-  firstName=$(echo "$userDetails" | docker run --rm --interactive stedolan/jq -r .forename)
-  lastName=$(echo "$userDetails" | docker run --rm --interactive stedolan/jq -r .surname)
-  userId=$(echo "$userDetails" | docker run --rm --interactive stedolan/jq -r .id)
+  firstName=$(echo "$userDetails" | docker run --rm --interactive ghcr.io/jqlang/jq -r .forename)
+  lastName=$(echo "$userDetails" | docker run --rm --interactive ghcr.io/jqlang/jq -r .surname)
+  userId=$(echo "$userDetails" | docker run --rm --interactive ghcr.io/jqlang/jq -r .id)
 
 done

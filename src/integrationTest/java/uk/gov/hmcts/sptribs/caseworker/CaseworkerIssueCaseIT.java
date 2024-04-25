@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.ITEventConstants.CASEWORKER_ISSUE_CASE;
@@ -82,7 +81,6 @@ class CaseworkerIssueCaseIT {
                         caseData,
                         CASEWORKER_ISSUE_CASE)))
                 .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andExpect(

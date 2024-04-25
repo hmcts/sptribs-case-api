@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.sptribs.cftlib.action.Case;
 import uk.gov.hmcts.sptribs.cftlib.util.DateHelpers;
 import uk.gov.hmcts.sptribs.cftlib.util.Login;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 
 import java.util.Calendar;
 
@@ -19,8 +20,8 @@ public class CaseworkerCloseCaseTest extends XuiTest {
 
     @RepeatedIfExceptionsTest
     public void caseworkerShouldAbleToCloseTheCase() {
-        Mockito.doNothing().when(applicationReceivedNotification).sendToSubject(Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(caseWithdrawnNotification).sendToSubject(Mockito.any(), Mockito.any());
+        Mockito.doNothing().when(applicationReceivedNotification).sendToSubject(Mockito.any(CaseData.class), Mockito.any());
+        Mockito.doNothing().when(caseWithdrawnNotification).sendToSubject(Mockito.any(CaseData.class), Mockito.any());
         Page page = getPage();
         Login login = new Login(page);
         login.signInWithCaseworker();

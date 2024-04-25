@@ -34,7 +34,6 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_HEARING_OPTIONS;
@@ -112,7 +111,6 @@ public class CaseworkerHearingOptionsIT {
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(callbackRequest))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andExpect(jsonPath("$.state").value("ReadyToList"));
@@ -133,7 +131,6 @@ public class CaseworkerHearingOptionsIT {
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(callbackRequest))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andExpect(jsonPath("$.state").value("ReadyToList"));
@@ -155,7 +152,6 @@ public class CaseworkerHearingOptionsIT {
                     caseData,
                     CASEWORKER_HEARING_OPTIONS)))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andReturn()
@@ -183,7 +179,6 @@ public class CaseworkerHearingOptionsIT {
                     caseData,
                     CASEWORKER_HEARING_OPTIONS)))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andReturn()
@@ -215,7 +210,6 @@ public class CaseworkerHearingOptionsIT {
                     caseData,
                     CASEWORKER_HEARING_OPTIONS)))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andReturn()
@@ -247,7 +241,6 @@ public class CaseworkerHearingOptionsIT {
                     caseData,
                     CASEWORKER_HEARING_OPTIONS)))
             .accept(APPLICATION_JSON))
-            .andDo(print())
             .andExpect(
                 status().isOk())
             .andReturn()

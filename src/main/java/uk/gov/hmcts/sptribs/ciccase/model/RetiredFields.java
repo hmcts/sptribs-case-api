@@ -29,7 +29,11 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @NoArgsConstructor
 public class RetiredFields {
-    @CCD(label = "Case data version", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+
+    @CCD(
+        label = "Case data version",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private int dataVersion;
 
     @CCD(
