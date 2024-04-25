@@ -73,7 +73,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .description("Orders: Create draft")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::draftCreated)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
@@ -97,6 +97,20 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .complex(CaseData::getDraftOrderContentCIC)
             .mandatory(DraftOrderContentCIC::getOrderSignature)
             .done();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
+        CaseDetails<CaseData, State> details,
+        CaseDetails<CaseData, State> detailsBefore
+    ) {
+
+        Calendar cal = Calendar.getInstance();
+        String date = simpleDateFormat.format(cal.getTime());
+        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
@@ -162,24 +176,10 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         orderTemplateDynamicList.getListItems().add(element);
     }
 
-    public SubmittedCallbackResponse draftCreated(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Draft order created. ")
-            .build();
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
-
-        Calendar cal = Calendar.getInstance();
-        String date = simpleDateFormat.format(cal.getTime());
-        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
+            .confirmationHeader("# Draft order created.")
             .build();
     }
 }

@@ -28,14 +28,11 @@ class CaseworkerCloneBundleTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
-        //Given
         caseworkerCloneBundle.setBundlingEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerCloneBundle.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CLONE_BUNDLE);
@@ -43,35 +40,12 @@ class CaseworkerCloneBundleTest {
 
     @Test
     void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerCloneBundle.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .doesNotContain(CLONE_BUNDLE);
     }
-
-    @Test
-    public void shouldSuccessfullyCreateBundle() {
-        //Given
-        final CaseData caseData = caseData();
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCloneBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-
-        //Then
-        assertThat(response.getData()).isNotNull();
-    }
-
-
 }

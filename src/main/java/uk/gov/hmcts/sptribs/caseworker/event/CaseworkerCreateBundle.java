@@ -61,8 +61,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Create a bundle")
             .description("Bundle: Create a bundle")
-            .aboutToSubmitCallback(this::aboutToSubmit)
             .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER)
@@ -80,18 +80,18 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     }
 
     @SneakyThrows
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         final List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
         final List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
+
         for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : documentListValues) {
             abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
         }
+
         caseData.setCaseDocuments(abstractCaseworkerCICDocumentList);
 
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
@@ -108,6 +108,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
