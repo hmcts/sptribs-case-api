@@ -8,12 +8,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentUploadFormat;
 
 public class UploadCaseDocuments implements CcdPageConfiguration {
@@ -53,8 +51,6 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
 
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
         List<String> errors = validateCaseworkerCICDocumentUploadFormat(uploadedDocuments);
-
-//        List<String> errors = validateCaseworkerCICDocumentFormat(data.getNewDocManagement().getCaseworkerCICDocument());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
